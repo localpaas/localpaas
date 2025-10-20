@@ -1,0 +1,41 @@
+package sessionhandler
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc/sessiondto"
+)
+
+// To keep `apperrors` pkg imported and swag gen won't fail
+type _ *apperrors.ErrorInfo
+
+// DevModeLogin Login user for dev mode
+// @Summary Login user for dev mode
+// @Description Login user for dev mode. One of `user_id` and `email` params is required.
+// @Tags    sessions_internal
+// @Produce json
+// @Id      devModeLogin
+// @Param   user_id query string false "user id to login"
+// @Param   email query string false "user email to login"
+// @Success 200 {object} sessiondto.DevModeLoginResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /internal/auth/dev-mode-login [post]
+func (h *SessionHandler) DevModeLogin(ctx *gin.Context) {
+	req := sessiondto.NewDevModeLoginReq()
+	if err := h.ParseRequestFlatStyle(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.sessionUC.DevModeLogin(h.RequestCtx(ctx), req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}

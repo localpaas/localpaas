@@ -1,0 +1,31 @@
+package jwtsession
+
+import "github.com/localpaas/localpaas/localpaas_app/apperrors"
+
+// AuthClaims the claims for authentication
+type AuthClaims struct {
+	BaseClaims
+	UID       string `json:"uid"`
+	UserID    string `json:"userId"`
+	IsRefresh bool   `json:"isRefresh,omitempty"`
+}
+
+// GenerateAccessToken generates access token
+func GenerateAccessToken(authClaims *AuthClaims) (string, error) {
+	authClaims.IsRefresh = false
+	token, err := GenerateToken(authClaims, accessTokenExp)
+	if err != nil {
+		return "", apperrors.Wrap(err)
+	}
+	return token, nil
+}
+
+// GenerateRefreshToken generates refresh token
+func GenerateRefreshToken(authClaims *AuthClaims) (string, error) {
+	authClaims.IsRefresh = true
+	token, err := GenerateToken(authClaims, refreshTokenExp)
+	if err != nil {
+		return "", apperrors.Wrap(err)
+	}
+	return token, nil
+}

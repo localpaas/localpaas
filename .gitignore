@@ -1,0 +1,15 @@
+/.idea
+/.vscode
+/.cursor
+/.run
+/mocks
+/build/*
+/vendor
+/test-results
+config.yaml
+.env
+.envrc
+.DS_Store
+srv
+temp
+tmp

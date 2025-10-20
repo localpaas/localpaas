@@ -1,0 +1,207 @@
+# Base errors
+ERR_UNAUTHORIZED = "unauthorized"
+ERR_INTERNAL_SERVER = "unexpected error"
+ERR_BAD_REQUEST = "bad request"
+ERR_PARAM_INVALID = "parameter '{{.Name}}' invalid"
+ERR_UNAVAILABLE = "'{{.Name}}' unavailable"
+ERR_FORBIDDEN = "forbidden"
+ERR_NOT_FOUND = "'{{.Name}}' not found"
+ERR_ALREADY_EXIST = "'{{.Name}}' already exist"
+ERR_CONFLICT = "'{{.Name}}' conflicts with the existing data"
+ERR_NON_EDITABLE = "'{{.Name}}' is non-editable"
+ERR_NON_DELETABLE = "'{{.Name}}' is non-deletable"
+ERR_RESOURCE_IN_USE = "'{{.Name}}' is in use"
+ERR_VALIDATION = "validation failed"
+ERR_IMPORT_DATA_INVALID = "Import data is invalid"
+ERR_IMPORT_COLUMN_INVALID = "'{{.Name}}' is required"
+ERR_REQUEST_TOO_FREQUENTLY = "request too frequently"
+ERR_ACTION_NOT_ALLOWED = "Action is not allowed"
+ERR_NOT_IMPLEMENTED = "not implemented"
+ERR_UPDATE_NO_CHANGE_DETECTED = "No change detected in the update data"
+
+ERR_REQUEST_DETAILS_NOT_ALLOWED_FOR_RESOURCE_CONTEXT = "Request details is not allowed for request with resource context"
+ERR_FIELD_FILTER_OP_NOT_SUPPORTED = "'{{.FieldFilterOp}}' operator for '{{.FieldFilter}}' field is not supported"
+ERR_FIELD_FILTER_UNSUPPORTED_CUSTOM_FIELD_TYPE = "'{{.FieldFilter}}' field filter is not supported for custom field type '{{.CustomFieldType}}'"
+ERR_FIELD_FILTER_ARG_INVALID = "Argument(s) for '{{.FieldFilter}}' field is invalid"
+ERR_ENTITY_TYPE_NOT_SUPPORTED = "Entity type '{{.EntityType}}' is not supported"
+
+# Session errors
+ERR_SESSION_JWT_INVALID = "Session JWT is invalid"
+ERR_SESSION_JWT_EXPIRED = "Session JWT expired"
+ERR_SESSION_REFRESH_TOKEN_REQUIRED = "Session refresh token is required"
+ERR_SSO_REQUIRED = "You are required to login with SSO"
+ERR_LOGIN_INPUT_INVALID = "Email or password is incorrect"
+ERR_PASSWORD_MISMATCHED = "Password is incorrect"
+ERR_PASSCODE_MISMATCHED = "Passcode is incorrect"
+ERR_MFA_TOKEN_INVALID = "MFA token is invalid"
+ERR_TOO_MANY_LOGIN_FAILURES = "You made too many login failures. Please wait {{.WaitDuration}} seconds before trying again."
+ERR_TOO_MANY_PASSCODE_ATTEMPTS = "You made too many passcode attempts. Please start over the login process."
+
+# API client errors
+ERR_API_KEY_INACTIVE = "API key is inactive"
+ERR_API_KEY_MISMATCHED = "API key is mismatched"
+ERR_API_KEY_INVALID = "API key is invalid"
+
+# Email sending errors
+ERR_SEND_EMAIL_FAILED = "Unable to send email to user"
+ERR_SEND_BULK_EMAIL_FAILED = "Unable to send bulk emails to multiple users"
+ERR_EMAIL_TEMPLATE_DATA_MISSING_FIELD = "Email template data is missing field '{{.Field}}'"
+
+# User/workspace errors
+ERR_WORKSPACE_REQUIRED = "Workspace is required"
+ERR_CURRENT_WORKSPACE_REQUIRED = "Current workspace must be used in the input"
+ERR_USER_NOT_IN_WORKSPACE = "User is not available in workspace"
+ERR_USER_INTERNAL_REQUIRED = "User is required to be internal"
+ERR_USER_UNAVAILABLE = "User is unavailable. Please contact administrator."
+ERR_USER_HAS_ACCESS_ON_OWN_DATA_ONLY = "User has access permission on own data only"
+ERR_USER_INVITE_TOKEN_INVALID = "Invite token is invalid or expired"
+ERR_USER_STATUS_NOT_ALLOW_SIGN_UP = "User status does not allow signing up"
+ERR_USER_STATUS_NOT_ALLOW_ACTIVATION = "User status does not allow activation"
+ERR_USER_ALREADY_SIGN_UP = "User already signs up"
+ERR_UPLOAD_PHOTO_FAILED = "{{.Message}}" # Use message from Casdoor directly
+ERR_PASSWORD_NOT_MEET_REQUIREMENTS = "Password does not meet requirements. Must contain at least {{.MinLen}} characters with {{.Lowers}} lowercase, {{.Uppers}} uppercase, {{.Digits}} digit, and {{.Specials}} special characters."
+ERR_PASSWORD_RESET_TOKEN_INVALID = "Password reset token is invalid or expired"
+ERR_EMAIL_CHANGE_UNALLOWED_ON_ENFORCE_SSO = "Email is not allowed changing when your login method is SSO"
+ERR_EMAIL_UNAVAILABLE = "Email address is unavailable"
+ERR_PROJECT_ACCESS_REQUIRED = "Access permission '{{.Permission}}' on project '{{.Resource}}' is required"
+
+# Access code errors
+ERR_ACCESS_CODE_EXPIRED = "Access code already expires"
+ERR_ACCESS_CODE_USER_ACCESS_EXPIRED = "User access of the access code expired"
+ERR_ACCESS_CODE_NOT_ACTIVE = "Access code is not active"
+
+# Role errors
+ERR_ROLE_UNAVAILABLE = "Role is not available in workspace"
+ERR_ROLE_NAME_UNAVAILABLE = "Role name '{{.Name}}' is taken in workspace"
+ERR_ACCESS_RULE_TITLE_UNAVAILABLE = "Access rule title '{{.Title}}' is taken for role"
+
+# Rule errors
+ERR_RULE_MATCH_TYPE_NOT_SUPPORTED = "Rule match type is not supported"
+ERR_RULE_OBJECT_TYPE_NOT_SUPPORTED = "Rule object type is not supported"
+ERR_RULE_OBJECT_FIELD_INVALID = "Rule object field is invalid"
+ERR_RULE_CONDITION_OPERATOR_NOT_SUPPORTED = "Rule condition operator is not supported"
+ERR_RULE_CONDITION_DATE_PERIOD_NOT_SUPPORTED = "Rule condition date period is not supported"
+ERR_RULE_CONDITION_DATA_INVALID = "Rule condition data is invalid"
+ERR_RULE_ACTION_OPERATOR_NOT_SUPPORTED = "Rule action operator '{{.Operator}}' is not supported"
+
+# Absence setting errors
+ERR_ABSENCE_SETTINGS_UNAVAILABLE_FOR_EXT_USERS = "Absence settings are not available for external users"
+ERR_USER_NOT_SUBJECT_TO_ABSENCE_MANAGEMENT = "User is not subjected to absence management"
+ERR_ABSENCE_REQUEST_TYPE_NOT_MATCH = "Absence request type '{{.Type}}' does not match"
+ERR_ABSENCE_REQUEST_STATUS_NOT_ALLOW_UPDATE = "Absence request status '{{.Status}}' does not allow updating"
+ERR_ABSENCE_REQUEST_STATUS_NOT_ALLOW_APPROVAL = "Absence request status '{{.Status}}' does not allow approval"
+ERR_ABSENCE_APPROVAL_TOKEN_INVALID = "Absence approval token is invalid"
+ERR_ABSENCE_REQUEST_INVALID = "Absence request is invalid"
+
+# Entity errors
+ERR_ENTITY_UNAVAILABLE = "Entity is not available in workspace"
+ERR_ENTITY_NAME_UNAVAILABLE = "Entity name '{{.Name}}' is taken in workspace"
+
+# Dashboard errors
+ERR_DASHBOARD_UNAVAILABLE = "Dashboard is not available in workspace"
+ERR_DASHBOARD_NAME_UNAVAILABLE = "Dashboard name '{{.Name}}' is taken in workspace and module"
+
+# Custom table view errors
+ERR_CUSTOM_TABLE_VIEW_NAME_UNAVAILABLE = "Custom table view name is not available in workspace"
+
+# File errors
+ERR_REQUEST_TOO_BIG = "Request size must be less than {{.MaxSize}}"
+ERR_FILE_SIZE_TOO_BIG = "File size must be less than {{.MaxSize}}"
+ERR_FILE_TYPE_NOT_SUPPORTED = "File type must be one of {{.SupportedTypes}}"
+ERR_FILE_EXT_NOT_SUPPORTED = "File extension must be one of {{.SupportedExts}}"
+ERR_FILE_NAME_TOO_LONG = "File name must contain less than {{.MaxNameLen}} characters"
+ERR_NUMBER_OF_FILES_INVALID = "Number of files to upload is invalid"
+ERR_FILE_TARGET_OBJECT_TYPE_INVALID = "File target object type must be one of {{.SupportedTypes}}"
+ERR_FILE_TARGET_OBJECT_UNAVAILABLE = "Target object for file upload is unavailable"
+ERR_FILE_TARGET_OBJECT_UNMATCHED = "Target object doesn't match the file"
+
+# Project blueprint errors
+ERR_BLUEPRINT_UNAVAILABLE = "Project blueprint is not available"
+ERR_BLUEPRINT_NAME_UNAVAILABLE = "Project blueprint name '{{.Name}}' is taken in workspace"
+
+# Custom field errors
+ERR_CUSTOM_FIELD_TYPE_UNMATCHED = "Custom field type is unmatched"
+ERR_CUSTOM_FIELD_VALUE_INVALID = "Custom field value is invalid"
+
+# Task catalog errors
+ERR_TASK_CATALOG_NAME_UNAVAILABLE = "Task catalog name '{{.Name}}' is unavailable"
+ERR_TASK_CATALOG_CATEGORY_NAME_UNAVAILABLE = "Task catalog category name '{{.Name}}' is unavailable"
+ERR_TASK_CATALOG_ITEM_NAME_UNAVAILABLE = "Task catalog item name '{{.Name}}' is unavailable"
+ERR_MULTI_WORKSPACE_TASK_CATALOG_NOT_SUPPORT_ROLE_INPUT = "A multi-workspace task catalog does not support configuring roles"
+ERR_MULTI_WORKSPACE_TASK_CATALOG_NOT_SUPPORT_CUSTOM_FIELDS = "A multi-workspace task catalog item cannot have custom fields"
+ERR_TASK_CATALOG_EDIT_STATUS_UNMATCHED = "Status of the task catalog edit doesn't match the expectation"
+ERR_TASK_CATALOG_ITEM_MUST_BE_MAJOR_MILESTONE = "Task catalog item required to be a major milestone"
+ERR_TASK_CATALOG_OWNER_REQUIRED = "Task catalog owner is required"
+ERR_TASK_CATALOG_COLLABORATOR_REQUIRED = "Task catalog collaborator is required"
+ERR_TASK_CATALOG_OWNER_OR_COLLABORATOR_REQUIRED = "Task catalog owner or collaborator is required"
+ERR_TASK_CATALOG_ITEM_NOT_ASSOCIATED_WITH_BLUEPRINT = "Task catalog item is not associated with the project blueprint"
+ERR_MULTIPLE_TASK_CATALOGS_NOT_ALLOWED = "Input of multiple task catalogs is not allowed"
+ERR_TASK_CATALOG_ITEM_TASK_DUE_DATE_RELATIVE_TO_INVALID = "Task catalog item task due date relative to '{{.RelativeTo}}' is invalid"
+ERR_TASK_CATALOG_ITEM_CREATION_TRIGGER_INVALID = "Task catalog item creation trigger '{{.Trigger}}' is invalid"
+ERR_TASK_CATALOG_ITEM_HAS_RELATING_ITEM = "Task catalog item '{{.ItemName}}' is required by item '{{.RelatingItemName}}' as a major milestone"
+ERR_TASK_CATALOG_ITEM_HAS_DEPENDING_ITEM = "Task catalog item '{{.ItemName}}' is required by item '{{.DependingItemName}}' as a dependency"
+ERR_USER_CANNOT_BE_BOTH_TASK_CATALOG_OWNER_AND_COLLABORATOR = "User cannot be both owner and collaborator of a task catalog"
+ERR_USER_CANNOT_BE_BOTH_TASK_CATALOG_ITEM_OWNER_AND_ASSIGNEE = "User cannot be both owner and assignee of a task catalog item"
+
+# Budget catalog errors
+ERR_BUDGET_CATALOG_NO_CHANGE_DETECTED = "No change detected in the budget catalog update data"
+ERR_BUDGET_CATALOG_ITEM_NO_CHANGE_DETECTED = "No change detected in the budget catalog item update data"
+ERR_BUDGET_CATALOG_ITEM_FILE_UNAVAILABLE = "This fileID='{{.FileID}}' is belong to targetObjectID='{{.OtherTargetObjectID}}'"
+ERR_BUDGET_CATALOG_ITEM_FILE_UNMATCHED = "The '{{.Field}}' is required file type '{{.ExpectedFileType}}', not '{{.ActualFileType}}'"
+ERR_BUDGET_CATALOG_RULE_NAME_UNAVAILABLE = "Budget catalog rule '{{.Name}}' is unavailable"
+
+# Task errors
+ERR_TASK_NAME_UNAVAILABLE = "Task name '{{.Name}}' is unavailable"
+ERR_MULTI_WORKSPACE_TASK_NOT_SUPPORT_ROLE_INPUT = "A multi-workspace task does not support configuring roles"
+ERR_MULTI_WORKSPACE_TASK_NOT_SUPPORT_CUSTOM_FIELDS = "A multi-workspace task cannot have custom fields"
+ERR_TASK_MUST_BE_MAJOR_MILESTONE = "Task is required to be a major milestone"
+ERR_SUBTASK_NAME_UNAVAILABLE = "Subtask name '{{.Name}}' is unavailable"
+ERR_TASK_LINK_NAME_UNAVAILABLE = "Task link name '{{.Name}}' is unavailable"
+ERR_TASK_ALREADY_DISCUSSED = "Task already discussed"
+ERR_RELATED_MILESTONE_MUST_BE_IN_SAME_PROJECT = "Task related milestone must be in the same project"
+ERR_DEPENDED_TASK_MUST_BE_IN_SAME_PROJECT = "Depended task must be in the same project"
+ERR_TASK_REQUIRES_AT_LEAST_ONE_OWNER = "Task requires at least an active owner"
+ERR_TASK_MAJOR_MILESTONE_REQUIRED_BY_OTHER_TASK = "Task '{{.TaskName}}' requires this task as a major milestone"
+ERR_TASK_STATUS_NOT_ALLOW_UPDATE_PERCENT_COMPLETED = "Task status '{{.TaskStatus}}' does not allow updating percent completed"
+ERR_MAJOR_MILESTONE_NOT_ALLOW_UPDATE_PERCENT_COMPLETED = "Task is a major milestone and is depended by other tasks"
+ERR_TASK_STATUS_NOT_ALLOW_UPDATE_COMPLETION = "Task status '{{.TaskStatus}}' does not allow updating completion"
+ERR_TASK_STATUS_NOT_ALLOW_UPDATE_START_DATE = "Task status '{{.TaskStatus}}' does not allow updating start date"
+ERR_TASK_STATUS_NOT_ALLOW_UPDATE_DUE_DATE = "Task status '{{.TaskStatus}}' does not allow updating due date"
+ERR_TASK_STATUS_NOT_ALLOW_DELAY = "Task status '{{.TaskStatus}}' does not allow delay"
+ERR_TASK_OWNER_REQUIRED = "Task owner is required"
+ERR_TASK_ASSIGNEE_REQUIRED = "Task assignee is required"
+ERR_TASK_OWNER_OR_ASSIGNEE_REQUIRED = "Task owner or assignee is required"
+ERR_TASK_HAS_RELATING_TASK = "Task '{{.TaskName}}' is required by task '{{.RelatingTaskName}}' as a major milestone"
+ERR_TASK_HAS_DEPENDING_TASK = "Task '{{.TaskName}}' is required by task '{{.DependingTaskName}}' as a dependency"
+ERR_USER_CANNOT_BE_BOTH_TASK_OWNER_AND_ASSIGNEE = "User cannot be both owner and assignee of a task"
+
+# Meeting errors
+ERR_MEETING_ALREADY_STARTED = "Meeting already started"
+ERR_MEETING_NOT_STARTED = "Meeting not started"
+ERR_MEETING_USER_NOT_LEAD = "User is not the lead of the meeting"
+
+# Property errors
+ERR_PROPERTY_TYPE_NAME_UNAVAILABLE = "Property type name '{{.Name}}' is unavailable"
+ERR_PROPERTY_EXTERNAL_REFERENCE_UNAVAILABLE = "Property external reference '{{.Name}}' is unavailable"
+
+# Department errors
+ERR_DEPARTMENT_NAME_UNAVAILABLE = "Department name '{{.Name}}' is taken in workspace"
+
+# Discipline errors
+ERR_DISCIPLINE_NAME_UNAVAILABLE = "Discipline name '{{.Name}}' is taken in workspace"
+
+# Team errors
+ERR_TEAM_NAME_UNAVAILABLE = "Team name '{{.Name}}' is taken in workspace"
+
+# Import errors
+ERR_IMPORT_INVALID = "Import is invalid"
+
+# Stakeholder errors
+ERR_STAKEHOLDER_NAME_UNAVAILABLE = "Stakeholder name '{{.Name}}' is taken in workspace"
+
+# Workflow errors
+ERR_WORKFLOW_ACTION_TYPE_NOT_SUPPORTED = "Workflow action type '{{.ActionType}}' is not supported"
+
+# Trip errors
+ErrTripStatusNotAllowRequestReview = "Trip status '{{.TripStatus}}' does not allow requesting review"
+ErrTripStatusNotAllowArchive = "Trip status '{{.TripStatus}}' does not allow archive"

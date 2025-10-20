@@ -1,0 +1,21 @@
+# User/workspace messages
+MSG_USER_NOT_INVITED_AS_ALREADY_ACTIVE = "{{.Email}} is already active in the workspace"
+MSG_USER_NOT_INVITED_AS_DISABLED = "{{.Email}} can not be invited as the user is disabled"
+MSG_USER_NOT_INVITED_AS_SENDING_MAIL_FAILED = "{{.Email}} can not be invited as failed to send invitation email"
+MSG_USER_INVITED = "{{.Email}} is invited to the workspace successfully"
+MSG_USER_ADDED_TO_WORKSPACE = "{{.Email}} is added to the workspace successfully as the user signed up already"
+
+# Signup requests approval messages
+MSG_SIGNUP_REQUEST_APPROVED = "Signup request from {{.Email}} is approved"
+MSG_SIGNUP_REQUEST_REJECTED = "Signup request from {{.Email}} is rejected"
+MSG_SIGNUP_REQUEST_ALREADY_PROCESSED = "Signup request from {{.Email}} was already processed"
+MSG_SIGNUP_REQUEST_NOT_PROCESSED_AS_USER_ALREADY_ACTIVE = "Signup request from {{.Email}} is not processed as the user is active"
+MSG_SIGNUP_REQUEST_NOT_PROCESSED_AS_USER_DISABLED = "Signup request from {{.Email}} is not processed as the user is disabled"
+
+# Absence management
+ERR_ABSENCE_HALF_DAY_REQUESTS_NOT_ALLOWED = "Half-day absence requests are not allowed in the user settings"
+ERR_ABSENCE_REQUEST_OVERLAP_OWN_REQUESTS = "The request date range overlaps one of the existing ranges"
+ERR_ABSENCE_REQUEST_OVERLAP_BLOCKED_PERIODS = "The request date range overlaps one of the blocked periods"
+ERR_ABSENCE_HOLIDAYS_CANNOT_BE_CARRIED_OVER = "Unused holidays are not configured to carry over to next year in the user settings"
+ERR_ABSENCE_INSUFFICIENT_HOLIDAYS_TO_CARRYOVER = "Insufficient unused holidays in the previous year to carry over to this year"
+ERR_ABSENCE_DAYS_IN_LIEU_CANNOT_BE_REQUESTED = "Days in lieu are not configured to be requested in the user settings"

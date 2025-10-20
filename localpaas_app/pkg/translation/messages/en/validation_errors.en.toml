@@ -1,0 +1,80 @@
+# This file contains errors for validation failures.
+# Normally validation errors are only returned when requests are parsed.
+# e.g. ERR_VLD_VALUE_INVALID = "{{.Field}} value is invalid"
+
+# BASE
+ERR_VLD_COMMON_DETAIL = "Your input contains invalid values"
+ERR_VLD_FIELD_REQUIRED = "Field is required"
+ERR_VLD_FIELD_UNALLOWED = "Field is unallowed"
+ERR_VLD_FIELD_LENGTH_INVALID = "Field length must be between {{.Min}} and {{.Max}} characters"
+ERR_VLD_VALUES_NON_UNIQUE = "Values must be unique"
+ERR_VLD_VALUE_REQUIRED = "Value is required"
+ERR_VLD_VALUE_UNALLOWED = "Value is unallowed"
+ERR_VLD_VALUE_NOT_IN_LIST = "Value must be one of {{.TargetValue}}"
+ERR_VLD_VALUE_NOT_IN_RANGE = "Value must be between {{.Min}} and {{.Max}}"
+ERR_VLD_VALUE_MUST_GREATER_THAN = "Value must be greater than {{.Min}}"
+ERR_VLD_VALUE_MUST_LESS_THAN = "Value must be less than {{.Max}}"
+ERR_VLD_VALUE_TOO_MANY = "Too many items provided. Maximum {{.Max}} items allowed, but {{.Actual}} were provided"
+ERR_VLD_OBJECT_ID_INVALID = "ID value is invalid"
+ERR_VLD_OBJECT_ID_REQUIRED = "ID value is required"
+ERR_VLD_OBJECT_ID_UNALLOWED = "ID value is not allowed"
+ERR_VLD_OBJECT_IDS_NON_UNIQUE = "ID values must be unique"
+ERR_VLD_OBJECT_IDS_REQUIRED = "ID values are required at least {{.Min}} item"
+ERR_VLD_EMAIL_ADDR_INVALID = "Email address is invalid"
+ERR_VLD_EMAIL_ADDR_REQUIRED = "Email address is required"
+ERR_VLD_EMAIL_ADDRS_NON_UNIQUE = "Email addresses must be unique"
+ERR_VLD_EMAIL_ADDRS_REQUIRED = "Email addresses are required at least {{.Min}} item"
+ERR_VLD_MUTUALLY_EXCLUSIVE_FIELDS_INVALID = "Fields are mutually exclusive"
+ERR_VLD_VALUE_INUSE_IN_ANOTHER_FIELD = "Field value is in-use in another field"
+ERR_VLD_START_DATE_AFTER_END_DATE = "Start date must not be after end date"
+ERR_VLD_GROSS_AMOUNT_LESS_THAN_NET_AMOUNT = "Gross amount must be greater than or equal to net amount"
+ERR_VLD_PROJECT_CANNOT_RELATE_TO_ITSELF = "Project cannot create relationship with itself"
+
+# WORKSPACES
+ERR_VLD_WORKSPACE_ID_REQUIRED = "Workspace ID is required"
+ERR_VLD_INVITE_TOKEN_REQUIRED = "Invite token is required"
+
+# USERS
+ERR_VLD_EMAIL_INVALID = "Email is invalid"
+ERR_VLD_FIRST_NAME_INVALID = "First name is invalid"
+ERR_VLD_LAST_NAME_INVALID = "Last name is invalid"
+ERR_VLD_USER_PHOTO_FILE_EXT_UNSUPPORTED = "Photo file extension is unsupported. Please use one of [png, jpg, webp, gif]."
+ERR_VLD_USER_PHOTO_FILE_TOO_BIG = "Photo file is too big. Please use image having size smaller than 1MB."
+ERR_VLD_USER_PHOTO_FILE_INVALID = "Photo file is invalid"
+ERR_VLD_USER_TYPE_INVALID = "User type must be one of {{.TargetValue}}"
+ERR_VLD_USER_STATUS_INVALID = "User status must be one of {{.TargetValue}}"
+ERR_VLD_USER_SECURITY_OPTION_INVALID = "User security option must be one of {{.TargetValue}}"
+ERR_VLD_ACCESS_EXPIRATION_INVALID = "Access expiration date is invalid"
+
+# ROLES
+ERR_VLD_ROLE_WIDGET_PERMISSIONS_SIZE_INVALID = "Role widget permissions size is invalid: must be between {{.Min}} and {{.Max}}."
+ERR_VLD_ROLE_WIDGET_PERMISSIONS_UNIQUE_INVALID = "Role widget permissions must be unique."
+ERR_VLD_ROLE_WIDGET_PERMISSIONS_WIDGET_ID_INVALID = "Invalid widget identifier."
+ERR_VLD_ROLE_FIELD_PERMISSIONS_SIZE_INVALID = "Role field permissions size is invalid: must be between {{.Min}} and {{.Max}}."
+ERR_VLD_ROLE_FIELD_PERMISSIONS_UNIQUE_INVALID = "Role field permissions must be unique."
+ERR_VLD_ROLE_FIELD_PERMISSIONS_FIELD_ID_REQUIRED = "Role field permissions field id is required."
+ERR_VLD_ROLE_FIELD_PERMISSIONS_FIELD_ID_INVALID = "Invalid field identifier."
+ERR_VLD_ACCESS_RULES_CONDITIONS_LENGTH_INVALID = "Access rule conditions length is invalid: must be between {{.Min}} and {{.Max}}."
+ERR_VLD_ACCESS_RULES_ACTIONS_PRIORITY_INVALID = "Access rule actions priority is invalid"
+ERR_VLD_ACCESS_RULES_CONDITION_DATE_PERIOD_INVALID = "Access rule condition date period is invalid"
+ERR_VLD_ACCESS_RULES_CONDITION_DATE_VALUE_INVALID = "Access rule condition date value is invalid"
+
+# ENTITIES
+ERR_VLD_ENTITY_NAME_LENGTH_INVALID = "Entity name must contain {{.Min}} to {{.Max}} characters"
+
+# ABSENCE SETTINGS
+ERR_VLD_CONTRACTUAL_YEAR_BEGIN_AT_INVALID = "Contractual year beginning date (DDMM) is invalid"
+ERR_VLD_WORK_SCHEDULE_INVALID = "User work schedule is invalid"
+ERR_VLD_WORKING_HOURS_PER_WEEK_INVALID = "Hours per week must be at least {{.Min}} and at most {{.Max}}"
+ERR_VLD_YEARLY_HOLIDAY_ALLOWANCE_INVALID = "Yearly holiday allowance must be at least {{.Min}} and at most {{.Max}}"
+ERR_VLD_HOLIDAY_APPROVER_REQUIRED = "At least one first step holiday request approver is required"
+ERR_VLD_CARRYOVER_APPROVER_REQUIRED = "At least one carryover request approver is required"
+ERR_VLD_CARRYOVER_CAP_INVALID = "Carryover cap must be at least {{.Min}} and at most {{.Max}}"
+ERR_VLD_CARRYOVER_PERIOD_UNIT_INVALID = "Carryover usage period unit must be one of {{.TargetValue}}"
+ERR_VLD_CARRYOVER_PERIOD_INVALID = "Carryover usage period must be at least {{.Min}} and at most {{.Max}}"
+ERR_VLD_DAYS_IN_LIEU_APPROVER_REQUIRED = "At least one days-in-lieu request approver is required"
+ERR_VLD_DAYS_IN_LIEU_PERIOD_UNIT_INVALID = "Days in lieu usage period unit must be one of {{.TargetValue}}"
+ERR_VLD_DAYS_IN_LIEU_PERIOD_INVALID = "Days in lieu usage period must be at least {{.Min}} and at most {{.Max}}"
+
+#BUDGET BLUEPRINTS
+ERR_VLD_BUDGET_BLUEPRINT_BILLING_SCHEDULE_SUM_INVALID = "The sum of all percentage billings needs to be 100%, but it is {{.Actual}}%"
