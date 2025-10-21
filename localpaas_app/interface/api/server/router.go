@@ -105,6 +105,9 @@ func (s *HTTPServer) registerRoutes() {
 		// Envs
 		projectGroup.POST("/:projectID/envs", s.handlerRegistry.projectHandler.CreateProjectEnv)
 		projectGroup.DELETE("/:projectID/envs/:projectEnvID", s.handlerRegistry.projectHandler.DeleteProjectEnv)
+		// Settings
+		projectGroup.GET("/:projectID/settings", s.handlerRegistry.projectHandler.GetProjectSettings)
+		projectGroup.PUT("/:projectID/settings", s.handlerRegistry.projectHandler.UpdateProjectSettings)
 	}
 
 	appGroup := apiV1Group.Group("/apps")

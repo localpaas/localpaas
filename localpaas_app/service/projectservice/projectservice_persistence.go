@@ -61,6 +61,13 @@ func (s *projectService) PersistProjectData(ctx context.Context, db database.IDB
 		return apperrors.Wrap(err)
 	}
 
+	// Settings
+	err = s.settingRepo.UpsertMulti(ctx, db, persistingData.UpsertingSettings,
+		entity.SettingUpsertingConflictCols, entity.SettingUpsertingUpdateCols)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
 	// Project accesses
 	err = s.permissionManager.UpdateACLPermissions(ctx, db, persistingData.UpsertingAccesses)
 	if err != nil {
