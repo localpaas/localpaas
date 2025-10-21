@@ -30,3 +30,19 @@ func (p *Project) GetSettings() (*ProjectSettings, error) {
 type ProjectEnvVars struct {
 	Data [][]string `json:"data"`
 }
+
+func (p *Project) GetEnvVars() (*ProjectEnvVars, error) {
+	if len(p.AllSettings) == 0 {
+		return nil, nil
+	}
+	data := p.AllSettings[0].Data
+	if len(data) == 0 {
+		return nil, nil
+	}
+	res := &ProjectEnvVars{}
+	err := json.Unmarshal(reflectutil.UnsafeStrToBytes(data), res)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return res, nil
+}

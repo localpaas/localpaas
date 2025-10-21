@@ -108,6 +108,9 @@ func (s *HTTPServer) registerRoutes() {
 		// Settings
 		projectGroup.GET("/:projectID/settings", s.handlerRegistry.projectHandler.GetProjectSettings)
 		projectGroup.PUT("/:projectID/settings", s.handlerRegistry.projectHandler.UpdateProjectSettings)
+		// Env vars
+		projectGroup.GET("/:projectID/env-vars", s.handlerRegistry.projectHandler.GetProjectEnvVars)
+		projectGroup.PUT("/:projectID/env-vars", s.handlerRegistry.projectHandler.UpdateProjectEnvVars)
 	}
 
 	appGroup := apiV1Group.Group("/apps")
