@@ -1,4 +1,4 @@
-package useruc
+package projectuc
 
 import (
 	"context"
@@ -6,18 +6,20 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc/userdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc/projectdto"
 )
 
-func (uc *UserUC) ListUser(
+func (uc *ProjectUC) ListProject(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *userdto.ListUserReq,
-) (*userdto.ListUserResp, error) {
-	listOpts := []bunex.SelectQueryOption{}
+	req *projectdto.ListProjectReq,
+) (*projectdto.ListProjectResp, error) {
+	listOpts := []bunex.SelectQueryOption{
+		bunex.SelectRelation("Envs"),
+	}
 	if len(req.Status) > 0 {
 		listOpts = append(listOpts,
-			bunex.SelectWhere("\"user\".status IN (?)", bunex.In(req.Status)),
+			bunex.SelectWhere("project.status IN (?)", bunex.In(req.Status)),
 		)
 	}
 	// Filter by search keyword
@@ -25,23 +27,22 @@ func (uc *UserUC) ListUser(
 		keyword := bunex.MakeLikeOpStr(req.Search, true)
 		listOpts = append(listOpts,
 			bunex.SelectWhereGroup(
-				bunex.SelectWhere("\"user\".email ILIKE ?", keyword),
-				bunex.SelectWhereOr("\"user\".full_name ILIKE ?", keyword),
+				bunex.SelectWhere("project.name ILIKE ?", keyword),
 			),
 		)
 	}
 
-	users, paging, err := uc.userRepo.List(ctx, uc.db, &req.Paging, listOpts...)
+	projects, paging, err := uc.projectRepo.List(ctx, uc.db, &req.Paging, listOpts...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := userdto.TransformUsers(users)
+	resp, err := projectdto.TransformProjects(projects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &userdto.ListUserResp{
+	return &projectdto.ListProjectResp{
 		Meta: &basedto.Meta{Page: paging},
 		Data: resp,
 	}, nil

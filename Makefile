@@ -3,7 +3,7 @@ UID := $(shell id -u)
 # ----- Development tools -----
 init: build-devtools
 
-DEVTOOLS_IMAGE := devtools
+DEVTOOLS_IMAGE := localpaas-devtools
 DEVTOOLS_CMD := docker run --user "$(UID)" --rm --volume "$(PWD)":/app --network="host" $(DEVTOOLS_IMAGE)
 build-devtools:
 	@docker build --file ./tools/docker/Dockerfile --tag ${DEVTOOLS_IMAGE} .

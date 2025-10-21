@@ -1,4 +1,4 @@
-package userhandler
+package apphandler
 
 import (
 	"net/http"
@@ -8,30 +8,32 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc/userdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
 )
 
 // To keep `apperrors` pkg imported and swag gen won't fail
 type _ *apperrors.ErrorInfo
 
-// ListUserBase Lists users
-// @Summary Lists users
-// @Description Lists users
-// @Tags    users_info
+// ListAppBase Lists apps
+// @Summary Lists apps
+// @Description Lists apps
+// @Tags    apps_info
 // @Produce json
-// @Id      listUserBase
+// @Id      listAppBase
+// @Param   projectId query string false "`projectId=<target>`"
+// @Param   projectEnvId query string false "`projectEnvId=<target>`"
 // @Param   status query string false "`status=<target>`"
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
 // @Param   sort query string false "`sort=[-]field1|field2...`"
-// @Success 200 {object} userdto.ListUserBaseResp
+// @Success 200 {object} appdto.ListAppBaseResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /users/base-list [get]
-func (h *UserHandler) ListUserBase(ctx *gin.Context) {
+// @Router  /apps/base-list [get]
+func (h *AppHandler) ListAppBase(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeUser,
+		ResourceType: base.ResourceTypeApp,
 		Action:       base.ActionTypeRead,
 	})
 	if err != nil {
@@ -39,13 +41,13 @@ func (h *UserHandler) ListUserBase(ctx *gin.Context) {
 		return
 	}
 
-	req := userdto.NewListUserBaseReq()
+	req := appdto.NewListAppBaseReq()
 	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.userUC.ListUserBase(h.RequestCtx(ctx), auth, req)
+	resp, err := h.appUC.ListAppBase(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -54,27 +56,27 @@ func (h *UserHandler) ListUserBase(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
-// GetUser Gets user details
-// @Summary Gets user details
-// @Description Gets user details
-// @Tags    users_info
+// GetApp Gets app details
+// @Summary Gets app details
+// @Description Gets app details
+// @Tags    apps_info
 // @Produce json
-// @Id      getUser
-// @Param   userID path string true "user ID"
-// @Success 200 {object} userdto.GetUserResp
+// @Id      getApp
+// @Param   appID path string true "app ID"
+// @Success 200 {object} appdto.GetAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /users/{userID} [get]
-func (h *UserHandler) GetUser(ctx *gin.Context) {
-	userID, err := h.ParseStringParam(ctx, "userID")
+// @Router  /apps/{appID} [get]
+func (h *AppHandler) GetApp(ctx *gin.Context) {
+	appID, err := h.ParseStringParam(ctx, "appID")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeUser,
-		ResourceID:   userID,
+		ResourceType: base.ResourceTypeApp,
+		ResourceID:   appID,
 		Action:       base.ActionTypeRead,
 	})
 	if err != nil {
@@ -82,14 +84,14 @@ func (h *UserHandler) GetUser(ctx *gin.Context) {
 		return
 	}
 
-	req := userdto.NewGetUserReq()
-	req.ID = userID
+	req := appdto.NewGetAppReq()
+	req.ID = appID
 	if err = h.ParseRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.userUC.GetUser(h.RequestCtx(ctx), auth, req)
+	resp, err := h.appUC.GetApp(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -98,24 +100,26 @@ func (h *UserHandler) GetUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
-// ListUser Lists users
-// @Summary Lists users
-// @Description Lists users
-// @Tags    users_info
+// ListApp Lists apps
+// @Summary Lists apps
+// @Description Lists apps
+// @Tags    apps_info
 // @Produce json
-// @Id      listUser
+// @Id      listApp
+// @Param   projectId query string false "`projectId=<target>`"
+// @Param   projectEnvId query string false "`projectEnvId=<target>`"
 // @Param   status query string false "`status=<target>`"
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
 // @Param   sort query string false "`sort=[-]field1|field2...`"
-// @Success 200 {object} userdto.ListUserResp
+// @Success 200 {object} appdto.ListAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /users [get]
-func (h *UserHandler) ListUser(ctx *gin.Context) {
+// @Router  /apps [get]
+func (h *AppHandler) ListApp(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeUser,
+		ResourceType: base.ResourceTypeApp,
 		Action:       base.ActionTypeRead,
 	})
 	if err != nil {
@@ -123,13 +127,13 @@ func (h *UserHandler) ListUser(ctx *gin.Context) {
 		return
 	}
 
-	req := userdto.NewListUserReq()
+	req := appdto.NewListAppReq()
 	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.userUC.ListUser(h.RequestCtx(ctx), auth, req)
+	resp, err := h.appUC.ListApp(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

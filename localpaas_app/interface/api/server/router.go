@@ -7,7 +7,9 @@ import (
 	swaggoFiles "github.com/swaggo/files"
 	swaggoGin "github.com/swaggo/gin-swagger"
 
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/apphandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projecthandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/userhandler"
 )
@@ -16,17 +18,23 @@ type HandlerRegistry struct {
 	authHandler    *authhandler.AuthHandler
 	sessionHandler *sessionhandler.SessionHandler
 	userHandler    *userhandler.UserHandler
+	projectHandler *projecthandler.ProjectHandler
+	appHandler     *apphandler.AppHandler
 }
 
 func NewHandlerRegistry(
 	authHandler *authhandler.AuthHandler,
 	sessionHandler *sessionhandler.SessionHandler,
 	userHandler *userhandler.UserHandler,
+	projectHandler *projecthandler.ProjectHandler,
+	appHandler *apphandler.AppHandler,
 ) *HandlerRegistry {
 	return &HandlerRegistry{
 		authHandler:    authHandler,
 		sessionHandler: sessionHandler,
 		userHandler:    userHandler,
+		projectHandler: projectHandler,
+		appHandler:     appHandler,
 	}
 }
 
@@ -76,11 +84,27 @@ func (s *HTTPServer) registerRoutes() {
 	userGroup := apiV1Group.Group("/users")
 	{ // user group
 		// Get user info
-		userGroup.GET("/base-list", s.handlerRegistry.userHandler.ListUserSimple)
+		userGroup.GET("/base-list", s.handlerRegistry.userHandler.ListUserBase)
 		userGroup.GET("/:userID", s.handlerRegistry.userHandler.GetUser)
 		userGroup.GET("", s.handlerRegistry.userHandler.ListUser)
 		// Password
 		userGroup.PATCH("/current/password", s.handlerRegistry.userHandler.UpdateUserPassword)
+	}
+
+	projectGroup := apiV1Group.Group("/projects")
+	{ // project group
+		// Project info
+		projectGroup.GET("/base-list", s.handlerRegistry.projectHandler.ListProjectBase)
+		projectGroup.GET("/:projectID", s.handlerRegistry.projectHandler.GetProject)
+		projectGroup.GET("", s.handlerRegistry.projectHandler.ListProject)
+	}
+
+	appGroup := apiV1Group.Group("/apps")
+	{ // app group
+		// App info
+		appGroup.GET("/base-list", s.handlerRegistry.appHandler.ListAppBase)
+		appGroup.GET("/:appID", s.handlerRegistry.appHandler.GetApp)
+		appGroup.GET("", s.handlerRegistry.appHandler.ListApp)
 	}
 }
 

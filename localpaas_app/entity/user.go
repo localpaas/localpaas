@@ -15,23 +15,25 @@ var (
 )
 
 type User struct {
-	ID                  string `bun:",pk"`
-	Email               string
-	Role                base.UserRole
-	Status              base.UserStatus
-	FullName            string
-	Photo               string `bun:",nullzero"`
+	ID       string `bun:",pk"`
+	Email    string
+	Role     base.UserRole
+	Status   base.UserStatus
+	FullName string
+	Photo    string `bun:",nullzero"`
+
 	SecurityOption      base.UserSecurityOption
 	TOPTSecret          string `bun:",nullzero"`
 	Password            []byte
 	PasswordSalt        []byte
 	PasswordFailsInRow  int
 	PasswordFirstFailAt time.Time `bun:",nullzero"`
-	CreatedAt           time.Time `bun:",default:current_timestamp"`
-	UpdatedAt           time.Time `bun:",default:current_timestamp"`
-	AccessExpireAt      time.Time `bun:",nullzero"`
-	DeletedAt           time.Time `bun:",soft_delete,nullzero"`
-	LastAccess          time.Time `bun:",nullzero"`
+
+	CreatedAt      time.Time `bun:",default:current_timestamp"`
+	UpdatedAt      time.Time `bun:",default:current_timestamp"`
+	AccessExpireAt time.Time `bun:",nullzero"`
+	DeletedAt      time.Time `bun:",soft_delete,nullzero"`
+	LastAccess     time.Time `bun:",nullzero"`
 }
 
 // GetID implements IDEntity interface

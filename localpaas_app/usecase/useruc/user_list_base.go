@@ -9,24 +9,24 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc/userdto"
 )
 
-func (uc *UserUC) ListUserSimple(
+func (uc *UserUC) ListUserBase(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *userdto.ListUserSimpleReq,
-) (*userdto.ListUserSimpleResp, error) {
+	req *userdto.ListUserBaseReq,
+) (*userdto.ListUserBaseResp, error) {
 	var listOpts []bunex.SelectQueryOption
 
 	if len(req.Status) > 0 {
 		listOpts = append(listOpts,
-			bunex.SelectWhere("workspace_user.status IN (?)", bunex.In(req.Status)),
+			bunex.SelectWhere("\"user\".status IN (?)", bunex.In(req.Status)),
 		)
 	}
 
 	if req.Search != "" {
 		keyword := bunex.MakeLikeOpStr(req.Search, true)
 		listOpts = append(listOpts,
-			// case-insensitive search by user's full name
-			bunex.SelectWhere("CONCAT(first_name, ' ', last_name) ILIKE ?", keyword),
+			bunex.SelectWhere("\"user\".email ILIKE ?", keyword),
+			bunex.SelectWhereOr("\"user\".full_name ILIKE ?", keyword),
 		)
 	}
 
@@ -35,8 +35,8 @@ func (uc *UserUC) ListUserSimple(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &userdto.ListUserSimpleResp{
+	return &userdto.ListUserBaseResp{
 		Meta: &basedto.Meta{Page: pagingMeta},
-		Data: userdto.TransformUsersSimple(users),
+		Data: userdto.TransformUsersBase(users),
 	}, nil
 }

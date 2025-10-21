@@ -1,6 +1,8 @@
 module github.com/localpaas/localpaas
 
-go 1.25.0
+go 1.25
+
+toolchain go1.25.3
 
 require (
 	github.com/BurntSushi/toml v1.5.0

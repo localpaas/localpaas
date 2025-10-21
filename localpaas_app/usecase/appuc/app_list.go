@@ -1,4 +1,4 @@
-package useruc
+package appuc
 
 import (
 	"context"
@@ -6,18 +6,28 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc/userdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
 )
 
-func (uc *UserUC) ListUser(
+func (uc *AppUC) ListApp(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *userdto.ListUserReq,
-) (*userdto.ListUserResp, error) {
+	req *appdto.ListAppReq,
+) (*appdto.ListAppResp, error) {
 	listOpts := []bunex.SelectQueryOption{}
+	if req.ProjectID != "" {
+		listOpts = append(listOpts,
+			bunex.SelectWhere("app.project_id = ?", req.ProjectID),
+		)
+	}
+	if req.ProjectEnvID != "" {
+		listOpts = append(listOpts,
+			bunex.SelectWhere("app.project_env_id = ?", req.ProjectEnvID),
+		)
+	}
 	if len(req.Status) > 0 {
 		listOpts = append(listOpts,
-			bunex.SelectWhere("\"user\".status IN (?)", bunex.In(req.Status)),
+			bunex.SelectWhere("app.status IN (?)", bunex.In(req.Status)),
 		)
 	}
 	// Filter by search keyword
@@ -25,23 +35,22 @@ func (uc *UserUC) ListUser(
 		keyword := bunex.MakeLikeOpStr(req.Search, true)
 		listOpts = append(listOpts,
 			bunex.SelectWhereGroup(
-				bunex.SelectWhere("\"user\".email ILIKE ?", keyword),
-				bunex.SelectWhereOr("\"user\".full_name ILIKE ?", keyword),
+				bunex.SelectWhere("app.name ILIKE ?", keyword),
 			),
 		)
 	}
 
-	users, paging, err := uc.userRepo.List(ctx, uc.db, &req.Paging, listOpts...)
+	apps, paging, err := uc.appRepo.List(ctx, uc.db, &req.Paging, listOpts...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := userdto.TransformUsers(users)
+	resp, err := appdto.TransformApps(apps)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &userdto.ListUserResp{
+	return &appdto.ListAppResp{
 		Meta: &basedto.Meta{Page: paging},
 		Data: resp,
 	}, nil

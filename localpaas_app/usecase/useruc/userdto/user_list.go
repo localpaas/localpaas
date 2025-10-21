@@ -20,7 +20,7 @@ func NewListUserReq() *ListUserReq {
 	return &ListUserReq{
 		Paging: basedto.Paging{
 			// Default paging if unset by client
-			Sort: basedto.Orders{{Direction: basedto.DirectionAsc, ColumnName: "created_at"}},
+			Sort: basedto.Orders{{Direction: basedto.DirectionAsc, ColumnName: "full_name"}},
 		},
 	}
 }

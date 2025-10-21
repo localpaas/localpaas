@@ -1,0 +1,73 @@
+package projectdto
+
+import (
+	"time"
+
+	vld "github.com/tiendc/go-validator"
+	"github.com/tiendc/gofn"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
+)
+
+type GetProjectReq struct {
+	ID string `json:"-"`
+}
+
+func NewGetProjectReq() *GetProjectReq {
+	return &GetProjectReq{}
+}
+
+func (req *GetProjectReq) Validate() apperrors.ValidationErrors {
+	return apperrors.NewValidationErrors(vld.Validate(basedto.ValidateID(&req.ID, true, "id")...))
+}
+
+type GetProjectResp struct {
+	Meta *basedto.BaseMeta `json:"meta"`
+	Data *ProjectResp      `json:"data"`
+}
+
+type ProjectResp struct {
+	ID     string             `json:"id"`
+	Name   string             `json:"name"`
+	Status base.ProjectStatus `json:"status"`
+	Photo  string             `json:"photo"`
+
+	Envs []*ProjectEnvResp `json:"envs"`
+
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+type ProjectEnvResp struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type ProjectBaseResp struct {
+	ID     string             `json:"id"`
+	Name   string             `json:"name"`
+	Photo  string             `json:"photo"`
+	Status base.ProjectStatus `json:"status"`
+}
+
+func TransformProject(project *entity.Project) (resp *ProjectResp, err error) {
+	if err = copier.Copy(&resp, &project); err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return resp, nil
+}
+
+func TransformProjectsBase(projects []*entity.Project) []*ProjectBaseResp {
+	return gofn.MapSlice(projects, func(project *entity.Project) *ProjectBaseResp {
+		return &ProjectBaseResp{
+			ID:     project.ID,
+			Name:   project.Name,
+			Photo:  project.Photo,
+			Status: project.Status,
+		}
+	})
+}

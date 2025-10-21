@@ -3,7 +3,6 @@ package handler
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"io"
 	"strconv"
 	"strings"
@@ -83,17 +82,17 @@ func (h *BaseHandler) parsePagination(ctx *gin.Context, paging *basedto.Paging) 
 		paging.Limit = basedto.PageLimitDefault
 	}
 
-	if limitStr := ctx.Query("page[limit]"); limitStr != "" {
+	if limitStr := ctx.Query("pageLimit"); limitStr != "" {
 		limit, err := strconv.Atoi(limitStr)
 		if err != nil || limit <= 0 || limit > basedto.PageLimitMax {
-			return apperrors.NewParamInvalid("page[limit]")
+			return apperrors.NewParamInvalid("pageLimit")
 		}
 		paging.Limit = limit
 	}
-	if offsetStr := ctx.Query("page[offset]"); offsetStr != "" {
+	if offsetStr := ctx.Query("pageOffset"); offsetStr != "" {
 		offset, err := strconv.Atoi(offsetStr)
 		if err != nil || offset < 0 {
-			return apperrors.NewParamInvalid("page[offset]")
+			return apperrors.NewParamInvalid("pageOffset")
 		}
 		if offset > 0 {
 			paging.Offset = offset
@@ -127,46 +126,6 @@ func (h *BaseHandler) parsePagination(ctx *gin.Context, paging *basedto.Paging) 
 			parts[i] = strutil.ToSnakeCase(parts[i])
 		}
 		order.ColumnName = strings.Join(parts, ".")
-	}
-
-	return nil
-}
-
-// parseFilterAndArgs parses request filter from URL of style /api?filter[key1]=val1&arg[key2]=val2
-func (h *BaseHandler) parseFilterAndArgs(ctx *gin.Context, filter any) error {
-	// `filter[key]=value` is commonly used for LIST/GET APIs
-	mapFilter := ctx.QueryMap("filter")
-	// `arg[key]=value` can be used as a general purpose param
-	for k, v := range ctx.QueryMap("arg") {
-		if _, exists := mapFilter[k]; exists {
-			return apperrors.NewParamInvalidNT(fmt.Sprintf("arg[%v]", v))
-		}
-		mapFilter[k] = v
-	}
-	for formParam, value := range ctx.Request.Form {
-		mapFilter[formParam] = strings.Join(value, ",")
-	}
-	if len(mapFilter) == 0 {
-		return nil
-	}
-
-	config := &mapstructure.DecoderConfig{
-		Result:           filter,
-		WeaklyTypedInput: true,
-	}
-
-	if len(defaultParseFuncs) == 1 {
-		config.DecodeHook = defaultParseFuncs[0]
-	} else if len(defaultParseFuncs) > 1 {
-		config.DecodeHook = mapstructure.ComposeDecodeHookFunc(defaultParseFuncs...)
-	}
-
-	decoder, err := mapstructure.NewDecoder(config)
-	if err != nil {
-		return apperrors.New(err)
-	}
-	if err = decoder.Decode(mapFilter); err != nil {
-		return apperrors.NewParamInvalid("filter").WithCause(err)
 	}
 
 	return nil
@@ -209,43 +168,7 @@ func (h *BaseHandler) parseQuery(ctx *gin.Context, query any) error {
 	return nil
 }
 
-// ParseRequest parses request filter and paging, then validate the request.
-// The URL is in format: /api?filter[key]=A&page[offset]=X&page[limit]=Y&sort=-firstName.
-//
-// The request struct should be defined similarly as:
-//
-//	type ListProjectReq struct {
-//	   Key string `mapstructure:"key"`
-//	}
-func (h *BaseHandler) ParseRequest(ctx *gin.Context, reqStruct any, paging *basedto.Paging) error {
-	if err := h.parseFilterAndArgs(ctx, reqStruct); err != nil {
-		return err
-	}
-	if paging != nil {
-		if err := h.parsePagination(ctx, paging); err != nil {
-			return err
-		}
-	}
-
-	// Execute custom modifier for the request input
-	if modifier, ok := reqStruct.(basedto.ReqModifier); ok {
-		if err := modifier.ModifyRequest(); err != nil {
-			return apperrors.New(err)
-		}
-	}
-
-	// Execute custom validator for the request input
-	if validator, ok := reqStruct.(basedto.ReqValidator); ok {
-		if vldErrs := validator.Validate(); len(vldErrs) > 0 {
-			return vldErrs
-		}
-	}
-
-	return nil
-}
-
-// ParseRequestFlatStyle parses request query, then validate the request.
-// The query is in flat-style format: /api?key1=val1&key2=val2.
+// ParseRequest parses request query, then validate the request.
 //
 // The request struct should be defined similarly as:
 //
@@ -253,9 +176,14 @@ func (h *BaseHandler) ParseRequest(ctx *gin.Context, reqStruct any, paging *base
 //	   Key1 int    `mapstructure:"key1"`
 //	   Key2 string `mapstructure:"key2"`
 //	}
-func (h *BaseHandler) ParseRequestFlatStyle(ctx *gin.Context, reqStruct any) error {
+func (h *BaseHandler) ParseRequest(ctx *gin.Context, reqStruct any, paging *basedto.Paging) error {
 	if err := h.parseQuery(ctx, reqStruct); err != nil {
 		return err
+	}
+	if paging != nil {
+		if err := h.parsePagination(ctx, paging); err != nil {
+			return err
+		}
 	}
 
 	// Execute custom modifier for the request input

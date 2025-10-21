@@ -1,0 +1,116 @@
+package repository
+
+import (
+	"context"
+	"database/sql"
+	"errors"
+
+	"github.com/uptrace/bun"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/infra/database"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+)
+
+type ProjectRepo interface {
+	GetByID(ctx context.Context, db database.IDB, id string,
+		opts ...bunex.SelectQueryOption) (*entity.Project, error)
+	List(ctx context.Context, db database.IDB, paging *basedto.Paging,
+		opts ...bunex.SelectQueryOption) ([]*entity.Project, *basedto.PagingMeta, error)
+	ListByIDs(ctx context.Context, db database.IDB, ids []string,
+		opts ...bunex.SelectQueryOption) ([]*entity.Project, error)
+
+	Upsert(ctx context.Context, db database.IDB, project *entity.Project,
+		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
+	UpsertMulti(ctx context.Context, db database.IDB, projects []*entity.Project,
+		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
+}
+
+type projectRepo struct {
+}
+
+func NewProjectRepo() ProjectRepo {
+	return &projectRepo{}
+}
+
+func (repo *projectRepo) GetByID(ctx context.Context, db database.IDB, id string,
+	opts ...bunex.SelectQueryOption) (*entity.Project, error) {
+	project := &entity.Project{}
+	query := db.NewSelect().Model(project).Where("project.id = ?", id)
+	query = bunex.ApplySelect(query, opts...)
+
+	err := query.Scan(ctx)
+	if project == nil || errors.Is(err, sql.ErrNoRows) {
+		return nil, apperrors.NewNotFound("Project").WithCause(err)
+	}
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return project, nil
+}
+
+func (repo *projectRepo) List(ctx context.Context, db database.IDB, paging *basedto.Paging,
+	opts ...bunex.SelectQueryOption) ([]*entity.Project, *basedto.PagingMeta, error) {
+	var projects []*entity.Project
+	query := db.NewSelect().Model(&projects)
+	query = bunex.ApplySelect(query, opts...)
+
+	pagingMeta := newPagingMeta(paging)
+
+	// Counts the total first
+	if paging != nil {
+		total, err := query.Count(ctx)
+		if err != nil {
+			return nil, nil, apperrors.Wrap(err)
+		}
+		pagingMeta.Total = total
+	}
+
+	// Applies pagination
+	query = bunex.ApplyPagination(query, paging)
+	err := query.Scan(ctx)
+	if err != nil {
+		return nil, nil, wrapPaginationError(err, paging)
+	}
+
+	return projects, pagingMeta, nil
+}
+
+func (repo *projectRepo) ListByIDs(ctx context.Context, db database.IDB, ids []string,
+	opts ...bunex.SelectQueryOption) ([]*entity.Project, error) {
+	if len(ids) == 0 {
+		return nil, nil
+	}
+	var projects []*entity.Project
+	query := db.NewSelect().Model(&projects).Where("project.id IN (?)", bun.In(ids))
+	query = bunex.ApplySelect(query, opts...)
+
+	err := query.Scan(ctx)
+	if err != nil {
+		return nil, apperrors.New(err)
+	}
+	return projects, nil
+}
+
+func (repo *projectRepo) Upsert(ctx context.Context, db database.IDB, project *entity.Project,
+	conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error {
+	return repo.UpsertMulti(ctx, db, []*entity.Project{project}, conflictCols, updateCols, opts...)
+}
+
+func (repo *projectRepo) UpsertMulti(ctx context.Context, db database.IDB, projects []*entity.Project,
+	conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error {
+	if len(projects) == 0 {
+		return nil
+	}
+	query := db.NewInsert().Model(&projects)
+	query = bunex.ApplyInsert(query, opts...)
+	query = bunex.ApplyUpsert(query, conflictCols, updateCols)
+
+	_, err := query.Exec(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}

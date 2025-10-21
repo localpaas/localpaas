@@ -1,4 +1,4 @@
-package userhandler
+package projecthandler
 
 import (
 	"net/http"
@@ -8,30 +8,30 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc/userdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc/projectdto"
 )
 
 // To keep `apperrors` pkg imported and swag gen won't fail
 type _ *apperrors.ErrorInfo
 
-// ListUserBase Lists users
-// @Summary Lists users
-// @Description Lists users
-// @Tags    users_info
+// ListProjectBase Lists projects
+// @Summary Lists projects
+// @Description Lists projects
+// @Tags    projects_info
 // @Produce json
-// @Id      listUserBase
+// @Id      listProjectBase
 // @Param   status query string false "`status=<target>`"
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
 // @Param   sort query string false "`sort=[-]field1|field2...`"
-// @Success 200 {object} userdto.ListUserBaseResp
+// @Success 200 {object} projectdto.ListProjectBaseResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /users/base-list [get]
-func (h *UserHandler) ListUserBase(ctx *gin.Context) {
+// @Router  /projects/base-list [get]
+func (h *ProjectHandler) ListProjectBase(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeUser,
+		ResourceType: base.ResourceTypeProject,
 		Action:       base.ActionTypeRead,
 	})
 	if err != nil {
@@ -39,13 +39,13 @@ func (h *UserHandler) ListUserBase(ctx *gin.Context) {
 		return
 	}
 
-	req := userdto.NewListUserBaseReq()
+	req := projectdto.NewListProjectBaseReq()
 	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.userUC.ListUserBase(h.RequestCtx(ctx), auth, req)
+	resp, err := h.projectUC.ListProjectBase(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -54,27 +54,27 @@ func (h *UserHandler) ListUserBase(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
-// GetUser Gets user details
-// @Summary Gets user details
-// @Description Gets user details
-// @Tags    users_info
+// GetProject Gets project details
+// @Summary Gets project details
+// @Description Gets project details
+// @Tags    projects_info
 // @Produce json
-// @Id      getUser
-// @Param   userID path string true "user ID"
-// @Success 200 {object} userdto.GetUserResp
+// @Id      getProject
+// @Param   projectID path string true "project ID"
+// @Success 200 {object} projectdto.GetProjectResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /users/{userID} [get]
-func (h *UserHandler) GetUser(ctx *gin.Context) {
-	userID, err := h.ParseStringParam(ctx, "userID")
+// @Router  /projects/{projectID} [get]
+func (h *ProjectHandler) GetProject(ctx *gin.Context) {
+	projectID, err := h.ParseStringParam(ctx, "projectID")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeUser,
-		ResourceID:   userID,
+		ResourceType: base.ResourceTypeProject,
+		ResourceID:   projectID,
 		Action:       base.ActionTypeRead,
 	})
 	if err != nil {
@@ -82,14 +82,14 @@ func (h *UserHandler) GetUser(ctx *gin.Context) {
 		return
 	}
 
-	req := userdto.NewGetUserReq()
-	req.ID = userID
+	req := projectdto.NewGetProjectReq()
+	req.ID = projectID
 	if err = h.ParseRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.userUC.GetUser(h.RequestCtx(ctx), auth, req)
+	resp, err := h.projectUC.GetProject(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -98,24 +98,24 @@ func (h *UserHandler) GetUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
-// ListUser Lists users
-// @Summary Lists users
-// @Description Lists users
-// @Tags    users_info
+// ListProject Lists projects
+// @Summary Lists projects
+// @Description Lists projects
+// @Tags    projects_info
 // @Produce json
-// @Id      listUser
+// @Id      listProject
 // @Param   status query string false "`status=<target>`"
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
 // @Param   sort query string false "`sort=[-]field1|field2...`"
-// @Success 200 {object} userdto.ListUserResp
+// @Success 200 {object} projectdto.ListProjectResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /users [get]
-func (h *UserHandler) ListUser(ctx *gin.Context) {
+// @Router  /projects [get]
+func (h *ProjectHandler) ListProject(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeUser,
+		ResourceType: base.ResourceTypeProject,
 		Action:       base.ActionTypeRead,
 	})
 	if err != nil {
@@ -123,13 +123,13 @@ func (h *UserHandler) ListUser(ctx *gin.Context) {
 		return
 	}
 
-	req := userdto.NewListUserReq()
+	req := projectdto.NewListProjectReq()
 	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.userUC.ListUser(h.RequestCtx(ctx), auth, req)
+	resp, err := h.projectUC.ListProject(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	vld "github.com/tiendc/go-validator"
+	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -62,4 +63,14 @@ func TransformUserDetails(user *entity.User) (resp *UserDetailsResp, err error) 
 	return &UserDetailsResp{
 		UserResp: userResp,
 	}, nil
+}
+
+func TransformUsersBase(users []*entity.User) []*UserBaseResp {
+	return gofn.MapSlice(users, func(user *entity.User) *UserBaseResp {
+		return &UserBaseResp{
+			ID:       user.ID,
+			FullName: user.FullName,
+			Photo:    user.Photo,
+		}
+	})
 }

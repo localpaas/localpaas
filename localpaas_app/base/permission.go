@@ -3,20 +3,26 @@ package base
 type ResourceType string
 
 const (
-	ResourceTypeUser    ResourceType = "user"
-	ResourceTypeProject ResourceType = "project"
+	ResourceTypeUser       ResourceType = "user"
+	ResourceTypeCluster    ResourceType = "cluster"
+	ResourceTypeNode       ResourceType = "node"
+	ResourceTypeNetwork    ResourceType = "network"
+	ResourceTypeDeployment ResourceType = "deployment"
+	ResourceTypeProject    ResourceType = "project"
+	ResourceTypeApp        ResourceType = "app"
 )
 
 type ActionType string
 
 const (
-	ActionTypeRead   ActionType = "read"
-	ActionTypeWrite  ActionType = "write"
-	ActionTypeDelete ActionType = "delete"
+	ActionTypeRead    ActionType = "read"
+	ActionTypeWrite   ActionType = "write"
+	ActionTypeDelete  ActionType = "delete"
+	ActionTypeExecute ActionType = "execute"
 )
 
 var (
-	AllActionTypes = []ActionType{ActionTypeRead, ActionTypeWrite, ActionTypeDelete}
+	AllActionTypes = []ActionType{ActionTypeRead, ActionTypeWrite, ActionTypeDelete, ActionTypeExecute}
 )
 
 type AccessType string
