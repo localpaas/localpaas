@@ -42,6 +42,19 @@ func (s *HTTPServer) registerRoutes() {
 			swaggoGin.URL("/docs/openapi/swagger.json")))
 	}
 
+	// INTERNAL ROUTES
+	basicAuthMdlw := gin.BasicAuth(gin.Accounts{
+		s.config.Session.BasicAuth.Username: s.config.Session.BasicAuth.Password,
+	})
+	v1BasicAuth := s.engine.Group(s.config.HTTPServer.BasePath + "/internal")
+	v1BasicAuth.Use(basicAuthMdlw)
+
+	// Dev mode
+	if !s.config.IsProdEnv() {
+		v1BasicAuth.POST("/auth/dev-mode-login", s.handlerRegistry.sessionHandler.DevModeLogin)
+	}
+
+	// PUBLIC ROUTES
 	apiV1Group := s.engine.Group(s.config.HTTPServer.BasePath)
 
 	{ // session group
@@ -65,7 +78,9 @@ func (s *HTTPServer) registerRoutes() {
 		// Get user info
 		userGroup.GET("/base-list", s.handlerRegistry.userHandler.ListUserSimple)
 		userGroup.GET("/:userID", s.handlerRegistry.userHandler.GetUser)
-		userGroup.GET("/users", s.handlerRegistry.userHandler.ListUser)
+		userGroup.GET("", s.handlerRegistry.userHandler.ListUser)
+		// Password
+		userGroup.PATCH("/current/password", s.handlerRegistry.userHandler.UpdateUserPassword)
 	}
 }
 

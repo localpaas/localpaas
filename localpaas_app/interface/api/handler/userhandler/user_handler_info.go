@@ -29,7 +29,7 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /users/base-list [get]
 func (h *UserHandler) ListUserSimple(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentCompositeAuth(ctx, &permission.AccessCheck{
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceType: base.ResourceTypeUser,
 		Action:       base.ActionTypeRead,
 	})

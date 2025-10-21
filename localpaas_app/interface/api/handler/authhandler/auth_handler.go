@@ -72,25 +72,6 @@ func (h *AuthHandler) GetCurrentAuth(ctx *gin.Context, accessCheck *permission.A
 	return auth, nil
 }
 
-func (h *AuthHandler) GetCurrentCompositeAuth(ctx *gin.Context, accessCheck *permission.AccessCheck) (
-	*basedto.Auth, error) {
-	auth, err := h.getCurrentAuth(ctx)
-	if err != nil {
-		return nil, apperrors.New(err)
-	}
-
-	//nolint:staticcheck
-	if accessCheck != NoAccessCheck && !(config.Current.IsDevEnv() && config.Current.DevMode.SkipAuthCheck) {
-		if err = h.sessionUC.VerifyAuth(ctx, auth, accessCheck); err != nil {
-			// NOTE: even on error, we still return the `auth` object so the client code
-			// still can be able to check permission with another method.
-			return auth, apperrors.New(err)
-		}
-	}
-
-	return auth, nil
-}
-
 func (h *AuthHandler) getCurrentAuth(ctx *gin.Context) (*basedto.Auth, error) {
 	token, err := h.getAuthToken(ctx)
 	if err != nil {

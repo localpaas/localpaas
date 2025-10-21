@@ -14,12 +14,11 @@ type _ *apperrors.ErrorInfo
 
 // DevModeLogin Login user for dev mode
 // @Summary Login user for dev mode
-// @Description Login user for dev mode. One of `user_id` and `email` params is required.
+// @Description Login user for dev mode. `user_id` params is required.
 // @Tags    sessions_internal
 // @Produce json
 // @Id      devModeLogin
 // @Param   user_id query string false "user id to login"
-// @Param   email query string false "user email to login"
 // @Success 200 {object} sessiondto.DevModeLoginResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
