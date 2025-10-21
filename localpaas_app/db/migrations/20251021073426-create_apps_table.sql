@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS apps
     CONSTRAINT fk_apps_updated_by FOREIGN KEY (updated_by) REFERENCES users (id)
 );
 
-CREATE UNIQUE INDEX idx_uq_apps_name ON apps(project_id, project_env_id, LOWER(name));
+CREATE UNIQUE INDEX idx_uq_apps_name ON apps(project_id, project_env_id, LOWER(name)) WHERE deleted_at IS NULL;
 CREATE INDEX idx_apps_project_id ON apps(project_id);
 CREATE INDEX idx_apps_created_at ON apps(created_at);
 CREATE INDEX idx_apps_deleted_at ON apps(deleted_at);

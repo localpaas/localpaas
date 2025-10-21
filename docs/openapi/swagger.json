@@ -474,6 +474,56 @@
         },
         "summary" : "Lists projects",
         "tags" : [ "projects_info" ]
+      },
+      "post" : {
+        "description" : "Creates a new project",
+        "operationId" : "createProject",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.CreateProjectReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.CreateProjectResp"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Creates a new project",
+        "tags" : [ "projects" ],
+        "x-codegen-request-body-name" : "body"
       }
     },
     "/projects/base-list" : {
@@ -599,6 +649,256 @@
         },
         "summary" : "Gets project details",
         "tags" : [ "projects_info" ]
+      }
+    },
+    "/projects/{projectID}/envs" : {
+      "post" : {
+        "description" : "Creates a new project tag",
+        "operationId" : "createProjectEnv",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.CreateProjectEnvReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.CreateProjectEnvResp"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Creates a new project tag",
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/projects/{projectID}/envs/{projectEnvID}" : {
+      "delete" : {
+        "description" : "Deletes a project env",
+        "operationId" : "deleteProjectEnv",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "project env ID",
+          "in" : "path",
+          "name" : "projectEnvID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.DeleteProjectEnvReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.DeleteProjectEnvResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Deletes a project env",
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/projects/{projectID}/tags" : {
+      "post" : {
+        "description" : "Creates a new project tag",
+        "operationId" : "createProjectTag",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.CreateProjectTagReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.CreateProjectTagResp"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Creates a new project tag",
+        "tags" : [ "projects_tags" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/projects/{projectID}/tags/delete" : {
+      "post" : {
+        "description" : "Deletes project tags",
+        "operationId" : "deleteProjectTags",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.DeleteProjectTagsReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.DeleteProjectTagsResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Deletes project tags",
+        "tags" : [ "projects_tags" ],
+        "x-codegen-request-body-name" : "body"
       }
     },
     "/sessions" : {
@@ -1086,6 +1386,15 @@
         },
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "id" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_basedto.PagingMeta" : {
         "properties" : {
           "limit" : {
@@ -1136,11 +1445,18 @@
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.AppStatus"
           },
+          "tags" : {
+            "description" : "manual copy AppTag -> string",
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
           "updatedAt" : {
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "id", "name", "photo", "status", "updatedAt" ],
+        "required" : [ "createdAt", "id", "name", "photo", "status", "tags", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.GetAppResp" : {
@@ -1183,6 +1499,108 @@
           }
         },
         "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.CreateProjectEnvReq" : {
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "name" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.CreateProjectEnvResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.CreateProjectReq" : {
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.ProjectStatus"
+          },
+          "tags" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          }
+        },
+        "required" : [ "name", "status", "tags" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.CreateProjectResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.CreateProjectTagReq" : {
+        "properties" : {
+          "tag" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "tag" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.CreateProjectTagResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.DeleteProjectEnvReq" : {
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.DeleteProjectEnvResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.DeleteProjectTagsReq" : {
+        "properties" : {
+          "tags" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          }
+        },
+        "required" : [ "tags" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.DeleteProjectTagsResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.GetProjectResp" : {
@@ -1280,11 +1698,18 @@
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.ProjectStatus"
           },
+          "tags" : {
+            "description" : "manual copy ProjectTag -> string",
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
           "updatedAt" : {
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "envs", "id", "name", "photo", "status", "updatedAt" ],
+        "required" : [ "createdAt", "envs", "id", "name", "photo", "status", "tags", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.BaseCreateSessionResp" : {

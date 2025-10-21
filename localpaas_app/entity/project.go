@@ -27,6 +27,7 @@ type Project struct {
 
 	Settings      []*Setting    `bun:"rel:has-many,join:id=target_id,join:type=target_type,polymorphic:project"`
 	Envs          []*ProjectEnv `bun:"rel:has-many,join:id=project_id"`
+	Tags          []*ProjectTag `bun:"rel:has-many,join:id=project_id"`
 	CreatedByUser *User         `bun:"rel:has-one,join:created_by=id"`
 	UpdatedByUser *User         `bun:"rel:has-one,join:updated_by=id"`
 }

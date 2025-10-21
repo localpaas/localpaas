@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"strings"
 
 	"github.com/uptrace/bun"
 
@@ -16,6 +17,8 @@ import (
 
 type ProjectRepo interface {
 	GetByID(ctx context.Context, db database.IDB, id string,
+		opts ...bunex.SelectQueryOption) (*entity.Project, error)
+	GetByName(ctx context.Context, db database.IDB, name string,
 		opts ...bunex.SelectQueryOption) (*entity.Project, error)
 	List(ctx context.Context, db database.IDB, paging *basedto.Paging,
 		opts ...bunex.SelectQueryOption) ([]*entity.Project, *basedto.PagingMeta, error)
@@ -39,6 +42,22 @@ func (repo *projectRepo) GetByID(ctx context.Context, db database.IDB, id string
 	opts ...bunex.SelectQueryOption) (*entity.Project, error) {
 	project := &entity.Project{}
 	query := db.NewSelect().Model(project).Where("project.id = ?", id)
+	query = bunex.ApplySelect(query, opts...)
+
+	err := query.Scan(ctx)
+	if project == nil || errors.Is(err, sql.ErrNoRows) {
+		return nil, apperrors.NewNotFound("Project").WithCause(err)
+	}
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return project, nil
+}
+
+func (repo *projectRepo) GetByName(ctx context.Context, db database.IDB, name string,
+	opts ...bunex.SelectQueryOption) (*entity.Project, error) {
+	project := &entity.Project{}
+	query := db.NewSelect().Model(project).Where("LOWER(project.name) = ?", strings.ToLower(name))
 	query = bunex.ApplySelect(query, opts...)
 
 	err := query.Scan(ctx)

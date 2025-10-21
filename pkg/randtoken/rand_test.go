@@ -1,4 +1,4 @@
-package jwtsession
+package randtoken
 
 import (
 	"testing"
@@ -7,9 +7,9 @@ import (
 	strvld "github.com/tiendc/go-validator/base/string"
 )
 
-func Test_GenerateRandToken(t *testing.T) {
+func Test_New(t *testing.T) {
 	t.Run("token length check", func(t *testing.T) {
-		token, err := GenerateRandToken(32)
+		token, err := New(32)
 		assert.Nil(t, err)
 		assert.Equal(t, 32*2, len(token)) // Token is in hex form
 		isHex, _ := strvld.IsHexadecimal(token)
@@ -17,8 +17,8 @@ func Test_GenerateRandToken(t *testing.T) {
 	})
 
 	t.Run("tokens must differ from each other", func(t *testing.T) {
-		token1, _ := GenerateRandToken(16)
-		token2, _ := GenerateRandToken(16)
+		token1, _ := New(16)
+		token2, _ := New(16)
 		assert.NotEqual(t, token1, token2)
 	})
 }

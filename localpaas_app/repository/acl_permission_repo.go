@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/uptrace/bun"
 
@@ -22,7 +23,8 @@ type ACLPermissionRepo interface {
 	UpsertMulti(ctx context.Context, db database.IDB, permissions []*entity.ACLPermission,
 		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
 
-	DeleteByIDs(ctx context.Context, db database.IDB, ids []string, opts ...bunex.DeleteQueryOption) error
+	DeleteByResources(ctx context.Context, db database.IDB, resources []*base.PermissionResource,
+		opts ...bunex.DeleteQueryOption) error
 	DeleteByUsers(ctx context.Context, db database.IDB, userIDs []string,
 		opts ...bunex.DeleteQueryOption) error
 }
@@ -61,7 +63,8 @@ func (repo *aclPermissionRepo) ListByResources(ctx context.Context, db database.
 
 	var permissions []*entity.ACLPermission
 	query := db.NewSelect().Model(&permissions).
-		Where(fmt.Sprintf("(user_id,resource_type,resource_id) IN (%s)", bun.In(conditions)), args...)
+		Where(fmt.Sprintf("(user_id,resource_type,resource_id) IN (%s)",
+			strings.Join(conditions, ",")), args...)
 	query = bunex.ApplySelect(query, opts...)
 
 	err := query.Scan(ctx)
@@ -103,13 +106,34 @@ func (repo *aclPermissionRepo) UpsertMulti(ctx context.Context, db database.IDB,
 	return nil
 }
 
-func (repo *aclPermissionRepo) DeleteByIDs(ctx context.Context, db database.IDB, ids []string,
-	opts ...bunex.DeleteQueryOption) error {
-	if len(ids) == 0 {
+func (repo *aclPermissionRepo) DeleteByResources(ctx context.Context, db database.IDB,
+	resources []*base.PermissionResource, opts ...bunex.DeleteQueryOption) error {
+	if len(resources) == 0 {
 		return nil
 	}
+
+	// opts = append(opts, bunex.SelectWhereGroup(
+	//	lo.Map(resources, func(res *base.PermissionResource, index int) bunex.SelectQueryOption {
+	//		if index == 0 {
+	//			return bunex.SelectWhere("(user_id,resource_type,resource_id) = (?,?,?)",
+	//				res.UserID, res.ResourceType, res.ResourceID)
+	//		}
+	//		return bunex.SelectWhereOr("(user_id,resource_type,resource_id) = (?,?,?)",
+	//			res.UserID, res.ResourceType, res.ResourceID)
+	//	})...,
+	// ))
+
+	// Construct the multi-column IN clause
+	conditions := make([]string, 0, len(resources))
+	args := make([]any, 0, len(resources)*3) //nolint:mnd
+	for _, res := range resources {
+		conditions = append(conditions, "(?,?,?)")
+		args = append(args, res.UserID, res.ResourceType, res.ResourceID)
+	}
+
 	query := db.NewDelete().Model((*entity.ACLPermission)(nil)).
-		Where("id IN (?)", bun.In(ids))
+		Where(fmt.Sprintf("(user_id,resource_type,resource_id) IN (%s)",
+			strings.Join(conditions, ",")), args...)
 	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)

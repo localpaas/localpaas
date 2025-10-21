@@ -6,14 +6,15 @@ import (
 
 var (
 	ProjectEnvUpsertingConflictCols = []string{"id"}
-	ProjectEnvUpsertingUpdateCols   = []string{"name", "project_id",
+	ProjectEnvUpsertingUpdateCols   = []string{"name", "project_id", "display_order",
 		"updated_at", "updated_by", "deleted_at"}
 )
 
 type ProjectEnv struct {
-	ID        string `bun:",pk"`
-	Name      string
-	ProjectID string
+	ID           string `bun:",pk"`
+	Name         string
+	ProjectID    string
+	DisplayOrder int
 
 	CreatedAt time.Time `bun:",default:current_timestamp"`
 	CreatedBy string

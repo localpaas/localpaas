@@ -35,8 +35,8 @@ type ProjectResp struct {
 	Name   string             `json:"name"`
 	Status base.ProjectStatus `json:"status"`
 	Photo  string             `json:"photo"`
-
-	Envs []*ProjectEnvResp `json:"envs"`
+	Tags   []string           `json:"tags" copy:"-"` // manual copy ProjectTag -> string
+	Envs   []*ProjectEnvResp  `json:"envs"`
 
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
@@ -58,6 +58,7 @@ func TransformProject(project *entity.Project) (resp *ProjectResp, err error) {
 	if err = copier.Copy(&resp, &project); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+	resp.Tags = gofn.MapSlice(project.Tags, func(t *entity.ProjectTag) string { return t.Tag })
 	return resp, nil
 }
 

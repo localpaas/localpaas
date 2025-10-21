@@ -30,6 +30,7 @@ type App struct {
 	Project       *Project    `bun:"rel:has-one,join:project_id=id"`
 	ProjectEnv    *ProjectEnv `bun:"rel:has-one,join:project_env_id=id"`
 	Settings      []*Setting  `bun:"rel:has-many,join:id=target_id,join:type=target_type,polymorphic:app"`
+	Tags          []*AppTag   `bun:"rel:has-many,join:id=app_id"`
 	CreatedByUser *User       `bun:"rel:has-one,join:created_by=id"`
 	UpdatedByUser *User       `bun:"rel:has-one,join:updated_by=id"`
 }

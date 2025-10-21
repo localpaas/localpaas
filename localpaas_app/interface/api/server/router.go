@@ -97,6 +97,14 @@ func (s *HTTPServer) registerRoutes() {
 		projectGroup.GET("/base-list", s.handlerRegistry.projectHandler.ListProjectBase)
 		projectGroup.GET("/:projectID", s.handlerRegistry.projectHandler.GetProject)
 		projectGroup.GET("", s.handlerRegistry.projectHandler.ListProject)
+		// Creation & Update
+		projectGroup.POST("", s.handlerRegistry.projectHandler.CreateProject)
+		// Tags
+		projectGroup.POST("/:projectID/tags", s.handlerRegistry.projectHandler.CreateProjectTag)
+		projectGroup.POST("/:projectID/tags/delete", s.handlerRegistry.projectHandler.DeleteProjectTags)
+		// Envs
+		projectGroup.POST("/:projectID/envs", s.handlerRegistry.projectHandler.CreateProjectEnv)
+		projectGroup.DELETE("/:projectID/envs/:projectEnvID", s.handlerRegistry.projectHandler.DeleteProjectEnv)
 	}
 
 	appGroup := apiV1Group.Group("/apps")

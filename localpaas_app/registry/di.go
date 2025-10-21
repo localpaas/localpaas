@@ -14,6 +14,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 	"github.com/localpaas/localpaas/localpaas_app/repository/redisrepository"
+	"github.com/localpaas/localpaas/localpaas_app/service/projectservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc"
@@ -56,15 +57,21 @@ var Provides = []any{
 
 	// Service
 	userservice.NewUserService,
+	projectservice.NewProjectService,
 
 	// Repo
 	repository.NewUserRepo,
 	// Repo: Project
 	repository.NewProjectRepo,
+	repository.NewProjectEnvRepo,
+	repository.NewProjectTagRepo,
 	// Repo: App
 	repository.NewAppRepo,
+	repository.NewAppTagRepo,
 	// Repo: Role & Permission
 	repository.NewACLPermissionRepo,
+	// Repo: Setting
+	repository.NewSettingRepo,
 	// Others
 	repository.NewLoginTrustedDeviceRepo,
 

@@ -7,22 +7,24 @@ import (
 )
 
 var (
-	ACLPermissionUpsertingConflictCols = []string{"id"}
+	ACLPermissionUpsertingConflictCols = []string{"user_id", "resource_type", "resource_id"}
 	ACLPermissionUpsertingUpdateCols   = []string{"action_read", "action_write", "action_delete",
-		"updated_at"}
+		"updated_at", "updated_by"}
 )
 
 type ACLPermission struct {
-	ID           string `bun:",pk"`
-	UserID       string
-	ResourceType base.ResourceType
-	ResourceID   string
-	Actions      AccessActions `bun:"embed:action_"`
+	UserID       string            `bun:",pk"`
+	ResourceType base.ResourceType `bun:",pk"`
+	ResourceID   string            `bun:",pk"`
+	Actions      AccessActions     `bun:"embed:action_"`
 	CreatedAt    time.Time
 	CreatedBy    string
 	UpdatedAt    time.Time
+	UpdatedBy    string
 
+	User          *User `bun:"rel:has-one,join:user_id=id"`
 	CreatedByUser *User `bun:"rel:has-one,join:created_by=id"`
+	UpdatedByUser *User `bun:"rel:has-one,join:updated_by=id"`
 }
 
 type AccessActions struct {

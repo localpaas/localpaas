@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS projects
     CONSTRAINT fk_projects_updated_by FOREIGN KEY (updated_by) REFERENCES users (id)
 );
 
-CREATE UNIQUE INDEX idx_uq_projects_name ON projects(LOWER(name));
+CREATE UNIQUE INDEX idx_uq_projects_name ON projects(LOWER(name)) WHERE deleted_at IS NULL;
 CREATE INDEX idx_projects_created_at ON projects(created_at);
 CREATE INDEX idx_projects_deleted_at ON projects(deleted_at);
 

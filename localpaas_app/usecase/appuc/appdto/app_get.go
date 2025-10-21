@@ -35,6 +35,7 @@ type AppResp struct {
 	Name   string         `json:"name"`
 	Status base.AppStatus `json:"status"`
 	Photo  string         `json:"photo"`
+	Tags   []string       `json:"tags" copy:"-"` // manual copy AppTag -> string
 
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
@@ -51,6 +52,7 @@ func TransformApp(app *entity.App) (resp *AppResp, err error) {
 	if err = copier.Copy(&resp, &app); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+	resp.Tags = gofn.MapSlice(app.Tags, func(t *entity.AppTag) string { return t.Tag })
 	return resp, nil
 }
 
