@@ -17,7 +17,7 @@ type _ *apperrors.ErrorInfo
 // GetProjectEnvVars Gets project env vars
 // @Summary Gets project env vars
 // @Description Gets project env vars
-// @Settings    projects_env_vars
+// @Tags    projects
 // @Produce json
 // @Id      getProjectEnvVars
 // @Param   projectID path string true "project ID"
@@ -62,7 +62,7 @@ func (h *ProjectHandler) GetProjectEnvVars(ctx *gin.Context) {
 // UpdateProjectEnvVars Updates project env vars
 // @Summary Updates project env vars
 // @Description Updates project env vars
-// @Settings    projects_env_vars
+// @Tags    projects
 // @Produce json
 // @Id      updateProjectEnvVars
 // @Param   projectID path string true "project ID"

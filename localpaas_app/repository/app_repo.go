@@ -16,13 +16,13 @@ import (
 )
 
 type AppRepo interface {
-	GetByID(ctx context.Context, db database.IDB, id string,
+	GetByID(ctx context.Context, db database.IDB, projectID, id string,
 		opts ...bunex.SelectQueryOption) (*entity.App, error)
-	GetByName(ctx context.Context, db database.IDB, name string,
+	GetByName(ctx context.Context, db database.IDB, projectID, name string,
 		opts ...bunex.SelectQueryOption) (*entity.App, error)
-	List(ctx context.Context, db database.IDB, paging *basedto.Paging,
+	List(ctx context.Context, db database.IDB, projectID string, paging *basedto.Paging,
 		opts ...bunex.SelectQueryOption) ([]*entity.App, *basedto.PagingMeta, error)
-	ListByIDs(ctx context.Context, db database.IDB, ids []string,
+	ListByIDs(ctx context.Context, db database.IDB, projectID string, ids []string,
 		opts ...bunex.SelectQueryOption) ([]*entity.App, error)
 
 	Upsert(ctx context.Context, db database.IDB, app *entity.App,
@@ -38,10 +38,13 @@ func NewAppRepo() AppRepo {
 	return &appRepo{}
 }
 
-func (repo *appRepo) GetByID(ctx context.Context, db database.IDB, id string,
+func (repo *appRepo) GetByID(ctx context.Context, db database.IDB, projectID, id string,
 	opts ...bunex.SelectQueryOption) (*entity.App, error) {
 	app := &entity.App{}
 	query := db.NewSelect().Model(app).Where("app.id = ?", id)
+	if projectID != "" {
+		query = query.Where("app.project_id = ?", projectID)
+	}
 	query = bunex.ApplySelect(query, opts...)
 
 	err := query.Scan(ctx)
@@ -54,10 +57,13 @@ func (repo *appRepo) GetByID(ctx context.Context, db database.IDB, id string,
 	return app, nil
 }
 
-func (repo *appRepo) GetByName(ctx context.Context, db database.IDB, name string,
+func (repo *appRepo) GetByName(ctx context.Context, db database.IDB, projectID, name string,
 	opts ...bunex.SelectQueryOption) (*entity.App, error) {
 	app := &entity.App{}
-	query := db.NewSelect().Model(app).Where("LOWER(project.name) = ?", strings.ToLower(name))
+	query := db.NewSelect().Model(app).Where("LOWER(app.name) = ?", strings.ToLower(name))
+	if projectID != "" {
+		query = query.Where("app.project_id = ?", projectID)
+	}
 	query = bunex.ApplySelect(query, opts...)
 
 	err := query.Scan(ctx)
@@ -70,10 +76,13 @@ func (repo *appRepo) GetByName(ctx context.Context, db database.IDB, name string
 	return app, nil
 }
 
-func (repo *appRepo) List(ctx context.Context, db database.IDB, paging *basedto.Paging,
+func (repo *appRepo) List(ctx context.Context, db database.IDB, projectID string, paging *basedto.Paging,
 	opts ...bunex.SelectQueryOption) ([]*entity.App, *basedto.PagingMeta, error) {
 	var apps []*entity.App
 	query := db.NewSelect().Model(&apps)
+	if projectID != "" {
+		query = query.Where("app.project_id = ?", projectID)
+	}
 	query = bunex.ApplySelect(query, opts...)
 
 	pagingMeta := newPagingMeta(paging)
@@ -97,13 +106,16 @@ func (repo *appRepo) List(ctx context.Context, db database.IDB, paging *basedto.
 	return apps, pagingMeta, nil
 }
 
-func (repo *appRepo) ListByIDs(ctx context.Context, db database.IDB, ids []string,
+func (repo *appRepo) ListByIDs(ctx context.Context, db database.IDB, projectID string, ids []string,
 	opts ...bunex.SelectQueryOption) ([]*entity.App, error) {
 	if len(ids) == 0 {
 		return nil, nil
 	}
 	var apps []*entity.App
 	query := db.NewSelect().Model(&apps).Where("app.id IN (?)", bun.In(ids))
+	if projectID != "" {
+		query = query.Where("app.project_id = ?", projectID)
+	}
 	query = bunex.ApplySelect(query, opts...)
 
 	err := query.Scan(ctx)

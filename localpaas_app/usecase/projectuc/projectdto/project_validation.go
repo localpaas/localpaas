@@ -8,9 +8,24 @@ import (
 
 const (
 	minProjectNameLen = 1
-	maxProjectNameLen = 50
+	maxProjectNameLen = 100
+
+	minProjectTagLen = 1
+	maxProjectTagLen = 100
+
+	minProjectNoteLen = 10
+	maxProjectNoteLen = 10000
 )
 
 func validateProjectName(name *string, field string) []vld.Validator {
 	return basedto.ValidateStr(name, true, minProjectNameLen, maxProjectNameLen, field)
+	// TODO: need validation for valid characters
+}
+
+func validateProjectTags(tags []string, field string) []vld.Validator {
+	return basedto.ValidateSliceEx(tags, true, minProjectTagLen, maxProjectTagLen, nil, field)
+}
+
+func validateProjectNote(note *string, field string) []vld.Validator {
+	return basedto.ValidateStr(note, false, minProjectNoteLen, maxProjectNoteLen, field)
 }

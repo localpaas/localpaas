@@ -14,7 +14,8 @@ import (
 )
 
 type GetAppReq struct {
-	ID string `json:"-"`
+	ProjectID string `json:"-"`
+	AppID     string `json:"-"`
 }
 
 func NewGetAppReq() *GetAppReq {
@@ -22,7 +23,10 @@ func NewGetAppReq() *GetAppReq {
 }
 
 func (req *GetAppReq) Validate() apperrors.ValidationErrors {
-	return apperrors.NewValidationErrors(vld.Validate(basedto.ValidateID(&req.ID, true, "id")...))
+	var validators []vld.Validator
+	validators = append(validators, basedto.ValidateID(&req.ProjectID, true, "projectId")...)
+	validators = append(validators, basedto.ValidateID(&req.AppID, true, "appId")...)
+	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
 type GetAppResp struct {

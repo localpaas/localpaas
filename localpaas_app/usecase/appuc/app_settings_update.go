@@ -1,4 +1,4 @@
-package projectuc
+package appuc
 
 import (
 	"context"
@@ -11,26 +11,27 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc/projectdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
 	"github.com/localpaas/localpaas/pkg/timeutil"
 	"github.com/localpaas/localpaas/pkg/ulid"
 )
 
-func (uc *ProjectUC) UpdateProjectEnvVars(
+func (uc *AppUC) UpdateAppSettings(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *projectdto.UpdateProjectEnvVarsReq,
-) (*projectdto.UpdateProjectEnvVarsResp, error) {
+	req *appdto.UpdateAppSettingsReq,
+) (*appdto.UpdateAppSettingsResp, error) {
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
-		envData := &updateProjectEnvVarsData{}
-		err := uc.loadProjectEnvVarsDataForUpdate(ctx, db, req, envData)
+		settingsData := &updateAppSettingsData{}
+		err := uc.loadAppSettingsDataForUpdate(ctx, db, req, settingsData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
 
-		persistingData := &persistingProjectData{}
-		err = uc.preparePersistingProjectEnvVars(auth, req, envData, persistingData)
+		persistingData := &persistingAppData{}
+		err = uc.preparePersistingAppSettings(auth, req, settingsData, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -41,50 +42,50 @@ func (uc *ProjectUC) UpdateProjectEnvVars(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &projectdto.UpdateProjectEnvVarsResp{}, nil
+	return &appdto.UpdateAppSettingsResp{}, nil
 }
 
-type updateProjectEnvVarsData struct {
-	Project          *entity.Project
+type updateAppSettingsData struct {
+	App              *entity.App
 	ExistingSettings *entity.Setting
 }
 
-func (uc *ProjectUC) loadProjectEnvVarsDataForUpdate(
+func (uc *AppUC) loadAppSettingsDataForUpdate(
 	ctx context.Context,
 	db database.IDB,
-	req *projectdto.UpdateProjectEnvVarsReq,
-	data *updateProjectEnvVarsData,
+	req *appdto.UpdateAppSettingsReq,
+	data *updateAppSettingsData,
 ) error {
-	project, err := uc.projectRepo.GetByID(ctx, db, req.ProjectID,
-		bunex.SelectFor("UPDATE OF project"),
-		bunex.SelectRelation("EnvVarsSettings"),
+	app, err := uc.appRepo.GetByID(ctx, db, req.ProjectID, req.AppID,
+		bunex.SelectFor("UPDATE OF app"),
+		bunex.SelectRelation("MainSettings"),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	data.Project = project
+	data.App = app
 
-	if len(project.EnvVarsSettings) > 0 {
-		data.ExistingSettings = project.EnvVarsSettings[0]
+	if len(app.MainSettings) > 0 {
+		data.ExistingSettings = app.MainSettings[0]
 	}
 
 	return nil
 }
 
-func (uc *ProjectUC) preparePersistingProjectEnvVars(
+func (uc *AppUC) preparePersistingAppSettings(
 	auth *basedto.Auth,
-	req *projectdto.UpdateProjectEnvVarsReq,
-	data *updateProjectEnvVarsData,
-	persistingData *persistingProjectData,
+	req *appdto.UpdateAppSettingsReq,
+	data *updateAppSettingsData,
+	persistingData *persistingAppData,
 ) error {
 	timeNow := timeutil.NowUTC()
-	project := data.Project
+	app := data.App
 	settings := data.ExistingSettings
 	if settings == nil {
 		settings = &entity.Setting{
 			ID:         gofn.Must(ulid.NewStringULID()),
-			TargetType: base.SettingTargetEnvVar,
-			TargetID:   project.ID,
+			TargetType: base.SettingTargetApp,
+			TargetID:   app.ID,
 			CreatedAt:  timeNow,
 			CreatedBy:  auth.User.ID,
 		}
@@ -93,7 +94,15 @@ func (uc *ProjectUC) preparePersistingProjectEnvVars(
 	settings.UpdatedAt = timeNow
 	settings.UpdatedBy = auth.User.ID
 
-	err := settings.SetData(&entity.ProjectEnvVars{Data: req.EnvVars})
+	var settingsData *entity.AppSettings
+
+	// Do a copy fields to fields
+	err := copier.Copy(&settingsData, req.Settings)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	err = settings.SetData(settingsData)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

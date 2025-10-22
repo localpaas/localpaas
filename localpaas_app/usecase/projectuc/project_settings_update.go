@@ -57,6 +57,7 @@ func (uc *ProjectUC) loadProjectSettingsDataForUpdate(
 	data *updateProjectSettingsData,
 ) error {
 	project, err := uc.projectRepo.GetByID(ctx, db, req.ProjectID,
+		bunex.SelectFor("UPDATE OF project"),
 		bunex.SelectRelation("MainSettings"),
 	)
 	if err != nil {

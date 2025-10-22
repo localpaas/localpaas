@@ -5,190 +5,20 @@ root = "root"
 Name = "Name"
 Action = "Action"
 
-# Workspaces
-Workspace = "Workspace"
-
 # Users
 User = "User"
 UserId = "User id"
-WorkspaceUser = "Workspace user"
-UserPosition = "User position"
 Passcode = "Passcode"
 LoginTrustedDevice = "Login trusted device"
-UserPersonalDashboard = "User personal dashboard"
 
 # API Clients
 ApiClient = "API client"
 
-# Roles and Access rules
+# Roles
 Role = "Role"
-AccessRule = "Access rule"
 
 # Files
 File = "File"
 
-# Absence settings
-AbsenceSetting = "Absence setting"
-UserAbsenceSetting = "User absence setting"
-WorkspaceAbsenceSetting = "Workspace absence setting"
-
-# Entities
-Entity = "Entity"
-
-# Project module settings
-ProjectModuleSetting = "Project module setting"
-
-# Project blueprints
-ProjectBlueprint = "Project blueprint"
-BlueprintTaskCatalog = "Blueprint task catalog"
-ProjectBlueprintField = "Project blueprint custom field"
-
 # Projects
 Project = "Project"
-ProjectField = "Project custom field"
-
-# Project notes
-ProjectNoteCategory = "Project note category"
-ProjectNoteTemplate = "Project note template"
-ProjectNote = "Project note"
-ProjectNoteWorkspaceShare = "Project note workspace share"
-
-# ProjectGroup
-ProjectGroup = "Project group"
-
-# ProjectDocument
-ProjectDocument = "Project document"
-
-# ProjectExpense
-ProjectExpense = "Project expense"
-
-# Personal dashboards
-PersonalDashboard = "Personal dashboard"
-PersonalDashboardFilter = "Personal dashboard filter"
-PersonalDashboardFilterGroup = "Personal dashboard filter group"
-PersonalDashboardFilterCondition = "Personal dashboard filter condition"
-
-# Custom Table Views
-CustomTableView = "Custom table view"
-CustomTableViewFilter = "Custom table view filter"
-CustomTableViewFilterGroup = "Custom table view filter group"
-CustomTableViewFilterCondition = "Custom table view filter condition"
-
-# Task catalogs
-TaskCatalog = "Task catalog"
-TaskCatalogCategory = "Task catalog category"
-TaskCatalogEdit = "Task catalog edit"
-TaskCatalogItem = "Task catalog item"
-TaskCatalogItemCategory = "Task catalog item category"
-TaskCatalogItemCreationRule = "Task catalog item creation rule"
-TaskCatalogItemApplicabilityRule = "Task catalog item applicability rule"
-TaskCatalogItemConfigurationRule = "Task catalog item configuration rule"
-TaskCatalogItemNote = "Task catalog item note"
-TaskCatalogItemDependency = "Task catalog item dependency"
-TaskCatalogItemDepartment = "Task catalog item department"
-TaskCatalogItemDiscipline = "Task catalog item discipline"
-TaskCatalogItemTeam = "Task catalog item team"
-TaskCatalogItemField = "Task catalog item custom field"
-TaskCatalogItemEdit = "Task catalog item edit"
-
-# Task
-Task = "Task"
-TaskCategory = "Task category"
-TaskOwner = "Task owner"
-TaskAssignee = "Task assignee"
-TaskDependency = "Task dependency"
-TaskDepartment = "Task department"
-TaskDiscipline = "Task discipline"
-TaskTeam = "Task team"
-TaskLink = "Task link"
-Subtask = "Subtask"
-TaskTag = "Task tag"
-TaskReminder = "Task reminder"
-TaskNote = "Task note"
-TaskFeedback = "Task feedback"
-TaskCompletionRequest = "Task completion request"
-TaskField = "Task custom field"
-TaskEdit = "Task edit"
-
-# Task module settings
-TaskModuleSetting = "Task module setting"
-TaskModuleSettingField = "Task module setting custom field"
-TaskModuleSettingPriorityLevel = "Task module setting priority level"
-TaskModuleSettingFeedbackCategory = "Task module setting feedback category"
-
-# Meetings
-Meeting = "Meeting"
-MeetingDiscussedTask = "Meeting discussed task"
-
-# Property module settings
-PropertyModuleSetting = "Property module setting"
-PropertyModuleSettingField = "Property module setting custom field"
-
-# Properties
-Property = "Property"
-PropertyOwner = "Property owner"
-PropertyFranchisee = "Property franchisee"
-PropertyManager = "Property manager"
-PropertyType = "Property type"
-
-# Access code
-AccessCode = "Access code"
-SignupRequest = "Signup request"
-
-# Department
-Department = "Department"
-Discipline = "Discipline"
-
-# Team
-Team = "Team"
-
-# Stakeholder
-Stakeholder = "Stakeholder"
-
-# Email
-EmailProvider = "Email provider"
-
-# Brand
-Brand = "Brand"
-BrandExternalReference = "Brand external reference"
-
-# BrandType
-BrandType = "Brand type"
-
-# Contact
-Contact = "Contact"
-
-# Country
-Country = "Country"
-
-# City
-City = "City"
-
-# Currency
-Currency = "Currency"
-
-# Workflow
-Workflow = "Workflow"
-
-# Budget catalogs
-BudgetCatalog = "Budget catalog"
-BudgetCatalogItem = "Budget catalog item"
-BudgetCatalogEdit = "Budget catalog edit"
-BudgetCatalogItemEdit = "Budget catalog item edit"
-BudgetCatalogRule = "Budget catalog rule"
-BudgetBlueprint = "Budget Blueprint"
-BudgetCatalogItemRule = "Budget catalog item rule"
-
-# Timesheet
-Timesheet = "Timesheet"
-TimesheetCategory = "Timesheet category"
-
-# Survey
-Survey = "Survey"
-SurveyRule = "Survey rule"
-SurveyCategory = "Survey category"
-SurveyResponse = "Survey response"
-SurveyResponseComment = "Survey response comment"
-SurveyResponseEdit = "Survey response edit"
-SurveyTemplate = "Survey template"
-SurveyTemplateRule = "Survey template rule"

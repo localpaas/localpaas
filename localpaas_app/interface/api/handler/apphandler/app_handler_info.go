@@ -17,11 +17,10 @@ type _ *apperrors.ErrorInfo
 // ListAppBase Lists apps
 // @Summary Lists apps
 // @Description Lists apps
-// @Tags    apps_info
+// @Tags    apps
 // @Produce json
 // @Id      listAppBase
-// @Param   projectId query string false "`projectId=<target>`"
-// @Param   projectEnvId query string false "`projectEnvId=<target>`"
+// @Param   projectID path string true "project ID"
 // @Param   status query string false "`status=<target>`"
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
@@ -30,8 +29,14 @@ type _ *apperrors.ErrorInfo
 // @Success 200 {object} appdto.ListAppBaseResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /apps/base-list [get]
+// @Router  /projects/{projectID}/apps/base-list [get]
 func (h *AppHandler) ListAppBase(ctx *gin.Context) {
+	projectID, err := h.ParseStringParam(ctx, "projectID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceType: base.ResourceTypeApp,
 		Action:       base.ActionTypeRead,
@@ -42,6 +47,7 @@ func (h *AppHandler) ListAppBase(ctx *gin.Context) {
 	}
 
 	req := appdto.NewListAppBaseReq()
+	req.ProjectID = projectID
 	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -56,18 +62,72 @@ func (h *AppHandler) ListAppBase(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
+// ListApp Lists apps
+// @Summary Lists apps
+// @Description Lists apps
+// @Tags    apps
+// @Produce json
+// @Id      listApp
+// @Param   projectID path string true "project ID"
+// @Param   status query string false "`status=<target>`"
+// @Param   search query string false "`search=<target> (support *)`"
+// @Param   pageOffset query int false "`pageOffset=offset`"
+// @Param   pageLimit query int false "`pageLimit=limit`"
+// @Param   sort query string false "`sort=[-]field1|field2...`"
+// @Success 200 {object} appdto.ListAppResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /projects/{projectID}/apps [get]
+func (h *AppHandler) ListApp(ctx *gin.Context) {
+	projectID, err := h.ParseStringParam(ctx, "projectID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceType: base.ResourceTypeApp,
+		Action:       base.ActionTypeRead,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := appdto.NewListAppReq()
+	req.ProjectID = projectID
+	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.appUC.ListApp(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
 // GetApp Gets app details
 // @Summary Gets app details
 // @Description Gets app details
-// @Tags    apps_info
+// @Tags    apps
 // @Produce json
 // @Id      getApp
+// @Param   projectID path string true "project ID"
 // @Param   appID path string true "app ID"
 // @Success 200 {object} appdto.GetAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /apps/{appID} [get]
+// @Router  /projects/{projectID}/apps/{appID} [get]
 func (h *AppHandler) GetApp(ctx *gin.Context) {
+	projectID, err := h.ParseStringParam(ctx, "projectID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
 	appID, err := h.ParseStringParam(ctx, "appID")
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -85,55 +145,14 @@ func (h *AppHandler) GetApp(ctx *gin.Context) {
 	}
 
 	req := appdto.NewGetAppReq()
-	req.ID = appID
+	req.ProjectID = projectID
+	req.AppID = appID
 	if err = h.ParseRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
 		h.RenderError(ctx, err)
 		return
 	}
 
 	resp, err := h.appUC.GetApp(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
-}
-
-// ListApp Lists apps
-// @Summary Lists apps
-// @Description Lists apps
-// @Tags    apps_info
-// @Produce json
-// @Id      listApp
-// @Param   projectId query string false "`projectId=<target>`"
-// @Param   projectEnvId query string false "`projectEnvId=<target>`"
-// @Param   status query string false "`status=<target>`"
-// @Param   search query string false "`search=<target> (support *)`"
-// @Param   pageOffset query int false "`pageOffset=offset`"
-// @Param   pageLimit query int false "`pageLimit=limit`"
-// @Param   sort query string false "`sort=[-]field1|field2...`"
-// @Success 200 {object} appdto.ListAppResp
-// @Failure 400 {object} apperrors.ErrorInfo
-// @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /apps [get]
-func (h *AppHandler) ListApp(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeApp,
-		Action:       base.ActionTypeRead,
-	})
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := appdto.NewListAppReq()
-	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.appUC.ListApp(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

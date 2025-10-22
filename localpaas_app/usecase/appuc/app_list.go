@@ -15,16 +15,7 @@ func (uc *AppUC) ListApp(
 	req *appdto.ListAppReq,
 ) (*appdto.ListAppResp, error) {
 	listOpts := []bunex.SelectQueryOption{}
-	if req.ProjectID != "" {
-		listOpts = append(listOpts,
-			bunex.SelectWhere("app.project_id = ?", req.ProjectID),
-		)
-	}
-	if req.ProjectEnvID != "" {
-		listOpts = append(listOpts,
-			bunex.SelectWhere("app.project_env_id = ?", req.ProjectEnvID),
-		)
-	}
+
 	if len(req.Status) > 0 {
 		listOpts = append(listOpts,
 			bunex.SelectWhere("app.status IN (?)", bunex.In(req.Status)),
@@ -36,11 +27,12 @@ func (uc *AppUC) ListApp(
 		listOpts = append(listOpts,
 			bunex.SelectWhereGroup(
 				bunex.SelectWhere("app.name ILIKE ?", keyword),
+				bunex.SelectWhereOr("app.note ILIKE ?", keyword),
 			),
 		)
 	}
 
-	apps, paging, err := uc.appRepo.List(ctx, uc.db, &req.Paging, listOpts...)
+	apps, paging, err := uc.appRepo.List(ctx, uc.db, req.ProjectID, &req.Paging, listOpts...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

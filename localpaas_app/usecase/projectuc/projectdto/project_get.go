@@ -22,7 +22,9 @@ func NewGetProjectReq() *GetProjectReq {
 }
 
 func (req *GetProjectReq) Validate() apperrors.ValidationErrors {
-	return apperrors.NewValidationErrors(vld.Validate(basedto.ValidateID(&req.ID, true, "id")...))
+	var validators []vld.Validator
+	validators = append(validators, basedto.ValidateID(&req.ID, true, "id")...)
+	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
 type GetProjectResp struct {

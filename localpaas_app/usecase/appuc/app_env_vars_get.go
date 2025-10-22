@@ -9,27 +9,29 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
 )
 
-func (uc *AppUC) GetApp(
+func (uc *AppUC) GetAppEnvVars(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *appdto.GetAppReq,
-) (*appdto.GetAppResp, error) {
+	req *appdto.GetAppEnvVarsReq,
+) (*appdto.GetAppEnvVarsResp, error) {
 	app, err := uc.appRepo.GetByID(ctx, uc.db, req.ProjectID, req.AppID,
-		bunex.SelectRelation("Tags", bunex.SelectOrder("display_order")),
+		bunex.SelectRelation("EnvVarsSettings"),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	if app.ProjectID != req.ProjectID {
-		return nil, apperrors.New(apperrors.ErrUnauthorized)
-	}
 
-	resp, err := appdto.TransformApp(app)
+	envVars, err := app.GetEnvVars()
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &appdto.GetAppResp{
+	resp, err := appdto.TransformAppEnvVars(envVars)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	return &appdto.GetAppEnvVarsResp{
 		Data: resp,
 	}, nil
 }

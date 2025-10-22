@@ -17,7 +17,7 @@ type _ *apperrors.ErrorInfo
 // ListProjectBase Lists projects
 // @Summary Lists projects
 // @Description Lists projects
-// @Tags    projects_info
+// @Tags    projects
 // @Produce json
 // @Id      listProjectBase
 // @Param   status query string false "`status=<target>`"
@@ -54,10 +54,50 @@ func (h *ProjectHandler) ListProjectBase(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
+// ListProject Lists projects
+// @Summary Lists projects
+// @Description Lists projects
+// @Tags    projects
+// @Produce json
+// @Id      listProject
+// @Param   status query string false "`status=<target>`"
+// @Param   search query string false "`search=<target> (support *)`"
+// @Param   pageOffset query int false "`pageOffset=offset`"
+// @Param   pageLimit query int false "`pageLimit=limit`"
+// @Param   sort query string false "`sort=[-]field1|field2...`"
+// @Success 200 {object} projectdto.ListProjectResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /projects [get]
+func (h *ProjectHandler) ListProject(ctx *gin.Context) {
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceType: base.ResourceTypeProject,
+		Action:       base.ActionTypeRead,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := projectdto.NewListProjectReq()
+	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.projectUC.ListProject(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
 // GetProject Gets project details
 // @Summary Gets project details
 // @Description Gets project details
-// @Tags    projects_info
+// @Tags    projects
 // @Produce json
 // @Id      getProject
 // @Param   projectID path string true "project ID"
@@ -90,46 +130,6 @@ func (h *ProjectHandler) GetProject(ctx *gin.Context) {
 	}
 
 	resp, err := h.projectUC.GetProject(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
-}
-
-// ListProject Lists projects
-// @Summary Lists projects
-// @Description Lists projects
-// @Tags    projects_info
-// @Produce json
-// @Id      listProject
-// @Param   status query string false "`status=<target>`"
-// @Param   search query string false "`search=<target> (support *)`"
-// @Param   pageOffset query int false "`pageOffset=offset`"
-// @Param   pageLimit query int false "`pageLimit=limit`"
-// @Param   sort query string false "`sort=[-]field1|field2...`"
-// @Success 200 {object} projectdto.ListProjectResp
-// @Failure 400 {object} apperrors.ErrorInfo
-// @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects [get]
-func (h *ProjectHandler) ListProject(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeProject,
-		Action:       base.ActionTypeRead,
-	})
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := projectdto.NewListProjectReq()
-	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.projectUC.ListProject(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

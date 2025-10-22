@@ -19,6 +19,17 @@ type ProjectBaseReq struct {
 	Note   string             `json:"note"`
 }
 
+func (req *ProjectBaseReq) validate(field string) (res []vld.Validator) {
+	if field != "" {
+		field += "."
+	}
+	res = append(res, validateProjectName(&req.Name, field+"name")...)
+	res = append(res, basedto.ValidateStrIn(&req.Status, true, base.AllProjectStatuses, field+"status")...)
+	res = append(res, validateProjectNote(&req.Note, field+"note")...)
+	res = append(res, validateProjectTags(req.Tags, field+"tags")...)
+	return res
+}
+
 func NewCreateProjectReq() *CreateProjectReq {
 	return &CreateProjectReq{}
 }
@@ -26,8 +37,7 @@ func NewCreateProjectReq() *CreateProjectReq {
 // Validate implements interface basedto.ReqValidator
 func (req *CreateProjectReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, validateProjectName(&req.Name, "name")...)
-	validators = append(validators, basedto.ValidateStrIn(&req.Status, true, base.AllProjectStatuses, "status")...)
+	validators = append(validators, req.validate("")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 

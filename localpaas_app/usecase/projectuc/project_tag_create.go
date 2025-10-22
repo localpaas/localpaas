@@ -52,7 +52,7 @@ func (uc *ProjectUC) loadProjectTagDataForAddNew(
 	// Loads and checks target project
 	project, err := uc.projectRepo.GetByID(ctx, db, req.ProjectID,
 		bunex.SelectFor("UPDATE OF project"),
-		bunex.SelectRelation("Tags"),
+		bunex.SelectRelation("Tags", bunex.SelectOrder("display_order")),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)

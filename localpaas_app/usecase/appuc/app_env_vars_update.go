@@ -1,4 +1,4 @@
-package projectuc
+package appuc
 
 import (
 	"context"
@@ -12,25 +12,25 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc/projectdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
 	"github.com/localpaas/localpaas/pkg/timeutil"
 	"github.com/localpaas/localpaas/pkg/ulid"
 )
 
-func (uc *ProjectUC) UpdateProjectEnvVars(
+func (uc *AppUC) UpdateAppEnvVars(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *projectdto.UpdateProjectEnvVarsReq,
-) (*projectdto.UpdateProjectEnvVarsResp, error) {
+	req *appdto.UpdateAppEnvVarsReq,
+) (*appdto.UpdateAppEnvVarsResp, error) {
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
-		envData := &updateProjectEnvVarsData{}
-		err := uc.loadProjectEnvVarsDataForUpdate(ctx, db, req, envData)
+		envData := &updateAppEnvVarsData{}
+		err := uc.loadAppEnvVarsDataForUpdate(ctx, db, req, envData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
 
-		persistingData := &persistingProjectData{}
-		err = uc.preparePersistingProjectEnvVars(auth, req, envData, persistingData)
+		persistingData := &persistingAppData{}
+		err = uc.preparePersistingAppEnvVars(auth, req, envData, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -41,50 +41,50 @@ func (uc *ProjectUC) UpdateProjectEnvVars(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &projectdto.UpdateProjectEnvVarsResp{}, nil
+	return &appdto.UpdateAppEnvVarsResp{}, nil
 }
 
-type updateProjectEnvVarsData struct {
-	Project          *entity.Project
+type updateAppEnvVarsData struct {
+	App              *entity.App
 	ExistingSettings *entity.Setting
 }
 
-func (uc *ProjectUC) loadProjectEnvVarsDataForUpdate(
+func (uc *AppUC) loadAppEnvVarsDataForUpdate(
 	ctx context.Context,
 	db database.IDB,
-	req *projectdto.UpdateProjectEnvVarsReq,
-	data *updateProjectEnvVarsData,
+	req *appdto.UpdateAppEnvVarsReq,
+	data *updateAppEnvVarsData,
 ) error {
-	project, err := uc.projectRepo.GetByID(ctx, db, req.ProjectID,
-		bunex.SelectFor("UPDATE OF project"),
+	app, err := uc.appRepo.GetByID(ctx, db, req.ProjectID, req.AppID,
+		bunex.SelectFor("UPDATE OF app"),
 		bunex.SelectRelation("EnvVarsSettings"),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	data.Project = project
+	data.App = app
 
-	if len(project.EnvVarsSettings) > 0 {
-		data.ExistingSettings = project.EnvVarsSettings[0]
+	if len(app.EnvVarsSettings) > 0 {
+		data.ExistingSettings = app.EnvVarsSettings[0]
 	}
 
 	return nil
 }
 
-func (uc *ProjectUC) preparePersistingProjectEnvVars(
+func (uc *AppUC) preparePersistingAppEnvVars(
 	auth *basedto.Auth,
-	req *projectdto.UpdateProjectEnvVarsReq,
-	data *updateProjectEnvVarsData,
-	persistingData *persistingProjectData,
+	req *appdto.UpdateAppEnvVarsReq,
+	data *updateAppEnvVarsData,
+	persistingData *persistingAppData,
 ) error {
 	timeNow := timeutil.NowUTC()
-	project := data.Project
+	app := data.App
 	settings := data.ExistingSettings
 	if settings == nil {
 		settings = &entity.Setting{
 			ID:         gofn.Must(ulid.NewStringULID()),
 			TargetType: base.SettingTargetEnvVar,
-			TargetID:   project.ID,
+			TargetID:   app.ID,
 			CreatedAt:  timeNow,
 			CreatedBy:  auth.User.ID,
 		}
@@ -93,7 +93,7 @@ func (uc *ProjectUC) preparePersistingProjectEnvVars(
 	settings.UpdatedAt = timeNow
 	settings.UpdatedBy = auth.User.ID
 
-	err := settings.SetData(&entity.ProjectEnvVars{Data: req.EnvVars})
+	err := settings.SetData(&entity.AppEnvVars{Data: req.EnvVars})
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

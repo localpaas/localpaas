@@ -110,12 +110,24 @@ func (s *HTTPServer) registerRoutes() {
 		projectGroup.PUT("/:projectID/env-vars", s.handlerRegistry.projectHandler.UpdateProjectEnvVars)
 	}
 
-	appGroup := apiV1Group.Group("/apps")
+	appGroup := projectGroup.Group("/:projectID/apps")
 	{ // app group
 		// App info
 		appGroup.GET("/base-list", s.handlerRegistry.appHandler.ListAppBase)
 		appGroup.GET("/:appID", s.handlerRegistry.appHandler.GetApp)
 		appGroup.GET("", s.handlerRegistry.appHandler.ListApp)
+		// Creation & Update
+		appGroup.POST("", s.handlerRegistry.appHandler.CreateApp)
+		appGroup.DELETE("/:appID", s.handlerRegistry.appHandler.DeleteApp)
+		// Tags
+		appGroup.POST("/:appID/tags", s.handlerRegistry.appHandler.CreateAppTag)
+		appGroup.POST("/:appID/tags/delete", s.handlerRegistry.appHandler.DeleteAppTags)
+		// Settings
+		appGroup.GET("/:appID/settings", s.handlerRegistry.appHandler.GetAppSettings)
+		appGroup.PUT("/:appID/settings", s.handlerRegistry.appHandler.UpdateAppSettings)
+		// Env vars
+		appGroup.GET("/:appID/env-vars", s.handlerRegistry.appHandler.GetAppEnvVars)
+		appGroup.PUT("/:appID/env-vars", s.handlerRegistry.appHandler.UpdateAppEnvVars)
 	}
 }
 
