@@ -9,6 +9,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/apphandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/clusterhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projecthandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/userhandler"
@@ -16,6 +17,7 @@ import (
 
 type HandlerRegistry struct {
 	authHandler    *authhandler.AuthHandler
+	clusterHandler *clusterhandler.ClusterHandler
 	sessionHandler *sessionhandler.SessionHandler
 	userHandler    *userhandler.UserHandler
 	projectHandler *projecthandler.ProjectHandler
@@ -24,6 +26,7 @@ type HandlerRegistry struct {
 
 func NewHandlerRegistry(
 	authHandler *authhandler.AuthHandler,
+	clusterHandler *clusterhandler.ClusterHandler,
 	sessionHandler *sessionhandler.SessionHandler,
 	userHandler *userhandler.UserHandler,
 	projectHandler *projecthandler.ProjectHandler,
@@ -31,6 +34,7 @@ func NewHandlerRegistry(
 ) *HandlerRegistry {
 	return &HandlerRegistry{
 		authHandler:    authHandler,
+		clusterHandler: clusterHandler,
 		sessionHandler: sessionHandler,
 		userHandler:    userHandler,
 		projectHandler: projectHandler,
@@ -65,6 +69,16 @@ func (s *HTTPServer) registerRoutes() {
 	// PUBLIC ROUTES
 	apiV1Group := s.engine.Group(s.config.HTTPServer.BasePath)
 
+	clusterGroup := apiV1Group.Group("/cluster")
+	{ // node group
+		nodeGroup := clusterGroup.Group("/nodes")
+		// Nodes
+		nodeGroup.GET("/base-list", s.handlerRegistry.clusterHandler.ListNodeBase)
+		nodeGroup.GET("", s.handlerRegistry.clusterHandler.ListNode)
+		nodeGroup.GET("/:nodeID", s.handlerRegistry.clusterHandler.GetNode)
+		nodeGroup.DELETE("/:nodeID", s.handlerRegistry.clusterHandler.DeleteNode)
+	}
+
 	{ // session group
 		sessionGroup := apiV1Group.Group("/sessions")
 		// User info
@@ -81,8 +95,8 @@ func (s *HTTPServer) registerRoutes() {
 		authGroup.POST("/login-with-passcode", s.handlerRegistry.sessionHandler.LoginWithPasscode)
 	}
 
-	userGroup := apiV1Group.Group("/users")
 	{ // user group
+		userGroup := apiV1Group.Group("/users")
 		// Get user info
 		userGroup.GET("/base-list", s.handlerRegistry.userHandler.ListUserBase)
 		userGroup.GET("/:userID", s.handlerRegistry.userHandler.GetUser)

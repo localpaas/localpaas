@@ -11,6 +11,15 @@ VALUES ('01JAB9XED0GTXBSQDFVYAJ8WA1', 'tiendc@gmail.com', 'owner', 'active', 'Ti
         '2025-10-01 00:00:00', '2025-10-01 00:00:00')
 ON CONFLICT DO NOTHING;
 
+INSERT INTO nodes (id, host_name, ip, status, infra_status, is_leader, is_manager, created_at, created_by, updated_at, updated_by)
+VALUES ('01JAB9XED0GTXBSQDFVYAJ8WX1', 'node-a', '123.123.123.1', 'active', 'ready', true, true,
+        '2025-10-01 00:00:00', '01JAB9XED0GTXBSQDFVYAJ8WA1', '2025-10-01 00:00:00',	'01JAB9XED0GTXBSQDFVYAJ8WA1'),
+       ('01JAB9XED0GTXBSQDFVYAJ8WX2', 'node-b', '123.123.123.2', 'active', 'ready', false, true,
+        '2025-10-01 00:00:00', '01JAB9XED0GTXBSQDFVYAJ8WA1', '2025-10-01 00:00:00',	'01JAB9XED0GTXBSQDFVYAJ8WA1'),
+       ('01JAB9XED0GTXBSQDFVYAJ8WX3', 'node-c', '123.123.123.3', 'active', 'ready', false, false,
+        '2025-10-01 00:00:00', '01JAB9XED0GTXBSQDFVYAJ8WA1', '2025-10-01 00:00:00',	'01JAB9XED0GTXBSQDFVYAJ8WA1')
+ON CONFLICT DO NOTHING;
+
 INSERT INTO projects (id, name, status, created_at, created_by, updated_at, updated_by)
 VALUES ('01JAB9XED0GTXBSQDFVYAJ8WB1', 'Project A', 'active',
         '2025-10-01 00:00:00', '01JAB9XED0GTXBSQDFVYAJ8WA1', '2025-10-01 00:00:00',	'01JAB9XED0GTXBSQDFVYAJ8WA1'),
