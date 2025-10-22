@@ -113,6 +113,7 @@ func (s *HTTPServer) registerRoutes() {
 		projectGroup.GET("", s.handlerRegistry.projectHandler.ListProject)
 		// Creation & Update
 		projectGroup.POST("", s.handlerRegistry.projectHandler.CreateProject)
+		projectGroup.DELETE("/:projectID", s.handlerRegistry.projectHandler.DeleteProject)
 		// Tags
 		projectGroup.POST("/:projectID/tags", s.handlerRegistry.projectHandler.CreateProjectTag)
 		projectGroup.POST("/:projectID/tags/delete", s.handlerRegistry.projectHandler.DeleteProjectTags)

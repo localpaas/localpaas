@@ -16,7 +16,7 @@ type _ *apperrors.ErrorInfo
 // UpdateUserPassword Changes user password
 // @Summary Changes user password
 // @Description Changes user password
-// @Tags    users_auth
+// @Tags    users
 // @Produce json
 // @Id      updateUserPassword
 // @Param   body body userdto.UpdatePasswordReq true "request data"

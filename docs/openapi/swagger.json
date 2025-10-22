@@ -622,6 +622,53 @@
       }
     },
     "/projects/{projectID}" : {
+      "delete" : {
+        "description" : "Deletes a project",
+        "operationId" : "deleteProject",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.DeleteProjectResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Deletes a project",
+        "tags" : [ "projects" ]
+      },
       "get" : {
         "description" : "Gets project details",
         "operationId" : "getProject",
@@ -1427,7 +1474,7 @@
           }
         },
         "summary" : "Deletes app tags",
-        "tags" : [ "apps_tags" ],
+        "tags" : [ "apps" ],
         "x-codegen-request-body-name" : "body"
       }
     },
@@ -1986,7 +2033,7 @@
           }
         },
         "summary" : "Lists users",
-        "tags" : [ "users_info" ]
+        "tags" : [ "users" ]
       }
     },
     "/users/base-list" : {
@@ -2062,7 +2109,7 @@
           }
         },
         "summary" : "Lists users",
-        "tags" : [ "users_info" ]
+        "tags" : [ "users" ]
       }
     },
     "/users/current/password" : {
@@ -2113,7 +2160,7 @@
           }
         },
         "summary" : "Changes user password",
-        "tags" : [ "users_auth" ],
+        "tags" : [ "users" ],
         "x-codegen-request-body-name" : "body"
       }
     },
@@ -2163,7 +2210,7 @@
           }
         },
         "summary" : "Gets user details",
-        "tags" : [ "users_info" ]
+        "tags" : [ "users" ]
       }
     }
   },
@@ -2239,9 +2286,9 @@
         "x-enum-varnames" : [ "NodeStatusActive", "NodeStatusInactive", "NodeStatusDeleting" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.ProjectStatus" : {
-        "enum" : [ "active", "locked", "disabled" ],
+        "enum" : [ "active", "locked", "disabled", "deleting" ],
         "type" : "string",
-        "x-enum-varnames" : [ "ProjectStatusActive", "ProjectStatusLocked", "ProjectStatusDisabled" ]
+        "x-enum-varnames" : [ "ProjectStatusActive", "ProjectStatusLocked", "ProjectStatusDisabled", "ProjectStatusDeleting" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.UserRole" : {
         "enum" : [ "owner", "admin", "member" ],
@@ -2750,6 +2797,15 @@
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.CreateProjectTagResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.DeleteProjectResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"

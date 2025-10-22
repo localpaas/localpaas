@@ -69,7 +69,7 @@ func (h *AppHandler) CreateAppTag(ctx *gin.Context) {
 // DeleteAppTags Deletes app tags
 // @Summary Deletes app tags
 // @Description Deletes app tags
-// @Tags    apps_tags
+// @Tags    apps
 // @Produce json
 // @Id      deleteAppTags
 // @Param   projectID path string true "project ID"

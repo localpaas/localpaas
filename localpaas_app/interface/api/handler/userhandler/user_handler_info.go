@@ -17,7 +17,7 @@ type _ *apperrors.ErrorInfo
 // ListUserBase Lists users
 // @Summary Lists users
 // @Description Lists users
-// @Tags    users_info
+// @Tags    users
 // @Produce json
 // @Id      listUserBase
 // @Param   status query string false "`status=<target>`"
@@ -57,7 +57,7 @@ func (h *UserHandler) ListUserBase(ctx *gin.Context) {
 // GetUser Gets user details
 // @Summary Gets user details
 // @Description Gets user details
-// @Tags    users_info
+// @Tags    users
 // @Produce json
 // @Id      getUser
 // @Param   userID path string true "user ID"
@@ -101,7 +101,7 @@ func (h *UserHandler) GetUser(ctx *gin.Context) {
 // ListUser Lists users
 // @Summary Lists users
 // @Description Lists users
-// @Tags    users_info
+// @Tags    users
 // @Produce json
 // @Id      listUser
 // @Param   status query string false "`status=<target>`"
