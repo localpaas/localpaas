@@ -14,9 +14,7 @@ func (uc *ProjectUC) ListProject(
 	auth *basedto.Auth,
 	req *projectdto.ListProjectReq,
 ) (*projectdto.ListProjectResp, error) {
-	listOpts := []bunex.SelectQueryOption{
-		bunex.SelectRelation("Envs"),
-	}
+	listOpts := []bunex.SelectQueryOption{}
 	if len(req.Status) > 0 {
 		listOpts = append(listOpts,
 			bunex.SelectWhere("project.status IN (?)", bunex.In(req.Status)),

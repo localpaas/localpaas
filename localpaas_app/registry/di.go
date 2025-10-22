@@ -7,7 +7,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/rediscache"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/apphandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
-	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projectenvhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projecthandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/userhandler"
@@ -18,7 +17,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/projectservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/projectenvuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc"
@@ -49,14 +47,12 @@ var Provides = []any{
 	sessionhandler.NewSessionHandler,
 	userhandler.NewUserHandler,
 	projecthandler.NewProjectHandler,
-	projectenvhandler.NewProjectEnvHandler,
 	apphandler.NewAppHandler,
 
 	// Use case
 	sessionuc.NewSessionUC,
 	useruc.NewUserUC,
 	projectuc.NewProjectUC,
-	projectenvuc.NewProjectEnvUC,
 	appuc.NewAppUC,
 
 	// Service
@@ -68,8 +64,6 @@ var Provides = []any{
 	// Repo: Project
 	repository.NewProjectRepo,
 	repository.NewProjectTagRepo,
-	// Repo: Project Env
-	repository.NewProjectEnvRepo,
 	// Repo: App
 	repository.NewAppRepo,
 	repository.NewAppTagRepo,

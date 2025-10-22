@@ -12,13 +12,12 @@ import (
 type PersistingProjectData struct {
 	UpsertingProjects []*entity.Project
 	UpsertingTags     []*entity.ProjectTag
-	UpsertingEnvs     []*entity.ProjectEnv
 	UpsertingSettings []*entity.Setting
 	UpsertingAccesses []*entity.ACLPermission
 
 	ProjectsToDeleteTags     []string
-	ProjectsToDeleteEnvs     []string
 	ProjectsToDeleteSettings []string
+	ProjectsToDeleteEnvVars  []string
 }
 
 func (s *projectService) PersistProjectData(ctx context.Context, db database.IDB,
@@ -29,13 +28,16 @@ func (s *projectService) PersistProjectData(ctx context.Context, db database.IDB
 		return apperrors.Wrap(err)
 	}
 
-	err = s.projectEnvRepo.DeleteAllByProjects(ctx, db, persistingData.ProjectsToDeleteEnvs)
+	// Main settings
+	err = s.settingRepo.DeleteAllByTargetObjects(ctx, db, base.SettingTargetProject,
+		persistingData.ProjectsToDeleteSettings)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	err = s.settingRepo.DeleteAllByTargetObjects(ctx, db, base.SettingTargetProject,
-		persistingData.ProjectsToDeleteSettings)
+	// Env vars
+	err = s.settingRepo.DeleteAllByTargetObjects(ctx, db, base.SettingTargetEnvVar,
+		persistingData.ProjectsToDeleteEnvVars)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -50,13 +52,6 @@ func (s *projectService) PersistProjectData(ctx context.Context, db database.IDB
 	// Tags
 	err = s.projectTagRepo.UpsertMulti(ctx, db, persistingData.UpsertingTags,
 		entity.ProjectTagUpsertingConflictCols, entity.ProjectTagUpsertingUpdateCols)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	// Envs
-	err = s.projectEnvRepo.UpsertMulti(ctx, db, persistingData.UpsertingEnvs,
-		entity.ProjectEnvUpsertingConflictCols, entity.ProjectEnvUpsertingUpdateCols)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

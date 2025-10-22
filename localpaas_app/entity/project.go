@@ -8,7 +8,7 @@ import (
 
 var (
 	ProjectUpsertingConflictCols = []string{"id"}
-	ProjectUpsertingUpdateCols   = []string{"name", "photo", "data", "status",
+	ProjectUpsertingUpdateCols   = []string{"name", "photo", "status",
 		"updated_at", "updated_by", "deleted_at"}
 )
 
@@ -26,7 +26,7 @@ type Project struct {
 
 	EnvVarsSettings []*Setting    `bun:"rel:has-many,join:id=target_id,join:type=target_type,polymorphic:env-var"`
 	MainSettings    []*Setting    `bun:"rel:has-many,join:id=target_id,join:type=target_type,polymorphic:project"`
-	Envs            []*ProjectEnv `bun:"rel:has-many,join:id=project_id"`
+	Apps            []*App        `bun:"rel:has-many,join:id=project_id"`
 	Tags            []*ProjectTag `bun:"rel:has-many,join:id=project_id"`
 	CreatedByUser   *User         `bun:"rel:has-one,join:created_by=id"`
 	UpdatedByUser   *User         `bun:"rel:has-one,join:updated_by=id"`

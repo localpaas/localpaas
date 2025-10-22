@@ -15,7 +15,6 @@ type ProjectService interface {
 
 func NewProjectService(
 	projectRepo repository.ProjectRepo,
-	projectEnvRepo repository.ProjectEnvRepo,
 	projectTagRepo repository.ProjectTagRepo,
 	settingRepo repository.SettingRepo,
 	permissionManager permission.Manager,
@@ -23,7 +22,6 @@ func NewProjectService(
 ) ProjectService {
 	return &projectService{
 		projectRepo:       projectRepo,
-		projectEnvRepo:    projectEnvRepo,
 		projectTagRepo:    projectTagRepo,
 		settingRepo:       settingRepo,
 		permissionManager: permissionManager,
@@ -33,7 +31,6 @@ func NewProjectService(
 
 type projectService struct {
 	projectRepo       repository.ProjectRepo
-	projectEnvRepo    repository.ProjectEnvRepo
 	projectTagRepo    repository.ProjectTagRepo
 	settingRepo       repository.SettingRepo
 	permissionManager permission.Manager

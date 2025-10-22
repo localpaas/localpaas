@@ -8,7 +8,6 @@ import (
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
@@ -17,10 +16,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc/projectdto"
 	"github.com/localpaas/localpaas/pkg/timeutil"
 	"github.com/localpaas/localpaas/pkg/ulid"
-)
-
-const (
-	defaultProjectEnv = "default"
 )
 
 func (uc *ProjectUC) CreateProject(
@@ -90,7 +85,6 @@ func (uc *ProjectUC) preparePersistingProject(
 
 	uc.preparePersistingProjectBase(auth, project, req.ProjectBaseReq, timeNow, persistingData)
 	uc.preparePersistingProjectTags(project, req.Tags, 0, persistingData)
-	uc.preparePersistingProjectEnvs(auth, project, []string{defaultProjectEnv}, 0, timeNow, persistingData)
 }
 
 func (uc *ProjectUC) preparePersistingProjectBase(
@@ -121,32 +115,6 @@ func (uc *ProjectUC) preparePersistingProjectTags(
 				ProjectID:    project.ID,
 				Tag:          tag,
 				DisplayOrder: displayOrder,
-			})
-		displayOrder++
-	}
-}
-
-func (uc *ProjectUC) preparePersistingProjectEnvs(
-	auth *basedto.Auth,
-	project *entity.Project,
-	envs []string,
-	startDisplayOrder int,
-	timeNow time.Time,
-	persistingData *persistingProjectData,
-) {
-	displayOrder := startDisplayOrder
-	for _, env := range envs {
-		persistingData.UpsertingEnvs = append(persistingData.UpsertingEnvs,
-			&entity.ProjectEnv{
-				ID:           gofn.Must(ulid.NewStringULID()),
-				ProjectID:    project.ID,
-				Name:         env,
-				Status:       base.ProjectStatusActive,
-				DisplayOrder: displayOrder,
-				CreatedAt:    timeNow,
-				CreatedBy:    auth.User.ID,
-				UpdatedAt:    timeNow,
-				UpdatedBy:    auth.User.ID,
 			})
 		displayOrder++
 	}

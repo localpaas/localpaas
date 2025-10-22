@@ -36,13 +36,13 @@ type ProjectResp struct {
 	Status base.ProjectStatus `json:"status"`
 	Photo  string             `json:"photo"`
 	Tags   []string           `json:"tags" copy:"-"` // manual copy ProjectTag -> string
-	Envs   []*ProjectEnvResp  `json:"envs"`
+	Apps   []*ProjectAppResp  `json:"apps"`
 
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
-type ProjectEnvResp struct {
+type ProjectAppResp struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
 }
