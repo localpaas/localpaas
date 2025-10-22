@@ -9,17 +9,19 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/apphandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projectenvhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projecthandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/userhandler"
 )
 
 type HandlerRegistry struct {
-	authHandler    *authhandler.AuthHandler
-	sessionHandler *sessionhandler.SessionHandler
-	userHandler    *userhandler.UserHandler
-	projectHandler *projecthandler.ProjectHandler
-	appHandler     *apphandler.AppHandler
+	authHandler       *authhandler.AuthHandler
+	sessionHandler    *sessionhandler.SessionHandler
+	userHandler       *userhandler.UserHandler
+	projectHandler    *projecthandler.ProjectHandler
+	projectEnvHandler *projectenvhandler.ProjectEnvHandler
+	appHandler        *apphandler.AppHandler
 }
 
 func NewHandlerRegistry(
@@ -27,14 +29,16 @@ func NewHandlerRegistry(
 	sessionHandler *sessionhandler.SessionHandler,
 	userHandler *userhandler.UserHandler,
 	projectHandler *projecthandler.ProjectHandler,
+	projectEnvHandler *projectenvhandler.ProjectEnvHandler,
 	appHandler *apphandler.AppHandler,
 ) *HandlerRegistry {
 	return &HandlerRegistry{
-		authHandler:    authHandler,
-		sessionHandler: sessionHandler,
-		userHandler:    userHandler,
-		projectHandler: projectHandler,
-		appHandler:     appHandler,
+		authHandler:       authHandler,
+		sessionHandler:    sessionHandler,
+		userHandler:       userHandler,
+		projectHandler:    projectHandler,
+		projectEnvHandler: projectEnvHandler,
+		appHandler:        appHandler,
 	}
 }
 
@@ -102,15 +106,29 @@ func (s *HTTPServer) registerRoutes() {
 		// Tags
 		projectGroup.POST("/:projectID/tags", s.handlerRegistry.projectHandler.CreateProjectTag)
 		projectGroup.POST("/:projectID/tags/delete", s.handlerRegistry.projectHandler.DeleteProjectTags)
-		// Envs
-		projectGroup.POST("/:projectID/envs", s.handlerRegistry.projectHandler.CreateProjectEnv)
-		projectGroup.DELETE("/:projectID/envs/:projectEnvID", s.handlerRegistry.projectHandler.DeleteProjectEnv)
 		// Settings
 		projectGroup.GET("/:projectID/settings", s.handlerRegistry.projectHandler.GetProjectSettings)
 		projectGroup.PUT("/:projectID/settings", s.handlerRegistry.projectHandler.UpdateProjectSettings)
 		// Env vars
 		projectGroup.GET("/:projectID/env-vars", s.handlerRegistry.projectHandler.GetProjectEnvVars)
 		projectGroup.PUT("/:projectID/env-vars", s.handlerRegistry.projectHandler.UpdateProjectEnvVars)
+	}
+
+	projectEnvGroup := projectGroup.Group("/:projectID/envs")
+	{ // project env group
+		// Project env info
+		projectEnvGroup.GET("/base-list", s.handlerRegistry.projectEnvHandler.ListProjectEnvBase)
+		projectEnvGroup.GET("/:projectEnvID", s.handlerRegistry.projectEnvHandler.GetProjectEnv)
+		projectEnvGroup.GET("", s.handlerRegistry.projectEnvHandler.ListProjectEnv)
+		// Creation & Update
+		projectEnvGroup.POST("", s.handlerRegistry.projectEnvHandler.CreateProjectEnv)
+		projectEnvGroup.DELETE("/:projectEnvID", s.handlerRegistry.projectEnvHandler.DeleteProjectEnv)
+		// Settings
+		projectEnvGroup.GET("/:projectEnvID/settings", s.handlerRegistry.projectEnvHandler.GetProjectEnvSettings)
+		projectEnvGroup.PUT("/:projectEnvID/settings", s.handlerRegistry.projectEnvHandler.UpdateProjectEnvSettings)
+		// Env vars
+		projectEnvGroup.GET("/:projectEnvID/env-vars", s.handlerRegistry.projectEnvHandler.GetProjectEnvEnvVars)
+		projectEnvGroup.PUT("/:projectEnvID/env-vars", s.handlerRegistry.projectEnvHandler.UpdateProjectEnvEnvVars)
 	}
 
 	appGroup := apiV1Group.Group("/apps")

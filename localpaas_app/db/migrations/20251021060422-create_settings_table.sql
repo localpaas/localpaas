@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS settings
     id           VARCHAR(26) PRIMARY KEY,
     target_type  VARCHAR(100) NOT NULL,
     target_id    VARCHAR(26) NULL,
-    data         JSONB NOT NULL DEFAULT '{}',
+    data         JSONB NULL,
 
     created_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by   VARCHAR(26) NOT NULL,

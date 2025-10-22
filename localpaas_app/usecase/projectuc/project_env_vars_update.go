@@ -56,18 +56,15 @@ func (uc *ProjectUC) loadProjectEnvVarsDataForUpdate(
 	data *updateProjectEnvVarsData,
 ) error {
 	project, err := uc.projectRepo.GetByID(ctx, db, req.ProjectID,
-		bunex.SelectRelation("AllSettings",
-			// Filter by `project target`
-			bunex.SelectWhere("setting.target_type = ?", base.SettingTargetEnvVar),
-		),
+		bunex.SelectRelation("EnvVarsSettings"),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 	data.Project = project
 
-	if len(project.AllSettings) > 0 {
-		data.ExistingSettings = project.AllSettings[0]
+	if len(project.EnvVarsSettings) > 0 {
+		data.ExistingSettings = project.EnvVarsSettings[0]
 	}
 
 	return nil

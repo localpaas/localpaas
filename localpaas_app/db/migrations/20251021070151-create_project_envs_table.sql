@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS project_envs
     name          VARCHAR(100) NOT NULL,
     project_id    VARCHAR(26) NOT NULL,
     display_order INT2 NOT NULL,
+    status        VARCHAR(100) NOT NULL,
 
     created_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by   VARCHAR(26) NOT NULL,

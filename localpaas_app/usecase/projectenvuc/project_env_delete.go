@@ -1,4 +1,4 @@
-package projectuc
+package projectenvuc
 
 import (
 	"context"
@@ -9,15 +9,16 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc/projectdto"
+	"github.com/localpaas/localpaas/localpaas_app/service/projectservice"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/projectenvuc/projectenvdto"
 	"github.com/localpaas/localpaas/pkg/timeutil"
 )
 
-func (uc *ProjectUC) DeleteProjectEnv(
+func (uc *ProjectEnvUC) DeleteProjectEnv(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *projectdto.DeleteProjectEnvReq,
-) (*projectdto.DeleteProjectEnvResp, error) {
+	req *projectenvdto.DeleteProjectEnvReq,
+) (*projectenvdto.DeleteProjectEnvResp, error) {
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
 		envData := &deleteProjectEnvData{}
 		err := uc.loadProjectEnvDataForDelete(ctx, db, req, envData)
@@ -25,18 +26,18 @@ func (uc *ProjectUC) DeleteProjectEnv(
 			return apperrors.Wrap(err)
 		}
 
-		persistingData := &persistingProjectData{}
+		persistingData := &projectservice.PersistingProjectData{}
 		uc.prepareDeletingProjectEnv(envData, persistingData)
 
 		// TODO: delete all apps in the deleted env
 
-		return uc.persistData(ctx, db, persistingData)
+		return uc.projectService.PersistProjectData(ctx, db, persistingData)
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &projectdto.DeleteProjectEnvResp{}, nil
+	return &projectenvdto.DeleteProjectEnvResp{}, nil
 }
 
 type deleteProjectEnvData struct {
@@ -45,10 +46,10 @@ type deleteProjectEnvData struct {
 	UpdatingOrderEnvs  []*entity.ProjectEnv
 }
 
-func (uc *ProjectUC) loadProjectEnvDataForDelete(
+func (uc *ProjectEnvUC) loadProjectEnvDataForDelete(
 	ctx context.Context,
 	db database.IDB,
-	req *projectdto.DeleteProjectEnvReq,
+	req *projectenvdto.DeleteProjectEnvReq,
 	data *deleteProjectEnvData,
 ) error {
 	// Loads and checks target project
@@ -76,9 +77,9 @@ func (uc *ProjectUC) loadProjectEnvDataForDelete(
 	return nil
 }
 
-func (uc *ProjectUC) prepareDeletingProjectEnv(
+func (uc *ProjectEnvUC) prepareDeletingProjectEnv(
 	envData *deleteProjectEnvData,
-	persistingData *persistingProjectData,
+	persistingData *projectservice.PersistingProjectData,
 ) {
 	timeNow := timeutil.NowUTC()
 

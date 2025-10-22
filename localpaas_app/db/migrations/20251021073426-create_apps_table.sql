@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS apps
     id             VARCHAR(26) PRIMARY KEY,
     name           VARCHAR(100) NOT NULL,
     photo          VARCHAR(255) NULL,
-    data           JSONB NOT NULL DEFAULT '{}',
     project_id     VARCHAR(26) NOT NULL,
     project_env_id VARCHAR(26) NULL,
     status         VARCHAR(100) NOT NULL,

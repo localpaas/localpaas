@@ -1,4 +1,4 @@
-package projectdto
+package projectenvdto
 
 import (
 	vld "github.com/tiendc/go-validator"
@@ -7,23 +7,25 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 )
 
-type DeleteProjectEnvReq struct {
-	ProjectID    string `json:"-"`
-	ProjectEnvID string `json:"-"`
+type UpdateProjectEnvEnvVarsReq struct {
+	ProjectID    string     `json:"-"`
+	ProjectEnvID string     `json:"-"`
+	EnvVars      [][]string `json:"envVars"`
 }
 
-func NewDeleteProjectEnvReq() *DeleteProjectEnvReq {
-	return &DeleteProjectEnvReq{}
+func NewUpdateProjectEnvEnvVarsReq() *UpdateProjectEnvEnvVarsReq {
+	return &UpdateProjectEnvEnvVarsReq{}
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *DeleteProjectEnvReq) Validate() apperrors.ValidationErrors {
+func (req *UpdateProjectEnvEnvVarsReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, basedto.ValidateID(&req.ProjectID, true, "projectId")...)
 	validators = append(validators, basedto.ValidateID(&req.ProjectEnvID, true, "projectEnvId")...)
+	// TODO: add validation for req.EnvVars
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type DeleteProjectEnvResp struct {
+type UpdateProjectEnvEnvVarsResp struct {
 	Meta *basedto.BaseMeta `json:"meta"`
 }

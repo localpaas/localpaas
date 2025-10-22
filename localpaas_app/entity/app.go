@@ -9,7 +9,7 @@ import (
 var (
 	AppUpsertingConflictCols = []string{"id"}
 	AppUpsertingUpdateCols   = []string{"name", "photo", "project_id", "project_env_id",
-		"data", "status", "updated_at", "updated_by", "deleted_at"}
+		"status", "updated_at", "updated_by", "deleted_at"}
 )
 
 type App struct {
@@ -18,7 +18,6 @@ type App struct {
 	Photo        string `bun:",nullzero"`
 	ProjectID    string
 	ProjectEnvID string
-	Data         []byte `bun:",nullzero"`
 	Status       base.AppStatus
 
 	CreatedAt time.Time `bun:",default:current_timestamp"`
@@ -27,20 +26,45 @@ type App struct {
 	UpdatedBy string
 	DeletedAt time.Time `bun:",soft_delete,nullzero"`
 
-	Project       *Project    `bun:"rel:has-one,join:project_id=id"`
-	ProjectEnv    *ProjectEnv `bun:"rel:has-one,join:project_env_id=id"`
-	Settings      []*Setting  `bun:"rel:has-many,join:id=target_id,join:type=target_type,polymorphic:app"`
-	Tags          []*AppTag   `bun:"rel:has-many,join:id=app_id"`
-	CreatedByUser *User       `bun:"rel:has-one,join:created_by=id"`
-	UpdatedByUser *User       `bun:"rel:has-one,join:updated_by=id"`
+	Project         *Project    `bun:"rel:has-one,join:project_id=id"`
+	ProjectEnv      *ProjectEnv `bun:"rel:has-one,join:project_env_id=id"`
+	MainSettings    []*Setting  `bun:"rel:has-many,join:id=target_id,join:type=target_type,polymorphic:app"`
+	EnvVarsSettings []*Setting  `bun:"rel:has-many,join:id=target_id,join:type=target_type,polymorphic:env-var"`
+	Tags            []*AppTag   `bun:"rel:has-many,join:id=app_id"`
+	CreatedByUser   *User       `bun:"rel:has-one,join:created_by=id"`
+	UpdatedByUser   *User       `bun:"rel:has-one,join:updated_by=id"`
 }
 
 // GetID implements IDEntity interface
-func (p *App) GetID() string {
-	return p.ID
+func (app *App) GetID() string {
+	return app.ID
 }
 
 // GetName implements NamedEntity interface
-func (p *App) GetName() string {
-	return p.Name
+func (app *App) GetName() string {
+	return app.Name
+}
+
+type AppSettings struct {
+	Test string `json:"test"`
+}
+
+func (app *App) GetMainSettings() (*AppSettings, error) {
+	if len(app.MainSettings) > 0 {
+		res := &AppSettings{}
+		return res, app.MainSettings[0].parseData(res)
+	}
+	return nil, nil
+}
+
+type AppEnvVars struct {
+	Data [][]string `json:"data"`
+}
+
+func (app *App) GetEnvVars() (*AppEnvVars, error) {
+	if len(app.EnvVarsSettings) > 0 {
+		res := &AppEnvVars{}
+		return res, app.EnvVarsSettings[0].parseData(res)
+	}
+	return nil, nil
 }

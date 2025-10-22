@@ -36,6 +36,17 @@ func (s *Setting) GetID() string {
 	return s.ID
 }
 
+func (s *Setting) parseData(structPtr any) error {
+	if s == nil || s.Data == "" {
+		return nil
+	}
+	err := json.Unmarshal(reflectutil.UnsafeStrToBytes(s.Data), structPtr)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
 func (s *Setting) SetData(data any) error {
 	b, err := json.Marshal(data)
 	if err != nil {

@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc/projectdto"
@@ -16,16 +15,13 @@ func (uc *ProjectUC) GetProjectSettings(
 	req *projectdto.GetProjectSettingsReq,
 ) (*projectdto.GetProjectSettingsResp, error) {
 	project, err := uc.projectRepo.GetByID(ctx, uc.db, req.ProjectID,
-		bunex.SelectRelation("AllSettings",
-			// Filter by `project target`
-			bunex.SelectWhere("setting.target_type = ?", base.SettingTargetProject),
-		),
+		bunex.SelectRelation("MainSettings"),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	settings, err := project.GetSettings()
+	settings, err := project.GetMainSettings()
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

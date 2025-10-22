@@ -2,6 +2,9 @@ package repository
 
 import (
 	"context"
+	"database/sql"
+	"errors"
+	"strings"
 
 	"github.com/uptrace/bun"
 
@@ -13,6 +16,10 @@ import (
 )
 
 type ProjectEnvRepo interface {
+	GetByID(ctx context.Context, db database.IDB, id string,
+		opts ...bunex.SelectQueryOption) (*entity.ProjectEnv, error)
+	GetByName(ctx context.Context, db database.IDB, name string,
+		opts ...bunex.SelectQueryOption) (*entity.ProjectEnv, error)
 	List(ctx context.Context, db database.IDB, paging *basedto.Paging,
 		opts ...bunex.SelectQueryOption) ([]*entity.ProjectEnv, *basedto.PagingMeta, error)
 
@@ -30,6 +37,38 @@ type projectEnvRepo struct {
 
 func NewProjectEnvRepo() ProjectEnvRepo {
 	return &projectEnvRepo{}
+}
+
+func (repo *projectEnvRepo) GetByID(ctx context.Context, db database.IDB, id string,
+	opts ...bunex.SelectQueryOption) (*entity.ProjectEnv, error) {
+	projectEnv := &entity.ProjectEnv{}
+	query := db.NewSelect().Model(projectEnv).Where("project_env.id = ?", id)
+	query = bunex.ApplySelect(query, opts...)
+
+	err := query.Scan(ctx)
+	if projectEnv == nil || errors.Is(err, sql.ErrNoRows) {
+		return nil, apperrors.NewNotFound("ProjectEnv").WithCause(err)
+	}
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return projectEnv, nil
+}
+
+func (repo *projectEnvRepo) GetByName(ctx context.Context, db database.IDB, name string,
+	opts ...bunex.SelectQueryOption) (*entity.ProjectEnv, error) {
+	projectEnv := &entity.ProjectEnv{}
+	query := db.NewSelect().Model(projectEnv).Where("LOWER(project_env.name) = ?", strings.ToLower(name))
+	query = bunex.ApplySelect(query, opts...)
+
+	err := query.Scan(ctx)
+	if projectEnv == nil || errors.Is(err, sql.ErrNoRows) {
+		return nil, apperrors.NewNotFound("ProjectEnv").WithCause(err)
+	}
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return projectEnv, nil
 }
 
 func (repo *projectEnvRepo) List(ctx context.Context, db database.IDB, paging *basedto.Paging,

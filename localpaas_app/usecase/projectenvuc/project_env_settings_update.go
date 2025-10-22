@@ -1,4 +1,4 @@
-package projectuc
+package projectenvuc
 
 import (
 	"context"
@@ -13,78 +13,82 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc/projectdto"
+	"github.com/localpaas/localpaas/localpaas_app/service/projectservice"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/projectenvuc/projectenvdto"
 	"github.com/localpaas/localpaas/pkg/timeutil"
 	"github.com/localpaas/localpaas/pkg/ulid"
 )
 
-func (uc *ProjectUC) UpdateProjectSettings(
+func (uc *ProjectEnvUC) UpdateProjectEnvSettings(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *projectdto.UpdateProjectSettingsReq,
-) (*projectdto.UpdateProjectSettingsResp, error) {
+	req *projectenvdto.UpdateProjectEnvSettingsReq,
+) (*projectenvdto.UpdateProjectEnvSettingsResp, error) {
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
-		settingsData := &updateProjectSettingsData{}
-		err := uc.loadProjectSettingsDataForUpdate(ctx, db, req, settingsData)
+		settingsData := &updateProjectEnvSettingsData{}
+		err := uc.loadProjectEnvSettingsDataForUpdate(ctx, db, req, settingsData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
 
-		persistingData := &persistingProjectData{}
-		err = uc.preparePersistingProjectSettings(auth, req, settingsData, persistingData)
+		persistingData := &projectservice.PersistingProjectData{}
+		err = uc.preparePersistingProjectEnvSettings(auth, req, settingsData, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
 
-		return uc.persistData(ctx, db, persistingData)
+		return uc.projectService.PersistProjectData(ctx, db, persistingData)
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &projectdto.UpdateProjectSettingsResp{}, nil
+	return &projectenvdto.UpdateProjectEnvSettingsResp{}, nil
 }
 
-type updateProjectSettingsData struct {
-	Project          *entity.Project
+type updateProjectEnvSettingsData struct {
+	ProjectEnv       *entity.ProjectEnv
 	ExistingSettings *entity.Setting
 }
 
-func (uc *ProjectUC) loadProjectSettingsDataForUpdate(
+func (uc *ProjectEnvUC) loadProjectEnvSettingsDataForUpdate(
 	ctx context.Context,
 	db database.IDB,
-	req *projectdto.UpdateProjectSettingsReq,
-	data *updateProjectSettingsData,
+	req *projectenvdto.UpdateProjectEnvSettingsReq,
+	data *updateProjectEnvSettingsData,
 ) error {
-	project, err := uc.projectRepo.GetByID(ctx, db, req.ProjectID,
+	projectEnv, err := uc.projectEnvRepo.GetByID(ctx, db, req.ProjectEnvID,
 		bunex.SelectRelation("MainSettings"),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	data.Project = project
+	if projectEnv.ProjectID != req.ProjectID {
+		return apperrors.New(apperrors.ErrUnauthorized)
+	}
+	data.ProjectEnv = projectEnv
 
-	if len(project.MainSettings) > 0 {
-		data.ExistingSettings = project.MainSettings[0]
+	if len(projectEnv.MainSettings) > 0 {
+		data.ExistingSettings = projectEnv.MainSettings[0]
 	}
 
 	return nil
 }
 
-func (uc *ProjectUC) preparePersistingProjectSettings(
+func (uc *ProjectEnvUC) preparePersistingProjectEnvSettings(
 	auth *basedto.Auth,
-	req *projectdto.UpdateProjectSettingsReq,
-	data *updateProjectSettingsData,
-	persistingData *persistingProjectData,
+	req *projectenvdto.UpdateProjectEnvSettingsReq,
+	data *updateProjectEnvSettingsData,
+	persistingData *projectservice.PersistingProjectData,
 ) error {
 	timeNow := timeutil.NowUTC()
-	project := data.Project
+	projectEnv := data.ProjectEnv
 	settings := data.ExistingSettings
 	if settings == nil {
 		settings = &entity.Setting{
 			ID:         gofn.Must(ulid.NewStringULID()),
-			TargetType: base.SettingTargetProject,
-			TargetID:   project.ID,
+			TargetType: base.SettingTargetProjectEnv,
+			TargetID:   projectEnv.ID,
 			CreatedAt:  timeNow,
 			CreatedBy:  auth.User.ID,
 		}
@@ -93,7 +97,7 @@ func (uc *ProjectUC) preparePersistingProjectSettings(
 	settings.UpdatedAt = timeNow
 	settings.UpdatedBy = auth.User.ID
 
-	var settingsData *entity.ProjectSettings
+	var settingsData *entity.ProjectEnvSettings
 
 	// Do a copy fields to fields
 	err := copier.Copy(&settingsData, req.Settings)

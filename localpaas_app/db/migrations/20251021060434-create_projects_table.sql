@@ -5,7 +5,6 @@ CREATE TABLE IF NOT EXISTS projects
     name         VARCHAR(100) NOT NULL,
     photo        VARCHAR(255) NULL,
     status       VARCHAR(100) NOT NULL,
-    data         JSONB NOT NULL DEFAULT '{}',
 
     created_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by   VARCHAR(26) NOT NULL,

@@ -8,6 +8,7 @@ import (
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
@@ -140,6 +141,7 @@ func (uc *ProjectUC) preparePersistingProjectEnvs(
 				ID:           gofn.Must(ulid.NewStringULID()),
 				ProjectID:    project.ID,
 				Name:         env,
+				Status:       base.ProjectStatusActive,
 				DisplayOrder: displayOrder,
 				CreatedAt:    timeNow,
 				CreatedBy:    auth.User.ID,

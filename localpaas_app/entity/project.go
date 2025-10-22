@@ -16,7 +16,6 @@ type Project struct {
 	ID     string `bun:",pk"`
 	Name   string
 	Photo  string `bun:",nullzero"`
-	Data   []byte `bun:",nullzero"`
 	Status base.ProjectStatus
 
 	CreatedAt time.Time `bun:",default:current_timestamp"`
@@ -25,12 +24,12 @@ type Project struct {
 	UpdatedBy string
 	DeletedAt time.Time `bun:",soft_delete,nullzero"`
 
-	AllSettings   []*Setting    `bun:"rel:has-many,join:id=target_id"`
-	Settings      []*Setting    `bun:"rel:has-many,join:id=target_id,join:type=target_type,polymorphic:project"`
-	Envs          []*ProjectEnv `bun:"rel:has-many,join:id=project_id"`
-	Tags          []*ProjectTag `bun:"rel:has-many,join:id=project_id"`
-	CreatedByUser *User         `bun:"rel:has-one,join:created_by=id"`
-	UpdatedByUser *User         `bun:"rel:has-one,join:updated_by=id"`
+	EnvVarsSettings []*Setting    `bun:"rel:has-many,join:id=target_id,join:type=target_type,polymorphic:env-var"`
+	MainSettings    []*Setting    `bun:"rel:has-many,join:id=target_id,join:type=target_type,polymorphic:project"`
+	Envs            []*ProjectEnv `bun:"rel:has-many,join:id=project_id"`
+	Tags            []*ProjectTag `bun:"rel:has-many,join:id=project_id"`
+	CreatedByUser   *User         `bun:"rel:has-one,join:created_by=id"`
+	UpdatedByUser   *User         `bun:"rel:has-one,join:updated_by=id"`
 }
 
 // GetID implements IDEntity interface
@@ -41,4 +40,28 @@ func (p *Project) GetID() string {
 // GetName implements NamedEntity interface
 func (p *Project) GetName() string {
 	return p.Name
+}
+
+type ProjectSettings struct {
+	Test string `json:"test"`
+}
+
+func (p *Project) GetMainSettings() (*ProjectSettings, error) {
+	if len(p.MainSettings) > 0 {
+		res := &ProjectSettings{}
+		return res, p.MainSettings[0].parseData(res)
+	}
+	return nil, nil
+}
+
+type ProjectEnvVars struct {
+	Data [][]string `json:"data"`
+}
+
+func (p *Project) GetEnvVars() (*ProjectEnvVars, error) {
+	if len(p.EnvVarsSettings) > 0 {
+		res := &ProjectEnvVars{}
+		return res, p.EnvVarsSettings[0].parseData(res)
+	}
+	return nil, nil
 }
