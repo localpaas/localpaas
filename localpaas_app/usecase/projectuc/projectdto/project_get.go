@@ -35,6 +35,7 @@ type ProjectResp struct {
 	Name   string             `json:"name"`
 	Status base.ProjectStatus `json:"status"`
 	Photo  string             `json:"photo"`
+	Note   string             `json:"note"`
 	Tags   []string           `json:"tags" copy:"-"` // manual copy ProjectTag -> string
 	Apps   []*ProjectAppResp  `json:"apps"`
 

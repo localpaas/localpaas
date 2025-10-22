@@ -8,7 +8,7 @@ import (
 
 var (
 	ProjectUpsertingConflictCols = []string{"id"}
-	ProjectUpsertingUpdateCols   = []string{"name", "photo", "status",
+	ProjectUpsertingUpdateCols   = []string{"name", "photo", "status", "note",
 		"updated_at", "updated_by", "deleted_at"}
 )
 
@@ -17,6 +17,7 @@ type Project struct {
 	Name   string
 	Photo  string `bun:",nullzero"`
 	Status base.ProjectStatus
+	Note   string `bun:",nullzero"`
 
 	CreatedAt time.Time `bun:",default:current_timestamp"`
 	CreatedBy string

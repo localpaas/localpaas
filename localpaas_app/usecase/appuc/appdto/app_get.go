@@ -35,6 +35,7 @@ type AppResp struct {
 	Name   string         `json:"name"`
 	Status base.AppStatus `json:"status"`
 	Photo  string         `json:"photo"`
+	Note   string         `json:"note"`
 	Tags   []string       `json:"tags" copy:"-"` // manual copy AppTag -> string
 
 	CreatedAt time.Time `json:"createdAt"`

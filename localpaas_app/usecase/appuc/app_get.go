@@ -15,7 +15,7 @@ func (uc *AppUC) GetApp(
 	req *appdto.GetAppReq,
 ) (*appdto.GetAppResp, error) {
 	app, err := uc.appRepo.GetByID(ctx, uc.db, req.ID,
-		bunex.SelectRelation("Tags"),
+		bunex.SelectRelation("Tags", bunex.SelectOrder("display_order")),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)

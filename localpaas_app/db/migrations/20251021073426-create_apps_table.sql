@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS apps
     photo        VARCHAR(255) NULL,
     project_id   VARCHAR(26) NOT NULL,
     status       VARCHAR(100) NOT NULL,
+    note         VARCHAR(10000) NULL,
 
     created_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by   VARCHAR(26) NOT NULL,

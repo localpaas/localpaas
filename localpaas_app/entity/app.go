@@ -8,7 +8,7 @@ import (
 
 var (
 	AppUpsertingConflictCols = []string{"id"}
-	AppUpsertingUpdateCols   = []string{"name", "photo", "project_id", "status",
+	AppUpsertingUpdateCols   = []string{"name", "photo", "project_id", "status", "note",
 		"updated_at", "updated_by", "deleted_at"}
 )
 
@@ -18,6 +18,7 @@ type App struct {
 	Photo     string `bun:",nullzero"`
 	ProjectID string
 	Status    base.AppStatus
+	Note      string `bun:",nullzero"`
 
 	CreatedAt time.Time `bun:",default:current_timestamp"`
 	CreatedBy string

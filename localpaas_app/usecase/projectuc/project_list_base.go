@@ -25,7 +25,10 @@ func (uc *ProjectUC) ListProjectBase(
 	if req.Search != "" {
 		keyword := bunex.MakeLikeOpStr(req.Search, true)
 		listOpts = append(listOpts,
-			bunex.SelectWhere("project.name ILIKE ?", keyword),
+			bunex.SelectWhereGroup(
+				bunex.SelectWhere("project.name ILIKE ?", keyword),
+				bunex.SelectWhereOr("project.note ILIKE ?", keyword),
+			),
 		)
 	}
 

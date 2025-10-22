@@ -26,6 +26,7 @@ func (uc *ProjectUC) ListProject(
 		listOpts = append(listOpts,
 			bunex.SelectWhereGroup(
 				bunex.SelectWhere("project.name ILIKE ?", keyword),
+				bunex.SelectWhereOr("project.note ILIKE ?", keyword),
 			),
 		)
 	}

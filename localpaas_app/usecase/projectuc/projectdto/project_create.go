@@ -16,6 +16,7 @@ type ProjectBaseReq struct {
 	Name   string             `json:"name"`
 	Status base.ProjectStatus `json:"status"`
 	Tags   []string           `json:"tags"`
+	Note   string             `json:"note"`
 }
 
 func NewCreateProjectReq() *CreateProjectReq {

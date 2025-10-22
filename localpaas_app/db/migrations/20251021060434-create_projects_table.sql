@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS projects
     name         VARCHAR(100) NOT NULL,
     photo        VARCHAR(255) NULL,
     status       VARCHAR(100) NOT NULL,
+    note         VARCHAR(10000) NULL,
 
     created_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by   VARCHAR(26) NOT NULL,

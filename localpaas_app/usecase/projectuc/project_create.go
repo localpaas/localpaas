@@ -96,6 +96,7 @@ func (uc *ProjectUC) preparePersistingProjectBase(
 ) {
 	project.Name = req.Name
 	project.Status = req.Status
+	project.Note = req.Note
 	project.UpdatedAt = timeNow
 	project.UpdatedBy = auth.User.ID
 
