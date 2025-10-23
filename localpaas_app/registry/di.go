@@ -87,7 +87,6 @@ var Provides = []any{
 	repository.NewACLPermissionRepo,
 	// Repo: Setting
 	repository.NewSettingRepo,
-	repository.NewS3StorageRepo,
 	// Others
 	repository.NewLoginTrustedDeviceRepo,
 

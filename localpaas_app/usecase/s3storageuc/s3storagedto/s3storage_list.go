@@ -30,6 +30,6 @@ type ListS3StorageResp struct {
 	Data []*S3StorageResp `json:"data"`
 }
 
-func TransformS3Storages(s3Storages []*entity.S3Storage) ([]*S3StorageResp, error) {
-	return basedto.TransformObjectSlice(s3Storages, TransformS3Storage) //nolint:wrapcheck
+func TransformS3Storages(settings []*entity.Setting) ([]*S3StorageResp, error) {
+	return basedto.TransformObjectSlice(settings, TransformS3Storage) //nolint:wrapcheck
 }

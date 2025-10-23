@@ -38,7 +38,7 @@ func (uc *S3StorageUC) DeleteS3Storage(
 }
 
 type deleteS3StorageData struct {
-	S3Storage *entity.S3Storage
+	Setting *entity.Setting
 }
 
 func (uc *S3StorageUC) loadS3StorageDataForDelete(
@@ -47,13 +47,13 @@ func (uc *S3StorageUC) loadS3StorageDataForDelete(
 	req *s3storagedto.DeleteS3StorageReq,
 	data *deleteS3StorageData,
 ) error {
-	s3Storage, err := uc.s3StorageRepo.GetByID(ctx, db, req.ID,
-		bunex.SelectFor("UPDATE OF s3_storage"),
+	setting, err := uc.settingRepo.GetByID(ctx, db, req.ID,
+		bunex.SelectFor("UPDATE OF setting"),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	data.S3Storage = s3Storage
+	data.Setting = setting
 
 	return nil
 }
@@ -62,7 +62,7 @@ func (uc *S3StorageUC) prepareDeletingS3Storage(
 	data *deleteS3StorageData,
 	persistingData *persistingS3StorageData,
 ) {
-	s3Storage := data.S3Storage
-	s3Storage.DeletedAt = timeutil.NowUTC()
-	persistingData.UpsertingS3Storages = append(persistingData.UpsertingS3Storages, s3Storage)
+	setting := data.Setting
+	setting.DeletedAt = timeutil.NowUTC()
+	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 }

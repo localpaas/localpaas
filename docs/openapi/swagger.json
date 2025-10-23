@@ -3518,7 +3518,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "accessKeyId", "bucket", "id", "name", "region" ],
+        "required" : [ "id", "name" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.S3StorageProjectAccessReq" : {
@@ -3582,6 +3582,9 @@
             "type" : "array"
           },
           "region" : {
+            "type" : "string"
+          },
+          "secretAccessKey" : {
             "type" : "string"
           }
         },

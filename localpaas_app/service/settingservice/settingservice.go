@@ -14,18 +14,15 @@ type SettingService interface {
 
 func NewSettingService(
 	settingRepo repository.SettingRepo,
-	s3StorageRepo repository.S3StorageRepo,
 	permissionManager permission.Manager,
 ) SettingService {
 	return &settingService{
 		settingRepo:       settingRepo,
-		s3StorageRepo:     s3StorageRepo,
 		permissionManager: permissionManager,
 	}
 }
 
 type settingService struct {
 	settingRepo       repository.SettingRepo
-	s3StorageRepo     repository.S3StorageRepo
 	permissionManager permission.Manager
 }

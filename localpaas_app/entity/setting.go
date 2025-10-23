@@ -25,6 +25,8 @@ type Setting struct {
 	CreatedAt time.Time `bun:",default:current_timestamp"`
 	UpdatedAt time.Time `bun:",default:current_timestamp"`
 	DeletedAt time.Time `bun:",soft_delete,nullzero"`
+
+	ObjectAccesses []*ACLPermission `bun:"rel:has-many,join:id=resource_id"`
 }
 
 // GetID implements IDEntity interface

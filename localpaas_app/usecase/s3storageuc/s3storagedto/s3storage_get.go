@@ -33,6 +33,7 @@ type S3StorageResp struct {
 	ID              string                        `json:"id"`
 	Name            string                        `json:"name"`
 	AccessKeyID     string                        `json:"accessKeyId"`
+	SecretAccessKey string                        `json:"secretAccessKey,omitempty"`
 	Region          string                        `json:"region"`
 	Bucket          string                        `json:"bucket"`
 	ProjectAccesses []*S3StorageProjectAccessResp `json:"projectAccesses"`
@@ -41,9 +42,9 @@ type S3StorageResp struct {
 type S3StorageBaseResp struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
-	AccessKeyID string `json:"accessKeyId"`
-	Region      string `json:"region"`
-	Bucket      string `json:"bucket"`
+	AccessKeyID string `json:"accessKeyId,omitempty"`
+	Region      string `json:"region,omitempty"`
+	Bucket      string `json:"bucket,omitempty"`
 }
 
 type S3StorageProjectAccessResp struct {
@@ -59,11 +60,18 @@ type S3StorageAppAccessResp struct {
 	Allowed bool   `json:"allowed"`
 }
 
-func TransformS3Storage(s3Storage *entity.S3Storage) (resp *S3StorageResp, err error) {
-	if err = copier.Copy(&resp, &s3Storage); err != nil {
+func TransformS3Storage(setting *entity.Setting) (resp *S3StorageResp, err error) {
+	if err = copier.Copy(&resp, &setting); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	resp.ProjectAccesses, err = TransformS3StorageObjectAccesses(s3Storage.ObjectAccesses)
+	s3Config, err := setting.ParseS3Storage(false)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	if err = copier.Copy(&resp, &s3Config); err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	resp.ProjectAccesses, err = TransformS3StorageObjectAccesses(setting.ObjectAccesses)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -101,13 +109,13 @@ func TransformS3StorageObjectAccesses(accesses []*entity.ACLPermission) (
 	return resp, nil
 }
 
-func TransformS3StorageBase(s3Storage *entity.S3Storage) (resp *S3StorageBaseResp, err error) {
-	if err = copier.Copy(&resp, &s3Storage); err != nil {
+func TransformS3StorageBase(setting *entity.Setting) (resp *S3StorageBaseResp, err error) {
+	if err = copier.Copy(&resp, &setting); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 	return resp, nil
 }
 
-func TransformS3StoragesBase(s3Storages []*entity.S3Storage) ([]*S3StorageBaseResp, error) {
-	return basedto.TransformObjectSlice(s3Storages, TransformS3StorageBase) //nolint:wrapcheck
+func TransformS3StoragesBase(settings []*entity.Setting) ([]*S3StorageBaseResp, error) {
+	return basedto.TransformObjectSlice(settings, TransformS3StorageBase) //nolint:wrapcheck
 }

@@ -9,10 +9,9 @@ import (
 )
 
 type PersistingSettingData struct {
-	UpsertingSettings   []*entity.Setting
-	UpsertingS3Storages []*entity.S3Storage
-	UpsertingAccesses   []*entity.ACLPermission
-	DeletingAccesses    []*entity.ACLPermission
+	UpsertingSettings []*entity.Setting
+	UpsertingAccesses []*entity.ACLPermission
+	DeletingAccesses  []*entity.ACLPermission
 }
 
 func (s *settingService) PersistSettingData(ctx context.Context, db database.IDB,
@@ -27,13 +26,6 @@ func (s *settingService) PersistSettingData(ctx context.Context, db database.IDB
 	// Settings
 	err = s.settingRepo.UpsertMulti(ctx, db, persistingData.UpsertingSettings,
 		entity.SettingUpsertingConflictCols, entity.SettingUpsertingUpdateCols)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	// S3 storages
-	err = s.s3StorageRepo.UpsertMulti(ctx, db, persistingData.UpsertingS3Storages,
-		entity.S3StorageUpsertingConflictCols, entity.S3StorageUpsertingUpdateCols)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

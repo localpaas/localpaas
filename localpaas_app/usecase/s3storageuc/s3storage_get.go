@@ -15,7 +15,7 @@ func (uc *S3StorageUC) GetS3Storage(
 	auth *basedto.Auth,
 	req *s3storagedto.GetS3StorageReq,
 ) (*s3storagedto.GetS3StorageResp, error) {
-	s3Storage, err := uc.s3StorageRepo.GetByID(ctx, uc.db, req.ID,
+	setting, err := uc.settingRepo.GetByID(ctx, uc.db, req.ID,
 		bunex.SelectRelation("ObjectAccesses",
 			bunex.SelectWhere("acl_permission.subject_type IN (?)", bunex.In([]base.SubjectType{
 				base.SubjectTypeProject, base.SubjectTypeApp,
@@ -28,7 +28,7 @@ func (uc *S3StorageUC) GetS3Storage(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := s3storagedto.TransformS3Storage(s3Storage)
+	resp, err := s3storagedto.TransformS3Storage(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

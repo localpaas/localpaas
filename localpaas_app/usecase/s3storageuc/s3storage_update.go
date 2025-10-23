@@ -12,7 +12,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/s3storageuc/s3storagedto"
-	"github.com/localpaas/localpaas/pkg/reflectutil"
 	"github.com/localpaas/localpaas/pkg/timeutil"
 )
 
@@ -29,7 +28,10 @@ func (uc *S3StorageUC) UpdateS3Storage(
 		}
 
 		persistingData := &persistingS3StorageData{}
-		uc.prepareUpdatingS3Storage(req.S3StoragePartialReq, s3storageData, persistingData)
+		err = uc.prepareUpdatingS3Storage(req.S3StoragePartialReq, s3storageData, persistingData)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 
 		return uc.persistData(ctx, db, persistingData)
 	})
@@ -41,7 +43,7 @@ func (uc *S3StorageUC) UpdateS3Storage(
 }
 
 type updateS3StorageData struct {
-	S3Storage *entity.S3Storage
+	Setting *entity.Setting
 }
 
 func (uc *S3StorageUC) loadS3StorageDataForUpdate(
@@ -50,8 +52,8 @@ func (uc *S3StorageUC) loadS3StorageDataForUpdate(
 	req *s3storagedto.UpdateS3StorageReq,
 	data *updateS3StorageData,
 ) error {
-	s3Storage, err := uc.s3StorageRepo.GetByID(ctx, db, req.ID,
-		bunex.SelectFor("UPDATE OF s3_storage"),
+	setting, err := uc.settingRepo.GetByID(ctx, db, req.ID,
+		bunex.SelectFor("UPDATE OF setting"),
 		bunex.SelectRelation("ObjectAccesses",
 			bunex.SelectWhere("acl_permission.subject_type IN (?)", bunex.In([]base.SubjectType{
 				base.SubjectTypeProject, base.SubjectTypeApp,
@@ -61,14 +63,14 @@ func (uc *S3StorageUC) loadS3StorageDataForUpdate(
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	data.S3Storage = s3Storage
+	data.Setting = setting
 
 	// If name changes, validate the new one
-	if req.Name != nil && !strings.EqualFold(s3Storage.Name, *req.Name) {
-		conflictS3Storage, _ := uc.s3StorageRepo.GetByName(ctx, db, *req.Name)
-		if conflictS3Storage != nil {
+	if req.Name != nil && !strings.EqualFold(setting.Name, *req.Name) {
+		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeS3Storage, *req.Name)
+		if conflictSetting != nil {
 			return apperrors.NewAlreadyExist("S3Storage").
-				WithMsgLog("s3 storage '%s' already exists", *req.Name)
+				WithMsgLog("s3 storage '%s' already exists", conflictSetting.Name)
 		}
 	}
 
@@ -79,32 +81,47 @@ func (uc *S3StorageUC) prepareUpdatingS3Storage(
 	req *s3storagedto.S3StoragePartialReq,
 	data *updateS3StorageData,
 	persistingData *persistingS3StorageData,
-) {
+) error {
 	timeNow := timeutil.NowUTC()
-	s3Storage := data.S3Storage
+	setting := data.Setting
 	if req.Name != nil {
-		s3Storage.Name = *req.Name
-	}
-	if req.AccessKeyID != nil {
-		s3Storage.AccessKeyID = *req.AccessKeyID
-	}
-	// TODO: encrypt the data (secret access key)
-	if req.SecretAccessKey != nil {
-		s3Storage.SecretAccessKey = reflectutil.UnsafeStrToBytes(*req.SecretAccessKey)
-	}
-	if req.Region != nil {
-		s3Storage.Region = *req.Region
-	}
-	if req.Bucket != nil {
-		s3Storage.Bucket = *req.Bucket
+		setting.Name = *req.Name
 	}
 
-	persistingData.UpsertingS3Storages = append(persistingData.UpsertingS3Storages, s3Storage)
+	//nolint:nestif
+	if req.AccessKeyID != nil || req.SecretAccessKey != nil || req.Region != nil || req.Bucket != nil {
+		s3Storage, err := setting.ParseS3Storage(false)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+		if req.AccessKeyID != nil {
+			s3Storage.AccessKeyID = *req.AccessKeyID
+		}
+		// TODO: encrypt the data (secret access key)
+		if req.SecretAccessKey != nil {
+			s3Storage.SecretAccessKey = *req.SecretAccessKey
+		}
+		if req.Region != nil {
+			s3Storage.Region = *req.Region
+		}
+		if req.Bucket != nil {
+			s3Storage.Bucket = *req.Bucket
+		}
+
+		err = setting.SetData(s3Storage)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+	}
+
+	setting.UpdatedAt = timeNow
+	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 
 	// Project accesses change
 	if req.ProjectAccesses != nil {
 		// Remove all current items
-		persistingData.DeletingAccesses = append(persistingData.DeletingAccesses, s3Storage.ObjectAccesses...)
-		uc.preparePersistingS3StorageProjects(s3Storage, req.ProjectAccesses, timeNow, persistingData)
+		persistingData.DeletingAccesses = append(persistingData.DeletingAccesses, setting.ObjectAccesses...)
+		uc.preparePersistingS3StorageProjects(setting, req.ProjectAccesses, timeNow, persistingData)
 	}
+	return nil
 }

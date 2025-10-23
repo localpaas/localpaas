@@ -9,20 +9,20 @@ import (
 
 type S3StorageUC struct {
 	db                *database.DB
-	s3StorageRepo     repository.S3StorageRepo
+	settingRepo       repository.SettingRepo
 	permissionManager permission.Manager
 	settingService    settingservice.SettingService
 }
 
 func NewS3StorageUC(
 	db *database.DB,
-	s3StorageRepo repository.S3StorageRepo,
+	settingRepo repository.SettingRepo,
 	permissionManager permission.Manager,
 	settingService settingservice.SettingService,
 ) *S3StorageUC {
 	return &S3StorageUC{
 		db:                db,
-		s3StorageRepo:     s3StorageRepo,
+		settingRepo:       settingRepo,
 		permissionManager: permissionManager,
 		settingService:    settingService,
 	}

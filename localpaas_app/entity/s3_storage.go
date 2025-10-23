@@ -1,37 +1,24 @@
 package entity
 
-import (
-	"time"
-)
-
-var (
-	S3StorageUpsertingConflictCols = []string{"id"}
-	S3StorageUpsertingUpdateCols   = []string{"name", "access_key_id", "secret_access_key", "salt",
-		"region", "bucket", "updated_at", "deleted_at"}
-)
-
 type S3Storage struct {
-	ID              string `bun:",pk"`
-	Name            string
-	AccessKeyID     string
-	SecretAccessKey []byte
-	Salt            []byte
-	Region          string `bun:",nullzero"`
-	Bucket          string `bun:",nullzero"`
-
-	CreatedAt time.Time `bun:",default:current_timestamp"`
-	UpdatedAt time.Time `bun:",default:current_timestamp"`
-	DeletedAt time.Time `bun:",soft_delete,nullzero"`
-
-	ObjectAccesses []*ACLPermission `bun:"rel:has-many,join:id=resource_id"`
+	AccessKeyID     string `json:"accessKeyId"`
+	SecretAccessKey string `json:"secretAccessKey"`
+	Salt            string `json:"salt,omitempty"`
+	Region          string `json:"region,omitempty"`
+	Bucket          string `json:"bucket,omitempty"`
 }
 
-// GetID implements IDEntity interface
-func (p *S3Storage) GetID() string {
-	return p.ID
-}
-
-// GetName implements NamedEntity interface
-func (p *S3Storage) GetName() string {
-	return p.Name
+func (s *Setting) ParseS3Storage(decrypt bool) (*S3Storage, error) {
+	if s != nil && s.Data != "" {
+		res := &S3Storage{}
+		err := s.parseData(res)
+		if err != nil {
+			return nil, err
+		}
+		if decrypt { //nolint
+			// TODO: implement encryption
+		}
+		return res, nil
+	}
+	return nil, nil
 }
