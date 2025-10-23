@@ -11,6 +11,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projecthandler"
 	s3Storagehandler "github.com/localpaas/localpaas/localpaas_app/interface/api/handler/s3storagehandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sshkeyhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/userhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/server"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
@@ -26,6 +27,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/s3storageuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/sshkeyuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc"
 )
 
@@ -57,6 +59,7 @@ var Provides = []any{
 	projecthandler.NewProjectHandler,
 	apphandler.NewAppHandler,
 	s3Storagehandler.NewS3StorageHandler,
+	sshkeyhandler.NewSSHKeyHandler,
 
 	// Use case
 	clusteruc.NewClusterUC,
@@ -65,6 +68,7 @@ var Provides = []any{
 	projectuc.NewProjectUC,
 	appuc.NewAppUC,
 	s3storageuc.NewS3StorageUC,
+	sshkeyuc.NewSSHKeyUC,
 
 	// Service
 	clusterservice.NewClusterService,
@@ -83,7 +87,7 @@ var Provides = []any{
 	// Repo: App
 	repository.NewAppRepo,
 	repository.NewAppTagRepo,
-	// Repo: Role & Permission
+	// Repo: Permission
 	repository.NewACLPermissionRepo,
 	// Repo: Setting
 	repository.NewSettingRepo,

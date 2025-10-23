@@ -1,4 +1,4 @@
-package s3storageuc
+package sshkeyuc
 
 import (
 	"context"
@@ -11,24 +11,24 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/s3storageuc/s3storagedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/sshkeyuc/sshkeydto"
 	"github.com/localpaas/localpaas/pkg/timeutil"
 )
 
-func (uc *S3StorageUC) UpdateS3Storage(
+func (uc *SSHKeyUC) UpdateSSHKey(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *s3storagedto.UpdateS3StorageReq,
-) (*s3storagedto.UpdateS3StorageResp, error) {
+	req *sshkeydto.UpdateSSHKeyReq,
+) (*sshkeydto.UpdateSSHKeyResp, error) {
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
-		s3storageData := &updateS3StorageData{}
-		err := uc.loadS3StorageDataForUpdate(ctx, db, req, s3storageData)
+		sshKeyData := &updateSSHKeyData{}
+		err := uc.loadSSHKeyDataForUpdate(ctx, db, req, sshKeyData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
 
-		persistingData := &persistingS3StorageData{}
-		err = uc.prepareUpdatingS3Storage(req.S3StoragePartialReq, s3storageData, persistingData)
+		persistingData := &persistingSSHKeyData{}
+		err = uc.prepareUpdatingSSHKey(req.SSHKeyPartialReq, sshKeyData, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -39,18 +39,18 @@ func (uc *S3StorageUC) UpdateS3Storage(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &s3storagedto.UpdateS3StorageResp{}, nil
+	return &sshkeydto.UpdateSSHKeyResp{}, nil
 }
 
-type updateS3StorageData struct {
+type updateSSHKeyData struct {
 	Setting *entity.Setting
 }
 
-func (uc *S3StorageUC) loadS3StorageDataForUpdate(
+func (uc *SSHKeyUC) loadSSHKeyDataForUpdate(
 	ctx context.Context,
 	db database.IDB,
-	req *s3storagedto.UpdateS3StorageReq,
-	data *updateS3StorageData,
+	req *sshkeydto.UpdateSSHKeyReq,
+	data *updateSSHKeyData,
 ) error {
 	setting, err := uc.settingRepo.GetByID(ctx, db, req.ID,
 		bunex.SelectFor("UPDATE OF setting"),
@@ -67,20 +67,20 @@ func (uc *S3StorageUC) loadS3StorageDataForUpdate(
 
 	// If name changes, validate the new one
 	if req.Name != nil && !strings.EqualFold(setting.Name, *req.Name) {
-		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeS3Storage, *req.Name)
+		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeSSHKey, *req.Name)
 		if conflictSetting != nil {
-			return apperrors.NewAlreadyExist("S3Storage").
-				WithMsgLog("s3 storage '%s' already exists", conflictSetting.Name)
+			return apperrors.NewAlreadyExist("SSHKey").
+				WithMsgLog("ssh key '%s' already exists", conflictSetting.Name)
 		}
 	}
 
 	return nil
 }
 
-func (uc *S3StorageUC) prepareUpdatingS3Storage(
-	req *s3storagedto.S3StoragePartialReq,
-	data *updateS3StorageData,
-	persistingData *persistingS3StorageData,
+func (uc *SSHKeyUC) prepareUpdatingSSHKey(
+	req *sshkeydto.SSHKeyPartialReq,
+	data *updateSSHKeyData,
+	persistingData *persistingSSHKeyData,
 ) error {
 	timeNow := timeutil.NowUTC()
 	setting := data.Setting
@@ -89,29 +89,19 @@ func (uc *S3StorageUC) prepareUpdatingS3Storage(
 	}
 
 	//nolint:nestif
-	if req.AccessKeyID != nil || req.SecretAccessKey != nil || req.Region != nil || req.Bucket != nil {
-		s3Storage, err := setting.ParseS3Storage(false)
+	if req.PrivateKey != nil {
+		sshKey, err := setting.ParseSSHKey(false)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
-		if s3Storage == nil {
-			s3Storage = &entity.S3Storage{}
-		}
-		if req.AccessKeyID != nil {
-			s3Storage.AccessKeyID = *req.AccessKeyID
+		if sshKey == nil {
+			sshKey = &entity.SSHKey{}
 		}
 		// TODO: encrypt the data (secret access key)
-		if req.SecretAccessKey != nil {
-			s3Storage.SecretAccessKey = *req.SecretAccessKey
+		if req.PrivateKey != nil {
+			sshKey.PrivateKey = *req.PrivateKey
 		}
-		if req.Region != nil {
-			s3Storage.Region = *req.Region
-		}
-		if req.Bucket != nil {
-			s3Storage.Bucket = *req.Bucket
-		}
-
-		err = setting.SetData(s3Storage)
+		err = setting.SetData(sshKey)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -124,7 +114,7 @@ func (uc *S3StorageUC) prepareUpdatingS3Storage(
 	if req.ProjectAccesses != nil {
 		// Remove all current items
 		persistingData.DeletingAccesses = append(persistingData.DeletingAccesses, setting.ObjectAccesses...)
-		uc.preparePersistingS3StorageProjects(setting, req.ProjectAccesses, timeNow, persistingData)
+		uc.preparePersistingSSHKeyProjects(setting, req.ProjectAccesses, timeNow, persistingData)
 	}
 	return nil
 }

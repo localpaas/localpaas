@@ -13,6 +13,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projecthandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/s3storagehandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sshkeyhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/userhandler"
 )
 
@@ -24,6 +25,7 @@ type HandlerRegistry struct {
 	projectHandler   *projecthandler.ProjectHandler
 	appHandler       *apphandler.AppHandler
 	s3StorageHandler *s3storagehandler.S3StorageHandler
+	sshKeyHandler    *sshkeyhandler.SSHKeyHandler
 }
 
 func NewHandlerRegistry(
@@ -34,6 +36,7 @@ func NewHandlerRegistry(
 	projectHandler *projecthandler.ProjectHandler,
 	appHandler *apphandler.AppHandler,
 	s3StorageHandler *s3storagehandler.S3StorageHandler,
+	sshKeyHandler *sshkeyhandler.SSHKeyHandler,
 ) *HandlerRegistry {
 	return &HandlerRegistry{
 		authHandler:      authHandler,
@@ -43,6 +46,7 @@ func NewHandlerRegistry(
 		projectHandler:   projectHandler,
 		appHandler:       appHandler,
 		s3StorageHandler: s3StorageHandler,
+		sshKeyHandler:    sshKeyHandler,
 	}
 }
 
@@ -159,6 +163,18 @@ func (s *HTTPServer) registerRoutes() {
 		s3StorageGroup.POST("", s.handlerRegistry.s3StorageHandler.CreateS3Storage)
 		s3StorageGroup.PATCH("/:ID", s.handlerRegistry.s3StorageHandler.UpdateS3Storage)
 		s3StorageGroup.DELETE("/:ID", s.handlerRegistry.s3StorageHandler.DeleteS3Storage)
+	}
+
+	sshKeyGroup := apiV1Group.Group("/ssh-keys")
+	{ // ssh key group
+		// Info
+		sshKeyGroup.GET("/base-list", s.handlerRegistry.sshKeyHandler.ListSSHKeyBase)
+		sshKeyGroup.GET("/:ID", s.handlerRegistry.sshKeyHandler.GetSSHKey)
+		sshKeyGroup.GET("", s.handlerRegistry.sshKeyHandler.ListSSHKey)
+		// Creation & Update
+		sshKeyGroup.POST("", s.handlerRegistry.sshKeyHandler.CreateSSHKey)
+		sshKeyGroup.PATCH("/:ID", s.handlerRegistry.sshKeyHandler.UpdateSSHKey)
+		sshKeyGroup.DELETE("/:ID", s.handlerRegistry.sshKeyHandler.DeleteSSHKey)
 	}
 }
 
