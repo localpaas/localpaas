@@ -7,6 +7,11 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 )
 
+const (
+	maxPasscodeLen = 10
+	maxMFATokenLen = 10000
+)
+
 type LoginWithPasscodeReq struct {
 	Passcode string `json:"passcode"`
 	MFAToken string `json:"mfaToken"`
@@ -17,16 +22,12 @@ func NewLoginWithPasscodeReq() *LoginWithPasscodeReq {
 }
 
 func (req *LoginWithPasscodeReq) Validate() apperrors.ValidationErrors {
-	return apperrors.NewValidationErrors(vld.Validate(
-		vld.Required(req.Passcode).OnError(
-			vld.SetField("passcode", nil),
-			vld.SetCustomKey("ERR_VLD_FIELD_REQUIRED"),
-		),
-		vld.Required(req.MFAToken).OnError(
-			vld.SetField("mfaToken", nil),
-			vld.SetCustomKey("ERR_VLD_FIELD_REQUIRED"),
-		),
-	))
+	var validators []vld.Validator
+	validators = append(validators, basedto.ValidateStr(&req.Passcode, true, 1,
+		maxPasscodeLen, "passcode")...)
+	validators = append(validators, basedto.ValidateStr(&req.MFAToken, true, 1,
+		maxMFATokenLen, "mfaToken")...)
+	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
 type LoginWithPasscodeResp struct {

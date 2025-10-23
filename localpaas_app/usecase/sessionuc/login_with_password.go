@@ -138,7 +138,8 @@ func (uc *SessionUC) savePasswordCheckingStatus(ctx context.Context, dbUser *ent
 func (uc *SessionUC) wrapSensitiveError(err error) error {
 	// Due to security reason, we don't want to send the real error to user for the cases
 	// user not found and password mismatched.
-	if errors.Is(err, apperrors.ErrNotFound) || errors.Is(err, apperrors.ErrPasswordMismatched) {
+	if errors.Is(err, apperrors.ErrNotFound) || errors.Is(err, apperrors.ErrPasswordMismatched) ||
+		errors.Is(err, apperrors.ErrAPIKeyMismatched) {
 		// Notes that the `cause` only shows up in dev env, not in production
 		return apperrors.New(apperrors.ErrLoginInputInvalid).WithCause(err)
 	}

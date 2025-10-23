@@ -11,6 +11,11 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/translation"
 )
 
+const (
+	maxUsernameLen = 100
+	maxPasswordLen = 100
+)
+
 type LoginWithPasswordReq struct {
 	Username        string `json:"username"`
 	Password        string `json:"password"`
@@ -27,16 +32,12 @@ func (req *LoginWithPasswordReq) Validate() apperrors.ValidationErrors {
 	req.Username = strings.TrimSpace(req.Username)
 	req.TrustedDeviceID = strings.TrimSpace(req.TrustedDeviceID)
 
-	return apperrors.NewValidationErrors(vld.Validate(
-		vld.Required(req.Username).OnError(
-			vld.SetField("username", nil),
-			vld.SetCustomKey("ERR_VLD_FIELD_REQUIRED"),
-		),
-		vld.Required(req.Password).OnError(
-			vld.SetField("password", nil),
-			vld.SetCustomKey("ERR_VLD_FIELD_REQUIRED"),
-		),
-	))
+	var validators []vld.Validator
+	validators = append(validators, basedto.ValidateStr(&req.Username, true, 1,
+		maxUsernameLen, "username")...)
+	validators = append(validators, basedto.ValidateStr(&req.Password, true, 1,
+		maxPasswordLen, "password")...)
+	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
 type LoginWithPasswordResp struct {

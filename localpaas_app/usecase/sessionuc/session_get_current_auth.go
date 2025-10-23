@@ -30,6 +30,12 @@ func (uc *SessionUC) GetCurrentAuth(ctx context.Context, jwt string) (*basedto.A
 			WithMsgLog("user access expired at: %v", user.AccessExpireAt)
 	}
 
+	// Use must complete MFA requirement
+	if user.SecurityOption == base.UserSecurityPassword2FA && user.TOPTSecret == "" {
+		return nil, apperrors.New(apperrors.ErrUserNotCompleteMFASetup).
+			WithMsgLog("user hasn't completed the MFA setup")
+	}
+
 	// Update `last_access` timestamp after each period of few minute.
 	// NOTE: We can't update `last_access` timestamp every request due to performance reason.
 	timeNow := timeutil.NowUTC()

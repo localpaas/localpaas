@@ -303,6 +303,58 @@
         "tags" : [ "api_keys" ]
       }
     },
+    "/auth/login-with-api-key" : {
+      "post" : {
+        "description" : "Login to system with API key",
+        "operationId" : "loginWithAPIKey",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.LoginWithAPIKeyReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.LoginWithAPIKeyResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Login to system with API key",
+        "tags" : [ "sessions_auth" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
     "/auth/login-with-passcode" : {
       "post" : {
         "description" : "Login to system with passcode after using password",
@@ -4417,6 +4469,48 @@
         "properties" : {
           "data" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.GetMeDataResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.LoginWithAPIKeyDataResp" : {
+        "properties" : {
+          "accessToken" : {
+            "type" : "string"
+          },
+          "accessTokenExp" : {
+            "type" : "string"
+          },
+          "refreshToken" : {
+            "type" : "string"
+          },
+          "refreshTokenExp" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "accessToken", "accessTokenExp", "refreshToken", "refreshTokenExp" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.LoginWithAPIKeyReq" : {
+        "properties" : {
+          "keyId" : {
+            "type" : "string"
+          },
+          "secretKey" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "keyId", "secretKey" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.LoginWithAPIKeyResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.LoginWithAPIKeyDataResp"
           },
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"

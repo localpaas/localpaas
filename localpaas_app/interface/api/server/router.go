@@ -105,6 +105,8 @@ func (s *HTTPServer) registerRoutes() {
 		// Login with password
 		authGroup.POST("/login-with-password", s.handlerRegistry.sessionHandler.LoginWithPassword)
 		authGroup.POST("/login-with-passcode", s.handlerRegistry.sessionHandler.LoginWithPasscode)
+		// Login with API key
+		authGroup.POST("/login-with-api-key", s.handlerRegistry.sessionHandler.LoginWithAPIKey)
 	}
 
 	{ // user group

@@ -10,8 +10,10 @@ import (
 )
 
 type UserService interface {
+	LoadUser(ctx context.Context, db database.IDB, userID string) (*entity.User, error)
 	LoadUsers(ctx context.Context, db database.IDB, userIDs []string) (
 		userMap map[string]*entity.User, err error)
+	LoadUserByEmail(ctx context.Context, db database.IDB, email string) (*entity.User, error)
 	LoadUsersByEmails(ctx context.Context, db database.IDB, emails []string) (
 		userMap map[string]*entity.User, err error)
 

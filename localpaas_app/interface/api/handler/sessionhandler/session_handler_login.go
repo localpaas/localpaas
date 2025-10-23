@@ -92,6 +92,33 @@ func (h *SessionHandler) LoginWithPasscode(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
+// LoginWithAPIKey Login to system with API key
+// @Summary Login to system with API key
+// @Description Login to system with API key
+// @Tags    sessions_auth
+// @Produce json
+// @Id      loginWithAPIKey
+// @Param   body body sessiondto.LoginWithAPIKeyReq true "request data"
+// @Success 200 {object} sessiondto.LoginWithAPIKeyResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /auth/login-with-api-key [post]
+func (h *SessionHandler) LoginWithAPIKey(ctx *gin.Context) {
+	req := sessiondto.NewLoginWithAPIKeyReq()
+	if err := h.ParseJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.sessionUC.LoginWithAPIKey(h.RequestCtx(ctx), req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
 func (h *SessionHandler) writeSessionDataToCookies(ctx *gin.Context, sessionResp *sessiondto.BaseCreateSessionResp,
 	writeRefreshOnly bool) {
 	ctx.SetSameSite(http.SameSiteLaxMode)

@@ -47,18 +47,16 @@ var (
 	ErrAPIKeyInvalid    = errors.New("ERR_API_KEY_INVALID")
 )
 
-// Errors for user/workspace
+// Errors for user
 var (
 	ErrUserUnavailable                  = errors.New("ERR_USER_UNAVAILABLE")
-	ErrUserStatusNotAllowSignUp         = errors.New("ERR_USER_STATUS_NOT_ALLOW_SIGN_UP")
 	ErrUserStatusNotAllowActivation     = errors.New("ERR_USER_STATUS_NOT_ALLOW_ACTIVATION")
 	ErrUserAlreadySignUp                = errors.New("ERR_USER_ALREADY_SIGN_UP")
-	ErrUploadPhotoFailed                = errors.New("ERR_UPLOAD_PHOTO_FAILED")
+	ErrUserNotCompleteMFASetup          = errors.New("ERR_USER_NOT_COMPLETE_MFA_SETUP")
 	ErrPasswordNotMeetRequirements      = errors.New("ERR_PASSWORD_NOT_MEET_REQUIREMENTS")
 	ErrPasswordResetTokenInvalid        = errors.New("ERR_PASSWORD_RESET_TOKEN_INVALID")
 	ErrEmailChangeUnallowedOnEnforceSSO = errors.New("ERR_EMAIL_CHANGE_UNALLOWED_ON_ENFORCE_SSO")
 	ErrEmailUnavailable                 = errors.New("ERR_EMAIL_UNAVAILABLE")
-	ErrProjectAccessRequired            = errors.New("ERR_PROJECT_ACCESS_REQUIRED")
 )
 
 // errorStatusMap - mapping from error to http status code
@@ -100,15 +98,13 @@ var errorStatusMap = map[error]int{
 	ErrAPIKeyInvalid:    http.StatusUnauthorized,
 
 	ErrUserUnavailable:                  http.StatusForbidden,
-	ErrUserStatusNotAllowSignUp:         http.StatusForbidden,
 	ErrUserStatusNotAllowActivation:     http.StatusForbidden,
 	ErrUserAlreadySignUp:                http.StatusForbidden,
-	ErrUploadPhotoFailed:                http.StatusUnprocessableEntity,
+	ErrUserNotCompleteMFASetup:          http.StatusForbidden,
 	ErrPasswordNotMeetRequirements:      http.StatusUnprocessableEntity,
 	ErrPasswordResetTokenInvalid:        http.StatusNotAcceptable,
 	ErrEmailChangeUnallowedOnEnforceSSO: http.StatusUnprocessableEntity,
 	ErrEmailUnavailable:                 http.StatusUnprocessableEntity,
-	ErrProjectAccessRequired:            http.StatusUnauthorized,
 }
 
 // errorWarnLevelMap defines the errors that are handled but unexpected to happen.
