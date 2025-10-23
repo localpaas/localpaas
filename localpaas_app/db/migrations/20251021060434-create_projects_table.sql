@@ -6,15 +6,15 @@ CREATE TABLE IF NOT EXISTS projects
     photo        VARCHAR(255) NULL,
     status       VARCHAR(100) NOT NULL,
     note         VARCHAR(10000) NULL,
+    settings_id  VARCHAR(26) NULL,
+    env_vars_id  VARCHAR(26) NULL,
 
     created_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    created_by   VARCHAR(26) NOT NULL,
     updated_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_by   VARCHAR(26) NOT NULL,
     deleted_at   TIMESTAMPTZ NULL,
 
-    CONSTRAINT fk_projects_created_by FOREIGN KEY (created_by) REFERENCES users (id),
-    CONSTRAINT fk_projects_updated_by FOREIGN KEY (updated_by) REFERENCES users (id)
+    CONSTRAINT fk_projects_settings_id FOREIGN KEY (settings_id) REFERENCES settings (id),
+    CONSTRAINT fk_projects_env_vars_id FOREIGN KEY (env_vars_id) REFERENCES settings (id)
 );
 
 CREATE UNIQUE INDEX idx_uq_projects_name ON projects(LOWER(name)) WHERE deleted_at IS NULL;

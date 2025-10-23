@@ -49,7 +49,6 @@ func (uc *ProjectUC) loadProjectTagDataForAddNew(
 	req *projectdto.CreateProjectTagReq,
 	data *createProjectTagData,
 ) error {
-	// Loads and checks target project
 	project, err := uc.projectRepo.GetByID(ctx, db, req.ProjectID,
 		bunex.SelectFor("UPDATE OF project"),
 		bunex.SelectRelation("Tags", bunex.SelectOrder("display_order")),

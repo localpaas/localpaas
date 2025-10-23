@@ -30,7 +30,7 @@ func (uc *ProjectUC) CreateProject(
 	}
 
 	persistingData := &persistingProjectData{}
-	uc.preparePersistingProject(auth, req, timeutil.NowUTC(), persistingData)
+	uc.preparePersistingProject(req, timeutil.NowUTC(), persistingData)
 
 	err = transaction.Execute(ctx, uc.db, func(db database.Tx) error {
 		return uc.persistData(ctx, db, persistingData)
@@ -71,7 +71,6 @@ type persistingProjectData struct {
 }
 
 func (uc *ProjectUC) preparePersistingProject(
-	auth *basedto.Auth,
 	req *projectdto.CreateProjectReq,
 	timeNow time.Time,
 	persistingData *persistingProjectData,
@@ -80,15 +79,13 @@ func (uc *ProjectUC) preparePersistingProject(
 	project := &entity.Project{
 		ID:        gofn.Must(ulid.NewStringULID()),
 		CreatedAt: timeNow,
-		CreatedBy: auth.User.ID,
 	}
 
-	uc.preparePersistingProjectBase(auth, project, req.ProjectBaseReq, timeNow, persistingData)
+	uc.preparePersistingProjectBase(project, req.ProjectBaseReq, timeNow, persistingData)
 	uc.preparePersistingProjectTags(project, req.Tags, 0, persistingData)
 }
 
 func (uc *ProjectUC) preparePersistingProjectBase(
-	auth *basedto.Auth,
 	project *entity.Project,
 	req *projectdto.ProjectBaseReq,
 	timeNow time.Time,
@@ -98,7 +95,6 @@ func (uc *ProjectUC) preparePersistingProjectBase(
 	project.Status = req.Status
 	project.Note = req.Note
 	project.UpdatedAt = timeNow
-	project.UpdatedBy = auth.User.ID
 
 	persistingData.UpsertingProjects = append(persistingData.UpsertingProjects, project)
 }

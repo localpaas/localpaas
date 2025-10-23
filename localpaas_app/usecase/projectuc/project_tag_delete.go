@@ -52,7 +52,6 @@ func (uc *ProjectUC) loadProjectTagDataForDelete(
 	req *projectdto.DeleteProjectTagsReq,
 	data *deleteProjectTagData,
 ) error {
-	// Loads and checks target project
 	project, err := uc.projectRepo.GetByID(ctx, db, req.ProjectID,
 		bunex.SelectFor("UPDATE OF project"),
 		bunex.SelectRelation("Tags", bunex.SelectOrder("display_order")),

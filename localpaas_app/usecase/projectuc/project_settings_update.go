@@ -46,8 +46,7 @@ func (uc *ProjectUC) UpdateProjectSettings(
 }
 
 type updateProjectSettingsData struct {
-	Project          *entity.Project
-	ExistingSettings *entity.Setting
+	Project *entity.Project
 }
 
 func (uc *ProjectUC) loadProjectSettingsDataForUpdate(
@@ -58,16 +57,12 @@ func (uc *ProjectUC) loadProjectSettingsDataForUpdate(
 ) error {
 	project, err := uc.projectRepo.GetByID(ctx, db, req.ProjectID,
 		bunex.SelectFor("UPDATE OF project"),
-		bunex.SelectRelation("MainSettings"),
+		bunex.SelectRelation("Settings"),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 	data.Project = project
-
-	if len(project.MainSettings) > 0 {
-		data.ExistingSettings = project.MainSettings[0]
-	}
 
 	return nil
 }
@@ -79,18 +74,16 @@ func (uc *ProjectUC) preparePersistingProjectSettings(
 ) error {
 	timeNow := timeutil.NowUTC()
 	project := data.Project
-	settings := data.ExistingSettings
-	if settings == nil {
-		settings = &entity.Setting{
+	if project.Settings == nil {
+		project.Settings = &entity.Setting{
 			ID:        gofn.Must(ulid.NewStringULID()),
 			Type:      base.SettingTypeProject,
-			ObjectID:  project.ID,
 			CreatedAt: timeNow,
 		}
+		project.SettingsID = project.Settings.ID
 	}
 
-	settings.UpdatedAt = timeNow
-
+	project.Settings.UpdatedAt = timeNow
 	var settingsData *entity.ProjectSettings
 
 	// Do a copy fields to fields
@@ -99,11 +92,13 @@ func (uc *ProjectUC) preparePersistingProjectSettings(
 		return apperrors.Wrap(err)
 	}
 
-	err = settings.SetData(settingsData)
+	err = project.Settings.SetData(settingsData)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, settings)
+	project.UpdatedAt = timeNow
+	persistingData.UpsertingProjects = append(persistingData.UpsertingProjects, project)
+	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, project.Settings)
 	return nil
 }

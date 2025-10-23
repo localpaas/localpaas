@@ -46,8 +46,7 @@ func (uc *AppUC) UpdateAppSettings(
 }
 
 type updateAppSettingsData struct {
-	App              *entity.App
-	ExistingSettings *entity.Setting
+	App *entity.App
 }
 
 func (uc *AppUC) loadAppSettingsDataForUpdate(
@@ -58,16 +57,12 @@ func (uc *AppUC) loadAppSettingsDataForUpdate(
 ) error {
 	app, err := uc.appRepo.GetByID(ctx, db, req.ProjectID, req.AppID,
 		bunex.SelectFor("UPDATE OF app"),
-		bunex.SelectRelation("MainSettings"),
+		bunex.SelectRelation("Settings"),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 	data.App = app
-
-	if len(app.MainSettings) > 0 {
-		data.ExistingSettings = app.MainSettings[0]
-	}
 
 	return nil
 }
@@ -79,18 +74,16 @@ func (uc *AppUC) preparePersistingAppSettings(
 ) error {
 	timeNow := timeutil.NowUTC()
 	app := data.App
-	settings := data.ExistingSettings
-	if settings == nil {
-		settings = &entity.Setting{
+	if app.Settings == nil {
+		app.Settings = &entity.Setting{
 			ID:        gofn.Must(ulid.NewStringULID()),
 			Type:      base.SettingTypeApp,
-			ObjectID:  app.ID,
 			CreatedAt: timeNow,
 		}
+		app.SettingsID = app.Settings.ID
 	}
 
-	settings.UpdatedAt = timeNow
-
+	app.Settings.UpdatedAt = timeNow
 	var settingsData *entity.AppSettings
 
 	// Do a copy fields to fields
@@ -99,11 +92,13 @@ func (uc *AppUC) preparePersistingAppSettings(
 		return apperrors.Wrap(err)
 	}
 
-	err = settings.SetData(settingsData)
+	err = app.Settings.SetData(settingsData)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, settings)
+	app.UpdatedAt = timeNow
+	persistingData.UpsertingApps = append(persistingData.UpsertingApps, app)
+	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, app.Settings)
 	return nil
 }

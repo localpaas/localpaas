@@ -22,9 +22,15 @@ File = "File"
 
 # Projects
 Project = "Project"
+ProjectTag = "Project tag"
+ProjectSetting = "Project setting"
+ProjectSettings = "Project settings"
 
 # Apps
 App = "app"
+AppTag = "App tag"
+AppSetting = "App setting"
+AppSettings = "App settings"
 
 # S3 storages
 S3Storage = "S3 storage"

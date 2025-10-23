@@ -15,13 +15,13 @@ func (uc *ProjectUC) GetProjectSettings(
 	req *projectdto.GetProjectSettingsReq,
 ) (*projectdto.GetProjectSettingsResp, error) {
 	project, err := uc.projectRepo.GetByID(ctx, uc.db, req.ProjectID,
-		bunex.SelectRelation("MainSettings"),
+		bunex.SelectRelation("Settings"),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	settings, err := project.GetMainSettings()
+	settings, err := project.ParseSettings()
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 )
@@ -15,9 +14,7 @@ type PersistingAppData struct {
 	UpsertingSettings []*entity.Setting
 	UpsertingAccesses []*entity.ACLPermission
 
-	AppsToDeleteTags     []string
-	AppsToDeleteSettings []string
-	AppsToDeleteEnvVars  []string
+	AppsToDeleteTags []string
 }
 
 func (s *appService) PersistAppData(ctx context.Context, db database.IDB,
@@ -28,21 +25,15 @@ func (s *appService) PersistAppData(ctx context.Context, db database.IDB,
 		return apperrors.Wrap(err)
 	}
 
-	// Main settings
-	err = s.settingRepo.DeleteAllByTargetObjects(ctx, db, base.SettingTypeApp,
-		persistingData.AppsToDeleteSettings)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	// Env vars
-	err = s.settingRepo.DeleteAllByTargetObjects(ctx, db, base.SettingTypeEnvVar,
-		persistingData.AppsToDeleteEnvVars)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
 	// Persists data
+	// Settings
+	err = s.settingRepo.UpsertMulti(ctx, db, persistingData.UpsertingSettings,
+		entity.SettingUpsertingConflictCols, entity.SettingUpsertingUpdateCols)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	// Apps
 	err = s.appRepo.UpsertMulti(ctx, db, persistingData.UpsertingApps,
 		entity.AppUpsertingConflictCols, entity.AppUpsertingUpdateCols)
 	if err != nil {
@@ -52,13 +43,6 @@ func (s *appService) PersistAppData(ctx context.Context, db database.IDB,
 	// Tags
 	err = s.appTagRepo.UpsertMulti(ctx, db, persistingData.UpsertingTags,
 		entity.AppTagUpsertingConflictCols, entity.AppTagUpsertingUpdateCols)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	// Settings
-	err = s.settingRepo.UpsertMulti(ctx, db, persistingData.UpsertingSettings,
-		entity.SettingUpsertingConflictCols, entity.SettingUpsertingUpdateCols)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

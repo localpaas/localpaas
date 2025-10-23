@@ -15,13 +15,13 @@ func (uc *AppUC) GetAppSettings(
 	req *appdto.GetAppSettingsReq,
 ) (*appdto.GetAppSettingsResp, error) {
 	app, err := uc.appRepo.GetByID(ctx, uc.db, req.ProjectID, req.AppID,
-		bunex.SelectRelation("MainSettings"),
+		bunex.SelectRelation("Settings"),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	settings, err := app.GetMainSettings()
+	settings, err := app.ParseSettings()
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

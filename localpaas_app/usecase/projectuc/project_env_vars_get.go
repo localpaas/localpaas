@@ -15,13 +15,13 @@ func (uc *ProjectUC) GetProjectEnvVars(
 	req *projectdto.GetProjectEnvVarsReq,
 ) (*projectdto.GetProjectEnvVarsResp, error) {
 	project, err := uc.projectRepo.GetByID(ctx, uc.db, req.ProjectID,
-		bunex.SelectRelation("EnvVarsSettings"),
+		bunex.SelectRelation("EnvVars"),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	envVars, err := project.GetEnvVars()
+	envVars, err := project.ParseEnvVars()
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

@@ -45,8 +45,7 @@ func (uc *AppUC) UpdateAppEnvVars(
 }
 
 type updateAppEnvVarsData struct {
-	App              *entity.App
-	ExistingSettings *entity.Setting
+	App *entity.App
 }
 
 func (uc *AppUC) loadAppEnvVarsDataForUpdate(
@@ -57,16 +56,12 @@ func (uc *AppUC) loadAppEnvVarsDataForUpdate(
 ) error {
 	app, err := uc.appRepo.GetByID(ctx, db, req.ProjectID, req.AppID,
 		bunex.SelectFor("UPDATE OF app"),
-		bunex.SelectRelation("EnvVarsSettings"),
+		bunex.SelectRelation("EnvVars"),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 	data.App = app
-
-	if len(app.EnvVarsSettings) > 0 {
-		data.ExistingSettings = app.EnvVarsSettings[0]
-	}
 
 	return nil
 }
@@ -78,23 +73,24 @@ func (uc *AppUC) preparePersistingAppEnvVars(
 ) error {
 	timeNow := timeutil.NowUTC()
 	app := data.App
-	settings := data.ExistingSettings
-	if settings == nil {
-		settings = &entity.Setting{
+	if app.EnvVars == nil {
+		app.EnvVars = &entity.Setting{
 			ID:        gofn.Must(ulid.NewStringULID()),
 			Type:      base.SettingTypeEnvVar,
-			ObjectID:  app.ID,
 			CreatedAt: timeNow,
 		}
+		app.EnvVarsID = app.EnvVars.ID
 	}
 
-	settings.UpdatedAt = timeNow
-
-	err := settings.SetData(&entity.AppEnvVars{Data: req.EnvVars})
+	app.EnvVars.UpdatedAt = timeNow
+	err := app.EnvVars.SetData(&entity.AppEnvVars{Data: req.EnvVars})
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, settings)
+	app.UpdatedAt = timeNow
+	persistingData.UpsertingApps = append(persistingData.UpsertingApps, app)
+	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, app.EnvVars)
+
 	return nil
 }

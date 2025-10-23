@@ -15,13 +15,13 @@ func (uc *AppUC) GetAppEnvVars(
 	req *appdto.GetAppEnvVarsReq,
 ) (*appdto.GetAppEnvVarsResp, error) {
 	app, err := uc.appRepo.GetByID(ctx, uc.db, req.ProjectID, req.AppID,
-		bunex.SelectRelation("EnvVarsSettings"),
+		bunex.SelectRelation("EnvVars"),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	envVars, err := app.GetEnvVars()
+	envVars, err := app.ParseEnvVars()
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

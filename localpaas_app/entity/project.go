@@ -9,28 +9,26 @@ import (
 var (
 	ProjectUpsertingConflictCols = []string{"id"}
 	ProjectUpsertingUpdateCols   = []string{"name", "photo", "status", "note",
-		"updated_at", "updated_by", "deleted_at"}
+		"settings_id", "env_vars_id", "updated_at", "deleted_at"}
 )
 
 type Project struct {
-	ID     string `bun:",pk"`
-	Name   string
-	Photo  string `bun:",nullzero"`
-	Status base.ProjectStatus
-	Note   string `bun:",nullzero"`
+	ID         string `bun:",pk"`
+	Name       string
+	Photo      string `bun:",nullzero"`
+	Status     base.ProjectStatus
+	Note       string `bun:",nullzero"`
+	SettingsID string `bun:",nullzero"`
+	EnvVarsID  string `bun:",nullzero"`
 
 	CreatedAt time.Time `bun:",default:current_timestamp"`
-	CreatedBy string
 	UpdatedAt time.Time `bun:",default:current_timestamp"`
-	UpdatedBy string
 	DeletedAt time.Time `bun:",soft_delete,nullzero"`
 
-	EnvVarsSettings []*Setting    `bun:"rel:has-many,join:id=object_id,join:type=type,polymorphic:env-var"`
-	MainSettings    []*Setting    `bun:"rel:has-many,join:id=object_id,join:type=type,polymorphic:project"`
-	Apps            []*App        `bun:"rel:has-many,join:id=project_id"`
-	Tags            []*ProjectTag `bun:"rel:has-many,join:id=project_id"`
-	CreatedByUser   *User         `bun:"rel:has-one,join:created_by=id"`
-	UpdatedByUser   *User         `bun:"rel:has-one,join:updated_by=id"`
+	Settings *Setting      `bun:"rel:has-one,join:settings_id=id"`
+	EnvVars  *Setting      `bun:"rel:has-one,join:env_vars_id=id"`
+	Apps     []*App        `bun:"rel:has-many,join:id=project_id"`
+	Tags     []*ProjectTag `bun:"rel:has-many,join:id=project_id"`
 }
 
 // GetID implements IDEntity interface
@@ -47,10 +45,10 @@ type ProjectSettings struct {
 	Test string `json:"test"`
 }
 
-func (p *Project) GetMainSettings() (*ProjectSettings, error) {
-	if len(p.MainSettings) > 0 {
+func (p *Project) ParseSettings() (*ProjectSettings, error) {
+	if p.Settings != nil {
 		res := &ProjectSettings{}
-		return res, p.MainSettings[0].parseData(res)
+		return res, p.Settings.parseData(res)
 	}
 	return nil, nil
 }
@@ -59,10 +57,10 @@ type ProjectEnvVars struct {
 	Data [][]string `json:"data"`
 }
 
-func (p *Project) GetEnvVars() (*ProjectEnvVars, error) {
-	if len(p.EnvVarsSettings) > 0 {
+func (p *Project) ParseEnvVars() (*ProjectEnvVars, error) {
+	if p.EnvVars != nil {
 		res := &ProjectEnvVars{}
-		return res, p.EnvVarsSettings[0].parseData(res)
+		return res, p.EnvVars.parseData(res)
 	}
 	return nil, nil
 }

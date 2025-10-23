@@ -45,8 +45,7 @@ func (uc *ProjectUC) UpdateProjectEnvVars(
 }
 
 type updateProjectEnvVarsData struct {
-	Project          *entity.Project
-	ExistingSettings *entity.Setting
+	Project *entity.Project
 }
 
 func (uc *ProjectUC) loadProjectEnvVarsDataForUpdate(
@@ -57,16 +56,12 @@ func (uc *ProjectUC) loadProjectEnvVarsDataForUpdate(
 ) error {
 	project, err := uc.projectRepo.GetByID(ctx, db, req.ProjectID,
 		bunex.SelectFor("UPDATE OF project"),
-		bunex.SelectRelation("EnvVarsSettings"),
+		bunex.SelectRelation("EnvVars"),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 	data.Project = project
-
-	if len(project.EnvVarsSettings) > 0 {
-		data.ExistingSettings = project.EnvVarsSettings[0]
-	}
 
 	return nil
 }
@@ -78,23 +73,23 @@ func (uc *ProjectUC) preparePersistingProjectEnvVars(
 ) error {
 	timeNow := timeutil.NowUTC()
 	project := data.Project
-	settings := data.ExistingSettings
-	if settings == nil {
-		settings = &entity.Setting{
+	if project.EnvVars == nil {
+		project.EnvVars = &entity.Setting{
 			ID:        gofn.Must(ulid.NewStringULID()),
 			Type:      base.SettingTypeEnvVar,
-			ObjectID:  project.ID,
 			CreatedAt: timeNow,
 		}
+		project.EnvVarsID = project.EnvVars.ID
 	}
 
-	settings.UpdatedAt = timeNow
-
-	err := settings.SetData(&entity.ProjectEnvVars{Data: req.EnvVars})
+	project.EnvVars.UpdatedAt = timeNow
+	err := project.EnvVars.SetData(&entity.ProjectEnvVars{Data: req.EnvVars})
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, settings)
+	project.UpdatedAt = timeNow
+	persistingData.UpsertingProjects = append(persistingData.UpsertingProjects, project)
+	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, project.EnvVars)
 	return nil
 }

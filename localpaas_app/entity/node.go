@@ -9,7 +9,7 @@ import (
 var (
 	NodeUpsertingConflictCols = []string{"id"}
 	NodeUpsertingUpdateCols   = []string{"is_leader", "is_manager", "host_name", "ip", "status", "infra_status",
-		"info", "note", "last_synced_at", "updated_at", "updated_by", "deleted_at"}
+		"info", "note", "settings_id", "last_synced_at", "updated_at", "deleted_at"}
 )
 
 type Node struct {
@@ -22,17 +22,14 @@ type Node struct {
 	InfraStatus string
 	Info        string `bun:",nullzero"`
 	Note        string `bun:",nullzero"`
+	SettingsID  string `bun:",nullzero"`
 
 	LastSyncedAt time.Time
 	CreatedAt    time.Time `bun:",default:current_timestamp"`
-	CreatedBy    string
 	UpdatedAt    time.Time `bun:",default:current_timestamp"`
-	UpdatedBy    string
 	DeletedAt    time.Time `bun:",soft_delete,nullzero"`
 
-	MainSettings  []*Setting `bun:"rel:has-many,join:id=object_id,join:type=type,polymorphic:node"`
-	CreatedByUser *User      `bun:"rel:has-one,join:created_by=id"`
-	UpdatedByUser *User      `bun:"rel:has-one,join:updated_by=id"`
+	Settings *Setting `bun:"rel:has-one,join:settings_id=id"`
 }
 
 // GetID implements IDEntity interface
@@ -49,10 +46,10 @@ type NodeSettings struct {
 	Test string `json:"test"`
 }
 
-func (n *Node) GetMainSettings() (*NodeSettings, error) {
-	if len(n.MainSettings) > 0 {
+func (n *Node) ParseSettings() (*NodeSettings, error) {
+	if n.Settings != nil {
 		res := &NodeSettings{}
-		return res, n.MainSettings[0].parseData(res)
+		return res, n.Settings.parseData(res)
 	}
 	return nil, nil
 }

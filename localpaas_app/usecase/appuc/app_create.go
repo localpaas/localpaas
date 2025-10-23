@@ -34,7 +34,7 @@ func (uc *AppUC) CreateApp(
 		}
 
 		persistingData = &persistingAppData{}
-		uc.preparePersistingApp(auth, req, appData, persistingData)
+		uc.preparePersistingApp(req, appData, persistingData)
 
 		return uc.persistData(ctx, db, persistingData)
 	})
@@ -86,7 +86,6 @@ type persistingAppData struct {
 }
 
 func (uc *AppUC) preparePersistingApp(
-	auth *basedto.Auth,
 	req *appdto.CreateAppReq,
 	data *createAppData,
 	persistingData *persistingAppData,
@@ -97,15 +96,13 @@ func (uc *AppUC) preparePersistingApp(
 		ID:        gofn.Must(ulid.NewStringULID()),
 		ProjectID: project.ID,
 		CreatedAt: timeNow,
-		CreatedBy: auth.User.ID,
 	}
 
-	uc.preparePersistingAppBase(auth, app, req.AppBaseReq, timeNow, persistingData)
+	uc.preparePersistingAppBase(app, req.AppBaseReq, timeNow, persistingData)
 	uc.preparePersistingAppTags(app, req.Tags, 0, persistingData)
 }
 
 func (uc *AppUC) preparePersistingAppBase(
-	auth *basedto.Auth,
 	app *entity.App,
 	req *appdto.AppBaseReq,
 	timeNow time.Time,
@@ -115,7 +112,6 @@ func (uc *AppUC) preparePersistingAppBase(
 	app.Status = req.Status
 	app.Note = req.Note
 	app.UpdatedAt = timeNow
-	app.UpdatedBy = auth.User.ID
 
 	persistingData.UpsertingApps = append(persistingData.UpsertingApps, app)
 }
