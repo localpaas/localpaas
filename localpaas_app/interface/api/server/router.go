@@ -7,6 +7,7 @@ import (
 	swaggoFiles "github.com/swaggo/files"
 	swaggoGin "github.com/swaggo/gin-swagger"
 
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/apikeyhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/apphandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/clusterhandler"
@@ -26,6 +27,7 @@ type HandlerRegistry struct {
 	appHandler       *apphandler.AppHandler
 	s3StorageHandler *s3storagehandler.S3StorageHandler
 	sshKeyHandler    *sshkeyhandler.SSHKeyHandler
+	apiKeyHandler    *apikeyhandler.APIKeyHandler
 }
 
 func NewHandlerRegistry(
@@ -37,6 +39,7 @@ func NewHandlerRegistry(
 	appHandler *apphandler.AppHandler,
 	s3StorageHandler *s3storagehandler.S3StorageHandler,
 	sshKeyHandler *sshkeyhandler.SSHKeyHandler,
+	apiKeyHandler *apikeyhandler.APIKeyHandler,
 ) *HandlerRegistry {
 	return &HandlerRegistry{
 		authHandler:      authHandler,
@@ -47,6 +50,7 @@ func NewHandlerRegistry(
 		appHandler:       appHandler,
 		s3StorageHandler: s3StorageHandler,
 		sshKeyHandler:    sshKeyHandler,
+		apiKeyHandler:    apiKeyHandler,
 	}
 }
 
@@ -175,6 +179,17 @@ func (s *HTTPServer) registerRoutes() {
 		sshKeyGroup.POST("", s.handlerRegistry.sshKeyHandler.CreateSSHKey)
 		sshKeyGroup.PATCH("/:ID", s.handlerRegistry.sshKeyHandler.UpdateSSHKey)
 		sshKeyGroup.DELETE("/:ID", s.handlerRegistry.sshKeyHandler.DeleteSSHKey)
+	}
+
+	apiKeyGroup := apiV1Group.Group("/api-keys")
+	{ // api key group
+		// Info
+		apiKeyGroup.GET("/base-list", s.handlerRegistry.apiKeyHandler.ListAPIKeyBase)
+		apiKeyGroup.GET("/:ID", s.handlerRegistry.apiKeyHandler.GetAPIKey)
+		apiKeyGroup.GET("", s.handlerRegistry.apiKeyHandler.ListAPIKey)
+		// Creation & Update
+		apiKeyGroup.POST("", s.handlerRegistry.apiKeyHandler.CreateAPIKey)
+		apiKeyGroup.DELETE("/:ID", s.handlerRegistry.apiKeyHandler.DeleteAPIKey)
 	}
 }
 

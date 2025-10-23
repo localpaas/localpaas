@@ -5,6 +5,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/infra/logging"
 	"github.com/localpaas/localpaas/localpaas_app/infra/rediscache"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/apikeyhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/apphandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/clusterhandler"
@@ -22,6 +23,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/projectservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/apikeyuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/clusteruc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc"
@@ -60,6 +62,7 @@ var Provides = []any{
 	apphandler.NewAppHandler,
 	s3Storagehandler.NewS3StorageHandler,
 	sshkeyhandler.NewSSHKeyHandler,
+	apikeyhandler.NewAPIKeyHandler,
 
 	// Use case
 	clusteruc.NewClusterUC,
@@ -69,6 +72,7 @@ var Provides = []any{
 	appuc.NewAppUC,
 	s3storageuc.NewS3StorageUC,
 	sshkeyuc.NewSSHKeyUC,
+	apikeyuc.NewAPIKeyUC,
 
 	// Service
 	clusterservice.NewClusterService,

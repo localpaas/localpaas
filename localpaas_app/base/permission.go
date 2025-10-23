@@ -24,6 +24,7 @@ const (
 	ResourceTypeApp        ResourceType = "app"
 	ResourceTypeS3Storage  ResourceType = "s3-storage"
 	ResourceTypeSSHKey     ResourceType = "ssh-key"
+	ResourceTypeAPIKey     ResourceType = "api-key"
 )
 
 type ActionType string
