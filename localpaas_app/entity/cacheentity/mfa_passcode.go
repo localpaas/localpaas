@@ -1,4 +1,4 @@
-package redisentity
+package cacheentity
 
 type MFAPasscode struct {
 	Secret   string `json:"secret"`

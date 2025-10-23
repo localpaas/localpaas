@@ -10,14 +10,14 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/clusterhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projecthandler"
-	s3Storagehandler "github.com/localpaas/localpaas/localpaas_app/interface/api/handler/s3storagehandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/s3storagehandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sshkeyhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/userhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/server"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
-	"github.com/localpaas/localpaas/localpaas_app/repository/redisrepository"
+	"github.com/localpaas/localpaas/localpaas_app/repository/cacherepository"
 	"github.com/localpaas/localpaas/localpaas_app/service/appservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/clusterservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/projectservice"
@@ -60,7 +60,7 @@ var Provides = []any{
 	userhandler.NewUserHandler,
 	projecthandler.NewProjectHandler,
 	apphandler.NewAppHandler,
-	s3Storagehandler.NewS3StorageHandler,
+	s3storagehandler.NewS3StorageHandler,
 	sshkeyhandler.NewSSHKeyHandler,
 	apikeyhandler.NewAPIKeyHandler,
 
@@ -99,6 +99,6 @@ var Provides = []any{
 	repository.NewLoginTrustedDeviceRepo,
 
 	// Cache Repo
-	redisrepository.NewUserTokenRepo,
-	redisrepository.NewMFAPasscodeRepo,
+	cacherepository.NewUserTokenRepo,
+	cacherepository.NewMFAPasscodeRepo,
 }
