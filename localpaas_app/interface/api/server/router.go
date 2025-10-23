@@ -11,17 +11,19 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/clusterhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projecthandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/s3storagehandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/userhandler"
 )
 
 type HandlerRegistry struct {
-	authHandler    *authhandler.AuthHandler
-	clusterHandler *clusterhandler.ClusterHandler
-	sessionHandler *sessionhandler.SessionHandler
-	userHandler    *userhandler.UserHandler
-	projectHandler *projecthandler.ProjectHandler
-	appHandler     *apphandler.AppHandler
+	authHandler      *authhandler.AuthHandler
+	clusterHandler   *clusterhandler.ClusterHandler
+	sessionHandler   *sessionhandler.SessionHandler
+	userHandler      *userhandler.UserHandler
+	projectHandler   *projecthandler.ProjectHandler
+	appHandler       *apphandler.AppHandler
+	s3StorageHandler *s3storagehandler.S3StorageHandler
 }
 
 func NewHandlerRegistry(
@@ -31,14 +33,16 @@ func NewHandlerRegistry(
 	userHandler *userhandler.UserHandler,
 	projectHandler *projecthandler.ProjectHandler,
 	appHandler *apphandler.AppHandler,
+	s3StorageHandler *s3storagehandler.S3StorageHandler,
 ) *HandlerRegistry {
 	return &HandlerRegistry{
-		authHandler:    authHandler,
-		clusterHandler: clusterHandler,
-		sessionHandler: sessionHandler,
-		userHandler:    userHandler,
-		projectHandler: projectHandler,
-		appHandler:     appHandler,
+		authHandler:      authHandler,
+		clusterHandler:   clusterHandler,
+		sessionHandler:   sessionHandler,
+		userHandler:      userHandler,
+		projectHandler:   projectHandler,
+		appHandler:       appHandler,
+		s3StorageHandler: s3StorageHandler,
 	}
 }
 
@@ -143,6 +147,18 @@ func (s *HTTPServer) registerRoutes() {
 		// Env vars
 		appGroup.GET("/:appID/env-vars", s.handlerRegistry.appHandler.GetAppEnvVars)
 		appGroup.PUT("/:appID/env-vars", s.handlerRegistry.appHandler.UpdateAppEnvVars)
+	}
+
+	s3StorageGroup := apiV1Group.Group("/s3-storages")
+	{ // s3 storage group
+		// Info
+		s3StorageGroup.GET("/base-list", s.handlerRegistry.s3StorageHandler.ListS3StorageBase)
+		s3StorageGroup.GET("/:ID", s.handlerRegistry.s3StorageHandler.GetS3Storage)
+		s3StorageGroup.GET("", s.handlerRegistry.s3StorageHandler.ListS3Storage)
+		// Creation & Update
+		s3StorageGroup.POST("", s.handlerRegistry.s3StorageHandler.CreateS3Storage)
+		s3StorageGroup.PATCH("/:ID", s.handlerRegistry.s3StorageHandler.UpdateS3Storage)
+		s3StorageGroup.DELETE("/:ID", s.handlerRegistry.s3StorageHandler.DeleteS3Storage)
 	}
 }
 

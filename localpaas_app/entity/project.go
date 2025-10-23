@@ -25,8 +25,8 @@ type Project struct {
 	UpdatedBy string
 	DeletedAt time.Time `bun:",soft_delete,nullzero"`
 
-	EnvVarsSettings []*Setting    `bun:"rel:has-many,join:id=target_id,join:type=target_type,polymorphic:env-var"`
-	MainSettings    []*Setting    `bun:"rel:has-many,join:id=target_id,join:type=target_type,polymorphic:project"`
+	EnvVarsSettings []*Setting    `bun:"rel:has-many,join:id=object_id,join:type=type,polymorphic:env-var"`
+	MainSettings    []*Setting    `bun:"rel:has-many,join:id=object_id,join:type=type,polymorphic:project"`
 	Apps            []*App        `bun:"rel:has-many,join:id=project_id"`
 	Tags            []*ProjectTag `bun:"rel:has-many,join:id=project_id"`
 	CreatedByUser   *User         `bun:"rel:has-one,join:created_by=id"`

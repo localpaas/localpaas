@@ -1,0 +1,62 @@
+package s3storagedto
+
+import (
+	vld "github.com/tiendc/go-validator"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/basedto"
+)
+
+type CreateS3StorageReq struct {
+	*S3StorageBaseReq
+}
+
+type S3StorageBaseReq struct {
+	Name            string                       `json:"name"`
+	AccessKeyID     string                       `json:"accessKeyId"`
+	SecretAccessKey string                       `json:"secretAccessKey"`
+	Region          string                       `json:"region"`
+	Bucket          string                       `json:"bucket"`
+	ProjectAccesses []*S3StorageProjectAccessReq `json:"projectAccesses"`
+}
+
+type S3StorageProjectAccessReq struct {
+	ID      string `json:"id"`
+	Allowed bool   `json:"allowed"`
+	// NOTE: this field is used to grant access to a project,
+	// but deny access to specific apps within the project
+	AppAccesses []*S3StorageAppAccessReq `json:"appAccesses"`
+}
+
+type S3StorageAppAccessReq struct {
+	ID      string `json:"id"`
+	Allowed bool   `json:"allowed"`
+}
+
+func (req *S3StorageBaseReq) validate(field string) (res []vld.Validator) {
+	if field != "" {
+		field += "."
+	}
+	res = append(res, validateS3StorageName(&req.Name, true, field+"name")...)
+	res = append(res, basedto.ValidateStr(&req.AccessKeyID, true, 1, maxKeyLen, "accessKeyId")...)
+	res = append(res, basedto.ValidateStr(&req.SecretAccessKey, true, 1, maxKeyLen, "secretAccessKey")...)
+	res = append(res, basedto.ValidateStr(&req.Region, false, 1, maxKeyLen, "region")...)
+	res = append(res, basedto.ValidateStr(&req.Bucket, false, 1, maxKeyLen, "bucket")...)
+	return res
+}
+
+func NewCreateS3StorageReq() *CreateS3StorageReq {
+	return &CreateS3StorageReq{}
+}
+
+// Validate implements interface basedto.ReqValidator
+func (req *CreateS3StorageReq) Validate() apperrors.ValidationErrors {
+	var validators []vld.Validator
+	validators = append(validators, req.validate("")...)
+	return apperrors.NewValidationErrors(vld.Validate(validators...))
+}
+
+type CreateS3StorageResp struct {
+	Meta *basedto.BaseMeta     `json:"meta"`
+	Data *basedto.ObjectIDResp `json:"data"`
+}

@@ -7,40 +7,49 @@ import (
 )
 
 var (
-	ACLPermissionUpsertingConflictCols = []string{"user_id", "resource_type", "resource_id"}
-	ACLPermissionUpsertingUpdateCols   = []string{"action_read", "action_write", "action_delete",
-		"updated_at", "updated_by"}
+	ACLPermissionUpsertingConflictCols = []string{"subject_id", "resource_id"}
+	ACLPermissionUpsertingUpdateCols   = []string{"subject_type", "resource_type",
+		"action_read", "action_write", "action_delete", "updated_at", "deleted_at"}
 )
 
 type ACLPermission struct {
-	UserID       string            `bun:",pk"`
-	ResourceType base.ResourceType `bun:",pk"`
-	ResourceID   string            `bun:",pk"`
-	Actions      AccessActions     `bun:"embed:action_"`
-	CreatedAt    time.Time
-	CreatedBy    string
-	UpdatedAt    time.Time
-	UpdatedBy    string
+	SubjectType  base.SubjectType
+	SubjectID    string `bun:",pk"`
+	ResourceType base.ResourceType
+	ResourceID   string        `bun:",pk"`
+	Actions      AccessActions `bun:"embed:action_"`
 
-	User          *User `bun:"rel:has-one,join:user_id=id"`
-	CreatedByUser *User `bun:"rel:has-one,join:created_by=id"`
-	UpdatedByUser *User `bun:"rel:has-one,join:updated_by=id"`
+	CreatedAt time.Time `bun:",default:current_timestamp"`
+	UpdatedAt time.Time `bun:",default:current_timestamp"`
+	DeletedAt time.Time `bun:",soft_delete,nullzero"`
+
+	SubjectProject *Project `bun:"rel:has-one,join:subject_id=id"`
+	SubjectApp     *App     `bun:"rel:has-one,join:subject_id=id"`
+
+	ResourceProject *Project `bun:"rel:has-one,join:resource_id=id"`
+	ResourceApp     *App     `bun:"rel:has-one,join:resource_id=id"`
 }
 
 type AccessActions struct {
-	Read   base.AccessType `json:"read"`
-	Write  base.AccessType `json:"write"`
-	Delete base.AccessType `json:"delete"`
+	Read   bool `json:"read"`
+	Write  bool `json:"write"`
+	Delete bool `json:"delete"`
 }
 
 func (a *AccessActions) Equal(other AccessActions) bool {
+	if a.Delete && other.Delete {
+		return true
+	}
+	if a.Delete == other.Delete && a.Write && other.Write {
+		return true
+	}
 	return a.Read == other.Read && a.Write == other.Write && a.Delete == other.Delete
 }
 
 func (a *AccessActions) IsFullAccess() bool {
-	return a.Read == base.AccessTypeYes && a.Write == base.AccessTypeYes && a.Delete == base.AccessTypeYes
+	return a.Read && a.Write && a.Delete
 }
 
 func (a *AccessActions) IsNoAccess() bool {
-	return a.Read == base.AccessTypeNo && a.Write == base.AccessTypeNo && a.Delete == base.AccessTypeNo
+	return !a.Read && !a.Write && !a.Delete
 }

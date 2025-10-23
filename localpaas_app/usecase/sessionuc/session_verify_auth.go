@@ -13,8 +13,8 @@ func (uc *SessionUC) VerifyAuth(ctx context.Context, auth *basedto.Auth, accessC
 	if auth.User.Role == base.UserRoleOwner || auth.User.Role == base.UserRoleAdmin {
 		return nil
 	}
-	if accessCheck != nil && accessCheck.UserID == "" {
-		accessCheck.UserID = auth.User.ID
+	if accessCheck != nil && accessCheck.SubjectID == "" {
+		accessCheck.SubjectID = auth.User.ID
 	}
 	checkResult, err := uc.permissionManager.CheckAccess(ctx, uc.db, accessCheck)
 	if err != nil {

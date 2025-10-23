@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/tiendc/gofn"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/pkg/reflectutil"
@@ -11,29 +13,30 @@ import (
 
 var (
 	SettingUpsertingConflictCols = []string{"id"}
-	SettingUpsertingUpdateCols   = []string{"target_type", "target_id", "data",
-		"updated_at", "updated_by", "deleted_at"}
+	SettingUpsertingUpdateCols   = []string{"type", "name", "data", "object_id",
+		"updated_at", "deleted_at"}
 )
 
 type Setting struct {
-	ID         string `bun:",pk"`
-	TargetType base.SettingTargetType
-	TargetID   string `bun:",nullzero"`
-	Data       string `bun:",nullzero"`
+	ID       string `bun:",pk"`
+	Type     base.SettingType
+	Name     string `bun:",nullzero"`
+	Data     string `bun:",nullzero"`
+	ObjectID string `bun:",nullzero"`
 
 	CreatedAt time.Time `bun:",default:current_timestamp"`
-	CreatedBy string
 	UpdatedAt time.Time `bun:",default:current_timestamp"`
-	UpdatedBy string
 	DeletedAt time.Time `bun:",soft_delete,nullzero"`
-
-	CreatedByUser *User `bun:"rel:has-one,join:created_by=id"`
-	UpdatedByUser *User `bun:"rel:has-one,join:updated_by=id"`
 }
 
 // GetID implements IDEntity interface
 func (s *Setting) GetID() string {
 	return s.ID
+}
+
+// GetName implements NamedEntity interface
+func (s *Setting) GetName() string {
+	return s.Name
 }
 
 func (s *Setting) parseData(structPtr any) error {
@@ -54,4 +57,8 @@ func (s *Setting) SetData(data any) error {
 	}
 	s.Data = reflectutil.UnsafeBytesToStr(b)
 	return nil
+}
+
+func (s *Setting) MustSetData(data any) {
+	gofn.Must1(s.SetData(data))
 }

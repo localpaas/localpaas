@@ -29,14 +29,14 @@ func (s *projectService) PersistProjectData(ctx context.Context, db database.IDB
 	}
 
 	// Main settings
-	err = s.settingRepo.DeleteAllByTargetObjects(ctx, db, base.SettingTargetProject,
+	err = s.settingRepo.DeleteAllByTargetObjects(ctx, db, base.SettingTypeProject,
 		persistingData.ProjectsToDeleteSettings)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
 	// Env vars
-	err = s.settingRepo.DeleteAllByTargetObjects(ctx, db, base.SettingTargetEnvVar,
+	err = s.settingRepo.DeleteAllByTargetObjects(ctx, db, base.SettingTypeEnvVar,
 		persistingData.ProjectsToDeleteEnvVars)
 	if err != nil {
 		return apperrors.Wrap(err)

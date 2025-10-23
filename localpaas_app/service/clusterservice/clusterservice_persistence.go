@@ -20,7 +20,7 @@ func (s *clusterService) PersistClusterData(ctx context.Context, db database.IDB
 	persistingData *PersistingClusterData) error {
 	// Deletes all current linked data if configured
 	// Main settings
-	err := s.settingRepo.DeleteAllByTargetObjects(ctx, db, base.SettingTargetNode,
+	err := s.settingRepo.DeleteAllByTargetObjects(ctx, db, base.SettingTypeNode,
 		persistingData.NodesToDeleteSettings)
 	if err != nil {
 		return apperrors.Wrap(err)

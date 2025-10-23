@@ -27,8 +27,8 @@ type App struct {
 	DeletedAt time.Time `bun:",soft_delete,nullzero"`
 
 	Project         *Project   `bun:"rel:has-one,join:project_id=id"`
-	MainSettings    []*Setting `bun:"rel:has-many,join:id=target_id,join:type=target_type,polymorphic:app"`
-	EnvVarsSettings []*Setting `bun:"rel:has-many,join:id=target_id,join:type=target_type,polymorphic:env-var"`
+	MainSettings    []*Setting `bun:"rel:has-many,join:id=object_id,join:type=type,polymorphic:app"`
+	EnvVarsSettings []*Setting `bun:"rel:has-many,join:id=object_id,join:type=type,polymorphic:env-var"`
 	Tags            []*AppTag  `bun:"rel:has-many,join:id=app_id"`
 	CreatedByUser   *User      `bun:"rel:has-one,join:created_by=id"`
 	UpdatedByUser   *User      `bun:"rel:has-one,join:updated_by=id"`

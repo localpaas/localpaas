@@ -42,29 +42,17 @@ func (repo *aclPermissionRepo) ListByResources(ctx context.Context, db database.
 		return nil, nil
 	}
 
-	// opts = append(opts, bunex.SelectWhereGroup(
-	//	lo.Map(resources, func(res *base.PermissionResource, index int) bunex.SelectQueryOption {
-	//		if index == 0 {
-	//			return bunex.SelectWhere("(user_id,resource_type,resource_id) = (?,?,?)",
-	//				res.UserID, res.ResourceType, res.ResourceID)
-	//		}
-	//		return bunex.SelectWhereOr("(user_id,resource_type,resource_id) = (?,?,?)",
-	//			res.UserID, res.ResourceType, res.ResourceID)
-	//	})...,
-	// ))
-
 	// Construct the multi-column IN clause
 	conditions := make([]string, 0, len(resources))
-	args := make([]any, 0, len(resources)*3) //nolint:mnd
+	args := make([]any, 0, len(resources)*2) //nolint:mnd
 	for _, res := range resources {
-		conditions = append(conditions, "(?,?,?)")
-		args = append(args, res.UserID, res.ResourceType, res.ResourceID)
+		conditions = append(conditions, "(?,?)")
+		args = append(args, res.SubjectID, res.ResourceID)
 	}
 
 	var permissions []*entity.ACLPermission
 	query := db.NewSelect().Model(&permissions).
-		Where(fmt.Sprintf("(user_id,resource_type,resource_id) IN (%s)",
-			strings.Join(conditions, ",")), args...)
+		Where(fmt.Sprintf("(subject_id,resource_id) IN (%s)", strings.Join(conditions, ",")), args...)
 	query = bunex.ApplySelect(query, opts...)
 
 	err := query.Scan(ctx)
@@ -80,7 +68,7 @@ func (repo *aclPermissionRepo) ListByUsers(ctx context.Context, db database.IDB,
 		return nil, nil
 	}
 	var permissions []*entity.ACLPermission
-	query := db.NewSelect().Model(&permissions).Where("user_id IN (?)", bun.In(userIDs))
+	query := db.NewSelect().Model(&permissions).Where("subject_id IN (?)", bun.In(userIDs))
 	query = bunex.ApplySelect(query, opts...)
 
 	err := query.Scan(ctx)
@@ -112,28 +100,16 @@ func (repo *aclPermissionRepo) DeleteByResources(ctx context.Context, db databas
 		return nil
 	}
 
-	// opts = append(opts, bunex.SelectWhereGroup(
-	//	lo.Map(resources, func(res *base.PermissionResource, index int) bunex.SelectQueryOption {
-	//		if index == 0 {
-	//			return bunex.SelectWhere("(user_id,resource_type,resource_id) = (?,?,?)",
-	//				res.UserID, res.ResourceType, res.ResourceID)
-	//		}
-	//		return bunex.SelectWhereOr("(user_id,resource_type,resource_id) = (?,?,?)",
-	//			res.UserID, res.ResourceType, res.ResourceID)
-	//	})...,
-	// ))
-
 	// Construct the multi-column IN clause
 	conditions := make([]string, 0, len(resources))
-	args := make([]any, 0, len(resources)*3) //nolint:mnd
+	args := make([]any, 0, len(resources)*2) //nolint:mnd
 	for _, res := range resources {
-		conditions = append(conditions, "(?,?,?)")
-		args = append(args, res.UserID, res.ResourceType, res.ResourceID)
+		conditions = append(conditions, "(?,?)")
+		args = append(args, res.SubjectID, res.ResourceID)
 	}
 
 	query := db.NewDelete().Model((*entity.ACLPermission)(nil)).
-		Where(fmt.Sprintf("(user_id,resource_type,resource_id) IN (%s)",
-			strings.Join(conditions, ",")), args...)
+		Where(fmt.Sprintf("(subject_id,resource_id) IN (%s)", strings.Join(conditions, ",")), args...)
 	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)
@@ -149,7 +125,7 @@ func (repo *aclPermissionRepo) DeleteByUsers(ctx context.Context, db database.ID
 		return nil
 	}
 	query := db.NewDelete().Model((*entity.ACLPermission)(nil)).
-		Where("user_id IN (?)", bun.In(userIDs))
+		Where("subject_id IN (?)", bun.In(userIDs))
 	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)

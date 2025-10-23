@@ -9,7 +9,6 @@ import (
 	vldbase "github.com/tiendc/go-validator/base"
 	"github.com/tiendc/gofn"
 
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/pkg/timeutil"
 )
 
@@ -128,22 +127,6 @@ func ValidateObjectAccessReq(access *ObjectAccessReq, required bool, field strin
 			vld.SetCustomKey("ERR_VLD_OBJECT_ID_INVALID"), // use default error key
 		))
 	}
-	if access != nil {
-		res = append(res,
-			vld.StrIn(&access.Access.Read, base.AllAccessTypes...).OnError(
-				vld.SetField(field+".access.read", nil),
-				vld.SetCustomKey("ERR_VLD_VALUE_NOT_IN_LIST"),
-			),
-			vld.StrIn(&access.Access.Write, base.AllAccessTypes...).OnError(
-				vld.SetField(field+".access.write", nil),
-				vld.SetCustomKey("ERR_VLD_VALUE_NOT_IN_LIST"),
-			),
-			vld.StrIn(&access.Access.Delete, base.AllAccessTypes...).OnError(
-				vld.SetField(field+".access.delete", nil),
-				vld.SetCustomKey("ERR_VLD_VALUE_NOT_IN_LIST"),
-			),
-		)
-	}
 	return res
 }
 
@@ -169,18 +152,6 @@ func ValidateObjectAccessSliceReq(access ObjectAccessSliceReq, unique bool, minL
 				vld.StrIsULID(&item.ID).OnError(
 					vld.SetField(fmt.Sprintf("%s[%d].id", field, index), nil),
 					vld.SetCustomKey("ERR_VLD_OBJECT_ID_INVALID"),
-				),
-				vld.StrIn(&item.Access.Read, base.AllAccessTypes...).OnError(
-					vld.SetField(fmt.Sprintf("%s[%d].access.read", field, index), nil),
-					vld.SetCustomKey("ERR_VLD_VALUE_NOT_IN_LIST"),
-				),
-				vld.StrIn(&item.Access.Write, base.AllAccessTypes...).OnError(
-					vld.SetField(fmt.Sprintf("%s[%d].access.write", field, index), nil),
-					vld.SetCustomKey("ERR_VLD_VALUE_NOT_IN_LIST"),
-				),
-				vld.StrIn(&item.Access.Delete, base.AllAccessTypes...).OnError(
-					vld.SetField(fmt.Sprintf("%s[%d].access.delete", field, index), nil),
-					vld.SetCustomKey("ERR_VLD_VALUE_NOT_IN_LIST"),
 				),
 			)
 		}),

@@ -30,7 +30,7 @@ func (uc *AppUC) UpdateAppEnvVars(
 		}
 
 		persistingData := &persistingAppData{}
-		err = uc.preparePersistingAppEnvVars(auth, req, envData, persistingData)
+		err = uc.preparePersistingAppEnvVars(req, envData, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -72,7 +72,6 @@ func (uc *AppUC) loadAppEnvVarsDataForUpdate(
 }
 
 func (uc *AppUC) preparePersistingAppEnvVars(
-	auth *basedto.Auth,
 	req *appdto.UpdateAppEnvVarsReq,
 	data *updateAppEnvVarsData,
 	persistingData *persistingAppData,
@@ -82,16 +81,14 @@ func (uc *AppUC) preparePersistingAppEnvVars(
 	settings := data.ExistingSettings
 	if settings == nil {
 		settings = &entity.Setting{
-			ID:         gofn.Must(ulid.NewStringULID()),
-			TargetType: base.SettingTargetEnvVar,
-			TargetID:   app.ID,
-			CreatedAt:  timeNow,
-			CreatedBy:  auth.User.ID,
+			ID:        gofn.Must(ulid.NewStringULID()),
+			Type:      base.SettingTypeEnvVar,
+			ObjectID:  app.ID,
+			CreatedAt: timeNow,
 		}
 	}
 
 	settings.UpdatedAt = timeNow
-	settings.UpdatedBy = auth.User.ID
 
 	err := settings.SetData(&entity.AppEnvVars{Data: req.EnvVars})
 	if err != nil {

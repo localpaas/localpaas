@@ -30,7 +30,7 @@ type Node struct {
 	UpdatedBy    string
 	DeletedAt    time.Time `bun:",soft_delete,nullzero"`
 
-	MainSettings  []*Setting `bun:"rel:has-many,join:id=target_id,join:type=target_type,polymorphic:node"`
+	MainSettings  []*Setting `bun:"rel:has-many,join:id=object_id,join:type=type,polymorphic:node"`
 	CreatedByUser *User      `bun:"rel:has-one,join:created_by=id"`
 	UpdatedByUser *User      `bun:"rel:has-one,join:updated_by=id"`
 }

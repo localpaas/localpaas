@@ -18,6 +18,8 @@ import (
 type SettingRepo interface {
 	GetByID(ctx context.Context, db database.IDB, id string,
 		opts ...bunex.SelectQueryOption) (*entity.Setting, error)
+	GetByName(ctx context.Context, db database.IDB, typ base.SettingType, objectID, name string,
+		opts ...bunex.SelectQueryOption) (*entity.Setting, error)
 	List(ctx context.Context, db database.IDB, paging *basedto.Paging,
 		opts ...bunex.SelectQueryOption) ([]*entity.Setting, *basedto.PagingMeta, error)
 	ListByIDs(ctx context.Context, db database.IDB, ids []string,
@@ -29,7 +31,7 @@ type SettingRepo interface {
 		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
 
 	DeleteAllByTargetObjects(ctx context.Context, db database.IDB,
-		targetType base.SettingTargetType, targetIDs []string, opts ...bunex.DeleteQueryOption) error
+		typ base.SettingType, objectIDs []string, opts ...bunex.DeleteQueryOption) error
 }
 
 type settingRepo struct {
@@ -43,6 +45,30 @@ func (repo *settingRepo) GetByID(ctx context.Context, db database.IDB, id string
 	opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
 	setting := &entity.Setting{}
 	query := db.NewSelect().Model(setting).Where("setting.id = ?", id)
+	query = bunex.ApplySelect(query, opts...)
+
+	err := query.Scan(ctx)
+	if setting == nil || errors.Is(err, sql.ErrNoRows) {
+		return nil, apperrors.NewNotFound("Setting").WithCause(err)
+	}
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return setting, nil
+}
+
+func (repo *settingRepo) GetByName(ctx context.Context, db database.IDB, typ base.SettingType, objectID, name string,
+	opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
+	if name == "" {
+		return nil, nil
+	}
+	setting := &entity.Setting{}
+	query := db.NewSelect().Model(setting).
+		Where("setting.type = ?", typ).
+		Where("setting.name = ?", name)
+	if objectID != "" {
+		query = query.Where("setting.object_id = ?", objectID)
+	}
 	query = bunex.ApplySelect(query, opts...)
 
 	err := query.Scan(ctx)
@@ -120,13 +146,13 @@ func (repo *settingRepo) UpsertMulti(ctx context.Context, db database.IDB, setti
 }
 
 func (repo *settingRepo) DeleteAllByTargetObjects(ctx context.Context, db database.IDB,
-	targetType base.SettingTargetType, targetIDs []string, opts ...bunex.DeleteQueryOption) error {
-	if len(targetIDs) == 0 {
+	typ base.SettingType, objectIDs []string, opts ...bunex.DeleteQueryOption) error {
+	if len(objectIDs) == 0 {
 		return nil
 	}
 	query := db.NewDelete().Model((*entity.Setting)(nil)).
-		Where("setting.target_type = ?", targetType).
-		Where("setting.target_id IN (?)", bun.In(targetIDs))
+		Where("setting.type = ?", typ).
+		Where("setting.object_id IN (?)", bun.In(objectIDs))
 	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)

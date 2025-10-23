@@ -22,3 +22,9 @@ File = "File"
 
 # Projects
 Project = "Project"
+
+# Apps
+App = "app"
+
+# S3 storages
+S3Storage = "S3 storage"

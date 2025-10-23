@@ -9,7 +9,8 @@ import (
 )
 
 type AccessCheck struct {
-	UserID       string
+	SubjectType  base.SubjectType
+	SubjectID    string
 	ResourceType base.ResourceType
 	ResourceID   string
 	Action       base.ActionType
@@ -18,7 +19,8 @@ type AccessCheck struct {
 func (p *manager) CheckAccess(ctx context.Context, db database.IDB, check *AccessCheck) (bool, error) {
 	perms, err := p.aclPermissionRepo.ListByResources(ctx, db, []*base.PermissionResource{
 		{
-			UserID:       check.UserID,
+			SubjectType:  check.SubjectType,
+			SubjectID:    check.SubjectID,
 			ResourceType: check.ResourceType,
 			ResourceID:   check.ResourceID,
 		},
@@ -28,13 +30,13 @@ func (p *manager) CheckAccess(ctx context.Context, db database.IDB, check *Acces
 	}
 
 	for _, perm := range perms {
-		if check.Action == base.ActionTypeRead && perm.Actions.Read == base.AccessTypeYes {
+		if check.Action == base.ActionTypeRead && perm.Actions.Read {
 			return true, nil
 		}
-		if check.Action == base.ActionTypeWrite && perm.Actions.Write == base.AccessTypeYes {
+		if check.Action == base.ActionTypeWrite && perm.Actions.Write {
 			return true, nil
 		}
-		if check.Action == base.ActionTypeDelete && perm.Actions.Delete == base.AccessTypeYes {
+		if check.Action == base.ActionTypeDelete && perm.Actions.Delete {
 			return true, nil
 		}
 	}

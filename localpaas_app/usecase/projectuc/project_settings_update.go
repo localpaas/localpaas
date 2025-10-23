@@ -31,7 +31,7 @@ func (uc *ProjectUC) UpdateProjectSettings(
 		}
 
 		persistingData := &persistingProjectData{}
-		err = uc.preparePersistingProjectSettings(auth, req, settingsData, persistingData)
+		err = uc.preparePersistingProjectSettings(req, settingsData, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -73,7 +73,6 @@ func (uc *ProjectUC) loadProjectSettingsDataForUpdate(
 }
 
 func (uc *ProjectUC) preparePersistingProjectSettings(
-	auth *basedto.Auth,
 	req *projectdto.UpdateProjectSettingsReq,
 	data *updateProjectSettingsData,
 	persistingData *persistingProjectData,
@@ -83,16 +82,14 @@ func (uc *ProjectUC) preparePersistingProjectSettings(
 	settings := data.ExistingSettings
 	if settings == nil {
 		settings = &entity.Setting{
-			ID:         gofn.Must(ulid.NewStringULID()),
-			TargetType: base.SettingTargetProject,
-			TargetID:   project.ID,
-			CreatedAt:  timeNow,
-			CreatedBy:  auth.User.ID,
+			ID:        gofn.Must(ulid.NewStringULID()),
+			Type:      base.SettingTypeProject,
+			ObjectID:  project.ID,
+			CreatedAt: timeNow,
 		}
 	}
 
 	settings.UpdatedAt = timeNow
-	settings.UpdatedBy = auth.User.ID
 
 	var settingsData *entity.ProjectSettings
 

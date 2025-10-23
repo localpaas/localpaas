@@ -31,7 +31,7 @@ func (uc *AppUC) UpdateAppSettings(
 		}
 
 		persistingData := &persistingAppData{}
-		err = uc.preparePersistingAppSettings(auth, req, settingsData, persistingData)
+		err = uc.preparePersistingAppSettings(req, settingsData, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -73,7 +73,6 @@ func (uc *AppUC) loadAppSettingsDataForUpdate(
 }
 
 func (uc *AppUC) preparePersistingAppSettings(
-	auth *basedto.Auth,
 	req *appdto.UpdateAppSettingsReq,
 	data *updateAppSettingsData,
 	persistingData *persistingAppData,
@@ -83,16 +82,14 @@ func (uc *AppUC) preparePersistingAppSettings(
 	settings := data.ExistingSettings
 	if settings == nil {
 		settings = &entity.Setting{
-			ID:         gofn.Must(ulid.NewStringULID()),
-			TargetType: base.SettingTargetApp,
-			TargetID:   app.ID,
-			CreatedAt:  timeNow,
-			CreatedBy:  auth.User.ID,
+			ID:        gofn.Must(ulid.NewStringULID()),
+			Type:      base.SettingTypeApp,
+			ObjectID:  app.ID,
+			CreatedAt: timeNow,
 		}
 	}
 
 	settings.UpdatedAt = timeNow
-	settings.UpdatedBy = auth.User.ID
 
 	var settingsData *entity.AppSettings
 

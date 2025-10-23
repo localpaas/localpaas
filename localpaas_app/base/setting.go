@@ -1,10 +1,13 @@
 package base
 
-type SettingTargetType string
+type SettingType string
 
 const (
-	SettingTargetNode    = SettingTargetType("node")
-	SettingTargetProject = SettingTargetType("project")
-	SettingTargetApp     = SettingTargetType("app")
-	SettingTargetEnvVar  = SettingTargetType("env-var")
+	SettingTypeNode      = SettingType("node")
+	SettingTypeProject   = SettingType("project")
+	SettingTypeApp       = SettingType("app")
+	SettingTypeEnvVar    = SettingType("env-var")
+	SettingTypeS3Storage = SettingType("s3-storage")
+	SettingTypeSSHKey    = SettingType("ssh-key")
+	SettingTypeAPIKey    = SettingType("api-key")
 )

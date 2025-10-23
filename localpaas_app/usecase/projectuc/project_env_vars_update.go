@@ -30,7 +30,7 @@ func (uc *ProjectUC) UpdateProjectEnvVars(
 		}
 
 		persistingData := &persistingProjectData{}
-		err = uc.preparePersistingProjectEnvVars(auth, req, envData, persistingData)
+		err = uc.preparePersistingProjectEnvVars(req, envData, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -72,7 +72,6 @@ func (uc *ProjectUC) loadProjectEnvVarsDataForUpdate(
 }
 
 func (uc *ProjectUC) preparePersistingProjectEnvVars(
-	auth *basedto.Auth,
 	req *projectdto.UpdateProjectEnvVarsReq,
 	data *updateProjectEnvVarsData,
 	persistingData *persistingProjectData,
@@ -82,16 +81,14 @@ func (uc *ProjectUC) preparePersistingProjectEnvVars(
 	settings := data.ExistingSettings
 	if settings == nil {
 		settings = &entity.Setting{
-			ID:         gofn.Must(ulid.NewStringULID()),
-			TargetType: base.SettingTargetEnvVar,
-			TargetID:   project.ID,
-			CreatedAt:  timeNow,
-			CreatedBy:  auth.User.ID,
+			ID:        gofn.Must(ulid.NewStringULID()),
+			Type:      base.SettingTypeEnvVar,
+			ObjectID:  project.ID,
+			CreatedAt: timeNow,
 		}
 	}
 
 	settings.UpdatedAt = timeNow
-	settings.UpdatedBy = auth.User.ID
 
 	err := settings.SetData(&entity.ProjectEnvVars{Data: req.EnvVars})
 	if err != nil {
