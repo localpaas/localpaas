@@ -23,7 +23,7 @@ type User struct {
 	Photo    string `bun:",nullzero"`
 
 	SecurityOption      base.UserSecurityOption
-	TOPTSecret          string `bun:",nullzero"`
+	TotpSecret          string `bun:",nullzero"`
 	Password            []byte
 	PasswordSalt        []byte
 	PasswordFailsInRow  int

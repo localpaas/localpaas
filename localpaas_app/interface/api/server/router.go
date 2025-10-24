@@ -117,6 +117,10 @@ func (s *HTTPServer) registerRoutes() {
 		userGroup.GET("", s.handlerRegistry.userHandler.ListUser)
 		// Password
 		userGroup.PATCH("/current/password", s.handlerRegistry.userHandler.UpdateUserPassword)
+		// MFA TOTP setup
+		userGroup.POST("/current/mfa/totp-begin-setup", s.handlerRegistry.userHandler.BeginMFATotpSetup)
+		userGroup.POST("/current/mfa/totp-complete-setup", s.handlerRegistry.userHandler.CompleteMFATotpSetup)
+		userGroup.POST("/current/mfa/totp-remove", s.handlerRegistry.userHandler.RemoveMFATotp)
 	}
 
 	projectGroup := apiV1Group.Group("/projects")

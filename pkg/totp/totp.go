@@ -1,6 +1,8 @@
 package totp
 
 import (
+	"bytes"
+	"image/png"
 	"time"
 
 	"github.com/pquerna/otp/totp"
@@ -8,15 +10,27 @@ import (
 	"github.com/localpaas/localpaas/pkg/tracerr"
 )
 
-func GenerateSecret() (string, error) {
-	key, err := totp.Generate(totp.GenerateOpts{})
+func GenerateSecretAndQRCode(imageSize int) (string, bytes.Buffer, error) {
+	key, err := totp.Generate(totp.GenerateOpts{
+		Issuer:      "LocalPaaS",
+		AccountName: "LocalPaaS",
+	})
 	if err != nil {
-		return "", tracerr.Wrap(err)
+		return "", bytes.Buffer{}, tracerr.Wrap(err)
 	}
-	return key.Secret(), nil
+	qrCode, err := key.Image(imageSize, imageSize)
+	if err != nil {
+		return "", bytes.Buffer{}, tracerr.Wrap(err)
+	}
+	buf := bytes.Buffer{}
+	err = png.Encode(&buf, qrCode)
+	if err != nil {
+		return "", bytes.Buffer{}, tracerr.Wrap(err)
+	}
+	return key.Secret(), buf, nil
 }
 
-func GeneratePassCode(secret string) (string, error) {
+func GeneratePasscode(secret string) (string, error) {
 	code, err := totp.GenerateCode(secret, time.Now().UTC())
 	if err != nil {
 		return "", tracerr.Wrap(err)
@@ -24,6 +38,6 @@ func GeneratePassCode(secret string) (string, error) {
 	return code, nil
 }
 
-func VerifyCode(passCode, secret string) bool {
-	return totp.Validate(passCode, secret)
+func VerifyPasscode(passcode, secret string) bool {
+	return totp.Validate(passcode, secret)
 }

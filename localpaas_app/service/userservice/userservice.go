@@ -22,6 +22,7 @@ type UserService interface {
 	CheckPasswordStrength(password string) error
 
 	GenerateMFAToken(userID string, mfaType base.MFAType, trustedDeviceID string) (string, error)
+	GenerateMFATotpSetupToken(userID string, toptSecret string) (string, error)
 }
 
 func NewUserService(

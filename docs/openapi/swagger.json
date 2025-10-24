@@ -3110,6 +3110,162 @@
         "tags" : [ "users" ]
       }
     },
+    "/users/current/mfa/totp-begin-setup" : {
+      "post" : {
+        "description" : "Begins MFA TOTP authenticator setup",
+        "operationId" : "beginMFATotpSetup",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.BeginMFATotpSetupReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.BeginMFATotpSetupResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Begins MFA TOTP authenticator setup",
+        "tags" : [ "users" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/users/current/mfa/totp-complete-setup" : {
+      "post" : {
+        "description" : "Completes MFA TOTP authenticator setup",
+        "operationId" : "completeMFATotpSetup",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.CompleteMFATotpSetupReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.CompleteMFATotpSetupResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Completes MFA TOTP authenticator setup",
+        "tags" : [ "users" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/users/current/mfa/totp-remove" : {
+      "post" : {
+        "description" : "Removes MFA TOTP authenticator setup",
+        "operationId" : "removeMFATotp",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.RemoveMFATotpReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.RemoveMFATotpResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Removes MFA TOTP authenticator setup",
+        "tags" : [ "users" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
     "/users/current/password" : {
       "patch" : {
         "description" : "Changes user password",
@@ -4848,6 +5004,42 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.BeginMFATotpSetupReq" : {
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.BeginMFATotpSetupResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.MFATotpSetupDataResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.CompleteMFATotpSetupReq" : {
+        "properties" : {
+          "passcode" : {
+            "type" : "string"
+          },
+          "totpToken" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "passcode", "totpToken" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.CompleteMFATotpSetupResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.GetUserResp" : {
         "properties" : {
           "data" : {
@@ -4888,6 +5080,54 @@
           }
         },
         "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.MFATotpSetupDataResp" : {
+        "properties" : {
+          "qrCode" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.MFATotpSetupQRCodeResp"
+          },
+          "secret" : {
+            "type" : "string"
+          },
+          "totpToken" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "qrCode", "secret", "totpToken" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.MFATotpSetupQRCodeResp" : {
+        "properties" : {
+          "dataBase64" : {
+            "type" : "string"
+          },
+          "imageSize" : {
+            "type" : "integer"
+          },
+          "imageType" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "dataBase64", "imageSize", "imageType" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.RemoveMFATotpReq" : {
+        "properties" : {
+          "passcode" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "passcode" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.RemoveMFATotpResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UpdatePasswordReq" : {

@@ -46,7 +46,7 @@ func (s *userService) LoadUsers(ctx context.Context, db database.IDB, userIDs []
 			return nil, apperrors.New(apperrors.ErrUserUnavailable).
 				WithMsgLog("user access expired at: %v", user.AccessExpireAt)
 		}
-		if user.SecurityOption == base.UserSecurityPassword2FA && user.TOPTSecret == "" {
+		if user.SecurityOption == base.UserSecurityPassword2FA && user.TotpSecret == "" {
 			return nil, apperrors.New(apperrors.ErrUserNotCompleteMFASetup).
 				WithMsgLog("user %s hasn't completed the MFA setup", userID)
 		}
@@ -91,7 +91,7 @@ func (s *userService) LoadUsersByEmails(ctx context.Context, db database.IDB,
 			return nil, apperrors.New(apperrors.ErrUserUnavailable).
 				WithMsgLog("user access expired at: %v", user.AccessExpireAt)
 		}
-		if user.SecurityOption == base.UserSecurityPassword2FA && user.TOPTSecret == "" {
+		if user.SecurityOption == base.UserSecurityPassword2FA && user.TotpSecret == "" {
 			return nil, apperrors.New(apperrors.ErrUserNotCompleteMFASetup).
 				WithMsgLog("user '%s' hasn't completed the MFA setup", email)
 		}

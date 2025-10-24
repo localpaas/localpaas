@@ -6,8 +6,8 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/entity/appentity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/jwtsession"
-	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc/sessiondto"
 	"github.com/localpaas/localpaas/pkg/timeutil"
 	"github.com/localpaas/localpaas/pkg/totp"
@@ -21,7 +21,7 @@ func (uc *SessionUC) LoginWithPasscode(
 	ctx context.Context,
 	req *sessiondto.LoginWithPasscodeReq,
 ) (resp *sessiondto.LoginWithPasscodeResp, err error) {
-	mfaTokenClaims := &userservice.MFATokenClaims{}
+	mfaTokenClaims := &appentity.MFATokenClaims{}
 	if err = jwtsession.ParseToken(req.MFAToken, mfaTokenClaims); err != nil {
 		return nil, apperrors.New(apperrors.ErrMFATokenInvalid).WithCause(err)
 	}
@@ -32,7 +32,7 @@ func (uc *SessionUC) LoginWithPasscode(
 	}
 
 	// Verify passcode TOTP
-	if !totp.VerifyCode(req.Passcode, dbUser.TOPTSecret) {
+	if !totp.VerifyPasscode(req.Passcode, dbUser.TotpSecret) {
 		passcode, err := uc.mfaPasscodeRepo.Get(ctx, mfaTokenClaims.UserID)
 		if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 			return nil, apperrors.Wrap(err)

@@ -2,7 +2,8 @@ package appentity
 
 import "github.com/localpaas/localpaas/localpaas_app/pkg/jwtsession"
 
-type UserInviteTokenClaims struct {
+type MFATotpSetupTokenClaims struct {
 	jwtsession.BaseClaims
-	Email string `json:"email"`
+	UserID string `json:"userId"`
+	Secret string `json:"secret"`
 }

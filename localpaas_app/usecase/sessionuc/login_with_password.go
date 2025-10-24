@@ -41,7 +41,7 @@ func (uc *SessionUC) LoginWithPassword(
 		return nil, uc.wrapSensitiveError(err)
 	}
 
-	passcodeRequired := dbUser.SecurityOption == base.UserSecurityPassword2FA && dbUser.TOPTSecret != ""
+	passcodeRequired := dbUser.TotpSecret != ""
 
 	// When trusted device is sent
 	if passcodeRequired && req.TrustedDeviceID != "" {
