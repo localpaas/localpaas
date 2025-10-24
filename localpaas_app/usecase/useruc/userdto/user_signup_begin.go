@@ -1,0 +1,35 @@
+package userdto
+
+import (
+	vld "github.com/tiendc/go-validator"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/basedto"
+)
+
+type BeginUserSignupReq struct {
+	InviteToken string `json:"inviteToken"`
+}
+
+func NewBeginUserSignupReq() *BeginUserSignupReq {
+	return &BeginUserSignupReq{}
+}
+
+func (req *BeginUserSignupReq) Validate() apperrors.ValidationErrors {
+	var validators []vld.Validator
+	validators = append(validators, basedto.ValidateStr(&req.InviteToken, true,
+		1, maxInviteTokenLen, "inviteToken")...)
+	return apperrors.NewValidationErrors(vld.Validate(validators...))
+}
+
+type BeginUserSignupResp struct {
+	Meta *basedto.BaseMeta        `json:"meta"`
+	Data *BeginUserSignupDataResp `json:"data"`
+}
+
+type BeginUserSignupDataResp struct {
+	RequirePassword bool               `json:"requirePassword"`
+	RequireMfa      bool               `json:"requireMfa"`
+	MFATotpSecret   string             `json:"mfaTotpSecret,omitempty"`
+	QRCode          *MFATotpQRCodeResp `json:"qrCode,omitempty"`
+}

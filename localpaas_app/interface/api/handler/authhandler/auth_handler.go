@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler"
@@ -58,6 +59,12 @@ func (h *AuthHandler) GetCurrentAuth(ctx *gin.Context, accessCheck *permission.A
 	auth, err := h.getCurrentAuth(ctx)
 	if err != nil {
 		return nil, apperrors.New(err)
+	}
+
+	// User is required to be owner or admin
+	if accessCheck != nil && accessCheck.RequireAdmin &&
+		(auth.User.Role == base.UserRoleOwner || auth.User.Role == base.UserRoleAdmin) {
+		return auth, nil
 	}
 
 	//nolint:staticcheck

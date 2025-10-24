@@ -45,7 +45,7 @@ func (uc *UserUC) BeginMFATotpSetup(
 		Data: &userdto.MFATotpSetupDataResp{
 			Secret:    secret,
 			TotpToken: totpToken,
-			QRCode: &userdto.MFATotpSetupQRCodeResp{
+			QRCode: &userdto.MFATotpQRCodeResp{
 				DataBase64: base64.StdEncoding.EncodeToString(qrCode.Bytes()),
 				ImageType:  qrCodeImageType,
 				ImageSize:  qrCodeImageSize,

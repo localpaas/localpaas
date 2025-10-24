@@ -23,7 +23,7 @@ func (uc *SessionUC) LoginWithPasscode(
 ) (resp *sessiondto.LoginWithPasscodeResp, err error) {
 	mfaTokenClaims := &appentity.MFATokenClaims{}
 	if err = jwtsession.ParseToken(req.MFAToken, mfaTokenClaims); err != nil {
-		return nil, apperrors.New(apperrors.ErrMFATokenInvalid).WithCause(err)
+		return nil, apperrors.New(apperrors.ErrTokenInvalid).WithCause(err)
 	}
 
 	dbUser, err := uc.userRepo.GetByID(ctx, uc.db, mfaTokenClaims.UserID)

@@ -23,7 +23,7 @@ func (uc *UserUC) CompleteMFATotpSetup(
 ) (*userdto.CompleteMFATotpSetupResp, error) {
 	mfaTotpSetupTokenClaims := &appentity.MFATotpSetupTokenClaims{}
 	if err := jwtsession.ParseToken(req.TotpToken, mfaTotpSetupTokenClaims); err != nil {
-		return nil, apperrors.New(apperrors.ErrMFATokenInvalid).WithCause(err)
+		return nil, apperrors.New(apperrors.ErrTokenInvalid).WithCause(err)
 	}
 
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {

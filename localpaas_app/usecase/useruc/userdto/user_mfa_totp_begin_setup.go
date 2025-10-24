@@ -22,12 +22,12 @@ type BeginMFATotpSetupResp struct {
 }
 
 type MFATotpSetupDataResp struct {
-	Secret    string                  `json:"secret"`
-	TotpToken string                  `json:"totpToken"`
-	QRCode    *MFATotpSetupQRCodeResp `json:"qrCode"`
+	Secret    string             `json:"secret"`
+	TotpToken string             `json:"totpToken"`
+	QRCode    *MFATotpQRCodeResp `json:"qrCode"`
 }
 
-type MFATotpSetupQRCodeResp struct {
+type MFATotpQRCodeResp struct {
 	DataBase64 string `json:"dataBase64"`
 	ImageType  string `json:"imageType"`
 	ImageSize  int    `json:"imageSize"`

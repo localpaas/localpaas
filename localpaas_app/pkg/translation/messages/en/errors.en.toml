@@ -17,6 +17,7 @@ ERR_IMPORT_DATA_INVALID = "Import data is invalid"
 ERR_IMPORT_COLUMN_INVALID = "{{.Name}} is required"
 ERR_REQUEST_TOO_FREQUENTLY = "request too frequently"
 ERR_ACTION_NOT_ALLOWED = "Action is not allowed"
+ERR_TOKEN_INVALID = "Token is invalid"
 ERR_NOT_IMPLEMENTED = "not implemented"
 
 # Session errors
@@ -27,7 +28,6 @@ ERR_SSO_REQUIRED = "You are required to login with SSO"
 ERR_LOGIN_INPUT_INVALID = "Email or password is incorrect"
 ERR_PASSWORD_MISMATCHED = "Password is incorrect"
 ERR_PASSCODE_MISMATCHED = "Passcode is incorrect"
-ERR_MFA_TOKEN_INVALID = "MFA token is invalid"
 ERR_TOO_MANY_LOGIN_FAILURES = "You made too many login failures. Please wait {{.WaitDuration}} seconds before trying again."
 ERR_TOO_MANY_PASSCODE_ATTEMPTS = "You made too many passcode attempts. Please start over the login process."
 

@@ -9,6 +9,7 @@ import (
 )
 
 type AccessCheck struct {
+	RequireAdmin bool
 	SubjectType  base.SubjectType
 	SubjectID    string
 	ResourceType base.ResourceType

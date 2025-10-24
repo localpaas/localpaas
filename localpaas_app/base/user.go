@@ -15,13 +15,13 @@ var (
 type UserStatus string
 
 const (
-	UserStatusInvited  = UserStatus("invited")
 	UserStatusActive   = UserStatus("active")
+	UserStatusPending  = UserStatus("pending")
 	UserStatusDisabled = UserStatus("disabled")
 )
 
 var (
-	AllUserStatuses = []UserStatus{UserStatusInvited, UserStatusActive, UserStatusDisabled}
+	AllUserStatuses = []UserStatus{UserStatusActive, UserStatusPending, UserStatusDisabled}
 )
 
 type UserSecurityOption string

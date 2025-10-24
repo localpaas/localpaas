@@ -8,6 +8,7 @@ app:
   name: LocalPaas
   version: 0.1
   base_url: http://localhost # front-end base URL
+  app_path: temp/appdata
 
 log:
 

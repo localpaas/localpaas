@@ -10,8 +10,9 @@ import (
 )
 
 const (
-	MFATokenExpiration          = 60 * time.Second
-	MFATotpSetupTokenExpiration = 120 * time.Second
+	MFATokenExp          = 60 * time.Second
+	MFATotpSetupTokenExp = 180 * time.Second
+	UserInviteTokenExp   = 7 * 24 * time.Hour // 1 week
 )
 
 // GenerateMFAToken builds MFA token for using in the next step
@@ -20,7 +21,7 @@ func (s *userService) GenerateMFAToken(userID string, mfaType base.MFAType, trus
 		UserID:          userID,
 		MFAType:         mfaType,
 		TrustedDeviceID: trustedDeviceID,
-	}, MFATokenExpiration)
+	}, MFATokenExp)
 	if err != nil {
 		return "", apperrors.Wrap(err)
 	}
@@ -32,9 +33,19 @@ func (s *userService) GenerateMFATotpSetupToken(userID string, toptSecret string
 	mfaToken, err := jwtsession.GenerateToken(&appentity.MFATotpSetupTokenClaims{
 		UserID: userID,
 		Secret: toptSecret,
-	}, MFATotpSetupTokenExpiration)
+	}, MFATotpSetupTokenExp)
 	if err != nil {
 		return "", apperrors.Wrap(err)
 	}
 	return mfaToken, nil
+}
+
+func (s *userService) GenerateUserInviteToken(userID string) (string, error) {
+	token, err := jwtsession.GenerateToken(&appentity.UserInviteTokenClaims{
+		UserID: userID,
+	}, UserInviteTokenExp)
+	if err != nil {
+		return "", apperrors.Wrap(err)
+	}
+	return token, nil
 }

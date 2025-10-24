@@ -54,6 +54,7 @@ func NewHandlerRegistry(
 	}
 }
 
+//nolint:funlen
 func (s *HTTPServer) registerRoutes() {
 	s.engine.GET("/", routeHome)
 	s.engine.GET("/ping", routePing)
@@ -65,6 +66,9 @@ func (s *HTTPServer) registerRoutes() {
 		s.engine.GET("/swagger/*any", swaggoGin.WrapHandler(swaggoFiles.Handler,
 			swaggoGin.URL("/docs/openapi/swagger.json")))
 	}
+
+	// STATIC FILES
+	s.engine.Static("/files/user/photo", s.config.App.DataPathUserPhoto())
 
 	// INTERNAL ROUTES
 	basicAuthMdlw := gin.BasicAuth(gin.Accounts{
@@ -121,6 +125,10 @@ func (s *HTTPServer) registerRoutes() {
 		userGroup.POST("/current/mfa/totp-begin-setup", s.handlerRegistry.userHandler.BeginMFATotpSetup)
 		userGroup.POST("/current/mfa/totp-complete-setup", s.handlerRegistry.userHandler.CompleteMFATotpSetup)
 		userGroup.POST("/current/mfa/totp-remove", s.handlerRegistry.userHandler.RemoveMFATotp)
+		// Invite & SignUp
+		userGroup.POST("/invite", s.handlerRegistry.userHandler.InviteUser)
+		userGroup.POST("/signup-begin", s.handlerRegistry.userHandler.BeginUserSignup)
+		userGroup.POST("/signup-complete", s.handlerRegistry.userHandler.CompleteUserSignup)
 	}
 
 	projectGroup := apiV1Group.Group("/projects")

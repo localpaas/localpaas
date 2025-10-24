@@ -6,6 +6,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
+	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 )
 
@@ -17,22 +18,32 @@ type UserService interface {
 	LoadUsersByEmails(ctx context.Context, db database.IDB, emails []string) (
 		userMap map[string]*entity.User, err error)
 
+	PersistUserData(ctx context.Context, db database.IDB, persistingData *PersistingUserData) error
+	SaveUserPhoto(_ context.Context, user *entity.User, data []byte, fileExt string) error
+
 	ChangePassword(user *entity.User, newPassword, currPassword string) error
 	VerifyPassword(user *entity.User, password string) error
 	CheckPasswordStrength(password string) error
 
 	GenerateMFAToken(userID string, mfaType base.MFAType, trustedDeviceID string) (string, error)
 	GenerateMFATotpSetupToken(userID string, toptSecret string) (string, error)
+	GenerateUserInviteToken(userID string) (string, error)
 }
 
 func NewUserService(
 	userRepo repository.UserRepo,
+	settingRepo repository.SettingRepo,
+	permissionManager permission.Manager,
 ) UserService {
 	return &userService{
-		userRepo: userRepo,
+		userRepo:          userRepo,
+		settingRepo:       settingRepo,
+		permissionManager: permissionManager,
 	}
 }
 
 type userService struct {
-	userRepo repository.UserRepo
+	userRepo          repository.UserRepo
+	settingRepo       repository.SettingRepo
+	permissionManager permission.Manager
 }

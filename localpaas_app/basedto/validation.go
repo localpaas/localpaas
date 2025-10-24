@@ -159,6 +159,39 @@ func ValidateObjectAccessSliceReq(access ObjectAccessSliceReq, unique bool, minL
 	return res
 }
 
+func ValidateModuleAccessReq(access *ModuleAccessReq, required bool, field string) (res []vld.Validator) {
+	var id *string
+	if access != nil {
+		id = &access.ID
+	}
+	if required {
+		res = append(res, vld.Required(id).OnError(
+			vld.SetField(field+".id", nil),
+			vld.SetCustomKey("ERR_VLD_OBJECT_ID_REQUIRED"), // use default error key
+		))
+	}
+	return res
+}
+
+func ValidateModuleAccessSliceReq(access ModuleAccessSliceReq, unique bool, minLen int, field string) (
+	res []vld.Validator) {
+	if unique {
+		res = append(res, vld.SliceUniqueBy(access, func(item *ModuleAccessReq) string {
+			return item.ID
+		}).OnError(
+			vld.SetField(field, nil),
+			vld.SetCustomKey("ERR_VLD_OBJECT_IDS_NON_UNIQUE"),
+		))
+	}
+	if minLen > 0 {
+		res = append(res, vld.SliceLen(access, minLen, math.MaxInt).OnError(
+			vld.SetField(field, nil),
+			vld.SetCustomKey("ERR_VLD_OBJECT_IDS_REQUIRED"),
+		))
+	}
+	return res
+}
+
 func ValidateEmail(email *string, required bool, field string) (res []vld.Validator) {
 	if required {
 		res = append(res, vld.Required(email).OnError(

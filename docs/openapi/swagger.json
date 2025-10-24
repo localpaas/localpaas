@@ -3318,6 +3318,162 @@
         "x-codegen-request-body-name" : "body"
       }
     },
+    "/users/invite" : {
+      "post" : {
+        "description" : "Invites a user to system",
+        "operationId" : "inviteUser",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.InviteUserReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.InviteUserResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Invites a user to system",
+        "tags" : [ "users" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/users/signup-begin" : {
+      "post" : {
+        "description" : "Begins user signup process",
+        "operationId" : "beginUserSignup",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.BeginUserSignupReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.BeginUserSignupResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Begins user signup process",
+        "tags" : [ "users" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/users/signup-complete" : {
+      "post" : {
+        "description" : "Completes user signup process",
+        "operationId" : "completeUserSignup",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.CompleteUserSignupReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.CompleteUserSignupResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Completes user signup process",
+        "tags" : [ "users" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
     "/users/{userID}" : {
       "get" : {
         "description" : "Gets user details",
@@ -3455,9 +3611,9 @@
         "x-enum-varnames" : [ "UserSecurityEnforceSSO", "UserSecurityPassword2FA", "UserSecurityPasswordOnly" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.UserStatus" : {
-        "enum" : [ "invited", "active", "disabled" ],
+        "enum" : [ "active", "pending", "disabled" ],
         "type" : "string",
-        "x-enum-varnames" : [ "UserStatusInvited", "UserStatusActive", "UserStatusDisabled" ]
+        "x-enum-varnames" : [ "UserStatusActive", "UserStatusPending", "UserStatusDisabled" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta" : {
         "properties" : {
@@ -3482,6 +3638,31 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.PagingMeta"
           }
         },
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_basedto.ModuleAccessReq" : {
+        "properties" : {
+          "access" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.AccessActions"
+          },
+          "id" : {
+            "description" : "could be module name",
+            "type" : "string"
+          }
+        },
+        "required" : [ "access", "id" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_basedto.ObjectAccessReq" : {
+        "properties" : {
+          "access" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.AccessActions"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "access", "id" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq" : {
@@ -3530,6 +3711,21 @@
           }
         },
         "required" : [ "fullName", "id", "photo" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_entity.AccessActions" : {
+        "properties" : {
+          "delete" : {
+            "type" : "boolean"
+          },
+          "read" : {
+            "type" : "boolean"
+          },
+          "write" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "delete", "read", "write" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_apikeyuc_apikeydto.APIKeyBaseResp" : {
@@ -5019,6 +5215,45 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.BeginUserSignupDataResp" : {
+        "properties" : {
+          "mfaTotpSecret" : {
+            "type" : "string"
+          },
+          "qrCode" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.MFATotpQRCodeResp"
+          },
+          "requireMfa" : {
+            "type" : "boolean"
+          },
+          "requirePassword" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "requireMfa", "requirePassword" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.BeginUserSignupReq" : {
+        "properties" : {
+          "inviteToken" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "inviteToken" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.BeginUserSignupResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.BeginUserSignupDataResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.CompleteMFATotpSetupReq" : {
         "properties" : {
           "passcode" : {
@@ -5040,10 +5275,99 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.CompleteUserSignupReq" : {
+        "properties" : {
+          "fullName" : {
+            "type" : "string"
+          },
+          "inviteToken" : {
+            "type" : "string"
+          },
+          "mfaTotpSecret" : {
+            "type" : "string"
+          },
+          "passcode" : {
+            "description" : "Required when security option is password-2fa",
+            "type" : "string"
+          },
+          "password" : {
+            "description" : "Required when security option is password-2fa/password-only",
+            "type" : "string"
+          },
+          "photo" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UserPhotoReq"
+          }
+        },
+        "required" : [ "fullName", "inviteToken", "mfaTotpSecret", "passcode", "password", "photo" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.CompleteUserSignupResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.GetUserResp" : {
         "properties" : {
           "data" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UserDetailsResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.InviteUserDataResp" : {
+        "properties" : {
+          "inviteLink" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "inviteLink" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.InviteUserReq" : {
+        "properties" : {
+          "accessExpiration" : {
+            "type" : "string"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "moduleAccesses" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ModuleAccessReq"
+            },
+            "type" : "array"
+          },
+          "projectAccesses" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectAccessReq"
+            },
+            "type" : "array"
+          },
+          "role" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.UserRole"
+          },
+          "securityOption" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.UserSecurityOption"
+          },
+          "sendInviteEmail" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "accessExpiration", "email", "moduleAccesses", "projectAccesses", "role", "securityOption", "sendInviteEmail" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.InviteUserResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.InviteUserDataResp"
           },
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
@@ -5082,22 +5406,7 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.MFATotpSetupDataResp" : {
-        "properties" : {
-          "qrCode" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.MFATotpSetupQRCodeResp"
-          },
-          "secret" : {
-            "type" : "string"
-          },
-          "totpToken" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "qrCode", "secret", "totpToken" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.MFATotpSetupQRCodeResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.MFATotpQRCodeResp" : {
         "properties" : {
           "dataBase64" : {
             "type" : "string"
@@ -5110,6 +5419,21 @@
           }
         },
         "required" : [ "dataBase64", "imageSize", "imageType" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.MFATotpSetupDataResp" : {
+        "properties" : {
+          "qrCode" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.MFATotpQRCodeResp"
+          },
+          "secret" : {
+            "type" : "string"
+          },
+          "totpToken" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "qrCode", "secret", "totpToken" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.RemoveMFATotpReq" : {
@@ -5203,6 +5527,18 @@
           }
         },
         "required" : [ "accessExpireAt", "createdAt", "email", "fullName", "id", "lastAccess", "photo", "role", "securityOption", "status", "updatedAt" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UserPhotoReq" : {
+        "properties" : {
+          "dataBase64" : {
+            "type" : "string"
+          },
+          "fileName" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "dataBase64", "fileName" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UserResp" : {

@@ -1,0 +1,50 @@
+package userdto
+
+import (
+	"time"
+
+	vld "github.com/tiendc/go-validator"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/pkg/strutil"
+)
+
+type InviteUserReq struct {
+	Email            string                       `json:"email"`
+	Role             base.UserRole                `json:"role"`
+	SecurityOption   base.UserSecurityOption      `json:"securityOption"`
+	AccessExpiration time.Time                    `json:"accessExpiration"`
+	SendInviteEmail  bool                         `json:"sendInviteEmail"`
+	ModuleAccesses   basedto.ModuleAccessSliceReq `json:"moduleAccesses"`
+	ProjectAccesses  basedto.ObjectAccessSliceReq `json:"projectAccesses"`
+}
+
+func NewInviteUserReq() *InviteUserReq {
+	return &InviteUserReq{}
+}
+
+func (req *InviteUserReq) Validate() apperrors.ValidationErrors {
+	req.Email = strutil.NormalizeEmail(req.Email)
+
+	var validators []vld.Validator
+	validators = append(validators, basedto.ValidateStrIn(&req.Role, true,
+		base.AllUserRoles, "role")...)
+	validators = append(validators, basedto.ValidateStrIn(&req.SecurityOption, true,
+		base.AllUserSecurityOptions, "securityOption")...)
+	validators = append(validators, basedto.ValidateModuleAccessSliceReq(req.ModuleAccesses, true,
+		0, "moduleAccesses")...)
+	validators = append(validators, basedto.ValidateObjectAccessSliceReq(req.ProjectAccesses, true,
+		0, "projectAccesses")...)
+	return apperrors.NewValidationErrors(vld.Validate(validators...))
+}
+
+type InviteUserResp struct {
+	Meta *basedto.BaseMeta   `json:"meta"`
+	Data *InviteUserDataResp `json:"data"`
+}
+
+type InviteUserDataResp struct {
+	InviteLink string `json:"inviteLink"`
+}

@@ -6,7 +6,7 @@ DEVTOOLS_IMAGE=localpaas-devtools
 # Gen swagger.json
 docker run --entrypoint "/go/bin/swag" --rm --volume "${PWD}":/app --volume "${HOME}/go/pkg/mod":/go/pkg/mod ${DEVTOOLS_IMAGE} init \
   -g localpaas_app/interface/api/server/server.go -o docs/openapi --outputTypes json \
-  --parseDependencyLevel 3 --requiredByDefault
+  --parseDependencyLevel 1 --requiredByDefault
 
 # Convert swagger.json to OpenAPI v3 format
 docker run --user $(id -u) --rm --volume "${PWD}:/app" openapitools/openapi-generator-cli generate \

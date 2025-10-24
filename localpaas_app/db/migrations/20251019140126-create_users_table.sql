@@ -6,26 +6,24 @@ CREATE TABLE IF NOT EXISTS users
     role            VARCHAR(20) NOT NULL CONSTRAINT chk_role CHECK
                         (role IN ('owner','admin','member')),
     status          VARCHAR(20) NOT NULL CONSTRAINT chk_status CHECK
-                        (status IN ('active','disabled')),
+                        (status IN ('active','pending','disabled')),
     full_name       VARCHAR(100) NOT NULL DEFAULT '',
     photo           VARCHAR(255) NULL,
     security_option VARCHAR(20) NOT NULL CONSTRAINT chk_security_option CHECK
                         (security_option IN ('enforce-sso','password-2fa','password-only')),
-    topt_secret     VARCHAR(50) NULL,
+    totp_secret     VARCHAR(100) NULL,
     password        BYTEA NULL,
     password_salt   BYTEA NULL,
     password_fails_in_row  SMALLINT NOT NULL DEFAULT 0,
     password_first_fail_at TIMESTAMPTZ NULL,
-    totp_secret            VARCHAR(100) NULL,
     created_at             TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at             TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     access_expire_at       TIMESTAMPTZ NULL,
     last_access            TIMESTAMPTZ NULL,
-    deleted_at             TIMESTAMPTZ NULL,
-
-    UNIQUE (email)
+    deleted_at             TIMESTAMPTZ NULL
 );
 
+CREATE UNIQUE INDEX idx_uq_users_email ON users(email) WHERE deleted_at IS NULL;
 CREATE INDEX idx_users_full_name ON users(full_name);
 CREATE INDEX idx_users_created_at ON users(created_at);
 CREATE INDEX idx_users_updated_at ON users(updated_at);

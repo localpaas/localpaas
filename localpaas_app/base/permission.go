@@ -15,6 +15,7 @@ const (
 type ResourceType string
 
 const (
+	ResourceTypeModule     ResourceType = "module"
 	ResourceTypeUser       ResourceType = "user"
 	ResourceTypeCluster    ResourceType = "cluster"
 	ResourceTypeNode       ResourceType = "node"
@@ -25,6 +26,13 @@ const (
 	ResourceTypeS3Storage  ResourceType = "s3-storage"
 	ResourceTypeSSHKey     ResourceType = "ssh-key"
 	ResourceTypeAPIKey     ResourceType = "api-key"
+)
+
+type ResourceModule string
+
+const (
+	ResourceModuleUserAndRole ResourceModule = "user-role"
+	ResourceModuleSetting     ResourceModule = "setting"
 )
 
 type ActionType string

@@ -141,6 +141,18 @@ func (req ObjectAccessSliceReq) ToIDStringSlice() []string {
 	return result
 }
 
+// ModuleAccessReq request input for requesting access to a module
+type ModuleAccessReq struct {
+	ModuleIDReq
+	Access entity.AccessActions `json:"access"`
+}
+
+type ModuleIDReq struct {
+	ID string `json:"id"` // could be module name
+}
+
+type ModuleAccessSliceReq []*ModuleAccessReq
+
 type FileReq struct {
 	File *multipart.FileHeader
 }

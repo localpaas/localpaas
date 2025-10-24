@@ -23,6 +23,7 @@ var (
 	ErrRequestTooFrequently = errors.New("ERR_REQUEST_TOO_FREQUENTLY")
 	ErrActionNotAllowed     = errors.New("ERR_ACTION_NOT_ALLOWED")
 	ErrNotImplemented       = errors.New("ERR_NOT_IMPLEMENTED")
+	ErrTokenInvalid         = errors.New("ERR_TOKEN_INVALID")
 	ErrValidation           = errors.New("ERR_VALIDATION")
 )
 
@@ -35,7 +36,6 @@ var (
 	ErrLoginInputInvalid           = errors.New("ERR_LOGIN_INPUT_INVALID")
 	ErrPasswordMismatched          = errors.New("ERR_PASSWORD_MISMATCHED")
 	ErrPasscodeMismatched          = errors.New("ERR_PASSCODE_MISMATCHED")
-	ErrMFATokenInvalid             = errors.New("ERR_MFA_TOKEN_INVALID")
 	ErrTooManyLoginFailures        = errors.New("ERR_TOO_MANY_LOGIN_FAILURES")
 	ErrTooManyPasscodeAttempts     = errors.New("ERR_TOO_MANY_PASSCODE_ATTEMPTS")
 )
@@ -78,6 +78,7 @@ var errorStatusMap = map[error]int{
 	ErrRequestTooFrequently: http.StatusForbidden,
 	ErrActionNotAllowed:     http.StatusForbidden,
 	ErrNotImplemented:       http.StatusNotImplemented,
+	ErrTokenInvalid:         http.StatusUnauthorized,
 	ErrValidation:           http.StatusBadRequest,
 
 	// Session errors
@@ -88,7 +89,6 @@ var errorStatusMap = map[error]int{
 	ErrLoginInputInvalid:           http.StatusUnauthorized,
 	ErrPasswordMismatched:          http.StatusUnauthorized,
 	ErrPasscodeMismatched:          http.StatusUnauthorized,
-	ErrMFATokenInvalid:             http.StatusUnauthorized,
 	ErrTooManyLoginFailures:        http.StatusForbidden,
 	ErrTooManyPasscodeAttempts:     http.StatusForbidden,
 
