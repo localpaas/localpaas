@@ -6,11 +6,10 @@
 /build/*
 /vendor
 /test-results
-config.yaml
-.env
-.envrc
-.DS_Store
-srv
 /temp
 /.temp
 /tmp
+/srv
+.env
+.envrc
+.DS_Store

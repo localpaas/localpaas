@@ -4,6 +4,9 @@ CREATE TABLE IF NOT EXISTS settings
     id           VARCHAR(26) PRIMARY KEY,
     name         VARCHAR(100) NULL,
     type         VARCHAR(100) NOT NULL,
+    version      VARCHAR(10) NOT NULL DEFAULT '1',
+    status       VARCHAR(20) NOT NULL CONSTRAINT chk_status CHECK
+                    (status IN ('active','pending','disabled')) DEFAULT 'active',
     data         JSONB NULL,
 
     created_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -13,6 +16,7 @@ CREATE TABLE IF NOT EXISTS settings
 
 CREATE INDEX idx_settings_type ON settings(type);
 CREATE INDEX idx_settings_name ON settings(name);
+CREATE INDEX idx_settings_status ON settings(status);
 CREATE INDEX idx_settings_created_at ON settings(created_at);
 CREATE INDEX idx_settings_deleted_at ON settings(deleted_at);
 

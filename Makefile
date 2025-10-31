@@ -15,9 +15,9 @@ mod:
 lint:
 	$(DEVTOOLS_CMD) golangci-lint --timeout=3m run -v ./...
 
-lint2:
+lint-local:
 	# Run this cmd locally once to install golangci-lint binary
-	# curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.1.6
+	# curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.6.0
 	golangci-lint --timeout=3m run -v ./...
 
 up:
