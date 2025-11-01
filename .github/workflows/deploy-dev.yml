@@ -1,0 +1,46 @@
+name: Deploy to Dev Server
+
+on:
+  push:
+    tags:
+      - 'dev-**'
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v5
+        with:
+          ref: dev
+          submodules: recursive
+      -
+        name: Get tag
+        run: echo "TAG_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build and push BE image
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          file: deployment/dev/Dockerfile
+          tags: |
+            localpaas/localpaas-dev:app-${{ env.TAG_VERSION }}
+            localpaas/localpaas-dev:app-latest
+      - name: Deploy BE to Server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEV_SRV_IP }}
+          port: ${{ secrets.DEV_SRV_SSH_PORT }}
+          username: ${{ secrets.DEV_SRV_USERNAME }}
+          password: ${{ secrets.DEV_SRV_PASSWORD }}
+          script: curl -sL "https://raw.githubusercontent.com/localpaas/localpaas/dev/deployment/dev/install.sh" | bash
