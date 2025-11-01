@@ -18,7 +18,7 @@ lint:
 lint-local:
 	# Run this cmd locally once to install golangci-lint binary
 	# curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.6.0
-	golangci-lint --timeout=3m run -v ./...
+	golangci-lint --timeout=5m run -v ./...
 
 up:
 	docker compose up -d
@@ -30,10 +30,10 @@ test:
 	@./scripts/test.sh
 
 build:
-	@go build -o srv ./localpaas_app/cmd/srv/...
+	@go build -o app ./localpaas_app/cmd/app/...
 
 run:
-	@go run ./localpaas_app/cmd/srv/...
+	@go run ./localpaas_app/cmd/app/...
 
 # ----- Code generation -----
 gen: gen-go gen-swag
@@ -90,3 +90,8 @@ seed-data-with-clear:
 	$(DB_EXEC_BASE) -f ${DB_MIGRATE_DIR}/seed/clear.sql
 	make migrate-up
 	$(DB_EXEC_BASE) -f ${DB_MIGRATE_DIR}/seed/seed.sql
+
+dev-deploy:
+	git checkout dev
+	git tag dev-v0.1.0 --force
+	git push origin dev-v0.1.0 --force
