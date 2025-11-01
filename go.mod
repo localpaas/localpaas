@@ -27,7 +27,7 @@ require (
 	github.com/swaggo/gin-swagger v1.6.1
 	github.com/tiendc/go-deepcopy v1.7.1
 	github.com/tiendc/go-validator v1.2.0
-	github.com/tiendc/gofn v1.14.0
+	github.com/tiendc/gofn v1.15.0
 	github.com/uptrace/bun v1.2.15
 	github.com/uptrace/bun/dialect/pgdialect v1.2.15
 	github.com/uptrace/bun/extra/bundebug v1.2.15

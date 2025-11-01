@@ -1,8 +1,6 @@
 package httputil
 
 import (
-	"strings"
-
 	"golang.org/x/text/language"
 
 	"github.com/localpaas/localpaas/localpaas_app/pkg/translation"
@@ -24,15 +22,4 @@ func ParseRequestLang(acceptLang string) translation.Lang {
 		}
 	}
 	return translation.GetDefaultLang()
-}
-
-// SplitQueryParam splits query param and removes all empty item
-func SplitQueryParam[T ~string](str, sep string) (result []T) {
-	for _, s := range strings.Split(str, sep) {
-		s = strings.TrimSpace(s)
-		if s != "" {
-			result = append(result, T(s))
-		}
-	}
-	return
 }

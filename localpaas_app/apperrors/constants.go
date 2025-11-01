@@ -49,14 +49,13 @@ var (
 
 // Errors for user
 var (
-	ErrUserUnavailable                  = errors.New("ERR_USER_UNAVAILABLE")
-	ErrUserStatusNotAllowActivation     = errors.New("ERR_USER_STATUS_NOT_ALLOW_ACTIVATION")
-	ErrUserAlreadySignUp                = errors.New("ERR_USER_ALREADY_SIGN_UP")
-	ErrUserNotCompleteMFASetup          = errors.New("ERR_USER_NOT_COMPLETE_MFA_SETUP")
-	ErrPasswordNotMeetRequirements      = errors.New("ERR_PASSWORD_NOT_MEET_REQUIREMENTS")
-	ErrPasswordResetTokenInvalid        = errors.New("ERR_PASSWORD_RESET_TOKEN_INVALID")
-	ErrEmailChangeUnallowedOnEnforceSSO = errors.New("ERR_EMAIL_CHANGE_UNALLOWED_ON_ENFORCE_SSO")
-	ErrEmailUnavailable                 = errors.New("ERR_EMAIL_UNAVAILABLE")
+	ErrUserUnavailable             = errors.New("ERR_USER_UNAVAILABLE")
+	ErrUserStatusNotAllowAction    = errors.New("ERR_USER_STATUS_NOT_ALLOW_ACTION")
+	ErrUserAlreadySignUp           = errors.New("ERR_USER_ALREADY_SIGN_UP")
+	ErrUserNotCompleteMFASetup     = errors.New("ERR_USER_NOT_COMPLETE_MFA_SETUP")
+	ErrPasswordNotMeetRequirements = errors.New("ERR_PASSWORD_NOT_MEET_REQUIREMENTS")
+	ErrPasswordResetTokenInvalid   = errors.New("ERR_PASSWORD_RESET_TOKEN_INVALID")
+	ErrEmailChangeUnallowed        = errors.New("ERR_EMAIL_CHANGE_UNALLOWED")
 )
 
 // errorStatusMap - mapping from error to http status code
@@ -97,14 +96,13 @@ var errorStatusMap = map[error]int{
 	ErrAPIKeyMismatched: http.StatusUnauthorized,
 	ErrAPIKeyInvalid:    http.StatusUnauthorized,
 
-	ErrUserUnavailable:                  http.StatusForbidden,
-	ErrUserStatusNotAllowActivation:     http.StatusForbidden,
-	ErrUserAlreadySignUp:                http.StatusForbidden,
-	ErrUserNotCompleteMFASetup:          http.StatusForbidden,
-	ErrPasswordNotMeetRequirements:      http.StatusUnprocessableEntity,
-	ErrPasswordResetTokenInvalid:        http.StatusNotAcceptable,
-	ErrEmailChangeUnallowedOnEnforceSSO: http.StatusUnprocessableEntity,
-	ErrEmailUnavailable:                 http.StatusUnprocessableEntity,
+	ErrUserUnavailable:             http.StatusForbidden,
+	ErrUserStatusNotAllowAction:    http.StatusForbidden,
+	ErrUserAlreadySignUp:           http.StatusForbidden,
+	ErrUserNotCompleteMFASetup:     http.StatusForbidden,
+	ErrPasswordNotMeetRequirements: http.StatusUnprocessableEntity,
+	ErrPasswordResetTokenInvalid:   http.StatusNotAcceptable,
+	ErrEmailChangeUnallowed:        http.StatusUnprocessableEntity,
 }
 
 // errorWarnLevelMap defines the errors that are handled but unexpected to happen.

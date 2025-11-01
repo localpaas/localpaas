@@ -78,14 +78,7 @@ func (uc *APIKeyUC) loadAPIKeyData(
 	}
 
 	// Generate key and secret
-	keyID, err := randtoken.New(keyLen)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	secretKey, err := randtoken.New(secretLen)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
+	keyID, secretKey := gofn.RandTokenAsHex(keyLen), gofn.RandTokenAsHex(secretLen)
 	data.KeyID = keyID
 	data.SecretKey = secretKey
 

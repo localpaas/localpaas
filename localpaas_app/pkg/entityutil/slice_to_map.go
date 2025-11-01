@@ -25,15 +25,3 @@ func SliceToNameMap[T entity.NamedEntity, S ~[]T](entities S, caseSensitive bool
 	}
 	return result
 }
-
-// SliceToCaseSensitiveNameMap converts a slice of entities to a case-sensitive map of entities
-// using the entity's name as a key.
-func SliceToCaseSensitiveNameMap[T entity.NamedEntity, S ~[]T](entities S) map[string]T {
-	return SliceToNameMap(entities, true)
-}
-
-// SliceToCaseISensitiveNameMap converts a slice of entities to a case-insensitive map of entities
-// using the entity's name as a key.
-func SliceToCaseISensitiveNameMap[T entity.NamedEntity, S ~[]T](entities S) map[string]T {
-	return SliceToNameMap(entities, false)
-}

@@ -183,8 +183,8 @@ github.com/tiendc/go-rflutil v0.0.0-20240919184510-8a396d31868e h1:fEy3KtoperpwQ
 github.com/tiendc/go-rflutil v0.0.0-20240919184510-8a396d31868e/go.mod h1:2nPnVtlbM4w4GOWSmFjKFKl+mhDT7hWgwky4qpRFugo=
 github.com/tiendc/go-validator v1.2.0 h1:fpuK0c6H4M7HG69rujlNgGYi81VDAZvGZKjBsE4wFUc=
 github.com/tiendc/go-validator v1.2.0/go.mod h1:i9BglN1/fRxLngj0/hi5zJN5PozedNZ8ouowzkbsULQ=
-github.com/tiendc/gofn v1.14.0 h1:2djOJ5TUKCBlINiF8Nnh85dDhDNfu5TTFar6jyI0/s0=
-github.com/tiendc/gofn v1.14.0/go.mod h1:SfEJjjn7b4WMW2PRoxKuBXGDCWuxnD8DfxJccBlx+4o=
+github.com/tiendc/gofn v1.15.0 h1:WYdPmO5BHmHZb+ZiDdq2m66yzo0B6N4CCFL4IuX/6f4=
+github.com/tiendc/gofn v1.15.0/go.mod h1:WCV4ZLqVxNoxtg99ESisK6d2g+NVLM3ZPc4MVrzw+8o=
 github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc h1:9lRDQMhESg+zvGYmW5DyG0UqvY96Bu5QYsTLvCHdrgo=
 github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc/go.mod h1:bciPuU6GHm1iF1pBvUfxfsH0Wmnc2VbpgvbI9ZWuIRs=
 github.com/twitchyliquid64/golang-asm v0.15.1 h1:SU5vSMR7hnwNxj24w34ZyCi/FmDZTkS4MhqMhdFk5YI=
