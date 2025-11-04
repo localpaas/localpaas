@@ -3,7 +3,7 @@ name: Deploy to Dev Server
 on:
   push:
     tags:
-      - 'dev-**'
+      - 'main-**'
 
 jobs:
   build_and_deploy:
@@ -13,7 +13,7 @@ jobs:
         name: Checkout
         uses: actions/checkout@v5
         with:
-          ref: dev
+          ref: main
           submodules: recursive
       -
         name: Get tag
@@ -43,4 +43,4 @@ jobs:
           port: ${{ secrets.DEV_SRV_SSH_PORT }}
           username: ${{ secrets.DEV_SRV_USERNAME }}
           password: ${{ secrets.DEV_SRV_PASSWORD }}
-          script: curl -sL "https://raw.githubusercontent.com/localpaas/localpaas/dev/deployment/dev/install.sh" | bash
+          script: curl -sL "https://raw.githubusercontent.com/localpaas/localpaas/main/deployment/dev/install.sh" | bash

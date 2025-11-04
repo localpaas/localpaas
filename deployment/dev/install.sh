@@ -20,8 +20,8 @@ mkdir -p $NGINX_CERTS/fake
 
 # Download nginx conf files
 echo "Download nginx config files..."
-curl -sL "https://raw.githubusercontent.com/localpaas/localpaas/dev/deployment/dev/nginx/nginx.conf" -o $NGINX_ETC/nginx.conf
-curl -sL "https://raw.githubusercontent.com/localpaas/localpaas/dev/deployment/dev/nginx/localpaas.conf" -o $NGINX_ETC/conf.d/localpaas.conf
+curl -sL "https://raw.githubusercontent.com/localpaas/localpaas/main/deployment/dev/nginx/nginx.conf" -o $NGINX_ETC/nginx.conf
+curl -sL "https://raw.githubusercontent.com/localpaas/localpaas/main/deployment/dev/nginx/localpaas.conf" -o $NGINX_ETC/conf.d/localpaas.conf
 
 # Gen self-signed SSL certs
 if [ ! -f "$NGINX_CERTS/fake/local.key" ]; then
@@ -43,7 +43,7 @@ docker network create --driver overlay --attachable localpaas_net || true
 
 # Download app_stack_nginx.yaml
 echo "Download app_stack_nginx.yaml..."
-curl -sL "https://raw.githubusercontent.com/localpaas/localpaas/dev/deployment/dev/app_stack_nginx.yaml" -o localpaas.yaml
+curl -sL "https://raw.githubusercontent.com/localpaas/localpaas/main/deployment/dev/app_stack_nginx.yaml" -o localpaas.yaml
 
 # Deploy localpaas stack
 echo "Deploy localpaas stack..."
