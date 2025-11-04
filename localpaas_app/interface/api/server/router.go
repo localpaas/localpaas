@@ -3,7 +3,6 @@ package server
 import (
 	"net/http"
 
-	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	swaggoFiles "github.com/swaggo/files"
 	swaggoGin "github.com/swaggo/gin-swagger"
@@ -57,20 +56,20 @@ func NewHandlerRegistry(
 
 //nolint:funlen
 func (s *HTTPServer) registerRoutes() {
-	s.engine.GET("/ping", routePing)
+	s.engine.GET("/_/ping", routePing)
 	s.engine.NoRoute(routeNotFound)
 
 	// Swagger server
 	if !s.config.IsProdEnv() {
-		s.engine.StaticFile("/docs/openapi/swagger.json", "docs/openapi/swagger.json")
+		s.engine.Use(StaticServe("/docs", localFile("./docs", false)))
 		s.engine.GET("/swagger/*any", swaggoGin.WrapHandler(swaggoFiles.Handler,
 			swaggoGin.URL("/docs/openapi/swagger.json")))
 	}
 
 	// STATIC FILES
-	// Serve the static files from the "public" directory at the root URL "/"
-	s.engine.Use(static.Serve("/", static.LocalFile("./dist-dashboard", false)))
-	s.engine.Static("/files/user/photo", s.config.App.DataPathUserPhoto())
+	s.engine.Use(StaticServe("/files/user/photo", localFile(s.config.App.DataPathUserPhoto(), false)))
+	// Serve the static files from the "dist-dashboard" directory at the root URL "/"
+	s.engine.Use(StaticServe("/", localFile("./dist-dashboard", true)))
 
 	// INTERNAL ROUTES
 	basicAuthMdlw := gin.BasicAuth(gin.Accounts{

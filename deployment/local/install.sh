@@ -3,10 +3,10 @@
 set -eo pipefail
 
 echo "---------------------------------------------------------------"
-echo "INSTALL LocalPaaS"
+echo "INSTALL LocalPaaS LOCALLY"
 echo "---------------------------------------------------------------"
 
-LOCALPAAS_DIR=localpaas
+LOCALPAAS_DIR=tmp/localpaas
 NGINX_ETC=$LOCALPAAS_DIR/nginx/etc
 NGINX_LOG=$LOCALPAAS_DIR/nginx/log
 NGINX_SHARE=$LOCALPAAS_DIR/nginx/share
@@ -19,14 +19,14 @@ mkdir -p $NGINX_LOG
 mkdir -p $NGINX_SHARE
 mkdir -p $NGINX_SHARE/default
 mkdir -p $NGINX_SHARE/domains
-mkdir -p $NGINX_SHARE/domains/app.dev.localpaas.com
+mkdir -p $NGINX_SHARE/domains/app.localhost
 mkdir -p $NGINX_CERTS/fake
 mkdir -p $LETSENCRYPT_ETC
 
 # Download nginx conf files
-echo "Download nginx config files..."
-curl -sL "https://raw.githubusercontent.com/localpaas/localpaas/main/deployment/dev/nginx/nginx.conf" -o $NGINX_ETC/nginx.conf
-curl -sL "https://raw.githubusercontent.com/localpaas/localpaas/main/deployment/dev/nginx/localpaas.conf" -o $NGINX_ETC/conf.d/localpaas.conf
+echo "Copy nginx config files..."
+cp deployment/local/nginx/nginx.conf $NGINX_ETC/nginx.conf
+cp deployment/local/nginx/localpaas.conf $NGINX_ETC/conf.d/localpaas.conf
 
 # Gen self-signed SSL certs
 if [ ! -f "$NGINX_CERTS/fake/local.key" ]; then
@@ -42,25 +42,21 @@ if [ ! -f "$NGINX_CERTS/dhparam.pem" ]; then
   openssl dhparam -out $NGINX_CERTS/dhparam.pem 2048
 fi
 
+# Init docker swarm
+echo "Init docker swarm..."
+docker swarm init || true
+
 # Create overlay network for nginx to discover services
 echo "Create overlay network 'localpaas_net'..."
 docker network create --driver overlay --attachable localpaas_net || true
 
-# Download app_stack_nginx.yaml
-echo "Download app_stack_nginx.yaml..."
-curl -sL "https://raw.githubusercontent.com/localpaas/localpaas/main/deployment/dev/app_stack_nginx.yaml" -o localpaas.yaml
-
 # Deploy localpaas stack
 echo "Deploy localpaas stack..."
-docker pull localpaas/localpaas-dev:app-latest # pull latest image
-docker stack deploy -c localpaas.yaml localpaas
+cp deployment/local/app_stack_nginx.yaml tmp/localpaas.yaml
+docker stack deploy -c tmp/localpaas.yaml localpaas
 
 sleep 5
-docker run --net localpaas_internal_net \
-  -e LP_PLATFORM=remote -e LP_DB_HOST=db -e LP_DB_PORT=5432 -e LP_DB_DB_NAME=localpaas \
-  -e LP_DB_USER=localpaas -e LP_DB_PASSWORD=abc123 -e LP_DB_SSL_MODE=disable \
-  -w /app localpaas/localpaas-dev:app-latest \
-  make seed-data-with-clear
+make seed-data-with-clear
 
 echo "---------------------------------------------------------------"
 echo "DONE."

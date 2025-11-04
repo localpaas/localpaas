@@ -9,7 +9,6 @@ require (
 	github.com/gin-contrib/cors v1.7.6
 	github.com/gin-contrib/logger v1.2.6
 	github.com/gin-contrib/requestid v1.0.5
-	github.com/gin-contrib/static v1.1.5
 	github.com/gin-gonic/gin v1.11.0
 	github.com/go-errors/errors v1.5.1
 	github.com/golang-jwt/jwt/v5 v5.3.0

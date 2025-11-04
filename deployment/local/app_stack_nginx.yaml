@@ -49,22 +49,43 @@ services:
       POSTGRES_DB: localpaas
       POSTGRES_USER: localpaas
       POSTGRES_PASSWORD: abc123
+    ports:
+      - target: 5432 # Container port
+        published: 35432 # Host port exposed on the nodes
+        protocol: tcp
+        mode: host
 
   redis:
     image: redis:8-alpine
-    restart: unless-stopped
     command: redis-server
     networks:
       - internal_net
+    ports:
+      - target: 6379 # Container port
+        published: 36379 # Host port exposed on the nodes
+        protocol: tcp
+        mode: host
 
-  app:
-    image: localpaas/localpaas-dev:app-latest
+  adminer:
+    image: adminer:latest
     networks:
       - localpaas_net
       - internal_net
-    environment:
-      LP_CONFIG_FILE: config/config.development.yaml
-      VITE_API_URL: http://localhost:10000
+    ports:
+      - target: 8080 # Container port
+        published: 38080 # Host port exposed on the nodes
+        protocol: tcp
+        mode: host
+
+#  redis_ui:
+#    image: redislabs/redisinsight:latest
+#    networks:
+#      - internal_net
+#    ports:
+#      - target: 8001 # Container port
+#        published: 38001 # Host port exposed on the nodes
+#        protocol: tcp
+#        mode: host
 
 # Define the overlay network for Swarm
 networks:
