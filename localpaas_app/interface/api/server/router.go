@@ -3,6 +3,7 @@ package server
 import (
 	"net/http"
 
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	swaggoFiles "github.com/swaggo/files"
 	swaggoGin "github.com/swaggo/gin-swagger"
@@ -56,7 +57,6 @@ func NewHandlerRegistry(
 
 //nolint:funlen
 func (s *HTTPServer) registerRoutes() {
-	s.engine.GET("/", routeHome)
 	s.engine.GET("/ping", routePing)
 	s.engine.NoRoute(routeNotFound)
 
@@ -68,6 +68,8 @@ func (s *HTTPServer) registerRoutes() {
 	}
 
 	// STATIC FILES
+	// Serve the static files from the "public" directory at the root URL "/"
+	s.engine.Use(static.Serve("/", static.LocalFile("./dist-dashboard", false)))
 	s.engine.Static("/files/user/photo", s.config.App.DataPathUserPhoto())
 
 	// INTERNAL ROUTES
@@ -213,8 +215,4 @@ func routePing(c *gin.Context) {
 
 func routeNotFound(c *gin.Context) {
 	c.JSON(http.StatusNotFound, "not found")
-}
-
-func routeHome(c *gin.Context) {
-	c.JSON(http.StatusOK, "localpaas api")
 }

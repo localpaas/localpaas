@@ -14,7 +14,6 @@ jobs:
         uses: actions/checkout@v5
         with:
           ref: dev
-          token: ${{ secrets.GIT_TOKEN }}
           submodules: recursive
       -
         name: Get tag
@@ -37,8 +36,6 @@ jobs:
           tags: |
             localpaas/localpaas-dev:app-${{ env.TAG_VERSION }}
             localpaas/localpaas-dev:app-latest
-          secrets: |
-            GIT_AUTH_TOKEN=${{ secrets.GIT_TOKEN }}
       - name: Deploy BE to Server
         uses: appleboy/ssh-action@v1
         with:
@@ -46,4 +43,4 @@ jobs:
           port: ${{ secrets.DEV_SRV_SSH_PORT }}
           username: ${{ secrets.DEV_SRV_USERNAME }}
           password: ${{ secrets.DEV_SRV_PASSWORD }}
-          script: curl -sL "https://github.com/localpaas/localpaas/blob/dev/deployment/dev/install.sh" | bash
+          script: curl -sL "https://raw.githubusercontent.com/localpaas/localpaas/dev/deployment/dev/install.sh" | bash

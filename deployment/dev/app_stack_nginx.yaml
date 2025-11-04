@@ -1,0 +1,74 @@
+version: "3"
+
+services:
+  nginx:
+    image: nginx:1.29-alpine
+
+    networks:
+      # Connect to the 'localpaas_net' overlay network for inter-container communication across nodes
+      - localpaas_net
+
+    ports:
+      # Expose nginx's entry points to the Swarm
+      # Swarm requires the long syntax for ports.
+      - target: 80 # Container port
+        published: 80 # Host port exposed on the nodes
+        protocol: tcp
+        # 'host' mode binds directly to the node's IP where the task runs.
+        # 'ingress' mode uses Swarm's Routing Mesh (load balances across nodes).
+        # Choose based on your load balancing strategy. 'host' is often simpler if using an external LB.
+        mode: host
+      - target: 443 # Container port
+        published: 443 # Host port
+        protocol: tcp
+        mode: host
+
+    volumes:
+      - ./nginx/etc:/etc/nginx
+      - ./nginx/log:/var/log/nginx
+      - ./nginx/share:/usr/share/nginx
+
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+
+  db:
+    image: postgres:18-alpine
+    networks:
+      - internal_net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    environment:
+      POSTGRES_DB: localpaas
+      POSTGRES_USER: localpaas
+      POSTGRES_PASSWORD: abc123
+
+  redis:
+    image: redis:8-alpine
+    restart: unless-stopped
+    command: redis-server
+    networks:
+      - internal_net
+
+  app:
+    image: localpaas/localpaas-dev:app-latest
+    networks:
+      - localpaas_net
+      - internal_net
+    environment:
+      LP_CONFIG_FILE: config/config.development.yaml
+      VITE_API_URL: http://localhost:10000
+
+# Define the overlay network for Swarm
+networks:
+  localpaas_net:
+    external: true
+  internal_net:
+    driver: overlay
+    attachable: true

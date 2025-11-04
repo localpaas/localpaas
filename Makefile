@@ -92,6 +92,7 @@ seed-data-with-clear:
 	$(DB_EXEC_BASE) -f ${DB_MIGRATE_DIR}/seed/seed.sql
 
 dev-deploy:
-	git checkout dev
+	git checkout main
+	git pull
 	git tag dev-v0.1.0 --force
 	git push origin dev-v0.1.0 --force

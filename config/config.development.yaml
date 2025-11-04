@@ -1,14 +1,14 @@
 env: development
-platform: local
+platform: remote
 
 app:
   name: LocalPaaS
   version: 0.1
-  base_url: http://localhost # dashboard base URL
+  base_url: https://app.dev.localpaas.com # dashboard base URL
 
 db:
-  host: localhost
-  port: 35432
+  host: db
+  port: 5432
   user: localpaas
   password: abc123
   db_name: localpaas
@@ -18,12 +18,12 @@ db:
   ssl_mode: disable
 
 cache:
-  url: redis://default:abc123@localhost:36379/0
+  url: redis://default:abc123@redis:6379/0
   pool_size: 10
   use_tls: false
 
 http_server:
-  base_url: http://localhost:10000 # API base URL
+  base_url: https://api.dev.localpaas.com # API base URL
   base_path: /_/v1
   port: 10000
   cors:
