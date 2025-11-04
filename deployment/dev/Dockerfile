@@ -1,3 +1,18 @@
+############################################################
+# Build dashboard
+FROM node:24-alpine AS dashboard_builder
+RUN apk update && apk upgrade --no-cache && apk add --update --no-cache git yarn
+
+WORKDIR /build
+
+RUN git clone --depth=1 https://github.com/localpaas/localpaas-dashboard.git && \
+    cd localpaas-dashboard && \
+    yarn install --no-cache --frozen-lockfile && \
+    yarn build && \
+    mv dist /dist-dashboard
+
+############################################################
+# Build backend
 FROM golang:1.25-alpine AS builder
 
 RUN apk update && \
@@ -42,7 +57,8 @@ COPY --from=builder /build/localpaas_app/db ./localpaas_app/db
 COPY --from=builder /build/config ./config
 COPY --from=builder /build/scripts ./scripts
 COPY --from=builder /build/Makefile .
-COPY --from=builder /build/sql-migrate .
+COPY --from=builder /build/sql-migrate /usr/local/bin/sql-migrate
+COPY --from=dashboard_builder /dist-dashboard ./dist-dashboard
 
 # Command to run
 CMD ["sh","-c","./app"]

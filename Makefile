@@ -93,5 +93,6 @@ seed-data-with-clear:
 
 dev-deploy:
 	git checkout dev
+	git pull
 	git tag dev-v0.1.0 --force
 	git push origin dev-v0.1.0 --force

@@ -9,7 +9,8 @@
 /temp
 /.temp
 /tmp
-/srv
+/app
+/dist-dashboard/*
 .env
 .envrc
 .DS_Store

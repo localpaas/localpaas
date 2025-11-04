@@ -63,6 +63,7 @@ services:
       - internal_net
     environment:
       LP_CONFIG_FILE: config/config.development.yaml
+      VITE_API_URL: http://localhost:10000
 
 # Define the overlay network for Swarm
 networks:

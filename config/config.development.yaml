@@ -15,7 +15,7 @@ db:
   max_open_conns: 20
   max_idle_conns: 20
   conn_max_lifetime: 60m
-  ssl_mode: require
+  ssl_mode: disable
 
 cache:
   url: redis://default:abc123@redis:6379/0

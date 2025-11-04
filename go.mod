@@ -9,6 +9,7 @@ require (
 	github.com/gin-contrib/cors v1.7.6
 	github.com/gin-contrib/logger v1.2.6
 	github.com/gin-contrib/requestid v1.0.5
+	github.com/gin-contrib/static v1.1.5
 	github.com/gin-gonic/gin v1.11.0
 	github.com/go-errors/errors v1.5.1
 	github.com/golang-jwt/jwt/v5 v5.3.0
@@ -83,7 +84,7 @@ require (
 	github.com/quic-go/qpack v0.5.1 // indirect
 	github.com/quic-go/quic-go v0.55.0 // indirect
 	github.com/rs/zerolog v1.34.0 // indirect
-	github.com/swaggo/swag v1.16.6 // indirect
+	github.com/swaggo/swag v1.8.12 // indirect
 	github.com/tiendc/go-rflutil v0.0.0-20240919184510-8a396d31868e // indirect
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
