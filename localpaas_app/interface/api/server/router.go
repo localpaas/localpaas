@@ -107,6 +107,8 @@ func (s *HTTPServer) registerRoutes() {
 
 	{ // auth group
 		authGroup := apiV1Group.Group("/auth")
+		// Login options
+		authGroup.GET("/login-options", s.handlerRegistry.sessionHandler.LoginGetOptions)
 		// Login with password
 		authGroup.POST("/login-with-password", s.handlerRegistry.sessionHandler.LoginWithPassword)
 		authGroup.POST("/login-with-passcode", s.handlerRegistry.sessionHandler.LoginWithPasscode)

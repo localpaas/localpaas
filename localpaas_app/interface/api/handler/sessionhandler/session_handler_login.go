@@ -26,6 +26,32 @@ const (
 	cookieRefreshPath     = "/sessions/refresh" // to avoid unnecessary sending of refresh token to server
 )
 
+// LoginGetOptions Gets login options
+// @Summary Gets login options
+// @Description Gets login options
+// @Tags    sessions_auth
+// @Produce json
+// @Id      getLoginOptions
+// @Success 200 {object} sessiondto.GetLoginOptionsResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /auth/login-options [get]
+func (h *SessionHandler) LoginGetOptions(ctx *gin.Context) {
+	req := sessiondto.NewGetLoginOptionsReq()
+	if err := h.ParseRequest(ctx, req, nil); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.sessionUC.GetLoginOptions(h.RequestCtx(ctx), req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
 // LoginWithPassword Login to system with username/password
 // @Summary Login to system with username/password
 // @Description When you get response's `next_step` with value `NextMfa`, you need to call the API

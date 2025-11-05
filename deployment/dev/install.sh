@@ -55,7 +55,7 @@ echo "Deploy localpaas stack..."
 docker pull localpaas/localpaas-dev:app-latest # pull latest image
 docker stack deploy -c localpaas.yaml localpaas
 
-sleep 5
+sleep 15
 docker run --net localpaas_internal_net \
   -e LP_PLATFORM=remote -e LP_DB_HOST=db -e LP_DB_PORT=5432 -e LP_DB_DB_NAME=localpaas \
   -e LP_DB_USER=localpaas -e LP_DB_PASSWORD=abc123 -e LP_DB_SSL_MODE=disable \
