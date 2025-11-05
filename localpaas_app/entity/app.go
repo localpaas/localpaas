@@ -28,11 +28,12 @@ type App struct {
 	UpdatedAt time.Time `bun:",default:current_timestamp"`
 	DeletedAt time.Time `bun:",soft_delete,nullzero"`
 
-	Project  *Project  `bun:"rel:has-one,join:project_id=id"`
-	Parent   *App      `bun:"rel:has-one,join:parent_id=id"`
-	Settings *Setting  `bun:"rel:has-one,join:settings_id=id"`
-	EnvVars  *Setting  `bun:"rel:has-one,join:env_vars_id=id"`
-	Tags     []*AppTag `bun:"rel:has-many,join:id=app_id"`
+	Project  *Project         `bun:"rel:has-one,join:project_id=id"`
+	Parent   *App             `bun:"rel:has-one,join:parent_id=id"`
+	Settings *Setting         `bun:"rel:has-one,join:settings_id=id"`
+	EnvVars  *Setting         `bun:"rel:has-one,join:env_vars_id=id"`
+	Tags     []*AppTag        `bun:"rel:has-many,join:id=app_id"`
+	Accesses []*ACLPermission `bun:"rel:has-many,join:id=resource_id"`
 }
 
 // GetID implements IDEntity interface

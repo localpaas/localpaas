@@ -35,16 +35,22 @@ type GetAppResp struct {
 }
 
 type AppResp struct {
-	ID     string         `json:"id"`
-	Name   string         `json:"name"`
-	Slug   string         `json:"slug"`
-	Status base.AppStatus `json:"status"`
-	Photo  string         `json:"photo"`
-	Note   string         `json:"note"`
-	Tags   []string       `json:"tags" copy:"-"` // manual copy AppTag -> string
+	ID           string               `json:"id"`
+	Name         string               `json:"name"`
+	Slug         string               `json:"slug"`
+	Status       base.AppStatus       `json:"status"`
+	Photo        string               `json:"photo"`
+	Note         string               `json:"note"`
+	Tags         []string             `json:"tags" copy:"-"` // manual copy AppTag -> string
+	UserAccesses []*AppUserAccessResp `json:"userAccesses"`
 
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+type AppUserAccessResp struct {
+	*basedto.UserBaseResp
+	Access entity.AccessActions `json:"access"`
 }
 
 type AppBaseResp struct {
@@ -60,7 +66,19 @@ func TransformApp(app *entity.App) (resp *AppResp, err error) {
 		return nil, apperrors.Wrap(err)
 	}
 	resp.Tags = gofn.MapSlice(app.Tags, func(t *entity.AppTag) string { return t.Tag })
+	resp.UserAccesses = TransformUserAccesses(app.Accesses)
 	return resp, nil
+}
+
+func TransformUserAccesses(accesses []*entity.ACLPermission) []*AppUserAccessResp {
+	return gofn.MapSlice(accesses, TransformUserAccess)
+}
+
+func TransformUserAccess(access *entity.ACLPermission) *AppUserAccessResp {
+	return &AppUserAccessResp{
+		UserBaseResp: basedto.TransformUserBase(access.SubjectUser),
+		Access:       access.Actions,
+	}
 }
 
 func TransformAppsBase(apps []*entity.App) []*AppBaseResp {

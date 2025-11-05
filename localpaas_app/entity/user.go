@@ -34,6 +34,8 @@ type User struct {
 	AccessExpireAt time.Time `bun:",nullzero"`
 	DeletedAt      time.Time `bun:",soft_delete,nullzero"`
 	LastAccess     time.Time `bun:",nullzero"`
+
+	Accesses []*ACLPermission `bun:"rel:has-many,join:id=subject_id"`
 }
 
 // GetID implements IDEntity interface

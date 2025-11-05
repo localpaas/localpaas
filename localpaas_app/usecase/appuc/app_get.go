@@ -24,6 +24,13 @@ func (uc *AppUC) GetApp(
 		return nil, apperrors.New(apperrors.ErrUnauthorized)
 	}
 
+	// Loads all accesses of the app
+	accesses, err := uc.permissionManager.LoadAppAccesses(ctx, uc.db, app.ProjectID, app.ID)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	app.Accesses = accesses
+
 	resp, err := appdto.TransformApp(app)
 	if err != nil {
 		return nil, apperrors.Wrap(err)

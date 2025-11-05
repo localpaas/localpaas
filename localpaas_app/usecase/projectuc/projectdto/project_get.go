@@ -33,14 +33,15 @@ type GetProjectResp struct {
 }
 
 type ProjectResp struct {
-	ID     string             `json:"id"`
-	Name   string             `json:"name"`
-	Slug   string             `json:"slug"`
-	Status base.ProjectStatus `json:"status"`
-	Photo  string             `json:"photo"`
-	Note   string             `json:"note"`
-	Tags   []string           `json:"tags" copy:"-"` // manual copy ProjectTag -> string
-	Apps   []*ProjectAppResp  `json:"apps"`
+	ID           string                   `json:"id"`
+	Name         string                   `json:"name"`
+	Slug         string                   `json:"slug"`
+	Status       base.ProjectStatus       `json:"status"`
+	Photo        string                   `json:"photo"`
+	Note         string                   `json:"note"`
+	Tags         []string                 `json:"tags" copy:"-"` // manual copy ProjectTag -> string
+	Apps         []*ProjectAppResp        `json:"apps"`
+	UserAccesses []*ProjectUserAccessResp `json:"userAccesses"`
 
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
@@ -49,6 +50,11 @@ type ProjectResp struct {
 type ProjectAppResp struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
+}
+
+type ProjectUserAccessResp struct {
+	*basedto.UserBaseResp
+	Access entity.AccessActions `json:"access"`
 }
 
 type ProjectBaseResp struct {
@@ -64,7 +70,19 @@ func TransformProject(project *entity.Project) (resp *ProjectResp, err error) {
 		return nil, apperrors.Wrap(err)
 	}
 	resp.Tags = gofn.MapSlice(project.Tags, func(t *entity.ProjectTag) string { return t.Tag })
+	resp.UserAccesses = TransformUserAccesses(project.Accesses)
 	return resp, nil
+}
+
+func TransformUserAccesses(accesses []*entity.ACLPermission) []*ProjectUserAccessResp {
+	return gofn.MapSlice(accesses, TransformUserAccess)
+}
+
+func TransformUserAccess(access *entity.ACLPermission) *ProjectUserAccessResp {
+	return &ProjectUserAccessResp{
+		UserBaseResp: basedto.TransformUserBase(access.SubjectUser),
+		Access:       access.Actions,
+	}
 }
 
 func TransformProjectsBase(projects []*entity.Project) []*ProjectBaseResp {

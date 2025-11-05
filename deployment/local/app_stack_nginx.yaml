@@ -54,6 +54,8 @@ services:
         published: 35432 # Host port exposed on the nodes
         protocol: tcp
         mode: host
+    volumes:
+      - db_data:/var/lib/postgresql/data
 
   redis:
     image: redis:8-alpine
@@ -65,6 +67,8 @@ services:
         published: 36379 # Host port exposed on the nodes
         protocol: tcp
         mode: host
+    volumes:
+      - redis:/data
 
   adminer:
     image: adminer:latest
@@ -86,6 +90,8 @@ services:
 #        published: 38001 # Host port exposed on the nodes
 #        protocol: tcp
 #        mode: host
+#    volumes:
+#      - redis_ui:/data
 
 # Define the overlay network for Swarm
 networks:
@@ -94,3 +100,11 @@ networks:
   internal_net:
     driver: overlay
     attachable: true
+
+volumes:
+  db_data:
+    driver: local
+  redis:
+    driver: local
+  redis_ui:
+    driver: local

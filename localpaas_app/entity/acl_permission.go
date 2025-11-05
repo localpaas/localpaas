@@ -23,6 +23,7 @@ type ACLPermission struct {
 	UpdatedAt time.Time `bun:",default:current_timestamp"`
 	DeletedAt time.Time `bun:",soft_delete,nullzero"`
 
+	SubjectUser    *User    `bun:"rel:has-one,join:subject_id=id"`
 	SubjectProject *Project `bun:"rel:has-one,join:subject_id=id"`
 	SubjectApp     *App     `bun:"rel:has-one,join:subject_id=id"`
 

@@ -22,6 +22,13 @@ func (uc *ProjectUC) GetProject(
 		return nil, apperrors.Wrap(err)
 	}
 
+	// Loads all accesses of the project
+	accesses, err := uc.permissionManager.LoadProjectAccesses(ctx, uc.db, project.ID)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	project.Accesses = accesses
+
 	resp, err := projectdto.TransformProject(project)
 	if err != nil {
 		return nil, apperrors.Wrap(err)

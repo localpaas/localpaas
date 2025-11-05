@@ -3853,11 +3853,14 @@
           "photo" : {
             "type" : "string"
           },
+          "slug" : {
+            "type" : "string"
+          },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.AppStatus"
           }
         },
-        "required" : [ "id", "name", "photo", "status" ],
+        "required" : [ "id", "name", "photo", "slug", "status" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppEnvVarsResp" : {
@@ -3892,6 +3895,9 @@
           "photo" : {
             "type" : "string"
           },
+          "slug" : {
+            "type" : "string"
+          },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.AppStatus"
           },
@@ -3904,9 +3910,15 @@
           },
           "updatedAt" : {
             "type" : "string"
+          },
+          "userAccesses" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppUserAccessResp"
+            },
+            "type" : "array"
           }
         },
-        "required" : [ "createdAt", "id", "name", "note", "photo", "status", "tags", "updatedAt" ],
+        "required" : [ "createdAt", "id", "name", "note", "photo", "slug", "status", "tags", "updatedAt", "userAccesses" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppSettingsReq" : {
@@ -3925,6 +3937,24 @@
           }
         },
         "required" : [ "test" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppUserAccessResp" : {
+        "properties" : {
+          "access" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.AccessActions"
+          },
+          "fullName" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "photo" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "access", "fullName", "id", "photo" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.CreateAppReq" : {
@@ -4418,11 +4448,14 @@
           "photo" : {
             "type" : "string"
           },
+          "slug" : {
+            "type" : "string"
+          },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.ProjectStatus"
           }
         },
-        "required" : [ "id", "name", "photo", "status" ],
+        "required" : [ "id", "name", "photo", "slug", "status" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.ProjectEnvVarsResp" : {
@@ -4463,6 +4496,9 @@
           "photo" : {
             "type" : "string"
           },
+          "slug" : {
+            "type" : "string"
+          },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.ProjectStatus"
           },
@@ -4475,9 +4511,15 @@
           },
           "updatedAt" : {
             "type" : "string"
+          },
+          "userAccesses" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.ProjectUserAccessResp"
+            },
+            "type" : "array"
           }
         },
-        "required" : [ "apps", "createdAt", "id", "name", "note", "photo", "status", "tags", "updatedAt" ],
+        "required" : [ "apps", "createdAt", "id", "name", "note", "photo", "slug", "status", "tags", "updatedAt", "userAccesses" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.ProjectSettingsReq" : {
@@ -4496,6 +4538,24 @@
           }
         },
         "required" : [ "test" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.ProjectUserAccessResp" : {
+        "properties" : {
+          "access" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.AccessActions"
+          },
+          "fullName" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "photo" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "access", "fullName", "id", "photo" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.UpdateProjectEnvVarsReq" : {

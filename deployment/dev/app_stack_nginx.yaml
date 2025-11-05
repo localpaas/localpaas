@@ -49,6 +49,8 @@ services:
       POSTGRES_DB: localpaas
       POSTGRES_USER: localpaas
       POSTGRES_PASSWORD: abc123
+    volumes:
+      - db_data:/var/lib/postgresql/data
 
   redis:
     image: redis:8-alpine
@@ -56,6 +58,8 @@ services:
     command: redis-server
     networks:
       - internal_net
+    volumes:
+      - redis:/data
 
   app:
     image: localpaas/localpaas-dev:app-latest
@@ -65,6 +69,8 @@ services:
     environment:
       LP_CONFIG_FILE: config/config.development.yaml
       VITE_API_URL: http://localhost:10000
+    volumes:
+      - app_data:/var/lib/localpaas
 
 # Define the overlay network for Swarm
 networks:
@@ -73,3 +79,13 @@ networks:
   internal_net:
     driver: overlay
     attachable: true
+
+volumes:
+  app_data:
+    driver: local
+  db_data:
+    driver: local
+  redis:
+    driver: local
+  redis_ui:
+    driver: local
