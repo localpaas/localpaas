@@ -20,6 +20,8 @@ type AppRepo interface {
 		opts ...bunex.SelectQueryOption) (*entity.App, error)
 	GetByName(ctx context.Context, db database.IDB, projectID, name string,
 		opts ...bunex.SelectQueryOption) (*entity.App, error)
+	GetBySlug(ctx context.Context, db database.IDB, projectID, slug string,
+		opts ...bunex.SelectQueryOption) (*entity.App, error)
 	List(ctx context.Context, db database.IDB, projectID string, paging *basedto.Paging,
 		opts ...bunex.SelectQueryOption) ([]*entity.App, *basedto.PagingMeta, error)
 	ListByIDs(ctx context.Context, db database.IDB, projectID string, ids []string,
@@ -61,6 +63,25 @@ func (repo *appRepo) GetByName(ctx context.Context, db database.IDB, projectID, 
 	opts ...bunex.SelectQueryOption) (*entity.App, error) {
 	app := &entity.App{}
 	query := db.NewSelect().Model(app).Where("LOWER(app.name) = ?", strings.ToLower(name))
+	if projectID != "" {
+		query = query.Where("app.project_id = ?", projectID)
+	}
+	query = bunex.ApplySelect(query, opts...)
+
+	err := query.Scan(ctx)
+	if app == nil || errors.Is(err, sql.ErrNoRows) {
+		return nil, apperrors.NewNotFound("App").WithCause(err)
+	}
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return app, nil
+}
+
+func (repo *appRepo) GetBySlug(ctx context.Context, db database.IDB, projectID, slug string,
+	opts ...bunex.SelectQueryOption) (*entity.App, error) {
+	app := &entity.App{}
+	query := db.NewSelect().Model(app).Where("LOWER(app.slug) = ?", slug).Limit(1)
 	if projectID != "" {
 		query = query.Where("app.project_id = ?", projectID)
 	}

@@ -16,6 +16,7 @@ require (
 	github.com/jackc/pgx/v5 v5.7.6
 	github.com/jinzhu/configor v1.2.2
 	github.com/mitchellh/mapstructure v1.5.0
+	github.com/mozillazg/go-slugify v0.2.0
 	github.com/nicksnyder/go-i18n/v2 v2.6.0
 	github.com/oklog/ulid/v2 v2.1.1
 	github.com/patrickmn/go-cache v2.1.0+incompatible
@@ -77,6 +78,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
+	github.com/mozillazg/go-unidecode v0.2.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/puzpuzpuz/xsync/v3 v3.5.1 // indirect

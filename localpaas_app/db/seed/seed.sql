@@ -20,12 +20,12 @@ VALUES ('01JAB9XED0GTXBSQDFVYAJ8WX1', 'node-a', '123.123.123.1', 'active', 'read
         '2025-10-01 00:00:00', '2025-10-01 00:00:00')
 ON CONFLICT DO NOTHING;
 
-INSERT INTO projects (id, name, status, created_at, updated_at)
-VALUES ('01JAB9XED0GTXBSQDFVYAJ8WB1', 'Project A', 'active',
+INSERT INTO projects (id, name, slug, status, created_at, updated_at)
+VALUES ('01JAB9XED0GTXBSQDFVYAJ8WB1', 'Project A', 'project_a', 'active',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
-       ('01JAB9XED0GTXBSQDFVYAJ8WB2', 'Project B', 'active',
+       ('01JAB9XED0GTXBSQDFVYAJ8WB2', 'Project B', 'project_b', 'active',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
-       ('01JAB9XED0GTXBSQDFVYAJ8WB3', 'Project C', 'locked',
+       ('01JAB9XED0GTXBSQDFVYAJ8WB3', 'Project C', 'project_c', 'locked',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00')
 ON CONFLICT DO NOTHING;
 
@@ -36,14 +36,14 @@ VALUES ('01JAB9XED0GTXBSQDFVYAJ8WB1', 'tag 1', 0),
        ('01JAB9XED0GTXBSQDFVYAJ8WB2', 'my tag', 1)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO apps (id, name, status, project_id, created_at, updated_at)
-VALUES ('01JAB9XED0GTXBSQDFVYAJ8WD1', 'Backend', 'active', '01JAB9XED0GTXBSQDFVYAJ8WB1',
+INSERT INTO apps (id, name, slug, status, project_id, created_at, updated_at)
+VALUES ('01JAB9XED0GTXBSQDFVYAJ8WD1', 'Backend', 'backend', 'active', '01JAB9XED0GTXBSQDFVYAJ8WB1',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
-       ('01JAB9XED0GTXBSQDFVYAJ8WD2', 'Frontend', 'active', '01JAB9XED0GTXBSQDFVYAJ8WB1',
+       ('01JAB9XED0GTXBSQDFVYAJ8WD2', 'Frontend', 'frontend', 'active', '01JAB9XED0GTXBSQDFVYAJ8WB1',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
-       ('01JAB9XED0GTXBSQDFVYAJ8WD3', 'Redis', 'active', '01JAB9XED0GTXBSQDFVYAJ8WB1',
+       ('01JAB9XED0GTXBSQDFVYAJ8WD3', 'Redis', 'redis', 'active', '01JAB9XED0GTXBSQDFVYAJ8WB1',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
-       ('01JAB9XED0GTXBSQDFVYAJ8WD4', 'Postgres', 'active', '01JAB9XED0GTXBSQDFVYAJ8WB1',
+       ('01JAB9XED0GTXBSQDFVYAJ8WD4', 'Postgres', 'postgres', 'active', '01JAB9XED0GTXBSQDFVYAJ8WB1',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00')
 ON CONFLICT DO NOTHING;
 

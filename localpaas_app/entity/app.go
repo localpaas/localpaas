@@ -8,15 +8,17 @@ import (
 
 var (
 	AppUpsertingConflictCols = []string{"id"}
-	AppUpsertingUpdateCols   = []string{"name", "photo", "project_id", "status", "note",
+	AppUpsertingUpdateCols   = []string{"name", "slug", "photo", "project_id", "parent_id", "status", "note",
 		"settings_id", "env_vars_id", "updated_at", "deleted_at"}
 )
 
 type App struct {
 	ID         string `bun:",pk"`
 	Name       string
+	Slug       string
 	Photo      string `bun:",nullzero"`
 	ProjectID  string
+	ParentID   string `bun:",nullzero"`
 	Status     base.AppStatus
 	Note       string `bun:",nullzero"`
 	SettingsID string `bun:",nullzero"`
@@ -27,6 +29,7 @@ type App struct {
 	DeletedAt time.Time `bun:",soft_delete,nullzero"`
 
 	Project  *Project  `bun:"rel:has-one,join:project_id=id"`
+	Parent   *App      `bun:"rel:has-one,join:parent_id=id"`
 	Settings *Setting  `bun:"rel:has-one,join:settings_id=id"`
 	EnvVars  *Setting  `bun:"rel:has-one,join:env_vars_id=id"`
 	Tags     []*AppTag `bun:"rel:has-many,join:id=app_id"`

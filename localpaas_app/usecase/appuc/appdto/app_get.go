@@ -37,6 +37,7 @@ type GetAppResp struct {
 type AppResp struct {
 	ID     string         `json:"id"`
 	Name   string         `json:"name"`
+	Slug   string         `json:"slug"`
 	Status base.AppStatus `json:"status"`
 	Photo  string         `json:"photo"`
 	Note   string         `json:"note"`
@@ -49,6 +50,7 @@ type AppResp struct {
 type AppBaseResp struct {
 	ID     string         `json:"id"`
 	Name   string         `json:"name"`
+	Slug   string         `json:"slug"`
 	Photo  string         `json:"photo"`
 	Status base.AppStatus `json:"status"`
 }
@@ -66,6 +68,7 @@ func TransformAppsBase(apps []*entity.App) []*AppBaseResp {
 		return &AppBaseResp{
 			ID:     app.ID,
 			Name:   app.Name,
+			Slug:   app.Slug,
 			Photo:  app.Photo,
 			Status: app.Status,
 		}

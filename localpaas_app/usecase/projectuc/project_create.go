@@ -14,8 +14,13 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/service/projectservice"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc/projectdto"
+	"github.com/localpaas/localpaas/pkg/slugify"
 	"github.com/localpaas/localpaas/pkg/timeutil"
 	"github.com/localpaas/localpaas/pkg/ulid"
+)
+
+const (
+	projectSlugMaxLen = 50
 )
 
 func (uc *ProjectUC) CreateProject(
@@ -30,7 +35,7 @@ func (uc *ProjectUC) CreateProject(
 	}
 
 	persistingData := &persistingProjectData{}
-	uc.preparePersistingProject(req, timeutil.NowUTC(), persistingData)
+	uc.preparePersistingProject(req, timeutil.NowUTC(), projectData, persistingData)
 
 	err = transaction.Execute(ctx, uc.db, func(db database.Tx) error {
 		return uc.persistData(ctx, db, persistingData)
@@ -46,21 +51,24 @@ func (uc *ProjectUC) CreateProject(
 }
 
 type createProjectData struct {
+	ProjectSlug string
 }
 
 func (uc *ProjectUC) loadProjectData(
 	ctx context.Context,
 	db database.IDB,
 	req *projectdto.CreateProjectReq,
-	_ *createProjectData,
+	data *createProjectData,
 ) error {
-	project, err := uc.projectRepo.GetByName(ctx, db, req.Name)
+	data.ProjectSlug = slugify.SlugifyEx(req.Name, []string{"-", "_", ".", "_"}, projectSlugMaxLen)
+
+	project, err := uc.projectRepo.GetBySlug(ctx, db, data.ProjectSlug)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}
 	if project != nil {
 		return apperrors.NewAlreadyExist("Project").
-			WithMsgLog("project '%s' already exists", req.Name)
+			WithMsgLog("project slug '%s' already exists", data.ProjectSlug)
 	}
 
 	return nil
@@ -73,11 +81,13 @@ type persistingProjectData struct {
 func (uc *ProjectUC) preparePersistingProject(
 	req *projectdto.CreateProjectReq,
 	timeNow time.Time,
+	data *createProjectData,
 	persistingData *persistingProjectData,
 ) {
 	// Upserting project
 	project := &entity.Project{
 		ID:        gofn.Must(ulid.NewStringULID()),
+		Slug:      data.ProjectSlug,
 		CreatedAt: timeNow,
 	}
 

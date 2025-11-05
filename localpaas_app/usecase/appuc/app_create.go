@@ -16,8 +16,13 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/service/appservice"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
+	"github.com/localpaas/localpaas/pkg/slugify"
 	"github.com/localpaas/localpaas/pkg/timeutil"
 	"github.com/localpaas/localpaas/pkg/ulid"
+)
+
+const (
+	appSlugMaxLen = 50
 )
 
 func (uc *AppUC) CreateApp(
@@ -50,6 +55,7 @@ func (uc *AppUC) CreateApp(
 
 type createAppData struct {
 	Project *entity.Project
+	AppSlug string
 }
 
 func (uc *AppUC) loadAppData(
@@ -69,13 +75,15 @@ func (uc *AppUC) loadAppData(
 	}
 	data.Project = project
 
-	app, err := uc.appRepo.GetByName(ctx, db, project.ID, req.Name)
+	data.AppSlug = slugify.SlugifyEx(req.Name, []string{"-", "_", ".", "_"}, appSlugMaxLen)
+
+	app, err := uc.appRepo.GetBySlug(ctx, db, project.ID, data.AppSlug)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}
 	if app != nil {
 		return apperrors.NewAlreadyExist("App").
-			WithMsgLog("app '%s' already exists", req.Name)
+			WithMsgLog("app '%s' already exists", data.AppSlug)
 	}
 
 	return nil
@@ -95,6 +103,7 @@ func (uc *AppUC) preparePersistingApp(
 	app := &entity.App{
 		ID:        gofn.Must(ulid.NewStringULID()),
 		ProjectID: project.ID,
+		Slug:      data.AppSlug,
 		CreatedAt: timeNow,
 	}
 
