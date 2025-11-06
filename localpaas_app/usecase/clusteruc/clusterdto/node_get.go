@@ -3,14 +3,16 @@ package clusterdto
 import (
 	"time"
 
+	"github.com/docker/docker/api/types/swarm"
 	vld "github.com/tiendc/go-validator"
-	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
+)
+
+const (
+	nodeIDMaxLen = 100
 )
 
 type GetNodeReq struct {
@@ -23,7 +25,8 @@ func NewGetNodeReq() *GetNodeReq {
 
 func (req *GetNodeReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, basedto.ValidateID(&req.NodeID, true, "nodeId")...)
+	// NOTE: node id is docker id, it's not ULID
+	validators = append(validators, basedto.ValidateStr(&req.NodeID, true, 1, nodeIDMaxLen, "nodeId")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
@@ -33,47 +36,47 @@ type GetNodeResp struct {
 }
 
 type NodeResp struct {
-	ID          string          `json:"id"`
-	HostName    string          `json:"hostName"`
-	IP          string          `json:"ip"`
-	Status      base.NodeStatus `json:"status"`
-	InfraStatus string          `json:"infraStatus"`
-	IsLeader    bool            `json:"isLeader"`
-	IsManager   bool            `json:"isManager"`
+	ID        string            `json:"id"`
+	Hostname  string            `json:"hostname"`
+	Addr      string            `json:"addr"`
+	Status    base.NodeStatus   `json:"status"`
+	Role      base.NodeRole     `json:"role"`
+	IsLeader  bool              `json:"isLeader"`
+	Platform  *NodePlatformResp `json:"platform"`
+	Resources *NodeResources    `json:"resources"`
 
-	LastSyncedAt time.Time `json:"lastSyncedAt"`
-	CreatedAt    time.Time `json:"createdAt"`
-	UpdatedAt    time.Time `json:"updatedAt"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
-type NodeBaseResp struct {
-	ID           string          `json:"id"`
-	HostName     string          `json:"hostName"`
-	IP           string          `json:"ip"`
-	Status       base.NodeStatus `json:"status"`
-	InfraStatus  string          `json:"infraStatus"`
-	IsLeader     bool            `json:"isLeader"`
-	IsManager    bool            `json:"isManager"`
-	LastSyncedAt time.Time       `json:"lastSyncedAt"`
+type NodePlatformResp struct {
+	Architecture string `json:"architecture"`
+	OS           string `json:"os"`
 }
 
-func TransformNode(node *entity.Node) (resp *NodeResp, err error) {
-	if err = copier.Copy(&resp, &node); err != nil {
-		return nil, apperrors.Wrap(err)
+type NodeResources struct {
+	NanoCPUs    int64 `json:"nanoCPUs"`
+	MemoryBytes int64 `json:"memoryBytes"`
+}
+
+func TransformNode(node *swarm.Node) *NodeResp {
+	isManager := node.Spec.Role == swarm.NodeRoleManager
+	return &NodeResp{
+		ID:       node.ID,
+		Status:   base.NodeStatus(node.Status.State),
+		Role:     base.NodeRole(node.Spec.Role),
+		IsLeader: isManager && node.ManagerStatus != nil && node.ManagerStatus.Leader,
+		Hostname: node.Description.Hostname,
+		Addr:     node.Status.Addr,
+		Platform: &NodePlatformResp{
+			Architecture: node.Description.Platform.Architecture,
+			OS:           node.Description.Platform.OS,
+		},
+		Resources: &NodeResources{
+			NanoCPUs:    node.Description.Resources.NanoCPUs,
+			MemoryBytes: node.Description.Resources.MemoryBytes,
+		},
+		CreatedAt: node.CreatedAt,
+		UpdatedAt: node.UpdatedAt,
 	}
-	return resp, nil
-}
-
-func TransformNodesBase(nodes []*entity.Node) []*NodeBaseResp {
-	return gofn.MapSlice(nodes, func(node *entity.Node) *NodeBaseResp {
-		return &NodeBaseResp{
-			ID:          node.ID,
-			HostName:    node.HostName,
-			IP:          node.IP,
-			Status:      node.Status,
-			InfraStatus: node.InfraStatus,
-			IsLeader:    node.IsLeader,
-			IsManager:   node.IsManager,
-		}
-	})
 }

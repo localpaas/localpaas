@@ -1,6 +1,7 @@
 package registry
 
 import (
+	"github.com/localpaas/localpaas/infrastructure/docker"
 	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/infra/logging"
@@ -52,6 +53,9 @@ var Provides = []any{
 	// permission
 	permission.NewManager,
 
+	// Infra
+	docker.New,
+
 	// Route handler
 	server.NewHandlerRegistry, // for all handler list
 	authhandler.NewAuthHandler,
@@ -81,8 +85,6 @@ var Provides = []any{
 	appservice.NewAppService,
 	settingservice.NewSettingService,
 
-	// Repo: Cluster
-	repository.NewNodeRepo,
 	// Repo: User
 	repository.NewUserRepo,
 	// Repo: Project

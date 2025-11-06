@@ -90,7 +90,6 @@ func (s *HTTPServer) registerRoutes() {
 	{ // node group
 		nodeGroup := clusterGroup.Group("/nodes")
 		// Nodes
-		nodeGroup.GET("/base-list", s.handlerRegistry.clusterHandler.ListNodeBase)
 		nodeGroup.GET("", s.handlerRegistry.clusterHandler.ListNode)
 		nodeGroup.GET("/:nodeID", s.handlerRegistry.clusterHandler.GetNode)
 		nodeGroup.DELETE("/:nodeID", s.handlerRegistry.clusterHandler.DeleteNode)

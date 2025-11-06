@@ -13,17 +13,12 @@ func (uc *ClusterUC) GetNode(
 	auth *basedto.Auth,
 	req *clusterdto.GetNodeReq,
 ) (*clusterdto.GetNodeResp, error) {
-	node, err := uc.nodeRepo.GetByID(ctx, uc.db, req.NodeID)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-
-	resp, err := clusterdto.TransformNode(node)
+	node, _, err := uc.dockerManager.NodeInspect(ctx, req.NodeID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
 	return &clusterdto.GetNodeResp{
-		Data: resp,
+		Data: clusterdto.TransformNode(node),
 	}, nil
 }

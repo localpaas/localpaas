@@ -1,18 +1,19 @@
 package clusterdto
 
 import (
+	"github.com/docker/docker/api/types/swarm"
 	vld "github.com/tiendc/go-validator"
+	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
 )
 
 type ListNodeReq struct {
-	Status      []base.NodeStatus `json:"-" mapstructure:"status"`
-	InfraStatus []string          `json:"-" mapstructure:"infraStatus"`
-	Search      string            `json:"-" mapstructure:"search"`
+	Status []base.NodeStatus `json:"-" mapstructure:"status"`
+	Role   []base.NodeRole   `json:"-" mapstructure:"role"`
+	Search string            `json:"-" mapstructure:"search"`
 
 	Paging basedto.Paging `json:"-"`
 }
@@ -30,6 +31,8 @@ func (req *ListNodeReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, basedto.ValidateSlice(req.Status, true, 0,
 		base.AllNodeStatuses, "status")...)
+	validators = append(validators, basedto.ValidateSlice(req.Role, true, 0,
+		base.AllNodeRoles, "role")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
@@ -38,6 +41,8 @@ type ListNodeResp struct {
 	Data []*NodeResp   `json:"data"`
 }
 
-func TransformNodes(nodes []*entity.Node) ([]*NodeResp, error) {
-	return basedto.TransformObjectSlice(nodes, TransformNode) //nolint:wrapcheck
+func TransformNodes(nodes []swarm.Node) []*NodeResp {
+	return gofn.MapSlice(nodes, func(node swarm.Node) *NodeResp {
+		return TransformNode(&node)
+	})
 }

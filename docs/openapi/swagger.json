@@ -575,82 +575,6 @@
         "tags" : [ "cluster_nodes" ]
       }
     },
-    "/cluster/nodes/base-list" : {
-      "get" : {
-        "description" : "Lists cluster nodes",
-        "operationId" : "listNodeBase",
-        "parameters" : [ {
-          "description" : "`status=<target>`",
-          "in" : "query",
-          "name" : "status",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "`search=<target> (support *)`",
-          "in" : "query",
-          "name" : "search",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "`pageOffset=offset`",
-          "in" : "query",
-          "name" : "pageOffset",
-          "schema" : {
-            "type" : "integer"
-          }
-        }, {
-          "description" : "`pageLimit=limit`",
-          "in" : "query",
-          "name" : "pageLimit",
-          "schema" : {
-            "type" : "integer"
-          }
-        }, {
-          "description" : "`sort=[-]field1|field2...`",
-          "in" : "query",
-          "name" : "sort",
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.ListNodeBaseResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Lists cluster nodes",
-        "tags" : [ "cluster_nodes" ]
-      }
-    },
     "/cluster/nodes/{nodeID}" : {
       "delete" : {
         "description" : "Deletes a node",
@@ -3630,10 +3554,15 @@
         "type" : "string",
         "x-enum-varnames" : [ "MFATypeTOTP", "MFATypeEmail" ]
       },
-      "github_com_localpaas_localpaas_localpaas_app_base.NodeStatus" : {
-        "enum" : [ "active", "inactive", "deleting" ],
+      "github_com_localpaas_localpaas_localpaas_app_base.NodeRole" : {
+        "enum" : [ "manager", "worker" ],
         "type" : "string",
-        "x-enum-varnames" : [ "NodeStatusActive", "NodeStatusInactive", "NodeStatusDeleting" ]
+        "x-enum-varnames" : [ "NodeRoleManager", "NodeRoleWorker" ]
+      },
+      "github_com_localpaas_localpaas_localpaas_app_base.NodeStatus" : {
+        "enum" : [ "unknown", "down", "ready", "disconnected" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "NodeStatusUnknown", "NodeStatusDown", "NodeStatusReady", "NodeStatusDisconnected" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.ProjectStatus" : {
         "enum" : [ "active", "locked", "disabled", "deleting" ],
@@ -4216,21 +4145,6 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.ListNodeBaseResp" : {
-        "properties" : {
-          "data" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.NodeBaseResp"
-            },
-            "type" : "array"
-          },
-          "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
-          }
-        },
-        "required" : [ "data", "meta" ],
-        "type" : "object"
-      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.ListNodeResp" : {
         "properties" : {
           "data" : {
@@ -4246,61 +4160,55 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.NodeBaseResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.NodePlatformResp" : {
         "properties" : {
-          "hostName" : {
+          "architecture" : {
             "type" : "string"
           },
-          "id" : {
+          "os" : {
             "type" : "string"
-          },
-          "infraStatus" : {
-            "type" : "string"
-          },
-          "ip" : {
-            "type" : "string"
-          },
-          "isLeader" : {
-            "type" : "boolean"
-          },
-          "isManager" : {
-            "type" : "boolean"
-          },
-          "lastSyncedAt" : {
-            "type" : "string"
-          },
-          "status" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.NodeStatus"
           }
         },
-        "required" : [ "hostName", "id", "infraStatus", "ip", "isLeader", "isManager", "lastSyncedAt", "status" ],
+        "required" : [ "architecture", "os" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.NodeResources" : {
+        "properties" : {
+          "memoryBytes" : {
+            "type" : "integer"
+          },
+          "nanoCPUs" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "memoryBytes", "nanoCPUs" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.NodeResp" : {
         "properties" : {
+          "addr" : {
+            "type" : "string"
+          },
           "createdAt" : {
             "type" : "string"
           },
-          "hostName" : {
+          "hostname" : {
             "type" : "string"
           },
           "id" : {
             "type" : "string"
           },
-          "infraStatus" : {
-            "type" : "string"
-          },
-          "ip" : {
-            "type" : "string"
-          },
           "isLeader" : {
             "type" : "boolean"
           },
-          "isManager" : {
-            "type" : "boolean"
+          "platform" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.NodePlatformResp"
           },
-          "lastSyncedAt" : {
-            "type" : "string"
+          "resources" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.NodeResources"
+          },
+          "role" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.NodeRole"
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.NodeStatus"
@@ -4309,7 +4217,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "hostName", "id", "infraStatus", "ip", "isLeader", "isManager", "lastSyncedAt", "status", "updatedAt" ],
+        "required" : [ "addr", "createdAt", "hostname", "id", "isLeader", "platform", "resources", "role", "status", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.CreateProjectReq" : {

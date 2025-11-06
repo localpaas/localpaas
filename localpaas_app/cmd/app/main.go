@@ -21,6 +21,7 @@ func main() {
 		fx.Invoke(internal.ValidateConfig),
 		fx.Invoke(internal.InitDBConnection),
 		fx.Invoke(internal.InitCache),
+		fx.Invoke(internal.InitDockerManager),
 		fx.Invoke(internal.InitJWTSession),
 		fx.Invoke(internal.InitHTTPServer),
 	)

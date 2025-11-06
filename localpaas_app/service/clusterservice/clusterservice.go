@@ -3,6 +3,7 @@ package clusterservice
 import (
 	"context"
 
+	"github.com/localpaas/localpaas/infrastructure/docker"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
@@ -13,19 +14,19 @@ type ClusterService interface {
 }
 
 func NewClusterService(
-	nodeRepo repository.NodeRepo,
 	settingRepo repository.SettingRepo,
 	permissionManager permission.Manager,
+	dockerManager *docker.Manager,
 ) ClusterService {
 	return &clusterService{
-		nodeRepo:          nodeRepo,
 		settingRepo:       settingRepo,
 		permissionManager: permissionManager,
+		dockerManager:     dockerManager,
 	}
 }
 
 type clusterService struct {
-	nodeRepo          repository.NodeRepo
 	settingRepo       repository.SettingRepo
 	permissionManager permission.Manager
+	dockerManager     *docker.Manager
 }

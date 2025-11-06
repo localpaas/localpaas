@@ -9,7 +9,6 @@ import (
 )
 
 type PersistingClusterData struct {
-	UpsertingNodes    []*entity.Node
 	UpsertingSettings []*entity.Setting
 }
 
@@ -19,13 +18,6 @@ func (s *clusterService) PersistClusterData(ctx context.Context, db database.IDB
 	// Settings
 	err := s.settingRepo.UpsertMulti(ctx, db, persistingData.UpsertingSettings,
 		entity.SettingUpsertingConflictCols, entity.SettingUpsertingUpdateCols)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	// Nodes
-	err = s.nodeRepo.UpsertMulti(ctx, db, persistingData.UpsertingNodes,
-		entity.NodeUpsertingConflictCols, entity.NodeUpsertingUpdateCols)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
