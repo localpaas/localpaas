@@ -6,9 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc"
@@ -61,19 +59,10 @@ func (h *AuthHandler) GetCurrentAuth(ctx *gin.Context, accessCheck *permission.A
 		return nil, apperrors.New(err)
 	}
 
-	// User is required to be owner or admin
-	if accessCheck != nil && accessCheck.RequireAdmin &&
-		(auth.User.Role == base.UserRoleOwner || auth.User.Role == base.UserRoleAdmin) {
-		return auth, nil
-	}
-
-	//nolint:staticcheck
-	if accessCheck != NoAccessCheck && !(config.Current.IsDevEnv() && config.Current.DevMode.SkipAuthCheck) {
-		if err = h.sessionUC.VerifyAuth(ctx, auth, accessCheck); err != nil {
-			// NOTE: even on error, we still return the `auth` object so the client code
-			// still can be able to check permission with another method.
-			return auth, apperrors.New(err)
-		}
+	if err = h.sessionUC.VerifyAuth(ctx, auth, accessCheck); err != nil {
+		// NOTE: even on error, we still return the `auth` object so the client code
+		// still can be able to check permission with another method.
+		return auth, apperrors.New(err)
 	}
 
 	return auth, nil

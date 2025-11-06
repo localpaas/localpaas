@@ -40,9 +40,10 @@ func (h *AppHandler) CreateAppTag(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeApp,
-		ResourceID:   appID,
-		Action:       base.ActionTypeWrite,
+		ResourceType:     base.ResourceTypeApp,
+		ResourceID:       appID,
+		ParentResourceID: projectID,
+		Action:           base.ActionTypeWrite,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -92,9 +93,10 @@ func (h *AppHandler) DeleteAppTags(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeApp,
-		ResourceID:   appID,
-		Action:       base.ActionTypeWrite,
+		ResourceType:     base.ResourceTypeApp,
+		ResourceID:       appID,
+		ParentResourceID: projectID,
+		Action:           base.ActionTypeWrite,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)

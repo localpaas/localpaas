@@ -10,10 +10,18 @@ import (
 )
 
 func (uc *SessionUC) VerifyAuth(ctx context.Context, auth *basedto.Auth, accessCheck *permission.AccessCheck) error {
-	if auth.User.Role == base.UserRoleOwner || auth.User.Role == base.UserRoleAdmin {
+	isAdmin := auth.User.Role == base.UserRoleOwner || auth.User.Role == base.UserRoleAdmin
+	if isAdmin {
 		return nil
 	}
-	if accessCheck != nil && accessCheck.SubjectID == "" {
+	if accessCheck == nil {
+		return nil
+	}
+	if accessCheck.RequireAdmin {
+		return apperrors.New(apperrors.ErrUnauthorized).WithMsgLog("admin/owner role required")
+	}
+
+	if accessCheck.SubjectID == "" {
 		accessCheck.SubjectID = auth.User.ID
 	}
 	checkResult, err := uc.permissionManager.CheckAccess(ctx, uc.db, accessCheck)

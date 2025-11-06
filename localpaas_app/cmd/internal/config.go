@@ -31,11 +31,6 @@ func ValidateConfig(lc fx.Lifecycle, cfg *config.Config, logger logging.Logger) 
 				return fmt.Errorf("%w: basic auth password is invalid for production", ErrInvalidConfig)
 			}
 
-			// DevMode.SkipAuthCheck must not be turned on for production
-			if isProdEnv && cfg.DevMode.SkipAuthCheck {
-				return fmt.Errorf("%w: DevMode.SkipAuthCheck must not be TRUE for production", ErrInvalidConfig)
-			}
-
 			return nil
 		},
 	})

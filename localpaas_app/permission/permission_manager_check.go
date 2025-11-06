@@ -11,15 +11,23 @@ import (
 )
 
 type AccessCheck struct {
-	RequireAdmin bool
-	SubjectType  base.SubjectType
-	SubjectID    string
-	ResourceType base.ResourceType
-	ResourceID   string
-	Action       base.ActionType
+	RequireAdmin     bool
+	SubjectType      base.SubjectType
+	SubjectID        string
+	ResourceType     base.ResourceType
+	ResourceID       string
+	ParentResourceID string
+	Action           base.ActionType
 }
 
 func (p *manager) CheckAccess(ctx context.Context, db database.IDB, check *AccessCheck) (bool, error) {
+	switch check.ResourceType { //nolint:exhaustive
+	case base.ResourceTypeProject:
+		return p.CheckProjectAccess(ctx, db, check)
+	case base.ResourceTypeApp:
+		return p.CheckAppAccess(ctx, db, check)
+	}
+
 	perms, err := p.aclPermissionRepo.ListByResources(ctx, db, []*base.PermissionResource{
 		{
 			SubjectType:  check.SubjectType,
@@ -45,6 +53,26 @@ func (p *manager) CheckAccess(ctx context.Context, db database.IDB, check *Acces
 	}
 
 	return false, nil
+}
+
+func (p *manager) CheckProjectAccess(ctx context.Context, db database.IDB, check *AccessCheck) (bool, error) {
+	acls, err := p.LoadProjectAccesses(ctx, db, check.ResourceID,
+		bunex.SelectWhere("\"user\".id = ?", check.SubjectID),
+	)
+	if err != nil {
+		return false, apperrors.Wrap(err)
+	}
+	return len(acls) > 0, nil
+}
+
+func (p *manager) CheckAppAccess(ctx context.Context, db database.IDB, check *AccessCheck) (bool, error) {
+	acls, err := p.LoadAppAccesses(ctx, db, check.ParentResourceID, check.ResourceID,
+		bunex.SelectWhere("\"user\".id = ?", check.SubjectID),
+	)
+	if err != nil {
+		return false, apperrors.Wrap(err)
+	}
+	return len(acls) > 0, nil
 }
 
 func (p *manager) LoadProjectAccesses(ctx context.Context, db database.IDB, projectID string,
