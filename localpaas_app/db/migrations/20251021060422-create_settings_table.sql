@@ -1,7 +1,8 @@
 -- +migrate Up
 CREATE TABLE IF NOT EXISTS settings
 (
-    id           VARCHAR(26) PRIMARY KEY,
+    id           VARCHAR(100) PRIMARY KEY,
+    object_id    VARCHAR(100) NULL,
     name         VARCHAR(100) NULL,
     type         VARCHAR(100) NOT NULL,
     version      VARCHAR(10) NOT NULL DEFAULT '1',
@@ -14,6 +15,7 @@ CREATE TABLE IF NOT EXISTS settings
     deleted_at   TIMESTAMPTZ NULL
 );
 
+CREATE INDEX idx_settings_object_id ON settings(object_id);
 CREATE INDEX idx_settings_type ON settings(type);
 CREATE INDEX idx_settings_name ON settings(name);
 CREATE INDEX idx_settings_status ON settings(status);

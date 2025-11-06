@@ -1,24 +1,20 @@
 -- +migrate Up
 CREATE TABLE IF NOT EXISTS apps
 (
-    id           VARCHAR(26) PRIMARY KEY,
+    id           VARCHAR(100) PRIMARY KEY,
     name         VARCHAR(100) NOT NULL,
     slug         VARCHAR(100) NOT NULL,
     photo        VARCHAR(255) NULL,
-    project_id   VARCHAR(26) NOT NULL,
-    parent_id    VARCHAR(26) NULL,
+    project_id   VARCHAR(100) NOT NULL,
+    parent_id    VARCHAR(100) NULL,
     status       VARCHAR(100) NOT NULL,
     note         VARCHAR(10000) NULL,
-    settings_id  VARCHAR(26) NULL,
-    env_vars_id  VARCHAR(26) NULL,
 
     created_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted_at   TIMESTAMPTZ NULL,
 
-    CONSTRAINT fk_apps_project_id FOREIGN KEY (project_id) REFERENCES projects (id),
-    CONSTRAINT fk_apps_settings_id FOREIGN KEY (settings_id) REFERENCES settings (id),
-    CONSTRAINT fk_apps_env_vars_id FOREIGN KEY (env_vars_id) REFERENCES settings (id)
+    CONSTRAINT fk_apps_project_id FOREIGN KEY (project_id) REFERENCES projects (id)
 );
 
 CREATE UNIQUE INDEX idx_uq_apps_name ON apps(project_id, LOWER(name)) WHERE deleted_at IS NULL;

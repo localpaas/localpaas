@@ -9,25 +9,22 @@ import (
 var (
 	ProjectUpsertingConflictCols = []string{"id"}
 	ProjectUpsertingUpdateCols   = []string{"name", "slug", "photo", "status", "note",
-		"settings_id", "env_vars_id", "updated_at", "deleted_at"}
+		"updated_at", "deleted_at"}
 )
 
 type Project struct {
-	ID         string `bun:",pk"`
-	Name       string
-	Slug       string
-	Photo      string `bun:",nullzero"`
-	Status     base.ProjectStatus
-	Note       string `bun:",nullzero"`
-	SettingsID string `bun:",nullzero"`
-	EnvVarsID  string `bun:",nullzero"`
+	ID     string `bun:",pk"`
+	Name   string
+	Slug   string
+	Photo  string `bun:",nullzero"`
+	Status base.ProjectStatus
+	Note   string `bun:",nullzero"`
 
 	CreatedAt time.Time `bun:",default:current_timestamp"`
 	UpdatedAt time.Time `bun:",default:current_timestamp"`
 	DeletedAt time.Time `bun:",soft_delete,nullzero"`
 
-	Settings *Setting         `bun:"rel:has-one,join:settings_id=id"`
-	EnvVars  *Setting         `bun:"rel:has-one,join:env_vars_id=id"`
+	Settings []*Setting       `bun:"rel:has-many,join:id=object_id"`
 	Apps     []*App           `bun:"rel:has-many,join:id=project_id"`
 	Tags     []*ProjectTag    `bun:"rel:has-many,join:id=project_id"`
 	Accesses []*ACLPermission `bun:"rel:has-many,join:id=resource_id"`
@@ -43,26 +40,20 @@ func (p *Project) GetName() string {
 	return p.Name
 }
 
-type ProjectSettings struct {
-	Test string `json:"test"`
-}
-
-func (p *Project) ParseSettings() (*ProjectSettings, error) {
-	if p.Settings != nil {
-		res := &ProjectSettings{}
-		return res, p.Settings.parseData(res)
+func (p *Project) GetSettingsByType(typ base.SettingType) (resp []*Setting) {
+	for _, setting := range p.Settings {
+		if setting.Type == typ {
+			resp = append(resp, setting)
+		}
 	}
-	return nil, nil
+	return resp
 }
 
-type ProjectEnvVars struct {
-	Data [][]string `json:"data"`
-}
-
-func (p *Project) ParseEnvVars() (*ProjectEnvVars, error) {
-	if p.EnvVars != nil {
-		res := &ProjectEnvVars{}
-		return res, p.EnvVars.parseData(res)
+func (p *Project) GetSettingByType(typ base.SettingType) *Setting {
+	for _, setting := range p.Settings {
+		if setting.Type == typ {
+			return setting
+		}
 	}
-	return nil, nil
+	return nil
 }

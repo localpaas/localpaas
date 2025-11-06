@@ -21,7 +21,7 @@ type _ *apperrors.ErrorInfo
 // @Produce json
 // @Id      getProjectSettings
 // @Param   projectID path string true "project ID"
-// @Param   body body projectdto.GetProjectSettingsReq true "request data"
+// @Param   type query string false "`type=<setting type>`"
 // @Success 200 {object} projectdto.GetProjectSettingsResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
@@ -70,7 +70,7 @@ func (h *ProjectHandler) GetProjectSettings(ctx *gin.Context) {
 // @Success 200 {object} projectdto.UpdateProjectSettingsResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/settings [put]
+// @Router  /projects/{projectID}/settings [patch]
 func (h *ProjectHandler) UpdateProjectSettings(ctx *gin.Context) {
 	projectID, err := h.ParseStringParam(ctx, "projectID")
 	if err != nil {

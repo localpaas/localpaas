@@ -1,7 +1,7 @@
 -- +migrate Up
 CREATE TABLE IF NOT EXISTS users
 (
-    id              VARCHAR(26) PRIMARY KEY,
+    id              VARCHAR(100) PRIMARY KEY,
     email           VARCHAR(255) NOT NULL,
     role            VARCHAR(20) NOT NULL CONSTRAINT chk_role CHECK
                         (role IN ('owner','admin','member')),

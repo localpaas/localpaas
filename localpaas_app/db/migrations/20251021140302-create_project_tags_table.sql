@@ -1,7 +1,7 @@
 -- +migrate Up
 CREATE TABLE IF NOT EXISTS project_tags
 (
-    project_id    VARCHAR(26) NOT NULL,
+    project_id    VARCHAR(100) NOT NULL,
     tag           VARCHAR(255) NOT NULL,
     display_order INT2 NOT NULL,
     deleted_at    TIMESTAMPTZ NULL,

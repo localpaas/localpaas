@@ -11,7 +11,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
 	"github.com/localpaas/localpaas/pkg/timeutil"
@@ -24,14 +23,14 @@ func (uc *AppUC) UpdateAppSettings(
 	req *appdto.UpdateAppSettingsReq,
 ) (*appdto.UpdateAppSettingsResp, error) {
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
-		settingsData := &updateAppSettingsData{}
-		err := uc.loadAppSettingsDataForUpdate(ctx, db, req, settingsData)
+		data := &updateAppSettingsData{}
+		err := uc.loadAppSettingsDataForUpdate(ctx, db, req, data)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
 
 		persistingData := &persistingAppData{}
-		err = uc.preparePersistingAppSettings(req, settingsData, persistingData)
+		err = uc.preparePersistingAppSettings(req, data, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -55,9 +54,19 @@ func (uc *AppUC) loadAppSettingsDataForUpdate(
 	req *appdto.UpdateAppSettingsReq,
 	data *updateAppSettingsData,
 ) error {
+	var targetTypes []base.SettingType
+	switch {
+	case req.EnvVars != nil:
+		targetTypes = append(targetTypes, base.SettingTypeEnvVar)
+	case req.DeploymentSettings != nil:
+		targetTypes = append(targetTypes, base.SettingTypeDeployment)
+	}
+
 	app, err := uc.appRepo.GetByID(ctx, db, req.ProjectID, req.AppID,
 		bunex.SelectFor("UPDATE OF app"),
-		bunex.SelectRelation("Settings"),
+		bunex.SelectRelation("Settings",
+			bunex.SelectWhere("setting.type IN (?)", bunex.In(targetTypes)),
+		),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -74,31 +83,46 @@ func (uc *AppUC) preparePersistingAppSettings(
 ) error {
 	timeNow := timeutil.NowUTC()
 	app := data.App
-	if app.Settings == nil {
-		app.Settings = &entity.Setting{
-			ID:        gofn.Must(ulid.NewStringULID()),
-			Type:      base.SettingTypeApp,
-			CreatedAt: timeNow,
+
+	if req.EnvVars != nil {
+		setting := app.GetSettingByType(base.SettingTypeEnvVar)
+		if setting == nil {
+			setting = &entity.Setting{
+				ID:        gofn.Must(ulid.NewStringULID()),
+				ObjectID:  app.ID,
+				Type:      base.SettingTypeEnvVar,
+				Status:    base.SettingStatusActive,
+				CreatedAt: timeNow,
+			}
 		}
-		app.SettingsID = app.Settings.ID
+		setting.UpdatedAt = timeNow
+		err := setting.SetData(&entity.EnvVars{Data: gofn.MapSlice(req.EnvVars, func(v *appdto.EnvVarReq) *entity.EnvVar {
+			return v.ToEntity()
+		})})
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+		persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 	}
 
-	app.Settings.UpdatedAt = timeNow
-	var settingsData *entity.AppSettings
-
-	// Do a copy fields to fields
-	err := copier.Copy(&settingsData, req.Settings)
-	if err != nil {
-		return apperrors.Wrap(err)
+	if req.DeploymentSettings != nil {
+		setting := app.GetSettingByType(base.SettingTypeDeployment)
+		if setting == nil {
+			setting = &entity.Setting{
+				ID:        gofn.Must(ulid.NewStringULID()),
+				ObjectID:  app.ID,
+				Type:      base.SettingTypeDeployment,
+				Status:    base.SettingStatusActive,
+				CreatedAt: timeNow,
+			}
+		}
+		setting.UpdatedAt = timeNow
+		err := setting.SetData(req.DeploymentSettings.ToEntity())
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+		persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 	}
 
-	err = app.Settings.SetData(settingsData)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	app.UpdatedAt = timeNow
-	persistingData.UpsertingApps = append(persistingData.UpsertingApps, app)
-	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, app.Settings)
 	return nil
 }

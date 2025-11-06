@@ -12,6 +12,7 @@ type ProjectUC struct {
 	db                *database.DB
 	userRepo          repository.UserRepo
 	projectRepo       repository.ProjectRepo
+	settingRepo       repository.SettingRepo
 	permissionManager permission.Manager
 	userService       userservice.UserService
 	projectService    projectservice.ProjectService
@@ -21,6 +22,7 @@ func NewProjectUC(
 	db *database.DB,
 	userRepo repository.UserRepo,
 	projectRepo repository.ProjectRepo,
+	settingRepo repository.SettingRepo,
 	permissionManager permission.Manager,
 	userService userservice.UserService,
 	projectService projectservice.ProjectService,
@@ -29,6 +31,7 @@ func NewProjectUC(
 		db:                db,
 		userRepo:          userRepo,
 		projectRepo:       projectRepo,
+		settingRepo:       settingRepo,
 		permissionManager: permissionManager,
 		userService:       userService,
 		projectService:    projectService,

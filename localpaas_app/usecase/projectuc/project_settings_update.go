@@ -11,7 +11,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc/projectdto"
 	"github.com/localpaas/localpaas/pkg/timeutil"
@@ -24,14 +23,14 @@ func (uc *ProjectUC) UpdateProjectSettings(
 	req *projectdto.UpdateProjectSettingsReq,
 ) (*projectdto.UpdateProjectSettingsResp, error) {
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
-		settingsData := &updateProjectSettingsData{}
-		err := uc.loadProjectSettingsDataForUpdate(ctx, db, req, settingsData)
+		data := &updateProjectSettingsData{}
+		err := uc.loadProjectSettingsDataForUpdate(ctx, db, req, data)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
 
 		persistingData := &persistingProjectData{}
-		err = uc.preparePersistingProjectSettings(req, settingsData, persistingData)
+		err = uc.preparePersistingProjectSettings(req, data, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -55,9 +54,19 @@ func (uc *ProjectUC) loadProjectSettingsDataForUpdate(
 	req *projectdto.UpdateProjectSettingsReq,
 	data *updateProjectSettingsData,
 ) error {
+	var targetTypes []base.SettingType
+	switch {
+	case req.EnvVars != nil:
+		targetTypes = append(targetTypes, base.SettingTypeEnvVar)
+	case req.Settings != nil:
+		targetTypes = append(targetTypes, base.SettingTypeProject)
+	}
+
 	project, err := uc.projectRepo.GetByID(ctx, db, req.ProjectID,
 		bunex.SelectFor("UPDATE OF project"),
-		bunex.SelectRelation("Settings"),
+		bunex.SelectRelation("Settings",
+			bunex.SelectWhere("setting.type IN (?)", bunex.In(targetTypes)),
+		),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -74,31 +83,46 @@ func (uc *ProjectUC) preparePersistingProjectSettings(
 ) error {
 	timeNow := timeutil.NowUTC()
 	project := data.Project
-	if project.Settings == nil {
-		project.Settings = &entity.Setting{
-			ID:        gofn.Must(ulid.NewStringULID()),
-			Type:      base.SettingTypeProject,
-			CreatedAt: timeNow,
+
+	if req.EnvVars != nil {
+		setting := project.GetSettingByType(base.SettingTypeEnvVar)
+		if setting == nil {
+			setting = &entity.Setting{
+				ID:        gofn.Must(ulid.NewStringULID()),
+				ObjectID:  project.ID,
+				Type:      base.SettingTypeEnvVar,
+				Status:    base.SettingStatusActive,
+				CreatedAt: timeNow,
+			}
 		}
-		project.SettingsID = project.Settings.ID
+		setting.UpdatedAt = timeNow
+		err := setting.SetData(&entity.EnvVars{Data: gofn.MapSlice(req.EnvVars, func(v *projectdto.EnvVarReq) *entity.EnvVar {
+			return v.ToEntity()
+		})})
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+		persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 	}
 
-	project.Settings.UpdatedAt = timeNow
-	var settingsData *entity.ProjectSettings
-
-	// Do a copy fields to fields
-	err := copier.Copy(&settingsData, req.Settings)
-	if err != nil {
-		return apperrors.Wrap(err)
+	if req.Settings != nil {
+		setting := project.GetSettingByType(base.SettingTypeProject)
+		if setting == nil {
+			setting = &entity.Setting{
+				ID:        gofn.Must(ulid.NewStringULID()),
+				ObjectID:  project.ID,
+				Type:      base.SettingTypeProject,
+				Status:    base.SettingStatusActive,
+				CreatedAt: timeNow,
+			}
+		}
+		setting.UpdatedAt = timeNow
+		err := setting.SetData(req.Settings.ToEntity())
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+		persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 	}
 
-	err = project.Settings.SetData(settingsData)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	project.UpdatedAt = timeNow
-	persistingData.UpsertingProjects = append(persistingData.UpsertingProjects, project)
-	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, project.Settings)
 	return nil
 }

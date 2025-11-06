@@ -13,6 +13,7 @@ type AppUC struct {
 	userRepo          repository.UserRepo
 	projectRepo       repository.ProjectRepo
 	appRepo           repository.AppRepo
+	settingRepo       repository.SettingRepo
 	permissionManager permission.Manager
 	userService       userservice.UserService
 	appService        appservice.AppService
@@ -23,6 +24,7 @@ func NewAppUC(
 	userRepo repository.UserRepo,
 	projectRepo repository.ProjectRepo,
 	appRepo repository.AppRepo,
+	settingRepo repository.SettingRepo,
 	permissionManager permission.Manager,
 	userService userservice.UserService,
 	appService appservice.AppService,
@@ -32,6 +34,7 @@ func NewAppUC(
 		userRepo:          userRepo,
 		projectRepo:       projectRepo,
 		appRepo:           appRepo,
+		settingRepo:       settingRepo,
 		permissionManager: permissionManager,
 		userService:       userService,
 		appService:        appService,

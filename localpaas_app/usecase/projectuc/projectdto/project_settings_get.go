@@ -4,13 +4,15 @@ import (
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 )
 
 type GetProjectSettingsReq struct {
-	ProjectID string `json:"-"`
+	ProjectID string             `json:"-"`
+	Type      []base.SettingType `json:"-" mapstructure:"type"`
 }
 
 func NewGetProjectSettingsReq() *GetProjectSettingsReq {
@@ -18,8 +20,13 @@ func NewGetProjectSettingsReq() *GetProjectSettingsReq {
 }
 
 func (req *GetProjectSettingsReq) Validate() apperrors.ValidationErrors {
+	if len(req.Type) == 0 {
+		req.Type = base.AllProjectSettingTypes
+	}
+
 	var validators []vld.Validator
 	validators = append(validators, basedto.ValidateID(&req.ProjectID, true, "projectId")...)
+	validators = append(validators, basedto.ValidateSlice(req.Type, true, 0, base.AllProjectSettingTypes, "type")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
@@ -29,11 +36,75 @@ type GetProjectSettingsResp struct {
 }
 
 type ProjectSettingsResp struct {
+	EnvVars  *EnvVarsResp         `json:"envVars,omitempty"`
+	Settings *GeneralSettingsResp `json:"settings,omitempty"`
+}
+
+type EnvVarsResp struct {
+	Project []*EnvVarResp `json:"project"`
+}
+
+type EnvVarResp struct {
+	Key        string `json:"key"`
+	Value      string `json:"value"`
+	IsBuildEnv bool   `json:"isBuildEnv,omitempty"`
+}
+
+type GeneralSettingsResp struct {
 	Test string `json:"test"`
 }
 
-func TransformProjectSettings(settings *entity.ProjectSettings) (resp *ProjectSettingsResp, err error) {
-	if err = copier.Copy(&resp, &settings); err != nil {
+func TransformProjectSettings(project *entity.Project) (resp *ProjectSettingsResp, err error) {
+	resp = &ProjectSettingsResp{}
+
+	for _, setting := range project.Settings {
+		switch setting.Type { //nolint:exhaustive
+		case base.SettingTypeProject:
+			resp.Settings, err = TransformGeneralSettings(setting)
+			if err != nil {
+				return nil, apperrors.Wrap(err)
+			}
+
+		case base.SettingTypeEnvVar:
+			resp.EnvVars, err = TransformEnvVars(setting)
+			if err != nil {
+				return nil, apperrors.Wrap(err)
+			}
+		}
+	}
+
+	return resp, nil
+}
+
+func TransformEnvVars(setting *entity.Setting) (resp *EnvVarsResp, err error) {
+	if setting == nil {
+		return nil, nil
+	}
+	envVars, err := setting.ParseEnvVars()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	if envVars != nil {
+		resp = &EnvVarsResp{
+			Project: []*EnvVarResp{},
+		}
+		for _, v := range envVars.Data {
+			resp.Project = append(resp.Project, &EnvVarResp{
+				Key:        v.Key,
+				Value:      v.Value,
+				IsBuildEnv: v.IsBuildEnv,
+			})
+		}
+	}
+	return resp, nil
+}
+
+func TransformGeneralSettings(setting *entity.Setting) (resp *GeneralSettingsResp, err error) {
+	data, err := setting.ParseProjectSettings()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	if err = copier.Copy(&resp, &data); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 	return resp, nil

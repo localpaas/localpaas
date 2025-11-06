@@ -1,7 +1,7 @@
 -- +migrate Up
 CREATE TABLE IF NOT EXISTS app_tags
 (
-    app_id        VARCHAR(26) NOT NULL,
+    app_id        VARCHAR(100) NOT NULL,
     tag           VARCHAR(255) NOT NULL,
     display_order INT2 NOT NULL,
     deleted_at    TIMESTAMPTZ NULL,

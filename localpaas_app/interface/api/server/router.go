@@ -147,10 +147,7 @@ func (s *HTTPServer) registerRoutes() {
 		projectGroup.POST("/:projectID/tags/delete", s.handlerRegistry.projectHandler.DeleteProjectTags)
 		// Settings
 		projectGroup.GET("/:projectID/settings", s.handlerRegistry.projectHandler.GetProjectSettings)
-		projectGroup.PUT("/:projectID/settings", s.handlerRegistry.projectHandler.UpdateProjectSettings)
-		// Env vars
-		projectGroup.GET("/:projectID/env-vars", s.handlerRegistry.projectHandler.GetProjectEnvVars)
-		projectGroup.PUT("/:projectID/env-vars", s.handlerRegistry.projectHandler.UpdateProjectEnvVars)
+		projectGroup.PATCH("/:projectID/settings", s.handlerRegistry.projectHandler.UpdateProjectSettings)
 	}
 
 	appGroup := projectGroup.Group("/:projectID/apps")
@@ -167,10 +164,7 @@ func (s *HTTPServer) registerRoutes() {
 		appGroup.POST("/:appID/tags/delete", s.handlerRegistry.appHandler.DeleteAppTags)
 		// Settings
 		appGroup.GET("/:appID/settings", s.handlerRegistry.appHandler.GetAppSettings)
-		appGroup.PUT("/:appID/settings", s.handlerRegistry.appHandler.UpdateAppSettings)
-		// Env vars
-		appGroup.GET("/:appID/env-vars", s.handlerRegistry.appHandler.GetAppEnvVars)
-		appGroup.PUT("/:appID/env-vars", s.handlerRegistry.appHandler.UpdateAppEnvVars)
+		appGroup.PATCH("/:appID/settings", s.handlerRegistry.appHandler.UpdateAppSettings)
 	}
 
 	s3StorageGroup := apiV1Group.Group("/s3-storages")

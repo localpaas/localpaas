@@ -22,7 +22,7 @@ type _ *apperrors.ErrorInfo
 // @Id      getAppSettings
 // @Param   projectID path string true "project ID"
 // @Param   appID path string true "app ID"
-// @Param   body body appdto.GetAppSettingsReq true "request data"
+// @Param   type query string false "`type=<setting type>`"
 // @Success 200 {object} appdto.GetAppSettingsResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
@@ -78,7 +78,7 @@ func (h *AppHandler) GetAppSettings(ctx *gin.Context) {
 // @Success 200 {object} appdto.UpdateAppSettingsResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/apps/{appID}/settings [put]
+// @Router  /projects/{projectID}/apps/{appID}/settings [patch]
 func (h *AppHandler) UpdateAppSettings(ctx *gin.Context) {
 	projectID, err := h.ParseStringParam(ctx, "projectID")
 	if err != nil {

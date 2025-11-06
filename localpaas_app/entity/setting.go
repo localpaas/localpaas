@@ -13,14 +13,16 @@ import (
 
 var (
 	SettingUpsertingConflictCols = []string{"id"}
-	SettingUpsertingUpdateCols   = []string{"type", "name", "data", "updated_at", "deleted_at"}
+	SettingUpsertingUpdateCols   = []string{"object_id", "type", "status", "name", "data", "updated_at", "deleted_at"}
 )
 
 type Setting struct {
-	ID   string `bun:",pk"`
-	Type base.SettingType
-	Name string `bun:",nullzero"`
-	Data string `bun:",nullzero"`
+	ID       string `bun:",pk"`
+	ObjectID string `bun:",nullzero"`
+	Type     base.SettingType
+	Status   base.SettingStatus
+	Name     string `bun:",nullzero"`
+	Data     string `bun:",nullzero"`
 
 	CreatedAt time.Time `bun:",default:current_timestamp"`
 	UpdatedAt time.Time `bun:",default:current_timestamp"`
