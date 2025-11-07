@@ -33,13 +33,16 @@ func (uc *UserUC) BeginUserSignup(
 	}
 
 	resp := &userdto.BeginUserSignupDataResp{
-		RequirePassword: user.SecurityOption == base.UserSecurityPassword2FA ||
-			user.SecurityOption == base.UserSecurityPasswordOnly,
-		RequireMfa: user.SecurityOption == base.UserSecurityPassword2FA,
+		Email:          user.Email,
+		Role:           user.Role,
+		SecurityOption: user.SecurityOption,
+	}
+	if !user.AccessExpireAt.IsZero() {
+		resp.AccessExpiration = &user.AccessExpireAt
 	}
 
-	// Generate TOTP secret and QR code for user to setup MFA
-	if resp.RequireMfa {
+	// Generate TOTP secret and QR code for user to setup 2FA
+	if user.SecurityOption == base.UserSecurityPassword2FA {
 		secret, qrCode, err := totp.GenerateSecretAndQRCode(qrCodeImageSize)
 		if err != nil {
 			return nil, apperrors.Wrap(err)

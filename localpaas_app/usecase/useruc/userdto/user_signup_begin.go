@@ -1,9 +1,12 @@
 package userdto
 
 import (
+	"time"
+
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 )
 
@@ -28,8 +31,11 @@ type BeginUserSignupResp struct {
 }
 
 type BeginUserSignupDataResp struct {
-	RequirePassword bool               `json:"requirePassword"`
-	RequireMfa      bool               `json:"requireMfa"`
-	MFATotpSecret   string             `json:"mfaTotpSecret,omitempty"`
-	QRCode          *MFATotpQRCodeResp `json:"qrCode,omitempty"`
+	Email            string                  `json:"email"`
+	Role             base.UserRole           `json:"role"`
+	SecurityOption   base.UserSecurityOption `json:"securityOption"`
+	AccessExpiration *time.Time              `json:"accessExpiration"`
+
+	MFATotpSecret string             `json:"mfaTotpSecret,omitempty"`
+	QRCode        *MFATotpQRCodeResp `json:"qrCode,omitempty"`
 }
