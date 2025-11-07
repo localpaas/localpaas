@@ -71,6 +71,7 @@ services:
       VITE_API_URL: http://localhost:10000
     volumes:
       - app_data:/var/lib/localpaas
+      - /var/run/docker.sock:/var/run/docker.sock
 
 # Define the overlay network for Swarm
 networks:
