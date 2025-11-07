@@ -27,7 +27,7 @@ type _ *apperrors.ErrorInfo
 // @Success 200 {object} sshkeydto.ListSSHKeyBaseResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /ssh-keys/base-list [get]
+// @Router  /ssh-keys/base [get]
 func (h *SSHKeyHandler) ListSSHKeyBase(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceType: base.ResourceTypeSSHKey,

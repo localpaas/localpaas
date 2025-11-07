@@ -29,7 +29,7 @@ type _ *apperrors.ErrorInfo
 // @Success 200 {object} appdto.ListAppBaseResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/apps/base-list [get]
+// @Router  /projects/{projectID}/apps/base [get]
 func (h *AppHandler) ListAppBase(ctx *gin.Context) {
 	projectID, err := h.ParseStringParam(ctx, "projectID")
 	if err != nil {

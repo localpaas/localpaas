@@ -28,7 +28,7 @@ type _ *apperrors.ErrorInfo
 // @Success 200 {object} userdto.ListUserBaseResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /users/base-list [get]
+// @Router  /users/base [get]
 func (h *UserHandler) ListUserBase(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceType: base.ResourceTypeUser,
@@ -115,6 +115,7 @@ func (h *UserHandler) GetUser(ctx *gin.Context) {
 // @Router  /users [get]
 func (h *UserHandler) ListUser(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		RequireAdmin: true,
 		ResourceType: base.ResourceTypeUser,
 		Action:       base.ActionTypeRead,
 	})

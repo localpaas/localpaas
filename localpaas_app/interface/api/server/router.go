@@ -118,7 +118,7 @@ func (s *HTTPServer) registerRoutes() {
 	{ // user group
 		userGroup := apiV1Group.Group("/users")
 		// Get user info
-		userGroup.GET("/base-list", s.handlerRegistry.userHandler.ListUserBase)
+		userGroup.GET("/base", s.handlerRegistry.userHandler.ListUserBase)
 		userGroup.GET("/:userID", s.handlerRegistry.userHandler.GetUser)
 		userGroup.GET("", s.handlerRegistry.userHandler.ListUser)
 		// Password
@@ -136,7 +136,7 @@ func (s *HTTPServer) registerRoutes() {
 	projectGroup := apiV1Group.Group("/projects")
 	{ // project group
 		// Project info
-		projectGroup.GET("/base-list", s.handlerRegistry.projectHandler.ListProjectBase)
+		projectGroup.GET("/base", s.handlerRegistry.projectHandler.ListProjectBase)
 		projectGroup.GET("/:projectID", s.handlerRegistry.projectHandler.GetProject)
 		projectGroup.GET("", s.handlerRegistry.projectHandler.ListProject)
 		// Creation & Update
@@ -153,7 +153,7 @@ func (s *HTTPServer) registerRoutes() {
 	appGroup := projectGroup.Group("/:projectID/apps")
 	{ // app group
 		// App info
-		appGroup.GET("/base-list", s.handlerRegistry.appHandler.ListAppBase)
+		appGroup.GET("/base", s.handlerRegistry.appHandler.ListAppBase)
 		appGroup.GET("/:appID", s.handlerRegistry.appHandler.GetApp)
 		appGroup.GET("", s.handlerRegistry.appHandler.ListApp)
 		// Creation & Update
@@ -170,7 +170,7 @@ func (s *HTTPServer) registerRoutes() {
 	s3StorageGroup := apiV1Group.Group("/s3-storages")
 	{ // s3 storage group
 		// Info
-		s3StorageGroup.GET("/base-list", s.handlerRegistry.s3StorageHandler.ListS3StorageBase)
+		s3StorageGroup.GET("/base", s.handlerRegistry.s3StorageHandler.ListS3StorageBase)
 		s3StorageGroup.GET("/:ID", s.handlerRegistry.s3StorageHandler.GetS3Storage)
 		s3StorageGroup.GET("", s.handlerRegistry.s3StorageHandler.ListS3Storage)
 		// Creation & Update
@@ -182,7 +182,7 @@ func (s *HTTPServer) registerRoutes() {
 	sshKeyGroup := apiV1Group.Group("/ssh-keys")
 	{ // ssh key group
 		// Info
-		sshKeyGroup.GET("/base-list", s.handlerRegistry.sshKeyHandler.ListSSHKeyBase)
+		sshKeyGroup.GET("/base", s.handlerRegistry.sshKeyHandler.ListSSHKeyBase)
 		sshKeyGroup.GET("/:ID", s.handlerRegistry.sshKeyHandler.GetSSHKey)
 		sshKeyGroup.GET("", s.handlerRegistry.sshKeyHandler.ListSSHKey)
 		// Creation & Update
@@ -194,7 +194,7 @@ func (s *HTTPServer) registerRoutes() {
 	apiKeyGroup := apiV1Group.Group("/api-keys")
 	{ // api key group
 		// Info
-		apiKeyGroup.GET("/base-list", s.handlerRegistry.apiKeyHandler.ListAPIKeyBase)
+		apiKeyGroup.GET("/base", s.handlerRegistry.apiKeyHandler.ListAPIKeyBase)
 		apiKeyGroup.GET("/:ID", s.handlerRegistry.apiKeyHandler.GetAPIKey)
 		apiKeyGroup.GET("", s.handlerRegistry.apiKeyHandler.ListAPIKey)
 		// Creation & Update

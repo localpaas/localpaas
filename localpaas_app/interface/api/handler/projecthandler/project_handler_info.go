@@ -28,7 +28,7 @@ type _ *apperrors.ErrorInfo
 // @Success 200 {object} projectdto.ListProjectBaseResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/base-list [get]
+// @Router  /projects/base [get]
 func (h *ProjectHandler) ListProjectBase(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceType: base.ResourceTypeProject,

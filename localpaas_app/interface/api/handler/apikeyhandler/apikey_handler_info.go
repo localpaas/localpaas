@@ -27,7 +27,7 @@ type _ *apperrors.ErrorInfo
 // @Success 200 {object} apikeydto.ListAPIKeyBaseResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /api-keys/base-list [get]
+// @Router  /api-keys/base [get]
 func (h *APIKeyHandler) ListAPIKeyBase(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceType: base.ResourceTypeAPIKey,

@@ -27,7 +27,7 @@ type _ *apperrors.ErrorInfo
 // @Success 200 {object} s3storagedto.ListS3StorageBaseResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /s3-storages/base-list [get]
+// @Router  /s3-storages/base [get]
 func (h *S3StorageHandler) ListS3StorageBase(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceType: base.ResourceTypeS3Storage,
