@@ -5,6 +5,7 @@ app:
   name: LocalPaaS
   version: 0.1
   base_url: http://localhost # dashboard base URL
+  app_path: .appdata
 
 db:
   host: localhost

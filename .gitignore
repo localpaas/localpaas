@@ -9,8 +9,8 @@
 /temp
 /.temp
 /tmp
-/app
 /dist-dashboard/*
+/.appdata
 .env
 .envrc
 .DS_Store

@@ -118,12 +118,14 @@ func (s *HTTPServer) registerRoutes() {
 
 	{ // user group
 		userGroup := apiV1Group.Group("/users")
-		// Get user info
+		// User info
 		userGroup.GET("/base", s.handlerRegistry.userHandler.ListUserBase)
 		userGroup.GET("/:userID", s.handlerRegistry.userHandler.GetUser)
 		userGroup.GET("", s.handlerRegistry.userHandler.ListUser)
 		// Password
 		userGroup.PATCH("/current/password", s.handlerRegistry.userHandler.UpdateUserPassword)
+		// Profile
+		userGroup.PATCH("/current/profile", s.handlerRegistry.userHandler.UpdateUserProfile)
 		// MFA TOTP setup
 		userGroup.POST("/current/mfa/totp-begin-setup", s.handlerRegistry.userHandler.BeginMFATotpSetup)
 		userGroup.POST("/current/mfa/totp-complete-setup", s.handlerRegistry.userHandler.CompleteMFATotpSetup)
