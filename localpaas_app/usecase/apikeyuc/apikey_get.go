@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/apikeyuc/apikeydto"
 )
@@ -15,26 +15,17 @@ func (uc *APIKeyUC) GetAPIKey(
 	auth *basedto.Auth,
 	req *apikeydto.GetAPIKeyReq,
 ) (*apikeydto.GetAPIKeyResp, error) {
-	setting, err := uc.settingRepo.GetByID(ctx, uc.db, req.ID)
+	setting, err := uc.settingRepo.GetByID(ctx, uc.db, req.ID,
+		bunex.SelectWhere("setting.deleted_at IS NULL"),
+		bunex.SelectWhere("setting.type = ?", base.SettingTypeAPIKey),
+		bunex.SelectWhere("setting.object_id = ?", auth.User.ID),
+		bunex.SelectRelation("ObjectUser", bunex.SelectWithDeleted()),
+	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	apiKey, err := setting.ParseAPIKey()
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-
-	userMap := make(map[string]*entity.User)
-	if apiKey != nil {
-		user, err := uc.userRepo.GetByID(ctx, uc.db, apiKey.ActingUser.ID, bunex.SelectWithDeleted())
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-		userMap[user.ID] = user
-	}
-
-	resp, err := apikeydto.TransformAPIKey(setting, userMap)
+	resp, err := apikeydto.TransformAPIKey(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

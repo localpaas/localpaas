@@ -5,18 +5,18 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 )
 
-type DeleteSessionReq struct {
+type DeleteAllSessionsReq struct {
 	User *basedto.User `json:"-"`
 }
 
-func NewDeleteSessionReq() *DeleteSessionReq {
-	return &DeleteSessionReq{}
+func NewDeleteAllSessionsReq() *DeleteAllSessionsReq {
+	return &DeleteAllSessionsReq{}
 }
 
-func (req *DeleteSessionReq) Validate() apperrors.ValidationErrors {
+func (req *DeleteAllSessionsReq) Validate() apperrors.ValidationErrors {
 	return nil
 }
 
-type DeleteSessionResp struct {
+type DeleteAllSessionsResp struct {
 	Meta *basedto.BaseMeta `json:"meta"`
 }

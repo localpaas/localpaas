@@ -24,7 +24,7 @@ type _ *apperrors.ErrorInfo
 // @Success 201 {object} apikeydto.CreateAPIKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /api-keys [post]
+// @Router  /users/current/api-keys [post]
 func (h *APIKeyHandler) CreateAPIKey(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceType: base.ResourceTypeAPIKey,
@@ -32,6 +32,13 @@ func (h *APIKeyHandler) CreateAPIKey(ctx *gin.Context) {
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
+		return
+	}
+
+	// Not allow to use API key to create API key
+	if auth.User.AuthClaims.IsAPIKey {
+		h.RenderError(ctx, apperrors.New(apperrors.ErrForbidden).
+			WithMsgLog("not allow to create API key by using API key session"))
 		return
 	}
 
@@ -60,7 +67,7 @@ func (h *APIKeyHandler) CreateAPIKey(ctx *gin.Context) {
 // @Success 200 {object} apikeydto.DeleteAPIKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /api-keys/{ID} [delete]
+// @Router  /users/current/api-keys/{ID} [delete]
 func (h *APIKeyHandler) DeleteAPIKey(ctx *gin.Context) {
 	id, err := h.ParseStringParam(ctx, "ID")
 	if err != nil {
@@ -75,6 +82,13 @@ func (h *APIKeyHandler) DeleteAPIKey(ctx *gin.Context) {
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
+		return
+	}
+
+	// Not allow to use API key to delete API key
+	if auth.User.AuthClaims.IsAPIKey {
+		h.RenderError(ctx, apperrors.New(apperrors.ErrForbidden).
+			WithMsgLog("not allow to delete API key by using API key session"))
 		return
 	}
 

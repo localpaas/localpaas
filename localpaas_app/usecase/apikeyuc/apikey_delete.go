@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
@@ -20,7 +21,7 @@ func (uc *APIKeyUC) DeleteAPIKey(
 ) (*apikeydto.DeleteAPIKeyResp, error) {
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
 		apiKeyData := &deleteAPIKeyData{}
-		err := uc.loadAPIKeyDataForDelete(ctx, db, req, apiKeyData)
+		err := uc.loadAPIKeyDataForDelete(ctx, db, auth, req, apiKeyData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -44,11 +45,15 @@ type deleteAPIKeyData struct {
 func (uc *APIKeyUC) loadAPIKeyDataForDelete(
 	ctx context.Context,
 	db database.IDB,
+	auth *basedto.Auth,
 	req *apikeydto.DeleteAPIKeyReq,
 	data *deleteAPIKeyData,
 ) error {
 	setting, err := uc.settingRepo.GetByID(ctx, db, req.ID,
 		bunex.SelectFor("UPDATE OF setting"),
+		bunex.SelectWhere("setting.deleted_at IS NULL"),
+		bunex.SelectWhere("setting.type = ?", base.SettingTypeAPIKey),
+		bunex.SelectWhere("setting.object_id = ?", auth.User.ID),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)

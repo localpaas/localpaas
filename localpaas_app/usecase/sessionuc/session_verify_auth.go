@@ -10,17 +10,31 @@ import (
 )
 
 func (uc *SessionUC) VerifyAuth(ctx context.Context, auth *basedto.Auth, accessCheck *permission.AccessCheck) error {
-	isAdmin := auth.User.Role == base.UserRoleOwner || auth.User.Role == base.UserRoleAdmin
-	if isAdmin {
+	if auth.User.AuthClaims.IsRefresh {
+		return apperrors.New(apperrors.ErrForbidden).
+			WithMsgLog("refresh token is not allowed")
+	}
+
+	// Requested action is higher than the one limited within the session settings
+	if auth.User.AuthClaims.AccessAction != "" &&
+		base.ActionTypeCmp(accessCheck.Action, auth.User.AuthClaims.AccessAction) > 0 {
+		return apperrors.New(apperrors.ErrUnauthorized).
+			WithMsgLog("requested action is not allowed by session settings")
+	}
+	if auth.User.Role == base.UserRoleAdmin {
 		return nil
 	}
 	if accessCheck == nil {
 		return nil
 	}
 	if accessCheck.RequireAdmin {
-		return apperrors.New(apperrors.ErrUnauthorized).WithMsgLog("admin/owner role required")
+		return apperrors.New(apperrors.ErrUnauthorized).WithMsgLog("admin role required")
 	}
 
+	// No resource ID, return `allow`
+	if accessCheck.ResourceID == "" {
+		return nil
+	}
 	if accessCheck.SubjectID == "" {
 		accessCheck.SubjectID = auth.User.ID
 	}

@@ -13,7 +13,8 @@ import (
 
 var (
 	SettingUpsertingConflictCols = []string{"id"}
-	SettingUpsertingUpdateCols   = []string{"object_id", "type", "status", "name", "data", "updated_at", "deleted_at"}
+	SettingUpsertingUpdateCols   = []string{"object_id", "type", "status", "name", "data",
+		"updated_at", "expire_at", "deleted_at"}
 )
 
 type Setting struct {
@@ -26,9 +27,13 @@ type Setting struct {
 
 	CreatedAt time.Time `bun:",default:current_timestamp"`
 	UpdatedAt time.Time `bun:",default:current_timestamp"`
+	ExpireAt  time.Time `bun:",nullzero"`
 	DeletedAt time.Time `bun:",soft_delete,nullzero"`
 
 	ObjectAccesses []*ACLPermission `bun:"rel:has-many,join:id=resource_id"`
+	ObjectUser     *User            `bun:"rel:belongs-to,join:object_id=id"`
+	ObjectProject  *Project         `bun:"rel:belongs-to,join:object_id=id"`
+	ObjectApp      *App             `bun:"rel:belongs-to,join:object_id=id"`
 }
 
 // GetID implements IDEntity interface

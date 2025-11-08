@@ -1,13 +1,18 @@
 package jwtsession
 
-import "github.com/localpaas/localpaas/localpaas_app/apperrors"
+import (
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
+)
 
 // AuthClaims the claims for authentication
 type AuthClaims struct {
 	BaseClaims
-	UID       string `json:"uid"`
-	UserID    string `json:"userId"`
-	IsRefresh bool   `json:"isRefresh,omitempty"`
+	UID          string          `json:"uid"`
+	UserID       string          `json:"userId"`
+	IsRefresh    bool            `json:"isRefresh,omitempty"`
+	IsAPIKey     bool            `json:"isAPIKey,omitempty"`
+	AccessAction base.ActionType `json:"access,omitempty"`
 }
 
 // GenerateAccessToken generates access token

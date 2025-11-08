@@ -31,6 +31,7 @@ type _ *apperrors.ErrorInfo
 // @Router  /cluster/nodes [get]
 func (h *ClusterHandler) ListNode(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		RequireAdmin: true,
 		ResourceType: base.ResourceTypeNode,
 		Action:       base.ActionTypeRead,
 	})
@@ -73,6 +74,7 @@ func (h *ClusterHandler) GetNode(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		RequireAdmin: true,
 		ResourceType: base.ResourceTypeNode,
 		ResourceID:   nodeID,
 		Action:       base.ActionTypeRead,
@@ -117,6 +119,7 @@ func (h *ClusterHandler) DeleteNode(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		RequireAdmin: true,
 		ResourceType: base.ResourceTypeNode,
 		ResourceID:   nodeID,
 		Action:       base.ActionTypeDelete,

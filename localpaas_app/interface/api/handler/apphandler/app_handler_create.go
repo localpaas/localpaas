@@ -33,6 +33,7 @@ func (h *AppHandler) CreateApp(ctx *gin.Context) {
 		return
 	}
 
+	// User needs write access on the project to create an app in it
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceType: base.ResourceTypeProject,
 		ResourceID:   projectID,
@@ -88,7 +89,7 @@ func (h *AppHandler) DeleteApp(ctx *gin.Context) {
 		ResourceType:     base.ResourceTypeApp,
 		ResourceID:       appID,
 		ParentResourceID: projectID,
-		Action:           base.ActionTypeWrite,
+		Action:           base.ActionTypeDelete,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)

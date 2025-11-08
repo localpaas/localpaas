@@ -102,6 +102,7 @@ func (s *HTTPServer) registerRoutes() {
 		// Session handling
 		sessionGroup.POST("/refresh", s.handlerRegistry.sessionHandler.RefreshSession)
 		sessionGroup.DELETE("", s.handlerRegistry.sessionHandler.DeleteSession)
+		sessionGroup.POST("/delete-all", s.handlerRegistry.sessionHandler.DeleteAllSessions)
 	}
 
 	{ // auth group
@@ -131,6 +132,17 @@ func (s *HTTPServer) registerRoutes() {
 		userGroup.POST("/invite", s.handlerRegistry.userHandler.InviteUser)
 		userGroup.POST("/signup-begin", s.handlerRegistry.userHandler.BeginUserSignup)
 		userGroup.POST("/signup-complete", s.handlerRegistry.userHandler.CompleteUserSignup)
+
+		// API key group
+		apiKeyGroup := userGroup.Group("/current/api-keys")
+		{
+			// Info
+			apiKeyGroup.GET("/:ID", s.handlerRegistry.apiKeyHandler.GetAPIKey)
+			apiKeyGroup.GET("", s.handlerRegistry.apiKeyHandler.ListAPIKey)
+			// Creation & Update
+			apiKeyGroup.POST("", s.handlerRegistry.apiKeyHandler.CreateAPIKey)
+			apiKeyGroup.DELETE("/:ID", s.handlerRegistry.apiKeyHandler.DeleteAPIKey)
+		}
 	}
 
 	projectGroup := apiV1Group.Group("/projects")
@@ -189,17 +201,6 @@ func (s *HTTPServer) registerRoutes() {
 		sshKeyGroup.POST("", s.handlerRegistry.sshKeyHandler.CreateSSHKey)
 		sshKeyGroup.PATCH("/:ID", s.handlerRegistry.sshKeyHandler.UpdateSSHKey)
 		sshKeyGroup.DELETE("/:ID", s.handlerRegistry.sshKeyHandler.DeleteSSHKey)
-	}
-
-	apiKeyGroup := apiV1Group.Group("/api-keys")
-	{ // api key group
-		// Info
-		apiKeyGroup.GET("/base", s.handlerRegistry.apiKeyHandler.ListAPIKeyBase)
-		apiKeyGroup.GET("/:ID", s.handlerRegistry.apiKeyHandler.GetAPIKey)
-		apiKeyGroup.GET("", s.handlerRegistry.apiKeyHandler.ListAPIKey)
-		// Creation & Update
-		apiKeyGroup.POST("", s.handlerRegistry.apiKeyHandler.CreateAPIKey)
-		apiKeyGroup.DELETE("/:ID", s.handlerRegistry.apiKeyHandler.DeleteAPIKey)
 	}
 }
 

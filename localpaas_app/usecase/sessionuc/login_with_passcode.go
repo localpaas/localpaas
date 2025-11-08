@@ -34,10 +34,14 @@ func (uc *SessionUC) LoginWithPasscode(
 	// Verify passcode TOTP
 	if !totp.VerifyPasscode(req.Passcode, dbUser.TotpSecret) {
 		passcode, err := uc.mfaPasscodeRepo.Get(ctx, mfaTokenClaims.UserID)
-		if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
+		if err != nil {
+			if errors.Is(err, apperrors.ErrNotFound) {
+				return nil, apperrors.New(apperrors.ErrPasscodeMismatched).
+					WithMsgLog("need to login with password first")
+			}
 			return nil, apperrors.Wrap(err)
 		}
-		if passcode != nil && passcode.Attempts >= passcodeMaxAttempts {
+		if passcode.Attempts >= passcodeMaxAttempts {
 			_ = uc.mfaPasscodeRepo.Del(ctx, mfaTokenClaims.UserID)
 			return nil, apperrors.New(apperrors.ErrTooManyPasscodeAttempts).
 				WithMsgLog("too many passcode attempts: %d", passcode.Attempts)

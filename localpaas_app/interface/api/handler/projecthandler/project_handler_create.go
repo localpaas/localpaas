@@ -27,6 +27,7 @@ type _ *apperrors.ErrorInfo
 // @Router  /projects [post]
 func (h *ProjectHandler) CreateProject(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		RequireAdmin: true,
 		ResourceType: base.ResourceTypeProject,
 		Action:       base.ActionTypeWrite,
 	})

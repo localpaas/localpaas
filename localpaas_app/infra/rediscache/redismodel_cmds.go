@@ -38,8 +38,8 @@ func Set[T any](ctx context.Context, cmder Cmdable, key string, value Value[T], 
 	return nil
 }
 
-func Del(ctx context.Context, cmder Cmdable, key string) (err error) {
-	_, err = cmder.Del(ctx, key).Result()
+func Del(ctx context.Context, cmder Cmdable, keys ...string) (err error) {
+	_, err = cmder.Del(ctx, keys...).Result()
 	if err != nil {
 		return apperrors.New(err).WithMsgLog("failed to delete value in redis")
 	}

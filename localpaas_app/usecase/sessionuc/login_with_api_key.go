@@ -7,6 +7,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc/sessiondto"
 	"github.com/localpaas/localpaas/pkg/randtoken"
+	"github.com/localpaas/localpaas/pkg/timeutil"
 )
 
 const (
@@ -22,24 +23,36 @@ func (uc *SessionUC) LoginWithAPIKey(
 	if err != nil {
 		return nil, uc.wrapSensitiveError(err)
 	}
+	if apiKeySetting.Status != base.SettingStatusActive {
+		return nil, uc.wrapSensitiveError(apperrors.ErrAPIKeyInvalid)
+	}
+	if !apiKeySetting.ExpireAt.IsZero() && apiKeySetting.ExpireAt.Before(timeutil.NowUTC()) {
+		return nil, uc.wrapSensitiveError(apperrors.ErrAPIKeyExpired)
+	}
+
 	apiKey, err := apiKeySetting.ParseAPIKey()
 	if err != nil {
 		return nil, uc.wrapSensitiveError(err)
 	}
-	if apiKey == nil || apiKey.ActingUser.ID == "" {
+	if apiKey == nil {
 		return nil, uc.wrapSensitiveError(apperrors.ErrAPIKeyMismatched)
 	}
 	if !randtoken.VerifyHashHex(req.SecretKey, apiKey.SecretKey, apiKey.Salt, hashingKeyLen, hashingIteration) {
 		return nil, uc.wrapSensitiveError(apperrors.ErrAPIKeyMismatched)
 	}
+	actingUserID := apiKeySetting.ObjectID
 
-	dbUser, err := uc.userService.LoadUser(ctx, uc.db, apiKey.ActingUser.ID)
+	dbUser, err := uc.userService.LoadUser(ctx, uc.db, actingUserID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
 	// Create a new session as login succeeds
-	sessionData, err := uc.createSession(ctx, &sessiondto.BaseCreateSessionReq{User: dbUser})
+	sessionData, err := uc.createSession(ctx, &sessiondto.BaseCreateSessionReq{
+		User:         dbUser,
+		IsAPIKey:     true,
+		AccessAction: apiKey.AccessAction,
+	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

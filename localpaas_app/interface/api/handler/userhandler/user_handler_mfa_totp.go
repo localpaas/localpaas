@@ -7,7 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
+	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc/userdto"
 )
 
@@ -26,7 +27,10 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /users/current/mfa/totp-begin-setup [post]
 func (h *UserHandler) BeginMFATotpSetup(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceType: base.ResourceTypeUser,
+		Action:       base.ActionTypeWrite,
+	})
 	if err != nil && !errors.Is(err, apperrors.ErrUserNotCompleteMFASetup) {
 		h.RenderError(ctx, err)
 		return
@@ -59,7 +63,10 @@ func (h *UserHandler) BeginMFATotpSetup(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /users/current/mfa/totp-complete-setup [post]
 func (h *UserHandler) CompleteMFATotpSetup(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceType: base.ResourceTypeUser,
+		Action:       base.ActionTypeWrite,
+	})
 	if err != nil && !errors.Is(err, apperrors.ErrUserNotCompleteMFASetup) {
 		h.RenderError(ctx, err)
 		return
@@ -92,7 +99,10 @@ func (h *UserHandler) CompleteMFATotpSetup(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /users/current/mfa/totp-remove [post]
 func (h *UserHandler) RemoveMFATotp(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceType: base.ResourceTypeUser,
+		Action:       base.ActionTypeWrite,
+	})
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

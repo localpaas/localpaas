@@ -15,7 +15,7 @@ type _ *apperrors.ErrorInfo
 // DevModeLogin Login user for dev mode
 // @Summary Login user for dev mode
 // @Description Login user for dev mode. `user_id` params is required.
-// @Tags    sessions_internal
+// @Tags    sessions
 // @Produce json
 // @Id      devModeLogin
 // @Param   user_id query string false "user id to login"

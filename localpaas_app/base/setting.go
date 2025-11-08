@@ -25,3 +25,7 @@ const (
 	SettingStatusPending  = SettingStatus("pending")
 	SettingStatusDisabled = SettingStatus("disabled")
 )
+
+var (
+	AllSettingStatuses = []SettingStatus{SettingStatusActive, SettingStatusPending, SettingStatusDisabled}
+)

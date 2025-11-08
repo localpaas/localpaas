@@ -9,7 +9,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/jwtsession"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc/sessiondto"
 	"github.com/localpaas/localpaas/pkg/timeutil"
-	"github.com/localpaas/localpaas/pkg/ulid"
+)
+
+const (
+	uidLen = 16
 )
 
 func (uc *SessionUC) createSession(
@@ -17,8 +20,10 @@ func (uc *SessionUC) createSession(
 	req *sessiondto.BaseCreateSessionReq,
 ) (resp *sessiondto.BaseCreateSessionResp, err error) {
 	authClaims := &jwtsession.AuthClaims{
-		UID:    gofn.Must(ulid.NewStringULID()),
-		UserID: req.User.ID,
+		UID:          gofn.RandTokenAsHex(uidLen),
+		UserID:       req.User.ID,
+		IsAPIKey:     req.IsAPIKey,
+		AccessAction: req.AccessAction,
 	}
 
 	resp = &sessiondto.BaseCreateSessionResp{}

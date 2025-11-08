@@ -86,7 +86,7 @@ func (p *manager) LoadProjectAccesses(ctx context.Context, db database.IDB, proj
 		bunex.SelectJoin("LEFT JOIN acl_permissions AS acl ON \"user\".id = acl.subject_id AND "+
 			"acl.resource_id = ?", projectID),
 		bunex.SelectWhereGroup(
-			bunex.SelectWhere("(\"user\".role = ? OR \"user\".role = ?)", base.UserRoleOwner, base.UserRoleAdmin),
+			bunex.SelectWhere("\"user\".role = ?", base.UserRoleAdmin),
 			bunex.SelectWhereOr("(acl.action_read OR acl.action_write OR acl.action_delete)"),
 		),
 
@@ -107,7 +107,7 @@ func (p *manager) LoadProjectAccesses(ctx context.Context, db database.IDB, proj
 		if len(user.Accesses) > 0 {
 			aclPerm = user.Accesses[0]
 		}
-		if user.Role == base.UserRoleOwner || user.Role == base.UserRoleAdmin {
+		if user.Role == base.UserRoleAdmin {
 			if aclPerm == nil {
 				aclPerm = &entity.ACLPermission{
 					SubjectType:  base.SubjectTypeUser,
@@ -157,7 +157,7 @@ func (p *manager) LoadAppAccesses(ctx context.Context, db database.IDB, projectI
 
 		bunex.SelectJoin("LEFT JOIN acl_permissions AS acl ON \"user\".id = acl.subject_id"),
 		bunex.SelectWhereGroup(
-			bunex.SelectWhere("(\"user\".role = ? OR \"user\".role = ?)", base.UserRoleOwner, base.UserRoleAdmin),
+			bunex.SelectWhere("\"user\".role = ?", base.UserRoleAdmin),
 			// Has permission on the app
 			bunex.SelectWhereOr("(acl.resource_id = ? AND "+
 				"(acl.action_read OR acl.action_write OR acl.action_delete))", appID),
@@ -190,7 +190,7 @@ func (p *manager) LoadAppAccesses(ctx context.Context, db database.IDB, projectI
 		if aclPerm == nil && len(user.Accesses) > 0 {
 			aclPerm = user.Accesses[0]
 		}
-		if user.Role == base.UserRoleOwner || user.Role == base.UserRoleAdmin {
+		if user.Role == base.UserRoleAdmin {
 			if aclPerm == nil {
 				aclPerm = &entity.ACLPermission{
 					SubjectType:  base.SubjectTypeUser,

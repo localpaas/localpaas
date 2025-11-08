@@ -3,13 +3,12 @@ package base
 type UserRole string
 
 const (
-	UserRoleOwner  = UserRole("owner")
 	UserRoleAdmin  = UserRole("admin")
 	UserRoleMember = UserRole("member")
 )
 
 var (
-	AllUserRoles = []UserRole{UserRoleOwner, UserRoleAdmin, UserRoleMember}
+	AllUserRoles = []UserRole{UserRoleAdmin, UserRoleMember}
 )
 
 type UserStatus string

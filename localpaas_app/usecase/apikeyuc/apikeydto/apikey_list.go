@@ -1,13 +1,17 @@
 package apikeydto
 
 import (
+	vld "github.com/tiendc/go-validator"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 )
 
 type ListAPIKeyReq struct {
-	Search string `json:"-" mapstructure:"search"`
+	Status []base.SettingStatus `json:"-" mapstructure:"status"`
+	Search string               `json:"-" mapstructure:"search"`
 
 	Paging basedto.Paging `json:"-"`
 }
@@ -22,7 +26,9 @@ func NewListAPIKeyReq() *ListAPIKeyReq {
 }
 
 func (req *ListAPIKeyReq) Validate() apperrors.ValidationErrors {
-	return nil
+	var validators []vld.Validator
+	validators = append(validators, basedto.ValidateSlice(req.Status, true, 0, base.AllSettingStatuses, "status")...)
+	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
 type ListAPIKeyResp struct {
@@ -30,9 +36,10 @@ type ListAPIKeyResp struct {
 	Data []*APIKeyResp `json:"data"`
 }
 
-func TransformAPIKeys(settings []*entity.Setting, userMap map[string]*entity.User) ([]*APIKeyResp, error) {
-	//nolint:wrapcheck
-	return basedto.TransformObjectSlice(settings, func(setting *entity.Setting) (*APIKeyResp, error) {
-		return TransformAPIKey(setting, userMap)
-	})
+func TransformAPIKeys(settings []*entity.Setting) ([]*APIKeyResp, error) {
+	resp, err := basedto.TransformObjectSlice(settings, TransformAPIKey)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return resp, nil
 }

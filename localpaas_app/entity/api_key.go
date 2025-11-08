@@ -1,15 +1,14 @@
 package entity
 
-import "github.com/localpaas/localpaas/localpaas_app/apperrors"
+import (
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
+)
 
 type APIKey struct {
-	SecretKey  string           `json:"secretKey"`
-	Salt       string           `json:"salt"`
-	ActingUser APIKeyActingUser `json:"actingUser"`
-}
-
-type APIKeyActingUser struct {
-	ID string `json:"id"`
+	SecretKey    string          `json:"secretKey"`
+	Salt         string          `json:"salt"`
+	AccessAction base.ActionType `json:"accessAction,omitempty"`
 }
 
 func (s *Setting) ParseAPIKey() (*APIKey, error) {

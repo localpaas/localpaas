@@ -45,7 +45,18 @@ const (
 
 var (
 	AllActionTypes = []ActionType{ActionTypeRead, ActionTypeWrite, ActionTypeDelete}
+
+	//nolint
+	mapActionValues = map[ActionType]int{
+		ActionTypeRead:   1,
+		ActionTypeWrite:  2,
+		ActionTypeDelete: 3,
+	}
 )
+
+func ActionTypeCmp(a1, s2 ActionType) int {
+	return mapActionValues[a1] - mapActionValues[s2]
+}
 
 type PermissionResource struct {
 	SubjectType  SubjectType

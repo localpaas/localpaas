@@ -34,6 +34,7 @@ ERR_TOO_MANY_PASSCODE_ATTEMPTS = "You made too many passcode attempts. Please st
 # API client errors
 ERR_API_KEY_INACTIVE = "API key is inactive"
 ERR_API_KEY_MISMATCHED = "API key is mismatched"
+ERR_API_KEY_EXPIRED = "API key expires"
 ERR_API_KEY_INVALID = "API key is invalid"
 
 # User/workspace errors

@@ -33,7 +33,7 @@ func (uc *APIKeyUC) CreateAPIKey(
 	req *apikeydto.CreateAPIKeyReq,
 ) (*apikeydto.CreateAPIKeyResp, error) {
 	apiKeyData := &createAPIKeyData{}
-	err := uc.loadAPIKeyData(ctx, uc.db, req, apiKeyData)
+	err := uc.loadAPIKeyData(ctx, uc.db, auth, req, apiKeyData)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -61,21 +61,19 @@ func (uc *APIKeyUC) CreateAPIKey(
 }
 
 type createAPIKeyData struct {
-	KeyID     string
-	SecretKey string
+	ActingUser *entity.User
+	KeyID      string
+	SecretKey  string
 }
 
 func (uc *APIKeyUC) loadAPIKeyData(
 	ctx context.Context,
 	db database.IDB,
-	req *apikeydto.CreateAPIKeyReq,
+	auth *basedto.Auth,
+	_ *apikeydto.CreateAPIKeyReq,
 	data *createAPIKeyData,
 ) error {
-	// Validate acting user
-	_, err := uc.userRepo.GetByID(ctx, db, req.ActingUser.ID)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
+	data.ActingUser = auth.User.User
 
 	// Generate key and secret
 	keyID, secretKey := gofn.RandTokenAsHex(keyLen), gofn.RandTokenAsHex(secretLen)
@@ -108,7 +106,10 @@ func (uc *APIKeyUC) preparePersistingAPIKey(
 	setting := &entity.Setting{
 		ID:        gofn.Must(ulid.NewStringULID()),
 		Type:      base.SettingTypeAPIKey,
+		Status:    base.SettingStatusActive,
+		ObjectID:  data.ActingUser.ID,
 		Name:      data.KeyID,
+		ExpireAt:  req.Expiration,
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,
 	}
@@ -119,9 +120,9 @@ func (uc *APIKeyUC) preparePersistingAPIKey(
 	}
 
 	apiKey := &entity.APIKey{
-		SecretKey:  secretHash,
-		Salt:       salt,
-		ActingUser: entity.APIKeyActingUser{ID: req.ActingUser.ID},
+		SecretKey:    secretHash,
+		Salt:         salt,
+		AccessAction: req.AccessAction,
 	}
 	err = setting.SetData(apiKey)
 	if err != nil {

@@ -3,11 +3,14 @@ package sessiondto
 import (
 	"time"
 
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 )
 
 type BaseCreateSessionReq struct {
-	User *entity.User
+	User         *entity.User
+	IsAPIKey     bool
+	AccessAction base.ActionType
 }
 
 type BaseCreateSessionResp struct {

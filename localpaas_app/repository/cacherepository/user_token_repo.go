@@ -13,6 +13,7 @@ type UserTokenRepo interface {
 	Exist(ctx context.Context, userID, uid string) error
 	Set(ctx context.Context, userID, uid string, exp time.Duration) error
 	Del(ctx context.Context, userID, uid string) error
+	DelAll(ctx context.Context, userID string) error
 }
 
 type userTokenRepo struct {
@@ -46,6 +47,17 @@ func (repo *userTokenRepo) Set(
 
 func (repo *userTokenRepo) Del(ctx context.Context, userID, uid string) error {
 	return rediscache.Del(ctx, repo.client, repo.formatKey(userID, uid)) //nolint:wrapcheck
+}
+
+func (repo *userTokenRepo) DelAll(ctx context.Context, userID string) error {
+	keys, err := repo.client.Keys(ctx, repo.formatKey(userID, "*")).Result()
+	if err != nil {
+		return apperrors.New(err)
+	}
+	if len(keys) == 0 {
+		return nil
+	}
+	return rediscache.Del(ctx, repo.client, keys...) //nolint:wrapcheck
 }
 
 func (repo *userTokenRepo) formatKey(userID, uid string) string {

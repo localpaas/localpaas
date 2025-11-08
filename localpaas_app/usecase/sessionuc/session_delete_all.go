@@ -7,15 +7,15 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc/sessiondto"
 )
 
-func (uc *SessionUC) DeleteSession(
+func (uc *SessionUC) DeleteAllSessions(
 	ctx context.Context,
-	req *sessiondto.DeleteSessionReq,
-) (resp *sessiondto.DeleteSessionResp, err error) {
+	req *sessiondto.DeleteAllSessionsReq,
+) (resp *sessiondto.DeleteAllSessionsResp, err error) {
 	// Invalidate the old token to make it unusable
-	err = uc.userTokenRepo.Del(ctx, req.User.AuthClaims.UserID, req.User.AuthClaims.UID)
+	err = uc.userTokenRepo.DelAll(ctx, req.User.AuthClaims.UserID)
 	if err != nil {
 		return nil, apperrors.New(err).WithMsgLog("failed to invalidate old token")
 	}
 
-	return &sessiondto.DeleteSessionResp{}, nil
+	return &sessiondto.DeleteAllSessionsResp{}, nil
 }

@@ -19,242 +19,7 @@
     "url" : "/v1"
   } ],
   "paths" : {
-    "/api-keys" : {
-      "get" : {
-        "description" : "Lists API key",
-        "operationId" : "listAPIKey",
-        "parameters" : [ {
-          "description" : "`search=<target> (support *)`",
-          "in" : "query",
-          "name" : "search",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "`pageOffset=offset`",
-          "in" : "query",
-          "name" : "pageOffset",
-          "schema" : {
-            "type" : "integer"
-          }
-        }, {
-          "description" : "`pageLimit=limit`",
-          "in" : "query",
-          "name" : "pageLimit",
-          "schema" : {
-            "type" : "integer"
-          }
-        }, {
-          "description" : "`sort=[-]field1|field2...`",
-          "in" : "query",
-          "name" : "sort",
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_apikeyuc_apikeydto.ListAPIKeyResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Lists API key",
-        "tags" : [ "api_keys" ]
-      },
-      "post" : {
-        "description" : "Creates a new API key",
-        "operationId" : "createAPIKey",
-        "requestBody" : {
-          "content" : {
-            "*/*" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_apikeyuc_apikeydto.CreateAPIKeyReq"
-              }
-            }
-          },
-          "description" : "request data",
-          "required" : true
-        },
-        "responses" : {
-          "201" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_apikeyuc_apikeydto.CreateAPIKeyResp"
-                }
-              }
-            },
-            "description" : "Created"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Creates a new API key",
-        "tags" : [ "api_keys" ],
-        "x-codegen-request-body-name" : "body"
-      }
-    },
-    "/api-keys/base" : {
-      "get" : {
-        "description" : "Lists API key",
-        "operationId" : "listAPIKeyBase",
-        "parameters" : [ {
-          "description" : "`search=<target> (support *)`",
-          "in" : "query",
-          "name" : "search",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "`pageOffset=offset`",
-          "in" : "query",
-          "name" : "pageOffset",
-          "schema" : {
-            "type" : "integer"
-          }
-        }, {
-          "description" : "`pageLimit=limit`",
-          "in" : "query",
-          "name" : "pageLimit",
-          "schema" : {
-            "type" : "integer"
-          }
-        }, {
-          "description" : "`sort=[-]field1|field2...`",
-          "in" : "query",
-          "name" : "sort",
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_apikeyuc_apikeydto.ListAPIKeyBaseResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Lists API key",
-        "tags" : [ "api_keys" ]
-      }
-    },
     "/api-keys/{ID}" : {
-      "delete" : {
-        "description" : "Deletes an API key",
-        "operationId" : "deleteAPIKey",
-        "parameters" : [ {
-          "description" : "API key ID",
-          "in" : "path",
-          "name" : "ID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_apikeyuc_apikeydto.DeleteAPIKeyResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Deletes an API key",
-        "tags" : [ "api_keys" ]
-      },
       "get" : {
         "description" : "Gets API key details",
         "operationId" : "getAPIKey",
@@ -340,7 +105,7 @@
           }
         },
         "summary" : "Gets login options",
-        "tags" : [ "sessions_auth" ]
+        "tags" : [ "sessions" ]
       }
     },
     "/auth/login-with-api-key" : {
@@ -391,7 +156,7 @@
           }
         },
         "summary" : "Login to system with API key",
-        "tags" : [ "sessions_auth" ],
+        "tags" : [ "sessions" ],
         "x-codegen-request-body-name" : "body"
       }
     },
@@ -443,7 +208,7 @@
           }
         },
         "summary" : "Login to system with passcode after using password",
-        "tags" : [ "sessions_auth" ],
+        "tags" : [ "sessions" ],
         "x-codegen-request-body-name" : "body"
       }
     },
@@ -495,7 +260,7 @@
           }
         },
         "summary" : "Login to system with username/password",
-        "tags" : [ "sessions_auth" ],
+        "tags" : [ "sessions" ],
         "x-codegen-request-body-name" : "body"
       }
     },
@@ -716,7 +481,7 @@
           }
         },
         "summary" : "Login user for dev mode",
-        "tags" : [ "sessions_internal" ]
+        "tags" : [ "sessions" ]
       }
     },
     "/projects" : {
@@ -2245,6 +2010,46 @@
         "tags" : [ "sessions" ]
       }
     },
+    "/sessions/delete-all" : {
+      "post" : {
+        "description" : "Deletes all sessions of the user",
+        "operationId" : "deleteAllSessions",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.DeleteAllSessionsResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Deletes all sessions of the user",
+        "tags" : [ "sessions" ]
+      }
+    },
     "/sessions/me" : {
       "get" : {
         "description" : "Gets session info of the current user",
@@ -2808,6 +2613,174 @@
         "tags" : [ "users" ]
       }
     },
+    "/users/current/api-keys" : {
+      "get" : {
+        "description" : "Lists API key",
+        "operationId" : "listAPIKey",
+        "parameters" : [ {
+          "description" : "`search=<target> (support *)`",
+          "in" : "query",
+          "name" : "search",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`pageOffset=offset`",
+          "in" : "query",
+          "name" : "pageOffset",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`pageLimit=limit`",
+          "in" : "query",
+          "name" : "pageLimit",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`sort=[-]field1|field2...`",
+          "in" : "query",
+          "name" : "sort",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_apikeyuc_apikeydto.ListAPIKeyResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Lists API key",
+        "tags" : [ "api_keys" ]
+      },
+      "post" : {
+        "description" : "Creates a new API key",
+        "operationId" : "createAPIKey",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_apikeyuc_apikeydto.CreateAPIKeyReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_apikeyuc_apikeydto.CreateAPIKeyResp"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Creates a new API key",
+        "tags" : [ "api_keys" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/users/current/api-keys/{ID}" : {
+      "delete" : {
+        "description" : "Deletes an API key",
+        "operationId" : "deleteAPIKey",
+        "parameters" : [ {
+          "description" : "API key ID",
+          "in" : "path",
+          "name" : "ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_apikeyuc_apikeydto.DeleteAPIKeyResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Deletes an API key",
+        "tags" : [ "api_keys" ]
+      }
+    },
     "/users/current/mfa/totp-begin-setup" : {
       "post" : {
         "description" : "Begins MFA TOTP authenticator setup",
@@ -3278,6 +3251,11 @@
         "required" : [ "code", "message", "path" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_base.ActionType" : {
+        "enum" : [ "read", "write", "delete" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "ActionTypeRead", "ActionTypeWrite", "ActionTypeDelete" ]
+      },
       "github_com_localpaas_localpaas_localpaas_app_base.AppStatus" : {
         "enum" : [ "active", "locked", "disabled", "deleting" ],
         "type" : "string",
@@ -3304,9 +3282,9 @@
         "x-enum-varnames" : [ "ProjectStatusActive", "ProjectStatusLocked", "ProjectStatusDisabled", "ProjectStatusDeleting" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.UserRole" : {
-        "enum" : [ "owner", "admin", "member" ],
+        "enum" : [ "admin", "member" ],
         "type" : "string",
-        "x-enum-varnames" : [ "UserRoleOwner", "UserRoleAdmin", "UserRoleMember" ]
+        "x-enum-varnames" : [ "UserRoleAdmin", "UserRoleMember" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.UserSecurityOption" : {
         "enum" : [ "enforce-sso", "password-2fa", "password-only" ],
@@ -3368,15 +3346,6 @@
         "required" : [ "access", "id" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq" : {
-        "properties" : {
-          "id" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "id" ],
-        "type" : "object"
-      },
       "github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp" : {
         "properties" : {
           "id" : {
@@ -3401,21 +3370,6 @@
         "required" : [ "limit", "offset", "total" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_basedto.UserBaseResp" : {
-        "properties" : {
-          "fullName" : {
-            "type" : "string"
-          },
-          "id" : {
-            "type" : "string"
-          },
-          "photo" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "fullName", "id", "photo" ],
-        "type" : "object"
-      },
       "github_com_localpaas_localpaas_localpaas_app_entity.AccessActions" : {
         "properties" : {
           "delete" : {
@@ -3429,18 +3383,6 @@
           }
         },
         "required" : [ "delete", "read", "write" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_apikeyuc_apikeydto.APIKeyBaseResp" : {
-        "properties" : {
-          "id" : {
-            "type" : "string"
-          },
-          "keyId" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "id", "keyId" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_apikeyuc_apikeydto.APIKeyDataResp" : {
@@ -3460,8 +3402,11 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_apikeyuc_apikeydto.APIKeyResp" : {
         "properties" : {
-          "actingUser" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.UserBaseResp"
+          "accessAction" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.ActionType"
+          },
+          "expiration" : {
+            "type" : "string"
           },
           "id" : {
             "type" : "string"
@@ -3470,16 +3415,19 @@
             "type" : "string"
           }
         },
-        "required" : [ "actingUser", "id", "keyId" ],
+        "required" : [ "id", "keyId" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_apikeyuc_apikeydto.CreateAPIKeyReq" : {
         "properties" : {
-          "actingUser" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
+          "accessAction" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.ActionType"
+          },
+          "expiration" : {
+            "type" : "string"
           }
         },
-        "required" : [ "actingUser" ],
+        "required" : [ "accessAction", "expiration" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_apikeyuc_apikeydto.CreateAPIKeyResp" : {
@@ -3510,21 +3458,6 @@
           },
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
-          }
-        },
-        "required" : [ "data", "meta" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_apikeyuc_apikeydto.ListAPIKeyBaseResp" : {
-        "properties" : {
-          "data" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_apikeyuc_apikeydto.APIKeyBaseResp"
-            },
-            "type" : "array"
-          },
-          "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -4525,6 +4458,15 @@
           }
         },
         "required" : [ "accessToken", "accessTokenExp" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.DeleteAllSessionsResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.DeleteSessionResp" : {

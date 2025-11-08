@@ -14,45 +14,6 @@ import (
 // To keep `apperrors` pkg imported and swag gen won't fail
 type _ *apperrors.ErrorInfo
 
-// ListAPIKeyBase Lists API key
-// @Summary Lists API key
-// @Description Lists API key
-// @Tags    api_keys
-// @Produce json
-// @Id      listAPIKeyBase
-// @Param   search query string false "`search=<target> (support *)`"
-// @Param   pageOffset query int false "`pageOffset=offset`"
-// @Param   pageLimit query int false "`pageLimit=limit`"
-// @Param   sort query string false "`sort=[-]field1|field2...`"
-// @Success 200 {object} apikeydto.ListAPIKeyBaseResp
-// @Failure 400 {object} apperrors.ErrorInfo
-// @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /api-keys/base [get]
-func (h *APIKeyHandler) ListAPIKeyBase(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeAPIKey,
-		Action:       base.ActionTypeRead,
-	})
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := apikeydto.NewListAPIKeyBaseReq()
-	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.apiKeyUC.ListAPIKeyBase(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
-}
-
 // ListAPIKey Lists API key
 // @Summary Lists API key
 // @Description Lists API key
@@ -66,7 +27,7 @@ func (h *APIKeyHandler) ListAPIKeyBase(ctx *gin.Context) {
 // @Success 200 {object} apikeydto.ListAPIKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /api-keys [get]
+// @Router  /users/current/api-keys [get]
 func (h *APIKeyHandler) ListAPIKey(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceType: base.ResourceTypeAPIKey,

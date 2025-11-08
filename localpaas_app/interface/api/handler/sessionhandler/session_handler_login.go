@@ -10,6 +10,7 @@ import (
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc/sessiondto"
 	"github.com/localpaas/localpaas/pkg/timeutil"
@@ -29,7 +30,7 @@ const (
 // LoginGetOptions Gets login options
 // @Summary Gets login options
 // @Description Gets login options
-// @Tags    sessions_auth
+// @Tags    sessions
 // @Produce json
 // @Id      getLoginOptions
 // @Success 200 {object} sessiondto.GetLoginOptionsResp
@@ -56,7 +57,7 @@ func (h *SessionHandler) LoginGetOptions(ctx *gin.Context) {
 // @Summary Login to system with username/password
 // @Description When you get response's `next_step` with value `NextMfa`, you need to call the API
 // @Description `/login-with-passcode` to complete the login process.
-// @Tags    sessions_auth
+// @Tags    sessions
 // @Produce json
 // @Id      loginWithPassword
 // @Param   body body sessiondto.LoginWithPasswordReq true "request data"
@@ -89,7 +90,7 @@ func (h *SessionHandler) LoginWithPassword(ctx *gin.Context) {
 // LoginWithPasscode Login to system with passcode after using password
 // @Summary Login to system with passcode after using password
 // @Description Login to system with passcode after using password
-// @Tags    sessions_auth
+// @Tags    sessions
 // @Produce json
 // @Id      loginWithPasscode
 // @Param   body body sessiondto.LoginWithPasscodeReq true "request data"
@@ -121,7 +122,7 @@ func (h *SessionHandler) LoginWithPasscode(ctx *gin.Context) {
 // LoginWithAPIKey Login to system with API key
 // @Summary Login to system with API key
 // @Description Login to system with API key
-// @Tags    sessions_auth
+// @Tags    sessions
 // @Produce json
 // @Id      loginWithAPIKey
 // @Param   body body sessiondto.LoginWithAPIKeyReq true "request data"
@@ -178,4 +179,41 @@ func (h *SessionHandler) clearSessionDataFromCookies(ctx *gin.Context) {
 	// MaxAge<0 means delete cookie now
 	ctx.SetCookie(cookieAccessToken, "", -1, "", "", false, false)
 	ctx.SetCookie(cookieRefreshToken, "", -1, "", "", false, false)
+}
+
+// RefreshSession Refreshes the current user session
+// @Summary Refreshes the current user session
+// @Description Refreshes the current user session. Refresh token is required via either
+// @Description `Authorization` header or `refresh_token` cookie.
+// @Tags    sessions
+// @Produce json
+// @Id      refreshSession
+// @Success 200 {object} sessiondto.RefreshSessionResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /sessions/refresh [post]
+func (h *SessionHandler) RefreshSession(ctx *gin.Context) {
+	var user *basedto.User
+	var err error
+	// Refresh token is retrieved from either `Authorization` header or `refresh_token` cookie
+	if refreshToken, _ := ctx.Cookie(cookieRefreshToken); refreshToken != "" {
+		user, err = h.authHandler.GetCurrentUserByToken(ctx, refreshToken)
+	} else {
+		user, err = h.authHandler.GetCurrentUser(ctx)
+	}
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.sessionUC.RefreshSession(h.RequestCtx(ctx), user)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	// Writes a portion of data response to cookies
+	h.writeSessionDataToCookies(ctx, resp.Data.BaseCreateSessionResp, true)
+
+	ctx.JSON(http.StatusOK, resp)
 }
