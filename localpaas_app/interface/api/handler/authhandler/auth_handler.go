@@ -56,7 +56,7 @@ func (h *AuthHandler) GetCurrentUserByToken(ctx *gin.Context, token string) (*ba
 func (h *AuthHandler) GetCurrentAuth(ctx *gin.Context, accessCheck *permission.AccessCheck) (*basedto.Auth, error) {
 	auth, err := h.getCurrentAuth(ctx)
 	if err != nil {
-		return nil, apperrors.New(err)
+		return auth, apperrors.New(err) // NOTE: on error, still return `auth`
 	}
 
 	if err = h.sessionUC.VerifyAuth(ctx, auth, accessCheck); err != nil {
@@ -76,7 +76,7 @@ func (h *AuthHandler) getCurrentAuth(ctx *gin.Context) (*basedto.Auth, error) {
 
 	auth, err := h.sessionUC.GetCurrentAuth(h.RequestCtx(ctx), token)
 	if err != nil {
-		return nil, apperrors.New(err)
+		return auth, apperrors.New(err) // NOTE: on error, still return `auth`
 	}
 	return auth, nil
 }

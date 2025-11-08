@@ -22,6 +22,11 @@ const (
 	passwordCheckDurationEachRow = time.Minute
 )
 
+const (
+	nextStepMfaInput = "NextMfa"
+	nextStepMfaSetup = "NextMfaSetup"
+)
+
 func (uc *SessionUC) LoginWithPassword(
 	ctx context.Context,
 	req *sessiondto.LoginWithPasswordReq,
@@ -66,7 +71,7 @@ func (uc *SessionUC) LoginWithPassword(
 
 		return &sessiondto.LoginWithPasswordResp{
 			Data: &sessiondto.LoginWithPasswordDataResp{
-				NextStep: "NextMfa",
+				NextStep: nextStepMfaInput,
 				MFAType:  mfaType,
 				MFAToken: mfaToken,
 			},
@@ -79,9 +84,15 @@ func (uc *SessionUC) LoginWithPassword(
 		return nil, apperrors.Wrap(err)
 	}
 
+	var nextStep string
+	if dbUser.SecurityOption == base.UserSecurityPassword2FA && dbUser.TotpSecret == "" {
+		nextStep = nextStepMfaSetup
+	}
+
 	return &sessiondto.LoginWithPasswordResp{
 		Data: &sessiondto.LoginWithPasswordDataResp{
-			Session: sessionData,
+			Session:  sessionData,
+			NextStep: nextStep,
 		},
 	}, nil
 }

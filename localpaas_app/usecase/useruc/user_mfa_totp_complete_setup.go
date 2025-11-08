@@ -44,9 +44,12 @@ func (uc *UserUC) CompleteMFATotpSetup(
 		}
 
 		user.TotpSecret = mfaTotpSetupTokenClaims.Secret
+		if user.Status == base.UserStatusPending && user.SecurityOption == base.UserSecurityPassword2FA {
+			user.Status = base.UserStatusActive
+		}
 		user.UpdatedAt = timeutil.NowUTC()
 		err = uc.userRepo.Update(ctx, db, user,
-			bunex.UpdateColumns("updated_at", "totp_secret"),
+			bunex.UpdateColumns("updated_at", "totp_secret", "status"),
 		)
 		if err != nil {
 			return apperrors.Wrap(err)
