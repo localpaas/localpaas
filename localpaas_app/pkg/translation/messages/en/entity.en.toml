@@ -32,5 +32,21 @@ AppTag = "App tag"
 AppSetting = "App setting"
 AppSettings = "App settings"
 
+# Settings
+Settings = "Settings"
+Setting = "Setting"
+
 # S3 storages
+S3Storages = "S3 storages"
 S3Storage = "S3 storage"
+
+# SSH keys
+SSHKeys = "SSH keys"
+SSHKey = "SSH key"
+
+# OAuth
+OAuth = "OAuth"
+
+# API keys
+APIKeys = "API keys"
+APIKey = "API key"

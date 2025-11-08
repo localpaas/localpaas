@@ -21,9 +21,9 @@ type Setting struct {
 	ID       string `bun:",pk"`
 	ObjectID string `bun:",nullzero"`
 	Type     base.SettingType
-	Status   base.SettingStatus
-	Name     string `bun:",nullzero"`
-	Data     string `bun:",nullzero"`
+	Status   base.SettingStatus `bun:",nullzero"`
+	Name     string             `bun:",nullzero"`
+	Data     string             `bun:",nullzero"`
 
 	CreatedAt time.Time `bun:",default:current_timestamp"`
 	UpdatedAt time.Time `bun:",default:current_timestamp"`

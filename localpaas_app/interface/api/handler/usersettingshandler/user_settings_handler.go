@@ -1,22 +1,22 @@
-package apikeyhandler
+package usersettingshandler
 
 import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/apikeyuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc"
 )
 
-type APIKeyHandler struct {
+type UserSettingsHandler struct {
 	*handler.BaseHandler
 	authHandler *authhandler.AuthHandler
 	apiKeyUC    *apikeyuc.APIKeyUC
 }
 
-func NewAPIKeyHandler(
+func NewUserSettingsHandler(
 	authHandler *authhandler.AuthHandler,
 	apiKeyUC *apikeyuc.APIKeyUC,
-) *APIKeyHandler {
-	hdl := &APIKeyHandler{
+) *UserSettingsHandler {
+	hdl := &UserSettingsHandler{
 		authHandler: authHandler,
 		apiKeyUC:    apiKeyUC,
 	}

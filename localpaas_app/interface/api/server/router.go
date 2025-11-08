@@ -7,7 +7,6 @@ import (
 	swaggoFiles "github.com/swaggo/files"
 	swaggoGin "github.com/swaggo/gin-swagger"
 
-	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/apikeyhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/apphandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/clusterhandler"
@@ -15,17 +14,18 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/settingshandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/userhandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/usersettingshandler"
 )
 
 type HandlerRegistry struct {
-	authHandler     *authhandler.AuthHandler
-	clusterHandler  *clusterhandler.ClusterHandler
-	sessionHandler  *sessionhandler.SessionHandler
-	userHandler     *userhandler.UserHandler
-	projectHandler  *projecthandler.ProjectHandler
-	appHandler      *apphandler.AppHandler
-	apiKeyHandler   *apikeyhandler.APIKeyHandler
-	settingsHandler *settingshandler.SettingsHandler
+	authHandler         *authhandler.AuthHandler
+	clusterHandler      *clusterhandler.ClusterHandler
+	sessionHandler      *sessionhandler.SessionHandler
+	userHandler         *userhandler.UserHandler
+	projectHandler      *projecthandler.ProjectHandler
+	appHandler          *apphandler.AppHandler
+	settingsHandler     *settingshandler.SettingsHandler
+	userSettingsHandler *usersettingshandler.UserSettingsHandler
 }
 
 func NewHandlerRegistry(
@@ -35,18 +35,18 @@ func NewHandlerRegistry(
 	userHandler *userhandler.UserHandler,
 	projectHandler *projecthandler.ProjectHandler,
 	appHandler *apphandler.AppHandler,
-	apiKeyHandler *apikeyhandler.APIKeyHandler,
 	settingsHandler *settingshandler.SettingsHandler,
+	userSettingsHandler *usersettingshandler.UserSettingsHandler,
 ) *HandlerRegistry {
 	return &HandlerRegistry{
-		authHandler:     authHandler,
-		clusterHandler:  clusterHandler,
-		sessionHandler:  sessionHandler,
-		userHandler:     userHandler,
-		projectHandler:  projectHandler,
-		appHandler:      appHandler,
-		apiKeyHandler:   apiKeyHandler,
-		settingsHandler: settingsHandler,
+		authHandler:         authHandler,
+		clusterHandler:      clusterHandler,
+		sessionHandler:      sessionHandler,
+		userHandler:         userHandler,
+		projectHandler:      projectHandler,
+		appHandler:          appHandler,
+		settingsHandler:     settingsHandler,
+		userSettingsHandler: userSettingsHandler,
 	}
 }
 
@@ -114,8 +114,8 @@ func (s *HTTPServer) registerRoutes() {
 		authGroup.POST("/login-with-api-key", s.handlerRegistry.sessionHandler.LoginWithAPIKey)
 	}
 
+	userGroup := apiV1Group.Group("/users")
 	{ // user group
-		userGroup := apiV1Group.Group("/users")
 		// User info
 		userGroup.GET("/base", s.handlerRegistry.userHandler.ListUserBase)
 		userGroup.GET("/:userID", s.handlerRegistry.userHandler.GetUser)
@@ -134,17 +134,19 @@ func (s *HTTPServer) registerRoutes() {
 		userGroup.POST("/invite", s.handlerRegistry.userHandler.InviteUser)
 		userGroup.POST("/signup-begin", s.handlerRegistry.userHandler.BeginUserSignup)
 		userGroup.POST("/signup-complete", s.handlerRegistry.userHandler.CompleteUserSignup)
+	}
 
-		// API key group
-		apiKeyGroup := userGroup.Group("/current/api-keys")
-		{
-			// Info
-			apiKeyGroup.GET("/:ID", s.handlerRegistry.apiKeyHandler.GetAPIKey)
-			apiKeyGroup.GET("", s.handlerRegistry.apiKeyHandler.ListAPIKey)
-			// Creation & Update
-			apiKeyGroup.POST("", s.handlerRegistry.apiKeyHandler.CreateAPIKey)
-			apiKeyGroup.DELETE("/:ID", s.handlerRegistry.apiKeyHandler.DeleteAPIKey)
-		}
+	// User settings group
+	userSettingGroup := userGroup.Group("/current/settings")
+
+	{ // API key group
+		apiKeyGroup := userSettingGroup.Group("/api-keys")
+		// Info
+		apiKeyGroup.GET("/:ID", s.handlerRegistry.userSettingsHandler.GetAPIKey)
+		apiKeyGroup.GET("", s.handlerRegistry.userSettingsHandler.ListAPIKey)
+		// Creation & Update
+		apiKeyGroup.POST("", s.handlerRegistry.userSettingsHandler.CreateAPIKey)
+		apiKeyGroup.DELETE("/:ID", s.handlerRegistry.userSettingsHandler.DeleteAPIKey)
 	}
 
 	projectGroup := apiV1Group.Group("/projects")
