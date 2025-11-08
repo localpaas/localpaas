@@ -29,7 +29,7 @@ func (uc *UserUC) UpdateProfile(
 		persistingData := &persistingUserProfileData{}
 		uc.preparePersistingUserProfileData(req, profileData, persistingData)
 
-		return uc.userRepo.Update(ctx, db, persistingData.UpdatingUser)
+		return uc.persistUserProfileData(ctx, db, persistingData)
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -93,4 +93,18 @@ func (uc *UserUC) preparePersistingUserProfileData(
 	if req.Photo != nil && req.Photo.FileName == "" {
 		user.Photo = ""
 	}
+}
+
+func (uc *UserUC) persistUserProfileData(
+	ctx context.Context,
+	db database.IDB,
+	persistingData *persistingUserProfileData,
+) error {
+	err := uc.userRepo.Update(ctx, db, persistingData.UpdatingUser,
+		bunex.UpdateColumns("updated_at", "full_name", "photo"),
+	)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
 }

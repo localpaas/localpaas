@@ -33,7 +33,7 @@ func (uc *UserUC) CompleteUserSignup(
 			return err
 		}
 
-		return uc.userRepo.Update(ctx, db, persistingData.UpdatingUser)
+		return uc.persistUserSignupData(ctx, db, persistingData)
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -121,5 +121,17 @@ func (uc *UserUC) preparePersistingUserSignupData(
 		user.TotpSecret = req.MFATotpSecret
 	}
 
+	return nil
+}
+
+func (uc *UserUC) persistUserSignupData(
+	ctx context.Context,
+	db database.IDB,
+	persistingData *persistingUserSignupData,
+) error {
+	err := uc.userRepo.Update(ctx, db, persistingData.UpdatingUser)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
 	return nil
 }
