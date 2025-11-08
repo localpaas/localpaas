@@ -57,8 +57,9 @@ func (uc *UserUC) InviteUser(
 }
 
 type userInviteData struct {
-	User       *entity.User
-	InviteLink string
+	User                  *entity.User
+	RemoveCurrentAccesses bool
+	InviteLink            string
 }
 
 func (uc *UserUC) loadUserInviteData(
@@ -82,8 +83,9 @@ func (uc *UserUC) loadUserInviteData(
 			Email:     req.Email,
 			CreatedAt: time.Now(),
 		}
-	} else { //nolint
-		// TODO: remove all old accesses
+	} else {
+		// Remove all current accesses
+		data.RemoveCurrentAccesses = true
 	}
 	data.User = user
 
@@ -115,6 +117,20 @@ func (uc *UserUC) preparePersistingUserInviteData(
 
 	persistingData.UpsertingUsers = append(persistingData.UpsertingUsers, user)
 
+	if data.RemoveCurrentAccesses {
+		persistingData.DeletingAccesses = append(persistingData.DeletingAccesses,
+			&base.PermissionResource{
+				SubjectType:  base.SubjectTypeUser,
+				SubjectID:    user.ID,
+				ResourceType: base.ResourceTypeModule,
+			},
+			&base.PermissionResource{
+				SubjectType:  base.SubjectTypeUser,
+				SubjectID:    user.ID,
+				ResourceType: base.ResourceTypeProject,
+			},
+		)
+	}
 	uc.preparePersistingUserModuleAccesses(user, req.ModuleAccesses, timeNow, persistingData)
 	uc.preparePersistingUserProjectAccesses(user, req.ProjectAccesses, timeNow, persistingData)
 }

@@ -3,6 +3,7 @@ package permission
 import (
 	"context"
 
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
@@ -14,6 +15,7 @@ type Manager interface {
 
 	// NOTE: this func should be called within a transaction
 	UpdateACLPermissions(ctx context.Context, db database.IDB, perms []*entity.ACLPermission) error
+	RemoveACLPermissions(ctx context.Context, db database.IDB, perms []*base.PermissionResource) error
 
 	LoadProjectAccesses(ctx context.Context, db database.IDB, projectID string,
 		extraLoadOpts ...bunex.SelectQueryOption) ([]*entity.ACLPermission, error)

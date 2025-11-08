@@ -14,19 +14,19 @@ import (
 // To keep `apperrors` pkg imported and swag gen won't fail
 type _ *apperrors.ErrorInfo
 
-// UpdateUserStatus Updates user status
-// @Summary Updates user status
-// @Description Updates user status
+// UpdateUser Updates user data (admin API)
+// @Summary Updates user data (admin API)
+// @Description Updates user data (admin API)
 // @Tags    users
 // @Produce json
-// @Id      updateUserStatus
+// @Id      updateUser
 // @Param   userID path string true "user ID"
-// @Param   body body userdto.UpdateStatusReq true "request data"
-// @Success 200 {object} userdto.UpdateStatusResp
+// @Param   body body userdto.UpdateUserReq true "request data"
+// @Success 200 {object} userdto.UpdateUserResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /users/{userID}/status [put]
-func (h *UserHandler) UpdateUserStatus(ctx *gin.Context) {
+// @Router  /users/{userID} [put]
+func (h *UserHandler) UpdateUser(ctx *gin.Context) {
 	userID, err := h.ParseStringParam(ctx, "userID")
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -44,14 +44,14 @@ func (h *UserHandler) UpdateUserStatus(ctx *gin.Context) {
 		return
 	}
 
-	req := userdto.NewUpdateStatusReq()
+	req := userdto.NewUpdateUserReq()
 	req.ID = userID
 	if err := h.ParseJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.userUC.UpdateStatus(h.RequestCtx(ctx), auth, req)
+	resp, err := h.userUC.UpdateUser(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

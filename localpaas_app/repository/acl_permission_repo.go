@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/tiendc/gofn"
 	"github.com/uptrace/bun"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -133,13 +134,31 @@ func (repo *aclPermissionRepo) DeleteByResources(ctx context.Context, db databas
 	// Construct the multi-column IN clause
 	conditions := make([]string, 0, len(resources))
 	args := make([]any, 0, len(resources)*2) //nolint:mnd
+	conditions2 := make([]string, 0, len(resources))
+	args2 := make([]any, 0, len(resources)*2) //nolint:mnd
 	for _, res := range resources {
-		conditions = append(conditions, "(?,?)")
-		args = append(args, res.SubjectID, res.ResourceID)
+		if res.ResourceID != "" {
+			// Delete a specific row by a pair of (subject_id, resource_id)
+			conditions = append(conditions, "(?,?)")
+			args = append(args, res.SubjectID, res.ResourceID)
+		} else if res.ResourceType != "" {
+			// Delete multiple rows by a pair of (subject_id, resource_type)
+			conditions2 = append(conditions2, "(?,?)")
+			args2 = append(args2, res.SubjectID, res.ResourceType)
+		}
 	}
 
-	query := db.NewDelete().Model((*entity.ACLPermission)(nil)).
-		Where(fmt.Sprintf("(subject_id,resource_id) IN (%s)", strings.Join(conditions, ",")), args...)
+	query := db.NewDelete().Model((*entity.ACLPermission)(nil))
+	if len(conditions) > 0 {
+		query = query.Where(
+			fmt.Sprintf("(subject_id,resource_id) IN (%s)", strings.Join(conditions, ",")), args...)
+	}
+	if len(conditions2) > 0 {
+		where := gofn.If(len(conditions) > 0, query.WhereOr, query.Where) //nolint:staticcheck
+		query = where(
+			fmt.Sprintf("(subject_id,resource_type) IN (%s)", strings.Join(conditions2, ",")), args2...)
+	}
+
 	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)

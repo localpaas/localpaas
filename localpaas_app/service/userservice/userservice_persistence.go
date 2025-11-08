@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 )
@@ -12,6 +13,7 @@ type PersistingUserData struct {
 	UpsertingUsers    []*entity.User
 	UpsertingSettings []*entity.Setting
 	UpsertingAccesses []*entity.ACLPermission
+	DeletingAccesses  []*base.PermissionResource
 }
 
 func (s *userService) PersistUserData(ctx context.Context, db database.IDB,
@@ -31,7 +33,13 @@ func (s *userService) PersistUserData(ctx context.Context, db database.IDB,
 		return apperrors.Wrap(err)
 	}
 
-	// App accesses
+	// Remove accesses
+	err = s.permissionManager.RemoveACLPermissions(ctx, db, persistingData.DeletingAccesses)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	// Project/App/... accesses
 	err = s.permissionManager.UpdateACLPermissions(ctx, db, persistingData.UpsertingAccesses)
 	if err != nil {
 		return apperrors.Wrap(err)

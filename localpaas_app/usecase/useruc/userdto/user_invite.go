@@ -25,16 +25,19 @@ func NewInviteUserReq() *InviteUserReq {
 	return &InviteUserReq{}
 }
 
-func (req *InviteUserReq) Validate() apperrors.ValidationErrors {
+func (req *InviteUserReq) ModifyRequest() error {
 	req.Email = strutil.NormalizeEmail(req.Email)
+	return nil
+}
 
+func (req *InviteUserReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, basedto.ValidateStrIn(&req.Role, true,
 		base.AllUserRoles, "role")...)
 	validators = append(validators, basedto.ValidateStrIn(&req.SecurityOption, true,
 		base.AllUserSecurityOptions, "securityOption")...)
 	validators = append(validators, basedto.ValidateModuleAccessSliceReq(req.ModuleAccesses, true,
-		0, "moduleAccesses")...)
+		0, base.AllResourceModules, "moduleAccesses")...)
 	validators = append(validators, basedto.ValidateObjectAccessSliceReq(req.ProjectAccesses, true,
 		0, "projectAccesses")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))

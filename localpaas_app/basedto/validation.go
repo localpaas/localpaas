@@ -9,6 +9,7 @@ import (
 	vldbase "github.com/tiendc/go-validator/base"
 	"github.com/tiendc/gofn"
 
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/pkg/timeutil"
 )
 
@@ -159,7 +160,8 @@ func ValidateObjectAccessSliceReq(access ObjectAccessSliceReq, unique bool, minL
 	return res
 }
 
-func ValidateModuleAccessReq(access *ModuleAccessReq, required bool, field string) (res []vld.Validator) {
+func ValidateModuleAccessReq(access *ModuleAccessReq, required bool, allowedValues []base.ResourceModule,
+	field string) (res []vld.Validator) {
 	var id *string
 	if access != nil {
 		id = &access.ID
@@ -170,11 +172,18 @@ func ValidateModuleAccessReq(access *ModuleAccessReq, required bool, field strin
 			vld.SetCustomKey("ERR_VLD_OBJECT_ID_REQUIRED"), // use default error key
 		))
 	}
+	if id != nil && len(allowedValues) > 0 {
+		allowedVals := gofn.ToStringSlice[string](allowedValues)
+		res = append(res, vld.StrIn(id, allowedVals...).OnError(
+			vld.SetField(field+".id", nil),
+			vld.SetCustomKey("ERR_VLD_VALUE_NOT_IN_LIST"),
+		))
+	}
 	return res
 }
 
-func ValidateModuleAccessSliceReq(access ModuleAccessSliceReq, unique bool, minLen int, field string) (
-	res []vld.Validator) {
+func ValidateModuleAccessSliceReq(access ModuleAccessSliceReq, unique bool, minLen int,
+	allowedValues []base.ResourceModule, field string) (res []vld.Validator) {
 	if unique {
 		res = append(res, vld.SliceUniqueBy(access, func(item *ModuleAccessReq) string {
 			return item.ID
@@ -189,6 +198,20 @@ func ValidateModuleAccessSliceReq(access ModuleAccessSliceReq, unique bool, minL
 			vld.SetCustomKey("ERR_VLD_OBJECT_IDS_REQUIRED"),
 		))
 	}
+	if len(allowedValues) > 0 {
+		allowedVals := gofn.ToStringSlice[string](allowedValues)
+		res = append(res,
+			vld.Slice(access).ForEach(func(elem *ModuleAccessReq, index int, elemValidator vld.ItemValidator) {
+				elemValidator.Validate(
+					vld.StrIn(&elem.ID, allowedVals...).OnError(
+						vld.SetField(fmt.Sprintf("%s[%d]", field, index), nil),
+						vld.SetCustomKey("ERR_VLD_VALUE_NOT_IN_LIST"),
+					),
+				)
+			}),
+		)
+	}
+
 	return res
 }
 

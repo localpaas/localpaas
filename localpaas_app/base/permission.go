@@ -31,8 +31,12 @@ const (
 type ResourceModule string
 
 const (
-	ResourceModuleUserAndRole ResourceModule = "user-role"
-	ResourceModuleSetting     ResourceModule = "setting"
+	ResourceModuleUser    ResourceModule = "user"
+	ResourceModuleProject ResourceModule = "project"
+)
+
+var (
+	AllResourceModules = []ResourceModule{ResourceModuleUser, ResourceModuleProject}
 )
 
 type ActionType string

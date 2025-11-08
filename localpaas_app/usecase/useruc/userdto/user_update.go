@@ -1,0 +1,62 @@
+package userdto
+
+import (
+	"encoding/base64"
+	"path/filepath"
+	"strings"
+	"time"
+
+	vld "github.com/tiendc/go-validator"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/basedto"
+)
+
+type UpdateUserReq struct {
+	ID               string                       `json:"-"`
+	FullName         *string                      `json:"fullName"`
+	Photo            *UserPhotoReq                `json:"photo"`
+	Status           *base.UserStatus             `json:"status"`
+	Role             *base.UserRole               `json:"role"`
+	SecurityOption   *base.UserSecurityOption     `json:"securityOption"`
+	AccessExpiration *time.Time                   `json:"accessExpiration"`
+	ModuleAccesses   basedto.ModuleAccessSliceReq `json:"moduleAccesses"`
+	ProjectAccesses  basedto.ObjectAccessSliceReq `json:"projectAccesses"`
+}
+
+func NewUpdateUserReq() *UpdateUserReq {
+	return &UpdateUserReq{}
+}
+
+func (req *UpdateUserReq) ModifyRequest() error {
+	// Parse photo
+	if req.Photo != nil && req.Photo.FileName != "" && req.Photo.DataBase64 != "" {
+		req.Photo.DataBytes, _ = base64.StdEncoding.DecodeString(req.Photo.DataBase64)
+		req.Photo.FileExt = strings.ToLower(filepath.Ext(req.Photo.FileName))
+	}
+	return nil
+}
+
+func (req *UpdateUserReq) Validate() apperrors.ValidationErrors {
+	var validators []vld.Validator
+	validators = append(validators, basedto.ValidateID(&req.ID, true, "status")...)
+	validators = append(validators, basedto.ValidateStr(req.FullName, false, minNameLen, maxNameLen,
+		"fullName")...)
+	validators = append(validators, validateUserPhoto(req.Photo, "photo")...)
+	validators = append(validators, basedto.ValidateStrIn(req.Status, false, base.AllUserStatuses,
+		"status")...)
+	validators = append(validators, basedto.ValidateStrIn(req.Role, false, base.AllUserRoles,
+		"role")...)
+	validators = append(validators, basedto.ValidateStrIn(req.SecurityOption, false,
+		base.AllUserSecurityOptions, "securityOption")...)
+	validators = append(validators, basedto.ValidateModuleAccessSliceReq(req.ModuleAccesses, true,
+		0, base.AllResourceModules, "moduleAccesses")...)
+	validators = append(validators, basedto.ValidateObjectAccessSliceReq(req.ProjectAccesses, true,
+		0, "projectAccesses")...)
+	return apperrors.NewValidationErrors(vld.Validate(validators...))
+}
+
+type UpdateUserResp struct {
+	Meta *basedto.BaseMeta `json:"meta"`
+}

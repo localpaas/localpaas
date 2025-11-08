@@ -3244,12 +3244,10 @@
         },
         "summary" : "Gets user details",
         "tags" : [ "users" ]
-      }
-    },
-    "/users/{userID}/status" : {
+      },
       "put" : {
-        "description" : "Updates user status",
-        "operationId" : "updateUserStatus",
+        "description" : "Updates user data (admin API)",
+        "operationId" : "updateUser",
         "parameters" : [ {
           "description" : "user ID",
           "in" : "path",
@@ -3263,7 +3261,7 @@
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UpdateStatusReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UpdateUserReq"
               }
             }
           },
@@ -3275,7 +3273,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UpdateStatusResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UpdateUserResp"
                 }
               }
             },
@@ -3302,7 +3300,7 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Updates user status",
+        "summary" : "Updates user data (admin API)",
         "tags" : [ "users" ],
         "x-codegen-request-body-name" : "body"
       }
@@ -5345,16 +5343,43 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UpdateStatusReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UpdateUserReq" : {
         "properties" : {
+          "accessExpiration" : {
+            "type" : "string"
+          },
+          "fullName" : {
+            "type" : "string"
+          },
+          "moduleAccesses" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ModuleAccessReq"
+            },
+            "type" : "array"
+          },
+          "photo" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UserPhotoReq"
+          },
+          "projectAccesses" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectAccessReq"
+            },
+            "type" : "array"
+          },
+          "role" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.UserRole"
+          },
+          "securityOption" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.UserSecurityOption"
+          },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.UserStatus"
           }
         },
-        "required" : [ "status" ],
+        "required" : [ "accessExpiration", "fullName", "moduleAccesses", "photo", "projectAccesses", "role", "securityOption", "status" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UpdateStatusResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UpdateUserResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
