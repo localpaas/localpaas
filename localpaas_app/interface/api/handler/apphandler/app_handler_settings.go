@@ -79,7 +79,7 @@ func (h *AppHandler) GetAppSettings(ctx *gin.Context) {
 // @Success 200 {object} appdto.UpdateAppSettingsResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/apps/{appID}/settings [patch]
+// @Router  /projects/{projectID}/apps/{appID}/settings [put]
 func (h *AppHandler) UpdateAppSettings(ctx *gin.Context) {
 	projectID, err := h.ParseStringParam(ctx, "projectID")
 	if err != nil {

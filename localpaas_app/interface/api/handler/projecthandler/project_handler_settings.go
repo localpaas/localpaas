@@ -70,7 +70,7 @@ func (h *ProjectHandler) GetProjectSettings(ctx *gin.Context) {
 // @Success 200 {object} projectdto.UpdateProjectSettingsResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/settings [patch]
+// @Router  /projects/{projectID}/settings [put]
 func (h *ProjectHandler) UpdateProjectSettings(ctx *gin.Context) {
 	projectID, err := h.ParseStringParam(ctx, "projectID")
 	if err != nil {

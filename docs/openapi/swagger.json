@@ -1196,7 +1196,7 @@
         "summary" : "Gets app settings",
         "tags" : [ "apps" ]
       },
-      "patch" : {
+      "put" : {
         "description" : "Updates app settings",
         "operationId" : "updateAppSettings",
         "parameters" : [ {
@@ -1457,7 +1457,7 @@
         "summary" : "Gets project settings",
         "tags" : [ "projects" ]
       },
-      "patch" : {
+      "put" : {
         "description" : "Updates project settings",
         "operationId" : "updateProjectSettings",
         "parameters" : [ {
@@ -1922,7 +1922,7 @@
         "summary" : "Gets s3 storage details",
         "tags" : [ "s3_storages" ]
       },
-      "patch" : {
+      "put" : {
         "description" : "Updates a s3 storage",
         "operationId" : "updateS3Storage",
         "parameters" : [ {
@@ -2413,7 +2413,7 @@
         "summary" : "Gets SSH key details",
         "tags" : [ "ssh_keys" ]
       },
-      "patch" : {
+      "put" : {
         "description" : "Updates an SSH key",
         "operationId" : "updateSSHKey",
         "parameters" : [ {
@@ -2938,7 +2938,7 @@
       }
     },
     "/users/current/password" : {
-      "patch" : {
+      "put" : {
         "description" : "Changes user password",
         "operationId" : "updateUserPassword",
         "requestBody" : {
@@ -2990,7 +2990,7 @@
       }
     },
     "/users/current/profile" : {
-      "patch" : {
+      "put" : {
         "description" : "Updates user profile",
         "operationId" : "updateUserProfile",
         "requestBody" : {
@@ -3247,7 +3247,7 @@
       }
     },
     "/users/{userID}/status" : {
-      "patch" : {
+      "put" : {
         "description" : "Updates user status",
         "operationId" : "updateUserStatus",
         "parameters" : [ {

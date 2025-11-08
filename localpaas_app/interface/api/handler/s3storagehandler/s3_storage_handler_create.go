@@ -60,7 +60,7 @@ func (h *S3StorageHandler) CreateS3Storage(ctx *gin.Context) {
 // @Success 200 {object} s3storagedto.UpdateS3StorageResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /s3-storages/{ID} [patch]
+// @Router  /s3-storages/{ID} [put]
 func (h *S3StorageHandler) UpdateS3Storage(ctx *gin.Context) {
 	id, err := h.ParseStringParam(ctx, "ID")
 	if err != nil {

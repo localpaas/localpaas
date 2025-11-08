@@ -25,7 +25,7 @@ type _ *apperrors.ErrorInfo
 // @Success 200 {object} userdto.UpdateStatusResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /users/{userID}/status [patch]
+// @Router  /users/{userID}/status [put]
 func (h *UserHandler) UpdateUserStatus(ctx *gin.Context) {
 	userID, err := h.ParseStringParam(ctx, "userID")
 	if err != nil {

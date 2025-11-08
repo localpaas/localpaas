@@ -24,7 +24,7 @@ type _ *apperrors.ErrorInfo
 // @Success 200 {object} userdto.UpdatePasswordResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /users/current/password [patch]
+// @Router  /users/current/password [put]
 func (h *UserHandler) UpdateUserPassword(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceType: base.ResourceTypeUser,

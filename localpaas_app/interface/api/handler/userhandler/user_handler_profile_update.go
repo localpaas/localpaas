@@ -24,7 +24,7 @@ type _ *apperrors.ErrorInfo
 // @Success 200 {object} userdto.UpdateProfileResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /users/current/profile [patch]
+// @Router  /users/current/profile [put]
 func (h *UserHandler) UpdateUserProfile(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceType: base.ResourceTypeUser,

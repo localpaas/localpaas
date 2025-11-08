@@ -123,11 +123,11 @@ func (s *HTTPServer) registerRoutes() {
 		userGroup.GET("/:userID", s.handlerRegistry.userHandler.GetUser)
 		userGroup.GET("", s.handlerRegistry.userHandler.ListUser)
 		// Password
-		userGroup.PATCH("/current/password", s.handlerRegistry.userHandler.UpdateUserPassword)
+		userGroup.PUT("/current/password", s.handlerRegistry.userHandler.UpdateUserPassword)
 		// Profile
-		userGroup.PATCH("/current/profile", s.handlerRegistry.userHandler.UpdateUserProfile)
+		userGroup.PUT("/current/profile", s.handlerRegistry.userHandler.UpdateUserProfile)
 		// Status (admin API)
-		userGroup.PATCH("/:userID/status", s.handlerRegistry.userHandler.UpdateUserStatus)
+		userGroup.PUT("/:userID/status", s.handlerRegistry.userHandler.UpdateUserStatus)
 		// MFA TOTP setup
 		userGroup.POST("/current/mfa/totp-begin-setup", s.handlerRegistry.userHandler.BeginMFATotpSetup)
 		userGroup.POST("/current/mfa/totp-complete-setup", s.handlerRegistry.userHandler.CompleteMFATotpSetup)
@@ -163,7 +163,7 @@ func (s *HTTPServer) registerRoutes() {
 		projectGroup.POST("/:projectID/tags/delete", s.handlerRegistry.projectHandler.DeleteProjectTags)
 		// Settings
 		projectGroup.GET("/:projectID/settings", s.handlerRegistry.projectHandler.GetProjectSettings)
-		projectGroup.PATCH("/:projectID/settings", s.handlerRegistry.projectHandler.UpdateProjectSettings)
+		projectGroup.PUT("/:projectID/settings", s.handlerRegistry.projectHandler.UpdateProjectSettings)
 	}
 
 	appGroup := projectGroup.Group("/:projectID/apps")
@@ -180,7 +180,7 @@ func (s *HTTPServer) registerRoutes() {
 		appGroup.POST("/:appID/tags/delete", s.handlerRegistry.appHandler.DeleteAppTags)
 		// Settings
 		appGroup.GET("/:appID/settings", s.handlerRegistry.appHandler.GetAppSettings)
-		appGroup.PATCH("/:appID/settings", s.handlerRegistry.appHandler.UpdateAppSettings)
+		appGroup.PUT("/:appID/settings", s.handlerRegistry.appHandler.UpdateAppSettings)
 	}
 
 	s3StorageGroup := apiV1Group.Group("/s3-storages")
@@ -191,7 +191,7 @@ func (s *HTTPServer) registerRoutes() {
 		s3StorageGroup.GET("", s.handlerRegistry.s3StorageHandler.ListS3Storage)
 		// Creation & Update
 		s3StorageGroup.POST("", s.handlerRegistry.s3StorageHandler.CreateS3Storage)
-		s3StorageGroup.PATCH("/:ID", s.handlerRegistry.s3StorageHandler.UpdateS3Storage)
+		s3StorageGroup.PUT("/:ID", s.handlerRegistry.s3StorageHandler.UpdateS3Storage)
 		s3StorageGroup.DELETE("/:ID", s.handlerRegistry.s3StorageHandler.DeleteS3Storage)
 	}
 
@@ -203,7 +203,7 @@ func (s *HTTPServer) registerRoutes() {
 		sshKeyGroup.GET("", s.handlerRegistry.sshKeyHandler.ListSSHKey)
 		// Creation & Update
 		sshKeyGroup.POST("", s.handlerRegistry.sshKeyHandler.CreateSSHKey)
-		sshKeyGroup.PATCH("/:ID", s.handlerRegistry.sshKeyHandler.UpdateSSHKey)
+		sshKeyGroup.PUT("/:ID", s.handlerRegistry.sshKeyHandler.UpdateSSHKey)
 		sshKeyGroup.DELETE("/:ID", s.handlerRegistry.sshKeyHandler.DeleteSSHKey)
 	}
 }
