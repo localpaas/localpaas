@@ -39,14 +39,6 @@ type S3StorageResp struct {
 	ProjectAccesses []*S3StorageProjectAccessResp `json:"projectAccesses"`
 }
 
-type S3StorageBaseResp struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	AccessKeyID string `json:"accessKeyId,omitempty"`
-	Region      string `json:"region,omitempty"`
-	Bucket      string `json:"bucket,omitempty"`
-}
-
 type S3StorageProjectAccessResp struct {
 	ID          string                    `json:"id"`
 	Name        string                    `json:"name"`
@@ -107,15 +99,4 @@ func TransformS3StorageObjectAccesses(accesses []*entity.ACLPermission) (
 		}
 	}
 	return resp, nil
-}
-
-func TransformS3StorageBase(setting *entity.Setting) (resp *S3StorageBaseResp, err error) {
-	if err = copier.Copy(&resp, &setting); err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-	return resp, nil
-}
-
-func TransformS3StoragesBase(settings []*entity.Setting) ([]*S3StorageBaseResp, error) {
-	return basedto.TransformObjectSlice(settings, TransformS3StorageBase) //nolint:wrapcheck
 }

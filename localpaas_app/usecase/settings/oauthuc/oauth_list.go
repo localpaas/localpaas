@@ -19,6 +19,10 @@ func (uc *OAuthUC) ListOAuth(
 		bunex.SelectWhere("setting.type = ?", base.SettingTypeOAuth),
 	}
 
+	if len(req.Status) > 0 {
+		listOpts = append(listOpts,
+			bunex.SelectWhere("setting.status IN (?)", bunex.In(req.Status)))
+	}
 	if req.Search != "" {
 		keyword := bunex.MakeLikeOpStr(req.Search, true)
 		listOpts = append(listOpts,

@@ -7,7 +7,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/sshkeyuc/sshkeydto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc/sshkeydto"
 )
 
 func (uc *SSHKeyUC) GetSSHKey(
@@ -16,6 +16,7 @@ func (uc *SSHKeyUC) GetSSHKey(
 	req *sshkeydto.GetSSHKeyReq,
 ) (*sshkeydto.GetSSHKeyResp, error) {
 	setting, err := uc.settingRepo.GetByID(ctx, uc.db, req.ID,
+		bunex.SelectWhere("setting.type = ?", base.SettingTypeSSHKey),
 		bunex.SelectRelation("ObjectAccesses",
 			bunex.SelectWhere("acl_permission.subject_type IN (?)", bunex.In([]base.SubjectType{
 				base.SubjectTypeProject, base.SubjectTypeApp,

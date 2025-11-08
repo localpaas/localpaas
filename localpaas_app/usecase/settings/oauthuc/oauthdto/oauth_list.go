@@ -1,13 +1,17 @@
 package oauthdto
 
 import (
+	vld "github.com/tiendc/go-validator"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 )
 
 type ListOAuthReq struct {
-	Search string `json:"-" mapstructure:"search"`
+	Status []base.SettingStatus `json:"-" mapstructure:"status"`
+	Search string               `json:"-" mapstructure:"search"`
 
 	Paging basedto.Paging `json:"-"`
 }
@@ -22,7 +26,9 @@ func NewListOAuthReq() *ListOAuthReq {
 }
 
 func (req *ListOAuthReq) Validate() apperrors.ValidationErrors {
-	return nil
+	var validators []vld.Validator
+	validators = append(validators, basedto.ValidateSlice(req.Status, true, 0, base.AllSettingStatuses, "status")...)
+	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
 type ListOAuthResp struct {

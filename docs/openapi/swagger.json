@@ -1639,337 +1639,6 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/s3-storages" : {
-      "get" : {
-        "description" : "Lists s3 storages",
-        "operationId" : "listS3Storage",
-        "parameters" : [ {
-          "description" : "`search=<target> (support *)`",
-          "in" : "query",
-          "name" : "search",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "`pageOffset=offset`",
-          "in" : "query",
-          "name" : "pageOffset",
-          "schema" : {
-            "type" : "integer"
-          }
-        }, {
-          "description" : "`pageLimit=limit`",
-          "in" : "query",
-          "name" : "pageLimit",
-          "schema" : {
-            "type" : "integer"
-          }
-        }, {
-          "description" : "`sort=[-]field1|field2...`",
-          "in" : "query",
-          "name" : "sort",
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.ListS3StorageResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Lists s3 storages",
-        "tags" : [ "s3_storages" ]
-      },
-      "post" : {
-        "description" : "Creates a new s3 storage",
-        "operationId" : "createS3Storage",
-        "requestBody" : {
-          "content" : {
-            "*/*" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.CreateS3StorageReq"
-              }
-            }
-          },
-          "description" : "request data",
-          "required" : true
-        },
-        "responses" : {
-          "201" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.CreateS3StorageResp"
-                }
-              }
-            },
-            "description" : "Created"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Creates a new s3 storage",
-        "tags" : [ "s3_storages" ],
-        "x-codegen-request-body-name" : "body"
-      }
-    },
-    "/s3-storages/base" : {
-      "get" : {
-        "description" : "Lists s3 storages",
-        "operationId" : "listS3StorageBase",
-        "parameters" : [ {
-          "description" : "`search=<target> (support *)`",
-          "in" : "query",
-          "name" : "search",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "`pageOffset=offset`",
-          "in" : "query",
-          "name" : "pageOffset",
-          "schema" : {
-            "type" : "integer"
-          }
-        }, {
-          "description" : "`pageLimit=limit`",
-          "in" : "query",
-          "name" : "pageLimit",
-          "schema" : {
-            "type" : "integer"
-          }
-        }, {
-          "description" : "`sort=[-]field1|field2...`",
-          "in" : "query",
-          "name" : "sort",
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.ListS3StorageBaseResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Lists s3 storages",
-        "tags" : [ "s3_storages" ]
-      }
-    },
-    "/s3-storages/{ID}" : {
-      "delete" : {
-        "description" : "Deletes a s3 storage",
-        "operationId" : "deleteS3Storage",
-        "parameters" : [ {
-          "description" : "s3 storage ID",
-          "in" : "path",
-          "name" : "ID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.DeleteS3StorageResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Deletes a s3 storage",
-        "tags" : [ "s3_storages" ]
-      },
-      "get" : {
-        "description" : "Gets s3 storage details",
-        "operationId" : "getS3Storage",
-        "parameters" : [ {
-          "description" : "s3 storage ID",
-          "in" : "path",
-          "name" : "ID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.GetS3StorageResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Gets s3 storage details",
-        "tags" : [ "s3_storages" ]
-      },
-      "put" : {
-        "description" : "Updates a s3 storage",
-        "operationId" : "updateS3Storage",
-        "parameters" : [ {
-          "description" : "s3 storage ID",
-          "in" : "path",
-          "name" : "ID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.UpdateS3StorageResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Updates a s3 storage",
-        "tags" : [ "s3_storages" ]
-      }
-    },
     "/sessions" : {
       "delete" : {
         "description" : "Deletes the current user session",
@@ -2254,7 +1923,7 @@
         "description" : "Deletes oauth setting",
         "operationId" : "deleteOAuthSetting",
         "parameters" : [ {
-          "description" : "oauth ID",
+          "description" : "setting ID",
           "in" : "path",
           "name" : "ID",
           "required" : true,
@@ -2301,7 +1970,7 @@
         "description" : "Gets oauth setting details",
         "operationId" : "getOAuthSetting",
         "parameters" : [ {
-          "description" : "oauth setting ID",
+          "description" : "setting ID",
           "in" : "path",
           "name" : "ID",
           "required" : true,
@@ -2348,7 +2017,7 @@
         "description" : "Updates oauth",
         "operationId" : "updateOAuthSetting",
         "parameters" : [ {
-          "description" : "oauth ID",
+          "description" : "setting ID",
           "in" : "path",
           "name" : "ID",
           "required" : true,
@@ -2392,10 +2061,10 @@
         "tags" : [ "settings_oauth" ]
       }
     },
-    "/ssh-keys" : {
+    "/settings/s3-storages" : {
       "get" : {
-        "description" : "Lists SSH key",
-        "operationId" : "listSSHKey",
+        "description" : "Lists S3 storage settings",
+        "operationId" : "listS3StorageSettings",
         "parameters" : [ {
           "description" : "`search=<target> (support *)`",
           "in" : "query",
@@ -2430,7 +2099,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.ListSSHKeyResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.ListS3StorageResp"
                 }
               }
             },
@@ -2457,17 +2126,17 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Lists SSH key",
-        "tags" : [ "ssh_keys" ]
+        "summary" : "Lists S3 storage settings",
+        "tags" : [ "settings_s3_storage" ]
       },
       "post" : {
-        "description" : "Creates a new SSH key",
-        "operationId" : "createSSHKey",
+        "description" : "Creates a new S3 storage setting",
+        "operationId" : "createS3StorageSetting",
         "requestBody" : {
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.CreateSSHKeyReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.CreateS3StorageReq"
               }
             }
           },
@@ -2479,7 +2148,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.CreateSSHKeyResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.CreateS3StorageResp"
                 }
               }
             },
@@ -2506,15 +2175,158 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Creates a new SSH key",
-        "tags" : [ "ssh_keys" ],
+        "summary" : "Creates a new S3 storage setting",
+        "tags" : [ "settings_s3_storage" ],
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/ssh-keys/base" : {
+    "/settings/s3-storages/{ID}" : {
+      "delete" : {
+        "description" : "Deletes S3 storage setting",
+        "operationId" : "deleteS3StorageSetting",
+        "parameters" : [ {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.DeleteS3StorageResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Deletes S3 storage setting",
+        "tags" : [ "settings_s3_storage" ]
+      },
       "get" : {
-        "description" : "Lists SSH key",
-        "operationId" : "listSSHKeyBase",
+        "description" : "Gets S3 storage setting details",
+        "operationId" : "getS3StorageSetting",
+        "parameters" : [ {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.GetS3StorageResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Gets S3 storage setting details",
+        "tags" : [ "settings_s3_storage" ]
+      },
+      "put" : {
+        "description" : "Updates S3 storage",
+        "operationId" : "updateS3StorageSetting",
+        "parameters" : [ {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.UpdateS3StorageResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates S3 storage",
+        "tags" : [ "settings_s3_storage" ]
+      }
+    },
+    "/settings/ssh-keys" : {
+      "get" : {
+        "description" : "Lists ssh-key settings",
+        "operationId" : "listSSHKeySettings",
         "parameters" : [ {
           "description" : "`search=<target> (support *)`",
           "in" : "query",
@@ -2549,7 +2361,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.ListSSHKeyBaseResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.ListSSHKeyResp"
                 }
               }
             },
@@ -2576,16 +2388,66 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Lists SSH key",
-        "tags" : [ "ssh_keys" ]
+        "summary" : "Lists ssh-key settings",
+        "tags" : [ "settings_ssh_key" ]
+      },
+      "post" : {
+        "description" : "Creates a new ssh-key setting",
+        "operationId" : "createSSHKeySetting",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.CreateSSHKeyReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.CreateSSHKeyResp"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Creates a new ssh-key setting",
+        "tags" : [ "settings_ssh_key" ],
+        "x-codegen-request-body-name" : "body"
       }
     },
-    "/ssh-keys/{ID}" : {
+    "/settings/ssh-keys/{ID}" : {
       "delete" : {
-        "description" : "Deletes an SSH key",
-        "operationId" : "deleteSSHKey",
+        "description" : "Deletes sshkey setting",
+        "operationId" : "deleteSSHKeySetting",
         "parameters" : [ {
-          "description" : "SSH key ID",
+          "description" : "setting ID",
           "in" : "path",
           "name" : "ID",
           "required" : true,
@@ -2598,7 +2460,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.DeleteSSHKeyResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.DeleteSSHKeyResp"
                 }
               }
             },
@@ -2625,14 +2487,14 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Deletes an SSH key",
-        "tags" : [ "ssh_keys" ]
+        "summary" : "Deletes sshkey setting",
+        "tags" : [ "settings_ssh_key" ]
       },
       "get" : {
-        "description" : "Gets SSH key details",
-        "operationId" : "getSSHKey",
+        "description" : "Gets ssh-key setting details",
+        "operationId" : "getSSHKeySetting",
         "parameters" : [ {
-          "description" : "s3 storage ID",
+          "description" : "setting ID",
           "in" : "path",
           "name" : "ID",
           "required" : true,
@@ -2645,7 +2507,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.GetSSHKeyResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.GetSSHKeyResp"
                 }
               }
             },
@@ -2672,14 +2534,14 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Gets SSH key details",
-        "tags" : [ "ssh_keys" ]
+        "summary" : "Gets ssh-key setting details",
+        "tags" : [ "settings_ssh_key" ]
       },
       "put" : {
-        "description" : "Updates an SSH key",
-        "operationId" : "updateSSHKey",
+        "description" : "Updates ssh-key",
+        "operationId" : "updateSSHKeySetting",
         "parameters" : [ {
-          "description" : "SSH key ID",
+          "description" : "setting ID",
           "in" : "path",
           "name" : "ID",
           "required" : true,
@@ -2692,7 +2554,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.UpdateSSHKeyResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.UpdateSSHKeyResp"
                 }
               }
             },
@@ -2719,8 +2581,8 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Updates an SSH key",
-        "tags" : [ "ssh_keys" ]
+        "summary" : "Updates ssh-key",
+        "tags" : [ "settings_ssh_key" ]
       }
     },
     "/users" : {
@@ -4609,223 +4471,6 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.CreateS3StorageReq" : {
-        "properties" : {
-          "accessKeyId" : {
-            "type" : "string"
-          },
-          "bucket" : {
-            "type" : "string"
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "projectAccesses" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.S3StorageProjectAccessReq"
-            },
-            "type" : "array"
-          },
-          "region" : {
-            "type" : "string"
-          },
-          "secretAccessKey" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "accessKeyId", "bucket", "name", "projectAccesses", "region", "secretAccessKey" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.CreateS3StorageResp" : {
-        "properties" : {
-          "data" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
-          },
-          "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
-          }
-        },
-        "required" : [ "data", "meta" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.DeleteS3StorageResp" : {
-        "properties" : {
-          "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
-          }
-        },
-        "required" : [ "meta" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.GetS3StorageResp" : {
-        "properties" : {
-          "data" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.S3StorageResp"
-          },
-          "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
-          }
-        },
-        "required" : [ "data", "meta" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.ListS3StorageBaseResp" : {
-        "properties" : {
-          "data" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.S3StorageBaseResp"
-            },
-            "type" : "array"
-          },
-          "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
-          }
-        },
-        "required" : [ "data", "meta" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.ListS3StorageResp" : {
-        "properties" : {
-          "data" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.S3StorageResp"
-            },
-            "type" : "array"
-          },
-          "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
-          }
-        },
-        "required" : [ "data", "meta" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.S3StorageAppAccessReq" : {
-        "properties" : {
-          "allowed" : {
-            "type" : "boolean"
-          },
-          "id" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "allowed", "id" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.S3StorageAppAccessResp" : {
-        "properties" : {
-          "allowed" : {
-            "type" : "boolean"
-          },
-          "id" : {
-            "type" : "string"
-          },
-          "name" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "allowed", "id", "name" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.S3StorageBaseResp" : {
-        "properties" : {
-          "accessKeyId" : {
-            "type" : "string"
-          },
-          "bucket" : {
-            "type" : "string"
-          },
-          "id" : {
-            "type" : "string"
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "region" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "id", "name" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.S3StorageProjectAccessReq" : {
-        "properties" : {
-          "allowed" : {
-            "type" : "boolean"
-          },
-          "appAccesses" : {
-            "description" : "NOTE: this field is used to grant access to a project,\nbut deny access to specific apps within the project",
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.S3StorageAppAccessReq"
-            },
-            "type" : "array"
-          },
-          "id" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "allowed", "appAccesses", "id" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.S3StorageProjectAccessResp" : {
-        "properties" : {
-          "allowed" : {
-            "type" : "boolean"
-          },
-          "appAccesses" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.S3StorageAppAccessResp"
-            },
-            "type" : "array"
-          },
-          "id" : {
-            "type" : "string"
-          },
-          "name" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "allowed", "appAccesses", "id", "name" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.S3StorageResp" : {
-        "properties" : {
-          "accessKeyId" : {
-            "type" : "string"
-          },
-          "bucket" : {
-            "type" : "string"
-          },
-          "id" : {
-            "type" : "string"
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "projectAccesses" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.S3StorageProjectAccessResp"
-            },
-            "type" : "array"
-          },
-          "region" : {
-            "type" : "string"
-          },
-          "secretAccessKey" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "accessKeyId", "bucket", "id", "name", "projectAccesses", "region" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_s3storageuc_s3storagedto.UpdateS3StorageResp" : {
-        "properties" : {
-          "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
-          }
-        },
-        "required" : [ "meta" ],
-        "type" : "object"
-      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.BaseCreateSessionResp" : {
         "properties" : {
           "accessToken" : {
@@ -5220,25 +4865,34 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.CreateSSHKeyReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.CreateS3StorageReq" : {
         "properties" : {
-          "name" : {
+          "accessKeyId" : {
             "type" : "string"
           },
-          "privateKey" : {
+          "bucket" : {
+            "type" : "string"
+          },
+          "name" : {
             "type" : "string"
           },
           "projectAccesses" : {
             "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.SSHKeyProjectAccessReq"
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.S3StorageProjectAccessReq"
             },
             "type" : "array"
+          },
+          "region" : {
+            "type" : "string"
+          },
+          "secretAccessKey" : {
+            "type" : "string"
           }
         },
-        "required" : [ "name", "privateKey", "projectAccesses" ],
+        "required" : [ "accessKeyId", "bucket", "name", "projectAccesses", "region", "secretAccessKey" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.CreateSSHKeyResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.CreateS3StorageResp" : {
         "properties" : {
           "data" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
@@ -5250,7 +4904,7 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.DeleteSSHKeyResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.DeleteS3StorageResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
@@ -5259,10 +4913,10 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.GetSSHKeyResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.GetS3StorageResp" : {
         "properties" : {
           "data" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.SSHKeyResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.S3StorageResp"
           },
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
@@ -5271,11 +4925,11 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.ListSSHKeyBaseResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.ListS3StorageResp" : {
         "properties" : {
           "data" : {
             "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.SSHKeyBaseResp"
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.S3StorageResp"
             },
             "type" : "array"
           },
@@ -5286,22 +4940,7 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.ListSSHKeyResp" : {
-        "properties" : {
-          "data" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.SSHKeyResp"
-            },
-            "type" : "array"
-          },
-          "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
-          }
-        },
-        "required" : [ "data", "meta" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.SSHKeyAppAccessReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.S3StorageAppAccessReq" : {
         "properties" : {
           "allowed" : {
             "type" : "boolean"
@@ -5313,7 +4952,7 @@
         "required" : [ "allowed", "id" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.SSHKeyAppAccessResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.S3StorageAppAccessResp" : {
         "properties" : {
           "allowed" : {
             "type" : "boolean"
@@ -5328,22 +4967,7 @@
         "required" : [ "allowed", "id", "name" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.SSHKeyBaseResp" : {
-        "properties" : {
-          "id" : {
-            "type" : "string"
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "privateKey" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "id", "name" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.SSHKeyProjectAccessReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.S3StorageProjectAccessReq" : {
         "properties" : {
           "allowed" : {
             "type" : "boolean"
@@ -5351,7 +4975,7 @@
           "appAccesses" : {
             "description" : "NOTE: this field is used to grant access to a project,\nbut deny access to specific apps within the project",
             "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.SSHKeyAppAccessReq"
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.S3StorageAppAccessReq"
             },
             "type" : "array"
           },
@@ -5362,14 +4986,14 @@
         "required" : [ "allowed", "appAccesses", "id" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.SSHKeyProjectAccessResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.S3StorageProjectAccessResp" : {
         "properties" : {
           "allowed" : {
             "type" : "boolean"
           },
           "appAccesses" : {
             "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.SSHKeyAppAccessResp"
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.S3StorageAppAccessResp"
             },
             "type" : "array"
           },
@@ -5383,7 +5007,179 @@
         "required" : [ "allowed", "appAccesses", "id", "name" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.SSHKeyResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.S3StorageResp" : {
+        "properties" : {
+          "accessKeyId" : {
+            "type" : "string"
+          },
+          "bucket" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "projectAccesses" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.S3StorageProjectAccessResp"
+            },
+            "type" : "array"
+          },
+          "region" : {
+            "type" : "string"
+          },
+          "secretAccessKey" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "accessKeyId", "bucket", "id", "name", "projectAccesses", "region" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.UpdateS3StorageResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.CreateSSHKeyReq" : {
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "privateKey" : {
+            "type" : "string"
+          },
+          "projectAccesses" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.SSHKeyProjectAccessReq"
+            },
+            "type" : "array"
+          }
+        },
+        "required" : [ "name", "privateKey", "projectAccesses" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.CreateSSHKeyResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.DeleteSSHKeyResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.GetSSHKeyResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.SSHKeyResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.ListSSHKeyResp" : {
+        "properties" : {
+          "data" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.SSHKeyResp"
+            },
+            "type" : "array"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.SSHKeyAppAccessReq" : {
+        "properties" : {
+          "allowed" : {
+            "type" : "boolean"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "allowed", "id" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.SSHKeyAppAccessResp" : {
+        "properties" : {
+          "allowed" : {
+            "type" : "boolean"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "allowed", "id", "name" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.SSHKeyProjectAccessReq" : {
+        "properties" : {
+          "allowed" : {
+            "type" : "boolean"
+          },
+          "appAccesses" : {
+            "description" : "NOTE: this field is used to grant access to a project,\nbut deny access to specific apps within the project",
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.SSHKeyAppAccessReq"
+            },
+            "type" : "array"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "allowed", "appAccesses", "id" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.SSHKeyProjectAccessResp" : {
+        "properties" : {
+          "allowed" : {
+            "type" : "boolean"
+          },
+          "appAccesses" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.SSHKeyAppAccessResp"
+            },
+            "type" : "array"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "allowed", "appAccesses", "id", "name" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.SSHKeyResp" : {
         "properties" : {
           "id" : {
             "type" : "string"
@@ -5396,7 +5192,7 @@
           },
           "projectAccesses" : {
             "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.SSHKeyProjectAccessResp"
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.SSHKeyProjectAccessResp"
             },
             "type" : "array"
           }
@@ -5404,7 +5200,7 @@
         "required" : [ "id", "name", "projectAccesses" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_sshkeyuc_sshkeydto.UpdateSSHKeyResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.UpdateSSHKeyResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"

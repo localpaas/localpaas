@@ -11,10 +11,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/clusterhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projecthandler"
-	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/s3storagehandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/settingshandler"
-	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sshkeyhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/userhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/server"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
@@ -29,10 +27,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/clusteruc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/s3storageuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/sshkeyuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/s3storageuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc"
 )
 
@@ -66,8 +64,6 @@ var Provides = []any{
 	userhandler.NewUserHandler,
 	projecthandler.NewProjectHandler,
 	apphandler.NewAppHandler,
-	s3storagehandler.NewS3StorageHandler,
-	sshkeyhandler.NewSSHKeyHandler,
 	apikeyhandler.NewAPIKeyHandler,
 	settingshandler.NewSettingsHandler,
 

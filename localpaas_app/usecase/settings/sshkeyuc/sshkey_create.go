@@ -14,7 +14,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/sshkeyuc/sshkeydto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc/sshkeydto"
 	"github.com/localpaas/localpaas/pkg/timeutil"
 	"github.com/localpaas/localpaas/pkg/ulid"
 )
@@ -82,6 +82,7 @@ func (uc *SSHKeyUC) preparePersistingSSHKey(
 	setting := &entity.Setting{
 		ID:        gofn.Must(ulid.NewStringULID()),
 		Type:      base.SettingTypeSSHKey,
+		Status:    base.SettingStatusActive,
 		Name:      req.Name,
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,

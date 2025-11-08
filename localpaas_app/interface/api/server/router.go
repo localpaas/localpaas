@@ -12,24 +12,20 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/clusterhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projecthandler"
-	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/s3storagehandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/settingshandler"
-	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sshkeyhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/userhandler"
 )
 
 type HandlerRegistry struct {
-	authHandler      *authhandler.AuthHandler
-	clusterHandler   *clusterhandler.ClusterHandler
-	sessionHandler   *sessionhandler.SessionHandler
-	userHandler      *userhandler.UserHandler
-	projectHandler   *projecthandler.ProjectHandler
-	appHandler       *apphandler.AppHandler
-	s3StorageHandler *s3storagehandler.S3StorageHandler
-	sshKeyHandler    *sshkeyhandler.SSHKeyHandler
-	apiKeyHandler    *apikeyhandler.APIKeyHandler
-	settingsHandler  *settingshandler.SettingsHandler
+	authHandler     *authhandler.AuthHandler
+	clusterHandler  *clusterhandler.ClusterHandler
+	sessionHandler  *sessionhandler.SessionHandler
+	userHandler     *userhandler.UserHandler
+	projectHandler  *projecthandler.ProjectHandler
+	appHandler      *apphandler.AppHandler
+	apiKeyHandler   *apikeyhandler.APIKeyHandler
+	settingsHandler *settingshandler.SettingsHandler
 }
 
 func NewHandlerRegistry(
@@ -39,22 +35,18 @@ func NewHandlerRegistry(
 	userHandler *userhandler.UserHandler,
 	projectHandler *projecthandler.ProjectHandler,
 	appHandler *apphandler.AppHandler,
-	s3StorageHandler *s3storagehandler.S3StorageHandler,
-	sshKeyHandler *sshkeyhandler.SSHKeyHandler,
 	apiKeyHandler *apikeyhandler.APIKeyHandler,
 	settingsHandler *settingshandler.SettingsHandler,
 ) *HandlerRegistry {
 	return &HandlerRegistry{
-		authHandler:      authHandler,
-		clusterHandler:   clusterHandler,
-		sessionHandler:   sessionHandler,
-		userHandler:      userHandler,
-		projectHandler:   projectHandler,
-		appHandler:       appHandler,
-		s3StorageHandler: s3StorageHandler,
-		sshKeyHandler:    sshKeyHandler,
-		apiKeyHandler:    apiKeyHandler,
-		settingsHandler:  settingsHandler,
+		authHandler:     authHandler,
+		clusterHandler:  clusterHandler,
+		sessionHandler:  sessionHandler,
+		userHandler:     userHandler,
+		projectHandler:  projectHandler,
+		appHandler:      appHandler,
+		apiKeyHandler:   apiKeyHandler,
+		settingsHandler: settingsHandler,
 	}
 }
 
@@ -189,30 +181,6 @@ func (s *HTTPServer) registerRoutes() {
 		appGroup.PUT("/:appID/settings", s.handlerRegistry.appHandler.UpdateAppSettings)
 	}
 
-	s3StorageGroup := apiV1Group.Group("/s3-storages")
-	{ // s3 storage group
-		// Info
-		s3StorageGroup.GET("/base", s.handlerRegistry.s3StorageHandler.ListS3StorageBase)
-		s3StorageGroup.GET("/:ID", s.handlerRegistry.s3StorageHandler.GetS3Storage)
-		s3StorageGroup.GET("", s.handlerRegistry.s3StorageHandler.ListS3Storage)
-		// Creation & Update
-		s3StorageGroup.POST("", s.handlerRegistry.s3StorageHandler.CreateS3Storage)
-		s3StorageGroup.PUT("/:ID", s.handlerRegistry.s3StorageHandler.UpdateS3Storage)
-		s3StorageGroup.DELETE("/:ID", s.handlerRegistry.s3StorageHandler.DeleteS3Storage)
-	}
-
-	sshKeyGroup := apiV1Group.Group("/ssh-keys")
-	{ // ssh key group
-		// Info
-		sshKeyGroup.GET("/base", s.handlerRegistry.sshKeyHandler.ListSSHKeyBase)
-		sshKeyGroup.GET("/:ID", s.handlerRegistry.sshKeyHandler.GetSSHKey)
-		sshKeyGroup.GET("", s.handlerRegistry.sshKeyHandler.ListSSHKey)
-		// Creation & Update
-		sshKeyGroup.POST("", s.handlerRegistry.sshKeyHandler.CreateSSHKey)
-		sshKeyGroup.PUT("/:ID", s.handlerRegistry.sshKeyHandler.UpdateSSHKey)
-		sshKeyGroup.DELETE("/:ID", s.handlerRegistry.sshKeyHandler.DeleteSSHKey)
-	}
-
 	settingGroup := apiV1Group.Group("/settings")
 
 	{ // ssh key group
@@ -224,6 +192,28 @@ func (s *HTTPServer) registerRoutes() {
 		oauthGroup.POST("", s.handlerRegistry.settingsHandler.CreateOAuth)
 		oauthGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateOAuth)
 		oauthGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteOAuth)
+	}
+
+	{ // s3 storage group
+		s3StorageGroup := settingGroup.Group("/s3-storages")
+		// Info
+		s3StorageGroup.GET("/:ID", s.handlerRegistry.settingsHandler.GetS3Storage)
+		s3StorageGroup.GET("", s.handlerRegistry.settingsHandler.ListS3Storage)
+		// Creation & Update
+		s3StorageGroup.POST("", s.handlerRegistry.settingsHandler.CreateS3Storage)
+		s3StorageGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateS3Storage)
+		s3StorageGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteS3Storage)
+	}
+
+	{ // ssh key group
+		sshKeyGroup := settingGroup.Group("/ssh-keys")
+		// Info
+		sshKeyGroup.GET("/:ID", s.handlerRegistry.settingsHandler.GetSSHKey)
+		sshKeyGroup.GET("", s.handlerRegistry.settingsHandler.ListSSHKey)
+		// Creation & Update
+		sshKeyGroup.POST("", s.handlerRegistry.settingsHandler.CreateSSHKey)
+		sshKeyGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateSSHKey)
+		sshKeyGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteSSHKey)
 	}
 }
 

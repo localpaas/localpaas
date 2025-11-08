@@ -1,4 +1,4 @@
-package s3storageuc
+package sshkeyuc
 
 import (
 	"context"
@@ -7,18 +7,22 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/s3storageuc/s3storagedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc/sshkeydto"
 )
 
-func (uc *S3StorageUC) ListS3Storage(
+func (uc *SSHKeyUC) ListSSHKey(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *s3storagedto.ListS3StorageReq,
-) (*s3storagedto.ListS3StorageResp, error) {
+	req *sshkeydto.ListSSHKeyReq,
+) (*sshkeydto.ListSSHKeyResp, error) {
 	listOpts := []bunex.SelectQueryOption{
-		bunex.SelectWhere("setting.type = ?", base.SettingTypeS3Storage),
+		bunex.SelectWhere("setting.type = ?", base.SettingTypeSSHKey),
 	}
 
+	if len(req.Status) > 0 {
+		listOpts = append(listOpts,
+			bunex.SelectWhere("setting.status IN (?)", bunex.In(req.Status)))
+	}
 	if req.Search != "" {
 		keyword := bunex.MakeLikeOpStr(req.Search, true)
 		listOpts = append(listOpts,
@@ -33,12 +37,12 @@ func (uc *S3StorageUC) ListS3Storage(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := s3storagedto.TransformS3Storages(settings)
+	resp, err := sshkeydto.TransformSSHKeys(settings)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &s3storagedto.ListS3StorageResp{
+	return &sshkeydto.ListSSHKeyResp{
 		Meta: &basedto.Meta{Page: paging},
 		Data: resp,
 	}, nil

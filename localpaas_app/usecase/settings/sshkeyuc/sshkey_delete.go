@@ -1,4 +1,4 @@
-package s3storageuc
+package sshkeyuc
 
 import (
 	"context"
@@ -9,24 +9,24 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/s3storageuc/s3storagedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc/sshkeydto"
 	"github.com/localpaas/localpaas/pkg/timeutil"
 )
 
-func (uc *S3StorageUC) DeleteS3Storage(
+func (uc *SSHKeyUC) DeleteSSHKey(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *s3storagedto.DeleteS3StorageReq,
-) (*s3storagedto.DeleteS3StorageResp, error) {
+	req *sshkeydto.DeleteSSHKeyReq,
+) (*sshkeydto.DeleteSSHKeyResp, error) {
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
-		s3storageData := &deleteS3StorageData{}
-		err := uc.loadS3StorageDataForDelete(ctx, db, req, s3storageData)
+		sshKeyData := &deleteSSHKeyData{}
+		err := uc.loadSSHKeyDataForDelete(ctx, db, req, sshKeyData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
 
-		persistingData := &persistingS3StorageData{}
-		uc.prepareDeletingS3Storage(s3storageData, persistingData)
+		persistingData := &persistingSSHKeyData{}
+		uc.prepareDeletingSSHKey(sshKeyData, persistingData)
 
 		return uc.persistData(ctx, db, persistingData)
 	})
@@ -34,18 +34,18 @@ func (uc *S3StorageUC) DeleteS3Storage(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &s3storagedto.DeleteS3StorageResp{}, nil
+	return &sshkeydto.DeleteSSHKeyResp{}, nil
 }
 
-type deleteS3StorageData struct {
+type deleteSSHKeyData struct {
 	Setting *entity.Setting
 }
 
-func (uc *S3StorageUC) loadS3StorageDataForDelete(
+func (uc *SSHKeyUC) loadSSHKeyDataForDelete(
 	ctx context.Context,
 	db database.IDB,
-	req *s3storagedto.DeleteS3StorageReq,
-	data *deleteS3StorageData,
+	req *sshkeydto.DeleteSSHKeyReq,
+	data *deleteSSHKeyData,
 ) error {
 	setting, err := uc.settingRepo.GetByID(ctx, db, req.ID,
 		bunex.SelectFor("UPDATE OF setting"),
@@ -58,9 +58,9 @@ func (uc *S3StorageUC) loadS3StorageDataForDelete(
 	return nil
 }
 
-func (uc *S3StorageUC) prepareDeletingS3Storage(
-	data *deleteS3StorageData,
-	persistingData *persistingS3StorageData,
+func (uc *SSHKeyUC) prepareDeletingSSHKey(
+	data *deleteSSHKeyData,
+	persistingData *persistingSSHKeyData,
 ) {
 	setting := data.Setting
 	setting.DeletedAt = timeutil.NowUTC()

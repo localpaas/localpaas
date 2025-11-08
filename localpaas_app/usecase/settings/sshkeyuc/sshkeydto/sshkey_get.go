@@ -36,12 +36,6 @@ type SSHKeyResp struct {
 	ProjectAccesses []*SSHKeyProjectAccessResp `json:"projectAccesses"`
 }
 
-type SSHKeyBaseResp struct {
-	ID         string `json:"id"`
-	Name       string `json:"name"`
-	PrivateKey string `json:"privateKey,omitempty"`
-}
-
 type SSHKeyProjectAccessResp struct {
 	ID          string                 `json:"id"`
 	Name        string                 `json:"name"`
@@ -102,15 +96,4 @@ func TransformSSHKeyObjectAccesses(accesses []*entity.ACLPermission) (
 		}
 	}
 	return resp, nil
-}
-
-func TransformSSHKeyBase(setting *entity.Setting) (resp *SSHKeyBaseResp, err error) {
-	if err = copier.Copy(&resp, &setting); err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-	return resp, nil
-}
-
-func TransformSSHKeysBase(settings []*entity.Setting) ([]*SSHKeyBaseResp, error) {
-	return basedto.TransformObjectSlice(settings, TransformSSHKeyBase) //nolint:wrapcheck
 }

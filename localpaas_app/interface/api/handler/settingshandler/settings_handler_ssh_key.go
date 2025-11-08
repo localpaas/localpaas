@@ -8,29 +8,29 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc/oauthdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc/sshkeydto"
 )
 
 // To keep `apperrors` pkg imported and swag gen won't fail
 type _ *apperrors.ErrorInfo
 
-// ListOAuth Lists oauth settings
-// @Summary Lists oauth settings
-// @Description Lists oauth settings
-// @Tags    settings_oauth
+// ListSSHKey Lists ssh-key settings
+// @Summary Lists ssh-key settings
+// @Description Lists ssh-key settings
+// @Tags    settings_ssh_key
 // @Produce json
-// @Id      listOAuthSettings
+// @Id      listSSHKeySettings
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
 // @Param   sort query string false "`sort=[-]field1|field2...`"
-// @Success 200 {object} oauthdto.ListOAuthResp
+// @Success 200 {object} sshkeydto.ListSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /settings/oauth [get]
-func (h *SettingsHandler) ListOAuth(ctx *gin.Context) {
+// @Router  /settings/ssh-keys [get]
+func (h *SettingsHandler) ListSSHKey(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeOAuth,
+		ResourceType: base.ResourceTypeSSHKey,
 		Action:       base.ActionTypeRead,
 	})
 	if err != nil {
@@ -38,13 +38,13 @@ func (h *SettingsHandler) ListOAuth(ctx *gin.Context) {
 		return
 	}
 
-	req := oauthdto.NewListOAuthReq()
+	req := sshkeydto.NewListSSHKeyReq()
 	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.oauthUC.ListOAuth(h.RequestCtx(ctx), auth, req)
+	resp, err := h.sshKeyUC.ListSSHKey(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -53,18 +53,18 @@ func (h *SettingsHandler) ListOAuth(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
-// GetOAuth Gets oauth setting details
-// @Summary Gets oauth setting details
-// @Description Gets oauth setting details
-// @Tags    settings_oauth
+// GetSSHKey Gets ssh-key setting details
+// @Summary Gets ssh-key setting details
+// @Description Gets ssh-key setting details
+// @Tags    settings_ssh_key
 // @Produce json
-// @Id      getOAuthSetting
+// @Id      getSSHKeySetting
 // @Param   ID path string true "setting ID"
-// @Success 200 {object} oauthdto.GetOAuthResp
+// @Success 200 {object} sshkeydto.GetSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /settings/oauth/{ID} [get]
-func (h *SettingsHandler) GetOAuth(ctx *gin.Context) {
+// @Router  /settings/ssh-keys/{ID} [get]
+func (h *SettingsHandler) GetSSHKey(ctx *gin.Context) {
 	id, err := h.ParseStringParam(ctx, "ID")
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -72,7 +72,7 @@ func (h *SettingsHandler) GetOAuth(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeOAuth,
+		ResourceType: base.ResourceTypeSSHKey,
 		ResourceID:   id,
 		Action:       base.ActionTypeRead,
 	})
@@ -81,14 +81,14 @@ func (h *SettingsHandler) GetOAuth(ctx *gin.Context) {
 		return
 	}
 
-	req := oauthdto.NewGetOAuthReq()
+	req := sshkeydto.NewGetSSHKeyReq()
 	req.ID = id
 	if err = h.ParseRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.oauthUC.GetOAuth(h.RequestCtx(ctx), auth, req)
+	resp, err := h.sshKeyUC.GetSSHKey(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -97,20 +97,20 @@ func (h *SettingsHandler) GetOAuth(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
-// CreateOAuth Creates a new oauth setting
-// @Summary Creates a new oauth setting
-// @Description Creates a new oauth setting
-// @Tags    settings_oauth
+// CreateSSHKey Creates a new ssh-key setting
+// @Summary Creates a new ssh-key setting
+// @Description Creates a new ssh-key setting
+// @Tags    settings_ssh_key
 // @Produce json
-// @Id      createOAuthSetting
-// @Param   body body oauthdto.CreateOAuthReq true "request data"
-// @Success 201 {object} oauthdto.CreateOAuthResp
+// @Id      createSSHKeySetting
+// @Param   body body sshkeydto.CreateSSHKeyReq true "request data"
+// @Success 201 {object} sshkeydto.CreateSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /settings/oauth [post]
-func (h *SettingsHandler) CreateOAuth(ctx *gin.Context) {
+// @Router  /settings/ssh-keys [post]
+func (h *SettingsHandler) CreateSSHKey(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeOAuth,
+		ResourceType: base.ResourceTypeSSHKey,
 		Action:       base.ActionTypeWrite,
 	})
 	if err != nil {
@@ -118,13 +118,13 @@ func (h *SettingsHandler) CreateOAuth(ctx *gin.Context) {
 		return
 	}
 
-	req := oauthdto.NewCreateOAuthReq()
+	req := sshkeydto.NewCreateSSHKeyReq()
 	if err := h.ParseJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.oauthUC.CreateOAuth(h.RequestCtx(ctx), auth, req)
+	resp, err := h.sshKeyUC.CreateSSHKey(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -133,18 +133,18 @@ func (h *SettingsHandler) CreateOAuth(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, resp)
 }
 
-// UpdateOAuth Updates oauth
-// @Summary Updates oauth
-// @Description Updates oauth
-// @Tags    settings_oauth
+// UpdateSSHKey Updates ssh-key
+// @Summary Updates ssh-key
+// @Description Updates ssh-key
+// @Tags    settings_ssh_key
 // @Produce json
-// @Id      updateOAuthSetting
+// @Id      updateSSHKeySetting
 // @Param   ID path string true "setting ID"
-// @Success 200 {object} oauthdto.UpdateOAuthResp
+// @Success 200 {object} sshkeydto.UpdateSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /settings/oauth/{ID} [put]
-func (h *SettingsHandler) UpdateOAuth(ctx *gin.Context) {
+// @Router  /settings/ssh-keys/{ID} [put]
+func (h *SettingsHandler) UpdateSSHKey(ctx *gin.Context) {
 	id, err := h.ParseStringParam(ctx, "ID")
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -152,7 +152,7 @@ func (h *SettingsHandler) UpdateOAuth(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeOAuth,
+		ResourceType: base.ResourceTypeSSHKey,
 		ResourceID:   id,
 		Action:       base.ActionTypeWrite,
 	})
@@ -161,14 +161,14 @@ func (h *SettingsHandler) UpdateOAuth(ctx *gin.Context) {
 		return
 	}
 
-	req := oauthdto.NewUpdateOAuthReq()
+	req := sshkeydto.NewUpdateSSHKeyReq()
 	req.ID = id
 	if err := h.ParseJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.oauthUC.UpdateOAuth(h.RequestCtx(ctx), auth, req)
+	resp, err := h.sshKeyUC.UpdateSSHKey(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -177,18 +177,18 @@ func (h *SettingsHandler) UpdateOAuth(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
-// DeleteOAuth Deletes oauth setting
-// @Summary Deletes oauth setting
-// @Description Deletes oauth setting
-// @Tags    settings_oauth
+// DeleteSSHKey Deletes sshkey setting
+// @Summary Deletes sshkey setting
+// @Description Deletes sshkey setting
+// @Tags    settings_ssh_key
 // @Produce json
-// @Id      deleteOAuthSetting
+// @Id      deleteSSHKeySetting
 // @Param   ID path string true "setting ID"
-// @Success 200 {object} oauthdto.DeleteOAuthResp
+// @Success 200 {object} sshkeydto.DeleteSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /settings/oauth/{ID} [delete]
-func (h *SettingsHandler) DeleteOAuth(ctx *gin.Context) {
+// @Router  /settings/ssh-keys/{ID} [delete]
+func (h *SettingsHandler) DeleteSSHKey(ctx *gin.Context) {
 	id, err := h.ParseStringParam(ctx, "ID")
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -196,7 +196,7 @@ func (h *SettingsHandler) DeleteOAuth(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeOAuth,
+		ResourceType: base.ResourceTypeSSHKey,
 		ResourceID:   id,
 		Action:       base.ActionTypeDelete,
 	})
@@ -205,14 +205,14 @@ func (h *SettingsHandler) DeleteOAuth(ctx *gin.Context) {
 		return
 	}
 
-	req := oauthdto.NewDeleteOAuthReq()
+	req := sshkeydto.NewDeleteSSHKeyReq()
 	req.ID = id
 	if err := h.ParseRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.oauthUC.DeleteOAuth(h.RequestCtx(ctx), auth, req)
+	resp, err := h.sshKeyUC.DeleteSSHKey(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
