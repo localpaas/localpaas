@@ -24,6 +24,7 @@ const (
 	ResourceTypeProject    ResourceType = "project"
 	ResourceTypeApp        ResourceType = "app"
 	ResourceTypeS3Storage  ResourceType = "s3-storage"
+	ResourceTypeOAuth      ResourceType = "oauth"
 	ResourceTypeSSHKey     ResourceType = "ssh-key"
 	ResourceTypeAPIKey     ResourceType = "api-key"
 )

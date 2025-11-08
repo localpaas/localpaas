@@ -24,4 +24,5 @@ type GetLoginOptionsResp struct {
 type LoginOptionsResp struct {
 	AllowLoginWithGitHub bool `json:"allowLoginWithGitHub"`
 	AllowLoginWithGitLab bool `json:"allowLoginWithGitLab"`
+	AllowLoginWithGoogle bool `json:"allowLoginWithGoogle"`
 }

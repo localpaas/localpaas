@@ -8,6 +8,7 @@ const (
 	SettingTypeDeployment = SettingType("deployment")
 	SettingTypeEnvVar     = SettingType("env-var")
 	SettingTypeS3Storage  = SettingType("s3-storage")
+	SettingTypeOAuth      = SettingType("oauth")
 	SettingTypeSSHKey     = SettingType("ssh-key")
 	SettingTypeAPIKey     = SettingType("api-key")
 )

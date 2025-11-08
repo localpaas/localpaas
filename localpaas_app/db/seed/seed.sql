@@ -71,4 +71,14 @@ VALUES ('user', '01JAB9XED0GTXBSQDFVYAJ8WA1', 'project', '01JAB9XED0GTXBSQDFVYAJ
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('user', '01JAB9XED0GTXBSQDFVYAJ8WA2', 'app', '01JAB9XED0GTXBSQDFVYAJ8WD1', false, false, false,
         '2025-10-01 00:00:00', '2025-10-01 00:00:00')
-    ON CONFLICT DO NOTHING;
+ON CONFLICT DO NOTHING;
+
+-- Settings: OAuth
+INSERT INTO settings (id, type, name, status, data, created_at, updated_at)
+VALUES ('01JAB9XED0GTXBSQDFVYAJ8WE1', 'oauth', 'github', 'active',
+        '{"clientId":"Ov23liygYjjhFUdsdjRm","clientSecret":"27fdaefa61dbcf11935921eb7376cc66693453e4","org":"localpaas-test","redirectURL":"https://app.dev.localpaas.com/oauth/callback/github"}',
+        '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
+       ('01JAB9XED0GTXBSQDFVYAJ8WE2', 'oauth', 'gitlab', 'active',
+        '{"clientId":"clientId","clientSecret":"clientSecret","org":"localpaas-test","redirectURL":"https://app.dev.localpaas.com/oauth/callback/gitlab"}',
+        '2025-10-01 00:00:00', '2025-10-01 00:00:00')
+ON CONFLICT DO NOTHING;

@@ -14,6 +14,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projecthandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/s3storagehandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/settingshandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sshkeyhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/userhandler"
 )
@@ -28,6 +29,7 @@ type HandlerRegistry struct {
 	s3StorageHandler *s3storagehandler.S3StorageHandler
 	sshKeyHandler    *sshkeyhandler.SSHKeyHandler
 	apiKeyHandler    *apikeyhandler.APIKeyHandler
+	settingsHandler  *settingshandler.SettingsHandler
 }
 
 func NewHandlerRegistry(
@@ -40,6 +42,7 @@ func NewHandlerRegistry(
 	s3StorageHandler *s3storagehandler.S3StorageHandler,
 	sshKeyHandler *sshkeyhandler.SSHKeyHandler,
 	apiKeyHandler *apikeyhandler.APIKeyHandler,
+	settingsHandler *settingshandler.SettingsHandler,
 ) *HandlerRegistry {
 	return &HandlerRegistry{
 		authHandler:      authHandler,
@@ -51,6 +54,7 @@ func NewHandlerRegistry(
 		s3StorageHandler: s3StorageHandler,
 		sshKeyHandler:    sshKeyHandler,
 		apiKeyHandler:    apiKeyHandler,
+		settingsHandler:  settingsHandler,
 	}
 }
 
@@ -207,6 +211,19 @@ func (s *HTTPServer) registerRoutes() {
 		sshKeyGroup.POST("", s.handlerRegistry.sshKeyHandler.CreateSSHKey)
 		sshKeyGroup.PUT("/:ID", s.handlerRegistry.sshKeyHandler.UpdateSSHKey)
 		sshKeyGroup.DELETE("/:ID", s.handlerRegistry.sshKeyHandler.DeleteSSHKey)
+	}
+
+	settingGroup := apiV1Group.Group("/settings")
+
+	{ // ssh key group
+		oauthGroup := settingGroup.Group("/oauth")
+		// Info
+		oauthGroup.GET("/:ID", s.handlerRegistry.settingsHandler.GetOAuth)
+		oauthGroup.GET("", s.handlerRegistry.settingsHandler.ListOAuth)
+		// Creation & Update
+		oauthGroup.POST("", s.handlerRegistry.settingsHandler.CreateOAuth)
+		oauthGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateOAuth)
+		oauthGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteOAuth)
 	}
 }
 
