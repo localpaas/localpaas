@@ -70,6 +70,8 @@ func (s *HTTPServer) registerRoutes() {
 	s.engine.Use(StaticServe("/files/user/photo", localFile(s.config.App.DataPathUserPhoto(), false)))
 	// Serve the static files from the "dist-dashboard" directory at the root URL "/"
 	s.engine.Use(StaticServe("/", localFile("./dist-dashboard", true)))
+	// Final redirection to redirect any path to `/next=<path>` in case no matching static file found
+	s.engine.Use(StaticServeRedirect("/"))
 
 	// INTERNAL ROUTES
 	basicAuthMdlw := gin.BasicAuth(gin.Accounts{

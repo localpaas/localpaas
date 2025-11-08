@@ -74,3 +74,18 @@ func (l *localFileSystem) Exists(prefix string, filepath string) bool {
 	}
 	return false
 }
+
+func StaticServeRedirect(urlPrefix string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		requestPath := c.Request.URL.Path
+		for _, v := range notStaticPrefixes {
+			if strings.HasPrefix(requestPath, v) {
+				return
+			}
+		}
+		requestPath = strings.TrimPrefix(requestPath, urlPrefix)
+		redirect := "/?next=" + requestPath + "?" + c.Request.URL.RawQuery
+		c.Redirect(http.StatusFound, redirect)
+		c.Abort()
+	}
+}
