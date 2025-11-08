@@ -33,10 +33,6 @@ func (uc *UserUC) CompleteMFATotpSetup(
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
-		if user.TotpSecret != "" {
-			return apperrors.New(apperrors.ErrActionNotAllowed).
-				WithMsgLog("user mfa authentication is already enabled")
-		}
 		if user.SecurityOption == base.UserSecurityEnforceSSO {
 			return apperrors.New(apperrors.ErrActionNotAllowed).
 				WithMsgLog("user authentication method is enforce-sso")

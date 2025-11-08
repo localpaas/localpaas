@@ -31,6 +31,11 @@ func (uc *UserUC) BeginMFATotpSetup(
 			WithMsgLog("user authentication method is enforce-sso")
 	}
 
+	// Verify current passcode if 2FA is enabled on user
+	if user.TotpSecret != "" && !totp.VerifyPasscode(req.CurrentPasscode, user.TotpSecret) {
+		return nil, apperrors.New(apperrors.ErrPasscodeMismatched)
+	}
+
 	secret, qrCode, err := totp.GenerateSecretAndQRCode(qrCodeImageSize)
 	if err != nil {
 		return nil, apperrors.Wrap(err)

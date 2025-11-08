@@ -1,11 +1,14 @@
 package userdto
 
 import (
+	vld "github.com/tiendc/go-validator"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 )
 
 type BeginMFATotpSetupReq struct {
+	CurrentPasscode string `json:"currentPasscode"`
 }
 
 func NewBeginMFATotpSetupReq() *BeginMFATotpSetupReq {
@@ -13,7 +16,10 @@ func NewBeginMFATotpSetupReq() *BeginMFATotpSetupReq {
 }
 
 func (req *BeginMFATotpSetupReq) Validate() apperrors.ValidationErrors {
-	return nil
+	var validators []vld.Validator
+	validators = append(validators, basedto.ValidateStr(&req.CurrentPasscode, false,
+		minPasscodeLen, maxPasscodeLen, "currentPasscode")...)
+	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
 type BeginMFATotpSetupResp struct {

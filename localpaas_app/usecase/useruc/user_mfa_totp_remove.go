@@ -33,6 +33,10 @@ func (uc *UserUC) RemoveMFATotp(
 			return apperrors.New(apperrors.ErrActionNotAllowed).
 				WithMsgLog("user authentication method is enforce-sso")
 		}
+		if user.SecurityOption == base.UserSecurityPassword2FA {
+			return apperrors.New(apperrors.ErrActionNotAllowed).
+				WithMsgLog("2FA is required by admin")
+		}
 
 		// Verify passcode
 		if !totp.VerifyPasscode(req.Passcode, user.TotpSecret) {
