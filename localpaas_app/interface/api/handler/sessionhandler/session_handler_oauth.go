@@ -34,7 +34,7 @@ type _ *apperrors.ErrorInfo
 // @Success 302 "on success redirect to provider OAuth URL"
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /sso/auth/{provider} [get]
+// @Router  /auth/sso/{provider} [get]
 func (h *SessionHandler) SSOOAuthBegin(ctx *gin.Context) {
 	provider, err := h.ParseStringParam(ctx, "provider")
 	if err != nil {
@@ -81,8 +81,8 @@ func (h *SessionHandler) SSOOAuthBegin(ctx *gin.Context) {
 // @Success 302 "on success redirect to the dashboard page"
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /sso/auth/callback/{provider} [get]
-// @Router  /sso/auth/callback/{provider} [post]
+// @Router  /auth/sso/callback/{provider} [get]
+// @Router  /auth/sso/callback/{provider} [post]
 func (h *SessionHandler) SSOOAuthCallback(ctx *gin.Context) {
 	provider, err := h.ParseStringParam(ctx, "provider")
 	if err != nil {

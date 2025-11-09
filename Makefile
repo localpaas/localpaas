@@ -94,5 +94,6 @@ seed-data-with-clear:
 dev-deploy:
 	git checkout main
 	git pull
+	git push origin --delete dev-v0.1.0 # delete tag in remote
 	git tag dev-v0.1.0 --force
 	git push origin dev-v0.1.0 --force
