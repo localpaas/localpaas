@@ -54,6 +54,7 @@ func (uc *S3StorageUC) loadS3StorageDataForUpdate(
 ) error {
 	setting, err := uc.settingRepo.GetByID(ctx, db, req.ID,
 		bunex.SelectFor("UPDATE OF setting"),
+		bunex.SelectWhere("setting.type = ?", base.SettingTypeS3Storage),
 		bunex.SelectRelation("ObjectAccesses",
 			bunex.SelectWhere("acl_permission.subject_type IN (?)", bunex.In([]base.SubjectType{
 				base.SubjectTypeProject, base.SubjectTypeApp,
@@ -89,7 +90,7 @@ func (uc *S3StorageUC) prepareUpdatingS3Storage(
 	}
 
 	//nolint:nestif
-	if req.AccessKeyID != nil || req.SecretAccessKey != nil || req.Region != nil || req.Bucket != nil {
+	if req.AccessKeyID != nil || req.SecretKey != nil || req.Region != nil || req.Bucket != nil {
 		s3Storage, err := setting.ParseS3Storage(false)
 		if err != nil {
 			return apperrors.Wrap(err)
@@ -100,15 +101,20 @@ func (uc *S3StorageUC) prepareUpdatingS3Storage(
 		if req.AccessKeyID != nil {
 			s3Storage.AccessKeyID = *req.AccessKeyID
 		}
-		// TODO: encrypt the data (secret access key)
-		if req.SecretAccessKey != nil {
-			s3Storage.SecretAccessKey = *req.SecretAccessKey
+		if req.SecretKey != nil {
+			s3Storage.SecretKey = *req.SecretKey
+			s3Storage.Salt = ""
 		}
 		if req.Region != nil {
 			s3Storage.Region = *req.Region
 		}
 		if req.Bucket != nil {
 			s3Storage.Bucket = *req.Bucket
+		}
+
+		err = s3Storage.Encrypt()
+		if err != nil {
+			return apperrors.Wrap(err)
 		}
 
 		err = setting.SetData(s3Storage)

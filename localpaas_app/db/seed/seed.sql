@@ -76,12 +76,12 @@ ON CONFLICT DO NOTHING;
 -- Settings: OAuth
 INSERT INTO settings (id, type, name, status, data, created_at, updated_at)
 VALUES ('01JAB9XED0GTXBSQDFVYAJ8WE1', 'oauth', 'github', 'active',
-        '{"clientId":"Iv23liObQsEr3GigALXt","clientSecret":"e8958ee1d82c58c6180ac2a09b81fcc87784d675","org":"localpaas-test"}',
+        '{"org": "localpaas-test", "salt": "27AyosacFwi8CA==", "clientId": "Iv23liObQsEr3GigALXt", "clientSecret": "EsRjd1QQkZ8YmKOqWMUM2iMvrY+MWShSv9CV5whZbXKq6wjB8H36U2oLFBLbWD06hJ+DUSzvUmEWjk2XrxRlkyN4MV4="}',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WE2', 'oauth', 'gitlab', 'active',
-        '{"clientId":"9a7d1422b34a79e83d74bee66448854d97452a2b6a7f05a74870f351f837dbbe","clientSecret":"gloas-55930aacdf3c35c5b32c5b27086b20285127406eb0bf41f6b2e3df7c85cca27c","org":"test-app-1","scopes":["read_user","profile","email"]}',
+        '{"org": "localpaas-test", "salt": "k+UQvPiR1yWRow==", "scopes": ["read_user", "openid", "profile", "email"], "clientId": "9a7d1422b34a79e83d74bee66448854d97452a2b6a7f05a74870f351f837dbbe", "clientSecret": "K8bthSPszSGA5YM2g5pNwreaNpFrYFn0TIOq+aJInN7vwrdOBJ+sAd1zy+RoRlr+CpiphDrPn77wn6hdJZl9tH2gNj/8Y8T07jhfibmKZpuFwRvbQOk01bcYQBWo8aXG8QY="}',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WE3', 'oauth', 'gitlab-custom', 'active',
-        '{"clientId":"9a7d1422b34a79e83d74bee66448854d97452a2b6a7f05a74870f351f837dbbe","clientSecret":"gloas-55930aacdf3c35c5b32c5b27086b20285127406eb0bf41f6b2e3df7c85cca27c","org":"test-app-1","scopes":["read_user","profile","email"],"authURL":"https://gitlab.com/oauth/authorize","tokenURL":"https://gitlab.com/oauth/token","profileURL":"https://gitlab.com/api/v3/user"}',
+        '{"org": "localpaas-test", "salt": "k+UQvPiR1yWRow==", "scopes": ["read_user", "openid", "profile", "email"], "clientId": "9a7d1422b34a79e83d74bee66448854d97452a2b6a7f05a74870f351f837dbbe", "clientSecret": "K8bthSPszSGA5YM2g5pNwreaNpFrYFn0TIOq+aJInN7vwrdOBJ+sAd1zy+RoRlr+CpiphDrPn77wn6hdJZl9tH2gNj/8Y8T07jhfibmKZpuFwRvbQOk01bcYQBWo8aXG8QY="}',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00')
 ON CONFLICT DO NOTHING;

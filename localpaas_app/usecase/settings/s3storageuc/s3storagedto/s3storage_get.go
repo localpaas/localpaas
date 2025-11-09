@@ -33,10 +33,11 @@ type S3StorageResp struct {
 	ID              string                        `json:"id"`
 	Name            string                        `json:"name"`
 	AccessKeyID     string                        `json:"accessKeyId"`
-	SecretAccessKey string                        `json:"secretAccessKey,omitempty"`
+	SecretKey       string                        `json:"secretKey,omitempty"`
 	Region          string                        `json:"region"`
 	Bucket          string                        `json:"bucket"`
 	ProjectAccesses []*S3StorageProjectAccessResp `json:"projectAccesses"`
+	Encrypted       bool                          `json:"encrypted"`
 }
 
 type S3StorageProjectAccessResp struct {
@@ -52,17 +53,18 @@ type S3StorageAppAccessResp struct {
 	Allowed bool   `json:"allowed"`
 }
 
-func TransformS3Storage(setting *entity.Setting) (resp *S3StorageResp, err error) {
+func TransformS3Storage(setting *entity.Setting, decrypt bool) (resp *S3StorageResp, err error) {
 	if err = copier.Copy(&resp, &setting); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	s3Config, err := setting.ParseS3Storage(false)
+	s3Config, err := setting.ParseS3Storage(decrypt)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 	if err = copier.Copy(&resp, &s3Config); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+	resp.Encrypted = s3Config.IsEncrypted()
 	resp.ProjectAccesses, err = TransformS3StorageObjectAccesses(setting.ObjectAccesses)
 	if err != nil {
 		return nil, apperrors.Wrap(err)

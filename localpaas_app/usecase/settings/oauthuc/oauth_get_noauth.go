@@ -38,7 +38,7 @@ func (uc *OAuthUC) GetOAuthNoAuth(
 		return nil, apperrors.NewNotFound("OAuth")
 	}
 
-	resp, err := oauthdto.TransformOAuth(settings[0], uc.GetOAuthBaseCallbackURL())
+	resp, err := oauthdto.TransformOAuth(settings[0], uc.GetOAuthBaseCallbackURL(), true)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

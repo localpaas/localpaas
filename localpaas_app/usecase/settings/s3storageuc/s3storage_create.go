@@ -88,14 +88,18 @@ func (uc *S3StorageUC) preparePersistingS3Storage(
 		UpdatedAt: timeNow,
 	}
 
-	// TODO: encrypt the data (secret access key)
 	s3Storage := &entity.S3Storage{
-		AccessKeyID:     req.AccessKeyID,
-		SecretAccessKey: req.SecretAccessKey,
-		Region:          req.Region,
-		Bucket:          req.Bucket,
+		AccessKeyID: req.AccessKeyID,
+		SecretKey:   req.SecretKey,
+		Region:      req.Region,
+		Bucket:      req.Bucket,
 	}
-	err := setting.SetData(s3Storage)
+	err := s3Storage.Encrypt()
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	err = setting.SetData(s3Storage)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

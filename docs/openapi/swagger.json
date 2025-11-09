@@ -4881,6 +4881,9 @@
           "clientSecret" : {
             "type" : "string"
           },
+          "encrypted" : {
+            "type" : "boolean"
+          },
           "id" : {
             "type" : "string"
           },
@@ -4903,7 +4906,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "authURL", "callbackURL", "clientId", "clientSecret", "id", "name", "organization", "profileURL", "scopes", "tokenURL" ],
+        "required" : [ "authURL", "callbackURL", "clientId", "clientSecret", "encrypted", "id", "name", "organization", "profileURL", "scopes", "tokenURL" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.UpdateOAuthResp" : {
@@ -4935,11 +4938,11 @@
           "region" : {
             "type" : "string"
           },
-          "secretAccessKey" : {
+          "secretKey" : {
             "type" : "string"
           }
         },
-        "required" : [ "accessKeyId", "bucket", "name", "projectAccesses", "region", "secretAccessKey" ],
+        "required" : [ "accessKeyId", "bucket", "name", "projectAccesses", "region", "secretKey" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.CreateS3StorageResp" : {
@@ -5065,6 +5068,9 @@
           "bucket" : {
             "type" : "string"
           },
+          "encrypted" : {
+            "type" : "boolean"
+          },
           "id" : {
             "type" : "string"
           },
@@ -5080,11 +5086,11 @@
           "region" : {
             "type" : "string"
           },
-          "secretAccessKey" : {
+          "secretKey" : {
             "type" : "string"
           }
         },
-        "required" : [ "accessKeyId", "bucket", "id", "name", "projectAccesses", "region" ],
+        "required" : [ "accessKeyId", "bucket", "encrypted", "id", "name", "projectAccesses", "region" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.UpdateS3StorageResp" : {
@@ -5231,6 +5237,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.SSHKeyResp" : {
         "properties" : {
+          "encrypted" : {
+            "type" : "boolean"
+          },
           "id" : {
             "type" : "string"
           },
@@ -5247,7 +5256,7 @@
             "type" : "array"
           }
         },
-        "required" : [ "id", "name", "projectAccesses" ],
+        "required" : [ "encrypted", "id", "name", "projectAccesses" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.UpdateSSHKeyResp" : {

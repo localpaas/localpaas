@@ -15,7 +15,7 @@ type UpdateS3StorageReq struct {
 type S3StoragePartialReq struct {
 	Name            *string                      `json:"name"`
 	AccessKeyID     *string                      `json:"accessKeyId"`
-	SecretAccessKey *string                      `json:"secretAccessKey"`
+	SecretKey       *string                      `json:"secretKey"`
 	Region          *string                      `json:"region"`
 	Bucket          *string                      `json:"bucket"`
 	ProjectAccesses []*S3StorageProjectAccessReq `json:"projectAccesses"`
@@ -27,7 +27,7 @@ func (req *S3StoragePartialReq) validate(field string) (res []vld.Validator) {
 	}
 	res = append(res, validateS3StorageName(req.Name, false, field+"name")...)
 	res = append(res, basedto.ValidateStr(req.AccessKeyID, false, 1, maxKeyLen, "accessKeyId")...)
-	res = append(res, basedto.ValidateStr(req.SecretAccessKey, false, 1, maxKeyLen, "secretAccessKey")...)
+	res = append(res, basedto.ValidateStr(req.SecretKey, false, 1, maxKeyLen, "secretKey")...)
 	res = append(res, basedto.ValidateStr(req.Region, false, 1, maxKeyLen, "region")...)
 	res = append(res, basedto.ValidateStr(req.Bucket, false, 1, maxKeyLen, "bucket")...)
 	return res

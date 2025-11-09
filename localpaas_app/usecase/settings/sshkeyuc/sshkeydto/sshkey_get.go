@@ -34,6 +34,7 @@ type SSHKeyResp struct {
 	Name            string                     `json:"name"`
 	PrivateKey      string                     `json:"privateKey,omitempty"`
 	ProjectAccesses []*SSHKeyProjectAccessResp `json:"projectAccesses"`
+	Encrypted       bool                       `json:"encrypted"`
 }
 
 type SSHKeyProjectAccessResp struct {
@@ -49,17 +50,18 @@ type SSHKeyAppAccessResp struct {
 	Allowed bool   `json:"allowed"`
 }
 
-func TransformSSHKey(setting *entity.Setting) (resp *SSHKeyResp, err error) {
+func TransformSSHKey(setting *entity.Setting, decrypt bool) (resp *SSHKeyResp, err error) {
 	if err = copier.Copy(&resp, &setting); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	sshKey, err := setting.ParseSSHKey(false)
+	sshKey, err := setting.ParseSSHKey(decrypt)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 	if err = copier.Copy(&resp, &sshKey); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+	resp.Encrypted = sshKey.IsEncrypted()
 	resp.ProjectAccesses, err = TransformSSHKeyObjectAccesses(setting.ObjectAccesses)
 	if err != nil {
 		return nil, apperrors.Wrap(err)

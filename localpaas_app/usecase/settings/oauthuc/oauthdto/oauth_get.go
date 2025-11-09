@@ -39,14 +39,15 @@ type OAuthResp struct {
 	TokenURL     string   `json:"tokenURL"`
 	ProfileURL   string   `json:"profileURL"`
 	Scopes       []string `json:"scopes"`
+	Encrypted    bool     `json:"encrypted"`
 }
 
-func TransformOAuth(setting *entity.Setting, baseCallbackURL string) (resp *OAuthResp, err error) {
+func TransformOAuth(setting *entity.Setting, baseCallbackURL string, decrypt bool) (resp *OAuthResp, err error) {
 	if err = copier.Copy(&resp, &setting); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	config, err := setting.ParseOAuth()
+	config, err := setting.ParseOAuth(decrypt)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -56,6 +57,7 @@ func TransformOAuth(setting *entity.Setting, baseCallbackURL string) (resp *OAut
 
 	// Recalculate callbackURL for the oauth as it depends on the actual server address
 	resp.CallbackURL = baseCallbackURL + "/" + setting.Name
+	resp.Encrypted = config.IsEncrypted()
 
 	return resp, nil
 }

@@ -36,6 +36,14 @@ type ListS3StorageResp struct {
 	Data []*S3StorageResp `json:"data"`
 }
 
-func TransformS3Storages(settings []*entity.Setting) ([]*S3StorageResp, error) {
-	return basedto.TransformObjectSlice(settings, TransformS3Storage) //nolint:wrapcheck
+func TransformS3Storages(settings []*entity.Setting, decrypt bool) (resp []*S3StorageResp, err error) {
+	resp = make([]*S3StorageResp, 0, len(settings))
+	for _, setting := range settings {
+		item, err := TransformS3Storage(setting, decrypt)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		resp = append(resp, item)
+	}
+	return resp, nil
 }

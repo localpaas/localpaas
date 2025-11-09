@@ -37,7 +37,7 @@ func (uc *OAuthUC) ListOAuth(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := oauthdto.TransformOAuths(settings, uc.GetOAuthBaseCallbackURL())
+	resp, err := oauthdto.TransformOAuths(settings, uc.GetOAuthBaseCallbackURL(), false)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

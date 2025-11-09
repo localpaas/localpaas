@@ -7,7 +7,7 @@ import (
 
 type APIKey struct {
 	SecretKey    string          `json:"secretKey"`
-	Salt         string          `json:"salt"`
+	Salt         string          `json:"salt,omitempty"`
 	AccessAction base.ActionType `json:"accessAction,omitempty"`
 }
 

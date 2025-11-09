@@ -54,6 +54,7 @@ func (uc *SSHKeyUC) loadSSHKeyDataForUpdate(
 ) error {
 	setting, err := uc.settingRepo.GetByID(ctx, db, req.ID,
 		bunex.SelectFor("UPDATE OF setting"),
+		bunex.SelectWhere("setting.type = ?", base.SettingTypeSSHKey),
 		bunex.SelectRelation("ObjectAccesses",
 			bunex.SelectWhere("acl_permission.subject_type IN (?)", bunex.In([]base.SubjectType{
 				base.SubjectTypeProject, base.SubjectTypeApp,
@@ -97,10 +98,16 @@ func (uc *SSHKeyUC) prepareUpdatingSSHKey(
 		if sshKey == nil {
 			sshKey = &entity.SSHKey{}
 		}
-		// TODO: encrypt the data (secret access key)
 		if req.PrivateKey != nil {
 			sshKey.PrivateKey = *req.PrivateKey
+			sshKey.Salt = ""
 		}
+
+		err = sshKey.Encrypt()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+
 		err = setting.SetData(sshKey)
 		if err != nil {
 			return apperrors.Wrap(err)

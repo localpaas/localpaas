@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
@@ -49,6 +50,7 @@ func (uc *SSHKeyUC) loadSSHKeyDataForDelete(
 ) error {
 	setting, err := uc.settingRepo.GetByID(ctx, db, req.ID,
 		bunex.SelectFor("UPDATE OF setting"),
+		bunex.SelectWhere("setting.type = ?", base.SettingTypeSSHKey),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)

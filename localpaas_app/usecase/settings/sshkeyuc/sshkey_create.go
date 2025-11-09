@@ -88,11 +88,15 @@ func (uc *SSHKeyUC) preparePersistingSSHKey(
 		UpdatedAt: timeNow,
 	}
 
-	// TODO: encrypt the data (secret access key)
 	sshKey := &entity.SSHKey{
 		PrivateKey: req.PrivateKey,
 	}
-	err := setting.SetData(sshKey)
+	err := sshKey.Encrypt()
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	err = setting.SetData(sshKey)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

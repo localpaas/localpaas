@@ -29,7 +29,7 @@ func (uc *SSHKeyUC) GetSSHKey(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := sshkeydto.TransformSSHKey(setting)
+	resp, err := sshkeydto.TransformSSHKey(setting, true)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

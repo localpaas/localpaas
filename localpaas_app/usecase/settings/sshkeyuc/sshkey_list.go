@@ -37,7 +37,7 @@ func (uc *SSHKeyUC) ListSSHKey(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := sshkeydto.TransformSSHKeys(settings)
+	resp, err := sshkeydto.TransformSSHKeys(settings, false)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

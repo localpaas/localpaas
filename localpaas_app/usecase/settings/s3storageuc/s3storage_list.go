@@ -37,7 +37,7 @@ func (uc *S3StorageUC) ListS3Storage(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := s3storagedto.TransformS3Storages(settings)
+	resp, err := s3storagedto.TransformS3Storages(settings, false)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

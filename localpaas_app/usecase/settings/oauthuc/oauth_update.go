@@ -82,6 +82,11 @@ func (uc *OAuthUC) prepareUpdatingOAuth(
 		ProfileURL:   req.ProfileURL,
 		Scopes:       req.Scopes,
 	}
+	err = oauth.Encrypt()
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
 	err = setting.SetData(oauth)
 	if err != nil {
 		return apperrors.Wrap(err)

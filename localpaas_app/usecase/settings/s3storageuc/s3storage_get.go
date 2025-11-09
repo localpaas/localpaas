@@ -29,7 +29,7 @@ func (uc *S3StorageUC) GetS3Storage(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := s3storagedto.TransformS3Storage(setting)
+	resp, err := s3storagedto.TransformS3Storage(setting, true)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
