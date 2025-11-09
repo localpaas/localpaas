@@ -37,7 +37,7 @@ func (uc *SessionUC) CreateOAuthSession(
 		// User makes the first login to our service
 		timeNow := timeutil.NowUTC()
 		dbUser = &entity.User{
-			Email:          oauthUser.Email,
+			Email:          email,
 			FullName:       fullName,
 			Photo:          gofn.If(len(oauthUser.AvatarURL) < externalAvatarURLMaxLen, oauthUser.AvatarURL, ""), //nolint
 			SecurityOption: base.UserSecurityEnforceSSO,
