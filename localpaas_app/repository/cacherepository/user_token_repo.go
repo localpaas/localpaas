@@ -36,17 +36,20 @@ func (repo *userTokenRepo) Exist(ctx context.Context, userID, uid string) error 
 	return nil
 }
 
-func (repo *userTokenRepo) Set(
-	ctx context.Context,
-	userID, uid string,
-	exp time.Duration,
-) error {
-	//nolint:wrapcheck
-	return rediscache.Set(ctx, repo.client, repo.formatKey(userID, uid), rediscache.NewJSONValue(""), exp)
+func (repo *userTokenRepo) Set(ctx context.Context, userID, uid string, exp time.Duration) error {
+	err := rediscache.Set(ctx, repo.client, repo.formatKey(userID, uid), rediscache.NewJSONValue(""), exp)
+	if err != nil {
+		return apperrors.New(err)
+	}
+	return nil
 }
 
 func (repo *userTokenRepo) Del(ctx context.Context, userID, uid string) error {
-	return rediscache.Del(ctx, repo.client, repo.formatKey(userID, uid)) //nolint:wrapcheck
+	err := rediscache.Del(ctx, repo.client, repo.formatKey(userID, uid))
+	if err != nil {
+		return apperrors.New(err)
+	}
+	return nil
 }
 
 func (repo *userTokenRepo) DelAll(ctx context.Context, userID string) error {
@@ -57,7 +60,11 @@ func (repo *userTokenRepo) DelAll(ctx context.Context, userID string) error {
 	if len(keys) == 0 {
 		return nil
 	}
-	return rediscache.Del(ctx, repo.client, keys...) //nolint:wrapcheck
+	err = rediscache.Del(ctx, repo.client, keys...)
+	if err != nil {
+		return apperrors.New(err)
+	}
+	return nil
 }
 
 func (repo *userTokenRepo) formatKey(userID, uid string) string {

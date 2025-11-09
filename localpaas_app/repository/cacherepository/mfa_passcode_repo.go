@@ -7,6 +7,7 @@ import (
 
 	"github.com/redis/go-redis/v9"
 
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/entity/cacheentity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/rediscache"
 )
@@ -28,32 +29,48 @@ func NewMFAPasscodeRepo(client rediscache.Client) MFAPasscodeRepo {
 }
 
 func (repo *mfaPasscodeRepo) Get(ctx context.Context, userID string) (*cacheentity.MFAPasscode, error) {
-	//nolint:wrapcheck
-	return rediscache.Get(ctx, repo.client, repo.formatKey(userID), rediscache.NewJSONValue[*cacheentity.MFAPasscode])
+	resp, err := rediscache.Get(ctx, repo.client, repo.formatKey(userID),
+		rediscache.NewJSONValue[*cacheentity.MFAPasscode])
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return resp, nil
 }
 
 func (repo *mfaPasscodeRepo) TTL(ctx context.Context, userID string) (time.Duration, error) {
-	//nolint:wrapcheck
-	return repo.client.TTL(ctx, repo.formatKey(userID)).Result()
+	d, err := repo.client.TTL(ctx, repo.formatKey(userID)).Result()
+	if err != nil {
+		return 0, apperrors.Wrap(err)
+	}
+	return d, nil
 }
 
 func (repo *mfaPasscodeRepo) Set(ctx context.Context, userID string, passcode *cacheentity.MFAPasscode,
 	exp time.Duration) error {
-	//nolint:wrapcheck
-	return rediscache.Set(ctx, repo.client, repo.formatKey(userID), rediscache.NewJSONValue(passcode), exp)
+	err := rediscache.Set(ctx, repo.client, repo.formatKey(userID), rediscache.NewJSONValue(passcode), exp)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
 }
 
 func (repo *mfaPasscodeRepo) IncrAttempts(ctx context.Context, userID string,
 	passcode *cacheentity.MFAPasscode) error {
 	passcode.Attempts++
 	// Only set value, not set expiration to keep the current expiration value
-	//nolint:wrapcheck
-	return rediscache.Set(ctx, repo.client, repo.formatKey(userID), rediscache.NewJSONValue(passcode), redis.KeepTTL)
+	err := rediscache.Set(ctx, repo.client, repo.formatKey(userID), rediscache.NewJSONValue(passcode), redis.KeepTTL)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
 }
 
 func (repo *mfaPasscodeRepo) Del(ctx context.Context, userID string) error {
-	//nolint:wrapcheck
-	return rediscache.Del(ctx, repo.client, repo.formatKey(userID))
+	err := rediscache.Del(ctx, repo.client, repo.formatKey(userID))
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
 }
 
 func (repo *mfaPasscodeRepo) formatKey(userID string) string {
