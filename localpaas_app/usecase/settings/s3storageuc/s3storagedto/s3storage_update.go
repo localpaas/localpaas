@@ -18,6 +18,7 @@ type S3StoragePartialReq struct {
 	SecretKey       *string                      `json:"secretKey"`
 	Region          *string                      `json:"region"`
 	Bucket          *string                      `json:"bucket"`
+	Endpoint        *string                      `json:"endpoint"`
 	ProjectAccesses []*S3StorageProjectAccessReq `json:"projectAccesses"`
 }
 
@@ -30,6 +31,7 @@ func (req *S3StoragePartialReq) validate(field string) (res []vld.Validator) {
 	res = append(res, basedto.ValidateStr(req.SecretKey, false, 1, maxKeyLen, "secretKey")...)
 	res = append(res, basedto.ValidateStr(req.Region, false, 1, maxKeyLen, "region")...)
 	res = append(res, basedto.ValidateStr(req.Bucket, false, 1, maxKeyLen, "bucket")...)
+	res = append(res, basedto.ValidateStr(req.Endpoint, false, 1, maxKeyLen, "endpoint")...)
 	return res
 }
 

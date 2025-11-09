@@ -43,6 +43,7 @@ func (req *S3StorageBaseReq) validate(field string) (res []vld.Validator) {
 	res = append(res, basedto.ValidateStr(&req.SecretKey, true, 1, maxKeyLen, "secretKey")...)
 	res = append(res, basedto.ValidateStr(&req.Region, false, 1, maxKeyLen, "region")...)
 	res = append(res, basedto.ValidateStr(&req.Bucket, false, 1, maxKeyLen, "bucket")...)
+	res = append(res, basedto.ValidateStr(&req.Endpoint, false, 1, maxKeyLen, "endpoint")...)
 	return res
 }
 

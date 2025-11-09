@@ -93,12 +93,12 @@ func (uc *S3StorageUC) preparePersistingS3Storage(
 		SecretKey:   req.SecretKey,
 		Region:      req.Region,
 		Bucket:      req.Bucket,
+		Endpoint:    req.Endpoint,
 	}
 	err := s3Storage.Encrypt()
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-
 	setting.MustSetData(s3Storage)
 
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)

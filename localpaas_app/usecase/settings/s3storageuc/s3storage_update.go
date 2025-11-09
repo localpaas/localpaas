@@ -89,35 +89,34 @@ func (uc *S3StorageUC) prepareUpdatingS3Storage(
 		setting.Name = *req.Name
 	}
 
-	//nolint:nestif
-	if req.AccessKeyID != nil || req.SecretKey != nil || req.Region != nil || req.Bucket != nil {
-		s3Storage, err := setting.ParseS3Storage(false)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
-		if s3Storage == nil {
-			s3Storage = &entity.S3Storage{}
-		}
-		if req.AccessKeyID != nil {
-			s3Storage.AccessKeyID = *req.AccessKeyID
-		}
-		if req.SecretKey != nil {
-			s3Storage.SecretKey = *req.SecretKey
-		}
-		if req.Region != nil {
-			s3Storage.Region = *req.Region
-		}
-		if req.Bucket != nil {
-			s3Storage.Bucket = *req.Bucket
-		}
-
-		err = s3Storage.Encrypt()
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
-
-		setting.MustSetData(s3Storage)
+	s3Storage, err := setting.ParseS3Storage(false)
+	if err != nil {
+		return apperrors.Wrap(err)
 	}
+	if s3Storage == nil {
+		s3Storage = &entity.S3Storage{}
+	}
+	if req.AccessKeyID != nil {
+		s3Storage.AccessKeyID = *req.AccessKeyID
+	}
+	if req.SecretKey != nil {
+		s3Storage.SecretKey = *req.SecretKey
+	}
+	if req.Region != nil {
+		s3Storage.Region = *req.Region
+	}
+	if req.Bucket != nil {
+		s3Storage.Bucket = *req.Bucket
+	}
+	if req.Endpoint != nil {
+		s3Storage.Endpoint = *req.Endpoint
+	}
+
+	err = s3Storage.Encrypt()
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	setting.MustSetData(s3Storage)
 
 	setting.UpdatedAt = timeNow
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
