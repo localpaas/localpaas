@@ -29,16 +29,19 @@ type GetOAuthResp struct {
 }
 
 type OAuthResp struct {
-	ID           string `json:"id"`
-	Name         string `json:"name"`
-	ClientID     string `json:"clientId"`
-	ClientSecret string `json:"clientSecret"`
-	Organization string `json:"organization"`
-	BaseURL      string `json:"baseURL"`
-	RedirectURL  string `json:"redirectURL"`
+	ID           string   `json:"id"`
+	Name         string   `json:"name"`
+	ClientID     string   `json:"clientId"`
+	ClientSecret string   `json:"clientSecret"`
+	Organization string   `json:"organization"`
+	CallbackURL  string   `json:"callbackURL"`
+	AuthURL      string   `json:"authURL"`
+	TokenURL     string   `json:"tokenURL"`
+	ProfileURL   string   `json:"profileURL"`
+	Scopes       []string `json:"scopes"`
 }
 
-func TransformOAuth(setting *entity.Setting) (resp *OAuthResp, err error) {
+func TransformOAuth(setting *entity.Setting, baseCallbackURL string) (resp *OAuthResp, err error) {
 	if err = copier.Copy(&resp, &setting); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -50,6 +53,9 @@ func TransformOAuth(setting *entity.Setting) (resp *OAuthResp, err error) {
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+
+	// Recalculate callbackURL for the oauth as it depends on the actual server address
+	resp.CallbackURL = baseCallbackURL + "/" + setting.Name
 
 	return resp, nil
 }

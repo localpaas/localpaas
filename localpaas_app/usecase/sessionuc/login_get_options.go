@@ -3,6 +3,8 @@ package sessionuc
 import (
 	"context"
 
+	"github.com/tiendc/gofn"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
@@ -17,25 +19,28 @@ func (uc *SessionUC) GetLoginOptions(
 		bunex.SelectWhere("setting.type = ?", base.SettingTypeOAuth),
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
 		bunex.SelectColumns("id", "name"),
+		bunex.SelectOrder("name"),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp := &sessiondto.LoginOptionsResp{
-		AllowLoginWithGitHub: false,
-		AllowLoginWithGitLab: false,
+	var resp []*sessiondto.LoginOptionResp
+	mapDisplayName := map[base.OAuthType]string{
+		base.OAuthTypeGitlabCustom: "Our Gitlab",
 	}
 
 	for _, setting := range settings {
-		switch setting.Name {
-		case "github":
-			resp.AllowLoginWithGitHub = true
-		case "gitlab":
-			resp.AllowLoginWithGitLab = true
-		case "google":
-			resp.AllowLoginWithGoogle = true
+		oauthType := base.OAuthType(setting.Name)
+		displayName := mapDisplayName[oauthType]
+		if displayName == "" {
+			displayName = gofn.StringToUpper1stLetter(setting.Name)
 		}
+		resp = append(resp, &sessiondto.LoginOptionResp{
+			Type:    oauthType,
+			Name:    displayName,
+			AuthURL: "/_/auth/sso/" + string(oauthType),
+		})
 	}
 
 	return &sessiondto.GetLoginOptionsResp{

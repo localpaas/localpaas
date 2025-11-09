@@ -1,11 +1,17 @@
 package entity
 
 type OAuth struct {
-	ClientID     string `json:"clientId"`
-	ClientSecret string `json:"clientSecret"`
-	Organization string `json:"org,omitempty"`
-	BaseURL      string `json:"baseURL,omitempty"`
-	RedirectURL  string `json:"redirectURL,omitempty"`
+	ClientID     string   `json:"clientId"`
+	ClientSecret string   `json:"clientSecret"`
+	Organization string   `json:"org,omitempty"`
+	CallbackURL  string   `json:"callbackURL,omitempty"`
+	AuthURL      string   `json:"authURL,omitempty"`
+	TokenURL     string   `json:"tokenURL,omitempty"`
+	ProfileURL   string   `json:"profileURL,omitempty"`
+	Scopes       []string `json:"scopes,omitempty"`
+
+	// Salt used to encrypt the secret
+	Salt string `json:"salt,omitempty"`
 }
 
 func (s *Setting) ParseOAuth() (*OAuth, error) {

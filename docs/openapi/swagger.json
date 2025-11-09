@@ -3628,9 +3628,9 @@
         "x-enum-varnames" : [ "NodeStatusUnknown", "NodeStatusDown", "NodeStatusReady", "NodeStatusDisconnected" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.OAuthType" : {
-        "enum" : [ "github", "gitlab", "google" ],
+        "enum" : [ "github", "gitlab", "google", "gitlab-custom" ],
         "type" : "string",
-        "x-enum-varnames" : [ "OAuthTypeGithub", "OAuthTypeGitlab", "OAuthTypeGoogle" ]
+        "x-enum-varnames" : [ "OAuthTypeGithub", "OAuthTypeGitlab", "OAuthTypeGoogle", "OAuthTypeGitlabCustom" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.ProjectStatus" : {
         "enum" : [ "active", "locked", "disabled", "deleting" ],
@@ -4557,7 +4557,10 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.GetLoginOptionsResp" : {
         "properties" : {
           "data" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.LoginOptionsResp"
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.LoginOptionResp"
+            },
+            "type" : "array"
           },
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
@@ -4587,19 +4590,19 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.LoginOptionsResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.LoginOptionResp" : {
         "properties" : {
-          "allowLoginWithGitHub" : {
-            "type" : "boolean"
+          "authURL" : {
+            "type" : "string"
           },
-          "allowLoginWithGitLab" : {
-            "type" : "boolean"
+          "name" : {
+            "type" : "string"
           },
-          "allowLoginWithGoogle" : {
-            "type" : "boolean"
+          "type" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.OAuthType"
           }
         },
-        "required" : [ "allowLoginWithGitHub", "allowLoginWithGitLab", "allowLoginWithGoogle" ],
+        "required" : [ "authURL", "name", "type" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.LoginWithAPIKeyDataResp" : {
@@ -4782,7 +4785,10 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.CreateOAuthReq" : {
         "properties" : {
-          "baseURL" : {
+          "authURL" : {
+            "type" : "string"
+          },
+          "callbackURL" : {
             "type" : "string"
           },
           "clientId" : {
@@ -4797,11 +4803,20 @@
           "organization" : {
             "type" : "string"
           },
-          "redirectURL" : {
+          "profileURL" : {
+            "type" : "string"
+          },
+          "scopes" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "tokenURL" : {
             "type" : "string"
           }
         },
-        "required" : [ "baseURL", "clientId", "clientSecret", "oauthType", "organization", "redirectURL" ],
+        "required" : [ "authURL", "callbackURL", "clientId", "clientSecret", "oauthType", "organization", "profileURL", "scopes", "tokenURL" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.CreateOAuthResp" : {
@@ -4854,7 +4869,10 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.OAuthResp" : {
         "properties" : {
-          "baseURL" : {
+          "authURL" : {
+            "type" : "string"
+          },
+          "callbackURL" : {
             "type" : "string"
           },
           "clientId" : {
@@ -4872,11 +4890,20 @@
           "organization" : {
             "type" : "string"
           },
-          "redirectURL" : {
+          "profileURL" : {
+            "type" : "string"
+          },
+          "scopes" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "tokenURL" : {
             "type" : "string"
           }
         },
-        "required" : [ "baseURL", "clientId", "clientSecret", "id", "name", "organization", "redirectURL" ],
+        "required" : [ "authURL", "callbackURL", "clientId", "clientSecret", "id", "name", "organization", "profileURL", "scopes", "tokenURL" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.UpdateOAuthResp" : {

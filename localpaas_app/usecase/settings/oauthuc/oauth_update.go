@@ -60,6 +60,7 @@ func (uc *OAuthUC) loadOAuthDataForUpdate(
 	}
 	data.Setting = setting
 
+	uc.preprocessRequest(base.OAuthType(setting.Name), req.OAuthBaseReq)
 	return nil
 }
 
@@ -75,8 +76,11 @@ func (uc *OAuthUC) prepareUpdatingOAuth(
 		ClientID:     req.ClientID,
 		ClientSecret: req.ClientSecret,
 		Organization: req.Organization,
-		BaseURL:      req.BaseURL,
-		RedirectURL:  req.RedirectURL,
+		CallbackURL:  req.CallbackURL,
+		AuthURL:      req.AuthURL,
+		TokenURL:     req.TokenURL,
+		ProfileURL:   req.ProfileURL,
+		Scopes:       req.Scopes,
 	}
 	err = setting.SetData(oauth)
 	if err != nil {

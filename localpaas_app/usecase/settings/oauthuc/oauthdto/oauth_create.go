@@ -14,11 +14,14 @@ type CreateOAuthReq struct {
 }
 
 type OAuthBaseReq struct {
-	ClientID     string `json:"clientId"`
-	ClientSecret string `json:"clientSecret"`
-	Organization string `json:"organization"`
-	RedirectURL  string `json:"redirectURL"`
-	BaseURL      string `json:"baseURL"`
+	ClientID     string   `json:"clientId"`
+	ClientSecret string   `json:"clientSecret"`
+	Organization string   `json:"organization"`
+	CallbackURL  string   `json:"callbackURL"`
+	AuthURL      string   `json:"authURL"`
+	TokenURL     string   `json:"tokenURL"`
+	ProfileURL   string   `json:"profileURL"`
+	Scopes       []string `json:"scopes"`
 }
 
 func (req *OAuthBaseReq) validate(_ string) []vld.Validator {

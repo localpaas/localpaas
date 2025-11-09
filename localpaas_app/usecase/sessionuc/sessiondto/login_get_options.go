@@ -2,6 +2,7 @@ package sessiondto
 
 import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 )
 
@@ -17,12 +18,12 @@ func (req *GetLoginOptionsReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetLoginOptionsResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
-	Data *LoginOptionsResp `json:"data"`
+	Meta *basedto.BaseMeta  `json:"meta"`
+	Data []*LoginOptionResp `json:"data"`
 }
 
-type LoginOptionsResp struct {
-	AllowLoginWithGitHub bool `json:"allowLoginWithGitHub"`
-	AllowLoginWithGitLab bool `json:"allowLoginWithGitLab"`
-	AllowLoginWithGoogle bool `json:"allowLoginWithGoogle"`
+type LoginOptionResp struct {
+	Type    base.OAuthType `json:"type"`
+	Name    string         `json:"name"`
+	AuthURL string         `json:"authURL"`
 }

@@ -58,6 +58,8 @@ func (uc *OAuthUC) loadOAuthData(
 	req *oauthdto.CreateOAuthReq,
 	data *createOAuthData,
 ) error {
+	uc.preprocessRequest(req.OAuthType, req.OAuthBaseReq)
+
 	settingName := string(req.OAuthType)
 	data.SettingName = settingName
 
@@ -71,6 +73,18 @@ func (uc *OAuthUC) loadOAuthData(
 	}
 
 	return nil
+}
+
+func (uc *OAuthUC) preprocessRequest(
+	oauthType base.OAuthType,
+	req *oauthdto.OAuthBaseReq,
+) {
+	if !base.IsCustomOAuthType(oauthType) {
+		req.CallbackURL = ""
+		req.AuthURL = ""
+		req.TokenURL = ""
+		req.ProfileURL = ""
+	}
 }
 
 type persistingOAuthData struct {
@@ -96,8 +110,11 @@ func (uc *OAuthUC) preparePersistingOAuth(
 		ClientID:     req.ClientID,
 		ClientSecret: req.ClientSecret,
 		Organization: req.Organization,
-		BaseURL:      req.BaseURL,
-		RedirectURL:  req.RedirectURL,
+		CallbackURL:  req.CallbackURL,
+		AuthURL:      req.AuthURL,
+		TokenURL:     req.TokenURL,
+		ProfileURL:   req.ProfileURL,
+		Scopes:       req.Scopes,
 	}
 	err = setting.SetData(oauth)
 	if err != nil {

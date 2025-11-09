@@ -9,6 +9,7 @@ import (
 	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/github"
 	"github.com/markbates/goth/providers/gitlab"
+	"github.com/markbates/goth/providers/google"
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -42,27 +43,43 @@ func (h *SessionHandler) SSOOAuthBegin(ctx *gin.Context) {
 		return
 	}
 
-	oauths, err := h.oauthUC.ListOAuthNoAuth(ctx, &oauthdto.ListOAuthNoAuthReq{
-		Name:   []string{provider},
+	oauthType := base.OAuthType(provider)
+	if !base.IsValidOAuthType(oauthType) {
+		h.RenderError(ctx, apperrors.NewParamInvalid("OAuth").
+			WithMsgLog("%s OAuth is not valid", provider))
+		return
+	}
+
+	oauth, err := h.oauthUC.GetOAuthNoAuth(ctx, &oauthdto.GetOAuthNoAuthReq{
+		Name:   provider,
 		Status: []base.SettingStatus{base.SettingStatusActive},
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
-	if len(oauths.Data) == 0 {
+	if oauth == nil {
 		h.RenderError(ctx, apperrors.New(apperrors.ErrUnavailable).
-			WithMsgLog("github SSO is not configured"))
+			WithMsgLog("%s OAuth SSO is not configured", provider))
 		return
 	}
 
-	baseCallbackURL := gofn.Must(url.JoinPath(config.Current.HTTPServer.BaseAPIURL(), "auth/sso/callback"))
-	oauth := oauths.Data[0]
-	switch provider {
-	case "github":
-		goth.UseProviders(github.New(oauth.ClientID, oauth.ClientSecret, baseCallbackURL+"/github"))
-	case "gitlab":
-		goth.UseProviders(gitlab.New(oauth.ClientID, oauth.ClientSecret, baseCallbackURL+"/gitlab"))
+	baseCallbackURL := h.oauthUC.GetOAuthBaseCallbackURL()
+	switch oauthType {
+	case base.OAuthTypeGithub:
+		goth.UseProviders(github.New(oauth.ClientID, oauth.ClientSecret, baseCallbackURL+"/"+provider, oauth.Scopes...))
+	case base.OAuthTypeGitlab:
+		goth.UseProviders(gitlab.New(oauth.ClientID, oauth.ClientSecret, baseCallbackURL+"/"+provider, oauth.Scopes...))
+	case base.OAuthTypeGoogle:
+		goth.UseProviders(google.New(oauth.ClientID, oauth.ClientSecret, baseCallbackURL+"/"+provider, oauth.Scopes...))
+
+	// Custom types
+	case base.OAuthTypeGitlabCustom:
+		providerObj := gitlab.NewCustomisedURL(oauth.ClientID, oauth.ClientSecret,
+			baseCallbackURL+"/"+provider, oauth.AuthURL, oauth.TokenURL, oauth.ProfileURL,
+			oauth.Scopes...)
+		providerObj.SetName(provider)
+		goth.UseProviders(providerObj)
 	}
 
 	q := ctx.Request.URL.Query()

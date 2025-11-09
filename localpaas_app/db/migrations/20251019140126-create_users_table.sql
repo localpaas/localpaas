@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS users
     status          VARCHAR(20) NOT NULL CONSTRAINT chk_status CHECK
                         (status IN ('active','pending','disabled')),
     full_name       VARCHAR(100) NOT NULL DEFAULT '',
-    photo           VARCHAR(255) NULL,
+    photo           VARCHAR(2000) NULL,
     security_option VARCHAR(20) NOT NULL CONSTRAINT chk_security_option CHECK
                         (security_option IN ('enforce-sso','password-2fa','password-only')),
     totp_secret     VARCHAR(100) NULL,
