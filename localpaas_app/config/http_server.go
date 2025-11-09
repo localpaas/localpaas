@@ -9,7 +9,7 @@ import (
 
 type HTTPServer struct {
 	BaseURL  string `yaml:"base_url" env:"LP_HTTP_SERVER_BASE_URL"`
-	BasePath string `yaml:"base_path" env:"LP_HTTP_SERVER_BASE_PATH" default:"/api/v1"`
+	BasePath string `yaml:"base_path" env:"LP_HTTP_SERVER_BASE_PATH" default:"/api"`
 	Port     int    `yaml:"port" env:"LP_HTTP_SERVER_PORT"`
 	CORS     struct {
 		AllowOrigins []string `yaml:"allow_origins" env:"LP_HTTP_SERVER_CORS_ALLOW_ORIGINS"`

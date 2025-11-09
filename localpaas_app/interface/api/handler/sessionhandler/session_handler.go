@@ -10,6 +10,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc/sessiondto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc"
 )
 
 // To keep `apperrors` pkg imported and swag gen won't fail
@@ -19,12 +20,18 @@ type SessionHandler struct {
 	*handler.BaseHandler
 	authHandler *authhandler.AuthHandler
 	sessionUC   *sessionuc.SessionUC
+	oauthUC     *oauthuc.OAuthUC
 }
 
-func NewSessionHandler(authHandler *authhandler.AuthHandler, sessionUC *sessionuc.SessionUC) *SessionHandler {
+func NewSessionHandler(
+	authHandler *authhandler.AuthHandler,
+	sessionUC *sessionuc.SessionUC,
+	oauthUC *oauthuc.OAuthUC,
+) *SessionHandler {
 	hdl := &SessionHandler{
 		authHandler: authHandler,
 		sessionUC:   sessionUC,
+		oauthUC:     oauthUC,
 	}
 	return hdl
 }

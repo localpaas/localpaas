@@ -82,19 +82,10 @@ func (s *HTTPServer) registerRoutes() {
 	}
 
 	// PUBLIC ROUTES
-	apiV1Group := s.engine.Group(s.config.HTTPServer.BasePath)
-
-	clusterGroup := apiV1Group.Group("/cluster")
-	{ // node group
-		nodeGroup := clusterGroup.Group("/nodes")
-		// Nodes
-		nodeGroup.GET("", s.handlerRegistry.clusterHandler.ListNode)
-		nodeGroup.GET("/:nodeID", s.handlerRegistry.clusterHandler.GetNode)
-		nodeGroup.DELETE("/:nodeID", s.handlerRegistry.clusterHandler.DeleteNode)
-	}
+	apiGroup := s.engine.Group(s.config.HTTPServer.BasePath)
 
 	{ // session group
-		sessionGroup := apiV1Group.Group("/sessions")
+		sessionGroup := apiGroup.Group("/sessions")
 		// User info
 		sessionGroup.GET("/me", s.handlerRegistry.sessionHandler.GetMe)
 		// Session handling
@@ -104,7 +95,7 @@ func (s *HTTPServer) registerRoutes() {
 	}
 
 	{ // auth group
-		authGroup := apiV1Group.Group("/auth")
+		authGroup := apiGroup.Group("/auth")
 		// Login options
 		authGroup.GET("/login-options", s.handlerRegistry.sessionHandler.LoginGetOptions)
 		// Login with password
@@ -112,9 +103,13 @@ func (s *HTTPServer) registerRoutes() {
 		authGroup.POST("/login-with-passcode", s.handlerRegistry.sessionHandler.LoginWithPasscode)
 		// Login with API key
 		authGroup.POST("/login-with-api-key", s.handlerRegistry.sessionHandler.LoginWithAPIKey)
+		// Login via SSO
+		authGroup.GET("/sso/:provider", s.handlerRegistry.sessionHandler.SSOOAuthBegin)
+		authGroup.GET("/sso/callback/:provider", s.handlerRegistry.sessionHandler.SSOOAuthCallback)
+		authGroup.POST("/sso/callback/:provider", s.handlerRegistry.sessionHandler.SSOOAuthCallback)
 	}
 
-	userGroup := apiV1Group.Group("/users")
+	userGroup := apiGroup.Group("/users")
 	{ // user group
 		// User info
 		userGroup.GET("/base", s.handlerRegistry.userHandler.ListUserBase)
@@ -149,7 +144,16 @@ func (s *HTTPServer) registerRoutes() {
 		apiKeyGroup.DELETE("/:ID", s.handlerRegistry.userSettingsHandler.DeleteAPIKey)
 	}
 
-	projectGroup := apiV1Group.Group("/projects")
+	clusterGroup := apiGroup.Group("/cluster")
+	{ // node group
+		nodeGroup := clusterGroup.Group("/nodes")
+		// Nodes
+		nodeGroup.GET("", s.handlerRegistry.clusterHandler.ListNode)
+		nodeGroup.GET("/:nodeID", s.handlerRegistry.clusterHandler.GetNode)
+		nodeGroup.DELETE("/:nodeID", s.handlerRegistry.clusterHandler.DeleteNode)
+	}
+
+	projectGroup := apiGroup.Group("/projects")
 	{ // project group
 		// Project info
 		projectGroup.GET("/base", s.handlerRegistry.projectHandler.ListProjectBase)
@@ -183,7 +187,7 @@ func (s *HTTPServer) registerRoutes() {
 		appGroup.PUT("/:appID/settings", s.handlerRegistry.appHandler.UpdateAppSettings)
 	}
 
-	settingGroup := apiV1Group.Group("/settings")
+	settingGroup := apiGroup.Group("/settings")
 
 	{ // ssh key group
 		oauthGroup := settingGroup.Group("/oauth")

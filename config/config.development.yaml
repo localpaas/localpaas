@@ -24,7 +24,7 @@ cache:
 
 http_server:
   base_url: https://api.dev.localpaas.com # API base URL
-  base_path: /_/v1
+  base_path: /_
   port: 10000
   cors:
     allow_origins:

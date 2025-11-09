@@ -2536,6 +2536,124 @@
         "tags" : [ "settings_ssh_key" ]
       }
     },
+    "/sso/auth/callback/{provider}" : {
+      "get" : {
+        "description" : "Begins SSO flow",
+        "operationId" : "beginOAuth",
+        "parameters" : [ {
+          "description" : "provider name",
+          "in" : "path",
+          "name" : "provider",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "302" : {
+            "content" : { },
+            "description" : "on success redirect to the dashboard page"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Begins SSO flow",
+        "tags" : [ "users" ]
+      },
+      "post" : {
+        "description" : "Begins SSO flow",
+        "operationId" : "beginOAuth",
+        "parameters" : [ {
+          "description" : "provider name",
+          "in" : "path",
+          "name" : "provider",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "302" : {
+            "content" : { },
+            "description" : "on success redirect to the dashboard page"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Begins SSO flow",
+        "tags" : [ "users" ]
+      }
+    },
+    "/sso/auth/{provider}" : {
+      "get" : {
+        "description" : "Starts OAuth SSO flow",
+        "operationId" : "ssoOAuthBegin",
+        "responses" : {
+          "302" : {
+            "content" : { },
+            "description" : "on success redirect to provider OAuth URL"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Starts OAuth SSO flow",
+        "tags" : [ "sessions_auth" ]
+      }
+    },
     "/users" : {
       "get" : {
         "description" : "Lists users",

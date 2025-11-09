@@ -76,9 +76,9 @@ ON CONFLICT DO NOTHING;
 -- Settings: OAuth
 INSERT INTO settings (id, type, name, status, data, created_at, updated_at)
 VALUES ('01JAB9XED0GTXBSQDFVYAJ8WE1', 'oauth', 'github', 'active',
-        '{"clientId":"Ov23liygYjjhFUdsdjRm","clientSecret":"27fdaefa61dbcf11935921eb7376cc66693453e4","org":"localpaas-test","redirectURL":"https://app.dev.localpaas.com/oauth/callback/github"}',
+        '{"clientId":"Iv23liObQsEr3GigALXt","clientSecret":"e8958ee1d82c58c6180ac2a09b81fcc87784d675","org":"localpaas-test","redirectURL":"https://app.dev.localpaas.com/_/auth/sso/callback/github"}',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WE2', 'oauth', 'gitlab', 'active',
-        '{"clientId":"clientId","clientSecret":"clientSecret","org":"localpaas-test","redirectURL":"https://app.dev.localpaas.com/oauth/callback/gitlab"}',
+        '{"clientId":"clientId","clientSecret":"clientSecret","org":"localpaas-test","redirectURL":"https://app.dev.localpaas.com/_/auth/sso/callback/gitlab"}',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00')
 ON CONFLICT DO NOTHING;
