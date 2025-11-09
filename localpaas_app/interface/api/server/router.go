@@ -221,6 +221,17 @@ func (s *HTTPServer) registerRoutes() {
 		sshKeyGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateSSHKey)
 		sshKeyGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteSSHKey)
 	}
+
+	{ // slack group
+		slackGroup := settingGroup.Group("/slack")
+		// Info
+		slackGroup.GET("/:ID", s.handlerRegistry.settingsHandler.GetSlack)
+		slackGroup.GET("", s.handlerRegistry.settingsHandler.ListSlack)
+		// Creation & Update
+		slackGroup.POST("", s.handlerRegistry.settingsHandler.CreateSlack)
+		slackGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateSlack)
+		slackGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteSlack)
+	}
 }
 
 func routePing(c *gin.Context) {

@@ -11,6 +11,7 @@ const (
 	SettingTypeOAuth      = SettingType("oauth")
 	SettingTypeSSHKey     = SettingType("ssh-key")
 	SettingTypeAPIKey     = SettingType("api-key")
+	SettingTypeSlack      = SettingType("slack")
 )
 
 var (

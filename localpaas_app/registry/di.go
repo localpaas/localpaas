@@ -29,6 +29,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/s3storageuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/slackuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc"
@@ -77,6 +78,7 @@ var Provides = []any{
 	sshkeyuc.NewSSHKeyUC,
 	apikeyuc.NewAPIKeyUC,
 	oauthuc.NewOAuthUC,
+	slackuc.NewSlackUC,
 
 	// Service
 	clusterservice.NewClusterService,
