@@ -9,6 +9,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 )
 
+const (
+	maskedSecretKey = "****************"
+)
+
 type GetOAuthReq struct {
 	ID string `json:"-"`
 }
@@ -58,6 +62,9 @@ func TransformOAuth(setting *entity.Setting, baseCallbackURL string, decrypt boo
 	// Recalculate callbackURL for the oauth as it depends on the actual server address
 	resp.CallbackURL = baseCallbackURL + "/" + setting.Name
 	resp.Encrypted = config.IsEncrypted()
+	if resp.Encrypted {
+		resp.ClientSecret = maskedSecretKey
+	}
 
 	return resp, nil
 }

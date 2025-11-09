@@ -76,12 +76,12 @@ ON CONFLICT DO NOTHING;
 -- Settings: OAuth
 INSERT INTO settings (id, type, name, status, data, created_at, updated_at)
 VALUES ('01JAB9XED0GTXBSQDFVYAJ8WE1', 'oauth', 'github', 'active',
-        '{"org": "localpaas-test", "salt": "27AyosacFwi8CA==", "clientId": "Iv23liObQsEr3GigALXt", "clientSecret": "EsRjd1QQkZ8YmKOqWMUM2iMvrY+MWShSv9CV5whZbXKq6wjB8H36U2oLFBLbWD06hJ+DUSzvUmEWjk2XrxRlkyN4MV4="}',
+        '{"org": "localpaas-test", "clientId": "Iv23liObQsEr3GigALXt", "clientSecret": "lpsalt:27AyosacFwi8CA== EsRjd1QQkZ8YmKOqWMUM2iMvrY+MWShSv9CV5whZbXKq6wjB8H36U2oLFBLbWD06hJ+DUSzvUmEWjk2XrxRlkyN4MV4="}',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WE2', 'oauth', 'gitlab', 'active',
-        '{"org": "localpaas-test", "salt": "k+UQvPiR1yWRow==", "scopes": ["read_user", "openid", "profile", "email"], "clientId": "9a7d1422b34a79e83d74bee66448854d97452a2b6a7f05a74870f351f837dbbe", "clientSecret": "K8bthSPszSGA5YM2g5pNwreaNpFrYFn0TIOq+aJInN7vwrdOBJ+sAd1zy+RoRlr+CpiphDrPn77wn6hdJZl9tH2gNj/8Y8T07jhfibmKZpuFwRvbQOk01bcYQBWo8aXG8QY="}',
+        '{"org": "localpaas-test", "scopes": ["read_user", "openid", "profile", "email"], "clientId": "9a7d1422b34a79e83d74bee66448854d97452a2b6a7f05a74870f351f837dbbe", "clientSecret": "lpsalt:k+UQvPiR1yWRow== K8bthSPszSGA5YM2g5pNwreaNpFrYFn0TIOq+aJInN7vwrdOBJ+sAd1zy+RoRlr+CpiphDrPn77wn6hdJZl9tH2gNj/8Y8T07jhfibmKZpuFwRvbQOk01bcYQBWo8aXG8QY="}',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WE3', 'oauth', 'gitlab-custom', 'active',
-        '{"org": "localpaas-test", "salt": "k+UQvPiR1yWRow==", "scopes": ["read_user", "openid", "profile", "email"], "clientId": "9a7d1422b34a79e83d74bee66448854d97452a2b6a7f05a74870f351f837dbbe", "clientSecret": "K8bthSPszSGA5YM2g5pNwreaNpFrYFn0TIOq+aJInN7vwrdOBJ+sAd1zy+RoRlr+CpiphDrPn77wn6hdJZl9tH2gNj/8Y8T07jhfibmKZpuFwRvbQOk01bcYQBWo8aXG8QY="}',
+        '{"org": "localpaas-test", "scopes": ["read_user", "openid", "profile", "email"], "clientId": "9a7d1422b34a79e83d74bee66448854d97452a2b6a7f05a74870f351f837dbbe", "clientSecret": "lpsalt:k+UQvPiR1yWRow== K8bthSPszSGA5YM2g5pNwreaNpFrYFn0TIOq+aJInN7vwrdOBJ+sAd1zy+RoRlr+CpiphDrPn77wn6hdJZl9tH2gNj/8Y8T07jhfibmKZpuFwRvbQOk01bcYQBWo8aXG8QY="}',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00')
 ON CONFLICT DO NOTHING;

@@ -6,13 +6,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc/sessiondto"
-	"github.com/localpaas/localpaas/pkg/randtoken"
 	"github.com/localpaas/localpaas/pkg/timeutil"
-)
-
-const (
-	hashingKeyLen    = 32
-	hashingIteration = 1
 )
 
 func (uc *SessionUC) LoginWithAPIKey(
@@ -37,8 +31,8 @@ func (uc *SessionUC) LoginWithAPIKey(
 	if apiKey == nil {
 		return nil, uc.wrapSensitiveError(apperrors.ErrAPIKeyMismatched)
 	}
-	if !randtoken.VerifyHashHex(req.SecretKey, apiKey.SecretKey, apiKey.Salt, hashingKeyLen, hashingIteration) {
-		return nil, uc.wrapSensitiveError(apperrors.ErrAPIKeyMismatched)
+	if err = apiKey.VerifyHash(req.SecretKey); err != nil {
+		return nil, uc.wrapSensitiveError(err)
 	}
 	actingUserID := apiKeySetting.ObjectID
 

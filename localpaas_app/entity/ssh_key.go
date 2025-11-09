@@ -1,42 +1,42 @@
 package entity
 
 import (
+	"strings"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/cryptoutil"
 )
 
 type SSHKey struct {
 	PrivateKey string `json:"privateKey"`
-	Salt       string `json:"salt,omitempty"`
 }
 
 func (o *SSHKey) IsEncrypted() bool {
-	return o.Salt != ""
+	return strings.HasPrefix(o.PrivateKey, base.SaltPrefix)
 }
 
 func (o *SSHKey) Encrypt() error {
-	if o.Salt != "" {
+	if o.IsEncrypted() {
 		return nil
 	}
-	cipher, salt, err := cryptoutil.EncryptBase64(o.PrivateKey, defaultSaltLen)
+	encrypted, err := cryptoutil.EncryptBase64(o.PrivateKey, base.DefaultSaltLen)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	o.PrivateKey = cipher
-	o.Salt = salt
+	o.PrivateKey = encrypted
 	return nil
 }
 
 func (o *SSHKey) Decrypt() error {
-	if o.Salt == "" {
+	if !o.IsEncrypted() {
 		return nil
 	}
-	plain, err := cryptoutil.DecryptBase64(o.PrivateKey, o.Salt)
+	decrypted, err := cryptoutil.DecryptBase64(o.PrivateKey)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	o.PrivateKey = plain
-	o.Salt = ""
+	o.PrivateKey = decrypted
 	return nil
 }
 

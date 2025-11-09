@@ -1,7 +1,10 @@
 package entity
 
 import (
+	"strings"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/cryptoutil"
 )
 
@@ -14,38 +17,33 @@ type OAuth struct {
 	TokenURL     string   `json:"tokenURL,omitempty"`
 	ProfileURL   string   `json:"profileURL,omitempty"`
 	Scopes       []string `json:"scopes,omitempty"`
-
-	// Salt used to encrypt the secret
-	Salt string `json:"salt,omitempty"`
 }
 
 func (o *OAuth) IsEncrypted() bool {
-	return o.Salt != ""
+	return strings.HasPrefix(o.ClientSecret, base.SaltPrefix)
 }
 
 func (o *OAuth) Encrypt() error {
-	if o.Salt != "" {
+	if o.IsEncrypted() {
 		return nil
 	}
-	cipher, salt, err := cryptoutil.EncryptBase64(o.ClientSecret, defaultSaltLen)
+	encrypted, err := cryptoutil.EncryptBase64(o.ClientSecret, base.DefaultSaltLen)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	o.ClientSecret = cipher
-	o.Salt = salt
+	o.ClientSecret = encrypted
 	return nil
 }
 
 func (o *OAuth) Decrypt() error {
-	if o.Salt == "" {
+	if !o.IsEncrypted() {
 		return nil
 	}
-	plain, err := cryptoutil.DecryptBase64(o.ClientSecret, o.Salt)
+	decrypted, err := cryptoutil.DecryptBase64(o.ClientSecret)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	o.ClientSecret = plain
-	o.Salt = ""
+	o.ClientSecret = decrypted
 	return nil
 }
 

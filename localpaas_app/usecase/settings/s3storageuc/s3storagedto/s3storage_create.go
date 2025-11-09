@@ -17,6 +17,7 @@ type S3StorageBaseReq struct {
 	SecretKey       string                       `json:"secretKey"`
 	Region          string                       `json:"region"`
 	Bucket          string                       `json:"bucket"`
+	Endpoint        string                       `json:"endpoint"`
 	ProjectAccesses []*S3StorageProjectAccessReq `json:"projectAccesses"`
 }
 

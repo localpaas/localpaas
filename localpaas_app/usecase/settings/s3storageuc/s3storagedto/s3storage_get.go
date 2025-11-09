@@ -10,6 +10,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 )
 
+const (
+	maskedSecretKey = "****************"
+)
+
 type GetS3StorageReq struct {
 	ID string `json:"-"`
 }
@@ -36,6 +40,7 @@ type S3StorageResp struct {
 	SecretKey       string                        `json:"secretKey,omitempty"`
 	Region          string                        `json:"region"`
 	Bucket          string                        `json:"bucket"`
+	Endpoint        string                        `json:"endpoint"`
 	ProjectAccesses []*S3StorageProjectAccessResp `json:"projectAccesses"`
 	Encrypted       bool                          `json:"encrypted"`
 }
@@ -65,6 +70,10 @@ func TransformS3Storage(setting *entity.Setting, decrypt bool) (resp *S3StorageR
 		return nil, apperrors.Wrap(err)
 	}
 	resp.Encrypted = s3Config.IsEncrypted()
+	if resp.Encrypted {
+		resp.SecretKey = maskedSecretKey
+	}
+
 	resp.ProjectAccesses, err = TransformS3StorageObjectAccesses(setting.ObjectAccesses)
 	if err != nil {
 		return nil, apperrors.Wrap(err)

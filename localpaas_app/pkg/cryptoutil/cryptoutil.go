@@ -6,11 +6,13 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"io"
+	"strings"
 
 	"github.com/tiendc/gofn"
 	"golang.org/x/crypto/argon2"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/config"
 )
 
@@ -49,15 +51,20 @@ func Encrypt(plaintext, salt []byte) ([]byte, error) {
 	return EncryptEx(plaintext, salt, []byte(config.Current.App.Secret))
 }
 
-func EncryptBase64(plaintext string, saltLen int) (ciphertext string, salt string, err error) {
+// EncryptBase64 this encrypts the input and returns a string in form: `lpsalt:<salt> <secret>`
+func EncryptBase64(plaintext string, saltLen int) (ciphertext string, err error) {
+	if saltLen <= 0 {
+		return plaintext, nil
+	}
+
 	saltBytes := gofn.RandToken(saltLen)
 	ciphertextBytes, err := Encrypt([]byte(plaintext), saltBytes)
 	if err != nil {
-		return "", "", apperrors.Wrap(err)
+		return "", apperrors.Wrap(err)
 	}
 	ciphertext = base64.StdEncoding.EncodeToString(ciphertextBytes)
-	salt = base64.StdEncoding.EncodeToString(saltBytes)
-	return ciphertext, salt, nil
+	salt := base64.StdEncoding.EncodeToString(saltBytes)
+	return PackSecret(ciphertext, salt), nil
 }
 
 func DecryptEx(ciphertext, salt, secret []byte) ([]byte, error) {
@@ -89,7 +96,13 @@ func Decrypt(ciphertext, salt []byte) ([]byte, error) {
 	return DecryptEx(ciphertext, salt, []byte(config.Current.App.Secret))
 }
 
-func DecryptBase64(ciphertext string, salt string) (plaintext string, err error) {
+// DecryptBase64 this decrypts the input in form: `lpsalt:<salt> <secret>`
+func DecryptBase64(secret string) (plaintext string, err error) {
+	ciphertext, salt := UnpackSecret(secret)
+	if salt == "" {
+		return ciphertext, nil
+	}
+
 	ciphertextBytes, err := base64.StdEncoding.DecodeString(ciphertext)
 	if err != nil {
 		return "", apperrors.Wrap(err)
@@ -106,4 +119,19 @@ func DecryptBase64(ciphertext string, salt string) (plaintext string, err error)
 	plaintext = string(plaintextBytes)
 
 	return plaintext, nil
+}
+
+func PackSecret(secret, salt string) string {
+	return base.SaltPrefix + salt + " " + secret
+}
+
+func UnpackSecret(secretText string) (secret string, salt string) {
+	if !strings.HasPrefix(secretText, base.SaltPrefix) {
+		return secretText, ""
+	}
+	parts := strings.SplitN(secretText, " ", 2) //nolint:mnd
+	if len(parts) != 2 {                        //nolint:mnd
+		return secretText, ""
+	}
+	return parts[1], strings.TrimPrefix(parts[0], base.SaltPrefix)
 }

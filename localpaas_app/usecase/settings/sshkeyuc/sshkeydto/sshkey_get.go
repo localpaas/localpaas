@@ -10,6 +10,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 )
 
+const (
+	maskedSecretKey = "****************"
+)
+
 type GetSSHKeyReq struct {
 	ID string `json:"-"`
 }
@@ -62,6 +66,10 @@ func TransformSSHKey(setting *entity.Setting, decrypt bool) (resp *SSHKeyResp, e
 		return nil, apperrors.Wrap(err)
 	}
 	resp.Encrypted = sshKey.IsEncrypted()
+	if resp.Encrypted {
+		resp.PrivateKey = maskedSecretKey
+	}
+
 	resp.ProjectAccesses, err = TransformSSHKeyObjectAccesses(setting.ObjectAccesses)
 	if err != nil {
 		return nil, apperrors.Wrap(err)

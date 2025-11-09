@@ -100,7 +100,6 @@ func (uc *SSHKeyUC) prepareUpdatingSSHKey(
 		}
 		if req.PrivateKey != nil {
 			sshKey.PrivateKey = *req.PrivateKey
-			sshKey.Salt = ""
 		}
 
 		err = sshKey.Encrypt()
@@ -108,10 +107,7 @@ func (uc *SSHKeyUC) prepareUpdatingSSHKey(
 			return apperrors.Wrap(err)
 		}
 
-		err = setting.SetData(sshKey)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
+		setting.MustSetData(sshKey)
 	}
 
 	setting.UpdatedAt = timeNow

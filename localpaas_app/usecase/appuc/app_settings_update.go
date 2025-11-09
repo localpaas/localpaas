@@ -30,10 +30,7 @@ func (uc *AppUC) UpdateAppSettings(
 		}
 
 		persistingData := &persistingAppData{}
-		err = uc.preparePersistingAppSettings(req, data, persistingData)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
+		uc.preparePersistingAppSettings(req, data, persistingData)
 
 		return uc.persistData(ctx, db, persistingData)
 	})
@@ -80,7 +77,7 @@ func (uc *AppUC) preparePersistingAppSettings(
 	req *appdto.UpdateAppSettingsReq,
 	data *updateAppSettingsData,
 	persistingData *persistingAppData,
-) error {
+) {
 	timeNow := timeutil.NowUTC()
 	app := data.App
 
@@ -96,12 +93,10 @@ func (uc *AppUC) preparePersistingAppSettings(
 			}
 		}
 		setting.UpdatedAt = timeNow
-		err := setting.SetData(&entity.EnvVars{Data: gofn.MapSlice(req.EnvVars, func(v *appdto.EnvVarReq) *entity.EnvVar {
+		setting.MustSetData(&entity.EnvVars{Data: gofn.MapSlice(req.EnvVars, func(v *appdto.EnvVarReq) *entity.EnvVar {
 			return v.ToEntity()
 		})})
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
+
 		persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 	}
 
@@ -117,12 +112,8 @@ func (uc *AppUC) preparePersistingAppSettings(
 			}
 		}
 		setting.UpdatedAt = timeNow
-		err := setting.SetData(req.DeploymentSettings.ToEntity())
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
+		setting.MustSetData(req.DeploymentSettings.ToEntity())
+
 		persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 	}
-
-	return nil
 }

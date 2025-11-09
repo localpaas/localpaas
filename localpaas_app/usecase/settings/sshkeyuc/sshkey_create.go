@@ -96,10 +96,8 @@ func (uc *SSHKeyUC) preparePersistingSSHKey(
 		return apperrors.Wrap(err)
 	}
 
-	err = setting.SetData(sshKey)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
+	setting.MustSetData(sshKey)
+
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 
 	uc.preparePersistingSSHKeyProjects(setting, req.ProjectAccesses, timeNow, persistingData)

@@ -87,10 +87,7 @@ func (uc *OAuthUC) prepareUpdatingOAuth(
 		return apperrors.Wrap(err)
 	}
 
-	err = setting.SetData(oauth)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
+	setting.MustSetData(oauth)
 
 	setting.UpdatedAt = timeNow
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)

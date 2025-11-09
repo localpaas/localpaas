@@ -14,7 +14,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc/apikeydto"
-	"github.com/localpaas/localpaas/pkg/randtoken"
 	"github.com/localpaas/localpaas/pkg/timeutil"
 	"github.com/localpaas/localpaas/pkg/ulid"
 )
@@ -114,20 +113,16 @@ func (uc *APIKeyUC) preparePersistingAPIKey(
 		UpdatedAt: timeNow,
 	}
 
-	secretHash, salt, err := randtoken.HashAsHex(data.SecretKey, saltLen, hashingKeyLen, hashingIteration)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
 	apiKey := &entity.APIKey{
-		SecretKey:    secretHash,
-		Salt:         salt,
+		SecretKey:    data.SecretKey,
 		AccessAction: req.AccessAction,
 	}
-	err = setting.SetData(apiKey)
+	err := apiKey.Hash()
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+	setting.MustSetData(apiKey)
+
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 
 	return nil

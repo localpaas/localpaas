@@ -99,10 +99,8 @@ func (uc *S3StorageUC) preparePersistingS3Storage(
 		return apperrors.Wrap(err)
 	}
 
-	err = setting.SetData(s3Storage)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
+	setting.MustSetData(s3Storage)
+
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 
 	uc.preparePersistingS3StorageProjects(setting, req.ProjectAccesses, timeNow, persistingData)

@@ -1,45 +1,46 @@
 package entity
 
 import (
+	"strings"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/cryptoutil"
 )
 
 type S3Storage struct {
 	AccessKeyID string `json:"accessKeyId"`
 	SecretKey   string `json:"secretKey"`
-	Salt        string `json:"salt,omitempty"`
 	Region      string `json:"region,omitempty"`
 	Bucket      string `json:"bucket,omitempty"`
+	Endpoint    string `json:"endpoint,omitempty"`
 }
 
 func (o *S3Storage) IsEncrypted() bool {
-	return o.Salt != ""
+	return strings.HasPrefix(o.SecretKey, base.SaltPrefix)
 }
 
 func (o *S3Storage) Encrypt() error {
-	if o.Salt != "" {
+	if o.IsEncrypted() {
 		return nil
 	}
-	cipher, salt, err := cryptoutil.EncryptBase64(o.SecretKey, defaultSaltLen)
+	encrypted, err := cryptoutil.EncryptBase64(o.SecretKey, base.DefaultSaltLen)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	o.SecretKey = cipher
-	o.Salt = salt
+	o.SecretKey = encrypted
 	return nil
 }
 
 func (o *S3Storage) Decrypt() error {
-	if o.Salt == "" {
+	if !o.IsEncrypted() {
 		return nil
 	}
-	plain, err := cryptoutil.DecryptBase64(o.SecretKey, o.Salt)
+	decrypted, err := cryptoutil.DecryptBase64(o.SecretKey)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	o.SecretKey = plain
-	o.Salt = ""
+	o.SecretKey = decrypted
 	return nil
 }
 

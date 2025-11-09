@@ -4926,6 +4926,9 @@
           "bucket" : {
             "type" : "string"
           },
+          "endpoint" : {
+            "type" : "string"
+          },
           "name" : {
             "type" : "string"
           },
@@ -4942,7 +4945,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "accessKeyId", "bucket", "name", "projectAccesses", "region", "secretKey" ],
+        "required" : [ "accessKeyId", "bucket", "endpoint", "name", "projectAccesses", "region", "secretKey" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.CreateS3StorageResp" : {
@@ -5071,6 +5074,9 @@
           "encrypted" : {
             "type" : "boolean"
           },
+          "endpoint" : {
+            "type" : "string"
+          },
           "id" : {
             "type" : "string"
           },
@@ -5090,7 +5096,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "accessKeyId", "bucket", "encrypted", "id", "name", "projectAccesses", "region" ],
+        "required" : [ "accessKeyId", "bucket", "encrypted", "endpoint", "id", "name", "projectAccesses", "region" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.UpdateS3StorageResp" : {
@@ -5296,9 +5302,12 @@
           },
           "keyId" : {
             "type" : "string"
+          },
+          "secretKey" : {
+            "type" : "string"
           }
         },
-        "required" : [ "id", "keyId" ],
+        "required" : [ "id", "keyId", "secretKey" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_usersettings_apikeyuc_apikeydto.CreateAPIKeyReq" : {

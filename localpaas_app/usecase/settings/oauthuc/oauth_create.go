@@ -121,10 +121,7 @@ func (uc *OAuthUC) preparePersistingOAuth(
 		return apperrors.Wrap(err)
 	}
 
-	err = setting.SetData(oauth)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
+	setting.MustSetData(oauth)
 
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 

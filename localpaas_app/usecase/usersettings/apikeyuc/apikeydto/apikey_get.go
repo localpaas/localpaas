@@ -12,6 +12,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 )
 
+const (
+	maskedSecretKey = "****************"
+)
+
 type GetAPIKeyReq struct {
 	ID string `json:"-"`
 }
@@ -34,13 +38,9 @@ type GetAPIKeyResp struct {
 type APIKeyResp struct {
 	ID           string          `json:"id"`
 	KeyID        string          `json:"keyId"`
+	SecretKey    string          `json:"secretKey"`
 	AccessAction base.ActionType `json:"accessAction,omitempty"`
 	Expiration   *time.Time      `json:"expiration,omitempty"`
-}
-
-type APIKeyBaseResp struct {
-	ID    string `json:"id"`
-	KeyID string `json:"keyId"`
 }
 
 func TransformAPIKey(setting *entity.Setting) (resp *APIKeyResp, err error) {
@@ -48,6 +48,7 @@ func TransformAPIKey(setting *entity.Setting) (resp *APIKeyResp, err error) {
 		return nil, apperrors.Wrap(err)
 	}
 	resp.KeyID = setting.Name
+	resp.SecretKey = maskedSecretKey
 	if !setting.ExpireAt.IsZero() {
 		resp.Expiration = &setting.ExpireAt
 	}

@@ -103,7 +103,6 @@ func (uc *S3StorageUC) prepareUpdatingS3Storage(
 		}
 		if req.SecretKey != nil {
 			s3Storage.SecretKey = *req.SecretKey
-			s3Storage.Salt = ""
 		}
 		if req.Region != nil {
 			s3Storage.Region = *req.Region
@@ -117,10 +116,7 @@ func (uc *S3StorageUC) prepareUpdatingS3Storage(
 			return apperrors.Wrap(err)
 		}
 
-		err = setting.SetData(s3Storage)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
+		setting.MustSetData(s3Storage)
 	}
 
 	setting.UpdatedAt = timeNow
