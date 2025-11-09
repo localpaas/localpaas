@@ -5,6 +5,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/s3storageuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/slackuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc"
 )
@@ -15,6 +16,7 @@ type SettingsHandler struct {
 	oauthUC     *oauthuc.OAuthUC
 	s3StorageUC *s3storageuc.S3StorageUC
 	sshKeyUC    *sshkeyuc.SSHKeyUC
+	secretUC    *secretuc.SecretUC
 	slackUC     *slackuc.SlackUC
 }
 
@@ -23,6 +25,7 @@ func NewSettingsHandler(
 	oauthUC *oauthuc.OAuthUC,
 	s3StorageUC *s3storageuc.S3StorageUC,
 	sshKeyUC *sshkeyuc.SSHKeyUC,
+	secretUC *secretuc.SecretUC,
 	slackUC *slackuc.SlackUC,
 ) *SettingsHandler {
 	hdl := &SettingsHandler{
@@ -30,6 +33,7 @@ func NewSettingsHandler(
 		oauthUC:     oauthUC,
 		s3StorageUC: s3StorageUC,
 		sshKeyUC:    sshKeyUC,
+		secretUC:    secretUC,
 		slackUC:     slackUC,
 	}
 	return hdl

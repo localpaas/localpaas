@@ -168,6 +168,10 @@ func (s *HTTPServer) registerRoutes() {
 		// Settings
 		projectGroup.GET("/:projectID/settings", s.handlerRegistry.projectHandler.GetProjectSettings)
 		projectGroup.PUT("/:projectID/settings", s.handlerRegistry.projectHandler.UpdateProjectSettings)
+		// Secrets
+		projectGroup.GET("/:projectID/secrets", s.handlerRegistry.projectHandler.ListProjectSecrets)
+		projectGroup.POST("/:projectID/secrets", s.handlerRegistry.projectHandler.CreateProjectSecret)
+		projectGroup.DELETE("/:projectID/secrets/:secretID", s.handlerRegistry.projectHandler.DeleteProjectSecret)
 	}
 
 	appGroup := projectGroup.Group("/:projectID/apps")
@@ -185,6 +189,10 @@ func (s *HTTPServer) registerRoutes() {
 		// Settings
 		appGroup.GET("/:appID/settings", s.handlerRegistry.appHandler.GetAppSettings)
 		appGroup.PUT("/:appID/settings", s.handlerRegistry.appHandler.UpdateAppSettings)
+		// Secrets
+		appGroup.GET("/:appID/secrets", s.handlerRegistry.appHandler.ListAppSecrets)
+		appGroup.POST("/:appID/secrets", s.handlerRegistry.appHandler.CreateAppSecret)
+		appGroup.DELETE("/:appID/secrets/:secretID", s.handlerRegistry.appHandler.DeleteAppSecret)
 	}
 
 	settingGroup := apiGroup.Group("/settings")
@@ -220,6 +228,15 @@ func (s *HTTPServer) registerRoutes() {
 		sshKeyGroup.POST("", s.handlerRegistry.settingsHandler.CreateSSHKey)
 		sshKeyGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateSSHKey)
 		sshKeyGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteSSHKey)
+	}
+
+	{ // secrets group
+		secretGroup := settingGroup.Group("/secrets")
+		// Info
+		secretGroup.GET("", s.handlerRegistry.settingsHandler.ListSecret)
+		// Creation & Update
+		secretGroup.POST("", s.handlerRegistry.settingsHandler.CreateSecret)
+		secretGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteSecret)
 	}
 
 	{ // slack group

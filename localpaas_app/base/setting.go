@@ -7,6 +7,7 @@ const (
 	SettingTypeApp        = SettingType("app")
 	SettingTypeDeployment = SettingType("deployment")
 	SettingTypeEnvVar     = SettingType("env-var")
+	SettingTypeSecret     = SettingType("secret")
 	SettingTypeS3Storage  = SettingType("s3-storage")
 	SettingTypeOAuth      = SettingType("oauth")
 	SettingTypeSSHKey     = SettingType("ssh-key")
@@ -15,9 +16,9 @@ const (
 )
 
 var (
-	AllAppSettingTypes = []SettingType{SettingTypeApp, SettingTypeDeployment, SettingTypeEnvVar}
+	AllAppSettingTypes = []SettingType{SettingTypeApp, SettingTypeDeployment, SettingTypeEnvVar, SettingTypeSecret}
 
-	AllProjectSettingTypes = []SettingType{SettingTypeProject, SettingTypeEnvVar}
+	AllProjectSettingTypes = []SettingType{SettingTypeProject, SettingTypeEnvVar, SettingTypeSecret}
 )
 
 type SettingStatus string

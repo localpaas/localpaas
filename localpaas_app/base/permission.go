@@ -27,6 +27,7 @@ const (
 	ResourceTypeOAuth      ResourceType = "oauth"
 	ResourceTypeSSHKey     ResourceType = "ssh-key"
 	ResourceTypeAPIKey     ResourceType = "api-key"
+	ResourceTypeSecret     ResourceType = "secret"
 	ResourceTypeSlack      ResourceType = "slack"
 )
 

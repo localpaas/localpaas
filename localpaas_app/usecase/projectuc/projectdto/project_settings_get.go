@@ -8,6 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc/secretdto"
 )
 
 type GetProjectSettingsReq struct {
@@ -37,6 +38,7 @@ type GetProjectSettingsResp struct {
 
 type ProjectSettingsResp struct {
 	EnvVars  *EnvVarsResp         `json:"envVars,omitempty"`
+	Secrets  *SecretsResp         `json:"secrets,omitempty"`
 	Settings *GeneralSettingsResp `json:"settings,omitempty"`
 }
 
@@ -50,6 +52,10 @@ type EnvVarResp struct {
 	IsBuildEnv bool   `json:"isBuildEnv,omitempty"`
 }
 
+type SecretsResp struct {
+	Project []*secretdto.SecretResp `json:"project"`
+}
+
 type GeneralSettingsResp struct {
 	Test string `json:"test"`
 }
@@ -57,6 +63,7 @@ type GeneralSettingsResp struct {
 func TransformProjectSettings(project *entity.Project) (resp *ProjectSettingsResp, err error) {
 	resp = &ProjectSettingsResp{}
 
+	var allSecrets []*entity.Setting
 	for _, setting := range project.Settings {
 		switch setting.Type { //nolint:exhaustive
 		case base.SettingTypeProject:
@@ -70,6 +77,19 @@ func TransformProjectSettings(project *entity.Project) (resp *ProjectSettingsRes
 			if err != nil {
 				return nil, apperrors.Wrap(err)
 			}
+
+		case base.SettingTypeSecret:
+			allSecrets = append(allSecrets, setting)
+		}
+	}
+
+	if len(allSecrets) > 0 {
+		secrets, err := secretdto.TransformSecrets(allSecrets, false)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		resp.Secrets = &SecretsResp{
+			Project: secrets,
 		}
 	}
 
