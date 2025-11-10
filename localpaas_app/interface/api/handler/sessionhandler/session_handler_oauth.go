@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	ssoRedirectFEPathOnSuccess = "/auth/sso/success"
+	ssoRedirectFEPathOnSuccess = "auth/sso/success"
 )
 
 // To keep `apperrors` pkg imported and swag gen won't fail
