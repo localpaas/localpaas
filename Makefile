@@ -97,3 +97,11 @@ dev-deploy:
 	git push origin --delete dev-v0.1.0 # delete tag in remote
 	git tag dev-v0.1.0 --force
 	git push origin dev-v0.1.0 --force
+
+local-deploy:
+	mkdir -p tmp
+	bash deployment/local/install.sh
+
+local-build-fe:
+	rm -rf dist-dashboard
+	cd ../localpaas-dashboard && git pull && yarn build && mv dist ../localpaas/dist-dashboard
