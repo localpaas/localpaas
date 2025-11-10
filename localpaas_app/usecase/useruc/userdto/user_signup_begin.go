@@ -31,6 +31,7 @@ type BeginUserSignupResp struct {
 }
 
 type BeginUserSignupDataResp struct {
+	Username         string                  `json:"username"`
 	Email            string                  `json:"email"`
 	Role             base.UserRole           `json:"role"`
 	SecurityOption   base.UserSecurityOption `json:"securityOption"`

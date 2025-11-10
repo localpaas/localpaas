@@ -2,6 +2,7 @@ package useruc
 
 import (
 	"context"
+	"errors"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -66,6 +67,34 @@ func (uc *UserUC) loadUserProfileData(
 	}
 	data.User = user
 
+	// If username changes, need to verify the uniqueness
+	if req.Username != "" && req.Username != user.Username {
+		conflictUser, err := uc.userRepo.GetByUsername(ctx, db, req.Username)
+		if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
+			return apperrors.Wrap(err)
+		}
+		if conflictUser != nil {
+			return apperrors.New(apperrors.ErrNameUnavailable).
+				WithMsgLog("user '%s' already exists", req.Username)
+		}
+	}
+
+	// If email changes, need to verify the uniqueness
+	if req.Email != "" && req.Email != user.Email {
+		if user.Email != "" {
+			// When email of user exists, we don't allow changing
+			return apperrors.New(apperrors.ErrEmailChangeUnallowed)
+		}
+		conflictUser, err := uc.userRepo.GetByEmail(ctx, db, req.Email)
+		if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
+			return apperrors.Wrap(err)
+		}
+		if conflictUser != nil {
+			return apperrors.New(apperrors.ErrEmailUnavailable).
+				WithMsgLog("email '%s' already exists", req.Email)
+		}
+	}
+
 	// Save user photo to local disk
 	if req.Photo != nil && req.Photo.FileName != "" {
 		err = uc.userService.SaveUserPhoto(ctx, user, req.Photo.DataBytes, req.Photo.FileExt)
@@ -87,8 +116,14 @@ func (uc *UserUC) preparePersistingUserProfileData(
 	persistingData.UpdatingUser = user
 
 	user.UpdatedAt = timeNow
-	if req.FullName != nil {
-		user.FullName = *req.FullName
+	if req.Username != "" {
+		user.Username = req.Username
+	}
+	if req.Email != "" {
+		user.Email = req.Email
+	}
+	if req.FullName != "" {
+		user.FullName = req.FullName
 	}
 	if req.Photo != nil && req.Photo.FileName == "" {
 		user.Photo = ""
@@ -101,7 +136,7 @@ func (uc *UserUC) persistUserProfileData(
 	persistingData *persistingUserProfileData,
 ) error {
 	err := uc.userRepo.Update(ctx, db, persistingData.UpdatingUser,
-		bunex.UpdateColumns("updated_at", "full_name", "photo"),
+		bunex.UpdateColumns("updated_at", "username", "email", "full_name", "photo"),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)

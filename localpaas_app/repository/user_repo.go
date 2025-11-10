@@ -20,6 +20,10 @@ import (
 type UserRepo interface {
 	GetByID(ctx context.Context, db database.IDB, id string, opts ...bunex.SelectQueryOption) (
 		*entity.User, error)
+	GetByUsernameOrEmail(ctx context.Context, db database.IDB, username, email string,
+		opts ...bunex.SelectQueryOption) (*entity.User, error)
+	GetByUsername(ctx context.Context, db database.IDB, username string,
+		opts ...bunex.SelectQueryOption) (*entity.User, error)
 	GetByEmail(ctx context.Context, db database.IDB, email string, opts ...bunex.SelectQueryOption) (
 		*entity.User, error)
 	List(ctx context.Context, db database.IDB, paging *basedto.Paging, opts ...bunex.SelectQueryOption) (
@@ -54,6 +58,42 @@ func (repo *userRepo) GetByID(ctx context.Context, db database.IDB, id string,
 	err := query.Scan(ctx)
 	if user == nil || errors.Is(err, sql.ErrNoRows) {
 		return nil, apperrors.NewNotFound("User").WithCause(err).WithMsgLog("user id: %s", id)
+	}
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return user, nil
+}
+
+func (repo *userRepo) GetByUsernameOrEmail(ctx context.Context, db database.IDB, username, email string,
+	opts ...bunex.SelectQueryOption) (*entity.User, error) {
+	user := &entity.User{}
+	query := db.NewSelect().Model(user).
+		Where("\"user\".username = ?", username).
+		WhereOr("\"user\".email = ?", strings.ToLower(email)).
+		Limit(1)
+	query = bunex.ApplySelect(query, opts...)
+
+	err := query.Scan(ctx)
+	if user == nil || errors.Is(err, sql.ErrNoRows) {
+		return nil, apperrors.NewNotFound("User").WithCause(err).
+			WithMsgLog("user name: %s, email: %s", username, email)
+	}
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return user, nil
+}
+
+func (repo *userRepo) GetByUsername(ctx context.Context, db database.IDB, username string,
+	opts ...bunex.SelectQueryOption) (*entity.User, error) {
+	user := &entity.User{}
+	query := db.NewSelect().Model(user).Where("\"user\".username = ?", username)
+	query = bunex.ApplySelect(query, opts...)
+
+	err := query.Scan(ctx)
+	if user == nil || errors.Is(err, sql.ErrNoRows) {
+		return nil, apperrors.NewNotFound("User").WithCause(err).WithMsgLog("user name: %s", username)
 	}
 	if err != nil {
 		return nil, apperrors.Wrap(err)

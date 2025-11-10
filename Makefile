@@ -102,6 +102,11 @@ local-deploy:
 	mkdir -p tmp
 	bash deployment/local/install.sh
 
+ifndef LP_FE_DIR
+LP_FE_DIR=../localpaas-dashboard
+endif
+
 local-build-fe:
+	cd ${LP_FE_DIR} && git pull && yarn build
 	rm -rf dist-dashboard
-	cd ../localpaas-dashboard && git pull && yarn build && mv dist ../localpaas/dist-dashboard
+	mv ${LP_FE_DIR}/dist dist-dashboard

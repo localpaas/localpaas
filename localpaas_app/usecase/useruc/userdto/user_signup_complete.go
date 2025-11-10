@@ -16,9 +16,11 @@ const (
 )
 
 type CompleteUserSignupReq struct {
-	InviteToken string        `json:"inviteToken"`
-	FullName    string        `json:"fullName"`
-	Photo       *UserPhotoReq `json:"photo"`
+	InviteToken string `json:"inviteToken"`
+
+	Username string        `json:"username"`
+	FullName string        `json:"fullName"`
+	Photo    *UserPhotoReq `json:"photo"`
 
 	// Required when security option is password-2fa/password-only
 	Password string `json:"password"`
@@ -42,6 +44,8 @@ func NewCompleteUserSignupReq() *CompleteUserSignupReq {
 }
 
 func (req *CompleteUserSignupReq) ModifyRequest() error {
+	req.Username = strings.TrimSpace(req.Username)
+	req.FullName = strings.TrimSpace(req.FullName)
 	// Parse photo
 	if req.Photo != nil && req.Photo.FileName != "" && req.Photo.DataBase64 != "" {
 		req.Photo.DataBytes, _ = base64.StdEncoding.DecodeString(req.Photo.DataBase64)
@@ -54,6 +58,7 @@ func (req *CompleteUserSignupReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, basedto.ValidateStr(&req.InviteToken, true,
 		1, maxInviteTokenLen, "inviteToken")...)
+	validators = append(validators, validateUsername(&req.Username, false, "username")...)
 	validators = append(validators, basedto.ValidateStr(&req.FullName, true,
 		minNameLen, maxNameLen, "fullName")...)
 	validators = append(validators, validateUserPhoto(req.Photo, "photo")...)

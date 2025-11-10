@@ -33,6 +33,7 @@ func (uc *UserUC) BeginUserSignup(
 	}
 
 	resp := &userdto.BeginUserSignupDataResp{
+		Username:       user.Username,
 		Email:          user.Email,
 		Role:           user.Role,
 		SecurityOption: user.SecurityOption,

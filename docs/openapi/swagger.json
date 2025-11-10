@@ -5591,9 +5591,12 @@
           },
           "updatedAt" : {
             "type" : "string"
+          },
+          "username" : {
+            "type" : "string"
           }
         },
-        "required" : [ "accessExpireAt", "createdAt", "email", "fullName", "id", "photo", "role", "securityOption", "status", "updatedAt" ],
+        "required" : [ "accessExpireAt", "createdAt", "email", "fullName", "id", "photo", "role", "securityOption", "status", "updatedAt", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.CreateOAuthReq" : {
@@ -6373,9 +6376,12 @@
           },
           "securityOption" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.UserSecurityOption"
+          },
+          "username" : {
+            "type" : "string"
           }
         },
-        "required" : [ "accessExpiration", "email", "role", "securityOption" ],
+        "required" : [ "accessExpiration", "email", "role", "securityOption", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.BeginUserSignupReq" : {
@@ -6441,9 +6447,12 @@
           },
           "photo" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UserPhotoReq"
+          },
+          "username" : {
+            "type" : "string"
           }
         },
-        "required" : [ "fullName", "inviteToken", "mfaTotpSecret", "passcode", "password", "photo" ],
+        "required" : [ "fullName", "inviteToken", "mfaTotpSecret", "passcode", "password", "photo", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.CompleteUserSignupResp" : {
@@ -6622,14 +6631,20 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UpdateProfileReq" : {
         "properties" : {
+          "email" : {
+            "type" : "string"
+          },
           "fullName" : {
             "type" : "string"
           },
           "photo" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UserPhotoReq"
+          },
+          "username" : {
+            "type" : "string"
           }
         },
-        "required" : [ "fullName", "photo" ],
+        "required" : [ "email", "fullName", "photo", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UpdateProfileResp" : {
@@ -6644,6 +6659,9 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UpdateUserReq" : {
         "properties" : {
           "accessExpiration" : {
+            "type" : "string"
+          },
+          "email" : {
             "type" : "string"
           },
           "fullName" : {
@@ -6672,9 +6690,12 @@
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.UserStatus"
+          },
+          "username" : {
+            "type" : "string"
           }
         },
-        "required" : [ "accessExpiration", "fullName", "moduleAccesses", "photo", "projectAccesses", "role", "securityOption", "status" ],
+        "required" : [ "accessExpiration", "email", "fullName", "moduleAccesses", "photo", "projectAccesses", "role", "securityOption", "status", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UpdateUserResp" : {

@@ -1,8 +1,11 @@
 package userdto
 
 import (
+	"github.com/asaskevich/govalidator"
 	vld "github.com/tiendc/go-validator"
 	"github.com/tiendc/gofn"
+
+	"github.com/localpaas/localpaas/localpaas_app/basedto"
 )
 
 var (
@@ -15,6 +18,20 @@ const (
 
 	maxUserPhotoSize = 500 * 1024 * 1024 // 500KB
 )
+
+func validateUsername(username *string, required bool, field string) (res []vld.Validator) {
+	res = append(res, basedto.ValidateStr(username, required,
+		minNameLen, maxNameLen, "username")...)
+
+	// NOTE: username must not be a valid email address as it takes the address
+	if username != nil {
+		res = append(res, vld.Must(!govalidator.IsEmail(*username)).OnError(
+			vld.SetField(field, nil),
+			vld.SetCustomKey("ERR_PARAM_INVALID"),
+		))
+	}
+	return res
+}
 
 func validateUserPhoto(photo *UserPhotoReq, field string) []vld.Validator {
 	if photo == nil || photo.FileName == "" || photo.DataBase64 == "" {

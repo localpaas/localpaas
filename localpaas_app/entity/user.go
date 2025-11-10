@@ -9,14 +9,15 @@ import (
 
 var (
 	UserUpsertingConflictCols = []string{"id"}
-	UserUpsertingUpdateCols   = []string{"email", "role", "status", "full_name", "photo", "security_option",
+	UserUpsertingUpdateCols   = []string{"username", "email", "role", "status", "full_name", "photo", "security_option",
 		"totp_secret", "password", "password_salt", "password_fails_in_row", "password_first_fail_at",
 		"access_expire_at", "last_access", "updated_at", "deleted_at"}
 )
 
 type User struct {
 	ID       string `bun:",pk"`
-	Email    string
+	Username string
+	Email    string `bun:",nullzero"`
 	Role     base.UserRole
 	Status   base.UserStatus
 	FullName string

@@ -28,6 +28,11 @@ func NewLoginWithPasswordReq() *LoginWithPasswordReq {
 	return &LoginWithPasswordReq{}
 }
 
+func (req *LoginWithPasswordReq) ModifyRequest() error {
+	req.Username = strings.TrimSpace(req.Username)
+	return nil
+}
+
 func (req *LoginWithPasswordReq) Validate() apperrors.ValidationErrors {
 	req.Username = strings.TrimSpace(req.Username)
 	req.TrustedDeviceID = strings.TrimSpace(req.TrustedDeviceID)

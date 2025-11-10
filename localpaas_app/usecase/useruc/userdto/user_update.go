@@ -11,11 +11,14 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/pkg/strutil"
 )
 
 type UpdateUserReq struct {
 	ID               string                       `json:"-"`
-	FullName         *string                      `json:"fullName"`
+	Username         string                       `json:"username"`
+	Email            string                       `json:"email"`
+	FullName         string                       `json:"fullName"`
 	Photo            *UserPhotoReq                `json:"photo"`
 	Status           *base.UserStatus             `json:"status"`
 	Role             *base.UserRole               `json:"role"`
@@ -30,6 +33,9 @@ func NewUpdateUserReq() *UpdateUserReq {
 }
 
 func (req *UpdateUserReq) ModifyRequest() error {
+	req.Username = strings.TrimSpace(req.Username)
+	req.Email = strutil.NormalizeEmail(req.Email)
+	req.FullName = strings.TrimSpace(req.FullName)
 	// Parse photo
 	if req.Photo != nil && req.Photo.FileName != "" && req.Photo.DataBase64 != "" {
 		req.Photo.DataBytes, _ = base64.StdEncoding.DecodeString(req.Photo.DataBase64)
@@ -40,8 +46,10 @@ func (req *UpdateUserReq) ModifyRequest() error {
 
 func (req *UpdateUserReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, basedto.ValidateID(&req.ID, true, "status")...)
-	validators = append(validators, basedto.ValidateStr(req.FullName, false, minNameLen, maxNameLen,
+	validators = append(validators, basedto.ValidateID(&req.ID, true, "id")...)
+	validators = append(validators, validateUsername(&req.Username, false, "username")...)
+	validators = append(validators, basedto.ValidateEmail(&req.Email, false, "email")...)
+	validators = append(validators, basedto.ValidateStr(&req.FullName, false, minNameLen, maxNameLen,
 		"fullName")...)
 	validators = append(validators, validateUserPhoto(req.Photo, "photo")...)
 	validators = append(validators, basedto.ValidateStrIn(req.Status, false, base.AllUserStatuses,

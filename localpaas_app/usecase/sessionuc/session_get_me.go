@@ -10,10 +10,10 @@ import (
 
 func (uc *SessionUC) GetMe(
 	_ context.Context,
-	auth *basedto.Auth,
+	user *basedto.User,
 	_ *sessiondto.GetMeReq,
 ) (*sessiondto.GetMeResp, error) {
-	userResp, err := sessiondto.TransformUser(auth.User.User)
+	userResp, err := sessiondto.TransformUser(user.User)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

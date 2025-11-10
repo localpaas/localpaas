@@ -2,6 +2,7 @@ package useruc
 
 import (
 	"context"
+	"errors"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -58,6 +59,30 @@ func (uc *UserUC) loadUserDataForUpdate(
 	}
 	data.User = user
 
+	// If username changes, need to verify the uniqueness
+	if req.Username != "" && req.Username != user.Username {
+		conflictUser, err := uc.userRepo.GetByUsername(ctx, db, req.Username)
+		if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
+			return apperrors.Wrap(err)
+		}
+		if conflictUser != nil {
+			return apperrors.New(apperrors.ErrNameUnavailable).
+				WithMsgLog("user '%s' already exists", req.Username)
+		}
+	}
+
+	// If email changes, need to verify the uniqueness
+	if req.Email != "" && req.Email != user.Email {
+		conflictUser, err := uc.userRepo.GetByEmail(ctx, db, req.Email)
+		if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
+			return apperrors.Wrap(err)
+		}
+		if conflictUser != nil {
+			return apperrors.New(apperrors.ErrEmailUnavailable).
+				WithMsgLog("email '%s' already exists", req.Email)
+		}
+	}
+
 	if req.Role != nil {
 		if base.RoleCmp(auth.User.Role, *req.Role) < 0 {
 			return apperrors.New(apperrors.ErrForbidden).
@@ -85,8 +110,14 @@ func (uc *UserUC) prepareUpdatingUserData(
 	user := profileData.User
 
 	user.UpdatedAt = timeNow
-	if req.FullName != nil {
-		user.FullName = *req.FullName
+	if req.Username != "" {
+		user.Username = req.Username
+	}
+	if req.Email != "" {
+		user.Email = req.Email
+	}
+	if req.FullName != "" {
+		user.FullName = req.FullName
 	}
 	if req.Photo != nil && req.Photo.FileName == "" {
 		user.Photo = ""

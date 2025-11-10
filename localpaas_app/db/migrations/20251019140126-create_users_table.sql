@@ -2,7 +2,8 @@
 CREATE TABLE IF NOT EXISTS users
 (
     id              VARCHAR(100) PRIMARY KEY,
-    email           VARCHAR(255) NOT NULL,
+    username        VARCHAR(100) NOT NULL,
+    email           VARCHAR(255) NULL,
     role            VARCHAR(20) NOT NULL CONSTRAINT chk_role CHECK
                         (role IN ('admin','member')),
     status          VARCHAR(20) NOT NULL CONSTRAINT chk_status CHECK
@@ -23,6 +24,7 @@ CREATE TABLE IF NOT EXISTS users
     deleted_at             TIMESTAMPTZ NULL
 );
 
+CREATE UNIQUE INDEX idx_uq_users_username ON users(username) WHERE deleted_at IS NULL;
 CREATE UNIQUE INDEX idx_uq_users_email ON users(email) WHERE deleted_at IS NULL;
 CREATE INDEX idx_users_full_name ON users(full_name);
 CREATE INDEX idx_users_created_at ON users(created_at);

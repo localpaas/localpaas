@@ -11,6 +11,7 @@ var (
 	ErrBadRequest           = errors.New("ERR_BAD_REQUEST")
 	ErrParamInvalid         = errors.New("ERR_PARAM_INVALID")
 	ErrUnavailable          = errors.New("ERR_UNAVAILABLE")
+	ErrNameUnavailable      = errors.New("ERR_NAME_UNAVAILABLE")
 	ErrUnauthorized         = errors.New("ERR_UNAUTHORIZED")
 	ErrForbidden            = errors.New("ERR_FORBIDDEN")
 	ErrNotFound             = errors.New("ERR_NOT_FOUND")
@@ -56,6 +57,7 @@ var (
 	ErrUserNotCompleteMFASetup     = errors.New("ERR_USER_NOT_COMPLETE_MFA_SETUP")
 	ErrPasswordNotMeetRequirements = errors.New("ERR_PASSWORD_NOT_MEET_REQUIREMENTS")
 	ErrPasswordResetTokenInvalid   = errors.New("ERR_PASSWORD_RESET_TOKEN_INVALID")
+	ErrEmailUnavailable            = errors.New("ERR_EMAIL_UNAVAILABLE")
 	ErrEmailChangeUnallowed        = errors.New("ERR_EMAIL_CHANGE_UNALLOWED")
 )
 
@@ -67,6 +69,7 @@ var errorStatusMap = map[error]int{
 	ErrParamInvalid:         http.StatusBadRequest,
 	ErrUnavailable:          http.StatusBadRequest,
 	ErrUnauthorized:         http.StatusUnauthorized,
+	ErrNameUnavailable:      http.StatusConflict,
 	ErrForbidden:            http.StatusForbidden,
 	ErrNotFound:             http.StatusNotFound,
 	ErrAlreadyExist:         http.StatusConflict,
@@ -104,6 +107,7 @@ var errorStatusMap = map[error]int{
 	ErrUserNotCompleteMFASetup:     http.StatusForbidden,
 	ErrPasswordNotMeetRequirements: http.StatusUnprocessableEntity,
 	ErrPasswordResetTokenInvalid:   http.StatusNotAcceptable,
+	ErrEmailUnavailable:            http.StatusUnprocessableEntity,
 	ErrEmailChangeUnallowed:        http.StatusUnprocessableEntity,
 }
 

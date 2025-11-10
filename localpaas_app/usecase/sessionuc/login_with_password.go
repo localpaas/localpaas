@@ -31,7 +31,7 @@ func (uc *SessionUC) LoginWithPassword(
 	ctx context.Context,
 	req *sessiondto.LoginWithPasswordReq,
 ) (resp *sessiondto.LoginWithPasswordResp, err error) {
-	dbUser, err := uc.userRepo.GetByEmail(ctx, uc.db, req.Username)
+	dbUser, err := uc.userRepo.GetByUsernameOrEmail(ctx, uc.db, req.Username, req.Username)
 	if err != nil {
 		return nil, uc.wrapSensitiveError(err)
 	}

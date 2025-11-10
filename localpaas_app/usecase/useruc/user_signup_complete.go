@@ -2,6 +2,7 @@ package useruc
 
 import (
 	"context"
+	"errors"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -76,6 +77,18 @@ func (uc *UserUC) loadUserSignupData(
 	}
 	data.User = user
 
+	// If username changes, need to verify the uniqueness
+	if req.Username != "" && req.Username != user.Username {
+		conflictUser, err := uc.userRepo.GetByUsername(ctx, db, req.Username)
+		if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
+			return apperrors.Wrap(err)
+		}
+		if conflictUser != nil {
+			return apperrors.New(apperrors.ErrNameUnavailable).
+				WithMsgLog("user '%s' already exists", req.Username)
+		}
+	}
+
 	// Save user photo to local disk
 	err = uc.userService.SaveUserPhoto(ctx, user, req.Photo.DataBytes, req.Photo.FileExt)
 	if err != nil {
@@ -95,6 +108,7 @@ func (uc *UserUC) preparePersistingUserSignupData(
 	persistingData.UpdatingUser = user
 
 	user.UpdatedAt = timeNow
+	user.Username = req.Username
 	user.FullName = req.FullName
 	user.Status = base.UserStatusActive
 

@@ -4,7 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math/rand"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/tiendc/gofn"
@@ -77,9 +79,21 @@ func (uc *UserUC) loadUserInviteData(
 			WithMsgLog("user '%s' already exists", req.Email)
 	}
 
+	// Calculate username from the email
+	username := strings.SplitN(req.Email, "@", 2)[0] //nolint:mnd
+	// If the username is not available, append some random chars
+	conflictUser, err := uc.userRepo.GetByUsername(ctx, db, username)
+	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
+		return apperrors.Wrap(err)
+	}
+	if conflictUser != nil {
+		username += fmt.Sprintf("-%d", 1000+rand.Intn(9000)) //nolint
+	}
+
 	if user == nil {
 		user = &entity.User{
 			ID:        gofn.Must(ulid.NewStringULID()),
+			Username:  username,
 			Email:     req.Email,
 			CreatedAt: time.Now(),
 		}

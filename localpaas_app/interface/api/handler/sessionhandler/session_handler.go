@@ -47,14 +47,14 @@ func NewSessionHandler(
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /sessions/me [get]
 func (h *SessionHandler) GetMe(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
+	user, err := h.authHandler.GetCurrentUser(ctx)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
 	req := sessiondto.NewGetMeReq()
-	resp, err := h.sessionUC.GetMe(h.RequestCtx(ctx), auth, req)
+	resp, err := h.sessionUC.GetMe(h.RequestCtx(ctx), user, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
