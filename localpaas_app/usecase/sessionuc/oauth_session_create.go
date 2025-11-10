@@ -40,6 +40,8 @@ func (uc *SessionUC) CreateOAuthSession(
 			Email:          email,
 			FullName:       fullName,
 			Photo:          gofn.If(len(oauthUser.AvatarURL) < externalAvatarURLMaxLen, oauthUser.AvatarURL, ""), //nolint
+			Role:           base.UserRoleMember,
+			Status:         base.UserStatusActive,
 			SecurityOption: base.UserSecurityEnforceSSO,
 			CreatedAt:      timeNow,
 			UpdatedAt:      timeNow,
