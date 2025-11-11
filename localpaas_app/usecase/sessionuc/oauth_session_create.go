@@ -3,6 +3,8 @@ package sessionuc
 import (
 	"context"
 	"errors"
+	"fmt"
+	"math/rand"
 	"strings"
 
 	"github.com/tiendc/gofn"
@@ -24,10 +26,29 @@ func (uc *SessionUC) CreateOAuthSession(
 	req *sessiondto.CreateOAuthSessionReq,
 ) (*sessiondto.CreateOAuthSessionResp, error) {
 	oauthUser := req.User
-	email := gofn.Coalesce(oauthUser.Email, oauthUser.UserID)
+	email := oauthUser.Email
+	if email == "" {
+		return nil, apperrors.New(apperrors.ErrInternalServer).
+			WithMsgLog("unable to create oauth session, email is not returned from provider")
+	}
+
 	dbUser, err := uc.userRepo.GetByEmail(ctx, uc.db, email)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return nil, apperrors.Wrap(err)
+	}
+
+	var username string
+	if dbUser != nil {
+		username = dbUser.Username
+	} else {
+		username = strings.SplitN(email, "@", 2)[0] //nolint:mnd
+		conflictUser, err := uc.userRepo.GetByUsername(ctx, uc.db, username)
+		if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
+			return nil, apperrors.Wrap(err)
+		}
+		if conflictUser != nil {
+			username += fmt.Sprintf("-%d", 1000+rand.Intn(9000)) //nolint
+		}
 	}
 
 	fullName := strings.Join(gofn.ToSliceSkippingZero(oauthUser.FirstName, oauthUser.LastName), " ")
@@ -37,6 +58,7 @@ func (uc *SessionUC) CreateOAuthSession(
 		// User makes the first login to our service
 		timeNow := timeutil.NowUTC()
 		dbUser = &entity.User{
+			Username:       username,
 			Email:          email,
 			FullName:       fullName,
 			Photo:          gofn.If(len(oauthUser.AvatarURL) < externalAvatarURLMaxLen, oauthUser.AvatarURL, ""), //nolint
