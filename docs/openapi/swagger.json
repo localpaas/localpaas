@@ -5950,6 +5950,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_secretuc_secretdto.CreateSecretReq" : {
         "properties" : {
+          "base64" : {
+            "type" : "boolean"
+          },
           "key" : {
             "type" : "string"
           },
@@ -5957,7 +5960,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "key", "value" ],
+        "required" : [ "base64", "key", "value" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_secretuc_secretdto.CreateSecretResp" : {

@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"encoding/base64"
 	"strings"
 
 	"github.com/tiendc/gofn"
@@ -11,8 +12,9 @@ import (
 )
 
 type Secret struct {
-	Key   string `json:"k"`
-	Value string `json:"v"`
+	Key    string `json:"k"`
+	Value  string `json:"v"`
+	Base64 bool   `json:"b64"`
 }
 
 func (o *Secret) IsEncrypted() bool {
@@ -46,6 +48,14 @@ func (o *Secret) Decrypt() error {
 	}
 	o.Value = decrypted
 	return nil
+}
+
+func (o *Secret) ValueAsBytes() []byte {
+	gofn.Must1(o.Decrypt())
+	if o.Base64 {
+		return gofn.Must(base64.StdEncoding.DecodeString(o.Value))
+	}
+	return []byte(o.Value)
 }
 
 func (s *Setting) ParseSecret(decrypt bool) (*Secret, error) {

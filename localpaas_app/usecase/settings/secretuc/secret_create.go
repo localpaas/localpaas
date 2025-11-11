@@ -94,8 +94,9 @@ func (uc *SecretUC) preparePersistingSecret(
 	}
 
 	secret := &entity.Secret{
-		Key:   req.Key,
-		Value: req.Value,
+		Key:    req.Key,
+		Value:  req.Value,
+		Base64: req.Base64,
 	}
 	setting.MustSetData(secret.MustEncrypt())
 

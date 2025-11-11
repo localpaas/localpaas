@@ -15,8 +15,9 @@ const (
 type CreateSecretReq struct {
 	ObjectID string `json:"-"`
 
-	Key   string `json:"key"`
-	Value string `json:"value"`
+	Key    string `json:"key"`
+	Value  string `json:"value"`
+	Base64 bool   `json:"base64"`
 }
 
 func NewCreateSecretReq() *CreateSecretReq {
