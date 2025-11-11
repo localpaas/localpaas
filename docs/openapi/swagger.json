@@ -5384,6 +5384,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.GetMeDataResp" : {
         "properties" : {
+          "nextStep" : {
+            "type" : "string"
+          },
           "user" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.UserResp"
           }

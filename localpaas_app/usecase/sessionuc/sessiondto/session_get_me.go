@@ -17,5 +17,6 @@ type GetMeResp struct {
 }
 
 type GetMeDataResp struct {
-	User *UserResp `json:"user"`
+	NextStep string    `json:"nextStep,omitempty"`
+	User     *UserResp `json:"user"`
 }
