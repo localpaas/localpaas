@@ -56,7 +56,7 @@ func (uc *SessionUC) LoginWithPassword(
 		if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 			return nil, apperrors.Wrap(err)
 		}
-		if trustedDevice != nil && timeNow.Sub(trustedDevice.UpdatedAt) < config.Current.Session.MFA.DeviceTrustedPeriod {
+		if trustedDevice != nil && timeNow.Sub(trustedDevice.UpdatedAt) < config.Current.Session.DeviceTrustedPeriod {
 			passcodeRequired = false
 		}
 	}

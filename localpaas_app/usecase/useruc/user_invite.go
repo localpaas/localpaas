@@ -108,7 +108,7 @@ func (uc *UserUC) loadUserInviteData(
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	signupLink := gofn.Must(url.JoinPath(config.Current.App.BaseURL, dashboardUserSignUpPath)) +
+	signupLink := gofn.Must(url.JoinPath(config.Current.BaseURL, dashboardUserSignUpPath)) +
 		fmt.Sprintf("?token=%s", inviteToken)
 	data.InviteLink = signupLink
 

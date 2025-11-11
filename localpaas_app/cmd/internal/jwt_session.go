@@ -15,9 +15,9 @@ func InitJWTSession(lc fx.Lifecycle, cfg *config.Config, logger logging.Logger) 
 		OnStart: func(_ context.Context) error {
 			logger.Info("initializing JWT session...")
 			return jwtsession.InitJWTSession(&jwtsession.Config{
-				Secret:          cfg.Session.JWT.Secret,
-				AccessTokenExp:  cfg.Session.JWT.AccessTokenExp,
-				RefreshTokenExp: cfg.Session.JWT.RefreshTokenExp,
+				Secret:          cfg.Session.JWTSecret,
+				AccessTokenExp:  cfg.Session.AccessTokenExp,
+				RefreshTokenExp: cfg.Session.RefreshTokenExp,
 			}) //nolint:wrapcheck
 		},
 		OnStop: func(ctx context.Context) error {

@@ -155,7 +155,7 @@ func (h *SessionHandler) writeSessionDataToCookies(ctx *gin.Context, sessionResp
 
 	if !writeRefreshOnly {
 		accessAge := int(sessionResp.AccessTokenExp.Sub(timeNow).Seconds())
-		baseURL := strings.SplitN(config.Current.HTTPServer.BaseURL, ".", 2) //nolint:mnd
+		baseURL := strings.SplitN(config.Current.BaseURL, ".", 2) //nolint:mnd
 		ctx.SetCookie(cookieAccessToken, sessionResp.AccessToken, accessAge, "",
 			baseURL[len(baseURL)-1], secure, cookieAccessHTTPOnly)
 	}

@@ -18,7 +18,7 @@ const (
 )
 
 func (s *userService) SaveUserPhoto(_ context.Context, user *entity.User, data []byte, fileExt string) error {
-	dirPath := config.Current.App.DataPathUserPhoto()
+	dirPath := config.Current.DataPathUserPhoto()
 	err := os.MkdirAll(dirPath, photoDirFileMode)
 	if err != nil {
 		return fmt.Errorf("error creating user photo directory: %w", err)
@@ -36,6 +36,6 @@ func (s *userService) SaveUserPhoto(_ context.Context, user *entity.User, data [
 	}
 
 	// Save the photo path
-	user.Photo = config.Current.App.HttpPathUserPhoto() + fileName
+	user.Photo = config.Current.HttpPathUserPhoto() + fileName
 	return nil
 }

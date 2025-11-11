@@ -67,7 +67,7 @@ services:
       - localpaas_net
       - internal_net
     environment:
-      LP_CONFIG_FILE: config/config.development.yaml
+      LP_CONFIG_FILE: config/config.development.toml
       VITE_API_URL: http://localhost:10000
     volumes:
       - app_data:/var/lib/localpaas

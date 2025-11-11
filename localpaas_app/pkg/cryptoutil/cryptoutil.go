@@ -48,7 +48,7 @@ func EncryptEx(plaintext, salt, secret []byte) ([]byte, error) {
 }
 
 func Encrypt(plaintext, salt []byte) ([]byte, error) {
-	return EncryptEx(plaintext, salt, []byte(config.Current.App.Secret))
+	return EncryptEx(plaintext, salt, []byte(config.Current.Secret))
 }
 
 // EncryptBase64 this encrypts the input and returns a string in form: `lpsalt:<salt> <secret>`
@@ -93,7 +93,7 @@ func DecryptEx(ciphertext, salt, secret []byte) ([]byte, error) {
 }
 
 func Decrypt(ciphertext, salt []byte) ([]byte, error) {
-	return DecryptEx(ciphertext, salt, []byte(config.Current.App.Secret))
+	return DecryptEx(ciphertext, salt, []byte(config.Current.Secret))
 }
 
 // DecryptBase64 this decrypts the input in form: `lpsalt:<salt> <secret>`

@@ -131,6 +131,6 @@ func (h *SessionHandler) SSOOAuthCallback(ctx *gin.Context) {
 	h.writeSessionDataToCookies(ctx, &sessionResp.BaseCreateSessionResp, false)
 
 	// Redirect client to front-end page
-	redirectURL := gofn.Must(url.JoinPath(config.Current.App.BaseURL, ssoRedirectFEPathOnSuccess))
+	redirectURL := gofn.Must(url.JoinPath(config.Current.BaseURL, ssoRedirectFEPathOnSuccess))
 	ctx.Redirect(http.StatusFound, redirectURL)
 }

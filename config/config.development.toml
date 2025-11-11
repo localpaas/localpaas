@@ -1,0 +1,34 @@
+env = "development"
+platform = "remote"
+name = "LocalPaaS"
+version = 1
+base_url = "https://app.dev.localpaas.com" # dashboard base URL
+secret = "abc123"
+app_path = ".appdata"
+
+[db]
+    host = "db"
+    port = 5432
+    user = "localpaas"
+    password = "abc123"
+    db_name = "localpaas"
+    ssl_mode = "disable"
+
+[cache]
+    url = "redis://default:abc123@redis:6379/0"
+    use_tls = false
+
+[http_server]
+    cors_allow_origins = ["*"]
+
+[session]
+    last_access_update_period = "1m"
+    passcode_timeout = "60s"
+    device_trusted_period = "48h" # 2-days
+
+    jwt_secret = "abc123"
+    access_token_exp = "12h"
+    refresh_token_exp = "24h"
+
+    basic_auth_username = "localpaas"
+    basic_auth_password = "abc123"

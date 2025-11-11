@@ -20,7 +20,7 @@ const (
 
 func (uc *OAuthUC) GetOAuthBaseCallbackURL() string {
 	// NOTE: to return correct callbackURL to users, we need to calculate it on the fly
-	return gofn.Must(url.JoinPath(config.Current.HTTPServer.BaseAPIURL(), ssoCallbackPath))
+	return gofn.Must(url.JoinPath(config.Current.BaseAPIURL(), ssoCallbackPath))
 }
 
 func (uc *OAuthUC) GetOAuth(

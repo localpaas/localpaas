@@ -22,12 +22,12 @@ func ValidateConfig(lc fx.Lifecycle, cfg *config.Config, logger logging.Logger) 
 			isProdEnv := cfg.IsProdEnv()
 
 			// JWT secret must not be empty or a trivial value
-			if isProdEnv && len(cfg.Session.JWT.Secret) < 10 {
+			if isProdEnv && len(cfg.Session.JWTSecret) < 10 {
 				return fmt.Errorf("%w: invalid JWT secret for production", ErrInvalidConfig)
 			}
 
 			// Basic auth password must not be empty or a trivial value
-			if isProdEnv && len(cfg.Session.BasicAuth.Password) < 10 {
+			if isProdEnv && len(cfg.Session.BasicAuthPassword) < 10 {
 				return fmt.Errorf("%w: basic auth password is invalid for production", ErrInvalidConfig)
 			}
 

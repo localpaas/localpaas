@@ -21,7 +21,7 @@ func InitLogger(lc fx.Lifecycle, cfg *config.Config, logger logging.Logger) {
 		OnStop: func(ctx context.Context) error {
 			if zapLogger, ok := logger.(*logging.ZapLogger); ok {
 				// Ensure that the logger is properly synced before shutdown.
-				// Error from sync method is safe to be ignored but we logged it anyway.
+				// Error from sync method is safe to be ignored, but we logged it anyway.
 				if err := zapLogger.Sync(); err != nil {
 					log.Printf("zap sync warning: %+v\n", err)
 				}
