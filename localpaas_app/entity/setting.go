@@ -13,7 +13,7 @@ import (
 
 var (
 	SettingUpsertingConflictCols = []string{"id"}
-	SettingUpsertingUpdateCols   = []string{"object_id", "type", "status", "name", "data",
+	SettingUpsertingUpdateCols   = []string{"object_id", "type", "kind", "status", "name", "data",
 		"updated_at", "expire_at", "deleted_at"}
 )
 
@@ -21,6 +21,7 @@ type Setting struct {
 	ID       string `bun:",pk"`
 	ObjectID string `bun:",nullzero"`
 	Type     base.SettingType
+	Kind     string             `bun:",nullzero"`
 	Status   base.SettingStatus `bun:",nullzero"`
 	Name     string             `bun:",nullzero"`
 	Data     string             `bun:",nullzero"`

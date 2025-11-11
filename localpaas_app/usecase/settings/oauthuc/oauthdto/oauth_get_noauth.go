@@ -6,6 +6,6 @@ import (
 
 type GetOAuthNoAuthReq struct {
 	ID     string
-	Name   string
+	Kind   string
 	Status []base.SettingStatus
 }

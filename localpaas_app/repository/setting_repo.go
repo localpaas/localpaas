@@ -18,6 +18,8 @@ import (
 type SettingRepo interface {
 	GetByID(ctx context.Context, db database.IDB, id string,
 		opts ...bunex.SelectQueryOption) (*entity.Setting, error)
+	GetByKind(ctx context.Context, db database.IDB, typ base.SettingType, kind string,
+		opts ...bunex.SelectQueryOption) (*entity.Setting, error)
 	GetByName(ctx context.Context, db database.IDB, typ base.SettingType, name string,
 		opts ...bunex.SelectQueryOption) (*entity.Setting, error)
 	List(ctx context.Context, db database.IDB, paging *basedto.Paging,
@@ -42,6 +44,27 @@ func (repo *settingRepo) GetByID(ctx context.Context, db database.IDB, id string
 	opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
 	setting := &entity.Setting{}
 	query := db.NewSelect().Model(setting).Where("setting.id = ?", id)
+	query = bunex.ApplySelect(query, opts...)
+
+	err := query.Scan(ctx)
+	if setting == nil || errors.Is(err, sql.ErrNoRows) {
+		return nil, apperrors.NewNotFound("Setting").WithCause(err)
+	}
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return setting, nil
+}
+
+func (repo *settingRepo) GetByKind(ctx context.Context, db database.IDB, typ base.SettingType, kind string,
+	opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
+	if kind == "" {
+		return nil, nil
+	}
+	setting := &entity.Setting{}
+	query := db.NewSelect().Model(setting).
+		Where("setting.type = ?", typ).
+		Where("setting.kind = ?", kind)
 	query = bunex.ApplySelect(query, opts...)
 
 	err := query.Scan(ctx)

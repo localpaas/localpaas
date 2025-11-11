@@ -3,8 +3,9 @@ CREATE TABLE IF NOT EXISTS settings
 (
     id           VARCHAR(100) PRIMARY KEY,
     object_id    VARCHAR(100) NULL,
-    name         VARCHAR(100) NULL,
     type         VARCHAR(100) NOT NULL,
+    kind         VARCHAR(100) NULL,
+    name         VARCHAR(100) NULL,
     version      VARCHAR(10) NOT NULL DEFAULT '1',
     status       VARCHAR(20) NOT NULL CONSTRAINT chk_status CHECK
                     (status IN ('active','pending','disabled')) DEFAULT 'active',

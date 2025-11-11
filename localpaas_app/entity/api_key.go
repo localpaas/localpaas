@@ -3,6 +3,8 @@ package entity
 import (
 	"strings"
 
+	"github.com/tiendc/gofn"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/cryptoutil"
@@ -34,6 +36,11 @@ func (o *APIKey) Hash() error {
 	}
 	o.SecretKey = cryptoutil.PackSecret(secretHash, salt)
 	return nil
+}
+
+func (o *APIKey) MustHash() *APIKey {
+	gofn.Must1(o.Hash())
+	return o
 }
 
 func (o *APIKey) VerifyHash(secretKey string) error {

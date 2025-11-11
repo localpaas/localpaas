@@ -31,10 +31,7 @@ func (uc *SSHKeyUC) CreateSSHKey(
 	}
 
 	persistingData := &persistingSSHKeyData{}
-	err = uc.preparePersistingSSHKey(req.SSHKeyBaseReq, persistingData)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
+	uc.preparePersistingSSHKey(req.SSHKeyBaseReq, persistingData)
 
 	err = transaction.Execute(ctx, uc.db, func(db database.Tx) error {
 		return uc.persistData(ctx, db, persistingData)
@@ -77,7 +74,7 @@ type persistingSSHKeyData struct {
 func (uc *SSHKeyUC) preparePersistingSSHKey(
 	req *sshkeydto.SSHKeyBaseReq,
 	persistingData *persistingSSHKeyData,
-) error {
+) {
 	timeNow := timeutil.NowUTC()
 	setting := &entity.Setting{
 		ID:        gofn.Must(ulid.NewStringULID()),
@@ -91,17 +88,11 @@ func (uc *SSHKeyUC) preparePersistingSSHKey(
 	sshKey := &entity.SSHKey{
 		PrivateKey: req.PrivateKey,
 	}
-	err := sshKey.Encrypt()
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	setting.MustSetData(sshKey)
+	setting.MustSetData(sshKey.MustEncrypt())
 
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 
 	uc.preparePersistingSSHKeyProjects(setting, req.ProjectAccesses, timeNow, persistingData)
-	return nil
 }
 
 func (uc *SSHKeyUC) preparePersistingSSHKeyProjects(

@@ -102,12 +102,7 @@ func (uc *SSHKeyUC) prepareUpdatingSSHKey(
 			sshKey.PrivateKey = *req.PrivateKey
 		}
 
-		err = sshKey.Encrypt()
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
-
-		setting.MustSetData(sshKey)
+		setting.MustSetData(sshKey.MustEncrypt())
 	}
 
 	setting.UpdatedAt = timeNow

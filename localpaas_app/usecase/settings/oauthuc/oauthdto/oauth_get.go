@@ -34,6 +34,7 @@ type GetOAuthResp struct {
 
 type OAuthResp struct {
 	ID           string   `json:"id"`
+	Kind         string   `json:"kind,omitempty"`
 	Name         string   `json:"name"`
 	ClientID     string   `json:"clientId"`
 	ClientSecret string   `json:"clientSecret"`

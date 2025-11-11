@@ -31,10 +31,7 @@ func (uc *S3StorageUC) CreateS3Storage(
 	}
 
 	persistingData := &persistingS3StorageData{}
-	err = uc.preparePersistingS3Storage(req.S3StorageBaseReq, persistingData)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
+	uc.preparePersistingS3Storage(req.S3StorageBaseReq, persistingData)
 
 	err = transaction.Execute(ctx, uc.db, func(db database.Tx) error {
 		return uc.persistData(ctx, db, persistingData)
@@ -77,7 +74,7 @@ type persistingS3StorageData struct {
 func (uc *S3StorageUC) preparePersistingS3Storage(
 	req *s3storagedto.S3StorageBaseReq,
 	persistingData *persistingS3StorageData,
-) error {
+) {
 	timeNow := timeutil.NowUTC()
 	setting := &entity.Setting{
 		ID:        gofn.Must(ulid.NewStringULID()),
@@ -95,16 +92,11 @@ func (uc *S3StorageUC) preparePersistingS3Storage(
 		Bucket:      req.Bucket,
 		Endpoint:    req.Endpoint,
 	}
-	err := s3Storage.Encrypt()
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	setting.MustSetData(s3Storage)
+	setting.MustSetData(s3Storage.MustEncrypt())
 
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 
 	uc.preparePersistingS3StorageProjects(setting, req.ProjectAccesses, timeNow, persistingData)
-	return nil
 }
 
 func (uc *S3StorageUC) preparePersistingS3StorageProjects(

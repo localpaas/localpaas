@@ -18,6 +18,13 @@ import (
 	"github.com/localpaas/localpaas/pkg/ulid"
 )
 
+var (
+	// NOTE: only store special values
+	mapNameByKind = map[string]string{
+		string(base.OAuthTypeGitlabCustom): "Our Gitlab",
+	}
+)
+
 func (uc *OAuthUC) CreateOAuth(
 	ctx context.Context,
 	auth *basedto.Auth,
@@ -30,10 +37,7 @@ func (uc *OAuthUC) CreateOAuth(
 	}
 
 	persistingData := &persistingOAuthData{}
-	err = uc.preparePersistingOAuth(req.OAuthBaseReq, oauthData, persistingData)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
+	uc.preparePersistingOAuth(req.OAuthBaseReq, oauthData, persistingData)
 
 	err = transaction.Execute(ctx, uc.db, func(db database.Tx) error {
 		return uc.persistData(ctx, db, persistingData)
@@ -49,7 +53,7 @@ func (uc *OAuthUC) CreateOAuth(
 }
 
 type createOAuthData struct {
-	SettingName string
+	SettingKind string
 }
 
 func (uc *OAuthUC) loadOAuthData(
@@ -59,17 +63,15 @@ func (uc *OAuthUC) loadOAuthData(
 	data *createOAuthData,
 ) error {
 	uc.preprocessRequest(req.OAuthType, req.OAuthBaseReq)
+	data.SettingKind = string(req.OAuthType)
 
-	settingName := string(req.OAuthType)
-	data.SettingName = settingName
-
-	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeOAuth, settingName)
+	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeOAuth, req.Name)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}
 	if setting != nil {
 		return apperrors.NewAlreadyExist("OAuth").
-			WithMsgLog("oauth setting '%s' already exists", settingName)
+			WithMsgLog("oauth setting '%s' already exists", req.Name)
 	}
 
 	return nil
@@ -80,6 +82,7 @@ func (uc *OAuthUC) preprocessRequest(
 	req *oauthdto.OAuthBaseReq,
 ) {
 	if !base.IsCustomOAuthType(oauthType) {
+		req.Name = ""
 		req.CallbackURL = ""
 		req.AuthURL = ""
 		req.TokenURL = ""
@@ -95,15 +98,23 @@ func (uc *OAuthUC) preparePersistingOAuth(
 	req *oauthdto.OAuthBaseReq,
 	data *createOAuthData,
 	persistingData *persistingOAuthData,
-) (err error) {
+) {
 	timeNow := timeutil.NowUTC()
 	setting := &entity.Setting{
 		ID:        gofn.Must(ulid.NewStringULID()),
 		Type:      base.SettingTypeOAuth,
 		Status:    base.SettingStatusActive,
-		Name:      data.SettingName,
+		Kind:      data.SettingKind,
+		Name:      req.Name,
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,
+	}
+
+	if setting.Name == "" {
+		setting.Name = mapNameByKind[data.SettingKind]
+		if setting.Name == "" {
+			setting.Name = gofn.StringToUpper1stLetter(setting.Kind)
+		}
 	}
 
 	oauth := &entity.OAuth{
@@ -116,16 +127,9 @@ func (uc *OAuthUC) preparePersistingOAuth(
 		ProfileURL:   req.ProfileURL,
 		Scopes:       req.Scopes,
 	}
-	err = oauth.Encrypt()
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	setting.MustSetData(oauth)
+	setting.MustSetData(oauth.MustEncrypt())
 
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
-
-	return nil
 }
 
 func (uc *OAuthUC) persistData(

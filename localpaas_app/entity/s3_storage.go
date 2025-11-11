@@ -3,6 +3,8 @@ package entity
 import (
 	"strings"
 
+	"github.com/tiendc/gofn"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/cryptoutil"
@@ -30,6 +32,11 @@ func (o *S3Storage) Encrypt() error {
 	}
 	o.SecretKey = encrypted
 	return nil
+}
+
+func (o *S3Storage) MustEncrypt() *S3Storage {
+	gofn.Must1(o.Encrypt())
+	return o
 }
 
 func (o *S3Storage) Decrypt() error {

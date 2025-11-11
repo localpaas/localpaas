@@ -3,6 +3,8 @@ package entity
 import (
 	"strings"
 
+	"github.com/tiendc/gofn"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/cryptoutil"
@@ -33,6 +35,11 @@ func (o *OAuth) Encrypt() error {
 	}
 	o.ClientSecret = encrypted
 	return nil
+}
+
+func (o *OAuth) MustEncrypt() *OAuth {
+	gofn.Must1(o.Encrypt())
+	return o
 }
 
 func (o *OAuth) Decrypt() error {

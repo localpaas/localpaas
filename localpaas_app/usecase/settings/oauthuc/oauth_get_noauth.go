@@ -21,9 +21,9 @@ func (uc *OAuthUC) GetOAuthNoAuth(
 		listOpts = append(listOpts,
 			bunex.SelectWhere("setting.id = ?", req.ID))
 	}
-	if req.Name != "" {
+	if req.Kind != "" {
 		listOpts = append(listOpts,
-			bunex.SelectWhere("setting.name = ?", req.Name))
+			bunex.SelectWhere("setting.kind = ?", req.Kind))
 	}
 	if len(req.Status) > 0 {
 		listOpts = append(listOpts,

@@ -77,14 +77,14 @@ VALUES ('user', '01JAB9XED0GTXBSQDFVYAJ8WA1', 'project', '01JAB9XED0GTXBSQDFVYAJ
 ON CONFLICT DO NOTHING;
 
 -- Settings: OAuth
-INSERT INTO settings (id, type, name, status, data, created_at, updated_at)
-VALUES ('01JAB9XED0GTXBSQDFVYAJ8WE1', 'oauth', 'github', 'active',
+INSERT INTO settings (id, type, kind, name, status, data, created_at, updated_at)
+VALUES ('01JAB9XED0GTXBSQDFVYAJ8WE1', 'oauth', 'github', 'Github', 'active',
         '{"org": "localpaas-test", "clientId": "Iv23liObQsEr3GigALXt", "clientSecret": "lpsalt:27AyosacFwi8CA== EsRjd1QQkZ8YmKOqWMUM2iMvrY+MWShSv9CV5whZbXKq6wjB8H36U2oLFBLbWD06hJ+DUSzvUmEWjk2XrxRlkyN4MV4="}',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
-       ('01JAB9XED0GTXBSQDFVYAJ8WE2', 'oauth', 'gitlab', 'active',
+       ('01JAB9XED0GTXBSQDFVYAJ8WE2', 'oauth', 'gitlab', 'Gitlab', 'active',
         '{"org": "localpaas-test", "scopes": ["read_user", "openid", "profile", "email"], "clientId": "9a7d1422b34a79e83d74bee66448854d97452a2b6a7f05a74870f351f837dbbe", "clientSecret": "lpsalt:k+UQvPiR1yWRow== K8bthSPszSGA5YM2g5pNwreaNpFrYFn0TIOq+aJInN7vwrdOBJ+sAd1zy+RoRlr+CpiphDrPn77wn6hdJZl9tH2gNj/8Y8T07jhfibmKZpuFwRvbQOk01bcYQBWo8aXG8QY="}',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
-       ('01JAB9XED0GTXBSQDFVYAJ8WE3', 'oauth', 'gitlab-custom', 'active',
+       ('01JAB9XED0GTXBSQDFVYAJ8WE3', 'oauth', 'gitlab-custom', 'Our Gitlab', 'active',
         '{"org": "localpaas-test", "scopes": ["read_user", "openid", "profile", "email"], "authURL": "https://gitlab.com/oauth/authorize", "clientId": "f453848a3e717bad989baa8552afadb163b98cccc8b6bd4c3bb6b9f852fb4345", "tokenURL": "https://gitlab.com/oauth/token", "profileURL": "https://gitlab.com/api/v3/user", "clientSecret": "lpsalt:+gl7AsEBZskoZQ== xWNUdw2Vn5v4kV/c2rYZWDnyhBEA8+nWi+9rMADjiQP/gdODpRolVOvKbj9Gip+jxKdhmh+JoOJBq7XZ5r9/zgrt5Zfd+oQ8rgJzO2x7xHWa0j/U4Wy+lBAN7zTh9YNB5Eo="}',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00')
 ON CONFLICT DO NOTHING;

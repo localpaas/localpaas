@@ -51,7 +51,7 @@ func (h *SessionHandler) SSOOAuthBegin(ctx *gin.Context) {
 	}
 
 	oauth, err := h.oauthUC.GetOAuthNoAuth(ctx, &oauthdto.GetOAuthNoAuthReq{
-		Name:   provider,
+		Kind:   provider,
 		Status: []base.SettingStatus{base.SettingStatusActive},
 	})
 	if err != nil {

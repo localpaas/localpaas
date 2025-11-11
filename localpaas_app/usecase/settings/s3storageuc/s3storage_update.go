@@ -112,11 +112,7 @@ func (uc *S3StorageUC) prepareUpdatingS3Storage(
 		s3Storage.Endpoint = *req.Endpoint
 	}
 
-	err = s3Storage.Encrypt()
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	setting.MustSetData(s3Storage)
+	setting.MustSetData(s3Storage.MustEncrypt())
 
 	setting.UpdatedAt = timeNow
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)

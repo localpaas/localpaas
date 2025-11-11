@@ -3,8 +3,6 @@ package sessionuc
 import (
 	"context"
 
-	"github.com/tiendc/gofn"
-
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
@@ -18,27 +16,19 @@ func (uc *SessionUC) GetLoginOptions(
 	settings, _, err := uc.settingRepo.List(ctx, uc.db, nil,
 		bunex.SelectWhere("setting.type = ?", base.SettingTypeOAuth),
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
-		bunex.SelectColumns("id", "name"),
-		bunex.SelectOrder("name"),
+		bunex.SelectColumns("id", "kind", "name"),
+		bunex.SelectOrder("kind"),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
 	var resp []*sessiondto.LoginOptionResp
-	mapDisplayName := map[base.OAuthType]string{
-		base.OAuthTypeGitlabCustom: "Our Gitlab",
-	}
-
 	for _, setting := range settings {
-		oauthType := base.OAuthType(setting.Name)
-		displayName := mapDisplayName[oauthType]
-		if displayName == "" {
-			displayName = gofn.StringToUpper1stLetter(setting.Name)
-		}
+		oauthType := base.OAuthType(setting.Kind)
 		resp = append(resp, &sessiondto.LoginOptionResp{
 			Type:    oauthType,
-			Name:    displayName,
+			Name:    setting.Name,
 			AuthURL: "/_/auth/sso/" + string(oauthType),
 		})
 	}

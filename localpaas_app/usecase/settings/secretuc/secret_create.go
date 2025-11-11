@@ -31,10 +31,7 @@ func (uc *SecretUC) CreateSecret(
 	}
 
 	persistingData := &persistingSecretData{}
-	err = uc.preparePersistingSecret(req, persistingData)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
+	uc.preparePersistingSecret(req, persistingData)
 
 	err = transaction.Execute(ctx, uc.db, func(db database.Tx) error {
 		return uc.persistData(ctx, db, persistingData)
@@ -84,7 +81,7 @@ type persistingSecretData struct {
 func (uc *SecretUC) preparePersistingSecret(
 	req *secretdto.CreateSecretReq,
 	persistingData *persistingSecretData,
-) (err error) {
+) {
 	timeNow := timeutil.NowUTC()
 	setting := &entity.Setting{
 		ID:        gofn.Must(ulid.NewStringULID()),
@@ -100,14 +97,9 @@ func (uc *SecretUC) preparePersistingSecret(
 		Key:   req.Key,
 		Value: req.Value,
 	}
-	err = secret.Encrypt()
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	setting.MustSetData(secret)
+	setting.MustSetData(secret.MustEncrypt())
 
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
-	return nil
 }
 
 func (uc *SecretUC) persistData(

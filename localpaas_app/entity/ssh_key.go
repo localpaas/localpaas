@@ -3,6 +3,8 @@ package entity
 import (
 	"strings"
 
+	"github.com/tiendc/gofn"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/cryptoutil"
@@ -26,6 +28,11 @@ func (o *SSHKey) Encrypt() error {
 	}
 	o.PrivateKey = encrypted
 	return nil
+}
+
+func (o *SSHKey) MustEncrypt() *SSHKey {
+	gofn.Must1(o.Encrypt())
+	return o
 }
 
 func (o *SSHKey) Decrypt() error {

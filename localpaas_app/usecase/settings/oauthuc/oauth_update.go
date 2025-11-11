@@ -3,6 +3,8 @@ package oauthuc
 import (
 	"context"
 
+	"github.com/tiendc/gofn"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -27,10 +29,7 @@ func (uc *OAuthUC) UpdateOAuth(
 		}
 
 		persistingData := &persistingOAuthData{}
-		err = uc.prepareUpdatingOAuth(req.OAuthBaseReq, oauthData, persistingData)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
+		uc.prepareUpdatingOAuth(req.OAuthBaseReq, oauthData, persistingData)
 
 		return uc.persistData(ctx, db, persistingData)
 	})
@@ -68,9 +67,19 @@ func (uc *OAuthUC) prepareUpdatingOAuth(
 	req *oauthdto.OAuthBaseReq,
 	data *updateOAuthData,
 	persistingData *persistingOAuthData,
-) (err error) {
+) {
 	timeNow := timeutil.NowUTC()
 	setting := data.Setting
+
+	if req.Name != "" {
+		setting.Name = req.Name
+	}
+	if setting.Name == "" {
+		setting.Name = mapNameByKind[setting.Kind]
+		if setting.Name == "" {
+			setting.Name = gofn.StringToUpper1stLetter(setting.Kind)
+		}
+	}
 
 	oauth := &entity.OAuth{
 		ClientID:     req.ClientID,
@@ -82,15 +91,8 @@ func (uc *OAuthUC) prepareUpdatingOAuth(
 		ProfileURL:   req.ProfileURL,
 		Scopes:       req.Scopes,
 	}
-	err = oauth.Encrypt()
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	setting.MustSetData(oauth)
+	setting.MustSetData(oauth.MustEncrypt())
 
 	setting.UpdatedAt = timeNow
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
-
-	return nil
 }
