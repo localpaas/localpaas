@@ -19,6 +19,7 @@ type UserResp struct {
 	FullName       string                  `json:"fullName"`
 	Photo          string                  `json:"photo"`
 	SecurityOption base.UserSecurityOption `json:"securityOption"`
+	MfaSecret      string                  `json:"mfaSecret"`
 	CreatedAt      time.Time               `json:"createdAt"`
 	UpdatedAt      time.Time               `json:"updatedAt"`
 	AccessExpireAt *timeutil.Date          `json:"accessExpireAt" copy:",nilonzero"`
@@ -27,6 +28,9 @@ type UserResp struct {
 func TransformUser(user *entity.User) (resp *UserResp, err error) {
 	if err = copier.Copy(&resp, &user); err != nil {
 		return nil, apperrors.Wrap(err)
+	}
+	if user.TotpSecret != "" {
+		resp.MfaSecret = "********"
 	}
 	return resp, nil
 }

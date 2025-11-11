@@ -4,6 +4,8 @@ import "github.com/localpaas/localpaas/localpaas_app/entity"
 
 type UserBaseResp struct {
 	ID       string `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
 	FullName string `json:"fullName"`
 	Photo    string `json:"photo"`
 }
@@ -14,6 +16,8 @@ func TransformUserBase(user *entity.User) *UserBaseResp {
 	}
 	return &UserBaseResp{
 		ID:       user.ID,
+		Username: user.Username,
+		Email:    user.Email,
 		FullName: user.FullName,
 		Photo:    user.Photo,
 	}
