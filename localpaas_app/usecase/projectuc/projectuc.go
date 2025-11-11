@@ -1,6 +1,7 @@
 package projectuc
 
 import (
+	"github.com/localpaas/localpaas/infrastructure/docker"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
@@ -16,6 +17,7 @@ type ProjectUC struct {
 	permissionManager permission.Manager
 	userService       userservice.UserService
 	projectService    projectservice.ProjectService
+	dockerManager     *docker.Manager
 }
 
 func NewProjectUC(
@@ -26,6 +28,7 @@ func NewProjectUC(
 	permissionManager permission.Manager,
 	userService userservice.UserService,
 	projectService projectservice.ProjectService,
+	dockerManager *docker.Manager,
 ) *ProjectUC {
 	return &ProjectUC{
 		db:                db,
@@ -35,5 +38,6 @@ func NewProjectUC(
 		permissionManager: permissionManager,
 		userService:       userService,
 		projectService:    projectService,
+		dockerManager:     dockerManager,
 	}
 }

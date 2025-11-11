@@ -45,6 +45,13 @@ func (uc *ProjectUC) CreateProject(
 	}
 
 	createdProject := persistingData.UpsertingProjects[0]
+
+	// Create default network for the project
+	_, err = uc.projectService.CreateProjectNetworks(ctx, createdProject)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
 	return &projectdto.CreateProjectResp{
 		Data: &basedto.ObjectIDResp{ID: createdProject.ID},
 	}, nil

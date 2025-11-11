@@ -3,6 +3,7 @@ package appservice
 import (
 	"context"
 
+	"github.com/localpaas/localpaas/infrastructure/docker"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
@@ -19,6 +20,7 @@ func NewAppService(
 	settingRepo repository.SettingRepo,
 	permissionManager permission.Manager,
 	userService userservice.UserService,
+	dockerManager *docker.Manager,
 ) AppService {
 	return &appService{
 		appRepo:           appRepo,
@@ -26,6 +28,7 @@ func NewAppService(
 		settingRepo:       settingRepo,
 		permissionManager: permissionManager,
 		userService:       userService,
+		dockerManager:     dockerManager,
 	}
 }
 
@@ -35,4 +38,5 @@ type appService struct {
 	settingRepo       repository.SettingRepo
 	permissionManager permission.Manager
 	userService       userservice.UserService
+	dockerManager     *docker.Manager
 }
