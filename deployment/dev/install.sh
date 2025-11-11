@@ -6,6 +6,9 @@ echo "---------------------------------------------------------------"
 echo "INSTALL LocalPaaS"
 echo "---------------------------------------------------------------"
 
+# Delete all unused data that take the disk space
+docker system prune -a -f
+
 LOCALPAAS_DIR=localpaas
 NGINX_ETC=$LOCALPAAS_DIR/nginx/etc
 NGINX_LOG=$LOCALPAAS_DIR/nginx/log
