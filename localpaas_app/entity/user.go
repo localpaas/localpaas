@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/pkg/timeutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
 var (

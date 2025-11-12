@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/pkg/tracerr"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tracerr"
 )
 
 // QueryRelation performs extra query relation(s) for the specific list of entities.

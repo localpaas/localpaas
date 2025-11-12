@@ -5,7 +5,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/localpaas/localpaas/pkg/tracerr"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tracerr"
 )
 
 type RequestSetupFunc func(r *http.Request)

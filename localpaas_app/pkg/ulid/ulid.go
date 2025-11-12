@@ -7,7 +7,7 @@ import (
 
 	ulidLib "github.com/oklog/ulid/v2"
 
-	"github.com/localpaas/localpaas/pkg/tracerr"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tracerr"
 )
 
 var (

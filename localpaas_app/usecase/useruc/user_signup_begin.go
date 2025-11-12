@@ -8,8 +8,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity/appentity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/jwtsession"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/totp"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc/userdto"
-	"github.com/localpaas/localpaas/pkg/totp"
 )
 
 func (uc *UserUC) BeginUserSignup(

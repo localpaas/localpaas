@@ -8,7 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/cryptoutil"
-	"github.com/localpaas/localpaas/pkg/randtoken"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/randtoken"
 )
 
 const (

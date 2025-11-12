@@ -8,7 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/pkg/strutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/strutil"
 )
 
 type InviteUserReq struct {

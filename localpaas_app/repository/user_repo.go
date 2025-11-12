@@ -14,7 +14,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/pkg/ulid"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
 )
 
 type UserRepo interface {

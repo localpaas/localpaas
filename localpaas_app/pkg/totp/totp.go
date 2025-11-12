@@ -7,7 +7,7 @@ import (
 
 	"github.com/pquerna/otp/totp"
 
-	"github.com/localpaas/localpaas/pkg/tracerr"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tracerr"
 )
 
 func GenerateSecretAndQRCode(imageSize int) (string, bytes.Buffer, error) {

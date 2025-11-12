@@ -10,10 +10,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/jwtsession"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/totp"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc/userdto"
-	"github.com/localpaas/localpaas/pkg/timeutil"
-	"github.com/localpaas/localpaas/pkg/totp"
 )
 
 func (uc *UserUC) CompleteMFATotpSetup(

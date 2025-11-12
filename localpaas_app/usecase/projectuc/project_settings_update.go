@@ -11,10 +11,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc/projectdto"
-	"github.com/localpaas/localpaas/pkg/timeutil"
-	"github.com/localpaas/localpaas/pkg/ulid"
 )
 
 func (uc *ProjectUC) UpdateProjectSettings(

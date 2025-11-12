@@ -3,7 +3,7 @@ package docker
 import (
 	"github.com/docker/docker/client"
 
-	"github.com/localpaas/localpaas/pkg/tracerr"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tracerr"
 )
 
 type Manager struct {

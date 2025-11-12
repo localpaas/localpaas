@@ -8,7 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/pkg/timeutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
 func (uc *SessionUC) GetCurrentAuth(ctx context.Context, jwt string) (*basedto.Auth, error) {

@@ -10,7 +10,7 @@ import (
 	"github.com/jinzhu/configor"
 	"github.com/tiendc/gofn"
 
-	"github.com/localpaas/localpaas/pkg/tracerr"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tracerr"
 )
 
 const (

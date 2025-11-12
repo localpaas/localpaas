@@ -10,7 +10,7 @@ import (
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/pkg/timeutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
 func ValidateID(id *string, required bool, field string) (res []vld.Validator) {

@@ -8,7 +8,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 
-	"github.com/localpaas/localpaas/pkg/timeutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
 var (

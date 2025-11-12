@@ -6,7 +6,7 @@ import (
 	"github.com/patrickmn/go-cache"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/pkg/timeutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
 const (

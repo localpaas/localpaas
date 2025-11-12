@@ -5,8 +5,8 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc/sessiondto"
-	"github.com/localpaas/localpaas/pkg/timeutil"
 )
 
 func (uc *SessionUC) LoginWithAPIKey(
