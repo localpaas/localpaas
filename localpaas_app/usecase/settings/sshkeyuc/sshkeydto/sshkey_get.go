@@ -38,7 +38,7 @@ type SSHKeyResp struct {
 	Name            string                     `json:"name"`
 	PrivateKey      string                     `json:"privateKey,omitempty"`
 	ProjectAccesses []*SSHKeyProjectAccessResp `json:"projectAccesses"`
-	Encrypted       bool                       `json:"encrypted"`
+	Encrypted       bool                       `json:"encrypted,omitempty"`
 }
 
 type SSHKeyProjectAccessResp struct {

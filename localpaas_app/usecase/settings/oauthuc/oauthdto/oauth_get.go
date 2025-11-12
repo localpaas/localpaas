@@ -44,7 +44,7 @@ type OAuthResp struct {
 	TokenURL     string   `json:"tokenURL"`
 	ProfileURL   string   `json:"profileURL"`
 	Scopes       []string `json:"scopes"`
-	Encrypted    bool     `json:"encrypted"`
+	Encrypted    bool     `json:"encrypted,omitempty"`
 }
 
 func TransformOAuth(setting *entity.Setting, baseCallbackURL string, decrypt bool) (resp *OAuthResp, err error) {

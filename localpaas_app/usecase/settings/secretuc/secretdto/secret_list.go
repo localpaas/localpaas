@@ -45,7 +45,7 @@ type SecretResp struct {
 	ID        string `json:"id"`
 	Key       string `json:"key"`
 	Value     string `json:"value"`
-	Encrypted bool   `json:"encrypted"`
+	Encrypted bool   `json:"encrypted,omitempty"`
 }
 
 func TransformSecret(setting *entity.Setting, decrypt bool) (resp *SecretResp, err error) {

@@ -42,7 +42,7 @@ type S3StorageResp struct {
 	Bucket          string                        `json:"bucket"`
 	Endpoint        string                        `json:"endpoint"`
 	ProjectAccesses []*S3StorageProjectAccessResp `json:"projectAccesses"`
-	Encrypted       bool                          `json:"encrypted"`
+	Encrypted       bool                          `json:"encrypted,omitempty"`
 }
 
 type S3StorageProjectAccessResp struct {

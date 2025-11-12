@@ -250,6 +250,17 @@ func (s *HTTPServer) registerRoutes() {
 		slackGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateSlack)
 		slackGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteSlack)
 	}
+
+	{ // registry auth group
+		registryAuthGroup := settingGroup.Group("/registry-auth")
+		// Info
+		registryAuthGroup.GET("/:ID", s.handlerRegistry.settingsHandler.GetRegistryAuth)
+		registryAuthGroup.GET("", s.handlerRegistry.settingsHandler.ListRegistryAuth)
+		// Creation & Update
+		registryAuthGroup.POST("", s.handlerRegistry.settingsHandler.CreateRegistryAuth)
+		registryAuthGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateRegistryAuth)
+		registryAuthGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteRegistryAuth)
+	}
 }
 
 func routePing(c *gin.Context) {

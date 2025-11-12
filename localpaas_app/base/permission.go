@@ -15,20 +15,21 @@ const (
 type ResourceType string
 
 const (
-	ResourceTypeModule     ResourceType = "module"
-	ResourceTypeUser       ResourceType = "user"
-	ResourceTypeCluster    ResourceType = "cluster"
-	ResourceTypeNode       ResourceType = "node"
-	ResourceTypeNetwork    ResourceType = "network"
-	ResourceTypeDeployment ResourceType = "deployment"
-	ResourceTypeProject    ResourceType = "project"
-	ResourceTypeApp        ResourceType = "app"
-	ResourceTypeS3Storage  ResourceType = "s3-storage"
-	ResourceTypeOAuth      ResourceType = "oauth"
-	ResourceTypeSSHKey     ResourceType = "ssh-key"
-	ResourceTypeAPIKey     ResourceType = "api-key"
-	ResourceTypeSecret     ResourceType = "secret"
-	ResourceTypeSlack      ResourceType = "slack"
+	ResourceTypeModule       ResourceType = "module"
+	ResourceTypeUser         ResourceType = "user"
+	ResourceTypeCluster      ResourceType = "cluster"
+	ResourceTypeNode         ResourceType = "node"
+	ResourceTypeNetwork      ResourceType = "network"
+	ResourceTypeDeployment   ResourceType = "deployment"
+	ResourceTypeProject      ResourceType = "project"
+	ResourceTypeApp          ResourceType = "app"
+	ResourceTypeS3Storage    ResourceType = "s3-storage"
+	ResourceTypeOAuth        ResourceType = "oauth"
+	ResourceTypeSSHKey       ResourceType = "ssh-key"
+	ResourceTypeAPIKey       ResourceType = "api-key"
+	ResourceTypeSecret       ResourceType = "secret"
+	ResourceTypeSlack        ResourceType = "slack"
+	ResourceTypeRegistryAuth ResourceType = "registry-auth"
 )
 
 type ResourceModule string
