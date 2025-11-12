@@ -4,7 +4,7 @@ name = "LocalPaaS"
 version = 1
 base_url = "https://app.dev.localpaas.com" # dashboard base URL
 secret = "abc123"
-app_path = ".appdata"
+app_path = "/var/lib/localpaas"
 
 [db]
     host = "db"
@@ -32,3 +32,6 @@ app_path = ".appdata"
 
     basic_auth_username = "localpaas"
     basic_auth_password = "abc123"
+
+[ssl]
+    le_user_email = "tiendc.lp@gmail.com"

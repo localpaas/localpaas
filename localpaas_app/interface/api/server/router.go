@@ -194,6 +194,8 @@ func (s *HTTPServer) registerRoutes() {
 		appGroup.GET("/:appID/secrets", s.handlerRegistry.appHandler.ListAppSecrets)
 		appGroup.POST("/:appID/secrets", s.handlerRegistry.appHandler.CreateAppSecret)
 		appGroup.DELETE("/:appID/secrets/:secretID", s.handlerRegistry.appHandler.DeleteAppSecret)
+		// Domain SSL
+		appGroup.POST("/:appID/ssl/install", s.handlerRegistry.appHandler.InstallDomainSsl)
 	}
 
 	settingGroup := apiGroup.Group("/settings")

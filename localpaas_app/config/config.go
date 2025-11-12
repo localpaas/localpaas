@@ -47,25 +47,50 @@ type Config struct {
 	DB         DB         `toml:"db"`
 	Cache      Cache      `toml:"cache"`
 	Session    Session    `toml:"session"`
+	SSL        SSL        `toml:"ssl"`
 }
 
 func (cfg *Config) IsDevEnv() bool  { return cfg.Env == EnvDev }
 func (cfg *Config) IsProdEnv() bool { return cfg.Env == EnvProd }
 
-func (cfg *Config) DataPath() string {
-	return filepath.Join(cfg.AppPath, "data")
+func (cfg *Config) BaseAPIURL() string {
+	return gofn.Must(url.JoinPath(cfg.BaseURL, cfg.HTTPServer.BasePath))
 }
+
+/// USER PHOTO
 
 func (cfg *Config) DataPathUserPhoto() string {
-	return filepath.Join(cfg.DataPath(), "user", "photo")
+	return filepath.Join(cfg.AppPath, "user", "photo")
 }
-
 func (cfg *Config) HttpPathUserPhoto() string {
 	return "/files/user/photo/"
 }
 
-func (cfg *Config) BaseAPIURL() string {
-	return gofn.Must(url.JoinPath(cfg.BaseURL, cfg.HTTPServer.BasePath))
+/// NGINX
+
+func (cfg *Config) DataPathNginx() string {
+	return filepath.Join(cfg.AppPath, "nginx")
+}
+func (cfg *Config) DataPathNginxEtc() string {
+	return filepath.Join(cfg.DataPathNginx(), "etc")
+}
+func (cfg *Config) DataPathNginxShare() string {
+	return filepath.Join(cfg.DataPathNginx(), "share")
+}
+func (cfg *Config) DataPathNginxShareDomains() string {
+	return filepath.Join(cfg.DataPathNginxShare(), "domains")
+}
+func (cfg *Config) DataPathNginxShareDomainsHttp01Challenge() string {
+	return filepath.Join(cfg.DataPathNginxShareDomains(), "http-01-challenge")
+}
+
+/// LETS ENCRYPT
+
+func (cfg *Config) DataPathLetsEncrypt() string {
+	return filepath.Join(cfg.AppPath, "letsencrypt")
+}
+func (cfg *Config) DataPathLetsEncryptEtc() string {
+	return filepath.Join(cfg.DataPathLetsEncrypt(), "etc")
 }
 
 func LoadConfig() (*Config, error) {

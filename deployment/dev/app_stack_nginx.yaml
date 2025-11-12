@@ -61,6 +61,21 @@ services:
     volumes:
       - redis:/data
 
+  adminer:
+    image: adminer:latest
+    restart: unless-stopped
+    networks:
+      - localpaas_net
+      - internal_net
+    volumes:
+      - adminer:/data
+
+  hello-world:
+    image: crccheck/hello-world:latest
+    restart: unless-stopped
+    networks:
+      - localpaas_net
+
   app:
     image: localpaas/localpaas-dev:app-latest
     networks:
@@ -70,10 +85,9 @@ services:
       LP_CONFIG_FILE: config/config.development.toml
       VITE_API_URL: http://localhost:10000
     volumes:
-      - app_data:/var/lib/localpaas
+      - ./localpaas:/var/lib/localpaas
       - /var/run/docker.sock:/var/run/docker.sock
 
-# Define the overlay network for Swarm
 networks:
   localpaas_net:
     external: true
@@ -82,9 +96,9 @@ networks:
     attachable: true
 
 volumes:
-  app_data:
-    driver: local
   db_data:
+    driver: local
+  adminer:
     driver: local
   redis:
     driver: local

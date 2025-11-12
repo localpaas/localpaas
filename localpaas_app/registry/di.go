@@ -36,6 +36,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc"
 	"github.com/localpaas/localpaas/services/docker"
+	"github.com/localpaas/localpaas/services/letsencrypt"
 )
 
 var Provides = []any{
@@ -59,6 +60,7 @@ var Provides = []any{
 
 	// Infra
 	docker.New,
+	letsencrypt.NewClientFromConfig,
 
 	// Route handler
 	server.NewHandlerRegistry, // for all handler list

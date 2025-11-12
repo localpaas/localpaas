@@ -58,12 +58,17 @@ echo "Deploy localpaas stack..."
 docker pull localpaas/localpaas-dev:app-latest # pull latest image
 docker stack deploy -c localpaas.yaml localpaas
 
-sleep 15
+sleep 10
 docker run --net localpaas_internal_net \
   -e LP_PLATFORM=remote -e LP_DB_HOST=db -e LP_DB_PORT=5432 -e LP_DB_DB_NAME=localpaas \
   -e LP_DB_USER=localpaas -e LP_DB_PASSWORD=abc123 -e LP_DB_SSL_MODE=disable \
   -w /app localpaas/localpaas-dev:app-latest \
   make seed-data-with-clear
+
+sleep 1
+# docker restart $(docker ps -a -q -f status=running)
+NGINX_CONT_ID=$(docker ps -f "status=running" | grep nginx | awk -F' ' '{print $1}')
+docker container restart "$NGINX_CONT_ID"
 
 echo "---------------------------------------------------------------"
 echo "DONE."

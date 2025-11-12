@@ -14,7 +14,7 @@ import (
 const (
 	// 0755 grants read/write/execute for owner, read/execute for group/others
 	// 0644 grants read/write for owner, read-only for group/others
-	photoDirFileMode = 0777
+	photoDirFileMode = 0644
 )
 
 func (s *userService) SaveUserPhoto(_ context.Context, user *entity.User, data []byte, fileExt string) error {

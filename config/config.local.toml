@@ -32,3 +32,6 @@ app_path = ".appdata"
 
     basic_auth_username = "localpaas"
     basic_auth_password = "abc123"
+
+[ssl]
+    le_user_email = "tiendc.lp@gmail.com"
