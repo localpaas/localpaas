@@ -52,8 +52,8 @@ func (o *S3Storage) Decrypt() error {
 }
 
 func (s *Setting) ParseS3Storage(decrypt bool) (*S3Storage, error) {
+	res := &S3Storage{}
 	if s != nil && s.Data != "" && s.Type == base.SettingTypeS3Storage {
-		res := &S3Storage{}
 		err := s.parseData(res)
 		if err != nil {
 			return nil, err
@@ -65,5 +65,5 @@ func (s *Setting) ParseS3Storage(decrypt bool) (*S3Storage, error) {
 		}
 		return res, nil
 	}
-	return nil, nil
+	return res, nil
 }

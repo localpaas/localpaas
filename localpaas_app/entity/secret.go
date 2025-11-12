@@ -59,8 +59,8 @@ func (o *Secret) ValueAsBytes() []byte {
 }
 
 func (s *Setting) ParseSecret(decrypt bool) (*Secret, error) {
+	res := &Secret{}
 	if s != nil && s.Data != "" && s.Type == base.SettingTypeSecret {
-		res := &Secret{}
 		err := s.parseData(res)
 		if err != nil {
 			return nil, err
@@ -72,5 +72,5 @@ func (s *Setting) ParseSecret(decrypt bool) (*Secret, error) {
 		}
 		return res, nil
 	}
-	return nil, nil
+	return res, nil
 }

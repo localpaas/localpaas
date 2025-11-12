@@ -9,13 +9,13 @@ type Slack struct {
 }
 
 func (s *Setting) ParseSlack() (*Slack, error) {
+	res := &Slack{}
 	if s != nil && s.Data != "" {
-		res := &Slack{}
 		err := s.parseData(res)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}
 		return res, nil
 	}
-	return nil, nil
+	return res, nil
 }

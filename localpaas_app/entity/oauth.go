@@ -55,8 +55,8 @@ func (o *OAuth) Decrypt() error {
 }
 
 func (s *Setting) ParseOAuth(decrypt bool) (*OAuth, error) {
+	res := &OAuth{}
 	if s != nil && s.Data != "" && s.Type == base.SettingTypeOAuth {
-		res := &OAuth{}
 		err := s.parseData(res)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
@@ -68,5 +68,5 @@ func (s *Setting) ParseOAuth(decrypt bool) (*OAuth, error) {
 		}
 		return res, nil
 	}
-	return nil, nil
+	return res, nil
 }

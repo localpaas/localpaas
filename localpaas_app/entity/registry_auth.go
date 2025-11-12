@@ -49,8 +49,8 @@ func (o *RegistryAuth) Decrypt() error {
 }
 
 func (s *Setting) ParseRegistryAuth(decrypt bool) (*RegistryAuth, error) {
+	res := &RegistryAuth{}
 	if s != nil && s.Data != "" && s.Type == base.SettingTypeRegistryAuth {
-		res := &RegistryAuth{}
 		err := s.parseData(res)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
@@ -62,5 +62,5 @@ func (s *Setting) ParseRegistryAuth(decrypt bool) (*RegistryAuth, error) {
 		}
 		return res, nil
 	}
-	return nil, nil
+	return res, nil
 }

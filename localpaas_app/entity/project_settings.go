@@ -9,9 +9,9 @@ type ProjectSettings struct {
 }
 
 func (s *Setting) ParseProjectSettings() (*ProjectSettings, error) {
+	res := &ProjectSettings{}
 	if s != nil && s.Type == base.SettingTypeProject {
-		res := &ProjectSettings{}
 		return res, s.parseData(res)
 	}
-	return nil, nil
+	return res, nil
 }

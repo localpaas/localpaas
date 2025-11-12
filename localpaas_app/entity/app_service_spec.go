@@ -6,9 +6,9 @@ import (
 )
 
 func (s *Setting) ParseAppServiceSpec() (*docker.ServiceSpec, error) {
+	res := &docker.ServiceSpec{}
 	if s != nil && s.Data != "" && s.Type == base.SettingTypeServiceSpec {
-		res := &docker.ServiceSpec{}
 		return res, s.parseData(res)
 	}
-	return nil, nil
+	return res, nil
 }
