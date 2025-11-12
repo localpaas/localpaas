@@ -150,6 +150,7 @@ func (s *HTTPServer) registerRoutes() {
 		// Nodes
 		nodeGroup.GET("", s.handlerRegistry.clusterHandler.ListNode)
 		nodeGroup.GET("/:nodeID", s.handlerRegistry.clusterHandler.GetNode)
+		nodeGroup.PUT("/:nodeID", s.handlerRegistry.clusterHandler.UpdateNode)
 		nodeGroup.DELETE("/:nodeID", s.handlerRegistry.clusterHandler.DeleteNode)
 	}
 

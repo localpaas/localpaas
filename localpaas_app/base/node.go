@@ -25,3 +25,16 @@ const (
 var (
 	AllNodeRoles = []NodeRole{NodeRoleManager, NodeRoleWorker}
 )
+
+type NodeAvailability string
+
+const (
+	NodeAvailabilityActive = NodeAvailability(swarm.NodeAvailabilityActive)
+	NodeAvailabilityPause  = NodeAvailability(swarm.NodeAvailabilityPause)
+	NodeAvailabilityDrain  = NodeAvailability(swarm.NodeAvailabilityDrain)
+)
+
+var (
+	AllNodeAvailabilities = []NodeAvailability{NodeAvailabilityActive, NodeAvailabilityPause,
+		NodeAvailabilityDrain}
+)

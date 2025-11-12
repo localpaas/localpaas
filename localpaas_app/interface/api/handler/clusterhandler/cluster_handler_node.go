@@ -100,6 +100,52 @@ func (h *ClusterHandler) GetNode(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
+// UpdateNode Updates a node
+// @Summary Updates a node
+// @Description Updates a node
+// @Tags    cluster_nodes
+// @Produce json
+// @Id      updateNode
+// @Param   nodeID path string true "node ID"
+// @Param   body body clusterdto.UpdateNodeReq true "request data"
+// @Success 200 {object} clusterdto.UpdateNodeResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /cluster/nodes/{nodeID} [put]
+func (h *ClusterHandler) UpdateNode(ctx *gin.Context) {
+	nodeID, err := h.ParseStringParam(ctx, "nodeID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		RequireAdmin: true,
+		ResourceType: base.ResourceTypeNode,
+		ResourceID:   nodeID,
+		Action:       base.ActionTypeWrite,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := clusterdto.NewUpdateNodeReq()
+	req.NodeID = nodeID
+	if err := h.ParseJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.clusterUC.UpdateNode(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
 // DeleteNode Deletes a node
 // @Summary Deletes a node
 // @Description Deletes a node

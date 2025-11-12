@@ -63,6 +63,7 @@ var (
 
 // Errors from docker
 var (
+	ErrDockerFailedUpdateNode    = errors.New("ERR_DOCKER_FAILED_UPDATE_NODE")
 	ErrDockerFailedCreateService = errors.New("ERR_DOCKER_FAILED_CREATE_SERVICE")
 )
 
@@ -117,6 +118,7 @@ var errorStatusMap = map[error]int{
 	ErrEmailChangeUnallowed:        http.StatusUnprocessableEntity,
 
 	// Docker errors
+	ErrDockerFailedUpdateNode:    http.StatusUnprocessableEntity,
 	ErrDockerFailedCreateService: http.StatusUnprocessableEntity,
 }
 

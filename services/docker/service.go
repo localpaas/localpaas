@@ -26,13 +26,16 @@ func (m *Manager) ServiceList(ctx context.Context, options ...ServiceListOption)
 
 type ServiceCreateOption func(options *swarm.ServiceCreateOptions)
 
-func (m *Manager) ServiceCreate(ctx context.Context, service swarm.ServiceSpec, options ...ServiceCreateOption) (
+func (m *Manager) ServiceCreate(ctx context.Context, service *swarm.ServiceSpec, options ...ServiceCreateOption) (
 	*swarm.ServiceCreateResponse, error) {
+	if service == nil {
+		return nil, nil
+	}
 	opts := swarm.ServiceCreateOptions{}
 	for _, opt := range options {
 		opt(&opts)
 	}
-	resp, err := m.client.ServiceCreate(ctx, service, opts)
+	resp, err := m.client.ServiceCreate(ctx, *service, opts)
 	if err != nil {
 		return nil, tracerr.Wrap(err, "error creating service")
 	}
@@ -42,7 +45,10 @@ func (m *Manager) ServiceCreate(ctx context.Context, service swarm.ServiceSpec, 
 type ServiceUpdateOption func(options *swarm.ServiceUpdateOptions)
 
 func (m *Manager) ServiceUpdate(ctx context.Context, serviceID string, version *swarm.Version,
-	service swarm.ServiceSpec, options ...ServiceUpdateOption) (*swarm.ServiceUpdateResponse, error) {
+	service *swarm.ServiceSpec, options ...ServiceUpdateOption) (*swarm.ServiceUpdateResponse, error) {
+	if service == nil {
+		return nil, nil
+	}
 	opts := swarm.ServiceUpdateOptions{}
 	for _, opt := range options {
 		opt(&opts)
@@ -56,7 +62,7 @@ func (m *Manager) ServiceUpdate(ctx context.Context, serviceID string, version *
 		version = &resp.Version
 	}
 
-	resp, err := m.client.ServiceUpdate(ctx, serviceID, *version, service, opts)
+	resp, err := m.client.ServiceUpdate(ctx, serviceID, *version, *service, opts)
 	if err != nil {
 		return nil, tracerr.Wrap(err, "error creating service")
 	}

@@ -46,7 +46,7 @@ func (uc *AppUC) CreateApp(
 		createdApp = persistingData.UpsertingApps[0]
 
 		// Create a service in docker for the app
-		res, err := uc.dockerManager.ServiceCreate(ctx, *gofn.Must(appData.ServiceSpec.ToSwarmServiceSpec()))
+		res, err := uc.dockerManager.ServiceCreate(ctx, gofn.Must(appData.ServiceSpec.ToSwarmServiceSpec()))
 		if err != nil {
 			return apperrors.New(apperrors.ErrDockerFailedCreateService).
 				WithNTParam("Error", err.Error())

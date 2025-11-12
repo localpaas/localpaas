@@ -503,6 +503,65 @@
         },
         "summary" : "Gets node details",
         "tags" : [ "cluster_nodes" ]
+      },
+      "put" : {
+        "description" : "Updates a node",
+        "operationId" : "updateNode",
+        "parameters" : [ {
+          "description" : "node ID",
+          "in" : "path",
+          "name" : "nodeID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.UpdateNodeReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.UpdateNodeResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates a node",
+        "tags" : [ "cluster_nodes" ],
+        "x-codegen-request-body-name" : "body"
       }
     },
     "/internal/auth/dev-mode-login" : {
@@ -4415,6 +4474,11 @@
         "type" : "string",
         "x-enum-varnames" : [ "MFATypeTOTP", "MFATypeEmail" ]
       },
+      "github_com_localpaas_localpaas_localpaas_app_base.NodeAvailability" : {
+        "enum" : [ "active", "pause", "drain" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "NodeAvailabilityActive", "NodeAvailabilityPause", "NodeAvailabilityDrain" ]
+      },
       "github_com_localpaas_localpaas_localpaas_app_base.NodeRole" : {
         "enum" : [ "manager", "worker" ],
         "type" : "string",
@@ -4961,6 +5025,15 @@
           "isLeader" : {
             "type" : "boolean"
           },
+          "labels" : {
+            "additionalProperties" : {
+              "type" : "string"
+            },
+            "type" : "object"
+          },
+          "name" : {
+            "type" : "string"
+          },
           "platform" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.NodePlatformResp"
           },
@@ -4977,7 +5050,37 @@
             "type" : "string"
           }
         },
-        "required" : [ "addr", "createdAt", "hostname", "id", "isLeader", "platform", "resources", "role", "status", "updatedAt" ],
+        "required" : [ "addr", "createdAt", "hostname", "id", "isLeader", "labels", "name", "platform", "resources", "role", "status", "updatedAt" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.UpdateNodeReq" : {
+        "properties" : {
+          "availability" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.NodeAvailability"
+          },
+          "labels" : {
+            "additionalProperties" : {
+              "type" : "string"
+            },
+            "type" : "object"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "role" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.NodeRole"
+          }
+        },
+        "required" : [ "availability", "labels", "name", "role" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.UpdateNodeResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.CreateProjectReq" : {

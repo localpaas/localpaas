@@ -12,7 +12,8 @@ import (
 )
 
 const (
-	nodeIDMaxLen = 100
+	nodeIDMaxLen   = 100
+	nodeNameMaxLen = 100
 )
 
 type GetNodeReq struct {
@@ -37,6 +38,8 @@ type GetNodeResp struct {
 
 type NodeResp struct {
 	ID        string            `json:"id"`
+	Name      string            `json:"name"`
+	Labels    map[string]string `json:"labels"`
 	Hostname  string            `json:"hostname"`
 	Addr      string            `json:"addr"`
 	Status    base.NodeStatus   `json:"status"`
@@ -63,6 +66,8 @@ func TransformNode(node *swarm.Node) *NodeResp {
 	isManager := node.Spec.Role == swarm.NodeRoleManager
 	return &NodeResp{
 		ID:       node.ID,
+		Name:     node.Spec.Name,
+		Labels:   node.Spec.Labels,
 		Status:   base.NodeStatus(node.Status.State),
 		Role:     base.NodeRole(node.Spec.Role),
 		IsLeader: isManager && node.ManagerStatus != nil && node.ManagerStatus.Leader,

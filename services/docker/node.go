@@ -30,6 +30,24 @@ func (m *Manager) NodeInspect(ctx context.Context, nodeID string) (*swarm.Node, 
 	return &resp, data, nil
 }
 
+func (m *Manager) NodeUpdate(ctx context.Context, nodeID string, version *swarm.Version, spec *swarm.NodeSpec) error {
+	if spec == nil {
+		return nil
+	}
+	if version == nil {
+		resp, _, err := m.client.NodeInspectWithRaw(ctx, nodeID)
+		if err != nil {
+			return tracerr.Wrap(err, "error inspecting node")
+		}
+		version = &resp.Version
+	}
+	err := m.client.NodeUpdate(ctx, nodeID, *version, *spec)
+	if err != nil {
+		return tracerr.Wrap(err, "error updating node")
+	}
+	return nil
+}
+
 type NodeRemoveOption func(*swarm.NodeRemoveOptions)
 
 func (m *Manager) NodeRemove(ctx context.Context, nodeID string, options ...NodeRemoveOption) error {
