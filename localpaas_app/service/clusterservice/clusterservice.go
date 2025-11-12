@@ -3,10 +3,10 @@ package clusterservice
 import (
 	"context"
 
-	"github.com/localpaas/localpaas/infrastructure/docker"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
+	"github.com/localpaas/localpaas/services/docker"
 )
 
 type ClusterService interface {

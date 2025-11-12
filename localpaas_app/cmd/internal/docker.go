@@ -5,8 +5,8 @@ import (
 
 	"go.uber.org/fx"
 
-	"github.com/localpaas/localpaas/infrastructure/docker"
 	"github.com/localpaas/localpaas/localpaas_app/infra/logging"
+	"github.com/localpaas/localpaas/services/docker"
 )
 
 func InitDockerManager(lc fx.Lifecycle, manager *docker.Manager, logger logging.Logger) error {

@@ -1,8 +1,8 @@
 package entity
 
 import (
-	"github.com/localpaas/localpaas/infrastructure/docker"
 	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/services/docker"
 )
 
 func (s *Setting) ParseAppServiceSpec() (*docker.ServiceSpec, error) {

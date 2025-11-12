@@ -7,7 +7,6 @@ import (
 
 	"github.com/tiendc/gofn"
 
-	"github.com/localpaas/localpaas/infrastructure/docker"
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -20,6 +19,7 @@ import (
 	"github.com/localpaas/localpaas/pkg/slugify"
 	"github.com/localpaas/localpaas/pkg/timeutil"
 	"github.com/localpaas/localpaas/pkg/ulid"
+	"github.com/localpaas/localpaas/services/docker"
 )
 
 const (

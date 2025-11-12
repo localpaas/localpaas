@@ -4610,6 +4610,9 @@
           },
           "envVars" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.EnvVarsResp"
+          },
+          "serviceSpec" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.ServiceSpecResp"
           }
         },
         "type" : "object"
@@ -4846,6 +4849,15 @@
           }
         },
         "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.ServiceSpecResp" : {
+        "properties" : {
+          "test" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "test" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.UpdateAppSettingsReq" : {
