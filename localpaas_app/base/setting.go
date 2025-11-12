@@ -3,20 +3,22 @@ package base
 type SettingType string
 
 const (
-	SettingTypeProject    = SettingType("project")
-	SettingTypeApp        = SettingType("app")
-	SettingTypeDeployment = SettingType("deployment")
-	SettingTypeEnvVar     = SettingType("env-var")
-	SettingTypeSecret     = SettingType("secret")
-	SettingTypeS3Storage  = SettingType("s3-storage")
-	SettingTypeOAuth      = SettingType("oauth")
-	SettingTypeSSHKey     = SettingType("ssh-key")
-	SettingTypeAPIKey     = SettingType("api-key")
-	SettingTypeSlack      = SettingType("slack")
+	SettingTypeProject     = SettingType("project")
+	SettingTypeApp         = SettingType("app")
+	SettingTypeServiceSpec = SettingType("service-spec")
+	SettingTypeDeployment  = SettingType("deployment")
+	SettingTypeEnvVar      = SettingType("env-var")
+	SettingTypeSecret      = SettingType("secret")
+	SettingTypeS3Storage   = SettingType("s3-storage")
+	SettingTypeOAuth       = SettingType("oauth")
+	SettingTypeSSHKey      = SettingType("ssh-key")
+	SettingTypeAPIKey      = SettingType("api-key")
+	SettingTypeSlack       = SettingType("slack")
 )
 
 var (
-	AllAppSettingTypes = []SettingType{SettingTypeApp, SettingTypeDeployment, SettingTypeEnvVar, SettingTypeSecret}
+	AllAppSettingTypes = []SettingType{SettingTypeApp, SettingTypeServiceSpec, SettingTypeDeployment,
+		SettingTypeEnvVar, SettingTypeSecret}
 
 	AllProjectSettingTypes = []SettingType{SettingTypeProject, SettingTypeEnvVar, SettingTypeSecret}
 )

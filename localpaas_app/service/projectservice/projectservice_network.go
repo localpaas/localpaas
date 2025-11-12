@@ -14,18 +14,18 @@ const (
 	networkDriver = "overlay"
 	networkScope  = "swarm"
 
-	networkLabelName = "localpaas.project.name"
+	networkLabelProjectSlug = "localpaas.project.slug"
 )
 
 func (s *projectService) CreateProjectNetworks(ctx context.Context, project *entity.Project) (
 	*network.CreateResponse, error) {
 	// Create a default network for the project apps
-	net, err := s.dockerManager.NetworkCreate(ctx, project.Slug+"_net", func(opts *network.CreateOptions) {
+	net, err := s.dockerManager.NetworkCreate(ctx, project.GetDefaultNetworkName(), func(opts *network.CreateOptions) {
 		opts.Driver = networkDriver
 		opts.Scope = networkScope
 		opts.Attachable = true
 		opts.Labels = map[string]string{
-			networkLabelName: project.Slug,
+			networkLabelProjectSlug: project.Slug,
 		}
 	})
 	if err != nil {
@@ -38,7 +38,7 @@ func (s *projectService) ListProjectNetworks(ctx context.Context, project *entit
 	[]network.Summary, error) {
 	res, err := s.dockerManager.NetworkList(ctx, func(opts *network.ListOptions) {
 		opts.Filters = filters.NewArgs(
-			filters.Arg("label", networkLabelName+"="+project.Slug),
+			filters.Arg("label", networkLabelProjectSlug+"="+project.Slug),
 		)
 	})
 	if err != nil {

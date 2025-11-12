@@ -13,9 +13,9 @@ type EnvVar struct {
 }
 
 func (s *Setting) ParseEnvVars() (*EnvVars, error) {
-	if s != nil && s.Type == base.SettingTypeEnvVar {
-		res := &EnvVars{}
+	res := &EnvVars{}
+	if s != nil && s.Data != "" && s.Type == base.SettingTypeEnvVar {
 		return res, s.parseData(res)
 	}
-	return nil, nil
+	return res, nil
 }

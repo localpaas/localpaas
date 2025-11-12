@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS apps
     photo        VARCHAR(255) NULL,
     project_id   VARCHAR(100) NOT NULL,
     parent_id    VARCHAR(100) NULL,
+    service_id   VARCHAR(100) NULL,
     status       VARCHAR(100) NOT NULL,
     note         VARCHAR(10000) NULL,
 

@@ -61,6 +61,11 @@ var (
 	ErrEmailChangeUnallowed        = errors.New("ERR_EMAIL_CHANGE_UNALLOWED")
 )
 
+// Errors from docker
+var (
+	ErrDockerFailedCreateService = errors.New("ERR_DOCKER_FAILED_CREATE_SERVICE")
+)
+
 // errorStatusMap - mapping from error to http status code
 var errorStatusMap = map[error]int{
 	// Base errors
@@ -101,6 +106,7 @@ var errorStatusMap = map[error]int{
 	ErrAPIKeyExpired:    http.StatusUnauthorized,
 	ErrAPIKeyInvalid:    http.StatusUnauthorized,
 
+	// User errors
 	ErrUserUnavailable:             http.StatusForbidden,
 	ErrUserStatusNotAllowAction:    http.StatusForbidden,
 	ErrUserAlreadySignUp:           http.StatusForbidden,
@@ -109,6 +115,9 @@ var errorStatusMap = map[error]int{
 	ErrPasswordResetTokenInvalid:   http.StatusNotAcceptable,
 	ErrEmailUnavailable:            http.StatusUnprocessableEntity,
 	ErrEmailChangeUnallowed:        http.StatusUnprocessableEntity,
+
+	// Docker errors
+	ErrDockerFailedCreateService: http.StatusUnprocessableEntity,
 }
 
 // errorWarnLevelMap defines the errors that are handled but unexpected to happen.

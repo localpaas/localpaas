@@ -67,7 +67,7 @@ func (uc *ProjectUC) loadProjectData(
 	req *projectdto.CreateProjectReq,
 	data *createProjectData,
 ) error {
-	data.ProjectSlug = slugify.SlugifyEx(req.Name, []string{"-", "_", ".", "_"}, projectSlugMaxLen)
+	data.ProjectSlug = slugify.SlugifyEx(req.Name, nil, projectSlugMaxLen)
 
 	project, err := uc.projectRepo.GetBySlug(ctx, db, data.ProjectSlug)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {

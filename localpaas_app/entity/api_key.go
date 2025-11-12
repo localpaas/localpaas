@@ -58,7 +58,7 @@ func (o *APIKey) VerifyHash(secretKey string) error {
 }
 
 func (s *Setting) ParseAPIKey() (*APIKey, error) {
-	if s != nil && s.Data != "" {
+	if s != nil && s.Data != "" && s.Type == base.SettingTypeAPIKey {
 		res := &APIKey{}
 		err := s.parseData(res)
 		if err != nil {

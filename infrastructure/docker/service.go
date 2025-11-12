@@ -39,6 +39,30 @@ func (m *Manager) ServiceCreate(ctx context.Context, service swarm.ServiceSpec, 
 	return &resp, nil
 }
 
+type ServiceUpdateOption func(options *swarm.ServiceUpdateOptions)
+
+func (m *Manager) ServiceUpdate(ctx context.Context, serviceID string, version *swarm.Version,
+	service swarm.ServiceSpec, options ...ServiceUpdateOption) (*swarm.ServiceUpdateResponse, error) {
+	opts := swarm.ServiceUpdateOptions{}
+	for _, opt := range options {
+		opt(&opts)
+	}
+
+	if version == nil {
+		resp, _, err := m.client.ServiceInspectWithRaw(ctx, serviceID, swarm.ServiceInspectOptions{})
+		if err != nil {
+			return nil, tracerr.Wrap(err, "error inspecting service")
+		}
+		version = &resp.Version
+	}
+
+	resp, err := m.client.ServiceUpdate(ctx, serviceID, *version, service, opts)
+	if err != nil {
+		return nil, tracerr.Wrap(err, "error creating service")
+	}
+	return &resp, nil
+}
+
 func (m *Manager) ServiceRemove(ctx context.Context, serviceID string) error {
 	err := m.client.ServiceRemove(ctx, serviceID)
 	if err != nil {

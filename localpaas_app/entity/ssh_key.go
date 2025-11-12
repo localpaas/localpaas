@@ -48,7 +48,7 @@ func (o *SSHKey) Decrypt() error {
 }
 
 func (s *Setting) ParseSSHKey(decrypt bool) (*SSHKey, error) {
-	if s != nil && s.Data != "" {
+	if s != nil && s.Data != "" && s.Type == base.SettingTypeSSHKey {
 		res := &SSHKey{}
 		err := s.parseData(res)
 		if err != nil {

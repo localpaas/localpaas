@@ -57,3 +57,7 @@ func (p *Project) GetSettingByType(typ base.SettingType) *Setting {
 	}
 	return nil
 }
+
+func (p *Project) GetDefaultNetworkName() string {
+	return p.Slug + "_net"
+}

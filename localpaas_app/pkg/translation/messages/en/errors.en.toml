@@ -49,3 +49,6 @@ ERR_PASSWORD_NOT_MEET_REQUIREMENTS = "Password does not meet requirements. Must 
 ERR_PASSWORD_RESET_TOKEN_INVALID = "Password reset token is invalid or expired"
 ERR_EMAIL_UNAVAILABLE = "Email address is not available"
 ERR_EMAIL_CHANGE_UNALLOWED = "Email changing is not allowed"
+
+# Docker errors
+ERR_DOCKER_FAILED_CREATE_SERVICE = "Failed to create service in docker. Error: {{.Error}}"

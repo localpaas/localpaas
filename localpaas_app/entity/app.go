@@ -8,8 +8,8 @@ import (
 
 var (
 	AppUpsertingConflictCols = []string{"id"}
-	AppUpsertingUpdateCols   = []string{"name", "slug", "photo", "project_id", "parent_id", "status", "note",
-		"updated_at", "deleted_at"}
+	AppUpsertingUpdateCols   = []string{"name", "slug", "photo", "project_id", "parent_id", "service_id",
+		"status", "note", "updated_at", "deleted_at"}
 )
 
 type App struct {
@@ -19,6 +19,7 @@ type App struct {
 	Photo     string `bun:",nullzero"`
 	ProjectID string
 	ParentID  string `bun:",nullzero"`
+	ServiceID string `bun:",nullzero"`
 	Status    base.AppStatus
 	Note      string `bun:",nullzero"`
 

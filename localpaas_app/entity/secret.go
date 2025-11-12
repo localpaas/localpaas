@@ -59,7 +59,7 @@ func (o *Secret) ValueAsBytes() []byte {
 }
 
 func (s *Setting) ParseSecret(decrypt bool) (*Secret, error) {
-	if s != nil && s.Data != "" {
+	if s != nil && s.Data != "" && s.Type == base.SettingTypeSecret {
 		res := &Secret{}
 		err := s.parseData(res)
 		if err != nil {

@@ -39,6 +39,7 @@ type GetAppSettingsResp struct {
 
 type AppSettingsResp struct {
 	EnvVars            *EnvVarsResp            `json:"envVars,omitempty"`
+	ServiceSpec        *ServiceSpecResp        `json:"serviceSpec,omitempty"`
 	DeploymentSettings *DeploymentSettingsResp `json:"deploymentSettings,omitempty"`
 }
 
@@ -54,6 +55,10 @@ type EnvVarResp struct {
 	IsBuildEnv bool   `json:"isBuildEnv,omitempty"`
 }
 
+type ServiceSpecResp struct {
+	Test string `json:"test"`
+}
+
 type DeploymentSettingsResp struct {
 	Test string `json:"test"`
 }
@@ -66,6 +71,11 @@ func TransformAppSettings(app *entity.App) (resp *AppSettingsResp, err error) {
 		switch setting.Type { //nolint:exhaustive
 		case base.SettingTypeEnvVar:
 			envVarSettings = append(envVarSettings, setting)
+		case base.SettingTypeServiceSpec:
+			resp.ServiceSpec, err = TransformServiceSpec(setting)
+			if err != nil {
+				return nil, apperrors.Wrap(err)
+			}
 		case base.SettingTypeDeployment:
 			resp.DeploymentSettings, err = TransformDeploymentSettings(setting)
 			if err != nil {
@@ -131,6 +141,17 @@ func TransformEnvVars(app *entity.App, envSettings []*entity.Setting) (resp *Env
 				IsBuildEnv: v.IsBuildEnv,
 			})
 		}
+	}
+	return resp, nil
+}
+
+func TransformServiceSpec(setting *entity.Setting) (resp *ServiceSpecResp, err error) {
+	data, err := setting.ParseAppServiceSpec()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	if err = copier.Copy(&resp, &data); err != nil {
+		return nil, apperrors.Wrap(err)
 	}
 	return resp, nil
 }
