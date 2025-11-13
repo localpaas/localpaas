@@ -17,7 +17,9 @@ type UserResp struct {
 	Role           base.UserRole           `json:"role"`
 	Status         base.UserStatus         `json:"status"`
 	FullName       string                  `json:"fullName"`
+	Position       string                  `json:"position"`
 	Photo          string                  `json:"photo"`
+	Notes          string                  `json:"notes,omitempty"`
 	SecurityOption base.UserSecurityOption `json:"securityOption"`
 	MfaSecret      string                  `json:"mfaSecret"`
 	CreatedAt      time.Time               `json:"createdAt"`

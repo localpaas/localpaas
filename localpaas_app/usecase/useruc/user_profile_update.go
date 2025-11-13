@@ -125,8 +125,14 @@ func (uc *UserUC) preparePersistingUserProfileData(
 	if req.FullName != "" {
 		user.FullName = req.FullName
 	}
+	if req.Position != nil {
+		user.Position = *req.Position
+	}
 	if req.Photo != nil && req.Photo.FileName == "" {
 		user.Photo = ""
+	}
+	if req.Notes != nil {
+		user.Notes = *req.Notes
 	}
 }
 
@@ -136,7 +142,7 @@ func (uc *UserUC) persistUserProfileData(
 	persistingData *persistingUserProfileData,
 ) error {
 	err := uc.userRepo.Update(ctx, db, persistingData.UpdatingUser,
-		bunex.UpdateColumns("updated_at", "username", "email", "full_name", "photo"),
+		bunex.UpdateColumns("updated_at", "username", "email", "full_name", "position", "photo", "notes"),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)

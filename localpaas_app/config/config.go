@@ -80,9 +80,6 @@ func (cfg *Config) DataPathNginxShare() string {
 func (cfg *Config) DataPathNginxShareDomains() string {
 	return filepath.Join(cfg.DataPathNginxShare(), "domains")
 }
-func (cfg *Config) DataPathNginxShareDomainsHttp01Challenge() string {
-	return filepath.Join(cfg.DataPathNginxShareDomains(), "http-01-challenge")
-}
 
 /// LETS ENCRYPT
 

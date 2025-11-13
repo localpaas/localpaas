@@ -119,6 +119,9 @@ func (uc *UserUC) prepareUpdatingUserData(
 	if req.FullName != "" {
 		user.FullName = req.FullName
 	}
+	if req.Position != nil {
+		user.Position = *req.Position
+	}
 	if req.Photo != nil && req.Photo.FileName == "" {
 		user.Photo = ""
 	}
@@ -127,6 +130,9 @@ func (uc *UserUC) prepareUpdatingUserData(
 	}
 	if req.Role != nil {
 		user.Role = *req.Role
+	}
+	if req.Notes != nil {
+		user.Notes = *req.Notes
 	}
 	if req.SecurityOption != nil {
 		user.SecurityOption = *req.SecurityOption

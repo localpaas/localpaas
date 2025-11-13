@@ -34,6 +34,6 @@ func (req *ListUserBaseReq) Validate() apperrors.ValidationErrors {
 }
 
 type ListUserBaseResp struct {
-	Meta *basedto.Meta   `json:"meta"`
-	Data []*UserBaseResp `json:"data"`
+	Meta *basedto.Meta           `json:"meta"`
+	Data []*basedto.UserBaseResp `json:"data"`
 }

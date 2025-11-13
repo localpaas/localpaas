@@ -9,9 +9,9 @@ import (
 
 var (
 	UserUpsertingConflictCols = []string{"id"}
-	UserUpsertingUpdateCols   = []string{"username", "email", "role", "status", "full_name", "photo", "security_option",
-		"totp_secret", "password", "password_salt", "password_fails_in_row", "password_first_fail_at",
-		"access_expire_at", "last_access", "updated_at", "deleted_at"}
+	UserUpsertingUpdateCols   = []string{"username", "email", "role", "status", "full_name", "position", "photo",
+		"notes", "security_option", "totp_secret", "password", "password_salt", "password_fails_in_row",
+		"password_first_fail_at", "access_expire_at", "last_access", "updated_at", "deleted_at"}
 )
 
 type User struct {
@@ -21,7 +21,9 @@ type User struct {
 	Role     base.UserRole
 	Status   base.UserStatus
 	FullName string
+	Position string `bun:",nullzero"`
 	Photo    string `bun:",nullzero"`
+	Notes    string `bun:",nullzero"`
 
 	SecurityOption      base.UserSecurityOption
 	TotpSecret          string `bun:",nullzero"`

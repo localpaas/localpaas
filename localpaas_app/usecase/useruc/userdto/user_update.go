@@ -19,9 +19,11 @@ type UpdateUserReq struct {
 	Username         string                       `json:"username"`
 	Email            string                       `json:"email"`
 	FullName         string                       `json:"fullName"`
+	Position         *string                      `json:"position"`
 	Photo            *UserPhotoReq                `json:"photo"`
 	Status           *base.UserStatus             `json:"status"`
 	Role             *base.UserRole               `json:"role"`
+	Notes            *string                      `json:"notes"`
 	SecurityOption   *base.UserSecurityOption     `json:"securityOption"`
 	AccessExpiration *time.Time                   `json:"accessExpiration"`
 	ModuleAccesses   basedto.ModuleAccessSliceReq `json:"moduleAccesses"`
@@ -51,11 +53,15 @@ func (req *UpdateUserReq) Validate() apperrors.ValidationErrors {
 	validators = append(validators, basedto.ValidateEmail(&req.Email, false, "email")...)
 	validators = append(validators, basedto.ValidateStr(&req.FullName, false, minNameLen, maxNameLen,
 		"fullName")...)
+	validators = append(validators, basedto.ValidateStr(req.Position, false,
+		minNameLen, maxNameLen, "position")...)
 	validators = append(validators, validateUserPhoto(req.Photo, "photo")...)
 	validators = append(validators, basedto.ValidateStrIn(req.Status, false, base.AllUserStatuses,
 		"status")...)
 	validators = append(validators, basedto.ValidateStrIn(req.Role, false, base.AllUserRoles,
 		"role")...)
+	validators = append(validators, basedto.ValidateStr(req.Notes, false,
+		minNotesLen, maxNotesLen, "notes")...)
 	validators = append(validators, basedto.ValidateStrIn(req.SecurityOption, false,
 		base.AllUserSecurityOptions, "securityOption")...)
 	validators = append(validators, basedto.ValidateModuleAccessSliceReq(req.ModuleAccesses, true,

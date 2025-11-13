@@ -8,6 +8,7 @@ import (
 	"crypto/rand"
 	"os"
 
+	"github.com/go-acme/lego/providers/http/webroot"
 	"github.com/go-acme/lego/v4/certificate"
 	"github.com/go-acme/lego/v4/lego"
 	"github.com/go-acme/lego/v4/registration"
@@ -59,7 +60,12 @@ func NewClient(email, http01NginxRoot string) (client *Client, err error) {
 		return nil, apperrors.New(err).WithMsgLog("failed to create lego client")
 	}
 
-	err = c.Challenge.SetHTTP01Provider(NewHttp01NginxProvider(http01NginxRoot))
+	webrootProvider, err := webroot.NewHTTPProvider(http01NginxRoot)
+	if err != nil {
+		return nil, apperrors.New(err).WithMsgLog("failed to create http provider for webroot")
+	}
+
+	err = c.Challenge.SetHTTP01Provider(webrootProvider)
 	if err != nil {
 		return nil, apperrors.New(err).WithMsgLog("failed to set http-01 challenge")
 	}
@@ -71,7 +77,12 @@ func NewClient(email, http01NginxRoot string) (client *Client, err error) {
 }
 
 func NewClientFromConfig(cfg *config.Config) (client *Client, err error) {
-	return NewClient(cfg.SSL.LeUserEmail, cfg.DataPathNginxShareDomainsHttp01Challenge())
+	nginxWebroot := cfg.DataPathNginxShareDomains()
+	err = os.MkdirAll(nginxWebroot, 0755) //nolint
+	if err != nil {
+		return nil, apperrors.New(err).WithMsgLog("failed to create nginx webroot directory")
+	}
+	return NewClient(cfg.SSL.LeUserEmail, nginxWebroot)
 }
 
 func (client *Client) registerUser(_ context.Context) error {

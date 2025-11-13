@@ -17,6 +17,9 @@ const (
 	maxNameLen = 100
 
 	maxUserPhotoSize = 500 * 1024 * 1024 // 500KB
+
+	minNotesLen = 1
+	maxNotesLen = 10000
 )
 
 func validateUsername(username *string, required bool, field string) (res []vld.Validator) {

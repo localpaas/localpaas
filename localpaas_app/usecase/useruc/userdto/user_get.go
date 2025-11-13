@@ -4,7 +4,6 @@ import (
 	"time"
 
 	vld "github.com/tiendc/go-validator"
-	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -41,18 +40,14 @@ type UserResp struct {
 	Status         base.UserStatus         `json:"status"`
 	FullName       string                  `json:"fullName"`
 	Photo          string                  `json:"photo"`
+	Position       string                  `json:"position"`
 	SecurityOption base.UserSecurityOption `json:"securityOption"`
+	Notes          string                  `json:"notes,omitempty"`
 
 	CreatedAt      time.Time  `json:"createdAt"`
 	UpdatedAt      time.Time  `json:"updatedAt"`
 	AccessExpireAt *time.Time `json:"accessExpireAt" copy:",nilonzero"`
 	LastAccess     *time.Time `json:"lastAccess" copy:",nilonzero"`
-}
-
-type UserBaseResp struct {
-	ID       string `json:"id"`
-	FullName string `json:"fullName"`
-	Photo    string `json:"photo"`
 }
 
 func TransformUserDetails(user *entity.User) (resp *UserDetailsResp, err error) {
@@ -63,14 +58,4 @@ func TransformUserDetails(user *entity.User) (resp *UserDetailsResp, err error) 
 	return &UserDetailsResp{
 		UserResp: userResp,
 	}, nil
-}
-
-func TransformUsersBase(users []*entity.User) []*UserBaseResp {
-	return gofn.MapSlice(users, func(user *entity.User) *UserBaseResp {
-		return &UserBaseResp{
-			ID:       user.ID,
-			FullName: user.FullName,
-			Photo:    user.Photo,
-		}
-	})
 }

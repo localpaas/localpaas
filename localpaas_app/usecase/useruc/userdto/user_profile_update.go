@@ -16,7 +16,9 @@ type UpdateProfileReq struct {
 	Username string        `json:"username"`
 	Email    string        `json:"email"`
 	FullName string        `json:"fullName"`
+	Position *string       `json:"position"`
 	Photo    *UserPhotoReq `json:"photo"`
+	Notes    *string       `json:"notes"`
 }
 
 func NewUpdateProfileReq() *UpdateProfileReq {
@@ -41,7 +43,11 @@ func (req *UpdateProfileReq) Validate() apperrors.ValidationErrors {
 	validators = append(validators, basedto.ValidateEmail(&req.Email, false, "email")...)
 	validators = append(validators, basedto.ValidateStr(&req.FullName, false,
 		minNameLen, maxNameLen, "fullName")...)
+	validators = append(validators, basedto.ValidateStr(req.Position, false,
+		minNameLen, maxNameLen, "position")...)
 	validators = append(validators, validateUserPhoto(req.Photo, "photo")...)
+	validators = append(validators, basedto.ValidateStr(req.Notes, false,
+		minNotesLen, maxNotesLen, "notes")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
