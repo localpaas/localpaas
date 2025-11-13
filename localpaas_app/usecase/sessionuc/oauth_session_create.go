@@ -52,7 +52,7 @@ func (uc *SessionUC) CreateOAuthSession(
 	}
 
 	fullName := strings.Join(gofn.ToSliceSkippingZero(oauthUser.FirstName, oauthUser.LastName), " ")
-	fullName = gofn.Coalesce(fullName, oauthUser.NickName, oauthUser.UserID)
+	fullName = gofn.Coalesce(fullName, oauthUser.NickName, username)
 
 	if dbUser == nil {
 		// User makes the first login to our service

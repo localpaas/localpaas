@@ -95,6 +95,7 @@ func (uc *UserUC) loadUserInviteData(
 			ID:        gofn.Must(ulid.NewStringULID()),
 			Username:  username,
 			Email:     req.Email,
+			FullName:  username,
 			CreatedAt: time.Now(),
 		}
 	} else {

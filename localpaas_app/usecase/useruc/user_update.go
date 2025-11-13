@@ -136,13 +136,16 @@ func (uc *UserUC) prepareUpdatingUserData(
 	}
 	if req.SecurityOption != nil {
 		user.SecurityOption = *req.SecurityOption
-		if user.SecurityOption == base.UserSecurityPassword2FA && user.TotpSecret == "" {
-			user.Status = base.UserStatusPending // User needs to set up 2FA authentication
-		}
 	}
 	if req.AccessExpiration != nil {
 		user.AccessExpireAt = *req.AccessExpiration
 	}
+
+	if user.Status == base.UserStatusActive &&
+		user.SecurityOption == base.UserSecurityPassword2FA && user.TotpSecret == "" {
+		user.Status = base.UserStatusPending // User needs to set up 2FA authentication
+	}
+
 	persistingData.UpsertingUsers = append(persistingData.UpsertingUsers, user)
 
 	if req.ModuleAccesses != nil {

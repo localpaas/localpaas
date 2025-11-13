@@ -58,7 +58,7 @@ func (req *CompleteUserSignupReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, basedto.ValidateStr(&req.InviteToken, true,
 		1, maxInviteTokenLen, "inviteToken")...)
-	validators = append(validators, validateUsername(&req.Username, false, "username")...)
+	validators = append(validators, validateUsername(&req.Username, true, "username")...)
 	validators = append(validators, basedto.ValidateStr(&req.FullName, true,
 		minNameLen, maxNameLen, "fullName")...)
 	validators = append(validators, validateUserPhoto(req.Photo, "photo")...)
