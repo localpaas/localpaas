@@ -68,6 +68,9 @@ func (uc *ProjectUC) loadProjectData(
 	data *createProjectData,
 ) error {
 	data.ProjectSlug = slugify.SlugifyEx(req.Name, nil, projectSlugMaxLen)
+	if data.ProjectSlug == "localpaas" { // this is the name used by LocalPaaS
+		return apperrors.New(apperrors.ErrNameUnavailable).WithMsgLog("project name is not allowed")
+	}
 
 	project, err := uc.projectRepo.GetBySlug(ctx, db, data.ProjectSlug)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
