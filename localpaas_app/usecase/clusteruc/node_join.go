@@ -37,9 +37,8 @@ func (uc *ClusterUC) JoinNode(
 	cmdCtx, cancelFunc := context.WithTimeout(ctx, executionTimeout)
 	defer cancelFunc()
 
-	joinToken := gofn.If(req.JoinAsManager, data.Swarm.JoinTokens.Manager, data.Swarm.JoinTokens.Worker) //nolint
-	command := fmt.Sprintf("docker swarm join --token %s %s", joinToken, data.PreferManagerAddr)
-
+	command := fmt.Sprintf("docker swarm leave --force && docker swarm join --token %s %s",
+		data.JoinToken, data.PreferManagerAddr)
 	output, err := ssh.Execute(cmdCtx, &ssh.CommandInput{
 		Host:       req.Host,
 		Port:       req.Port,
@@ -48,12 +47,16 @@ func (uc *ClusterUC) JoinNode(
 		Passphrase: data.SSHKey.Passphrase,
 		Command:    command,
 	})
+
+	var errorMessage string
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		errorMessage = err.Error()
 	}
 
 	return &clusterdto.JoinNodeResp{
 		Data: &clusterdto.JoinNodeDataResp{
+			Success:       err == nil,
+			ErrorMessage:  errorMessage,
 			CommandOutput: output,
 		},
 	}, nil
@@ -61,7 +64,7 @@ func (uc *ClusterUC) JoinNode(
 
 type joinNodeData struct {
 	SSHKey            *entity.SSHKey
-	Swarm             *swarm.Swarm
+	JoinToken         string
 	PreferManagerAddr string
 }
 
@@ -85,11 +88,17 @@ func (uc *ClusterUC) loadJoinNodeData(
 	}
 	data.SSHKey = sshKey
 
+	// Find join token from the cluster
 	theSwarm, err := uc.dockerManager.SwarmInspect(ctx)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	data.Swarm = theSwarm
+
+	joinToken := gofn.If(req.JoinAsManager, theSwarm.JoinTokens.Manager, theSwarm.JoinTokens.Worker) //nolint
+	if joinToken == "" {
+		return apperrors.Wrap(apperrors.ErrDockerJoinTokenNotFound)
+	}
+	data.JoinToken = joinToken
 
 	// List all manager nodes to get the addr to join new node
 	managerNodes, err := uc.dockerManager.NodeList(ctx, func(opts *swarm.NodeListOptions) {
@@ -110,6 +119,9 @@ func (uc *ClusterUC) loadJoinNodeData(
 		}
 	}
 	data.PreferManagerAddr = gofn.Coalesce(leaderAddr, managerAddr)
+	if data.PreferManagerAddr == "" {
+		return apperrors.Wrap(apperrors.ErrDockerActiveManagerNodeNotFound)
+	}
 
 	return nil
 }

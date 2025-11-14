@@ -410,7 +410,7 @@
       }
     },
     "/cluster/nodes/join" : {
-      "put" : {
+      "post" : {
         "description" : "Joins a node to the swarm",
         "operationId" : "joinNode",
         "requestBody" : {
@@ -459,6 +459,54 @@
         "summary" : "Joins a node to the swarm",
         "tags" : [ "cluster_nodes" ],
         "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/cluster/nodes/join-command" : {
+      "get" : {
+        "description" : "Gets node join command",
+        "operationId" : "getNodeJoinCommand",
+        "parameters" : [ {
+          "description" : "joinAsManager=true/false",
+          "in" : "query",
+          "name" : "joinAsManager",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.GetNodeJoinCommandResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Gets node join command",
+        "tags" : [ "cluster_nodes" ]
       }
     },
     "/cluster/nodes/{nodeID}" : {
@@ -5398,6 +5446,27 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.GetNodeJoinCommandDataResp" : {
+        "properties" : {
+          "command" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "command" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.GetNodeJoinCommandResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.GetNodeJoinCommandDataResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.GetNodeResp" : {
         "properties" : {
           "data" : {
@@ -5414,9 +5483,15 @@
         "properties" : {
           "commandOutput" : {
             "type" : "string"
+          },
+          "errorMessage" : {
+            "type" : "string"
+          },
+          "success" : {
+            "type" : "boolean"
           }
         },
-        "required" : [ "commandOutput" ],
+        "required" : [ "commandOutput", "errorMessage", "success" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.JoinNodeReq" : {

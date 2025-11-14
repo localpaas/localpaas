@@ -35,5 +35,7 @@ type JoinNodeResp struct {
 }
 
 type JoinNodeDataResp struct {
+	Success       bool   `json:"success"`
+	ErrorMessage  string `json:"errorMessage"`
 	CommandOutput string `json:"commandOutput"`
 }

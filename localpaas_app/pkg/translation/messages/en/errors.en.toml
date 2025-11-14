@@ -53,3 +53,5 @@ ERR_EMAIL_CHANGE_UNALLOWED = "Email changing is not allowed"
 # Docker errors
 ERR_DOCKER_FAILED_UPDATE_NODE = "Failed to update node in docker. Error: {{.Error}}"
 ERR_DOCKER_FAILED_CREATE_SERVICE = "Failed to create service in docker. Error: {{.Error}}"
+ERR_DOCKER_JOIN_TOKEN_NOT_FOUND = "Valid join token is not found in the cluster"
+ERR_DOCKER_ACTIVE_MANAGER_NOT_FOUND = "No active manager node found in the cluster"

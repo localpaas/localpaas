@@ -202,7 +202,7 @@ func (h *ClusterHandler) DeleteNode(ctx *gin.Context) {
 // @Success 200 {object} clusterdto.JoinNodeResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /cluster/nodes/join [put]
+// @Router  /cluster/nodes/join [post]
 func (h *ClusterHandler) JoinNode(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceType: base.ResourceTypeNode,
@@ -220,6 +220,42 @@ func (h *ClusterHandler) JoinNode(ctx *gin.Context) {
 	}
 
 	resp, err := h.clusterUC.JoinNode(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
+// GetNodeJoinCommand Gets node join command
+// @Summary Gets node join command
+// @Description Gets node join command
+// @Tags    cluster_nodes
+// @Produce json
+// @Id      getNodeJoinCommand
+// @Param   joinAsManager query string false "joinAsManager=true/false"
+// @Success 200 {object} clusterdto.GetNodeJoinCommandResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /cluster/nodes/join-command [get]
+func (h *ClusterHandler) GetNodeJoinCommand(ctx *gin.Context) {
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceType: base.ResourceTypeNode,
+		Action:       base.ActionTypeWrite,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := clusterdto.NewGetNodeJoinCommandReq()
+	if err := h.ParseRequest(ctx, req, nil); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.clusterUC.GetNodeJoinCommand(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

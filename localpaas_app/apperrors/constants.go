@@ -63,8 +63,10 @@ var (
 
 // Errors from docker
 var (
-	ErrDockerFailedUpdateNode    = errors.New("ERR_DOCKER_FAILED_UPDATE_NODE")
-	ErrDockerFailedCreateService = errors.New("ERR_DOCKER_FAILED_CREATE_SERVICE")
+	ErrDockerFailedUpdateNode          = errors.New("ERR_DOCKER_FAILED_UPDATE_NODE")
+	ErrDockerFailedCreateService       = errors.New("ERR_DOCKER_FAILED_CREATE_SERVICE")
+	ErrDockerJoinTokenNotFound         = errors.New("ERR_DOCKER_JOIN_TOKEN_NOT_FOUND")
+	ErrDockerActiveManagerNodeNotFound = errors.New("ERR_DOCKER_ACTIVE_MANAGER_NOT_FOUND")
 )
 
 // errorStatusMap - mapping from error to http status code
@@ -118,8 +120,10 @@ var errorStatusMap = map[error]int{
 	ErrEmailChangeUnallowed:        http.StatusUnprocessableEntity,
 
 	// Docker errors
-	ErrDockerFailedUpdateNode:    http.StatusUnprocessableEntity,
-	ErrDockerFailedCreateService: http.StatusUnprocessableEntity,
+	ErrDockerFailedUpdateNode:          http.StatusUnprocessableEntity,
+	ErrDockerFailedCreateService:       http.StatusUnprocessableEntity,
+	ErrDockerJoinTokenNotFound:         http.StatusUnprocessableEntity,
+	ErrDockerActiveManagerNodeNotFound: http.StatusUnprocessableEntity,
 }
 
 // errorWarnLevelMap defines the errors that are handled but unexpected to happen.
