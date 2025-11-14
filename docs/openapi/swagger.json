@@ -409,6 +409,58 @@
         "tags" : [ "cluster_nodes" ]
       }
     },
+    "/cluster/nodes/join" : {
+      "put" : {
+        "description" : "Joins a node to the swarm",
+        "operationId" : "joinNode",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.JoinNodeReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.JoinNodeResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Joins a node to the swarm",
+        "tags" : [ "cluster_nodes" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
     "/cluster/nodes/{nodeID}" : {
       "delete" : {
         "description" : "Deletes a node",
@@ -4902,6 +4954,15 @@
         "required" : [ "access", "id" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "id" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp" : {
         "properties" : {
           "id" : {
@@ -5341,6 +5402,48 @@
         "properties" : {
           "data" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.NodeResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.JoinNodeDataResp" : {
+        "properties" : {
+          "commandOutput" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "commandOutput" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.JoinNodeReq" : {
+        "properties" : {
+          "host" : {
+            "type" : "string"
+          },
+          "joinAsManager" : {
+            "type" : "boolean"
+          },
+          "port" : {
+            "type" : "integer"
+          },
+          "sshKey" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
+          },
+          "user" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "host", "joinAsManager", "port", "sshKey", "user" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.JoinNodeResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.JoinNodeDataResp"
           },
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
@@ -6878,6 +6981,9 @@
           "name" : {
             "type" : "string"
           },
+          "passphrase" : {
+            "type" : "string"
+          },
           "privateKey" : {
             "type" : "string"
           },
@@ -6888,7 +6994,7 @@
             "type" : "array"
           }
         },
-        "required" : [ "id", "name", "projectAccesses" ],
+        "required" : [ "id", "name", "privateKey", "projectAccesses" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.UpdateSSHKeyResp" : {

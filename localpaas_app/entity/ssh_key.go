@@ -12,14 +12,38 @@ import (
 
 type SSHKey struct {
 	PrivateKey string `json:"privateKey"`
+	Passphrase string `json:"passphrase,omitempty"`
 }
 
 func (o *SSHKey) IsEncrypted() bool {
-	return strings.HasPrefix(o.PrivateKey, base.SaltPrefix)
+	return o.IsPrivateKeyEncrypted() || o.IsPassphraseEncrypted()
 }
 
 func (o *SSHKey) Encrypt() error {
-	if o.IsEncrypted() {
+	if err := o.EncryptPrivateKey(); err != nil {
+		return apperrors.Wrap(err)
+	}
+	return o.EncryptPassphrase()
+}
+
+func (o *SSHKey) MustEncrypt() *SSHKey {
+	gofn.Must1(o.Encrypt())
+	return o
+}
+
+func (o *SSHKey) Decrypt() error {
+	if err := o.DecryptPrivateKey(); err != nil {
+		return apperrors.Wrap(err)
+	}
+	return o.DecryptPassphrase()
+}
+
+func (o *SSHKey) IsPrivateKeyEncrypted() bool {
+	return strings.HasPrefix(o.PrivateKey, base.SaltPrefix)
+}
+
+func (o *SSHKey) EncryptPrivateKey() error {
+	if o.IsPrivateKeyEncrypted() {
 		return nil
 	}
 	encrypted, err := cryptoutil.EncryptBase64(o.PrivateKey, base.DefaultSaltLen)
@@ -30,13 +54,13 @@ func (o *SSHKey) Encrypt() error {
 	return nil
 }
 
-func (o *SSHKey) MustEncrypt() *SSHKey {
-	gofn.Must1(o.Encrypt())
+func (o *SSHKey) MustEncryptPrivateKey() *SSHKey {
+	gofn.Must1(o.EncryptPrivateKey())
 	return o
 }
 
-func (o *SSHKey) Decrypt() error {
-	if !o.IsEncrypted() {
+func (o *SSHKey) DecryptPrivateKey() error {
+	if !o.IsPrivateKeyEncrypted() {
 		return nil
 	}
 	decrypted, err := cryptoutil.DecryptBase64(o.PrivateKey)
@@ -44,6 +68,39 @@ func (o *SSHKey) Decrypt() error {
 		return apperrors.Wrap(err)
 	}
 	o.PrivateKey = decrypted
+	return nil
+}
+
+func (o *SSHKey) IsPassphraseEncrypted() bool {
+	return strings.HasPrefix(o.Passphrase, base.SaltPrefix)
+}
+
+func (o *SSHKey) EncryptPassphrase() error {
+	if o.IsPassphraseEncrypted() {
+		return nil
+	}
+	encrypted, err := cryptoutil.EncryptBase64(o.Passphrase, base.DefaultSaltLen)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	o.Passphrase = encrypted
+	return nil
+}
+
+func (o *SSHKey) MustEncryptPassphrase() *SSHKey {
+	gofn.Must1(o.EncryptPassphrase())
+	return o
+}
+
+func (o *SSHKey) DecryptPassphrase() error {
+	if !o.IsPassphraseEncrypted() {
+		return nil
+	}
+	decrypted, err := cryptoutil.DecryptBase64(o.Passphrase)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	o.Passphrase = decrypted
 	return nil
 }
 

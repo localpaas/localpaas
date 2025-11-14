@@ -191,3 +191,39 @@ func (h *ClusterHandler) DeleteNode(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, resp)
 }
+
+// JoinNode Joins a node to the swarm
+// @Summary Joins a node to the swarm
+// @Description Joins a node to the swarm
+// @Tags    cluster_nodes
+// @Produce json
+// @Id      joinNode
+// @Param   body body clusterdto.JoinNodeReq true "request data"
+// @Success 200 {object} clusterdto.JoinNodeResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /cluster/nodes/join [put]
+func (h *ClusterHandler) JoinNode(ctx *gin.Context) {
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceType: base.ResourceTypeNode,
+		Action:       base.ActionTypeWrite,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := clusterdto.NewJoinNodeReq()
+	if err := h.ParseJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.clusterUC.JoinNode(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}

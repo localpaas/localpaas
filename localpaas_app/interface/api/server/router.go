@@ -152,6 +152,7 @@ func (s *HTTPServer) registerRoutes() {
 		nodeGroup.GET("/:nodeID", s.handlerRegistry.clusterHandler.GetNode)
 		nodeGroup.PUT("/:nodeID", s.handlerRegistry.clusterHandler.UpdateNode)
 		nodeGroup.DELETE("/:nodeID", s.handlerRegistry.clusterHandler.DeleteNode)
+		nodeGroup.POST("/join", s.handlerRegistry.clusterHandler.JoinNode)
 	}
 
 	projectGroup := apiGroup.Group("/projects")
