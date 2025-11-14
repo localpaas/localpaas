@@ -47,6 +47,6 @@ func (uc *ClusterUC) ListNode(
 			Limit:  req.Paging.Limit,
 			Total:  len(nodes),
 		}},
-		Data: clusterdto.TransformNodes(filterNodes),
+		Data: clusterdto.TransformNodes(filterNodes, false),
 	}, nil
 }

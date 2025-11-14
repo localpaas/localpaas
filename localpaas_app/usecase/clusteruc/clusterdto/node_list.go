@@ -41,8 +41,8 @@ type ListNodeResp struct {
 	Data []*NodeResp   `json:"data"`
 }
 
-func TransformNodes(nodes []swarm.Node) []*NodeResp {
+func TransformNodes(nodes []swarm.Node, detailed bool) []*NodeResp {
 	return gofn.MapSlice(nodes, func(node swarm.Node) *NodeResp {
-		return TransformNode(&node)
+		return TransformNode(&node, detailed)
 	})
 }

@@ -19,6 +19,6 @@ func (uc *ClusterUC) GetNode(
 	}
 
 	return &clusterdto.GetNodeResp{
-		Data: clusterdto.TransformNode(node),
+		Data: clusterdto.TransformNode(node, true),
 	}, nil
 }
