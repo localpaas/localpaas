@@ -26,7 +26,11 @@ func (uc *UserUC) ListUserBase(
 		keyword := bunex.MakeLikeOpStr(req.Search, true)
 		listOpts = append(listOpts,
 			bunex.SelectWhere("\"user\".email ILIKE ?", keyword),
+			bunex.SelectWhereOr("\"user\".username ILIKE ?", keyword),
 			bunex.SelectWhereOr("\"user\".full_name ILIKE ?", keyword),
+			bunex.SelectWhereOr("\"user\".position ILIKE ?", keyword),
+			bunex.SelectWhereOr("\"user\".status = ?", keyword),
+			bunex.SelectWhereOr("\"user\".security_option ILIKE ?", keyword),
 		)
 	}
 

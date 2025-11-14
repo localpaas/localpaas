@@ -153,6 +153,7 @@ func (h *ClusterHandler) UpdateNode(ctx *gin.Context) {
 // @Produce json
 // @Id      deleteNode
 // @Param   nodeID path string true "node ID"
+// @Param   force query bool false "`force=true/false`"
 // @Success 200 {object} clusterdto.DeleteNodeResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo

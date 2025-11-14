@@ -26,7 +26,11 @@ func (uc *UserUC) ListUser(
 		listOpts = append(listOpts,
 			bunex.SelectWhereGroup(
 				bunex.SelectWhere("\"user\".email ILIKE ?", keyword),
+				bunex.SelectWhereOr("\"user\".username ILIKE ?", keyword),
 				bunex.SelectWhereOr("\"user\".full_name ILIKE ?", keyword),
+				bunex.SelectWhereOr("\"user\".position ILIKE ?", keyword),
+				bunex.SelectWhereOr("\"user\".status = ?", keyword),
+				bunex.SelectWhereOr("\"user\".security_option ILIKE ?", keyword),
 			),
 		)
 	}

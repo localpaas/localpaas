@@ -50,6 +50,12 @@ func (m *Manager) NodeUpdate(ctx context.Context, nodeID string, version *swarm.
 
 type NodeRemoveOption func(*swarm.NodeRemoveOptions)
 
+func NodeRemoveForce(force bool) NodeRemoveOption {
+	return func(opts *swarm.NodeRemoveOptions) {
+		opts.Force = force
+	}
+}
+
 func (m *Manager) NodeRemove(ctx context.Context, nodeID string, options ...NodeRemoveOption) error {
 	opts := swarm.NodeRemoveOptions{}
 	for _, opt := range options {

@@ -9,6 +9,7 @@ import (
 
 type DeleteNodeReq struct {
 	NodeID string `json:"-"`
+	Force  bool   `json:"-" mapstructure:"force"`
 }
 
 func NewDeleteNodeReq() *DeleteNodeReq {
