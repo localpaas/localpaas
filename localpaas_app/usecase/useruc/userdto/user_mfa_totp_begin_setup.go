@@ -8,7 +8,7 @@ import (
 )
 
 type BeginMFATotpSetupReq struct {
-	CurrentPasscode string `json:"currentPasscode"`
+	CurrentPasscode string `json:"passcode"`
 }
 
 func NewBeginMFATotpSetupReq() *BeginMFATotpSetupReq {
@@ -18,7 +18,7 @@ func NewBeginMFATotpSetupReq() *BeginMFATotpSetupReq {
 func (req *BeginMFATotpSetupReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, basedto.ValidateStr(&req.CurrentPasscode, false,
-		minPasscodeLen, maxPasscodeLen, "currentPasscode")...)
+		minPasscodeLen, maxPasscodeLen, "passcode")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 

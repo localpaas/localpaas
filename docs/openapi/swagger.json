@@ -6952,11 +6952,11 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.BeginMFATotpSetupReq" : {
         "properties" : {
-          "currentPasscode" : {
+          "passcode" : {
             "type" : "string"
           }
         },
-        "required" : [ "currentPasscode" ],
+        "required" : [ "passcode" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.BeginMFATotpSetupResp" : {
