@@ -4,7 +4,9 @@ import (
 	"context"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc/projectdto"
 )
@@ -23,7 +25,13 @@ func (uc *ProjectUC) GetProject(
 	}
 
 	// Loads all accesses of the project
-	accesses, err := uc.permissionManager.LoadProjectAccesses(ctx, uc.db, project.ID)
+	accesses, err := uc.permissionManager.LoadObjectAccesses(ctx, uc.db, &permission.AccessCheck{
+		SubjectType:    base.SubjectTypeUser,
+		ResourceModule: base.ResourceModuleProject,
+		ResourceType:   base.ResourceTypeProject,
+		ResourceID:     project.ID,
+		Action:         base.ActionTypeRead,
+	}, true)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

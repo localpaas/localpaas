@@ -30,8 +30,9 @@ type _ *apperrors.ErrorInfo
 // @Router  /settings/ssh-keys [get]
 func (h *SettingsHandler) ListSSHKey(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeSSHKey,
-		Action:       base.ActionTypeRead,
+		ResourceModule: base.ResourceModuleSettings,
+		ResourceType:   base.ResourceTypeSSHKey,
+		Action:         base.ActionTypeRead,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -72,9 +73,10 @@ func (h *SettingsHandler) GetSSHKey(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeSSHKey,
-		ResourceID:   id,
-		Action:       base.ActionTypeRead,
+		ResourceModule: base.ResourceModuleSettings,
+		ResourceType:   base.ResourceTypeSSHKey,
+		ResourceID:     id,
+		Action:         base.ActionTypeRead,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -110,8 +112,8 @@ func (h *SettingsHandler) GetSSHKey(ctx *gin.Context) {
 // @Router  /settings/ssh-keys [post]
 func (h *SettingsHandler) CreateSSHKey(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeSSHKey,
-		Action:       base.ActionTypeWrite,
+		ResourceModule: base.ResourceModuleSettings,
+		Action:         base.ActionTypeWrite,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -152,9 +154,10 @@ func (h *SettingsHandler) UpdateSSHKey(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeSSHKey,
-		ResourceID:   id,
-		Action:       base.ActionTypeWrite,
+		ResourceModule: base.ResourceModuleSettings,
+		ResourceType:   base.ResourceTypeSSHKey,
+		ResourceID:     id,
+		Action:         base.ActionTypeWrite,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -196,9 +199,10 @@ func (h *SettingsHandler) DeleteSSHKey(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeSSHKey,
-		ResourceID:   id,
-		Action:       base.ActionTypeDelete,
+		ResourceModule: base.ResourceModuleSettings,
+		ResourceType:   base.ResourceTypeSSHKey,
+		ResourceID:     id,
+		Action:         base.ActionTypeDelete,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)

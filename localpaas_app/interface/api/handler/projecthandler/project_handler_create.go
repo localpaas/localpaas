@@ -27,9 +27,9 @@ type _ *apperrors.ErrorInfo
 // @Router  /projects [post]
 func (h *ProjectHandler) CreateProject(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		RequireAdmin: true,
-		ResourceType: base.ResourceTypeProject,
-		Action:       base.ActionTypeWrite,
+		ResourceModule: base.ResourceModuleProject,
+		ResourceType:   base.ResourceTypeProject,
+		Action:         base.ActionTypeWrite,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -70,9 +70,10 @@ func (h *ProjectHandler) DeleteProject(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeProject,
-		ResourceID:   projectID,
-		Action:       base.ActionTypeDelete,
+		ResourceModule: base.ResourceModuleProject,
+		ResourceType:   base.ResourceTypeProject,
+		ResourceID:     projectID,
+		Action:         base.ActionTypeDelete,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)

@@ -32,6 +32,12 @@ func (uc *AppUC) ListAppBase(
 		)
 	}
 
+	if len(auth.AllowObjectIDs) > 0 {
+		listOpts = append(listOpts,
+			bunex.SelectWhere("app.id IN (?)", bunex.In(auth.AllowObjectIDs)),
+		)
+	}
+
 	apps, pagingMeta, err := uc.appRepo.List(ctx, uc.db, req.ProjectID, &req.Paging, listOpts...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)

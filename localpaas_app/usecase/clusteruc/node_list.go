@@ -40,6 +40,11 @@ func (uc *ClusterUC) ListNode(
 			return strings.Contains(node.Description.Hostname, keyword)
 		})
 	}
+	if len(auth.AllowObjectIDs) > 0 {
+		filterNodes = gofn.FilterPtr(filterNodes, func(node *swarm.Node) bool {
+			return gofn.Contain(auth.AllowObjectIDs, node.ID)
+		})
+	}
 
 	return &clusterdto.ListNodeResp{
 		Meta: &basedto.Meta{Page: &basedto.PagingMeta{

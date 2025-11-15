@@ -34,9 +34,10 @@ func (h *ProjectHandler) ListProjectSecrets(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeProject,
-		ResourceID:   projectID,
-		Action:       base.ActionTypeRead,
+		ResourceModule: base.ResourceModuleProject,
+		ResourceType:   base.ResourceTypeProject,
+		ResourceID:     projectID,
+		Action:         base.ActionTypeRead,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -79,9 +80,10 @@ func (h *ProjectHandler) CreateProjectSecret(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeProject,
-		ResourceID:   projectID,
-		Action:       base.ActionTypeWrite,
+		ResourceModule: base.ResourceModuleProject,
+		ResourceType:   base.ResourceTypeProject,
+		ResourceID:     projectID,
+		Action:         base.ActionTypeWrite,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -130,9 +132,10 @@ func (h *ProjectHandler) DeleteProjectSecret(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeProject,
-		ResourceID:   projectID,
-		Action:       base.ActionTypeWrite,
+		ResourceModule: base.ResourceModuleProject,
+		ResourceType:   base.ResourceTypeProject,
+		ResourceID:     projectID,
+		Action:         base.ActionTypeWrite,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)

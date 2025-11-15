@@ -31,9 +31,9 @@ type _ *apperrors.ErrorInfo
 // @Router  /cluster/nodes [get]
 func (h *ClusterHandler) ListNode(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		RequireAdmin: true,
-		ResourceType: base.ResourceTypeNode,
-		Action:       base.ActionTypeRead,
+		ResourceModule: base.ResourceModuleCluster,
+		ResourceType:   base.ResourceTypeNode,
+		Action:         base.ActionTypeRead,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -74,10 +74,10 @@ func (h *ClusterHandler) GetNode(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		RequireAdmin: true,
-		ResourceType: base.ResourceTypeNode,
-		ResourceID:   nodeID,
-		Action:       base.ActionTypeRead,
+		ResourceModule: base.ResourceModuleCluster,
+		ResourceType:   base.ResourceTypeNode,
+		ResourceID:     nodeID,
+		Action:         base.ActionTypeRead,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -120,10 +120,10 @@ func (h *ClusterHandler) UpdateNode(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		RequireAdmin: true,
-		ResourceType: base.ResourceTypeNode,
-		ResourceID:   nodeID,
-		Action:       base.ActionTypeWrite,
+		ResourceModule: base.ResourceModuleCluster,
+		ResourceType:   base.ResourceTypeNode,
+		ResourceID:     nodeID,
+		Action:         base.ActionTypeWrite,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -166,10 +166,10 @@ func (h *ClusterHandler) DeleteNode(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		RequireAdmin: true,
-		ResourceType: base.ResourceTypeNode,
-		ResourceID:   nodeID,
-		Action:       base.ActionTypeDelete,
+		ResourceModule: base.ResourceModuleCluster,
+		ResourceType:   base.ResourceTypeNode,
+		ResourceID:     nodeID,
+		Action:         base.ActionTypeDelete,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -205,8 +205,9 @@ func (h *ClusterHandler) DeleteNode(ctx *gin.Context) {
 // @Router  /cluster/nodes/join [post]
 func (h *ClusterHandler) JoinNode(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeNode,
-		Action:       base.ActionTypeWrite,
+		ResourceModule: base.ResourceModuleCluster,
+		ResourceType:   base.ResourceTypeNode,
+		Action:         base.ActionTypeWrite,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -241,8 +242,9 @@ func (h *ClusterHandler) JoinNode(ctx *gin.Context) {
 // @Router  /cluster/nodes/join-command [get]
 func (h *ClusterHandler) GetNodeJoinCommand(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeNode,
-		Action:       base.ActionTypeWrite,
+		ResourceModule: base.ResourceModuleCluster,
+		ResourceType:   base.ResourceTypeNode,
+		Action:         base.ActionTypeWrite,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)

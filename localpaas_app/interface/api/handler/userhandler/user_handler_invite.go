@@ -27,9 +27,8 @@ type _ *apperrors.ErrorInfo
 // @Router  /users/invite [post]
 func (h *UserHandler) InviteUser(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		RequireAdmin: true,
-		ResourceType: base.ResourceTypeUser,
-		Action:       base.ActionTypeWrite,
+		ResourceModule: base.ResourceModuleUser,
+		Action:         base.ActionTypeWrite,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)

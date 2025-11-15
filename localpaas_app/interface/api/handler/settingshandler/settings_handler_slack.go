@@ -30,8 +30,9 @@ type _ *apperrors.ErrorInfo
 // @Router  /settings/slack [get]
 func (h *SettingsHandler) ListSlack(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeSlack,
-		Action:       base.ActionTypeRead,
+		ResourceModule: base.ResourceModuleSettings,
+		ResourceType:   base.ResourceTypeSlack,
+		Action:         base.ActionTypeRead,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -72,9 +73,10 @@ func (h *SettingsHandler) GetSlack(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeSlack,
-		ResourceID:   id,
-		Action:       base.ActionTypeRead,
+		ResourceModule: base.ResourceModuleSettings,
+		ResourceType:   base.ResourceTypeSlack,
+		ResourceID:     id,
+		Action:         base.ActionTypeRead,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -110,8 +112,8 @@ func (h *SettingsHandler) GetSlack(ctx *gin.Context) {
 // @Router  /settings/slack [post]
 func (h *SettingsHandler) CreateSlack(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeSlack,
-		Action:       base.ActionTypeWrite,
+		ResourceModule: base.ResourceModuleSettings,
+		Action:         base.ActionTypeWrite,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -152,9 +154,10 @@ func (h *SettingsHandler) UpdateSlack(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeSlack,
-		ResourceID:   id,
-		Action:       base.ActionTypeWrite,
+		ResourceModule: base.ResourceModuleSettings,
+		ResourceType:   base.ResourceTypeSlack,
+		ResourceID:     id,
+		Action:         base.ActionTypeWrite,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -196,9 +199,10 @@ func (h *SettingsHandler) DeleteSlack(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeSlack,
-		ResourceID:   id,
-		Action:       base.ActionTypeDelete,
+		ResourceModule: base.ResourceModuleSettings,
+		ResourceType:   base.ResourceTypeSlack,
+		ResourceID:     id,
+		Action:         base.ActionTypeDelete,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)

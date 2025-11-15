@@ -31,8 +31,9 @@ type _ *apperrors.ErrorInfo
 // @Router  /projects/base [get]
 func (h *ProjectHandler) ListProjectBase(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeProject,
-		Action:       base.ActionTypeRead,
+		ResourceModule: base.ResourceModuleProject,
+		ResourceType:   base.ResourceTypeProject,
+		Action:         base.ActionTypeRead,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -71,8 +72,9 @@ func (h *ProjectHandler) ListProjectBase(ctx *gin.Context) {
 // @Router  /projects [get]
 func (h *ProjectHandler) ListProject(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeProject,
-		Action:       base.ActionTypeRead,
+		ResourceModule: base.ResourceModuleProject,
+		ResourceType:   base.ResourceTypeProject,
+		Action:         base.ActionTypeRead,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -113,9 +115,10 @@ func (h *ProjectHandler) GetProject(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeProject,
-		ResourceID:   projectID,
-		Action:       base.ActionTypeRead,
+		ResourceModule: base.ResourceModuleProject,
+		ResourceType:   base.ResourceTypeProject,
+		ResourceID:     projectID,
+		Action:         base.ActionTypeRead,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)

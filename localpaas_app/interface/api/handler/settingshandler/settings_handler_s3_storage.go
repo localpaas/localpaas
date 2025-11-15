@@ -30,8 +30,9 @@ type _ *apperrors.ErrorInfo
 // @Router  /settings/s3-storages [get]
 func (h *SettingsHandler) ListS3Storage(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeS3Storage,
-		Action:       base.ActionTypeRead,
+		ResourceModule: base.ResourceModuleSettings,
+		ResourceType:   base.ResourceTypeS3Storage,
+		Action:         base.ActionTypeRead,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -72,9 +73,10 @@ func (h *SettingsHandler) GetS3Storage(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeS3Storage,
-		ResourceID:   id,
-		Action:       base.ActionTypeRead,
+		ResourceModule: base.ResourceModuleSettings,
+		ResourceType:   base.ResourceTypeS3Storage,
+		ResourceID:     id,
+		Action:         base.ActionTypeRead,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -110,8 +112,8 @@ func (h *SettingsHandler) GetS3Storage(ctx *gin.Context) {
 // @Router  /settings/s3-storages [post]
 func (h *SettingsHandler) CreateS3Storage(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeS3Storage,
-		Action:       base.ActionTypeWrite,
+		ResourceModule: base.ResourceModuleSettings,
+		Action:         base.ActionTypeWrite,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -152,9 +154,10 @@ func (h *SettingsHandler) UpdateS3Storage(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeS3Storage,
-		ResourceID:   id,
-		Action:       base.ActionTypeWrite,
+		ResourceModule: base.ResourceModuleSettings,
+		ResourceType:   base.ResourceTypeS3Storage,
+		ResourceID:     id,
+		Action:         base.ActionTypeWrite,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -196,9 +199,10 @@ func (h *SettingsHandler) DeleteS3Storage(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeS3Storage,
-		ResourceID:   id,
-		Action:       base.ActionTypeDelete,
+		ResourceModule: base.ResourceModuleSettings,
+		ResourceType:   base.ResourceTypeS3Storage,
+		ResourceID:     id,
+		Action:         base.ActionTypeDelete,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)

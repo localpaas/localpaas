@@ -30,8 +30,9 @@ type _ *apperrors.ErrorInfo
 // @Router  /settings/registry-auth [get]
 func (h *SettingsHandler) ListRegistryAuth(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeRegistryAuth,
-		Action:       base.ActionTypeRead,
+		ResourceModule: base.ResourceModuleSettings,
+		ResourceType:   base.ResourceTypeRegistryAuth,
+		Action:         base.ActionTypeRead,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -72,9 +73,10 @@ func (h *SettingsHandler) GetRegistryAuth(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeRegistryAuth,
-		ResourceID:   id,
-		Action:       base.ActionTypeRead,
+		ResourceModule: base.ResourceModuleSettings,
+		ResourceType:   base.ResourceTypeRegistryAuth,
+		ResourceID:     id,
+		Action:         base.ActionTypeRead,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -110,8 +112,8 @@ func (h *SettingsHandler) GetRegistryAuth(ctx *gin.Context) {
 // @Router  /settings/registry-auth [post]
 func (h *SettingsHandler) CreateRegistryAuth(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeRegistryAuth,
-		Action:       base.ActionTypeWrite,
+		ResourceModule: base.ResourceModuleSettings,
+		Action:         base.ActionTypeWrite,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -152,9 +154,10 @@ func (h *SettingsHandler) UpdateRegistryAuth(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeRegistryAuth,
-		ResourceID:   id,
-		Action:       base.ActionTypeWrite,
+		ResourceModule: base.ResourceModuleSettings,
+		ResourceType:   base.ResourceTypeRegistryAuth,
+		ResourceID:     id,
+		Action:         base.ActionTypeWrite,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -196,9 +199,10 @@ func (h *SettingsHandler) DeleteRegistryAuth(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeRegistryAuth,
-		ResourceID:   id,
-		Action:       base.ActionTypeDelete,
+		ResourceModule: base.ResourceModuleSettings,
+		ResourceType:   base.ResourceTypeRegistryAuth,
+		ResourceID:     id,
+		Action:         base.ActionTypeDelete,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)

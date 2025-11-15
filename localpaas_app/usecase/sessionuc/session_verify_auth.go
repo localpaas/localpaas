@@ -27,18 +27,11 @@ func (uc *SessionUC) VerifyAuth(ctx context.Context, auth *basedto.Auth, accessC
 	if accessCheck == nil {
 		return nil
 	}
-	if accessCheck.RequireAdmin {
-		return apperrors.New(apperrors.ErrUnauthorized).WithMsgLog("admin role required")
-	}
 
-	// No resource ID, return `allow`
-	if accessCheck.ResourceID == "" {
-		return nil
-	}
 	if accessCheck.SubjectID == "" {
 		accessCheck.SubjectID = auth.User.ID
 	}
-	checkResult, err := uc.permissionManager.CheckAccess(ctx, uc.db, accessCheck)
+	checkResult, err := uc.permissionManager.CheckAccess(ctx, uc.db, auth, accessCheck)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

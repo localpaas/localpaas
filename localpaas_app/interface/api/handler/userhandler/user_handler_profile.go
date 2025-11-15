@@ -31,8 +31,9 @@ type _ *apperrors.ErrorInfo
 // @Router  /users/base [get]
 func (h *UserHandler) ListUserBase(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeUser,
-		Action:       base.ActionTypeRead,
+		ResourceModule: base.ResourceModuleUser,
+		ResourceType:   base.ResourceTypeUser,
+		Action:         base.ActionTypeRead,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -73,9 +74,10 @@ func (h *UserHandler) GetUser(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeUser,
-		ResourceID:   userID,
-		Action:       base.ActionTypeRead,
+		ResourceModule: base.ResourceModuleUser,
+		ResourceType:   base.ResourceTypeUser,
+		ResourceID:     userID,
+		Action:         base.ActionTypeRead,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -115,9 +117,9 @@ func (h *UserHandler) GetUser(ctx *gin.Context) {
 // @Router  /users [get]
 func (h *UserHandler) ListUser(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		RequireAdmin: true,
-		ResourceType: base.ResourceTypeUser,
-		Action:       base.ActionTypeRead,
+		ResourceModule: base.ResourceModuleUser,
+		ResourceType:   base.ResourceTypeUser,
+		Action:         base.ActionTypeRead,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
@@ -11,15 +12,13 @@ import (
 )
 
 type Manager interface {
-	CheckAccess(ctx context.Context, db database.IDB, check *AccessCheck) (bool, error)
+	CheckAccess(ctx context.Context, db database.IDB, auth *basedto.Auth, check *AccessCheck) (bool, error)
 
 	// NOTE: this func should be called within a transaction
 	UpdateACLPermissions(ctx context.Context, db database.IDB, perms []*entity.ACLPermission) error
 	RemoveACLPermissions(ctx context.Context, db database.IDB, perms []*base.PermissionResource) error
 
-	LoadProjectAccesses(ctx context.Context, db database.IDB, projectID string,
-		extraLoadOpts ...bunex.SelectQueryOption) ([]*entity.ACLPermission, error)
-	LoadAppAccesses(ctx context.Context, db database.IDB, projectID, appID string,
+	LoadObjectAccesses(ctx context.Context, db database.IDB, check *AccessCheck, sort bool,
 		extraLoadOpts ...bunex.SelectQueryOption) ([]*entity.ACLPermission, error)
 }
 

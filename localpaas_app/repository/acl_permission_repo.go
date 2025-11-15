@@ -3,9 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
-	"strings"
 
-	"github.com/tiendc/gofn"
 	"github.com/uptrace/bun"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -45,18 +43,31 @@ func (repo *aclPermissionRepo) ListByResources(ctx context.Context, db database.
 	if len(resources) == 0 {
 		return nil, nil
 	}
-
-	// Construct the multi-column IN clause
-	conditions := make([]string, 0, len(resources))
+	var condition string
 	args := make([]any, 0, len(resources)*2) //nolint:mnd
 	for _, res := range resources {
-		conditions = append(conditions, "(?,?)")
-		args = append(args, res.SubjectID, res.ResourceID)
+		subjectCol := "subject_id"
+		subjectArg := res.SubjectID
+		if res.SubjectID != "" {
+			subjectCol = "subject_type"
+			subjectArg = string(res.SubjectType)
+		}
+		resCol := "resource_id"
+		resArg := res.ResourceID
+		if res.ResourceID != "" {
+			resCol = "resource_type"
+			resArg = string(res.ResourceType)
+		}
+		if condition == "" {
+			condition = fmt.Sprintf("(%s,%s) = (?,?)", subjectCol, resCol)
+		} else {
+			condition = fmt.Sprintf("%s OR (%s,%s) = (?,?)", condition, subjectCol, resCol)
+		}
+		args = append(args, subjectArg, resArg)
 	}
 
 	var permissions []*entity.ACLPermission
-	query := db.NewSelect().Model(&permissions).
-		Where(fmt.Sprintf("(subject_id,resource_id) IN (%s)", strings.Join(conditions, ",")), args...)
+	query := db.NewSelect().Model(&permissions).Where(condition, args...)
 	query = bunex.ApplySelect(query, opts...)
 
 	err := query.Scan(ctx)
@@ -130,35 +141,33 @@ func (repo *aclPermissionRepo) DeleteByResources(ctx context.Context, db databas
 	if len(resources) == 0 {
 		return nil
 	}
-
-	// Construct the multi-column IN clause
-	conditions := make([]string, 0, len(resources))
+	var condition string
 	args := make([]any, 0, len(resources)*2) //nolint:mnd
-	conditions2 := make([]string, 0, len(resources))
-	args2 := make([]any, 0, len(resources)*2) //nolint:mnd
 	for _, res := range resources {
-		if res.ResourceID != "" {
-			// Delete a specific row by a pair of (subject_id, resource_id)
-			conditions = append(conditions, "(?,?)")
-			args = append(args, res.SubjectID, res.ResourceID)
-		} else if res.ResourceType != "" {
-			// Delete multiple rows by a pair of (subject_id, resource_type)
-			conditions2 = append(conditions2, "(?,?)")
-			args2 = append(args2, res.SubjectID, res.ResourceType)
+		subjectCol := "subject_id"
+		subjectArg := res.SubjectID
+		if res.SubjectID != "" {
+			subjectCol = "subject_type"
+			subjectArg = string(res.SubjectType)
 		}
+		resCol := "resource_id"
+		resArg := res.ResourceID
+		if res.ResourceID != "" {
+			resCol = "resource_type"
+			resArg = string(res.ResourceType)
+		}
+		if condition == "" {
+			condition = fmt.Sprintf("(%s,%s) = (?,?)", subjectCol, resCol)
+		} else {
+			condition = fmt.Sprintf("OR (%s,%s) = (?,?)", subjectCol, resCol)
+		}
+		args = append(args, subjectArg, resArg)
 	}
 
 	query := db.NewDelete().Model((*entity.ACLPermission)(nil))
-	if len(conditions) > 0 {
-		query = query.Where(
-			fmt.Sprintf("(subject_id,resource_id) IN (%s)", strings.Join(conditions, ",")), args...)
+	if condition != "" {
+		query = query.Where(condition, args...)
 	}
-	if len(conditions2) > 0 {
-		where := gofn.If(len(conditions) > 0, query.WhereOr, query.Where) //nolint:staticcheck
-		query = where(
-			fmt.Sprintf("(subject_id,resource_type) IN (%s)", strings.Join(conditions2, ",")), args2...)
-	}
-
 	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)

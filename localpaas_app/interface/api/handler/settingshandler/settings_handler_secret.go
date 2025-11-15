@@ -30,8 +30,9 @@ type _ *apperrors.ErrorInfo
 // @Router  /settings/secrets [get]
 func (h *SettingsHandler) ListSecret(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeSecret,
-		Action:       base.ActionTypeRead,
+		ResourceModule: base.ResourceModuleSettings,
+		ResourceType:   base.ResourceTypeSecret,
+		Action:         base.ActionTypeRead,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -66,8 +67,8 @@ func (h *SettingsHandler) ListSecret(ctx *gin.Context) {
 // @Router  /settings/secrets [post]
 func (h *SettingsHandler) CreateSecret(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeSecret,
-		Action:       base.ActionTypeWrite,
+		ResourceModule: base.ResourceModuleSettings,
+		Action:         base.ActionTypeWrite,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -108,9 +109,10 @@ func (h *SettingsHandler) DeleteSecret(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceType: base.ResourceTypeSecret,
-		ResourceID:   id,
-		Action:       base.ActionTypeDelete,
+		ResourceModule: base.ResourceModuleSettings,
+		ResourceType:   base.ResourceTypeSecret,
+		ResourceID:     id,
+		Action:         base.ActionTypeDelete,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)

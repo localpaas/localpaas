@@ -35,12 +35,14 @@ const (
 type ResourceModule string
 
 const (
-	ResourceModuleUser    ResourceModule = "user"
-	ResourceModuleProject ResourceModule = "project"
+	ResourceModuleSettings ResourceModule = "mod::settings"
+	ResourceModuleCluster  ResourceModule = "mod::cluster"
+	ResourceModuleUser     ResourceModule = "mod::user"
+	ResourceModuleProject  ResourceModule = "mod::project"
 )
 
 var (
-	AllResourceModules = []ResourceModule{ResourceModuleUser, ResourceModuleProject}
+	AllResourceModules = []ResourceModule{ResourceModuleUser, ResourceModuleCluster, ResourceModuleProject}
 )
 
 type ActionType string

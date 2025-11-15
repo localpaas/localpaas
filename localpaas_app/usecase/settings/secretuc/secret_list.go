@@ -38,6 +38,11 @@ func (uc *SecretUC) ListSecret(
 			),
 		)
 	}
+	if len(auth.AllowObjectIDs) > 0 {
+		listOpts = append(listOpts,
+			bunex.SelectWhere("setting.id IN (?)", bunex.In(auth.AllowObjectIDs)),
+		)
+	}
 
 	settings, paging, err := uc.settingRepo.List(ctx, uc.db, &req.Paging, listOpts...)
 	if err != nil {

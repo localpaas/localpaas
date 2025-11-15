@@ -2,211 +2,229 @@ package permission
 
 import (
 	"context"
+	"slices"
+	"strings"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 )
 
 type AccessCheck struct {
-	RequireAdmin     bool
-	SubjectType      base.SubjectType
-	SubjectID        string
-	ResourceType     base.ResourceType
-	ResourceID       string
-	ParentResourceID string
-	Action           base.ActionType
+	SubjectType        base.SubjectType
+	SubjectID          string
+	ResourceModule     base.ResourceModule
+	ResourceType       base.ResourceType
+	ResourceID         string
+	ParentResourceType base.ResourceType
+	ParentResourceID   string
+	Action             base.ActionType
 }
 
-func (p *manager) CheckAccess(ctx context.Context, db database.IDB, check *AccessCheck) (bool, error) {
-	switch check.ResourceType { //nolint:exhaustive
-	case base.ResourceTypeProject:
-		return p.CheckProjectAccess(ctx, db, check)
-	case base.ResourceTypeApp:
-		return p.CheckAppAccess(ctx, db, check)
+//nolint:gocognit
+func (p *manager) CheckAccess(ctx context.Context, db database.IDB, auth *basedto.Auth,
+	check *AccessCheck) (hasPerm bool, err error) {
+	modPerms, parentPerms, objPerms, err := p.loadPermissions(ctx, db, check)
+	if err != nil {
+		return false, apperrors.Wrap(err)
+	}
+	defer func() {
+		// When user has no permission on the given resource, collect IDs of all other resources user has permission on.
+		// This is usually to allow users listing accessible objects when they don't have permission on the module.
+		if !hasPerm && check.ResourceID == "" {
+			for _, perm := range objPerms {
+				if p.hasPermission(perm, check.Action) {
+					auth.AllowObjectIDs = append(auth.AllowObjectIDs, perm.ResourceID)
+				}
+			}
+			if len(auth.AllowObjectIDs) > 0 {
+				hasPerm = true
+			}
+		}
+	}()
+
+	if check.ResourceType != "" && check.ResourceID != "" {
+		for _, perm := range objPerms {
+			if p.hasPermission(perm, check.Action) {
+				hasPerm = true
+			}
+			// This record denies access to the resource
+			return hasPerm, nil //nolint
+		}
 	}
 
-	perms, err := p.aclPermissionRepo.ListByResources(ctx, db, []*base.PermissionResource{
-		{
+	if check.ParentResourceType != "" && check.ParentResourceID != "" {
+		for _, perm := range parentPerms {
+			if p.hasPermission(perm, check.Action) {
+				hasPerm = true
+			}
+			// This record denies access to the resource
+			return hasPerm, nil //nolint
+		}
+	}
+
+	if check.ResourceModule != "" {
+		for _, perm := range modPerms {
+			if p.hasPermission(perm, check.Action) {
+				hasPerm = true
+			}
+			// This record denies access to the resource
+			return hasPerm, nil //nolint
+		}
+	}
+
+	return hasPerm, nil
+}
+
+func (p *manager) loadPermissions(ctx context.Context, db database.IDB, check *AccessCheck,
+	opts ...bunex.SelectQueryOption) (modPerms, parentPerms, objPerms []*entity.ACLPermission, err error) {
+	var resources []*base.PermissionResource
+	if check.ResourceModule != "" {
+		resources = append(resources, &base.PermissionResource{
+			SubjectType:  check.SubjectType,
+			SubjectID:    check.SubjectID,
+			ResourceType: base.ResourceTypeModule,
+			ResourceID:   string(check.ResourceModule),
+		})
+	}
+	if check.ResourceType != "" {
+		resources = append(resources, &base.PermissionResource{
 			SubjectType:  check.SubjectType,
 			SubjectID:    check.SubjectID,
 			ResourceType: check.ResourceType,
 			ResourceID:   check.ResourceID,
-		},
-	})
+		})
+	}
+	if check.ParentResourceType != "" && check.ParentResourceID != "" {
+		resources = append(resources, &base.PermissionResource{
+			SubjectType:  check.SubjectType,
+			SubjectID:    check.SubjectID,
+			ResourceType: check.ParentResourceType,
+			ResourceID:   check.ParentResourceID,
+		})
+	}
+
+	perms, err := p.aclPermissionRepo.ListByResources(ctx, db, resources, opts...)
 	if err != nil || len(perms) == 0 {
-		return false, apperrors.Wrap(err)
+		return nil, nil, nil, apperrors.Wrap(err)
 	}
 
 	for _, perm := range perms {
-		if check.Action == base.ActionTypeRead && perm.Actions.Read {
-			return true, nil
+		if perm.ResourceType == base.ResourceTypeModule && perm.ResourceID == string(check.ResourceModule) {
+			modPerms = append(modPerms, perm)
+			continue
 		}
-		if check.Action == base.ActionTypeWrite && perm.Actions.Write {
-			return true, nil
+		if perm.ResourceType == check.ParentResourceType && perm.ResourceID == check.ParentResourceID {
+			parentPerms = append(parentPerms, perm)
+			continue
 		}
-		if check.Action == base.ActionTypeDelete && perm.Actions.Delete {
-			return true, nil
-		}
+		objPerms = append(objPerms, perm)
 	}
-
-	return false, nil
+	return modPerms, parentPerms, objPerms, nil
 }
 
-func (p *manager) CheckProjectAccess(ctx context.Context, db database.IDB, check *AccessCheck) (bool, error) {
-	acls, err := p.LoadProjectAccesses(ctx, db, check.ResourceID,
-		bunex.SelectWhere("\"user\".id = ?", check.SubjectID),
-	)
-	if err != nil {
-		return false, apperrors.Wrap(err)
+func (p *manager) hasPermission(perm *entity.ACLPermission, action base.ActionType) bool {
+	if action == base.ActionTypeRead && (perm.Actions.Read || perm.Actions.Write || perm.Actions.Delete) {
+		return true
 	}
-	return len(acls) > 0, nil
+	if action == base.ActionTypeWrite && perm.Actions.Write {
+		return true
+	}
+	if action == base.ActionTypeDelete && perm.Actions.Delete {
+		return true
+	}
+	return false
 }
 
-func (p *manager) CheckAppAccess(ctx context.Context, db database.IDB, check *AccessCheck) (bool, error) {
-	acls, err := p.LoadAppAccesses(ctx, db, check.ParentResourceID, check.ResourceID,
-		bunex.SelectWhere("\"user\".id = ?", check.SubjectID),
-	)
-	if err != nil {
-		return false, apperrors.Wrap(err)
-	}
-	return len(acls) > 0, nil
-}
-
-func (p *manager) LoadProjectAccesses(ctx context.Context, db database.IDB, projectID string,
+func (p *manager) LoadObjectAccesses(ctx context.Context, db database.IDB, check *AccessCheck, sort bool,
 	extraLoadOpts ...bunex.SelectQueryOption) ([]*entity.ACLPermission, error) {
+	if check.ResourceID == "" {
+		return nil, nil
+	}
 	loadOpts := []bunex.SelectQueryOption{
-		bunex.SelectDistinct(),
-		bunex.SelectWhere("\"user\".deleted_at IS NULL"),
-		bunex.SelectWhere("\"user\".status = ?", base.UserStatusActive),
-		bunex.SelectWhere("(\"user\".access_expire_at IS NULL OR \"user\".access_expire_at > NOW())"),
-
-		bunex.SelectJoin("LEFT JOIN acl_permissions AS acl ON \"user\".id = acl.subject_id AND "+
-			"acl.resource_id = ?", projectID),
-		bunex.SelectWhereGroup(
-			bunex.SelectWhere("\"user\".role = ?", base.UserRoleAdmin),
-			bunex.SelectWhereOr("(acl.action_read OR acl.action_write OR acl.action_delete)"),
-		),
-
-		bunex.SelectRelation("Accesses",
-			bunex.SelectWhere("acl_permission.deleted_at IS NULL"),
-			bunex.SelectWhere("acl_permission.resource_id = ?", projectID),
-		),
+		bunex.SelectRelation("SubjectUser"),
+		bunex.SelectJoin("JOIN users ON users.id = acl_permission.subject_id"),
+		bunex.SelectWhere("users.deleted_at IS NULL"),
+		bunex.SelectWhere("users.status = ?", base.UserStatusActive),
+		bunex.SelectWhere("(users.access_expire_at IS NULL OR users.access_expire_at > NOW())"),
 	}
 	loadOpts = append(loadOpts, extraLoadOpts...)
-	users, _, err := p.userRepo.List(ctx, db, nil, loadOpts...)
+
+	modPerms, parentPerms, objPerms, err := p.loadPermissions(ctx, db, check, loadOpts...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	aclPermissions := make([]*entity.ACLPermission, 0, len(users))
-	for _, user := range users {
-		var aclPerm *entity.ACLPermission
-		if len(user.Accesses) > 0 {
-			aclPerm = user.Accesses[0]
-		}
-		if user.Role == base.UserRoleAdmin {
-			if aclPerm == nil {
-				aclPerm = &entity.ACLPermission{
-					SubjectType:  base.SubjectTypeUser,
-					SubjectID:    user.ID,
-					ResourceType: base.ResourceTypeProject,
-					ResourceID:   projectID,
-				}
-			}
-			aclPerm.Actions.Read = true
-			aclPerm.Actions.Write = true
-			aclPerm.Actions.Delete = true
-		}
-		if aclPerm != nil {
-			aclPerm.SubjectUser = user
-			aclPermissions = append(aclPermissions, aclPerm)
+	permByUserID := make(map[string]*entity.ACLPermission)
+	deniedUserIDs := make([]string, 0)
+	for _, perm := range objPerms {
+		permByUserID[perm.SubjectID] = perm
+		if !perm.Actions.Read && !perm.Actions.Write && !perm.Actions.Delete {
+			deniedUserIDs = append(deniedUserIDs, perm.SubjectID)
 		}
 	}
+	for _, perm := range parentPerms {
+		if _, exists := permByUserID[perm.SubjectID]; exists {
+			continue
+		}
+		permByUserID[perm.SubjectID] = perm
+		if !perm.Actions.Read && !perm.Actions.Write && !perm.Actions.Delete {
+			deniedUserIDs = append(deniedUserIDs, perm.SubjectID)
+		}
+	}
+	for _, perm := range modPerms {
+		if _, exists := permByUserID[perm.SubjectID]; exists {
+			continue
+		}
+		permByUserID[perm.SubjectID] = perm
+		if !perm.Actions.Read && !perm.Actions.Write && !perm.Actions.Delete {
+			deniedUserIDs = append(deniedUserIDs, perm.SubjectID)
+		}
+	}
+	for _, userID := range deniedUserIDs {
+		delete(permByUserID, userID)
+	}
 
-	return aclPermissions, nil
-}
-
-func (p *manager) LoadAppAccesses(ctx context.Context, db database.IDB, projectID, appID string,
-	extraLoadOpts ...bunex.SelectQueryOption) ([]*entity.ACLPermission, error) {
-	deniedACLs, _, err := p.aclPermissionRepo.List(ctx, db, nil,
+	// Loads all admin users
+	adminUsers, _, err := p.userRepo.List(ctx, db, nil,
 		bunex.SelectWhere("deleted_at IS NULL"),
-		bunex.SelectWhere("subject_type = ?", base.SubjectTypeUser),
-		bunex.SelectWhere("resource_type = ?", base.ResourceTypeApp),
-		bunex.SelectWhere("resource_id = ?", appID),
-		bunex.SelectWhere("(action_read = FALSE AND action_write = FALSE AND action_delete = FALSE)"),
+		bunex.SelectWhere("status = ?", base.UserStatusActive),
+		bunex.SelectWhere("(access_expire_at IS NULL OR access_expire_at > NOW())"),
+		bunex.SelectWhere("(role = ?", base.UserRoleAdmin),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	deniedUserIDs := make([]string, 0, len(deniedACLs))
-	for _, deniedACL := range deniedACLs {
-		deniedUserIDs = append(deniedUserIDs, deniedACL.SubjectID)
-	}
-	if len(deniedUserIDs) == 0 {
-		deniedUserIDs = []string{""}
-	}
 
-	loadOpts := []bunex.SelectQueryOption{
-		bunex.SelectDistinct(),
-		bunex.SelectWhere("\"user\".deleted_at IS NULL"),
-		bunex.SelectWhere("\"user\".status = ?", base.UserStatusActive),
-		bunex.SelectWhere("(\"user\".access_expire_at IS NULL OR \"user\".access_expire_at > NOW())"),
-
-		bunex.SelectJoin("LEFT JOIN acl_permissions AS acl ON \"user\".id = acl.subject_id"),
-		bunex.SelectWhereGroup(
-			bunex.SelectWhere("\"user\".role = ?", base.UserRoleAdmin),
-			// Has permission on the app
-			bunex.SelectWhereOr("(acl.resource_id = ? AND "+
-				"(acl.action_read OR acl.action_write OR acl.action_delete))", appID),
-			// Has permission on the belonging project but not denied by the app
-			bunex.SelectWhereOr("(acl.resource_id = ? AND "+
-				"(acl.action_read OR acl.action_write OR acl.action_delete) AND acl.subject_id NOT IN (?))",
-				projectID, bunex.In(deniedUserIDs)),
-		),
-
-		bunex.SelectRelation("Accesses",
-			bunex.SelectWhere("acl_permission.deleted_at IS NULL"),
-			bunex.SelectWhere("acl_permission.resource_id IN (?)", bunex.In([]string{projectID, appID})),
-		),
-	}
-	loadOpts = append(loadOpts, extraLoadOpts...)
-	users, _, err := p.userRepo.List(ctx, db, nil, loadOpts...)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-
-	aclPermissions := make([]*entity.ACLPermission, 0, len(users))
-	for _, user := range users {
-		var aclPerm *entity.ACLPermission
-		for _, acl := range user.Accesses {
-			if acl.ResourceID == appID {
-				aclPerm = acl
-				break
+	for _, user := range adminUsers {
+		perm, ok := permByUserID[user.ID]
+		if !ok {
+			perm = &entity.ACLPermission{
+				SubjectType:  base.SubjectTypeUser,
+				SubjectID:    user.ID,
+				ResourceType: base.ResourceTypeProject,
+				ResourceID:   check.ResourceID,
 			}
+			permByUserID[user.ID] = perm
 		}
-		if aclPerm == nil && len(user.Accesses) > 0 {
-			aclPerm = user.Accesses[0]
-		}
-		if user.Role == base.UserRoleAdmin {
-			if aclPerm == nil {
-				aclPerm = &entity.ACLPermission{
-					SubjectType:  base.SubjectTypeUser,
-					SubjectID:    user.ID,
-					ResourceType: base.ResourceTypeApp,
-					ResourceID:   appID,
-				}
-			}
-			aclPerm.Actions.Read = true
-			aclPerm.Actions.Write = true
-			aclPerm.Actions.Delete = true
-		}
-		if aclPerm != nil {
-			aclPerm.SubjectUser = user
-			aclPermissions = append(aclPermissions, aclPerm)
-		}
+		perm.Actions.Read = true
+		perm.Actions.Write = true
+		perm.Actions.Delete = true
+		perm.SubjectUser = user
+	}
+
+	aclPermissions := make([]*entity.ACLPermission, 0, len(permByUserID))
+	for _, perm := range permByUserID {
+		aclPermissions = append(aclPermissions, perm)
+	}
+
+	if sort {
+		slices.SortStableFunc(aclPermissions, func(a, b *entity.ACLPermission) int {
+			return strings.Compare(a.SubjectUser.FullName, b.SubjectUser.FullName)
+		})
 	}
 
 	return aclPermissions, nil

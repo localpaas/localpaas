@@ -19,4 +19,7 @@ func (u *User) Entity() *entity.User {
 
 type Auth struct {
 	User *User
+
+	// AllowObjectIDs object IDs which the current user can access
+	AllowObjectIDs []string
 }

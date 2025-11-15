@@ -34,10 +34,10 @@ func (h *UserHandler) UpdateUser(ctx *gin.Context) {
 	}
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		RequireAdmin: true,
-		ResourceType: base.ResourceTypeUser,
-		ResourceID:   userID,
-		Action:       base.ActionTypeWrite,
+		ResourceModule: base.ResourceModuleUser,
+		ResourceType:   base.ResourceTypeUser,
+		ResourceID:     userID,
+		Action:         base.ActionTypeWrite,
 	})
 	if err != nil {
 		h.RenderError(ctx, err)

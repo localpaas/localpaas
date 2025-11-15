@@ -32,6 +32,12 @@ func (uc *ProjectUC) ListProjectBase(
 		)
 	}
 
+	if len(auth.AllowObjectIDs) > 0 {
+		listOpts = append(listOpts,
+			bunex.SelectWhere("project.id IN (?)", bunex.In(auth.AllowObjectIDs)),
+		)
+	}
+
 	projects, pagingMeta, err := uc.projectRepo.List(ctx, uc.db, &req.Paging, listOpts...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
