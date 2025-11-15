@@ -79,6 +79,9 @@ func (o *SSHKey) EncryptPassphrase() error {
 	if o.IsPassphraseEncrypted() {
 		return nil
 	}
+	if o.Passphrase == "" {
+		return nil
+	}
 	encrypted, err := cryptoutil.EncryptBase64(o.Passphrase, base.DefaultSaltLen)
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -94,6 +97,9 @@ func (o *SSHKey) MustEncryptPassphrase() *SSHKey {
 
 func (o *SSHKey) DecryptPassphrase() error {
 	if !o.IsPassphraseEncrypted() {
+		return nil
+	}
+	if o.Passphrase == "" {
 		return nil
 	}
 	decrypted, err := cryptoutil.DecryptBase64(o.Passphrase)

@@ -15,6 +15,7 @@ type UpdateSSHKeyReq struct {
 type SSHKeyPartialReq struct {
 	Name            *string                   `json:"name"`
 	PrivateKey      *string                   `json:"privateKey"`
+	Passphrase      *string                   `json:"passphrase"`
 	ProjectAccesses []*SSHKeyProjectAccessReq `json:"projectAccesses"`
 }
 
@@ -24,6 +25,7 @@ func (req *SSHKeyPartialReq) validate(field string) (res []vld.Validator) {
 	}
 	res = append(res, validateSSHKeyName(req.Name, false, field+"name")...)
 	res = append(res, basedto.ValidateStr(req.PrivateKey, false, 1, maxKeyLen, "privateKey")...)
+	res = append(res, basedto.ValidateStr(req.Passphrase, false, 1, maxNameLen, "passphrase")...)
 	return res
 }
 

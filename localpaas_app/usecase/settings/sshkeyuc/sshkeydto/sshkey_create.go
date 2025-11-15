@@ -14,6 +14,7 @@ type CreateSSHKeyReq struct {
 type SSHKeyBaseReq struct {
 	Name            string                    `json:"name"`
 	PrivateKey      string                    `json:"privateKey"`
+	Passphrase      string                    `json:"passphrase"`
 	ProjectAccesses []*SSHKeyProjectAccessReq `json:"projectAccesses"`
 }
 
@@ -36,6 +37,7 @@ func (req *SSHKeyBaseReq) validate(field string) (res []vld.Validator) {
 	}
 	res = append(res, validateSSHKeyName(&req.Name, true, field+"name")...)
 	res = append(res, basedto.ValidateStr(&req.PrivateKey, true, 1, maxKeyLen, "privateKey")...)
+	res = append(res, basedto.ValidateStr(&req.Passphrase, false, 1, maxNameLen, "passphrase")...)
 	return res
 }
 

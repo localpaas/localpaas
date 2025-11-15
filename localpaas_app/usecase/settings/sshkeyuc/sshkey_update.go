@@ -101,6 +101,9 @@ func (uc *SSHKeyUC) prepareUpdatingSSHKey(
 		if req.PrivateKey != nil {
 			sshKey.PrivateKey = *req.PrivateKey
 		}
+		if req.Passphrase != nil {
+			sshKey.Passphrase = *req.Passphrase
+		}
 
 		setting.MustSetData(sshKey.MustEncrypt())
 	}

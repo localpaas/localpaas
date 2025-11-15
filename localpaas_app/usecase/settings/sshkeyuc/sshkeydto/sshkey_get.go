@@ -71,7 +71,9 @@ func TransformSSHKey(setting *entity.Setting, decrypt bool) (resp *SSHKeyResp, e
 	resp.Encrypted = sshKey.IsEncrypted()
 	if resp.Encrypted {
 		resp.PrivateKey = maskedSecretKey
-		resp.Passphrase = maskedSecretKey
+		if resp.Passphrase != "" {
+			resp.Passphrase = maskedSecretKey
+		}
 	}
 
 	resp.ProjectAccesses, err = TransformSSHKeyObjectAccesses(setting.ObjectAccesses)

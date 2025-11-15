@@ -6917,6 +6917,9 @@
           "name" : {
             "type" : "string"
           },
+          "passphrase" : {
+            "type" : "string"
+          },
           "privateKey" : {
             "type" : "string"
           },
@@ -6927,7 +6930,7 @@
             "type" : "array"
           }
         },
-        "required" : [ "name", "privateKey", "projectAccesses" ],
+        "required" : [ "name", "passphrase", "privateKey", "projectAccesses" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.CreateSSHKeyResp" : {

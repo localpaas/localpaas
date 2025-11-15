@@ -87,6 +87,7 @@ func (uc *SSHKeyUC) preparePersistingSSHKey(
 
 	sshKey := &entity.SSHKey{
 		PrivateKey: req.PrivateKey,
+		Passphrase: req.Passphrase,
 	}
 	setting.MustSetData(sshKey.MustEncrypt())
 
