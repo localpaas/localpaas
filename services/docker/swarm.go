@@ -11,7 +11,7 @@ import (
 func (m *Manager) SwarmInspect(ctx context.Context) (*swarm.Swarm, error) {
 	resp, err := m.client.SwarmInspect(ctx)
 	if err != nil {
-		return nil, tracerr.Wrap(err, "error inspecting swarm")
+		return nil, tracerr.Wrap(err)
 	}
 	return &resp, nil
 }

@@ -24,7 +24,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/clusteruc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/nodeuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/volumeuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc"
@@ -74,7 +75,8 @@ var Provides = []any{
 	usersettingshandler.NewUserSettingsHandler,
 
 	// Use case
-	clusteruc.NewClusterUC,
+	nodeuc.NewNodeUC,
+	volumeuc.NewVolumeUC,
 	sessionuc.NewSessionUC,
 	useruc.NewUserUC,
 	projectuc.NewProjectUC,

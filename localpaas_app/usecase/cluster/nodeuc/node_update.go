@@ -1,4 +1,4 @@
-package clusteruc
+package nodeuc
 
 import (
 	"context"
@@ -7,17 +7,17 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/clusteruc/clusterdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/nodeuc/nodedto"
 )
 
-func (uc *ClusterUC) UpdateNode(
+func (uc *NodeUC) UpdateNode(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *clusterdto.UpdateNodeReq,
-) (*clusterdto.UpdateNodeResp, error) {
+	req *nodedto.UpdateNodeReq,
+) (*nodedto.UpdateNodeResp, error) {
 	node, _, err := uc.dockerManager.NodeInspect(ctx, req.NodeID)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.NewInfra(err)
 	}
 
 	spec := node.Spec
@@ -37,8 +37,8 @@ func (uc *ClusterUC) UpdateNode(
 
 	err = uc.dockerManager.NodeUpdate(ctx, req.NodeID, &node.Version, &spec)
 	if err != nil {
-		return nil, apperrors.New(apperrors.ErrDockerFailedUpdateNode).WithNTParam("Error", err.Error())
+		return nil, apperrors.NewInfra(err)
 	}
 
-	return &clusterdto.UpdateNodeResp{}, nil
+	return &nodedto.UpdateNodeResp{}, nil
 }

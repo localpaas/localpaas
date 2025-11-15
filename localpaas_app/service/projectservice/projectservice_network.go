@@ -29,7 +29,7 @@ func (s *projectService) CreateProjectNetworks(ctx context.Context, project *ent
 		}
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.NewInfra(err)
 	}
 	return net, nil
 }
@@ -42,7 +42,7 @@ func (s *projectService) ListProjectNetworks(ctx context.Context, project *entit
 		)
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.NewInfra(err)
 	}
 	return res, nil
 }

@@ -378,7 +378,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.ListNodeResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.ListNodeResp"
                 }
               }
             },
@@ -417,7 +417,7 @@
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.JoinNodeReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.JoinNodeReq"
               }
             }
           },
@@ -429,7 +429,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.JoinNodeResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.JoinNodeResp"
                 }
               }
             },
@@ -478,7 +478,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.GetNodeJoinCommandResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.GetNodeJoinCommandResp"
                 }
               }
             },
@@ -534,7 +534,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.DeleteNodeResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.DeleteNodeResp"
                 }
               }
             },
@@ -581,7 +581,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.GetNodeResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.GetNodeResp"
                 }
               }
             },
@@ -627,7 +627,7 @@
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.UpdateNodeReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.UpdateNodeReq"
               }
             }
           },
@@ -639,7 +639,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.UpdateNodeResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.UpdateNodeResp"
                 }
               }
             },
@@ -669,6 +669,235 @@
         "summary" : "Updates a node",
         "tags" : [ "cluster_nodes" ],
         "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/cluster/volumes" : {
+      "get" : {
+        "description" : "Lists cluster volumes",
+        "operationId" : "listVolume",
+        "parameters" : [ {
+          "description" : "`status=<target>`",
+          "in" : "query",
+          "name" : "status",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`search=<target> (support *)`",
+          "in" : "query",
+          "name" : "search",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`pageOffset=offset`",
+          "in" : "query",
+          "name" : "pageOffset",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`pageLimit=limit`",
+          "in" : "query",
+          "name" : "pageLimit",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`sort=[-]field1|field2...`",
+          "in" : "query",
+          "name" : "sort",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_volumeuc_volumedto.ListVolumeResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Lists cluster volumes",
+        "tags" : [ "cluster_volumes" ]
+      },
+      "post" : {
+        "description" : "Creates a volume",
+        "operationId" : "createVolume",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_volumeuc_volumedto.CreateVolumeReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_volumeuc_volumedto.CreateVolumeResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Creates a volume",
+        "tags" : [ "cluster_volumes" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/cluster/volumes/{volumeID}" : {
+      "delete" : {
+        "description" : "Deletes a volume",
+        "operationId" : "deleteVolume",
+        "parameters" : [ {
+          "description" : "volume ID",
+          "in" : "path",
+          "name" : "volumeID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`force=true/false`",
+          "in" : "query",
+          "name" : "force",
+          "schema" : {
+            "type" : "boolean"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_volumeuc_volumedto.DeleteVolumeResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Deletes a volume",
+        "tags" : [ "cluster_volumes" ]
+      },
+      "get" : {
+        "description" : "Gets volume details",
+        "operationId" : "getVolume",
+        "parameters" : [ {
+          "description" : "volume ID",
+          "in" : "path",
+          "name" : "volumeID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_volumeuc_volumedto.GetVolumeResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Gets volume details",
+        "tags" : [ "cluster_volumes" ]
       }
     },
     "/internal/auth/dev-mode-login" : {
@@ -4952,6 +5181,21 @@
         "type" : "string",
         "x-enum-varnames" : [ "UserStatusActive", "UserStatusPending", "UserStatusDisabled" ]
       },
+      "github_com_localpaas_localpaas_localpaas_app_base.VolumeDriver" : {
+        "enum" : [ "local", "seaweedfs" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "VolumeDriverLocal", "VolumeDriverSeaweedFs" ]
+      },
+      "github_com_localpaas_localpaas_localpaas_app_base.VolumeScope" : {
+        "enum" : [ "global", "local" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "VolumeScopeGlobal", "VolumeScopeLocal" ]
+      },
+      "github_com_localpaas_localpaas_localpaas_app_base.VolumeType" : {
+        "enum" : [ "volume", "nfs" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "VolumeTypeVolume", "VolumeTypeNfs" ]
+      },
       "github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta" : {
         "properties" : {
           "code" : {
@@ -5437,7 +5681,7 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.DeleteNodeResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.DeleteNodeResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
@@ -5446,7 +5690,7 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.GetNodeJoinCommandDataResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.GetNodeJoinCommandDataResp" : {
         "properties" : {
           "command" : {
             "type" : "string"
@@ -5455,10 +5699,10 @@
         "required" : [ "command" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.GetNodeJoinCommandResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.GetNodeJoinCommandResp" : {
         "properties" : {
           "data" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.GetNodeJoinCommandDataResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.GetNodeJoinCommandDataResp"
           },
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
@@ -5467,10 +5711,10 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.GetNodeResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.GetNodeResp" : {
         "properties" : {
           "data" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.NodeResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.NodeResp"
           },
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
@@ -5479,7 +5723,7 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.JoinNodeDataResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.JoinNodeDataResp" : {
         "properties" : {
           "commandOutput" : {
             "type" : "string"
@@ -5494,7 +5738,7 @@
         "required" : [ "commandOutput", "errorMessage", "success" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.JoinNodeReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.JoinNodeReq" : {
         "properties" : {
           "host" : {
             "type" : "string"
@@ -5515,10 +5759,10 @@
         "required" : [ "host", "joinAsManager", "port", "sshKey", "user" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.JoinNodeResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.JoinNodeResp" : {
         "properties" : {
           "data" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.JoinNodeDataResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.JoinNodeDataResp"
           },
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
@@ -5527,11 +5771,11 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.ListNodeResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.ListNodeResp" : {
         "properties" : {
           "data" : {
             "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.NodeResp"
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.NodeResp"
             },
             "type" : "array"
           },
@@ -5542,7 +5786,7 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.NodeEngineDescResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.NodeEngineDescResp" : {
         "properties" : {
           "engineVersion" : {
             "type" : "string"
@@ -5555,7 +5799,7 @@
           },
           "plugins" : {
             "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.NodePluginDescResp"
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.NodePluginDescResp"
             },
             "type" : "array"
           }
@@ -5563,7 +5807,7 @@
         "required" : [ "engineVersion", "labels" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.NodePlatformResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.NodePlatformResp" : {
         "properties" : {
           "architecture" : {
             "type" : "string"
@@ -5575,7 +5819,7 @@
         "required" : [ "architecture", "os" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.NodePluginDescResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.NodePluginDescResp" : {
         "properties" : {
           "name" : {
             "type" : "string"
@@ -5587,7 +5831,7 @@
         "required" : [ "name", "type" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.NodeResources" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.NodeResources" : {
         "properties" : {
           "cpus" : {
             "type" : "integer"
@@ -5599,7 +5843,7 @@
         "required" : [ "cpus", "memoryMB" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.NodeResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.NodeResp" : {
         "properties" : {
           "addr" : {
             "type" : "string"
@@ -5611,7 +5855,7 @@
             "type" : "string"
           },
           "engineDesc" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.NodeEngineDescResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.NodeEngineDescResp"
           },
           "hostname" : {
             "type" : "string"
@@ -5632,10 +5876,10 @@
             "type" : "string"
           },
           "platform" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.NodePlatformResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.NodePlatformResp"
           },
           "resources" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.NodeResources"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.NodeResources"
           },
           "role" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.NodeRole"
@@ -5650,7 +5894,7 @@
         "required" : [ "addr", "availability", "createdAt", "engineDesc", "hostname", "id", "isLeader", "labels", "name", "platform", "resources", "role", "status", "updatedAt" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.UpdateNodeReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.UpdateNodeReq" : {
         "properties" : {
           "availability" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.NodeAvailability"
@@ -5671,13 +5915,163 @@
         "required" : [ "availability", "labels", "name", "role" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_clusteruc_clusterdto.UpdateNodeResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.UpdateNodeResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
           }
         },
         "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_volumeuc_volumedto.ClusterVolumeSpecResp" : {
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_volumeuc_volumedto.CreateVolumeReq" : {
+        "properties" : {
+          "driver" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.VolumeDriver"
+          },
+          "extraDriverOpts" : {
+            "additionalProperties" : {
+              "type" : "string"
+            },
+            "type" : "object"
+          },
+          "labels" : {
+            "additionalProperties" : {
+              "type" : "string"
+            },
+            "type" : "object"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "nfsOpts" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_volumeuc_volumedto.VolumeNfsOptsReq"
+          },
+          "source" : {
+            "type" : "string"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.VolumeType"
+          }
+        },
+        "required" : [ "driver", "extraDriverOpts", "labels", "name", "nfsOpts", "source", "type" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_volumeuc_volumedto.CreateVolumeResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_volumeuc_volumedto.DeleteVolumeResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_volumeuc_volumedto.GetVolumeResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_volumeuc_volumedto.VolumeResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_volumeuc_volumedto.ListVolumeResp" : {
+        "properties" : {
+          "data" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_volumeuc_volumedto.VolumeResp"
+            },
+            "type" : "array"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_volumeuc_volumedto.VolumeNfsOptsReq" : {
+        "properties" : {
+          "addr" : {
+            "type" : "string"
+          },
+          "device" : {
+            "type" : "string"
+          },
+          "readonly" : {
+            "type" : "boolean"
+          },
+          "version" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "addr", "device", "readonly", "version" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_volumeuc_volumedto.VolumeResp" : {
+        "properties" : {
+          "clusterVolumeSpec" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_volumeuc_volumedto.ClusterVolumeSpecResp"
+          },
+          "createdAt" : {
+            "type" : "string"
+          },
+          "driver" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "labels" : {
+            "additionalProperties" : {
+              "type" : "string"
+            },
+            "type" : "object"
+          },
+          "mountpoint" : {
+            "type" : "string"
+          },
+          "options" : {
+            "additionalProperties" : {
+              "type" : "string"
+            },
+            "type" : "object"
+          },
+          "refCount" : {
+            "type" : "integer"
+          },
+          "scope" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.VolumeScope"
+          },
+          "size" : {
+            "type" : "integer"
+          },
+          "status" : {
+            "additionalProperties" : {
+              "type" : "object"
+            },
+            "type" : "object"
+          }
+        },
+        "required" : [ "clusterVolumeSpec", "createdAt", "driver", "id", "labels", "mountpoint", "options", "refCount", "scope", "size", "status" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.CreateProjectReq" : {

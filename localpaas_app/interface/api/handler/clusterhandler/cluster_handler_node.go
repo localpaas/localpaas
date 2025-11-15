@@ -8,7 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/clusteruc/clusterdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/nodeuc/nodedto"
 )
 
 // To keep `apperrors` pkg imported and swag gen won't fail
@@ -25,7 +25,7 @@ type _ *apperrors.ErrorInfo
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
 // @Param   sort query string false "`sort=[-]field1|field2...`"
-// @Success 200 {object} clusterdto.ListNodeResp
+// @Success 200 {object} nodedto.ListNodeResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /cluster/nodes [get]
@@ -40,13 +40,13 @@ func (h *ClusterHandler) ListNode(ctx *gin.Context) {
 		return
 	}
 
-	req := clusterdto.NewListNodeReq()
+	req := nodedto.NewListNodeReq()
 	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.clusterUC.ListNode(h.RequestCtx(ctx), auth, req)
+	resp, err := h.nodeUC.ListNode(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -62,7 +62,7 @@ func (h *ClusterHandler) ListNode(ctx *gin.Context) {
 // @Produce json
 // @Id      getNode
 // @Param   nodeID path string true "node ID"
-// @Success 200 {object} clusterdto.GetNodeResp
+// @Success 200 {object} nodedto.GetNodeResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /cluster/nodes/{nodeID} [get]
@@ -84,14 +84,14 @@ func (h *ClusterHandler) GetNode(ctx *gin.Context) {
 		return
 	}
 
-	req := clusterdto.NewGetNodeReq()
+	req := nodedto.NewGetNodeReq()
 	req.NodeID = nodeID
 	if err = h.ParseRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.clusterUC.GetNode(h.RequestCtx(ctx), auth, req)
+	resp, err := h.nodeUC.GetNode(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -107,8 +107,8 @@ func (h *ClusterHandler) GetNode(ctx *gin.Context) {
 // @Produce json
 // @Id      updateNode
 // @Param   nodeID path string true "node ID"
-// @Param   body body clusterdto.UpdateNodeReq true "request data"
-// @Success 200 {object} clusterdto.UpdateNodeResp
+// @Param   body body nodedto.UpdateNodeReq true "request data"
+// @Success 200 {object} nodedto.UpdateNodeResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /cluster/nodes/{nodeID} [put]
@@ -130,14 +130,14 @@ func (h *ClusterHandler) UpdateNode(ctx *gin.Context) {
 		return
 	}
 
-	req := clusterdto.NewUpdateNodeReq()
+	req := nodedto.NewUpdateNodeReq()
 	req.NodeID = nodeID
 	if err := h.ParseJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.clusterUC.UpdateNode(h.RequestCtx(ctx), auth, req)
+	resp, err := h.nodeUC.UpdateNode(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -154,7 +154,7 @@ func (h *ClusterHandler) UpdateNode(ctx *gin.Context) {
 // @Id      deleteNode
 // @Param   nodeID path string true "node ID"
 // @Param   force query bool false "`force=true/false`"
-// @Success 200 {object} clusterdto.DeleteNodeResp
+// @Success 200 {object} nodedto.DeleteNodeResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /cluster/nodes/{nodeID} [delete]
@@ -176,14 +176,14 @@ func (h *ClusterHandler) DeleteNode(ctx *gin.Context) {
 		return
 	}
 
-	req := clusterdto.NewDeleteNodeReq()
+	req := nodedto.NewDeleteNodeReq()
 	req.NodeID = nodeID
 	if err = h.ParseRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.clusterUC.DeleteNode(h.RequestCtx(ctx), auth, req)
+	resp, err := h.nodeUC.DeleteNode(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -198,8 +198,8 @@ func (h *ClusterHandler) DeleteNode(ctx *gin.Context) {
 // @Tags    cluster_nodes
 // @Produce json
 // @Id      joinNode
-// @Param   body body clusterdto.JoinNodeReq true "request data"
-// @Success 200 {object} clusterdto.JoinNodeResp
+// @Param   body body nodedto.JoinNodeReq true "request data"
+// @Success 200 {object} nodedto.JoinNodeResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /cluster/nodes/join [post]
@@ -214,13 +214,13 @@ func (h *ClusterHandler) JoinNode(ctx *gin.Context) {
 		return
 	}
 
-	req := clusterdto.NewJoinNodeReq()
+	req := nodedto.NewJoinNodeReq()
 	if err := h.ParseJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.clusterUC.JoinNode(h.RequestCtx(ctx), auth, req)
+	resp, err := h.nodeUC.JoinNode(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -236,7 +236,7 @@ func (h *ClusterHandler) JoinNode(ctx *gin.Context) {
 // @Produce json
 // @Id      getNodeJoinCommand
 // @Param   joinAsManager query string false "joinAsManager=true/false"
-// @Success 200 {object} clusterdto.GetNodeJoinCommandResp
+// @Success 200 {object} nodedto.GetNodeJoinCommandResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /cluster/nodes/join-command [get]
@@ -251,13 +251,13 @@ func (h *ClusterHandler) GetNodeJoinCommand(ctx *gin.Context) {
 		return
 	}
 
-	req := clusterdto.NewGetNodeJoinCommandReq()
+	req := nodedto.NewGetNodeJoinCommandReq()
 	if err := h.ParseRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.clusterUC.GetNodeJoinCommand(h.RequestCtx(ctx), auth, req)
+	resp, err := h.nodeUC.GetNodeJoinCommand(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

@@ -17,7 +17,7 @@ func (m *Manager) NetworkList(ctx context.Context, options ...NetworkListOption)
 	}
 	resp, err := m.client.NetworkList(ctx, opts)
 	if err != nil {
-		return nil, tracerr.Wrap(err, "error listing network")
+		return nil, tracerr.Wrap(err)
 	}
 	return resp, nil
 }
@@ -32,7 +32,7 @@ func (m *Manager) NetworkCreate(ctx context.Context, name string, options ...Net
 	}
 	resp, err := m.client.NetworkCreate(ctx, name, opts)
 	if err != nil {
-		return nil, tracerr.Wrap(err, "error creating network")
+		return nil, tracerr.Wrap(err)
 	}
 	return &resp, nil
 }
@@ -40,7 +40,7 @@ func (m *Manager) NetworkCreate(ctx context.Context, name string, options ...Net
 func (m *Manager) NetworkRemove(ctx context.Context, name string) error {
 	err := m.client.NetworkRemove(ctx, name)
 	if err != nil {
-		return tracerr.Wrap(err, "error removing network")
+		return tracerr.Wrap(err)
 	}
 	return nil
 }
@@ -55,7 +55,7 @@ func (m *Manager) NetworkInspect(ctx context.Context, name string, options ...Ne
 	}
 	resp, err := m.client.NetworkInspect(ctx, name, opts)
 	if err != nil {
-		return nil, tracerr.Wrap(err, "error inspecting network")
+		return nil, tracerr.Wrap(err)
 	}
 	return &resp, nil
 }

@@ -19,7 +19,7 @@ func (m *Manager) ServiceList(ctx context.Context, options ...ServiceListOption)
 	}
 	resp, err := m.client.ServiceList(ctx, opts)
 	if err != nil {
-		return nil, tracerr.Wrap(err, "error listing service")
+		return nil, tracerr.Wrap(err)
 	}
 	return resp, nil
 }
@@ -37,7 +37,7 @@ func (m *Manager) ServiceCreate(ctx context.Context, service *swarm.ServiceSpec,
 	}
 	resp, err := m.client.ServiceCreate(ctx, *service, opts)
 	if err != nil {
-		return nil, tracerr.Wrap(err, "error creating service")
+		return nil, tracerr.Wrap(err)
 	}
 	return &resp, nil
 }
@@ -57,14 +57,14 @@ func (m *Manager) ServiceUpdate(ctx context.Context, serviceID string, version *
 	if version == nil {
 		resp, _, err := m.client.ServiceInspectWithRaw(ctx, serviceID, swarm.ServiceInspectOptions{})
 		if err != nil {
-			return nil, tracerr.Wrap(err, "error inspecting service")
+			return nil, tracerr.Wrap(err)
 		}
 		version = &resp.Version
 	}
 
 	resp, err := m.client.ServiceUpdate(ctx, serviceID, *version, *service, opts)
 	if err != nil {
-		return nil, tracerr.Wrap(err, "error creating service")
+		return nil, tracerr.Wrap(err)
 	}
 	return &resp, nil
 }
@@ -72,7 +72,7 @@ func (m *Manager) ServiceUpdate(ctx context.Context, serviceID string, version *
 func (m *Manager) ServiceRemove(ctx context.Context, serviceID string) error {
 	err := m.client.ServiceRemove(ctx, serviceID)
 	if err != nil {
-		return tracerr.Wrap(err, "error removing service")
+		return tracerr.Wrap(err)
 	}
 	return nil
 }
@@ -87,7 +87,7 @@ func (m *Manager) ServiceInspect(ctx context.Context, serviceID string, options 
 	}
 	resp, data, err := m.client.ServiceInspectWithRaw(ctx, serviceID, opts)
 	if err != nil {
-		return nil, nil, tracerr.Wrap(err, "error inspecting service")
+		return nil, nil, tracerr.Wrap(err)
 	}
 	return &resp, data, nil
 }
@@ -107,7 +107,7 @@ func (m *Manager) ServiceLogs(ctx context.Context, serviceID string, options ...
 	}
 	resp, err := m.client.ServiceLogs(ctx, serviceID, opts)
 	if err != nil {
-		return nil, tracerr.Wrap(err, "error getting service logs")
+		return nil, tracerr.Wrap(err)
 	}
 	return resp, nil
 }

@@ -24,6 +24,7 @@ var (
 	ErrRequestTooFrequently = errors.New("ERR_REQUEST_TOO_FREQUENTLY")
 	ErrActionNotAllowed     = errors.New("ERR_ACTION_NOT_ALLOWED")
 	ErrNotImplemented       = errors.New("ERR_NOT_IMPLEMENTED")
+	ErrUnsupported          = errors.New("ERR_UNSUPPORTED")
 	ErrTokenInvalid         = errors.New("ERR_TOKEN_INVALID")
 	ErrValidation           = errors.New("ERR_VALIDATION")
 )
@@ -61,12 +62,24 @@ var (
 	ErrEmailChangeUnallowed        = errors.New("ERR_EMAIL_CHANGE_UNALLOWED")
 )
 
-// Errors from docker
+// Errors from infrastructure
 var (
-	ErrDockerFailedUpdateNode          = errors.New("ERR_DOCKER_FAILED_UPDATE_NODE")
-	ErrDockerFailedCreateService       = errors.New("ERR_DOCKER_FAILED_CREATE_SERVICE")
-	ErrDockerJoinTokenNotFound         = errors.New("ERR_DOCKER_JOIN_TOKEN_NOT_FOUND")
-	ErrDockerActiveManagerNodeNotFound = errors.New("ERR_DOCKER_ACTIVE_MANAGER_NOT_FOUND")
+	ErrInfraUnknown            = errors.New("ERR_INFRA_UNKNOWN")
+	ErrInfraInvalidArgument    = errors.New("ERR_INFRA_INVALID_ARGUMENT")
+	ErrInfraNotFound           = errors.New("ERR_INFRA_NOT_FOUND")
+	ErrInfraAlreadyExists      = errors.New("ERR_INFRA_ALREADY_EXISTS")
+	ErrInfraPermissionDenied   = errors.New("ERR_INFRA_PERMISSION_DENIED")
+	ErrInfraResourceExhausted  = errors.New("ERR_INFRA_RESOURCE_EXHAUSTED")
+	ErrInfraFailedPrecondition = errors.New("ERR_INFRA_FAILED_PRECONDITION")
+	ErrInfraConflict           = errors.New("ERR_INFRA_CONFLICT")
+	ErrInfraNotModified        = errors.New("ERR_INFRA_NOT_MODIFIED")
+	ErrInfraAborted            = errors.New("ERR_INFRA_ABORTED")
+	ErrInfraOutOfRange         = errors.New("ERR_INFRA_OUT_OF_RANGE")
+	ErrInfraNotImplemented     = errors.New("ERR_INFRA_NOT_IMPLEMENTED")
+	ErrInfraInternal           = errors.New("ERR_INFRA_INTERNAL")
+	ErrInfraUnavailable        = errors.New("ERR_INFRA_UNAVAILABLE")
+	ErrInfraDataLoss           = errors.New("ERR_INFRA_DATA_LOSS")
+	ErrInfraUnauthorized       = errors.New("ERR_INFRA_UNAUTHORIZED")
 )
 
 // errorStatusMap - mapping from error to http status code
@@ -89,6 +102,7 @@ var errorStatusMap = map[error]int{
 	ErrRequestTooFrequently: http.StatusForbidden,
 	ErrActionNotAllowed:     http.StatusForbidden,
 	ErrNotImplemented:       http.StatusNotImplemented,
+	ErrUnsupported:          http.StatusNotImplemented,
 	ErrTokenInvalid:         http.StatusUnauthorized,
 	ErrValidation:           http.StatusBadRequest,
 
@@ -119,11 +133,23 @@ var errorStatusMap = map[error]int{
 	ErrEmailUnavailable:            http.StatusUnprocessableEntity,
 	ErrEmailChangeUnallowed:        http.StatusUnprocessableEntity,
 
-	// Docker errors
-	ErrDockerFailedUpdateNode:          http.StatusUnprocessableEntity,
-	ErrDockerFailedCreateService:       http.StatusUnprocessableEntity,
-	ErrDockerJoinTokenNotFound:         http.StatusUnprocessableEntity,
-	ErrDockerActiveManagerNodeNotFound: http.StatusUnprocessableEntity,
+	// Errors from infrastructure
+	ErrInfraUnknown:            http.StatusInternalServerError,
+	ErrInfraInvalidArgument:    http.StatusBadRequest,
+	ErrInfraNotFound:           http.StatusNotFound,
+	ErrInfraAlreadyExists:      http.StatusConflict,
+	ErrInfraPermissionDenied:   http.StatusUnauthorized,
+	ErrInfraResourceExhausted:  http.StatusUnprocessableEntity,
+	ErrInfraFailedPrecondition: http.StatusPreconditionFailed,
+	ErrInfraConflict:           http.StatusConflict,
+	ErrInfraNotModified:        http.StatusUnprocessableEntity,
+	ErrInfraAborted:            http.StatusUnprocessableEntity,
+	ErrInfraOutOfRange:         http.StatusUnprocessableEntity,
+	ErrInfraNotImplemented:     http.StatusNotImplemented,
+	ErrInfraInternal:           http.StatusInternalServerError,
+	ErrInfraUnavailable:        http.StatusConflict,
+	ErrInfraDataLoss:           http.StatusUnprocessableEntity,
+	ErrInfraUnauthorized:       http.StatusUnauthorized,
 }
 
 // errorWarnLevelMap defines the errors that are handled but unexpected to happen.

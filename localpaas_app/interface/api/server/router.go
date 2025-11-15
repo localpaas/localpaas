@@ -156,6 +156,14 @@ func (s *HTTPServer) registerRoutes() {
 		nodeGroup.POST("/join", s.handlerRegistry.clusterHandler.JoinNode)
 		nodeGroup.GET("/join-command", s.handlerRegistry.clusterHandler.GetNodeJoinCommand)
 	}
+	{ // volume group
+		volumeGroup := clusterGroup.Group("/volumes")
+		// Volumes
+		volumeGroup.GET("", s.handlerRegistry.clusterHandler.ListVolume)
+		volumeGroup.GET("/:volumeID", s.handlerRegistry.clusterHandler.GetVolume)
+		volumeGroup.POST("", s.handlerRegistry.clusterHandler.CreateVolume)
+		volumeGroup.DELETE("/:volumeID", s.handlerRegistry.clusterHandler.DeleteVolume)
+	}
 
 	projectGroup := apiGroup.Group("/projects")
 	{ // project group

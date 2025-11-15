@@ -1,4 +1,4 @@
-package clusterdto
+package nodedto
 
 import (
 	vld "github.com/tiendc/go-validator"

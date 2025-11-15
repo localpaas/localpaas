@@ -1,4 +1,4 @@
-package clusteruc
+package nodeuc
 
 import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
@@ -8,7 +8,7 @@ import (
 	"github.com/localpaas/localpaas/services/docker"
 )
 
-type ClusterUC struct {
+type NodeUC struct {
 	db                *database.DB
 	settingRepo       repository.SettingRepo
 	permissionManager permission.Manager
@@ -16,14 +16,14 @@ type ClusterUC struct {
 	dockerManager     *docker.Manager
 }
 
-func NewClusterUC(
+func NewNodeUC(
 	db *database.DB,
 	settingRepo repository.SettingRepo,
 	permissionManager permission.Manager,
 	clusterService clusterservice.ClusterService,
 	dockerManager *docker.Manager,
-) *ClusterUC {
-	return &ClusterUC{
+) *NodeUC {
+	return &NodeUC{
 		db:                db,
 		settingRepo:       settingRepo,
 		permissionManager: permissionManager,

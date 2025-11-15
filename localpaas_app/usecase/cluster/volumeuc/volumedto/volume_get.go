@@ -1,0 +1,79 @@
+package volumedto
+
+import (
+	"time"
+
+	"github.com/docker/docker/api/types/volume"
+	vld "github.com/tiendc/go-validator"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/basedto"
+)
+
+type GetVolumeReq struct {
+	VolumeID string `json:"-"`
+}
+
+func NewGetVolumeReq() *GetVolumeReq {
+	return &GetVolumeReq{}
+}
+
+func (req *GetVolumeReq) Validate() apperrors.ValidationErrors {
+	var validators []vld.Validator
+	// NOTE: volume id is docker id, it's not ULID
+	validators = append(validators, basedto.ValidateStr(&req.VolumeID, true, 1, volumeIDMaxLen, "volumeId")...)
+	return apperrors.NewValidationErrors(vld.Validate(validators...))
+}
+
+type GetVolumeResp struct {
+	Meta *basedto.BaseMeta `json:"meta"`
+	Data *VolumeResp       `json:"data"`
+}
+
+type VolumeResp struct {
+	ID                string                 `json:"id"`
+	Labels            map[string]string      `json:"labels"`
+	Driver            string                 `json:"driver"`
+	Mountpoint        string                 `json:"mountpoint"`
+	Options           map[string]string      `json:"options"`
+	Scope             base.VolumeScope       `json:"scope"`
+	Status            map[string]any         `json:"status"`
+	RefCount          int64                  `json:"refCount"`
+	Size              int64                  `json:"size"`
+	CreatedAt         time.Time              `json:"createdAt"`
+	ClusterVolumeSpec *ClusterVolumeSpecResp `json:"clusterVolumeSpec"`
+}
+
+type ClusterVolumeSpecResp struct {
+	// TODO: add fields
+}
+
+func TransformVolume(vol *volume.Volume, _ bool) *VolumeResp {
+	resp := &VolumeResp{
+		ID:         vol.Name,
+		Driver:     vol.Driver,
+		Mountpoint: vol.Mountpoint,
+		Options:    vol.Options,
+		Scope:      base.VolumeScope(vol.Scope),
+		Status:     vol.Status,
+		Labels:     vol.Labels,
+		CreatedAt:  transformVolumeCreatedAt(vol.CreatedAt),
+	}
+	if vol.ClusterVolume != nil {
+		resp.ID = vol.ClusterVolume.ID
+	}
+	if vol.UsageData != nil {
+		resp.RefCount = vol.UsageData.RefCount
+		resp.Size = vol.UsageData.Size
+	}
+	return resp
+}
+
+func transformVolumeCreatedAt(createdAt string) time.Time {
+	t, err := time.Parse(time.RFC3339, createdAt)
+	if err == nil {
+		return t
+	}
+	return time.Time{}
+}

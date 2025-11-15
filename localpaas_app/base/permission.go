@@ -20,6 +20,7 @@ const (
 	ResourceTypeCluster      ResourceType = "cluster"
 	ResourceTypeNode         ResourceType = "node"
 	ResourceTypeNetwork      ResourceType = "network"
+	ResourceTypeVolume       ResourceType = "volume"
 	ResourceTypeDeployment   ResourceType = "deployment"
 	ResourceTypeProject      ResourceType = "project"
 	ResourceTypeApp          ResourceType = "app"

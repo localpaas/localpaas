@@ -1,4 +1,4 @@
-package clusterdto
+package nodedto
 
 import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"

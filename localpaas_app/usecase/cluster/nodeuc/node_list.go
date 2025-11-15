@@ -1,4 +1,4 @@
-package clusteruc
+package nodeuc
 
 import (
 	"context"
@@ -10,17 +10,17 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/clusteruc/clusterdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/nodeuc/nodedto"
 )
 
-func (uc *ClusterUC) ListNode(
+func (uc *NodeUC) ListNode(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *clusterdto.ListNodeReq,
-) (*clusterdto.ListNodeResp, error) {
+	req *nodedto.ListNodeReq,
+) (*nodedto.ListNodeResp, error) {
 	nodes, err := uc.dockerManager.NodeList(ctx)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.NewInfra(err)
 	}
 
 	filterNodes := nodes
@@ -46,12 +46,12 @@ func (uc *ClusterUC) ListNode(
 		})
 	}
 
-	return &clusterdto.ListNodeResp{
+	return &nodedto.ListNodeResp{
 		Meta: &basedto.Meta{Page: &basedto.PagingMeta{
 			Offset: 0,
 			Limit:  req.Paging.Limit,
 			Total:  len(nodes),
 		}},
-		Data: clusterdto.TransformNodes(filterNodes, false),
+		Data: nodedto.TransformNodes(filterNodes, false),
 	}, nil
 }

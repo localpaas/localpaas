@@ -1,4 +1,4 @@
-package clusterdto
+package nodedto
 
 import (
 	"time"
@@ -81,7 +81,7 @@ func TransformNode(node *swarm.Node, detailed bool) *NodeResp {
 	isManager := node.Spec.Role == swarm.NodeRoleManager
 	resp := &NodeResp{
 		ID:           node.ID,
-		Name:         node.Spec.Name,
+		Name:         gofn.Coalesce(node.Spec.Name, "<unset>"),
 		Status:       base.NodeStatus(node.Status.State),
 		Availability: base.NodeAvailability(node.Spec.Availability),
 		Role:         base.NodeRole(node.Spec.Role),

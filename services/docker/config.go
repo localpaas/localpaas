@@ -25,7 +25,7 @@ func (m *Manager) ConfigList(ctx context.Context, options ...ConfigListOption) (
 func (m *Manager) ConfigInspect(ctx context.Context, configId string) (*swarm.Config, error) {
 	resp, _, err := m.client.ConfigInspectWithRaw(ctx, configId)
 	if err != nil {
-		return nil, tracerr.Wrap(err, "error inspecting config")
+		return nil, tracerr.Wrap(err)
 	}
 	return &resp, nil
 }
@@ -45,7 +45,7 @@ func (m *Manager) ConfigCreate(ctx context.Context, name string, data []byte, op
 	}
 	resp, err := m.client.ConfigCreate(ctx, spec)
 	if err != nil {
-		return nil, tracerr.Wrap(err, "error creating config")
+		return nil, tracerr.Wrap(err)
 	}
 	return &resp, nil
 }

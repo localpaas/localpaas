@@ -48,11 +48,10 @@ func (uc *AppUC) CreateApp(
 		// Create a service in docker for the app
 		res, err := uc.dockerManager.ServiceCreate(ctx, gofn.Must(appData.ServiceSpec.ToSwarmServiceSpec()))
 		if err != nil {
-			return apperrors.New(apperrors.ErrDockerFailedCreateService).
-				WithNTParam("Error", err.Error())
+			return apperrors.NewInfra(err)
 		}
 		if res.ID == "" { // should never happen
-			return apperrors.New(apperrors.ErrDockerFailedCreateService).
+			return apperrors.New(apperrors.ErrInfraInternal).
 				WithNTParam("Error", "empty service ID returned")
 		}
 		createdApp.ServiceID = res.ID

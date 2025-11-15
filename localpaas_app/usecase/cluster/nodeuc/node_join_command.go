@@ -1,4 +1,4 @@
-package clusteruc
+package nodeuc
 
 import (
 	"context"
@@ -10,14 +10,14 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/clusteruc/clusterdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/nodeuc/nodedto"
 )
 
-func (uc *ClusterUC) GetNodeJoinCommand(
+func (uc *NodeUC) GetNodeJoinCommand(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *clusterdto.GetNodeJoinCommandReq,
-) (*clusterdto.GetNodeJoinCommandResp, error) {
+	req *nodedto.GetNodeJoinCommandReq,
+) (*nodedto.GetNodeJoinCommandResp, error) {
 	data := &joinNodeCommandData{}
 	err := uc.loadGetNodeJoinCommandData(ctx, req, data)
 	if err != nil {
@@ -25,8 +25,8 @@ func (uc *ClusterUC) GetNodeJoinCommand(
 	}
 
 	command := fmt.Sprintf("docker swarm join --token %s %s", data.JoinToken, data.PreferManagerAddr)
-	return &clusterdto.GetNodeJoinCommandResp{
-		Data: &clusterdto.GetNodeJoinCommandDataResp{
+	return &nodedto.GetNodeJoinCommandResp{
+		Data: &nodedto.GetNodeJoinCommandDataResp{
 			Command: command,
 		},
 	}, nil
@@ -37,20 +37,21 @@ type joinNodeCommandData struct {
 	PreferManagerAddr string
 }
 
-func (uc *ClusterUC) loadGetNodeJoinCommandData(
+func (uc *NodeUC) loadGetNodeJoinCommandData(
 	ctx context.Context,
-	req *clusterdto.GetNodeJoinCommandReq,
+	req *nodedto.GetNodeJoinCommandReq,
 	data *joinNodeCommandData,
 ) error {
 	// Find join token from the cluster
 	theSwarm, err := uc.dockerManager.SwarmInspect(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.NewInfra(err)
 	}
 
 	joinToken := gofn.If(req.JoinAsManager, theSwarm.JoinTokens.Manager, theSwarm.JoinTokens.Worker) //nolint
 	if joinToken == "" {
-		return apperrors.Wrap(apperrors.ErrDockerJoinTokenNotFound)
+		return apperrors.New(apperrors.ErrInfraInternal).
+			WithNTParam("Error", "join token is not found")
 	}
 	data.JoinToken = joinToken
 
@@ -59,7 +60,7 @@ func (uc *ClusterUC) loadGetNodeJoinCommandData(
 		opts.Filters = filters.NewArgs(filters.Arg("role", "manager"))
 	})
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.NewInfra(err)
 	}
 
 	var leaderAddr, managerAddr string
@@ -74,7 +75,8 @@ func (uc *ClusterUC) loadGetNodeJoinCommandData(
 	}
 	data.PreferManagerAddr = gofn.Coalesce(leaderAddr, managerAddr)
 	if data.PreferManagerAddr == "" {
-		return apperrors.Wrap(apperrors.ErrDockerActiveManagerNodeNotFound)
+		return apperrors.New(apperrors.ErrInfraInternal).
+			WithNTParam("Error", "active manager node not found")
 	}
 
 	return nil

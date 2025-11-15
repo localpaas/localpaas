@@ -1,4 +1,4 @@
-package clusterdto
+package nodedto
 
 import (
 	"github.com/docker/docker/api/types/swarm"
