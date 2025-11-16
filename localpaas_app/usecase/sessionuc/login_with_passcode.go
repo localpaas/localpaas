@@ -33,7 +33,7 @@ func (uc *SessionUC) LoginWithPasscode(
 
 	// Verify passcode TOTP
 	if !totp.VerifyPasscode(req.Passcode, dbUser.TotpSecret) {
-		passcode, err := uc.mfaPasscodeRepo.Get(ctx, mfaTokenClaims.UserID)
+		passcode, err := uc.cacheMfaPasscodeRepo.Get(ctx, mfaTokenClaims.UserID)
 		if err != nil {
 			if errors.Is(err, apperrors.ErrNotFound) {
 				return nil, apperrors.New(apperrors.ErrPasscodeMismatched).
@@ -42,17 +42,17 @@ func (uc *SessionUC) LoginWithPasscode(
 			return nil, apperrors.Wrap(err)
 		}
 		if passcode.Attempts >= passcodeMaxAttempts {
-			_ = uc.mfaPasscodeRepo.Del(ctx, mfaTokenClaims.UserID)
+			_ = uc.cacheMfaPasscodeRepo.Del(ctx, mfaTokenClaims.UserID)
 			return nil, apperrors.New(apperrors.ErrTooManyPasscodeAttempts).
 				WithMsgLog("too many passcode attempts: %d", passcode.Attempts)
 		}
 		// Increase the attempts
-		_ = uc.mfaPasscodeRepo.IncrAttempts(ctx, mfaTokenClaims.UserID, passcode)
+		_ = uc.cacheMfaPasscodeRepo.IncrAttempts(ctx, mfaTokenClaims.UserID, passcode)
 		return nil, apperrors.Wrap(apperrors.ErrPasscodeMismatched)
 	}
 
 	// Removes the passcode in redis
-	if err = uc.mfaPasscodeRepo.Del(ctx, mfaTokenClaims.UserID); err != nil {
+	if err = uc.cacheMfaPasscodeRepo.Del(ctx, mfaTokenClaims.UserID); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 

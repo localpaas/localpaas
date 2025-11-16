@@ -14,7 +14,7 @@ type SessionUC struct {
 	loginTrustedDeviceRepo repository.LoginTrustedDeviceRepo
 	settingRepo            repository.SettingRepo
 	userTokenRepo          cacherepository.UserTokenRepo
-	mfaPasscodeRepo        cacherepository.MFAPasscodeRepo
+	cacheMfaPasscodeRepo   cacherepository.MFAPasscodeRepo
 	userService            userservice.UserService
 	permissionManager      permission.Manager
 }
@@ -25,7 +25,7 @@ func NewSessionUC(
 	loginTrustedDeviceRepo repository.LoginTrustedDeviceRepo,
 	settingRepo repository.SettingRepo,
 	userTokenRepo cacherepository.UserTokenRepo,
-	mfaPasscodeRepo cacherepository.MFAPasscodeRepo,
+	cacheMfaPasscodeRepo cacherepository.MFAPasscodeRepo,
 	userService userservice.UserService,
 	permissionManager permission.Manager,
 ) *SessionUC {
@@ -35,7 +35,7 @@ func NewSessionUC(
 		loginTrustedDeviceRepo: loginTrustedDeviceRepo,
 		settingRepo:            settingRepo,
 		userTokenRepo:          userTokenRepo,
-		mfaPasscodeRepo:        mfaPasscodeRepo,
+		cacheMfaPasscodeRepo:   cacheMfaPasscodeRepo,
 		userService:            userService,
 		permissionManager:      permissionManager,
 	}

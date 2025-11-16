@@ -107,6 +107,6 @@ LP_FE_DIR=../localpaas-dashboard
 endif
 
 local-build-fe:
-	cd ${LP_FE_DIR} && git pull && yarn build
+	cd ${LP_FE_DIR} && git pull && yarn install && yarn build
 	rm -rf dist-dashboard
 	mv ${LP_FE_DIR}/dist dist-dashboard
