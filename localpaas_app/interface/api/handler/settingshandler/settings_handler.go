@@ -9,6 +9,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/slackuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc"
 )
 
 type SettingsHandler struct {
@@ -20,6 +21,7 @@ type SettingsHandler struct {
 	secretUC       *secretuc.SecretUC
 	slackUC        *slackuc.SlackUC
 	registryAuthUC *registryauthuc.RegistryAuthUC
+	sslUC          *ssluc.SslUC
 }
 
 func NewSettingsHandler(
@@ -30,6 +32,7 @@ func NewSettingsHandler(
 	secretUC *secretuc.SecretUC,
 	slackUC *slackuc.SlackUC,
 	registryAuthUC *registryauthuc.RegistryAuthUC,
+	sslUC *ssluc.SslUC,
 ) *SettingsHandler {
 	hdl := &SettingsHandler{
 		authHandler:    authHandler,
@@ -39,6 +42,7 @@ func NewSettingsHandler(
 		secretUC:       secretUC,
 		slackUC:        slackUC,
 		registryAuthUC: registryAuthUC,
+		sslUC:          sslUC,
 	}
 	return hdl
 }

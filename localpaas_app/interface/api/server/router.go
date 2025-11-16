@@ -274,6 +274,17 @@ func (s *HTTPServer) registerRoutes() {
 		registryAuthGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateRegistryAuth)
 		registryAuthGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteRegistryAuth)
 	}
+
+	{ // ssl group
+		sslGroup := settingGroup.Group("/ssls")
+		// Info
+		sslGroup.GET("/:ID", s.handlerRegistry.settingsHandler.GetSsl)
+		sslGroup.GET("", s.handlerRegistry.settingsHandler.ListSsl)
+		// Creation & Update
+		sslGroup.POST("", s.handlerRegistry.settingsHandler.CreateSsl)
+		sslGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateSsl)
+		sslGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteSsl)
+	}
 }
 
 func routePing(c *gin.Context) {

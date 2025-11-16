@@ -15,6 +15,7 @@ const (
 	SettingTypeAPIKey       = SettingType("api-key")
 	SettingTypeSlack        = SettingType("slack")
 	SettingTypeRegistryAuth = SettingType("registry-auth")
+	SettingTypeSsl          = SettingType("ssl")
 )
 
 var (

@@ -31,6 +31,7 @@ const (
 	ResourceTypeSecret       ResourceType = "secret"
 	ResourceTypeSlack        ResourceType = "slack"
 	ResourceTypeRegistryAuth ResourceType = "registry-auth"
+	ResourceTypeSsl          ResourceType = "ssl"
 )
 
 type ResourceModule string

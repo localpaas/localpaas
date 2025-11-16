@@ -34,6 +34,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/slackuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc"
 	"github.com/localpaas/localpaas/services/docker"
@@ -88,6 +89,7 @@ var Provides = []any{
 	secretuc.NewSecretUC,
 	slackuc.NewSlackUC,
 	registryauthuc.NewRegistryAuthUC,
+	ssluc.NewSslUC,
 
 	// Service
 	clusterservice.NewClusterService,
