@@ -29,6 +29,7 @@ func (uc *SessionUC) VerifyAuth(ctx context.Context, auth *basedto.Auth, accessC
 	}
 
 	if accessCheck.SubjectID == "" {
+		accessCheck.SubjectType = base.SubjectTypeUser
 		accessCheck.SubjectID = auth.User.ID
 	}
 	checkResult, err := uc.permissionManager.CheckAccess(ctx, uc.db, auth, accessCheck)

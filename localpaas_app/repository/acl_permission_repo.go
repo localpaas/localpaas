@@ -48,13 +48,13 @@ func (repo *aclPermissionRepo) ListByResources(ctx context.Context, db database.
 	for _, res := range resources {
 		subjectCol := "subject_id"
 		subjectArg := res.SubjectID
-		if res.SubjectID != "" {
+		if res.SubjectID == "" {
 			subjectCol = "subject_type"
 			subjectArg = string(res.SubjectType)
 		}
 		resCol := "resource_id"
 		resArg := res.ResourceID
-		if res.ResourceID != "" {
+		if res.ResourceID == "" {
 			resCol = "resource_type"
 			resArg = string(res.ResourceType)
 		}
@@ -146,13 +146,13 @@ func (repo *aclPermissionRepo) DeleteByResources(ctx context.Context, db databas
 	for _, res := range resources {
 		subjectCol := "subject_id"
 		subjectArg := res.SubjectID
-		if res.SubjectID != "" {
+		if res.SubjectID == "" {
 			subjectCol = "subject_type"
 			subjectArg = string(res.SubjectType)
 		}
 		resCol := "resource_id"
 		resArg := res.ResourceID
-		if res.ResourceID != "" {
+		if res.ResourceID == "" {
 			resCol = "resource_type"
 			resArg = string(res.ResourceType)
 		}
