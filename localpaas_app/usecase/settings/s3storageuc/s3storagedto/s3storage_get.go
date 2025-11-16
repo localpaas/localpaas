@@ -75,6 +75,7 @@ func TransformS3Storage(setting *entity.Setting, decrypt bool) (resp *S3StorageR
 	if err = copier.Copy(&resp, &s3Config); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+
 	resp.Encrypted = s3Config.IsEncrypted()
 	if resp.Encrypted {
 		resp.SecretKey = maskedSecretKey

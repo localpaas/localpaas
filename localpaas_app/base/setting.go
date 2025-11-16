@@ -1,5 +1,7 @@
 package base
 
+import "github.com/tiendc/gofn"
+
 type SettingType string
 
 const (
@@ -35,5 +37,7 @@ const (
 )
 
 var (
-	AllSettingStatuses = []SettingStatus{SettingStatusActive, SettingStatusPending, SettingStatusDisabled}
+	AllSettingStatuses = []SettingStatus{SettingStatusActive, SettingStatusPending, SettingStatusDisabled,
+		SettingStatusExpired}
+	AllSettingSettableStatuses = gofn.Drop(AllSettingStatuses, SettingStatusExpired)
 )

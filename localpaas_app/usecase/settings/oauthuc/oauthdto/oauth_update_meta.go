@@ -23,7 +23,8 @@ func NewUpdateOAuthMetaReq() *UpdateOAuthMetaReq {
 // Validate implements interface basedto.ReqValidator
 func (req *UpdateOAuthMetaReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, basedto.ValidateStrIn(req.Status, false, base.AllSettingStatuses, "status")...)
+	validators = append(validators, basedto.ValidateStrIn(req.Status, false,
+		base.AllSettingSettableStatuses, "status")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 

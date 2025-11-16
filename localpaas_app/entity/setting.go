@@ -49,7 +49,15 @@ func (s *Setting) GetName() string {
 
 // IsActive returns true if setting has status `active` and is not expired
 func (s *Setting) IsActive() bool {
-	return s.Status == base.SettingStatusActive && (s.ExpireAt.IsZero() || s.ExpireAt.After(time.Now()))
+	return s.Status == base.SettingStatusActive && !s.IsExpired()
+}
+
+func (s *Setting) IsExpired() bool {
+	return !s.ExpireAt.IsZero() && s.ExpireAt.Before(time.Now())
+}
+
+func (s *Setting) IsStatusDirty() bool {
+	return s.Status == base.SettingStatusActive && s.IsExpired()
 }
 
 func (s *Setting) parseData(structPtr any) error {

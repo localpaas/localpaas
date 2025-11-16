@@ -64,6 +64,5 @@ func TransformSsl(setting *entity.Setting, decrypt bool) (resp *SslResp, err err
 	if resp.Encrypted {
 		resp.PrivateKey = maskedKey
 	}
-
 	return resp, nil
 }

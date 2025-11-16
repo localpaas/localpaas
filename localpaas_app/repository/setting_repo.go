@@ -18,8 +18,6 @@ import (
 type SettingRepo interface {
 	GetByID(ctx context.Context, db database.IDB, id string,
 		opts ...bunex.SelectQueryOption) (*entity.Setting, error)
-	GetByIDAndActive(ctx context.Context, db database.IDB, id string, activeNotExp bool,
-		opts ...bunex.SelectQueryOption) (*entity.Setting, error)
 	GetByKind(ctx context.Context, db database.IDB, typ base.SettingType, kind string,
 		opts ...bunex.SelectQueryOption) (*entity.Setting, error)
 	GetByName(ctx context.Context, db database.IDB, typ base.SettingType, name string,
@@ -34,6 +32,8 @@ type SettingRepo interface {
 	UpsertMulti(ctx context.Context, db database.IDB, settings []*entity.Setting,
 		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
 	Update(ctx context.Context, db database.IDB, setting *entity.Setting,
+		opts ...bunex.UpdateQueryOption) error
+	UpdateMulti(ctx context.Context, db database.IDB, settings []*entity.Setting,
 		opts ...bunex.UpdateQueryOption) error
 }
 
@@ -57,25 +57,9 @@ func (repo *settingRepo) GetByID(ctx context.Context, db database.IDB, id string
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	return setting, nil
-}
 
-func (repo *settingRepo) GetByIDAndActive(ctx context.Context, db database.IDB, id string, activeNotExp bool,
-	opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
-	setting := &entity.Setting{}
-	query := db.NewSelect().Model(setting).Where("setting.id = ?", id)
-	if activeNotExp {
-		query = query.Where("setting.status = ?", base.SettingStatusActive).
-			Where("setting.expire_at > NOW()")
-	}
-	query = bunex.ApplySelect(query, opts...)
-
-	err := query.Scan(ctx)
-	if setting == nil || errors.Is(err, sql.ErrNoRows) {
-		return nil, apperrors.NewNotFound("Setting").WithCause(err)
-	}
-	if err != nil {
-		return nil, apperrors.Wrap(err)
+	if hasChange, _ := repo.updateExpiredSetting(ctx, db, setting); hasChange {
+		return repo.GetByID(ctx, db, id, opts...)
 	}
 	return setting, nil
 }
@@ -98,6 +82,10 @@ func (repo *settingRepo) GetByKind(ctx context.Context, db database.IDB, typ bas
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+
+	if hasChange, _ := repo.updateExpiredSetting(ctx, db, setting); hasChange {
+		return repo.GetByKind(ctx, db, typ, kind, opts...)
+	}
 	return setting, nil
 }
 
@@ -118,6 +106,10 @@ func (repo *settingRepo) GetByName(ctx context.Context, db database.IDB, typ bas
 	}
 	if err != nil {
 		return nil, apperrors.Wrap(err)
+	}
+
+	if hasChange, _ := repo.updateExpiredSetting(ctx, db, setting); hasChange {
+		return repo.GetByName(ctx, db, typ, name, opts...)
 	}
 	return setting, nil
 }
@@ -146,6 +138,9 @@ func (repo *settingRepo) List(ctx context.Context, db database.IDB, paging *base
 		return nil, nil, wrapPaginationError(err, paging)
 	}
 
+	if hasChange, _ := repo.updateExpiredSettings(ctx, db, settings); hasChange {
+		return repo.List(ctx, db, paging, opts...)
+	}
 	return settings, pagingMeta, nil
 }
 
@@ -161,6 +156,10 @@ func (repo *settingRepo) ListByIDs(ctx context.Context, db database.IDB, ids []s
 	err := query.Scan(ctx)
 	if err != nil {
 		return nil, apperrors.New(err)
+	}
+
+	if hasChange, _ := repo.updateExpiredSettings(ctx, db, settings); hasChange {
+		return repo.ListByIDs(ctx, db, ids, opts...)
 	}
 	return settings, nil
 }
@@ -188,7 +187,16 @@ func (repo *settingRepo) UpsertMulti(ctx context.Context, db database.IDB, setti
 
 func (repo *settingRepo) Update(ctx context.Context, db database.IDB, setting *entity.Setting,
 	opts ...bunex.UpdateQueryOption) error {
-	query := db.NewUpdate().Model(setting).WherePK()
+	return repo.UpdateMulti(ctx, db, []*entity.Setting{setting}, opts...)
+}
+
+func (repo *settingRepo) UpdateMulti(ctx context.Context, db database.IDB, settings []*entity.Setting,
+	opts ...bunex.UpdateQueryOption) error {
+	if len(settings) == 0 {
+		return nil
+	}
+
+	query := db.NewUpdate().Model(&settings).WherePK()
 	query = bunex.ApplyUpdate(query, opts...)
 
 	_, err := query.Exec(ctx)
@@ -196,4 +204,34 @@ func (repo *settingRepo) Update(ctx context.Context, db database.IDB, setting *e
 		return apperrors.Wrap(err)
 	}
 	return nil
+}
+
+func (repo *settingRepo) updateExpiredSetting(ctx context.Context, db database.IDB, setting *entity.Setting) (
+	bool, error) {
+	if setting == nil {
+		return false, nil
+	}
+	return repo.updateExpiredSettings(ctx, db, []*entity.Setting{setting})
+}
+
+func (repo *settingRepo) updateExpiredSettings(ctx context.Context, db database.IDB, settings []*entity.Setting) (
+	hasChange bool, err error) {
+	for _, setting := range settings {
+		if setting.IsStatusDirty() {
+			hasChange = true
+			break
+		}
+	}
+	if !hasChange {
+		return false, nil
+	}
+	query := db.NewUpdate().Model((*entity.Setting)(nil)).
+		Set("status = ?", base.SettingStatusExpired).
+		Where("status = ? AND expire_at < NOW()", base.SettingStatusActive)
+
+	_, err = query.Exec(ctx)
+	if err != nil {
+		return hasChange, apperrors.Wrap(err)
+	}
+	return hasChange, nil
 }

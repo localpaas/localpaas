@@ -63,6 +63,5 @@ func TransformRegistryAuth(setting *entity.Setting, decrypt bool) (resp *Registr
 	if resp.Encrypted {
 		resp.Password = maskedPassword
 	}
-
 	return resp, nil
 }

@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS settings
     name         VARCHAR(100) NULL,
     version      VARCHAR(10) NOT NULL DEFAULT '1',
     status       VARCHAR(20) NOT NULL CONSTRAINT chk_status CHECK
-                    (status IN ('active','pending','disabled')) DEFAULT 'active',
+                    (status IN ('active','pending','disabled','expired')) DEFAULT 'active',
     data         JSONB NULL,
 
     created_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,

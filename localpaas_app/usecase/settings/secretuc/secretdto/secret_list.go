@@ -9,6 +9,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 )
 
 const (
@@ -55,20 +56,22 @@ type SecretResp struct {
 }
 
 func TransformSecret(setting *entity.Setting, decrypt bool) (resp *SecretResp, err error) {
+	if err = copier.Copy(&resp, &setting); err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	resp.Key = setting.Name
+
 	secret, err := setting.ParseSecret(decrypt)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	resp = &SecretResp{
-		ID:  setting.ID,
-		Key: setting.Name,
+	if err = copier.Copy(&resp, &secret); err != nil {
+		return nil, apperrors.Wrap(err)
 	}
-	if secret != nil {
-		resp.Value = secret.Value
-		resp.Encrypted = secret.IsEncrypted()
-		if resp.Encrypted {
-			resp.Value = maskedSecretValue
-		}
+
+	resp.Encrypted = secret.IsEncrypted()
+	if resp.Encrypted {
+		resp.Value = maskedSecretValue
 	}
 	return resp, nil
 }

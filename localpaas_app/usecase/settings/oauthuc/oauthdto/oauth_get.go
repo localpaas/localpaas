@@ -72,6 +72,5 @@ func TransformOAuth(setting *entity.Setting, baseCallbackURL string, decrypt boo
 	if resp.Encrypted {
 		resp.ClientSecret = maskedSecretKey
 	}
-
 	return resp, nil
 }
