@@ -90,6 +90,52 @@ func (h *SettingsHandler) CreateSecret(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, resp)
 }
 
+// UpdateSecretMeta Updates secret meta
+// @Summary Updates secret meta
+// @Description Updates secret meta
+// @Tags    settings_secrets
+// @Produce json
+// @Id      updateSecretMeta
+// @Param   ID path string true "setting ID"
+// @Param   body body secretdto.UpdateSecretMetaReq true "request data"
+// @Success 201 {object} secretdto.UpdateSecretMetaResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /settings/secrets/{ID}/meta [put]
+func (h *SettingsHandler) UpdateSecretMeta(ctx *gin.Context) {
+	id, err := h.ParseStringParam(ctx, "ID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceModule: base.ResourceModuleSettings,
+		ResourceType:   base.ResourceTypeSecret,
+		ResourceID:     id,
+		Action:         base.ActionTypeWrite,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := secretdto.NewUpdateSecretMetaReq()
+	req.ID = id
+	if err := h.ParseJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.secretUC.UpdateSecretMeta(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
 // DeleteSecret Deletes a secret
 // @Summary Deletes a secret
 // @Description Deletes a secret

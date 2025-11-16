@@ -1,6 +1,8 @@
 package secretdto
 
 import (
+	"time"
+
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -46,6 +48,10 @@ type SecretResp struct {
 	Key       string `json:"key"`
 	Value     string `json:"value"`
 	Encrypted bool   `json:"encrypted,omitempty"`
+
+	CreatedAt time.Time  `json:"createdAt"`
+	UpdatedAt time.Time  `json:"updatedAt"`
+	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
 }
 
 func TransformSecret(setting *entity.Setting, decrypt bool) (resp *SecretResp, err error) {

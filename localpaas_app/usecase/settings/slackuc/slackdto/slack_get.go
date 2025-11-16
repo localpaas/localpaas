@@ -1,6 +1,8 @@
 package slackdto
 
 import (
+	"time"
+
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -32,6 +34,10 @@ type SlackResp struct {
 	ID      string `json:"id"`
 	Name    string `json:"name"`
 	Webhook string `json:"webhook"`
+
+	CreatedAt time.Time  `json:"createdAt"`
+	UpdatedAt time.Time  `json:"updatedAt"`
+	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
 }
 
 func TransformSlack(setting *entity.Setting) (resp *SlackResp, err error) {

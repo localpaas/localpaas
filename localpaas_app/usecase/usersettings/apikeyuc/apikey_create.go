@@ -19,11 +19,8 @@ import (
 )
 
 const (
-	keyLen           = 16
-	secretLen        = 32
-	saltLen          = 8
-	hashingKeyLen    = 32
-	hashingIteration = 1
+	keyLen    = 16
+	secretLen = 32
 )
 
 func (uc *APIKeyUC) CreateAPIKey(
@@ -108,7 +105,7 @@ func (uc *APIKeyUC) preparePersistingAPIKey(
 		Status:    base.SettingStatusActive,
 		ObjectID:  data.ActingUser.ID,
 		Name:      data.KeyID,
-		ExpireAt:  req.Expiration,
+		ExpireAt:  req.ExpireAt,
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,
 	}

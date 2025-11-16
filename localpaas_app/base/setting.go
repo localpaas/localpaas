@@ -31,6 +31,7 @@ const (
 	SettingStatusActive   = SettingStatus("active")
 	SettingStatusPending  = SettingStatus("pending")
 	SettingStatusDisabled = SettingStatus("disabled")
+	SettingStatusExpired  = SettingStatus("expired")
 )
 
 var (

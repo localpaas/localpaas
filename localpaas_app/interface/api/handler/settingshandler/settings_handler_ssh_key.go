@@ -142,6 +142,7 @@ func (h *SettingsHandler) CreateSSHKey(ctx *gin.Context) {
 // @Produce json
 // @Id      updateSSHKeySetting
 // @Param   ID path string true "setting ID"
+// @Param   body body sshkeydto.UpdateSSHKeyReq true "request data"
 // @Success 200 {object} sshkeydto.UpdateSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
@@ -172,6 +173,52 @@ func (h *SettingsHandler) UpdateSSHKey(ctx *gin.Context) {
 	}
 
 	resp, err := h.sshKeyUC.UpdateSSHKey(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
+// UpdateSSHKeyMeta Updates ssh-key meta
+// @Summary Updates ssh-key meta
+// @Description Updates ssh-key meta
+// @Tags    settings_ssh_key
+// @Produce json
+// @Id      updateSSHKeyMetaSetting
+// @Param   ID path string true "setting ID"
+// @Param   body body sshkeydto.UpdateSSHKeyMetaReq true "request data"
+// @Success 200 {object} sshkeydto.UpdateSSHKeyMetaResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /settings/ssh-keys/{ID}/meta [put]
+func (h *SettingsHandler) UpdateSSHKeyMeta(ctx *gin.Context) {
+	id, err := h.ParseStringParam(ctx, "ID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceModule: base.ResourceModuleSettings,
+		ResourceType:   base.ResourceTypeSSHKey,
+		ResourceID:     id,
+		Action:         base.ActionTypeWrite,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := sshkeydto.NewUpdateSSHKeyMetaReq()
+	req.ID = id
+	if err := h.ParseJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.sshKeyUC.UpdateSSHKeyMeta(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

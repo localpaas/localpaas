@@ -1,6 +1,8 @@
 package sshkeydto
 
 import (
+	"time"
+
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -40,6 +42,10 @@ type SSHKeyResp struct {
 	Passphrase      string                     `json:"passphrase,omitempty"`
 	Encrypted       bool                       `json:"encrypted,omitempty"`
 	ProjectAccesses []*SSHKeyProjectAccessResp `json:"projectAccesses"`
+
+	CreatedAt time.Time  `json:"createdAt"`
+	UpdatedAt time.Time  `json:"updatedAt"`
+	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
 }
 
 type SSHKeyProjectAccessResp struct {

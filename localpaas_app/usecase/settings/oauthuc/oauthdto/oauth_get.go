@@ -1,6 +1,8 @@
 package oauthdto
 
 import (
+	"time"
+
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -39,12 +41,16 @@ type OAuthResp struct {
 	ClientID     string   `json:"clientId"`
 	ClientSecret string   `json:"clientSecret"`
 	Organization string   `json:"organization"`
-	CallbackURL  string   `json:"callbackURL"`
-	AuthURL      string   `json:"authURL"`
-	TokenURL     string   `json:"tokenURL"`
-	ProfileURL   string   `json:"profileURL"`
-	Scopes       []string `json:"scopes"`
+	CallbackURL  string   `json:"callbackURL,omitempty"`
+	AuthURL      string   `json:"authURL,omitempty"`
+	TokenURL     string   `json:"tokenURL,omitempty"`
+	ProfileURL   string   `json:"profileURL,omitempty"`
+	Scopes       []string `json:"scopes,omitempty"`
 	Encrypted    bool     `json:"encrypted,omitempty"`
+
+	CreatedAt time.Time  `json:"createdAt"`
+	UpdatedAt time.Time  `json:"updatedAt"`
+	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
 }
 
 func TransformOAuth(setting *entity.Setting, baseCallbackURL string, decrypt bool) (resp *OAuthResp, err error) {

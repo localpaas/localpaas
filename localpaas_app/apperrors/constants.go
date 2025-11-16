@@ -44,9 +44,7 @@ var (
 
 // Errors for api client
 var (
-	ErrAPIKeyInactive   = errors.New("ERR_API_KEY_INACTIVE")
 	ErrAPIKeyMismatched = errors.New("ERR_API_KEY_MISMATCHED")
-	ErrAPIKeyExpired    = errors.New("ERR_API_KEY_EXPIRED")
 	ErrAPIKeyInvalid    = errors.New("ERR_API_KEY_INVALID")
 )
 
@@ -118,9 +116,7 @@ var errorStatusMap = map[error]int{
 	ErrTooManyPasscodeAttempts:     http.StatusForbidden,
 
 	// Api client errors
-	ErrAPIKeyInactive:   http.StatusUnauthorized,
 	ErrAPIKeyMismatched: http.StatusUnauthorized,
-	ErrAPIKeyExpired:    http.StatusUnauthorized,
 	ErrAPIKeyInvalid:    http.StatusUnauthorized,
 
 	// User errors

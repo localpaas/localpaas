@@ -142,6 +142,7 @@ func (h *SettingsHandler) CreateRegistryAuth(ctx *gin.Context) {
 // @Produce json
 // @Id      updateRegistryAuthSetting
 // @Param   ID path string true "setting ID"
+// @Param   body body registryauthdto.UpdateRegistryAuthReq true "request data"
 // @Success 200 {object} registryauthdto.UpdateRegistryAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
@@ -172,6 +173,52 @@ func (h *SettingsHandler) UpdateRegistryAuth(ctx *gin.Context) {
 	}
 
 	resp, err := h.registryAuthUC.UpdateRegistryAuth(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
+// UpdateRegistryAuthMeta Updates registry auth meta
+// @Summary Updates registry auth meta
+// @Description Updates registry auth meta
+// @Tags    settings_registry_auth
+// @Produce json
+// @Id      updateRegistryAuthMetaSetting
+// @Param   ID path string true "setting ID"
+// @Param   body body registryauthdto.UpdateRegistryAuthMetaReq true "request data"
+// @Success 200 {object} registryauthdto.UpdateRegistryAuthMetaResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /settings/registry-auth/{ID}/meta [put]
+func (h *SettingsHandler) UpdateRegistryAuthMeta(ctx *gin.Context) {
+	id, err := h.ParseStringParam(ctx, "ID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceModule: base.ResourceModuleSettings,
+		ResourceType:   base.ResourceTypeRegistryAuth,
+		ResourceID:     id,
+		Action:         base.ActionTypeWrite,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := registryauthdto.NewUpdateRegistryAuthMetaReq()
+	req.ID = id
+	if err := h.ParseJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.registryAuthUC.UpdateRegistryAuthMeta(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

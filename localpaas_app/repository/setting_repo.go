@@ -18,6 +18,8 @@ import (
 type SettingRepo interface {
 	GetByID(ctx context.Context, db database.IDB, id string,
 		opts ...bunex.SelectQueryOption) (*entity.Setting, error)
+	GetByIDAndActive(ctx context.Context, db database.IDB, id string, activeNotExp bool,
+		opts ...bunex.SelectQueryOption) (*entity.Setting, error)
 	GetByKind(ctx context.Context, db database.IDB, typ base.SettingType, kind string,
 		opts ...bunex.SelectQueryOption) (*entity.Setting, error)
 	GetByName(ctx context.Context, db database.IDB, typ base.SettingType, name string,
@@ -31,6 +33,8 @@ type SettingRepo interface {
 		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
 	UpsertMulti(ctx context.Context, db database.IDB, settings []*entity.Setting,
 		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
+	Update(ctx context.Context, db database.IDB, setting *entity.Setting,
+		opts ...bunex.UpdateQueryOption) error
 }
 
 type settingRepo struct {
@@ -44,6 +48,26 @@ func (repo *settingRepo) GetByID(ctx context.Context, db database.IDB, id string
 	opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
 	setting := &entity.Setting{}
 	query := db.NewSelect().Model(setting).Where("setting.id = ?", id)
+	query = bunex.ApplySelect(query, opts...)
+
+	err := query.Scan(ctx)
+	if setting == nil || errors.Is(err, sql.ErrNoRows) {
+		return nil, apperrors.NewNotFound("Setting").WithCause(err)
+	}
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return setting, nil
+}
+
+func (repo *settingRepo) GetByIDAndActive(ctx context.Context, db database.IDB, id string, activeNotExp bool,
+	opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
+	setting := &entity.Setting{}
+	query := db.NewSelect().Model(setting).Where("setting.id = ?", id)
+	if activeNotExp {
+		query = query.Where("setting.status = ?", base.SettingStatusActive).
+			Where("setting.expire_at > NOW()")
+	}
 	query = bunex.ApplySelect(query, opts...)
 
 	err := query.Scan(ctx)
@@ -154,6 +178,18 @@ func (repo *settingRepo) UpsertMulti(ctx context.Context, db database.IDB, setti
 	query := db.NewInsert().Model(&settings)
 	query = bunex.ApplyInsert(query, opts...)
 	query = bunex.ApplyUpsert(query, conflictCols, updateCols)
+
+	_, err := query.Exec(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (repo *settingRepo) Update(ctx context.Context, db database.IDB, setting *entity.Setting,
+	opts ...bunex.UpdateQueryOption) error {
+	query := db.NewUpdate().Model(setting).WherePK()
+	query = bunex.ApplyUpdate(query, opts...)
 
 	_, err := query.Exec(ctx)
 	if err != nil {

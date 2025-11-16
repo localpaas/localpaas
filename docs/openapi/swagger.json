@@ -2926,6 +2926,17 @@
             "type" : "string"
           }
         } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.UpdateOAuthReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
         "responses" : {
           "200" : {
             "content" : {
@@ -2959,7 +2970,69 @@
           }
         },
         "summary" : "Updates oauth",
-        "tags" : [ "settings_oauth" ]
+        "tags" : [ "settings_oauth" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/settings/oauth/{ID}/meta" : {
+      "put" : {
+        "description" : "Updates oauth meta",
+        "operationId" : "updateOAuthMetaSetting",
+        "parameters" : [ {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.UpdateOAuthMetaReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.UpdateOAuthMetaResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates oauth meta",
+        "tags" : [ "settings_oauth" ],
+        "x-codegen-request-body-name" : "body"
       }
     },
     "/settings/registry-auth" : {
@@ -3188,6 +3261,17 @@
             "type" : "string"
           }
         } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.UpdateRegistryAuthReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
         "responses" : {
           "200" : {
             "content" : {
@@ -3221,7 +3305,69 @@
           }
         },
         "summary" : "Updates registry auth",
-        "tags" : [ "settings_registry_auth" ]
+        "tags" : [ "settings_registry_auth" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/settings/registry-auth/{ID}/meta" : {
+      "put" : {
+        "description" : "Updates registry auth meta",
+        "operationId" : "updateRegistryAuthMetaSetting",
+        "parameters" : [ {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.UpdateRegistryAuthMetaReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.UpdateRegistryAuthMetaResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates registry auth meta",
+        "tags" : [ "settings_registry_auth" ],
+        "x-codegen-request-body-name" : "body"
       }
     },
     "/settings/s3-storages" : {
@@ -3450,6 +3596,17 @@
             "type" : "string"
           }
         } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.UpdateS3StorageReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
         "responses" : {
           "200" : {
             "content" : {
@@ -3483,7 +3640,69 @@
           }
         },
         "summary" : "Updates S3 storage",
-        "tags" : [ "settings_s3_storage" ]
+        "tags" : [ "settings_s3_storage" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/settings/s3-storages/{ID}/meta" : {
+      "put" : {
+        "description" : "Updates S3 storage meta",
+        "operationId" : "updateS3StorageMetaSetting",
+        "parameters" : [ {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.UpdateS3StorageMetaReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.UpdateS3StorageMetaResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates S3 storage meta",
+        "tags" : [ "settings_s3_storage" ],
+        "x-codegen-request-body-name" : "body"
       }
     },
     "/settings/secrets" : {
@@ -3652,6 +3871,67 @@
         },
         "summary" : "Deletes a secret",
         "tags" : [ "settings_secrets" ]
+      }
+    },
+    "/settings/secrets/{ID}/meta" : {
+      "put" : {
+        "description" : "Updates secret meta",
+        "operationId" : "updateSecretMeta",
+        "parameters" : [ {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_secretuc_secretdto.UpdateSecretMetaReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_secretuc_secretdto.UpdateSecretMetaResp"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates secret meta",
+        "tags" : [ "settings_secrets" ],
+        "x-codegen-request-body-name" : "body"
       }
     },
     "/settings/slack" : {
@@ -3880,6 +4160,17 @@
             "type" : "string"
           }
         } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.UpdateSlackReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
         "responses" : {
           "200" : {
             "content" : {
@@ -3913,7 +4204,69 @@
           }
         },
         "summary" : "Updates Slack setting",
-        "tags" : [ "settings_slack" ]
+        "tags" : [ "settings_slack" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/settings/slack/{ID}/meta" : {
+      "put" : {
+        "description" : "Updates Slack meta setting",
+        "operationId" : "updateSlackMetaSetting",
+        "parameters" : [ {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.UpdateSlackMetaReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.UpdateSlackMetaResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates Slack meta setting",
+        "tags" : [ "settings_slack" ],
+        "x-codegen-request-body-name" : "body"
       }
     },
     "/settings/ssh-keys" : {
@@ -4142,6 +4495,17 @@
             "type" : "string"
           }
         } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.UpdateSSHKeyReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
         "responses" : {
           "200" : {
             "content" : {
@@ -4175,7 +4539,69 @@
           }
         },
         "summary" : "Updates ssh-key",
-        "tags" : [ "settings_ssh_key" ]
+        "tags" : [ "settings_ssh_key" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/settings/ssh-keys/{ID}/meta" : {
+      "put" : {
+        "description" : "Updates ssh-key meta",
+        "operationId" : "updateSSHKeyMetaSetting",
+        "parameters" : [ {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.UpdateSSHKeyMetaReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.UpdateSSHKeyMetaResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates ssh-key meta",
+        "tags" : [ "settings_ssh_key" ],
+        "x-codegen-request-body-name" : "body"
       }
     },
     "/settings/ssls" : {
@@ -4404,6 +4830,17 @@
             "type" : "string"
           }
         } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSslReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
         "responses" : {
           "200" : {
             "content" : {
@@ -4437,7 +4874,69 @@
           }
         },
         "summary" : "Updates SSL",
-        "tags" : [ "settings_ssl" ]
+        "tags" : [ "settings_ssl" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/settings/ssls/{ID}/meta" : {
+      "put" : {
+        "description" : "Updates SSL meta",
+        "operationId" : "updateSslMetaSetting",
+        "parameters" : [ {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSslMetaReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSslMetaResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates SSL meta",
+        "tags" : [ "settings_ssl" ],
+        "x-codegen-request-body-name" : "body"
       }
     },
     "/users" : {
@@ -5067,6 +5566,67 @@
         "tags" : [ "user_settings_api_keys" ]
       }
     },
+    "/users/current/settings/api-keys/{ID}/meta" : {
+      "put" : {
+        "description" : "Updates API key meta",
+        "operationId" : "updateAPIKeyMetaSetting",
+        "parameters" : [ {
+          "description" : "API key ID",
+          "in" : "path",
+          "name" : "ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_usersettings_apikeyuc_apikeydto.UpdateAPIKeyMetaReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_usersettings_apikeyuc_apikeydto.UpdateAPIKeyMetaResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates API key meta",
+        "tags" : [ "user_settings_api_keys" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
     "/users/invite" : {
       "post" : {
         "description" : "Invites a user to system",
@@ -5427,6 +5987,11 @@
         "enum" : [ "active", "locked", "disabled", "deleting" ],
         "type" : "string",
         "x-enum-varnames" : [ "ProjectStatusActive", "ProjectStatusLocked", "ProjectStatusDisabled", "ProjectStatusDeleting" ]
+      },
+      "github_com_localpaas_localpaas_localpaas_app_base.SettingStatus" : {
+        "enum" : [ "active", "pending", "disabled", "expired" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "SettingStatusActive", "SettingStatusPending", "SettingStatusDisabled", "SettingStatusExpired" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.UserRole" : {
         "enum" : [ "admin", "member" ],
@@ -7092,8 +7657,14 @@
           "clientSecret" : {
             "type" : "string"
           },
+          "createdAt" : {
+            "type" : "string"
+          },
           "encrypted" : {
             "type" : "boolean"
+          },
+          "expireAt" : {
+            "type" : "string"
           },
           "id" : {
             "type" : "string"
@@ -7118,9 +7689,69 @@
           },
           "tokenURL" : {
             "type" : "string"
+          },
+          "updatedAt" : {
+            "type" : "string"
           }
         },
-        "required" : [ "authURL", "callbackURL", "clientId", "clientSecret", "id", "name", "organization", "profileURL", "scopes", "tokenURL" ],
+        "required" : [ "clientId", "clientSecret", "createdAt", "id", "name", "organization", "updatedAt" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.UpdateOAuthMetaReq" : {
+        "properties" : {
+          "expireAt" : {
+            "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          }
+        },
+        "required" : [ "expireAt", "status" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.UpdateOAuthMetaResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.UpdateOAuthReq" : {
+        "properties" : {
+          "authURL" : {
+            "type" : "string"
+          },
+          "callbackURL" : {
+            "type" : "string"
+          },
+          "clientId" : {
+            "type" : "string"
+          },
+          "clientSecret" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "organization" : {
+            "type" : "string"
+          },
+          "profileURL" : {
+            "type" : "string"
+          },
+          "scopes" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "tokenURL" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "authURL", "callbackURL", "clientId", "clientSecret", "name", "organization", "profileURL", "scopes", "tokenURL" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.UpdateOAuthResp" : {
@@ -7197,8 +7828,14 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.RegistryAuthResp" : {
         "properties" : {
+          "createdAt" : {
+            "type" : "string"
+          },
           "encrypted" : {
             "type" : "boolean"
+          },
+          "expireAt" : {
+            "type" : "string"
           },
           "id" : {
             "type" : "string"
@@ -7209,11 +7846,50 @@
           "password" : {
             "type" : "string"
           },
+          "updatedAt" : {
+            "type" : "string"
+          },
           "username" : {
             "type" : "string"
           }
         },
-        "required" : [ "id", "name", "password", "username" ],
+        "required" : [ "createdAt", "id", "name", "password", "updatedAt", "username" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.UpdateRegistryAuthMetaReq" : {
+        "properties" : {
+          "expireAt" : {
+            "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          }
+        },
+        "required" : [ "expireAt", "status" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.UpdateRegistryAuthMetaResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.UpdateRegistryAuthReq" : {
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "password" : {
+            "type" : "string"
+          },
+          "username" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "name", "password", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.UpdateRegistryAuthResp" : {
@@ -7378,10 +8054,16 @@
           "bucket" : {
             "type" : "string"
           },
+          "createdAt" : {
+            "type" : "string"
+          },
           "encrypted" : {
             "type" : "boolean"
           },
           "endpoint" : {
+            "type" : "string"
+          },
+          "expireAt" : {
             "type" : "string"
           },
           "id" : {
@@ -7401,9 +8083,63 @@
           },
           "secretKey" : {
             "type" : "string"
+          },
+          "updatedAt" : {
+            "type" : "string"
           }
         },
-        "required" : [ "accessKeyId", "bucket", "endpoint", "id", "name", "projectAccesses", "region" ],
+        "required" : [ "accessKeyId", "bucket", "createdAt", "endpoint", "id", "name", "projectAccesses", "region", "updatedAt" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.UpdateS3StorageMetaReq" : {
+        "properties" : {
+          "expireAt" : {
+            "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          }
+        },
+        "required" : [ "expireAt", "status" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.UpdateS3StorageMetaResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.UpdateS3StorageReq" : {
+        "properties" : {
+          "accessKeyId" : {
+            "type" : "string"
+          },
+          "bucket" : {
+            "type" : "string"
+          },
+          "endpoint" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "projectAccesses" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.S3StorageProjectAccessReq"
+            },
+            "type" : "array"
+          },
+          "region" : {
+            "type" : "string"
+          },
+          "secretKey" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "accessKeyId", "bucket", "endpoint", "name", "projectAccesses", "region", "secretKey" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.UpdateS3StorageResp" : {
@@ -7468,8 +8204,14 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_secretuc_secretdto.SecretResp" : {
         "properties" : {
+          "createdAt" : {
+            "type" : "string"
+          },
           "encrypted" : {
             "type" : "boolean"
+          },
+          "expireAt" : {
+            "type" : "string"
           },
           "id" : {
             "type" : "string"
@@ -7477,11 +8219,35 @@
           "key" : {
             "type" : "string"
           },
+          "updatedAt" : {
+            "type" : "string"
+          },
           "value" : {
             "type" : "string"
           }
         },
-        "required" : [ "id", "key", "value" ],
+        "required" : [ "createdAt", "id", "key", "updatedAt", "value" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_secretuc_secretdto.UpdateSecretMetaReq" : {
+        "properties" : {
+          "expireAt" : {
+            "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          }
+        },
+        "required" : [ "expireAt", "status" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_secretuc_secretdto.UpdateSecretMetaResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.CreateSlackReq" : {
@@ -7546,9 +8312,51 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.SlackResp" : {
         "properties" : {
+          "createdAt" : {
+            "type" : "string"
+          },
+          "expireAt" : {
+            "type" : "string"
+          },
           "id" : {
             "type" : "string"
           },
+          "name" : {
+            "type" : "string"
+          },
+          "updatedAt" : {
+            "type" : "string"
+          },
+          "webhook" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "createdAt", "id", "name", "updatedAt", "webhook" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.UpdateSlackMetaReq" : {
+        "properties" : {
+          "expireAt" : {
+            "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          }
+        },
+        "required" : [ "expireAt", "status" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.UpdateSlackMetaResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.UpdateSlackReq" : {
+        "properties" : {
           "name" : {
             "type" : "string"
           },
@@ -7556,7 +8364,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "id", "name", "webhook" ],
+        "required" : [ "name", "webhook" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.UpdateSlackResp" : {
@@ -7706,8 +8514,14 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.SSHKeyResp" : {
         "properties" : {
+          "createdAt" : {
+            "type" : "string"
+          },
           "encrypted" : {
             "type" : "boolean"
+          },
+          "expireAt" : {
+            "type" : "string"
           },
           "id" : {
             "type" : "string"
@@ -7726,9 +8540,54 @@
               "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.SSHKeyProjectAccessResp"
             },
             "type" : "array"
+          },
+          "updatedAt" : {
+            "type" : "string"
           }
         },
-        "required" : [ "id", "name", "privateKey", "projectAccesses" ],
+        "required" : [ "createdAt", "id", "name", "privateKey", "projectAccesses", "updatedAt" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.UpdateSSHKeyMetaReq" : {
+        "properties" : {
+          "expireAt" : {
+            "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          }
+        },
+        "required" : [ "expireAt", "status" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.UpdateSSHKeyMetaResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.UpdateSSHKeyReq" : {
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "passphrase" : {
+            "type" : "string"
+          },
+          "privateKey" : {
+            "type" : "string"
+          },
+          "projectAccesses" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.SSHKeyProjectAccessReq"
+            },
+            "type" : "array"
+          }
+        },
+        "required" : [ "name", "passphrase", "privateKey", "projectAccesses" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.UpdateSSHKeyResp" : {
@@ -7811,10 +8670,16 @@
           "certificate" : {
             "type" : "string"
           },
+          "createdAt" : {
+            "type" : "string"
+          },
           "encrypted" : {
             "type" : "boolean"
           },
           "expiration" : {
+            "type" : "string"
+          },
+          "expireAt" : {
             "type" : "string"
           },
           "id" : {
@@ -7825,9 +8690,51 @@
           },
           "privateKey" : {
             "type" : "string"
+          },
+          "updatedAt" : {
+            "type" : "string"
           }
         },
-        "required" : [ "certificate", "expiration", "id", "name", "privateKey" ],
+        "required" : [ "certificate", "createdAt", "expiration", "id", "name", "privateKey", "updatedAt" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSslMetaReq" : {
+        "properties" : {
+          "expireAt" : {
+            "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          }
+        },
+        "required" : [ "expireAt", "status" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSslMetaResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSslReq" : {
+        "properties" : {
+          "certificate" : {
+            "type" : "string"
+          },
+          "expiration" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "privateKey" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "certificate", "expiration", "name", "privateKey" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSslResp" : {
@@ -7859,7 +8766,10 @@
           "accessAction" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.ActionType"
           },
-          "expiration" : {
+          "createdAt" : {
+            "type" : "string"
+          },
+          "expireAt" : {
             "type" : "string"
           },
           "id" : {
@@ -7870,9 +8780,12 @@
           },
           "secretKey" : {
             "type" : "string"
+          },
+          "updatedAt" : {
+            "type" : "string"
           }
         },
-        "required" : [ "id", "keyId", "secretKey" ],
+        "required" : [ "createdAt", "id", "keyId", "secretKey", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_usersettings_apikeyuc_apikeydto.CreateAPIKeyReq" : {
@@ -7880,11 +8793,11 @@
           "accessAction" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.ActionType"
           },
-          "expiration" : {
+          "expireAt" : {
             "type" : "string"
           }
         },
-        "required" : [ "accessAction", "expiration" ],
+        "required" : [ "accessAction", "expireAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_usersettings_apikeyuc_apikeydto.CreateAPIKeyResp" : {
@@ -7933,6 +8846,27 @@
           }
         },
         "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_usersettings_apikeyuc_apikeydto.UpdateAPIKeyMetaReq" : {
+        "properties" : {
+          "expireAt" : {
+            "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          }
+        },
+        "required" : [ "expireAt", "status" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_usersettings_apikeyuc_apikeydto.UpdateAPIKeyMetaResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.BeginMFATotpSetupReq" : {

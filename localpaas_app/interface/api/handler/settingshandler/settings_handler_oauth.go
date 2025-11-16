@@ -143,6 +143,7 @@ func (h *SettingsHandler) CreateOAuth(ctx *gin.Context) {
 // @Produce json
 // @Id      updateOAuthSetting
 // @Param   ID path string true "setting ID"
+// @Param   body body oauthdto.UpdateOAuthReq true "request data"
 // @Success 200 {object} oauthdto.UpdateOAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
@@ -173,6 +174,52 @@ func (h *SettingsHandler) UpdateOAuth(ctx *gin.Context) {
 	}
 
 	resp, err := h.oauthUC.UpdateOAuth(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
+// UpdateOAuthMeta Updates oauth meta
+// @Summary Updates oauth meta
+// @Description Updates oauth meta
+// @Tags    settings_oauth
+// @Produce json
+// @Id      updateOAuthMetaSetting
+// @Param   ID path string true "setting ID"
+// @Param   body body oauthdto.UpdateOAuthMetaReq true "request data"
+// @Success 200 {object} oauthdto.UpdateOAuthMetaResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /settings/oauth/{ID}/meta [put]
+func (h *SettingsHandler) UpdateOAuthMeta(ctx *gin.Context) {
+	id, err := h.ParseStringParam(ctx, "ID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceModule: base.ResourceModuleSettings,
+		ResourceType:   base.ResourceTypeOAuth,
+		ResourceID:     id,
+		Action:         base.ActionTypeWrite,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := oauthdto.NewUpdateOAuthMetaReq()
+	req.ID = id
+	if err := h.ParseJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.oauthUC.UpdateOAuthMeta(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

@@ -141,6 +141,7 @@ func (s *HTTPServer) registerRoutes() {
 		apiKeyGroup.GET("", s.handlerRegistry.userSettingsHandler.ListAPIKey)
 		// Creation & Update
 		apiKeyGroup.POST("", s.handlerRegistry.userSettingsHandler.CreateAPIKey)
+		apiKeyGroup.PUT("/:ID/meta", s.handlerRegistry.userSettingsHandler.UpdateAPIKeyMeta)
 		apiKeyGroup.DELETE("/:ID", s.handlerRegistry.userSettingsHandler.DeleteAPIKey)
 	}
 
@@ -219,6 +220,7 @@ func (s *HTTPServer) registerRoutes() {
 		// Creation & Update
 		oauthGroup.POST("", s.handlerRegistry.settingsHandler.CreateOAuth)
 		oauthGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateOAuth)
+		oauthGroup.PUT("/:ID/meta", s.handlerRegistry.settingsHandler.UpdateOAuthMeta)
 		oauthGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteOAuth)
 	}
 
@@ -230,6 +232,7 @@ func (s *HTTPServer) registerRoutes() {
 		// Creation & Update
 		s3StorageGroup.POST("", s.handlerRegistry.settingsHandler.CreateS3Storage)
 		s3StorageGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateS3Storage)
+		s3StorageGroup.PUT("/:ID/meta", s.handlerRegistry.settingsHandler.UpdateS3StorageMeta)
 		s3StorageGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteS3Storage)
 	}
 
@@ -241,6 +244,7 @@ func (s *HTTPServer) registerRoutes() {
 		// Creation & Update
 		sshKeyGroup.POST("", s.handlerRegistry.settingsHandler.CreateSSHKey)
 		sshKeyGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateSSHKey)
+		sshKeyGroup.PUT("/:ID/meta", s.handlerRegistry.settingsHandler.UpdateSSHKeyMeta)
 		sshKeyGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteSSHKey)
 	}
 
@@ -250,6 +254,7 @@ func (s *HTTPServer) registerRoutes() {
 		secretGroup.GET("", s.handlerRegistry.settingsHandler.ListSecret)
 		// Creation & Update
 		secretGroup.POST("", s.handlerRegistry.settingsHandler.CreateSecret)
+		secretGroup.PUT("/:ID/meta", s.handlerRegistry.settingsHandler.UpdateSecretMeta)
 		secretGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteSecret)
 	}
 
@@ -261,6 +266,7 @@ func (s *HTTPServer) registerRoutes() {
 		// Creation & Update
 		slackGroup.POST("", s.handlerRegistry.settingsHandler.CreateSlack)
 		slackGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateSlack)
+		slackGroup.PUT("/:ID/meta", s.handlerRegistry.settingsHandler.UpdateSlackMeta)
 		slackGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteSlack)
 	}
 
@@ -272,6 +278,7 @@ func (s *HTTPServer) registerRoutes() {
 		// Creation & Update
 		registryAuthGroup.POST("", s.handlerRegistry.settingsHandler.CreateRegistryAuth)
 		registryAuthGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateRegistryAuth)
+		registryAuthGroup.PUT("/:ID/meta", s.handlerRegistry.settingsHandler.UpdateRegistryAuthMeta)
 		registryAuthGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteRegistryAuth)
 	}
 
@@ -283,6 +290,7 @@ func (s *HTTPServer) registerRoutes() {
 		// Creation & Update
 		sslGroup.POST("", s.handlerRegistry.settingsHandler.CreateSsl)
 		sslGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateSsl)
+		sslGroup.PUT("/:ID/meta", s.handlerRegistry.settingsHandler.UpdateSslMeta)
 		sslGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteSsl)
 	}
 }

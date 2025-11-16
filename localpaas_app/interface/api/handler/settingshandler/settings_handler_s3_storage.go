@@ -142,6 +142,7 @@ func (h *SettingsHandler) CreateS3Storage(ctx *gin.Context) {
 // @Produce json
 // @Id      updateS3StorageSetting
 // @Param   ID path string true "setting ID"
+// @Param   body body s3storagedto.UpdateS3StorageReq true "request data"
 // @Success 200 {object} s3storagedto.UpdateS3StorageResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
@@ -172,6 +173,52 @@ func (h *SettingsHandler) UpdateS3Storage(ctx *gin.Context) {
 	}
 
 	resp, err := h.s3StorageUC.UpdateS3Storage(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
+// UpdateS3StorageMeta Updates S3 storage meta
+// @Summary Updates S3 storage meta
+// @Description Updates S3 storage meta
+// @Tags    settings_s3_storage
+// @Produce json
+// @Id      updateS3StorageMetaSetting
+// @Param   ID path string true "setting ID"
+// @Param   body body s3storagedto.UpdateS3StorageMetaReq true "request data"
+// @Success 200 {object} s3storagedto.UpdateS3StorageMetaResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /settings/s3-storages/{ID}/meta [put]
+func (h *SettingsHandler) UpdateS3StorageMeta(ctx *gin.Context) {
+	id, err := h.ParseStringParam(ctx, "ID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceModule: base.ResourceModuleSettings,
+		ResourceType:   base.ResourceTypeS3Storage,
+		ResourceID:     id,
+		Action:         base.ActionTypeWrite,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := s3storagedto.NewUpdateS3StorageMetaReq()
+	req.ID = id
+	if err := h.ParseJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.s3StorageUC.UpdateS3StorageMeta(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

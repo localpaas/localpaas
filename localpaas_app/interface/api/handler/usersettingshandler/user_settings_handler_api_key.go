@@ -129,6 +129,54 @@ func (h *UserSettingsHandler) CreateAPIKey(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, resp)
 }
 
+// UpdateAPIKeyMeta Updates API key meta
+// @Summary Updates API key meta
+// @Description Updates API key meta
+// @Tags    user_settings_api_keys
+// @Produce json
+// @Id      updateAPIKeyMetaSetting
+// @Param   ID path string true "API key ID"
+// @Param   body body apikeydto.UpdateAPIKeyMetaReq true "request data"
+// @Success 200 {object} apikeydto.UpdateAPIKeyMetaResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /users/current/settings/api-keys/{ID}/meta [put]
+func (h *UserSettingsHandler) UpdateAPIKeyMeta(ctx *gin.Context) {
+	id, err := h.ParseStringParam(ctx, "ID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	auth, err := h.authHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	// Not allow to use API key to update API key
+	if auth.User.AuthClaims.IsAPIKey {
+		h.RenderError(ctx, apperrors.New(apperrors.ErrForbidden).
+			WithMsgLog("not allow to update API key by using API key session"))
+		return
+	}
+
+	req := apikeydto.NewUpdateAPIKeyMetaReq()
+	req.ID = id
+	if err := h.ParseJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.apiKeyUC.UpdateAPIKeyMeta(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
 // DeleteAPIKey Deletes an API key
 // @Summary Deletes an API key
 // @Description Deletes an API key

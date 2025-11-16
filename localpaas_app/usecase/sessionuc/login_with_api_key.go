@@ -5,7 +5,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc/sessiondto"
 )
 
@@ -17,11 +16,8 @@ func (uc *SessionUC) LoginWithAPIKey(
 	if err != nil {
 		return nil, uc.wrapSensitiveError(err)
 	}
-	if apiKeySetting.Status != base.SettingStatusActive {
+	if !apiKeySetting.IsActive() {
 		return nil, uc.wrapSensitiveError(apperrors.ErrAPIKeyInvalid)
-	}
-	if !apiKeySetting.ExpireAt.IsZero() && apiKeySetting.ExpireAt.Before(timeutil.NowUTC()) {
-		return nil, uc.wrapSensitiveError(apperrors.ErrAPIKeyExpired)
 	}
 
 	apiKey, err := apiKeySetting.ParseAPIKey()

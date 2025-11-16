@@ -40,7 +40,10 @@ type APIKeyResp struct {
 	KeyID        string          `json:"keyId"`
 	SecretKey    string          `json:"secretKey"`
 	AccessAction base.ActionType `json:"accessAction,omitempty"`
-	Expiration   *time.Time      `json:"expiration,omitempty"`
+
+	CreatedAt time.Time  `json:"createdAt"`
+	UpdatedAt time.Time  `json:"updatedAt"`
+	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
 }
 
 func TransformAPIKey(setting *entity.Setting) (resp *APIKeyResp, err error) {
@@ -49,9 +52,6 @@ func TransformAPIKey(setting *entity.Setting) (resp *APIKeyResp, err error) {
 	}
 	resp.KeyID = setting.Name
 	resp.SecretKey = maskedSecretKey
-	if !setting.ExpireAt.IsZero() {
-		resp.Expiration = &setting.ExpireAt
-	}
 
 	apiKey, err := setting.ParseAPIKey()
 	if err != nil {

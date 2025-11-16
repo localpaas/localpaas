@@ -41,6 +41,10 @@ type SslResp struct {
 	PrivateKey  string     `json:"privateKey"`
 	Expiration  *time.Time `json:"expiration" copy:",nilonzero"`
 	Encrypted   bool       `json:"encrypted,omitempty"`
+
+	CreatedAt time.Time  `json:"createdAt"`
+	UpdatedAt time.Time  `json:"updatedAt"`
+	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
 }
 
 func TransformSsl(setting *entity.Setting, decrypt bool) (resp *SslResp, err error) {

@@ -142,6 +142,7 @@ func (h *SettingsHandler) CreateSsl(ctx *gin.Context) {
 // @Produce json
 // @Id      updateSslSetting
 // @Param   ID path string true "setting ID"
+// @Param   body body ssldto.UpdateSslReq true "request data"
 // @Success 200 {object} ssldto.UpdateSslResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
@@ -172,6 +173,52 @@ func (h *SettingsHandler) UpdateSsl(ctx *gin.Context) {
 	}
 
 	resp, err := h.sslUC.UpdateSsl(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
+// UpdateSslMeta Updates SSL meta
+// @Summary Updates SSL meta
+// @Description Updates SSL meta
+// @Tags    settings_ssl
+// @Produce json
+// @Id      updateSslMetaSetting
+// @Param   ID path string true "setting ID"
+// @Param   body body ssldto.UpdateSslMetaReq true "request data"
+// @Success 200 {object} ssldto.UpdateSslMetaResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /settings/ssls/{ID}/meta [put]
+func (h *SettingsHandler) UpdateSslMeta(ctx *gin.Context) {
+	id, err := h.ParseStringParam(ctx, "ID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceModule: base.ResourceModuleSettings,
+		ResourceType:   base.ResourceTypeSsl,
+		ResourceID:     id,
+		Action:         base.ActionTypeWrite,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := ssldto.NewUpdateSslMetaReq()
+	req.ID = id
+	if err := h.ParseJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.sslUC.UpdateSslMeta(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

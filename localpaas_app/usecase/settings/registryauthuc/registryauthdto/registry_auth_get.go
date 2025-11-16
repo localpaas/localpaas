@@ -1,6 +1,8 @@
 package registryauthdto
 
 import (
+	"time"
+
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -38,6 +40,10 @@ type RegistryAuthResp struct {
 	Username  string `json:"username"`
 	Password  string `json:"password"`
 	Encrypted bool   `json:"encrypted,omitempty"`
+
+	CreatedAt time.Time  `json:"createdAt"`
+	UpdatedAt time.Time  `json:"updatedAt"`
+	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
 }
 
 func TransformRegistryAuth(setting *entity.Setting, decrypt bool) (resp *RegistryAuthResp, err error) {
