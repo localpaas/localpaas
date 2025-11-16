@@ -151,6 +151,7 @@ func (s *HTTPServer) registerRoutes() {
 		// Nodes
 		nodeGroup.GET("", s.handlerRegistry.clusterHandler.ListNode)
 		nodeGroup.GET("/:nodeID", s.handlerRegistry.clusterHandler.GetNode)
+		nodeGroup.GET("/:nodeID/inspect", s.handlerRegistry.clusterHandler.GetNodeInspection)
 		nodeGroup.PUT("/:nodeID", s.handlerRegistry.clusterHandler.UpdateNode)
 		nodeGroup.DELETE("/:nodeID", s.handlerRegistry.clusterHandler.DeleteNode)
 		// Node join
@@ -162,6 +163,7 @@ func (s *HTTPServer) registerRoutes() {
 		// Volumes
 		volumeGroup.GET("", s.handlerRegistry.clusterHandler.ListVolume)
 		volumeGroup.GET("/:volumeID", s.handlerRegistry.clusterHandler.GetVolume)
+		volumeGroup.GET("/:volumeID/inspect", s.handlerRegistry.clusterHandler.GetVolumeInspection)
 		volumeGroup.POST("", s.handlerRegistry.clusterHandler.CreateVolume)
 		volumeGroup.DELETE("/:volumeID", s.handlerRegistry.clusterHandler.DeleteVolume)
 	}
@@ -170,6 +172,7 @@ func (s *HTTPServer) registerRoutes() {
 		// Volumes
 		imageGroup.GET("", s.handlerRegistry.clusterHandler.ListImage)
 		imageGroup.GET("/:imageID", s.handlerRegistry.clusterHandler.GetImage)
+		imageGroup.GET("/:imageID/inspect", s.handlerRegistry.clusterHandler.GetImageInspection)
 		imageGroup.POST("", s.handlerRegistry.clusterHandler.CreateImage)
 		imageGroup.DELETE("/:imageID", s.handlerRegistry.clusterHandler.DeleteImage)
 	}

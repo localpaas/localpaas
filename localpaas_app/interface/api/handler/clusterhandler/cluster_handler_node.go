@@ -100,6 +100,51 @@ func (h *ClusterHandler) GetNode(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
+// GetNodeInspection Gets node details
+// @Summary Gets node details
+// @Description Gets node details
+// @Tags    cluster_nodes
+// @Produce json
+// @Id      getNodeInspection
+// @Param   nodeID path string true "node ID"
+// @Success 200 {object} nodedto.GetNodeInspectionResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /cluster/nodes/{nodeID}/inspect [get]
+func (h *ClusterHandler) GetNodeInspection(ctx *gin.Context) {
+	nodeID, err := h.ParseStringParam(ctx, "nodeID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceModule: base.ResourceModuleCluster,
+		ResourceType:   base.ResourceTypeNode,
+		ResourceID:     nodeID,
+		Action:         base.ActionTypeRead,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := nodedto.NewGetNodeInspectionReq()
+	req.NodeID = nodeID
+	if err = h.ParseRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.nodeUC.GetNodeInspection(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
 // UpdateNode Updates a node
 // @Summary Updates a node
 // @Description Updates a node

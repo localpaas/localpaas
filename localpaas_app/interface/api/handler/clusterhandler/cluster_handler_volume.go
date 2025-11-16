@@ -100,6 +100,51 @@ func (h *ClusterHandler) GetVolume(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
+// GetVolumeInspection Gets volume details
+// @Summary Gets volume details
+// @Description Gets volume details
+// @Tags    cluster_volumes
+// @Produce json
+// @Id      getVolumeInspection
+// @Param   volumeID path string true "volume ID"
+// @Success 200 {object} volumedto.GetVolumeInspectionResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /cluster/volumes/{volumeID}/inspect [get]
+func (h *ClusterHandler) GetVolumeInspection(ctx *gin.Context) {
+	volumeID, err := h.ParseStringParam(ctx, "volumeID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceModule: base.ResourceModuleCluster,
+		ResourceType:   base.ResourceTypeVolume,
+		ResourceID:     volumeID,
+		Action:         base.ActionTypeRead,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := volumedto.NewGetVolumeInspectionReq()
+	req.VolumeID = volumeID
+	if err = h.ParseRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.volumeUC.GetVolumeInspection(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
 // CreateVolume Creates a volume
 // @Summary Creates a volume
 // @Description Creates a volume

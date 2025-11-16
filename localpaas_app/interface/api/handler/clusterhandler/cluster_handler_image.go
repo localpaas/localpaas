@@ -100,6 +100,51 @@ func (h *ClusterHandler) GetImage(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
+// GetImageInspection Gets image details
+// @Summary Gets image details
+// @Description Gets image details
+// @Tags    cluster_images
+// @Produce json
+// @Id      getImageInspection
+// @Param   imageID path string true "image ID"
+// @Success 200 {object} imagedto.GetImageInspectionResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /cluster/images/{imageID}/inspect [get]
+func (h *ClusterHandler) GetImageInspection(ctx *gin.Context) {
+	imageID, err := h.ParseStringParam(ctx, "imageID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceModule: base.ResourceModuleCluster,
+		ResourceType:   base.ResourceTypeImage,
+		ResourceID:     imageID,
+		Action:         base.ActionTypeRead,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := imagedto.NewGetImageInspectionReq()
+	req.ImageID = imageID
+	if err = h.ParseRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.imageUC.GetImageInspection(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
 // CreateImage Creates an image
 // @Summary Creates an image
 // @Description Creates an image
