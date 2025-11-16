@@ -55,7 +55,7 @@ func (uc *S3StorageUC) loadS3StorageData(
 	req *s3storagedto.CreateS3StorageReq,
 	_ *createS3StorageData,
 ) error {
-	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeS3Storage, req.Name)
+	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeS3Storage, req.Name, false)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}

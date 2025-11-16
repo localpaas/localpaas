@@ -49,9 +49,8 @@ func (uc *OAuthUC) loadOAuthDataForUpdate(
 	req *oauthdto.UpdateOAuthReq,
 	data *updateOAuthData,
 ) error {
-	setting, err := uc.settingRepo.GetByID(ctx, db, req.ID,
+	setting, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeOAuth, req.ID, false,
 		bunex.SelectFor("UPDATE OF setting"),
-		bunex.SelectWhere("setting.type = ?", base.SettingTypeOAuth),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -61,7 +60,7 @@ func (uc *OAuthUC) loadOAuthDataForUpdate(
 
 	// If name changes, validate the new one
 	if req.Name != "" && !strings.EqualFold(setting.Name, req.Name) {
-		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeOAuth, req.Name)
+		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeOAuth, req.Name, false)
 		if conflictSetting != nil {
 			return apperrors.NewAlreadyExist("OAuth").
 				WithMsgLog("oauth '%s' already exists", conflictSetting.Name)

@@ -48,9 +48,8 @@ func (uc *SlackUC) loadSlackDataForDelete(
 	req *slackdto.DeleteSlackReq,
 	data *deleteSlackData,
 ) error {
-	setting, err := uc.settingRepo.GetByID(ctx, db, req.ID,
+	setting, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeSlack, req.ID, false,
 		bunex.SelectFor("UPDATE OF setting"),
-		bunex.SelectWhere("setting.type = ?", base.SettingTypeSlack),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)

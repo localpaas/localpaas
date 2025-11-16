@@ -10,7 +10,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/config"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc/oauthdto"
 )
 
@@ -28,9 +27,7 @@ func (uc *OAuthUC) GetOAuth(
 	auth *basedto.Auth,
 	req *oauthdto.GetOAuthReq,
 ) (*oauthdto.GetOAuthResp, error) {
-	setting, err := uc.settingRepo.GetByID(ctx, uc.db, req.ID,
-		bunex.SelectWhere("setting.type = ?", base.SettingTypeOAuth),
-	)
+	setting, err := uc.settingRepo.GetByID(ctx, uc.db, base.SettingTypeOAuth, req.ID, false)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

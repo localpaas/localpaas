@@ -14,7 +14,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/nodeuc/nodedto"
 	"github.com/localpaas/localpaas/services/ssh"
 )
@@ -74,10 +73,7 @@ func (uc *NodeUC) loadJoinNodeData(
 	req *nodedto.JoinNodeReq,
 	data *joinNodeData,
 ) error {
-	sshKeySetting, err := uc.settingRepo.GetByID(ctx, db, req.SSHKey.ID,
-		bunex.SelectWhere("setting.type = ?", base.SettingTypeSSHKey),
-		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
-	)
+	sshKeySetting, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeSSHKey, req.SSHKey.ID, true)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

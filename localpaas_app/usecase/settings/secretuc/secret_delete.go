@@ -50,7 +50,6 @@ func (uc *SecretUC) loadSecretDataForDelete(
 ) error {
 	options := []bunex.SelectQueryOption{
 		bunex.SelectFor("UPDATE OF setting"),
-		bunex.SelectWhere("setting.type = ?", base.SettingTypeSecret),
 	}
 	if req.ObjectID != "" {
 		options = append(options, bunex.SelectWhere("setting.object_id = ?", req.ObjectID))
@@ -58,7 +57,7 @@ func (uc *SecretUC) loadSecretDataForDelete(
 		options = append(options, bunex.SelectWhere("setting.object_id IS NULL"))
 	}
 
-	setting, err := uc.settingRepo.GetByID(ctx, db, req.ID, options...)
+	setting, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeSecret, req.ID, false, options...)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

@@ -46,9 +46,8 @@ func (uc *APIKeyUC) loadAPIKeyDataForUpdateMeta(
 	req *apikeydto.UpdateAPIKeyMetaReq,
 	data *updateAPIKeyData,
 ) error {
-	setting, err := uc.settingRepo.GetByID(ctx, db, req.ID,
+	setting, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeAPIKey, req.ID, false,
 		bunex.SelectFor("UPDATE OF setting"),
-		bunex.SelectWhere("setting.type = ?", base.SettingTypeAPIKey),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)

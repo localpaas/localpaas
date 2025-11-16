@@ -62,7 +62,7 @@ func (uc *SecretUC) loadSecretData(
 		options = append(options, bunex.SelectWhere("setting.object_id IS NULL"))
 	}
 
-	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeSecret, req.Key, options...)
+	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeSecret, req.Key, false, options...)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}

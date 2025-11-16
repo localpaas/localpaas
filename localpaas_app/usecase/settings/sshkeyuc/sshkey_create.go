@@ -55,7 +55,7 @@ func (uc *SSHKeyUC) loadSSHKeyData(
 	req *sshkeydto.CreateSSHKeyReq,
 	_ *createSSHKeyData,
 ) error {
-	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeSSHKey, req.Name)
+	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeSSHKey, req.Name, false)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}

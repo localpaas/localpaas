@@ -54,7 +54,7 @@ func (uc *SlackUC) loadSlackData(
 	req *slackdto.CreateSlackReq,
 	_ *createSlackData,
 ) error {
-	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeSlack, req.Name)
+	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeSlack, req.Name, false)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}

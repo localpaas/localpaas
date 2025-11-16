@@ -65,7 +65,7 @@ func (uc *OAuthUC) loadOAuthData(
 	uc.preprocessRequest(req.OAuthType, req.OAuthBaseReq)
 	data.SettingKind = string(req.OAuthType)
 
-	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeOAuth, req.Name)
+	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeOAuth, req.Name, false)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}

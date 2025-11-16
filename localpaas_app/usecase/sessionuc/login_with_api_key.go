@@ -12,7 +12,7 @@ func (uc *SessionUC) LoginWithAPIKey(
 	ctx context.Context,
 	req *sessiondto.LoginWithAPIKeyReq,
 ) (resp *sessiondto.LoginWithAPIKeyResp, err error) {
-	apiKeySetting, err := uc.settingRepo.GetByName(ctx, uc.db, base.SettingTypeAPIKey, req.KeyID)
+	apiKeySetting, err := uc.settingRepo.GetByName(ctx, uc.db, base.SettingTypeAPIKey, req.KeyID, false)
 	if err != nil {
 		return nil, uc.wrapSensitiveError(err)
 	}

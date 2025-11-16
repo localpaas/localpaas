@@ -16,11 +16,11 @@ import (
 )
 
 type SettingRepo interface {
-	GetByID(ctx context.Context, db database.IDB, id string,
+	GetByID(ctx context.Context, db database.IDB, typ base.SettingType, id string, active bool,
 		opts ...bunex.SelectQueryOption) (*entity.Setting, error)
-	GetByKind(ctx context.Context, db database.IDB, typ base.SettingType, kind string,
+	GetByKind(ctx context.Context, db database.IDB, typ base.SettingType, kind string, active bool,
 		opts ...bunex.SelectQueryOption) (*entity.Setting, error)
-	GetByName(ctx context.Context, db database.IDB, typ base.SettingType, name string,
+	GetByName(ctx context.Context, db database.IDB, typ base.SettingType, name string, active bool,
 		opts ...bunex.SelectQueryOption) (*entity.Setting, error)
 	List(ctx context.Context, db database.IDB, paging *basedto.Paging,
 		opts ...bunex.SelectQueryOption) ([]*entity.Setting, *basedto.PagingMeta, error)
@@ -44,10 +44,14 @@ func NewSettingRepo() SettingRepo {
 	return &settingRepo{}
 }
 
-func (repo *settingRepo) GetByID(ctx context.Context, db database.IDB, id string,
+func (repo *settingRepo) GetByID(ctx context.Context, db database.IDB, typ base.SettingType, id string, active bool,
 	opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
 	setting := &entity.Setting{}
-	query := db.NewSelect().Model(setting).Where("setting.id = ?", id)
+	query := db.NewSelect().Model(setting).Where("setting.id = ?", id).
+		Where("setting.type = ?", typ)
+	if active {
+		query = query.Where("setting.status = ?", base.SettingStatusActive)
+	}
 	query = bunex.ApplySelect(query, opts...)
 
 	err := query.Scan(ctx)
@@ -59,12 +63,12 @@ func (repo *settingRepo) GetByID(ctx context.Context, db database.IDB, id string
 	}
 
 	if hasChange, _ := repo.updateExpiredSetting(ctx, db, setting); hasChange {
-		return repo.GetByID(ctx, db, id, opts...)
+		return repo.GetByID(ctx, db, typ, id, active, opts...)
 	}
 	return setting, nil
 }
 
-func (repo *settingRepo) GetByKind(ctx context.Context, db database.IDB, typ base.SettingType, kind string,
+func (repo *settingRepo) GetByKind(ctx context.Context, db database.IDB, typ base.SettingType, kind string, active bool,
 	opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
 	if kind == "" {
 		return nil, nil
@@ -73,6 +77,9 @@ func (repo *settingRepo) GetByKind(ctx context.Context, db database.IDB, typ bas
 	query := db.NewSelect().Model(setting).
 		Where("setting.type = ?", typ).
 		Where("setting.kind = ?", kind)
+	if active {
+		query = query.Where("setting.status = ?", base.SettingStatusActive)
+	}
 	query = bunex.ApplySelect(query, opts...)
 
 	err := query.Scan(ctx)
@@ -84,12 +91,12 @@ func (repo *settingRepo) GetByKind(ctx context.Context, db database.IDB, typ bas
 	}
 
 	if hasChange, _ := repo.updateExpiredSetting(ctx, db, setting); hasChange {
-		return repo.GetByKind(ctx, db, typ, kind, opts...)
+		return repo.GetByKind(ctx, db, typ, kind, active, opts...)
 	}
 	return setting, nil
 }
 
-func (repo *settingRepo) GetByName(ctx context.Context, db database.IDB, typ base.SettingType, name string,
+func (repo *settingRepo) GetByName(ctx context.Context, db database.IDB, typ base.SettingType, name string, active bool,
 	opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
 	if name == "" {
 		return nil, nil
@@ -98,6 +105,9 @@ func (repo *settingRepo) GetByName(ctx context.Context, db database.IDB, typ bas
 	query := db.NewSelect().Model(setting).
 		Where("setting.type = ?", typ).
 		Where("setting.name = ?", name)
+	if active {
+		query = query.Where("setting.status = ?", base.SettingStatusActive)
+	}
 	query = bunex.ApplySelect(query, opts...)
 
 	err := query.Scan(ctx)
@@ -109,7 +119,7 @@ func (repo *settingRepo) GetByName(ctx context.Context, db database.IDB, typ bas
 	}
 
 	if hasChange, _ := repo.updateExpiredSetting(ctx, db, setting); hasChange {
-		return repo.GetByName(ctx, db, typ, name, opts...)
+		return repo.GetByName(ctx, db, typ, name, active, opts...)
 	}
 	return setting, nil
 }

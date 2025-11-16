@@ -48,9 +48,8 @@ func (uc *S3StorageUC) loadS3StorageDataForDelete(
 	req *s3storagedto.DeleteS3StorageReq,
 	data *deleteS3StorageData,
 ) error {
-	setting, err := uc.settingRepo.GetByID(ctx, db, req.ID,
+	setting, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeS3Storage, req.ID, false,
 		bunex.SelectFor("UPDATE OF setting"),
-		bunex.SelectWhere("setting.type = ?", base.SettingTypeS3Storage),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)

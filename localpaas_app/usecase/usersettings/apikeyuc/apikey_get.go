@@ -15,9 +15,8 @@ func (uc *APIKeyUC) GetAPIKey(
 	auth *basedto.Auth,
 	req *apikeydto.GetAPIKeyReq,
 ) (*apikeydto.GetAPIKeyResp, error) {
-	setting, err := uc.settingRepo.GetByID(ctx, uc.db, req.ID,
+	setting, err := uc.settingRepo.GetByID(ctx, uc.db, base.SettingTypeAPIKey, req.ID, false,
 		bunex.SelectWhere("setting.deleted_at IS NULL"),
-		bunex.SelectWhere("setting.type = ?", base.SettingTypeAPIKey),
 		bunex.SelectWhere("setting.object_id = ?", auth.User.ID),
 		bunex.SelectRelation("ObjectUser", bunex.SelectWithDeleted()),
 	)

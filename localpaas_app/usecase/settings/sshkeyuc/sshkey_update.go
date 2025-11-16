@@ -52,9 +52,8 @@ func (uc *SSHKeyUC) loadSSHKeyDataForUpdate(
 	req *sshkeydto.UpdateSSHKeyReq,
 	data *updateSSHKeyData,
 ) error {
-	setting, err := uc.settingRepo.GetByID(ctx, db, req.ID,
+	setting, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeSSHKey, req.ID, false,
 		bunex.SelectFor("UPDATE OF setting"),
-		bunex.SelectWhere("setting.type = ?", base.SettingTypeSSHKey),
 		bunex.SelectRelation("ObjectAccesses",
 			bunex.SelectWhere("acl_permission.subject_type IN (?)", bunex.In([]base.SubjectType{
 				base.SubjectTypeProject, base.SubjectTypeApp,
@@ -68,7 +67,7 @@ func (uc *SSHKeyUC) loadSSHKeyDataForUpdate(
 
 	// If name changes, validate the new one
 	if req.Name != nil && !strings.EqualFold(setting.Name, *req.Name) {
-		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeSSHKey, *req.Name)
+		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeSSHKey, *req.Name, false)
 		if conflictSetting != nil {
 			return apperrors.NewAlreadyExist("SSHKey").
 				WithMsgLog("ssh key '%s' already exists", conflictSetting.Name)

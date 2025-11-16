@@ -52,9 +52,8 @@ func (uc *S3StorageUC) loadS3StorageDataForUpdate(
 	req *s3storagedto.UpdateS3StorageReq,
 	data *updateS3StorageData,
 ) error {
-	setting, err := uc.settingRepo.GetByID(ctx, db, req.ID,
+	setting, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeS3Storage, req.ID, false,
 		bunex.SelectFor("UPDATE OF setting"),
-		bunex.SelectWhere("setting.type = ?", base.SettingTypeS3Storage),
 		bunex.SelectRelation("ObjectAccesses",
 			bunex.SelectWhere("acl_permission.subject_type IN (?)", bunex.In([]base.SubjectType{
 				base.SubjectTypeProject, base.SubjectTypeApp,
@@ -68,7 +67,7 @@ func (uc *S3StorageUC) loadS3StorageDataForUpdate(
 
 	// If name changes, validate the new one
 	if req.Name != nil && !strings.EqualFold(setting.Name, *req.Name) {
-		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeS3Storage, *req.Name)
+		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeS3Storage, *req.Name, false)
 		if conflictSetting != nil {
 			return apperrors.NewAlreadyExist("S3Storage").
 				WithMsgLog("s3 storage '%s' already exists", conflictSetting.Name)

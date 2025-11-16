@@ -49,9 +49,8 @@ func (uc *RegistryAuthUC) loadRegistryAuthDataForUpdate(
 	req *registryauthdto.UpdateRegistryAuthReq,
 	data *updateRegistryAuthData,
 ) error {
-	setting, err := uc.settingRepo.GetByID(ctx, db, req.ID,
+	setting, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeRegistryAuth, req.ID, false,
 		bunex.SelectFor("UPDATE OF setting"),
-		bunex.SelectWhere("setting.type = ?", base.SettingTypeRegistryAuth),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -60,7 +59,7 @@ func (uc *RegistryAuthUC) loadRegistryAuthDataForUpdate(
 
 	// If name changes, validate the new one
 	if req.Name != "" && !strings.EqualFold(setting.Name, req.Name) {
-		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeRegistryAuth, req.Name)
+		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeRegistryAuth, req.Name, false)
 		if conflictSetting != nil {
 			return apperrors.NewAlreadyExist("RegistryAuth").
 				WithMsgLog("registry auth '%s' already exists", conflictSetting.Name)

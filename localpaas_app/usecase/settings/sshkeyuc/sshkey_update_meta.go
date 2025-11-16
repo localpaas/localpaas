@@ -41,9 +41,8 @@ func (uc *SSHKeyUC) loadSSHKeyDataForUpdateMeta(
 	req *sshkeydto.UpdateSSHKeyMetaReq,
 	data *updateSSHKeyData,
 ) error {
-	setting, err := uc.settingRepo.GetByID(ctx, db, req.ID,
+	setting, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeSSHKey, req.ID, false,
 		bunex.SelectFor("UPDATE OF setting"),
-		bunex.SelectWhere("setting.type = ?", base.SettingTypeSSHKey),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)

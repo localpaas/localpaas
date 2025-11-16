@@ -15,8 +15,7 @@ func (uc *SSHKeyUC) GetSSHKey(
 	auth *basedto.Auth,
 	req *sshkeydto.GetSSHKeyReq,
 ) (*sshkeydto.GetSSHKeyResp, error) {
-	setting, err := uc.settingRepo.GetByID(ctx, uc.db, req.ID,
-		bunex.SelectWhere("setting.type = ?", base.SettingTypeSSHKey),
+	setting, err := uc.settingRepo.GetByID(ctx, uc.db, base.SettingTypeSSHKey, req.ID, false,
 		bunex.SelectRelation("ObjectAccesses",
 			bunex.SelectWhere("acl_permission.subject_type IN (?)", bunex.In([]base.SubjectType{
 				base.SubjectTypeProject, base.SubjectTypeApp,

@@ -49,9 +49,8 @@ func (uc *SslUC) loadSslDataForUpdate(
 	req *ssldto.UpdateSslReq,
 	data *updateSslData,
 ) error {
-	setting, err := uc.settingRepo.GetByID(ctx, db, req.ID,
+	setting, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeSsl, req.ID, false,
 		bunex.SelectFor("UPDATE OF setting"),
-		bunex.SelectWhere("setting.type = ?", base.SettingTypeSsl),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -60,7 +59,7 @@ func (uc *SslUC) loadSslDataForUpdate(
 
 	// If name changes, validate the new one
 	if req.Name != "" && !strings.EqualFold(setting.Name, req.Name) {
-		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeSsl, req.Name)
+		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeSsl, req.Name, false)
 		if conflictSetting != nil {
 			return apperrors.NewAlreadyExist("SSL").
 				WithMsgLog("ssl '%s' already exists", conflictSetting.Name)

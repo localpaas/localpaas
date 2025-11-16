@@ -46,9 +46,8 @@ func (uc *SecretUC) loadSecretDataForUpdateMeta(
 	req *secretdto.UpdateSecretMetaReq,
 	data *updateSecretData,
 ) error {
-	setting, err := uc.settingRepo.GetByID(ctx, db, req.ID,
+	setting, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeSecret, req.ID, false,
 		bunex.SelectFor("UPDATE OF setting"),
-		bunex.SelectWhere("setting.type = ?", base.SettingTypeSecret),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)

@@ -49,10 +49,9 @@ func (uc *APIKeyUC) loadAPIKeyDataForDelete(
 	req *apikeydto.DeleteAPIKeyReq,
 	data *deleteAPIKeyData,
 ) error {
-	setting, err := uc.settingRepo.GetByID(ctx, db, req.ID,
+	setting, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeAPIKey, req.ID, false,
 		bunex.SelectFor("UPDATE OF setting"),
 		bunex.SelectWhere("setting.deleted_at IS NULL"),
-		bunex.SelectWhere("setting.type = ?", base.SettingTypeAPIKey),
 		bunex.SelectWhere("setting.object_id = ?", auth.User.ID),
 	)
 	if err != nil {

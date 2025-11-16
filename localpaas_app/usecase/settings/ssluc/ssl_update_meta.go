@@ -41,9 +41,8 @@ func (uc *SslUC) loadSslDataForUpdateMeta(
 	req *ssldto.UpdateSslMetaReq,
 	data *updateSslData,
 ) error {
-	setting, err := uc.settingRepo.GetByID(ctx, db, req.ID,
+	setting, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeSsl, req.ID, false,
 		bunex.SelectFor("UPDATE OF setting"),
-		bunex.SelectWhere("setting.type = ?", base.SettingTypeSsl),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)

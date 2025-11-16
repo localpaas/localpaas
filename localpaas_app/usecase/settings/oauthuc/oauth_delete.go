@@ -48,9 +48,8 @@ func (uc *OAuthUC) loadOAuthDataForDelete(
 	req *oauthdto.DeleteOAuthReq,
 	data *deleteOAuthData,
 ) error {
-	setting, err := uc.settingRepo.GetByID(ctx, db, req.ID,
+	setting, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeOAuth, req.ID, false,
 		bunex.SelectFor("UPDATE OF setting"),
-		bunex.SelectWhere("setting.type = ?", base.SettingTypeOAuth),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)

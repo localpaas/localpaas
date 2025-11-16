@@ -6,6 +6,7 @@ import (
 	"github.com/docker/docker/api/types/image"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
@@ -49,7 +50,7 @@ func (uc *ImageUC) loadImageData(
 	data *createImageData,
 ) error {
 	if req.RegistryAuth.ID != "" {
-		regAuth, err := uc.settingRepo.GetByID(ctx, db, req.RegistryAuth.ID)
+		regAuth, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeRegistryAuth, req.RegistryAuth.ID, true)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}

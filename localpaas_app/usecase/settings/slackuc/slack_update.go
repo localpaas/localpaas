@@ -49,9 +49,8 @@ func (uc *SlackUC) loadSlackDataForUpdate(
 	req *slackdto.UpdateSlackReq,
 	data *updateSlackData,
 ) error {
-	setting, err := uc.settingRepo.GetByID(ctx, db, req.ID,
+	setting, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeSlack, req.ID, false,
 		bunex.SelectFor("UPDATE OF setting"),
-		bunex.SelectWhere("setting.type = ?", base.SettingTypeSlack),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -60,7 +59,7 @@ func (uc *SlackUC) loadSlackDataForUpdate(
 
 	// If name changes, validate the new one
 	if req.Name != "" && !strings.EqualFold(setting.Name, req.Name) {
-		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeSlack, req.Name)
+		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeSlack, req.Name, false)
 		if conflictSetting != nil {
 			return apperrors.NewAlreadyExist("Slack").
 				WithMsgLog("slack setting '%s' already exists", req.Name)

@@ -77,7 +77,7 @@ func (uc *APIKeyUC) loadAPIKeyData(
 	data.SecretKey = secretKey
 
 	// Make sure there is no duplicated key in the db
-	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeAPIKey, keyID)
+	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeAPIKey, keyID, false)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}

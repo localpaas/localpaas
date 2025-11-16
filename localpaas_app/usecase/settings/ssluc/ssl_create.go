@@ -54,7 +54,7 @@ func (uc *SslUC) loadSslData(
 	req *ssldto.CreateSslReq,
 	_ *createSslData,
 ) error {
-	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeSsl, req.Name)
+	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeSsl, req.Name, false)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}

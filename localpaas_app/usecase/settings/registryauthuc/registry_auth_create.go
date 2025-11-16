@@ -54,7 +54,7 @@ func (uc *RegistryAuthUC) loadRegistryAuthData(
 	req *registryauthdto.CreateRegistryAuthReq,
 	_ *createRegistryAuthData,
 ) error {
-	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeRegistryAuth, req.Name)
+	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeRegistryAuth, req.Name, false)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}
