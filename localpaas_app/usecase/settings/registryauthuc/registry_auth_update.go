@@ -2,6 +2,7 @@ package registryauthuc
 
 import (
 	"context"
+	"strings"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -57,6 +58,15 @@ func (uc *RegistryAuthUC) loadRegistryAuthDataForUpdate(
 	}
 	data.Setting = setting
 
+	// If name changes, validate the new one
+	if req.Name != "" && !strings.EqualFold(setting.Name, req.Name) {
+		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeRegistryAuth, req.Name)
+		if conflictSetting != nil {
+			return apperrors.NewAlreadyExist("RegistryAuth").
+				WithMsgLog("registry auth '%s' already exists", conflictSetting.Name)
+		}
+	}
+
 	return nil
 }
 
@@ -69,6 +79,9 @@ func (uc *RegistryAuthUC) prepareUpdatingRegistryAuth(
 	setting := data.Setting
 	if req.Name != "" {
 		setting.Name = req.Name
+	}
+	if req.Address != "" {
+		setting.Kind = req.Address
 	}
 
 	registryAuth := &entity.RegistryAuth{

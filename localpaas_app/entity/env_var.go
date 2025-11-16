@@ -4,6 +4,9 @@ import "github.com/localpaas/localpaas/localpaas_app/base"
 
 type EnvVars struct {
 	Data []*EnvVar `json:"data"`
+
+	// NOTE: for storing current containing setting only
+	Setting *Setting `json:"-"`
 }
 
 type EnvVar struct {
@@ -13,7 +16,7 @@ type EnvVar struct {
 }
 
 func (s *Setting) ParseEnvVars() (*EnvVars, error) {
-	res := &EnvVars{}
+	res := &EnvVars{Setting: s}
 	if s != nil && s.Data != "" && s.Type == base.SettingTypeEnvVar {
 		return res, s.parseData(res)
 	}

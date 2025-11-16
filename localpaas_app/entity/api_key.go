@@ -19,6 +19,9 @@ const (
 type APIKey struct {
 	SecretKey    string          `json:"secretKey"`
 	AccessAction base.ActionType `json:"accessAction,omitempty"`
+
+	// NOTE: for storing current containing setting only
+	Setting *Setting `json:"-"`
 }
 
 func (o *APIKey) IsHashed() bool {
@@ -58,7 +61,7 @@ func (o *APIKey) VerifyHash(secretKey string) error {
 }
 
 func (s *Setting) ParseAPIKey() (*APIKey, error) {
-	res := &APIKey{}
+	res := &APIKey{Setting: s}
 	if s != nil && s.Data != "" && s.Type == base.SettingTypeAPIKey {
 		err := s.parseData(res)
 		if err != nil {

@@ -92,5 +92,11 @@ VALUES ('01JAB9XED0GTXBSQDFVYAJ8WE1', 'oauth', 'github', 'Github', 'active',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WE5', 'ssh-key', NULL, 'ssh-key srv 2 with passphrase', 'active',
         '{"passphrase": "lpsalt:rHHxHbmV9Qx+hw== ffetB1FLIKffsFC1Gs3JVrUaB1oHIUvH3QwBuDMJwXFENg==", "privateKey": "lpsalt:8xPNWZPCzSnqvw== rdNzO68zrXA+ULr4VFpsaGowgI4evk3imiKg6V4An3T3qD8FEyapqLFhA2jsyotgbOJp1RV2iBgLRdZJW/Ovn1tKIsEUNkbx0wt1dPQf8Tgrnp78/Gff0BDt27lXatmRzSzV7L3ixTEah/MbZ4eUgZtwpYMeRGvGQfgwXPEVgvzq9RTGDbUm+00SWOZz96Y7m3eil3iH1di3AiGzYvt2L9PcaDTTAFAxY9v1Ru3cY7p3z9LlW91tiFU/gc7ywVaZDhxzf6nlZCLRl5tnq1EOI9gRFF9K0MOZvp/YMKvtHBBxn+8kx97V2Vs9ukCYdXkF9fQ7ddbcA6+0sDePIq7YCEyLdKzcBAg2NYyjpZsaEZaDQtlo9ZOYDoxi1cy9R6BZLfchFCdKSQgST07mAvRPE9x2hwJTT0NTO1GyJwBnyYJvjpmlL42nW1p3IW75kuaD+pgZqbRUxWVuyXMs4EAsHFV7xOXsBAqotxEZ6RwOrZGsw2plBEpLu+/auilCdOlsvBp0mT3A+ocAXULUByQ7LwYi76Rwzru0JOjKjMUCG99OqKc2WCwTulrm2cVrszsn5aK7kqVweFejlzRhkl2UXQSYi9nj/hD3tPhImML+3YRmub8uHzIRBIwli4DNz+Azk1jgSaztuqFxKhI="}',
+        '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
+       ('01JAB9XED0GTXBSQDFVYAJ8WE6', 'registry-auth', 'docker.com', 'docker.com 1', 'active',
+        '{"password": "lpsalt:7rJsK4//cIqCKw== SxnfW00e9UueetjGT0dpuC9pUqqWR3fEiX1w+YZAo6N4E9+bNp3itGnvWR5tyblz1lJwjWAXnleyXiqtk4Rxsw==", "username": "localpaastest"}',
+        '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
+       ('01JAB9XED0GTXBSQDFVYAJ8WE7', 'registry-auth', 'docker.com', 'docker.com ro', 'active',
+        '{"password": "lpsalt:xpbKUbDCp7mDbQ== zzzou62KRIRxm5mfg4FFWivJGaVH19FhuglZa2bfOAhM7UDsxfCx2Z4HnRJUOqSPv3Nc/AEb9iCzrFzvd5sFNA==", "username": "localpaastest"}',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00')
 ON CONFLICT DO NOTHING;

@@ -13,6 +13,9 @@ import (
 type SSHKey struct {
 	PrivateKey string `json:"privateKey"`
 	Passphrase string `json:"passphrase,omitempty"`
+
+	// NOTE: for storing current containing setting only
+	Setting *Setting `json:"-"`
 }
 
 func (o *SSHKey) IsEncrypted() bool {
@@ -111,7 +114,7 @@ func (o *SSHKey) DecryptPassphrase() error {
 }
 
 func (s *Setting) ParseSSHKey(decrypt bool) (*SSHKey, error) {
-	res := &SSHKey{}
+	res := &SSHKey{Setting: s}
 	if s != nil && s.Data != "" && s.Type == base.SettingTypeSSHKey {
 		err := s.parseData(res)
 		if err != nil {

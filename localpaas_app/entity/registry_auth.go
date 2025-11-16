@@ -13,6 +13,9 @@ import (
 type RegistryAuth struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+
+	// NOTE: for storing current containing setting only
+	Setting *Setting `json:"-"`
 }
 
 func (o *RegistryAuth) IsEncrypted() bool {
@@ -49,7 +52,7 @@ func (o *RegistryAuth) Decrypt() error {
 }
 
 func (s *Setting) ParseRegistryAuth(decrypt bool) (*RegistryAuth, error) {
-	res := &RegistryAuth{}
+	res := &RegistryAuth{Setting: s}
 	if s != nil && s.Data != "" && s.Type == base.SettingTypeRegistryAuth {
 		err := s.parseData(res)
 		if err != nil {

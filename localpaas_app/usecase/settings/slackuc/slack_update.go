@@ -59,7 +59,7 @@ func (uc *SlackUC) loadSlackDataForUpdate(
 	data.Setting = setting
 
 	// If name changes, validate the new one
-	if !strings.EqualFold(setting.Name, req.Name) {
+	if req.Name != "" && !strings.EqualFold(setting.Name, req.Name) {
 		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeSlack, req.Name)
 		if conflictSetting != nil {
 			return apperrors.NewAlreadyExist("Slack").
@@ -78,7 +78,9 @@ func (uc *SlackUC) prepareUpdatingSlack(
 	timeNow := timeutil.NowUTC()
 	setting := data.Setting
 
-	setting.Name = req.Name
+	if req.Name != "" {
+		setting.Name = req.Name
+	}
 	slack := &entity.Slack{
 		Webhook: req.Webhook,
 	}

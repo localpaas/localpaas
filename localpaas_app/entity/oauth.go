@@ -19,6 +19,9 @@ type OAuth struct {
 	TokenURL     string   `json:"tokenURL,omitempty"`
 	ProfileURL   string   `json:"profileURL,omitempty"`
 	Scopes       []string `json:"scopes,omitempty"`
+
+	// NOTE: for storing current containing setting only
+	Setting *Setting `json:"-"`
 }
 
 func (o *OAuth) IsEncrypted() bool {
@@ -55,7 +58,7 @@ func (o *OAuth) Decrypt() error {
 }
 
 func (s *Setting) ParseOAuth(decrypt bool) (*OAuth, error) {
-	res := &OAuth{}
+	res := &OAuth{Setting: s}
 	if s != nil && s.Data != "" && s.Type == base.SettingTypeOAuth {
 		err := s.parseData(res)
 		if err != nil {

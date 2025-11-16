@@ -20,8 +20,8 @@ import (
 
 var (
 	// NOTE: only store special values
-	mapNameByKind = map[string]string{
-		string(base.OAuthTypeGitlabCustom): "Our Gitlab",
+	mapNameByKind = map[base.OAuthType]string{
+		base.OAuthTypeGitlabCustom: "Our Gitlab",
 	}
 )
 
@@ -37,7 +37,7 @@ func (uc *OAuthUC) CreateOAuth(
 	}
 
 	persistingData := &persistingOAuthData{}
-	uc.preparePersistingOAuth(req.OAuthBaseReq, oauthData, persistingData)
+	uc.preparePersistingOAuth(req, oauthData, persistingData)
 
 	err = transaction.Execute(ctx, uc.db, func(db database.Tx) error {
 		return uc.persistData(ctx, db, persistingData)
@@ -88,6 +88,9 @@ func (uc *OAuthUC) preprocessRequest(
 		req.TokenURL = ""
 		req.ProfileURL = ""
 	}
+	if req.Name == "" {
+		req.Name = gofn.Coalesce(mapNameByKind[oauthType], gofn.StringToUpper1stLetter(string(oauthType)))
+	}
 }
 
 type persistingOAuthData struct {
@@ -95,7 +98,7 @@ type persistingOAuthData struct {
 }
 
 func (uc *OAuthUC) preparePersistingOAuth(
-	req *oauthdto.OAuthBaseReq,
+	req *oauthdto.CreateOAuthReq,
 	data *createOAuthData,
 	persistingData *persistingOAuthData,
 ) {
@@ -108,13 +111,6 @@ func (uc *OAuthUC) preparePersistingOAuth(
 		Name:      req.Name,
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,
-	}
-
-	if setting.Name == "" {
-		setting.Name = mapNameByKind[data.SettingKind]
-		if setting.Name == "" {
-			setting.Name = gofn.StringToUpper1stLetter(setting.Kind)
-		}
 	}
 
 	oauth := &entity.OAuth{

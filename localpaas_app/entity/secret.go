@@ -15,6 +15,9 @@ type Secret struct {
 	Key    string `json:"k"`
 	Value  string `json:"v"`
 	Base64 bool   `json:"b64"`
+
+	// NOTE: for storing current containing setting only
+	Setting *Setting `json:"-"`
 }
 
 func (o *Secret) IsEncrypted() bool {
@@ -59,7 +62,7 @@ func (o *Secret) ValueAsBytes() []byte {
 }
 
 func (s *Setting) ParseSecret(decrypt bool) (*Secret, error) {
-	res := &Secret{}
+	res := &Secret{Setting: s}
 	if s != nil && s.Data != "" && s.Type == base.SettingTypeSecret {
 		err := s.parseData(res)
 		if err != nil {

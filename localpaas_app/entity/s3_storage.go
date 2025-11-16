@@ -16,6 +16,9 @@ type S3Storage struct {
 	Region      string `json:"region,omitempty"`
 	Bucket      string `json:"bucket,omitempty"`
 	Endpoint    string `json:"endpoint,omitempty"`
+
+	// NOTE: for storing current containing setting only
+	Setting *Setting `json:"-"`
 }
 
 func (o *S3Storage) IsEncrypted() bool {
@@ -52,7 +55,7 @@ func (o *S3Storage) Decrypt() error {
 }
 
 func (s *Setting) ParseS3Storage(decrypt bool) (*S3Storage, error) {
-	res := &S3Storage{}
+	res := &S3Storage{Setting: s}
 	if s != nil && s.Data != "" && s.Type == base.SettingTypeS3Storage {
 		err := s.parseData(res)
 		if err != nil {

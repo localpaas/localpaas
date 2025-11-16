@@ -19,12 +19,14 @@ type CreateRegistryAuthReq struct {
 
 type RegistryAuthBaseReq struct {
 	Name     string `json:"name"`
+	Address  string `json:"address"`
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
 func (req *RegistryAuthBaseReq) modifyRequest() error {
 	req.Name = strings.TrimSpace(req.Name)
+	req.Address = strings.ToLower(strings.TrimSpace(req.Address))
 	req.Username = strings.TrimSpace(req.Username)
 	return nil
 }
@@ -34,6 +36,7 @@ func (req *RegistryAuthBaseReq) validate(field string) (res []vld.Validator) {
 		field += "."
 	}
 	res = append(res, basedto.ValidateStr(&req.Name, true, 1, nameMaxLen, field+"name")...)
+	res = append(res, basedto.ValidateStr(&req.Address, true, 1, nameMaxLen, field+"address")...)
 	res = append(res, basedto.ValidateStr(&req.Username, true, 1, nameMaxLen, field+"username")...)
 	res = append(res, basedto.ValidateStr(&req.Password, true, 1, nameMaxLen, field+"password")...)
 	return res

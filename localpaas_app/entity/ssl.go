@@ -15,6 +15,9 @@ type Ssl struct {
 	Certificate string    `json:"certificate"`
 	PrivateKey  string    `json:"privateKey"`
 	Expiration  time.Time `json:"expiration,omitzero"`
+
+	// NOTE: for storing current containing setting only
+	Setting *Setting `json:"-"`
 }
 
 func (o *Ssl) IsEncrypted() bool {
@@ -51,7 +54,7 @@ func (o *Ssl) Decrypt() error {
 }
 
 func (s *Setting) ParseSsl(decrypt bool) (*Ssl, error) {
-	res := &Ssl{}
+	res := &Ssl{Setting: s}
 	if s != nil && s.Data != "" && s.Type == base.SettingTypeSsl {
 		err := s.parseData(res)
 		if err != nil {

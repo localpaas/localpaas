@@ -89,7 +89,6 @@ func (uc *SSHKeyUC) prepareUpdatingSSHKey(
 		setting.Name = *req.Name
 	}
 
-	//nolint:nestif
 	if req.PrivateKey != nil {
 		sshKey, err := setting.ParseSSHKey(false)
 		if err != nil {

@@ -22,6 +22,7 @@ CREATE INDEX idx_settings_type ON settings(type);
 CREATE INDEX idx_settings_name ON settings(name);
 CREATE INDEX idx_settings_status ON settings(status);
 CREATE INDEX idx_settings_created_at ON settings(created_at);
+CREATE INDEX idx_settings_expire_at ON settings(expire_at);
 CREATE INDEX idx_settings_deleted_at ON settings(deleted_at);
 
 -- +migrate Down

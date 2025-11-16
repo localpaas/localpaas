@@ -333,6 +333,228 @@
         "tags" : [ "sessions_auth" ]
       }
     },
+    "/cluster/images" : {
+      "get" : {
+        "description" : "Lists cluster images",
+        "operationId" : "listImage",
+        "parameters" : [ {
+          "description" : "`status=<target>`",
+          "in" : "query",
+          "name" : "status",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`search=<target> (support *)`",
+          "in" : "query",
+          "name" : "search",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`pageOffset=offset`",
+          "in" : "query",
+          "name" : "pageOffset",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`pageLimit=limit`",
+          "in" : "query",
+          "name" : "pageLimit",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`sort=[-]field1|field2...`",
+          "in" : "query",
+          "name" : "sort",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_imageuc_imagedto.ListImageResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Lists cluster images",
+        "tags" : [ "cluster_images" ]
+      },
+      "post" : {
+        "description" : "Creates an image",
+        "operationId" : "createImage",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_imageuc_imagedto.CreateImageReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_imageuc_imagedto.CreateImageResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Creates an image",
+        "tags" : [ "cluster_images" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/cluster/images/{imageID}" : {
+      "delete" : {
+        "description" : "Deletes an image",
+        "operationId" : "deleteImage",
+        "parameters" : [ {
+          "description" : "image ID",
+          "in" : "path",
+          "name" : "imageID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_imageuc_imagedto.DeleteImageResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Deletes an image",
+        "tags" : [ "cluster_images" ]
+      },
+      "get" : {
+        "description" : "Gets image details",
+        "operationId" : "getImage",
+        "parameters" : [ {
+          "description" : "image ID",
+          "in" : "path",
+          "name" : "imageID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_imageuc_imagedto.GetImageResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Gets image details",
+        "tags" : [ "cluster_images" ]
+      }
+    },
     "/cluster/nodes" : {
       "get" : {
         "description" : "Lists cluster nodes",
@@ -6508,6 +6730,93 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_imageuc_imagedto.CreateImageReq" : {
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "registryAuth" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
+          }
+        },
+        "required" : [ "name", "registryAuth" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_imageuc_imagedto.CreateImageResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_imageuc_imagedto.DeleteImageResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_imageuc_imagedto.GetImageResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_imageuc_imagedto.ImageResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_imageuc_imagedto.ImageResp" : {
+        "properties" : {
+          "createdAt" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "labels" : {
+            "additionalProperties" : {
+              "type" : "string"
+            },
+            "type" : "object"
+          },
+          "repoTags" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "size" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "createdAt", "id", "labels", "repoTags", "size" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_imageuc_imagedto.ListImageResp" : {
+        "properties" : {
+          "data" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_imageuc_imagedto.ImageResp"
+            },
+            "type" : "array"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.DeleteNodeResp" : {
         "properties" : {
           "meta" : {
@@ -7765,6 +8074,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.CreateRegistryAuthReq" : {
         "properties" : {
+          "address" : {
+            "type" : "string"
+          },
           "name" : {
             "type" : "string"
           },
@@ -7775,7 +8087,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "name", "password", "username" ],
+        "required" : [ "address", "name", "password", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.CreateRegistryAuthResp" : {
@@ -7828,6 +8140,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.RegistryAuthResp" : {
         "properties" : {
+          "address" : {
+            "type" : "string"
+          },
           "createdAt" : {
             "type" : "string"
           },
@@ -7853,7 +8168,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "id", "name", "password", "updatedAt", "username" ],
+        "required" : [ "address", "createdAt", "id", "name", "password", "updatedAt", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.UpdateRegistryAuthMetaReq" : {
@@ -7879,6 +8194,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.UpdateRegistryAuthReq" : {
         "properties" : {
+          "address" : {
+            "type" : "string"
+          },
           "name" : {
             "type" : "string"
           },
@@ -7889,7 +8207,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "name", "password", "username" ],
+        "required" : [ "address", "name", "password", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.UpdateRegistryAuthResp" : {

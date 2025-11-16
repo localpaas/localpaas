@@ -21,6 +21,7 @@ const (
 	ResourceTypeNode         ResourceType = "node"
 	ResourceTypeNetwork      ResourceType = "network"
 	ResourceTypeVolume       ResourceType = "volume"
+	ResourceTypeImage        ResourceType = "image"
 	ResourceTypeDeployment   ResourceType = "deployment"
 	ResourceTypeProject      ResourceType = "project"
 	ResourceTypeApp          ResourceType = "app"

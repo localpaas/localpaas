@@ -79,6 +79,7 @@ func (uc *RegistryAuthUC) preparePersistingRegistryAuth(
 		ID:        gofn.Must(ulid.NewStringULID()),
 		Type:      base.SettingTypeRegistryAuth,
 		Status:    base.SettingStatusActive,
+		Kind:      req.Address,
 		Name:      req.Name,
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,

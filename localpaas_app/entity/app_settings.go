@@ -6,11 +6,14 @@ import (
 
 type AppDeploymentSettings struct {
 	Test string `json:"test"`
+
+	// NOTE: for storing current containing setting only
+	Setting *Setting `json:"-"`
 }
 
 func (s *Setting) ParseAppDeploymentSettings() (*AppDeploymentSettings, error) {
-	if s != nil && s.Type == base.SettingTypeDeployment {
-		res := &AppDeploymentSettings{}
+	res := &AppDeploymentSettings{Setting: s}
+	if s != nil && s.Data != "" && s.Type == base.SettingTypeDeployment {
 		return res, s.parseData(res)
 	}
 	return nil, nil

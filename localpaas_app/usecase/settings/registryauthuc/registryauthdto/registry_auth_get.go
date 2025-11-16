@@ -37,6 +37,7 @@ type GetRegistryAuthResp struct {
 type RegistryAuthResp struct {
 	ID        string `json:"id"`
 	Name      string `json:"name"`
+	Address   string `json:"address"`
 	Username  string `json:"username"`
 	Password  string `json:"password"`
 	Encrypted bool   `json:"encrypted,omitempty"`
@@ -50,6 +51,7 @@ func TransformRegistryAuth(setting *entity.Setting, decrypt bool) (resp *Registr
 	if err = copier.Copy(&resp, &setting); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+	resp.Address = setting.Kind
 
 	config, err := setting.ParseRegistryAuth(decrypt)
 	if err != nil {

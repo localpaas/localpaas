@@ -2,8 +2,7 @@ package oauthuc
 
 import (
 	"context"
-
-	"github.com/tiendc/gofn"
+	"strings"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -58,8 +57,17 @@ func (uc *OAuthUC) loadOAuthDataForUpdate(
 		return apperrors.Wrap(err)
 	}
 	data.Setting = setting
+	uc.preprocessRequest(base.OAuthType(setting.Kind), req.OAuthBaseReq)
 
-	uc.preprocessRequest(base.OAuthType(setting.Name), req.OAuthBaseReq)
+	// If name changes, validate the new one
+	if req.Name != "" && !strings.EqualFold(setting.Name, req.Name) {
+		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeOAuth, req.Name)
+		if conflictSetting != nil {
+			return apperrors.NewAlreadyExist("OAuth").
+				WithMsgLog("oauth '%s' already exists", conflictSetting.Name)
+		}
+	}
+
 	return nil
 }
 
@@ -73,12 +81,6 @@ func (uc *OAuthUC) prepareUpdatingOAuth(
 
 	if req.Name != "" {
 		setting.Name = req.Name
-	}
-	if setting.Name == "" {
-		setting.Name = mapNameByKind[setting.Kind]
-		if setting.Name == "" {
-			setting.Name = gofn.StringToUpper1stLetter(setting.Kind)
-		}
 	}
 
 	oauth := &entity.OAuth{

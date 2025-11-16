@@ -165,6 +165,14 @@ func (s *HTTPServer) registerRoutes() {
 		volumeGroup.POST("", s.handlerRegistry.clusterHandler.CreateVolume)
 		volumeGroup.DELETE("/:volumeID", s.handlerRegistry.clusterHandler.DeleteVolume)
 	}
+	{ // image group
+		imageGroup := clusterGroup.Group("/images")
+		// Volumes
+		imageGroup.GET("", s.handlerRegistry.clusterHandler.ListImage)
+		imageGroup.GET("/:imageID", s.handlerRegistry.clusterHandler.GetImage)
+		imageGroup.POST("", s.handlerRegistry.clusterHandler.CreateImage)
+		imageGroup.DELETE("/:imageID", s.handlerRegistry.clusterHandler.DeleteImage)
+	}
 
 	projectGroup := apiGroup.Group("/projects")
 	{ // project group
