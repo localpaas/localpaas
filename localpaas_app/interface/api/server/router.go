@@ -219,6 +219,11 @@ func (s *HTTPServer) registerRoutes() {
 		appGroup.DELETE("/:appID/secrets/:secretID", s.handlerRegistry.appHandler.DeleteAppSecret)
 		// Domain SSL
 		appGroup.POST("/:appID/ssl/install", s.handlerRegistry.appHandler.InstallDomainSsl)
+
+		// Logs
+		appGroup.GET("/:appID/runtime-logs", func(ctx *gin.Context) {
+			s.handlerRegistry.appHandler.GetAppRuntimeLogs(ctx, s.websocket)
+		})
 	}
 
 	settingGroup := apiGroup.Group("/settings")

@@ -8,14 +8,14 @@ import (
 
 var (
 	ProjectUpsertingConflictCols = []string{"id"}
-	ProjectUpsertingUpdateCols   = []string{"name", "slug", "photo", "status", "note",
+	ProjectUpsertingUpdateCols   = []string{"name", "key", "photo", "status", "note",
 		"updated_at", "deleted_at"}
 )
 
 type Project struct {
 	ID     string `bun:",pk"`
 	Name   string
-	Slug   string
+	Key    string
 	Photo  string `bun:",nullzero"`
 	Status base.ProjectStatus
 	Note   string `bun:",nullzero"`
@@ -59,5 +59,5 @@ func (p *Project) GetSettingByType(typ base.SettingType) *Setting {
 }
 
 func (p *Project) GetDefaultNetworkName() string {
-	return p.Slug + "_net"
+	return p.Key + "_net"
 }

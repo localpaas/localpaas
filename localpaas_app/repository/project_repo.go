@@ -20,7 +20,7 @@ type ProjectRepo interface {
 		opts ...bunex.SelectQueryOption) (*entity.Project, error)
 	GetByName(ctx context.Context, db database.IDB, name string,
 		opts ...bunex.SelectQueryOption) (*entity.Project, error)
-	GetBySlug(ctx context.Context, db database.IDB, slug string,
+	GetByKey(ctx context.Context, db database.IDB, key string,
 		opts ...bunex.SelectQueryOption) (*entity.Project, error)
 	List(ctx context.Context, db database.IDB, paging *basedto.Paging,
 		opts ...bunex.SelectQueryOption) ([]*entity.Project, *basedto.PagingMeta, error)
@@ -72,10 +72,10 @@ func (repo *projectRepo) GetByName(ctx context.Context, db database.IDB, name st
 	return project, nil
 }
 
-func (repo *projectRepo) GetBySlug(ctx context.Context, db database.IDB, slug string,
+func (repo *projectRepo) GetByKey(ctx context.Context, db database.IDB, key string,
 	opts ...bunex.SelectQueryOption) (*entity.Project, error) {
 	project := &entity.Project{}
-	query := db.NewSelect().Model(project).Where("LOWER(project.slug) = ?", strings.ToLower(slug)).Limit(1)
+	query := db.NewSelect().Model(project).Where("LOWER(project.key) = ?", strings.ToLower(key)).Limit(1)
 	query = bunex.ApplySelect(query, opts...)
 
 	err := query.Scan(ctx)

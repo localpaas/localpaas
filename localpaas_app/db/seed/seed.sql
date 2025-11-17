@@ -17,7 +17,7 @@ VALUES ('01JAB9XED0GTXBSQDFVYAJ8WA1', 'tiendc', 'tiendc@gmail.com', 'admin', 'ac
         '2025-10-01 00:00:00', '2025-10-01 00:00:00')
 ON CONFLICT DO NOTHING;
 
-INSERT INTO projects (id, name, slug, status, created_at, updated_at)
+INSERT INTO projects (id, name, key, status, created_at, updated_at)
 VALUES ('01JAB9XED0GTXBSQDFVYAJ8WB1', 'Project A', 'project_a', 'active',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WB2', 'Project B', 'project_b', 'active',
@@ -33,7 +33,7 @@ VALUES ('01JAB9XED0GTXBSQDFVYAJ8WB1', 'tag 1', 0),
        ('01JAB9XED0GTXBSQDFVYAJ8WB2', 'my tag', 1)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO apps (id, name, slug, status, project_id, created_at, updated_at)
+INSERT INTO apps (id, name, key, status, project_id, created_at, updated_at)
 VALUES ('01JAB9XED0GTXBSQDFVYAJ8WD1', 'Backend', 'backend', 'active', '01JAB9XED0GTXBSQDFVYAJ8WB1',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WD2', 'Frontend', 'frontend', 'active', '01JAB9XED0GTXBSQDFVYAJ8WB1',

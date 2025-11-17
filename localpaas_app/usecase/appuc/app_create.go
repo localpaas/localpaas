@@ -23,7 +23,7 @@ import (
 )
 
 const (
-	appSlugMaxLen = 50
+	appKeyMaxLen = 100
 )
 
 func (uc *AppUC) CreateApp(
@@ -69,7 +69,7 @@ func (uc *AppUC) CreateApp(
 
 type createAppData struct {
 	Project     *entity.Project
-	AppSlug     string
+	AppKey      string
 	ServiceSpec *docker.ServiceSpec
 }
 
@@ -90,15 +90,15 @@ func (uc *AppUC) loadAppData(
 	}
 	data.Project = project
 
-	data.AppSlug = slugify.SlugifyEx(req.Name, nil, appSlugMaxLen)
+	data.AppKey = slugify.SlugifyEx(req.Name, nil, appKeyMaxLen)
 
-	app, err := uc.appRepo.GetBySlug(ctx, db, project.ID, data.AppSlug)
+	app, err := uc.appRepo.GetByKey(ctx, db, project.ID, data.AppKey)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}
 	if app != nil {
 		return apperrors.NewAlreadyExist("App").
-			WithMsgLog("app '%s' already exists", data.AppSlug)
+			WithMsgLog("app '%s' already exists", data.AppKey)
 	}
 
 	return nil
@@ -118,7 +118,7 @@ func (uc *AppUC) preparePersistingApp(
 	app := &entity.App{
 		ID:        gofn.Must(ulid.NewStringULID()),
 		ProjectID: project.ID,
-		Slug:      data.AppSlug,
+		Key:       data.AppKey,
 		CreatedAt: timeNow,
 	}
 
@@ -175,11 +175,11 @@ func (uc *AppUC) preparePersistingAppSpecDefault(
 	}
 
 	serviceSpec := &docker.ServiceSpec{
-		Name:        app.Slug,
+		Name:        app.Key,
 		Image:       "crccheck/hello-world:latest", // TODO: test image
 		ServiceMode: docker.ServiceModeReplicated,
 		Replicas:    1,
-		Hostname:    app.Slug,
+		Hostname:    app.Key,
 		Networks: []*docker.NetworkAttachment{
 			{
 				Target: data.Project.GetDefaultNetworkName(),

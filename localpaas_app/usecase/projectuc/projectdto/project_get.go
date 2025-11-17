@@ -35,7 +35,7 @@ type GetProjectResp struct {
 type ProjectResp struct {
 	ID           string                   `json:"id"`
 	Name         string                   `json:"name"`
-	Slug         string                   `json:"slug"`
+	Key          string                   `json:"key"`
 	Status       base.ProjectStatus       `json:"status"`
 	Photo        string                   `json:"photo"`
 	Note         string                   `json:"note"`
@@ -60,7 +60,7 @@ type ProjectUserAccessResp struct {
 type ProjectBaseResp struct {
 	ID     string             `json:"id"`
 	Name   string             `json:"name"`
-	Slug   string             `json:"slug"`
+	Key    string             `json:"key"`
 	Photo  string             `json:"photo"`
 	Status base.ProjectStatus `json:"status"`
 }
@@ -90,7 +90,7 @@ func TransformProjectsBase(projects []*entity.Project) []*ProjectBaseResp {
 		return &ProjectBaseResp{
 			ID:     project.ID,
 			Name:   project.Name,
-			Slug:   project.Slug,
+			Key:    project.Key,
 			Photo:  project.Photo,
 			Status: project.Status,
 		}

@@ -6,17 +6,17 @@
       "name" : "API Support",
       "url" : "http://www.swagger.io/support"
     },
-    "description" : "LocalPaas Backend",
+    "description" : "LocalPaas App",
     "license" : {
       "name" : "Apache 2.0",
       "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
     },
     "termsOfService" : "http://swagger.io/terms/",
-    "title" : "LocalPaas Backend",
+    "title" : "LocalPaas App",
     "version" : "0.1"
   },
   "servers" : [ {
-    "url" : "/v1"
+    "url" : "/_"
   } ],
   "paths" : {
     "/auth/login-options" : {
@@ -218,7 +218,7 @@
     "/auth/sso/callback/{provider}" : {
       "get" : {
         "description" : "Begins SSO flow",
-        "operationId" : "beginOAuth",
+        "operationId" : "ssoOAuthCallback",
         "parameters" : [ {
           "description" : "provider name",
           "in" : "path",
@@ -259,7 +259,7 @@
       },
       "post" : {
         "description" : "Begins SSO flow",
-        "operationId" : "beginOAuth",
+        "operationId" : "ssoOAuthCallback",
         "parameters" : [ {
           "description" : "provider name",
           "in" : "path",
@@ -1963,6 +1963,91 @@
           }
         },
         "summary" : "Gets app details",
+        "tags" : [ "apps" ]
+      }
+    },
+    "/projects/{projectID}/apps/{appID}/runtime-logs" : {
+      "get" : {
+        "description" : "Stream app logs via websocket",
+        "operationId" : "getAppRuntimeLogs",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "app ID",
+          "in" : "path",
+          "name" : "appID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`follow=true/false`",
+          "in" : "query",
+          "name" : "follow",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`since=YYYY-MM-DDTHH:mm:SSZ`",
+          "in" : "query",
+          "name" : "since",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`duration=` logs within the period",
+          "in" : "query",
+          "name" : "duration",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`tail=1000` to get last 1000 lines of logs",
+          "in" : "query",
+          "name" : "tail",
+          "schema" : {
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.GetAppRuntimeLogsResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Stream app logs via websocket",
         "tags" : [ "apps" ]
       }
     },
@@ -6516,20 +6601,20 @@
           "id" : {
             "type" : "string"
           },
+          "key" : {
+            "type" : "string"
+          },
           "name" : {
             "type" : "string"
           },
           "photo" : {
             "type" : "string"
           },
-          "slug" : {
-            "type" : "string"
-          },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.AppStatus"
           }
         },
-        "required" : [ "id", "name", "photo", "slug", "status" ],
+        "required" : [ "id", "key", "name", "photo", "status" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppResp" : {
@@ -6540,6 +6625,9 @@
           "id" : {
             "type" : "string"
           },
+          "key" : {
+            "type" : "string"
+          },
           "name" : {
             "type" : "string"
           },
@@ -6547,9 +6635,6 @@
             "type" : "string"
           },
           "photo" : {
-            "type" : "string"
-          },
-          "slug" : {
             "type" : "string"
           },
           "status" : {
@@ -6572,7 +6657,19 @@
             "type" : "array"
           }
         },
-        "required" : [ "createdAt", "id", "name", "note", "photo", "slug", "status", "tags", "updatedAt", "userAccesses" ],
+        "required" : [ "createdAt", "id", "key", "name", "note", "photo", "status", "tags", "updatedAt", "userAccesses" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppRuntimeLogsDataResp" : {
+        "properties" : {
+          "logs" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_services_docker.LogFrame"
+            },
+            "type" : "array"
+          }
+        },
+        "required" : [ "logs" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppSettingsResp" : {
@@ -6773,6 +6870,18 @@
         "properties" : {
           "data" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.GetAppRuntimeLogsResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppRuntimeLogsDataResp"
           },
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
@@ -7605,20 +7714,20 @@
           "id" : {
             "type" : "string"
           },
+          "key" : {
+            "type" : "string"
+          },
           "name" : {
             "type" : "string"
           },
           "photo" : {
             "type" : "string"
           },
-          "slug" : {
-            "type" : "string"
-          },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.ProjectStatus"
           }
         },
-        "required" : [ "id", "name", "photo", "slug", "status" ],
+        "required" : [ "id", "key", "name", "photo", "status" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.ProjectResp" : {
@@ -7635,6 +7744,9 @@
           "id" : {
             "type" : "string"
           },
+          "key" : {
+            "type" : "string"
+          },
           "name" : {
             "type" : "string"
           },
@@ -7642,9 +7754,6 @@
             "type" : "string"
           },
           "photo" : {
-            "type" : "string"
-          },
-          "slug" : {
             "type" : "string"
           },
           "status" : {
@@ -7667,7 +7776,7 @@
             "type" : "array"
           }
         },
-        "required" : [ "apps", "createdAt", "id", "name", "note", "photo", "slug", "status", "tags", "updatedAt", "userAccesses" ],
+        "required" : [ "apps", "createdAt", "id", "key", "name", "note", "photo", "status", "tags", "updatedAt", "userAccesses" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.ProjectSettingsResp" : {
@@ -9854,6 +9963,23 @@
         },
         "required" : [ "accessExpireAt", "createdAt", "email", "fullName", "id", "lastAccess", "photo", "position", "role", "securityOption", "status", "updatedAt" ],
         "type" : "object"
+      },
+      "github_com_localpaas_localpaas_services_docker.LogFrame" : {
+        "properties" : {
+          "data" : {
+            "type" : "string"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_services_docker.LogType"
+          }
+        },
+        "required" : [ "data", "type" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_services_docker.LogType" : {
+        "enum" : [ "out", "in", "err" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "LogTypeStdout", "LogTypeStdin", "LogTypeStderr" ]
       }
     },
     "securitySchemes" : {

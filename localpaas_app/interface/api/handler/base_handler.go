@@ -25,6 +25,8 @@ var (
 
 		// This helps parse timeutil.Date from string value
 		timeutil.MapstructureParseDateFunc(),
+		timeutil.MapstructureParseTimeFunc(),
+		timeutil.MapstructureParseDurationFunc(),
 
 		// NOTE: Parse slice should be the last hook function as some
 		// types may be treated as slice, such as UUID can be []byte.

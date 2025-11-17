@@ -6,8 +6,8 @@ import (
 	"time"
 
 	ginlogger "github.com/gin-contrib/logger"
-	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
+	"github.com/olahol/melody"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/config"
@@ -28,21 +28,22 @@ type HTTPServer struct {
 	*http.Server
 	config          *config.Config
 	engine          *gin.Engine
+	websocket       *melody.Melody
 	handlerRegistry *HandlerRegistry
 	logger          logging.Logger
 }
 
 // NewHTTPServer Create new LocalPaas app
-// @title LocalPaas Backend
+// @title LocalPaas App
 // @version 0.1
-// @description LocalPaas Backend
+// @description LocalPaas App
 // @termsOfService http://swagger.io/terms/
 // @contact.name API Support
 // @contact.url http://www.swagger.io/support
 // @contact.email support@swagger.io
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-// @BasePath /v1
+// @BasePath /_
 // @securityDefinitions.basic BasicAuth
 func NewHTTPServer(
 	config *config.Config,
@@ -53,6 +54,7 @@ func NewHTTPServer(
 	s := &HTTPServer{
 		config:          config,
 		engine:          engine,
+		websocket:       melody.New(),
 		handlerRegistry: handlerRegistry,
 		logger:          logger,
 		Server: &http.Server{
@@ -67,7 +69,6 @@ func NewHTTPServer(
 	// Configures middlewares
 	engine.Use(
 		recovery.Recovery(config),
-		requestid.New(),
 		loggermiddleware.Logger(logger),
 		secureheaders.SecureHeaders,
 		cors.CORS(config),

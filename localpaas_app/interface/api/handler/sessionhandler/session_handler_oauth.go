@@ -93,7 +93,7 @@ func (h *SessionHandler) SSOOAuthBegin(ctx *gin.Context) {
 // @Description Begins SSO flow
 // @Tags    users
 // @Produce json
-// @Id      beginOAuth
+// @Id      ssoOAuthCallback
 // @Param   provider path string true "provider name"
 // @Success 302 "on success redirect to the dashboard page"
 // @Failure 400 {object} apperrors.ErrorInfo

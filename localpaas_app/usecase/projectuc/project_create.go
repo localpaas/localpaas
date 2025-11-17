@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	projectSlugMaxLen = 50
+	projectKeyMaxLen = 100
 )
 
 func (uc *ProjectUC) CreateProject(
@@ -58,7 +58,7 @@ func (uc *ProjectUC) CreateProject(
 }
 
 type createProjectData struct {
-	ProjectSlug string
+	ProjectKey string
 }
 
 func (uc *ProjectUC) loadProjectData(
@@ -67,18 +67,18 @@ func (uc *ProjectUC) loadProjectData(
 	req *projectdto.CreateProjectReq,
 	data *createProjectData,
 ) error {
-	data.ProjectSlug = slugify.SlugifyEx(req.Name, nil, projectSlugMaxLen)
-	if data.ProjectSlug == "localpaas" { // this is the name used by LocalPaaS
+	data.ProjectKey = slugify.SlugifyEx(req.Name, nil, projectKeyMaxLen)
+	if data.ProjectKey == "localpaas" { // this is the name used by LocalPaaS
 		return apperrors.New(apperrors.ErrNameUnavailable).WithMsgLog("project name is not allowed")
 	}
 
-	project, err := uc.projectRepo.GetBySlug(ctx, db, data.ProjectSlug)
+	project, err := uc.projectRepo.GetByKey(ctx, db, data.ProjectKey)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}
 	if project != nil {
 		return apperrors.NewAlreadyExist("Project").
-			WithMsgLog("project slug '%s' already exists", data.ProjectSlug)
+			WithMsgLog("project key '%s' already exists", data.ProjectKey)
 	}
 
 	return nil
@@ -97,7 +97,7 @@ func (uc *ProjectUC) preparePersistingProject(
 	// Upserting project
 	project := &entity.Project{
 		ID:        gofn.Must(ulid.NewStringULID()),
-		Slug:      data.ProjectSlug,
+		Key:       data.ProjectKey,
 		CreatedAt: timeNow,
 	}
 
