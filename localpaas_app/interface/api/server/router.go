@@ -119,8 +119,9 @@ func (s *HTTPServer) registerRoutes() {
 		userGroup.PUT("/current/password", s.handlerRegistry.userHandler.UpdateUserPassword)
 		// Profile
 		userGroup.PUT("/current/profile", s.handlerRegistry.userHandler.UpdateUserProfile)
-		// Status (admin API)
+		// Update (admin API)
 		userGroup.PUT("/:userID", s.handlerRegistry.userHandler.UpdateUser)
+		userGroup.DELETE("/:userID", s.handlerRegistry.userHandler.DeleteUser)
 		// MFA TOTP setup
 		userGroup.POST("/current/mfa/totp-begin-setup", s.handlerRegistry.userHandler.BeginMFATotpSetup)
 		userGroup.POST("/current/mfa/totp-complete-setup", s.handlerRegistry.userHandler.CompleteMFATotpSetup)

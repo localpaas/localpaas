@@ -59,3 +59,48 @@ func (h *UserHandler) UpdateUser(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, resp)
 }
+
+// DeleteUser Deletes a user (admin API)
+// @Summary Deletes a user (admin API)
+// @Description Deletes a user (admin API)
+// @Tags    users
+// @Produce json
+// @Id      deleteUser
+// @Param   userID path string true "user ID"
+// @Success 200 {object} userdto.DeleteUserResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /users/{userID} [delete]
+func (h *UserHandler) DeleteUser(ctx *gin.Context) {
+	userID, err := h.ParseStringParam(ctx, "userID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceModule: base.ResourceModuleUser,
+		ResourceType:   base.ResourceTypeUser,
+		ResourceID:     userID,
+		Action:         base.ActionTypeDelete,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := userdto.NewDeleteUserReq()
+	req.ID = userID
+	if err := h.ParseRequest(ctx, req, nil); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.userUC.DeleteUser(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}

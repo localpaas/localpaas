@@ -103,11 +103,11 @@ func (uc *UserUC) loadUserDataForUpdate(
 
 func (uc *UserUC) prepareUpdatingUserData(
 	req *userdto.UpdateUserReq,
-	profileData *userUpdateData,
+	updateData *userUpdateData,
 	persistingData *userservice.PersistingUserData,
 ) {
 	timeNow := timeutil.NowUTC()
-	user := profileData.User
+	user := updateData.User
 
 	user.UpdatedAt = timeNow
 	if req.Username != "" {
