@@ -45,7 +45,8 @@ const (
 )
 
 var (
-	AllResourceModules = []ResourceModule{ResourceModuleUser, ResourceModuleCluster, ResourceModuleProject}
+	AllResourceModules = []ResourceModule{ResourceModuleSettings, ResourceModuleUser, ResourceModuleCluster,
+		ResourceModuleProject}
 )
 
 type ActionType string

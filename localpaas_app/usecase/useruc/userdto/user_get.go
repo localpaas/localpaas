@@ -1,6 +1,8 @@
 package userdto
 
 import (
+	"slices"
+	"strings"
 	"time"
 
 	vld "github.com/tiendc/go-validator"
@@ -13,7 +15,8 @@ import (
 )
 
 type GetUserReq struct {
-	ID string `json:"-"`
+	ID          string `json:"-"`
+	GetAccesses bool   `json:"-" mapstructure:"getAccesses"`
 }
 
 func NewGetUserReq() *GetUserReq {
@@ -31,6 +34,8 @@ type GetUserResp struct {
 
 type UserDetailsResp struct {
 	*UserResp
+	ProjectAccesses basedto.ObjectAccessSliceResp `json:"projectAccesses"`
+	ModuleAccesses  basedto.ObjectAccessSliceResp `json:"moduleAccesses"`
 }
 
 type UserResp struct {
@@ -56,7 +61,36 @@ func TransformUserDetails(user *entity.User) (resp *UserDetailsResp, err error) 
 	if err = copier.Copy(&userResp, &user); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	return &UserDetailsResp{
+	resp = &UserDetailsResp{
 		UserResp: userResp,
-	}, nil
+	}
+
+	for _, access := range user.Accesses {
+		if access.ResourceType == base.ResourceTypeProject && access.ResourceProject != nil {
+			resp.ProjectAccesses = append(resp.ProjectAccesses, &basedto.ObjectAccessResp{
+				NamedObjectResp: basedto.NamedObjectResp{
+					ID:   access.ResourceProject.ID,
+					Name: access.ResourceProject.Name,
+				},
+				Access: access.Actions,
+			})
+			continue
+		}
+		if access.ResourceType == base.ResourceTypeModule {
+			resp.ModuleAccesses = append(resp.ModuleAccesses, &basedto.ObjectAccessResp{
+				NamedObjectResp: basedto.NamedObjectResp{
+					ID: access.ResourceID,
+				},
+				Access: access.Actions,
+			})
+			continue
+		}
+	}
+
+	// Sort project accesses by project names
+	slices.SortStableFunc(resp.ProjectAccesses, func(a, b *basedto.ObjectAccessResp) int {
+		return strings.Compare(a.Name, b.Name)
+	})
+
+	return resp, nil
 }

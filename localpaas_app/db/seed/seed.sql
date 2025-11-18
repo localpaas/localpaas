@@ -73,6 +73,14 @@ VALUES ('user', '01JAB9XED0GTXBSQDFVYAJ8WA1', 'project', '01JAB9XED0GTXBSQDFVYAJ
        ('user', '01JAB9XED0GTXBSQDFVYAJ8WA1', 'app', '01JAB9XED0GTXBSQDFVYAJ8WD1', true, true, true,
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('user', '01JAB9XED0GTXBSQDFVYAJ8WA2', 'app', '01JAB9XED0GTXBSQDFVYAJ8WD1', false, false, false,
+        '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
+       ('user', '01JAB9XED0GTXBSQDFVYAJ8WA2', 'module', 'mod::user', true, true, false,
+        '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
+       ('user', '01JAB9XED0GTXBSQDFVYAJ8WA2', 'module', 'mod::project', true, true, true,
+        '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
+       ('user', '01JAB9XED0GTXBSQDFVYAJ8WA2', 'module', 'mod::settings', true, true, true,
+        '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
+       ('user', '01JAB9XED0GTXBSQDFVYAJ8WA2', 'module', 'mod::cluster', true, true, true,
         '2025-10-01 00:00:00', '2025-10-01 00:00:00')
 ON CONFLICT DO NOTHING;
 

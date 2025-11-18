@@ -6527,6 +6527,21 @@
         "required" : [ "access", "id" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_basedto.ObjectAccessResp" : {
+        "properties" : {
+          "access" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.AccessActions"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "access", "id", "name" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq" : {
         "properties" : {
           "id" : {
@@ -9882,6 +9897,12 @@
           "lastAccess" : {
             "type" : "string"
           },
+          "moduleAccesses" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectAccessResp"
+            },
+            "type" : "array"
+          },
           "notes" : {
             "type" : "string"
           },
@@ -9890,6 +9911,12 @@
           },
           "position" : {
             "type" : "string"
+          },
+          "projectAccesses" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectAccessResp"
+            },
+            "type" : "array"
           },
           "role" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.UserRole"
@@ -9907,7 +9934,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "accessExpireAt", "createdAt", "email", "fullName", "id", "lastAccess", "photo", "position", "role", "securityOption", "status", "updatedAt", "username" ],
+        "required" : [ "accessExpireAt", "createdAt", "email", "fullName", "id", "lastAccess", "moduleAccesses", "photo", "position", "projectAccesses", "role", "securityOption", "status", "updatedAt", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UserPhotoReq" : {
