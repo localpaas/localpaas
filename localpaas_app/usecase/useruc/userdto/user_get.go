@@ -35,6 +35,7 @@ type UserDetailsResp struct {
 
 type UserResp struct {
 	ID             string                  `json:"id"`
+	Username       string                  `json:"username"`
 	Email          string                  `json:"email"`
 	Role           base.UserRole           `json:"role"`
 	Status         base.UserStatus         `json:"status"`

@@ -3,6 +3,7 @@ package apphandler
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/olahol/melody"
@@ -72,7 +73,8 @@ func (h *AppHandler) GetAppRuntimeLogs(ctx *gin.Context, mel *melody.Melody) {
 		return
 	}
 
-	if !req.Follow {
+	// Not a websocket request, return data via body
+	if strings.ToLower(ctx.Request.Header.Get("Connection")) != "upgrade" {
 		ctx.JSON(http.StatusOK, resp)
 		return
 	}
@@ -94,5 +96,8 @@ func (h *AppHandler) GetAppRuntimeLogs(ctx *gin.Context, mel *melody.Melody) {
 	}()
 
 	_ = mel.HandleRequest(ctx.Writer, ctx.Request)
+	defer func() {
+		_ = recover()
+	}()
 	close(resp.Data.LogChan)
 }

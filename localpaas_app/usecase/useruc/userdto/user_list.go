@@ -7,6 +7,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 )
 
 type ListUserReq struct {
@@ -37,25 +38,9 @@ type ListUserResp struct {
 	Data []*UserResp   `json:"data"`
 }
 
-func TransformUser(user *entity.User) (*UserResp, error) {
-	resp := &UserResp{
-		ID:             user.ID,
-		Email:          user.Email,
-		Role:           user.Role,
-		Status:         user.Status,
-		FullName:       user.FullName,
-		Position:       user.Position,
-		Photo:          user.Photo,
-		Notes:          user.Notes,
-		SecurityOption: user.SecurityOption,
-		CreatedAt:      user.CreatedAt,
-		UpdatedAt:      user.UpdatedAt,
-	}
-	if !user.AccessExpireAt.IsZero() {
-		resp.AccessExpireAt = &user.AccessExpireAt
-	}
-	if !user.LastAccess.IsZero() {
-		resp.LastAccess = &user.LastAccess
+func TransformUser(user *entity.User) (resp *UserResp, err error) {
+	if err = copier.Copy(&resp, user); err != nil {
+		return nil, apperrors.Wrap(err)
 	}
 	return resp, nil
 }

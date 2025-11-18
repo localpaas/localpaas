@@ -9902,9 +9902,12 @@
           },
           "updatedAt" : {
             "type" : "string"
+          },
+          "username" : {
+            "type" : "string"
           }
         },
-        "required" : [ "accessExpireAt", "createdAt", "email", "fullName", "id", "lastAccess", "photo", "position", "role", "securityOption", "status", "updatedAt" ],
+        "required" : [ "accessExpireAt", "createdAt", "email", "fullName", "id", "lastAccess", "photo", "position", "role", "securityOption", "status", "updatedAt", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UserPhotoReq" : {
@@ -9959,9 +9962,12 @@
           },
           "updatedAt" : {
             "type" : "string"
+          },
+          "username" : {
+            "type" : "string"
           }
         },
-        "required" : [ "accessExpireAt", "createdAt", "email", "fullName", "id", "lastAccess", "photo", "position", "role", "securityOption", "status", "updatedAt" ],
+        "required" : [ "accessExpireAt", "createdAt", "email", "fullName", "id", "lastAccess", "photo", "position", "role", "securityOption", "status", "updatedAt", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_services_docker.LogFrame" : {
