@@ -3677,6 +3677,58 @@
         "x-codegen-request-body-name" : "body"
       }
     },
+    "/settings/registry-auth/test-conn" : {
+      "post" : {
+        "description" : "Tests registry auth connection",
+        "operationId" : "testRegistryAuthConn",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.TestRegistryAuthConnReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.TestRegistryAuthConnResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Tests registry auth connection",
+        "tags" : [ "settings_registry_auth" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
     "/settings/registry-auth/{ID}" : {
       "delete" : {
         "description" : "Deletes registry auth setting",
@@ -8639,6 +8691,33 @@
         "required" : [ "address", "createdAt", "id", "name", "password", "updatedAt", "username" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.TestRegistryAuthConnReq" : {
+        "properties" : {
+          "address" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "password" : {
+            "type" : "string"
+          },
+          "username" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "address", "name", "password", "username" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.TestRegistryAuthConnResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.UpdateRegistryAuthMetaReq" : {
         "properties" : {
           "expireAt" : {
@@ -9678,7 +9757,7 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.BeginUserSignupDataResp" : {
         "properties" : {
-          "accessExpiration" : {
+          "accessExpireAt" : {
             "type" : "string"
           },
           "email" : {
@@ -9700,7 +9779,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "accessExpiration", "email", "role", "securityOption", "username" ],
+        "required" : [ "accessExpireAt", "email", "role", "securityOption", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.BeginUserSignupReq" : {
@@ -9815,7 +9894,7 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.InviteUserReq" : {
         "properties" : {
-          "accessExpiration" : {
+          "accessExpireAt" : {
             "type" : "string"
           },
           "email" : {
@@ -9843,7 +9922,7 @@
             "type" : "boolean"
           }
         },
-        "required" : [ "accessExpiration", "email", "moduleAccesses", "projectAccesses", "role", "securityOption", "sendInviteEmail" ],
+        "required" : [ "accessExpireAt", "email", "moduleAccesses", "projectAccesses", "role", "securityOption", "sendInviteEmail" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.InviteUserResp" : {
@@ -9992,7 +10071,7 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UpdateUserReq" : {
         "properties" : {
-          "accessExpiration" : {
+          "accessExpireAt" : {
             "type" : "string"
           },
           "email" : {
@@ -10035,7 +10114,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "accessExpiration", "email", "fullName", "moduleAccesses", "notes", "photo", "position", "projectAccesses", "role", "securityOption", "status", "username" ],
+        "required" : [ "accessExpireAt", "email", "fullName", "moduleAccesses", "notes", "photo", "position", "projectAccesses", "role", "securityOption", "status", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UpdateUserResp" : {

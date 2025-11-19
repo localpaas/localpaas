@@ -65,6 +65,7 @@ func (uc *AppUC) UpdateAppDeploymentSource(
 
 type updateAppDeploymentData struct {
 	App                *entity.App
+	ExistingSettingID  string
 	DeploymentSettings *entity.AppDeploymentSettings
 	RegistryAuth       *entity.RegistryAuth
 }
@@ -93,11 +94,14 @@ func (uc *AppUC) loadAppForUpdateDeployment(
 	// Parse the current deployment settings
 	currDeploymentSetting := app.GetSettingByType(base.SettingTypeDeployment)
 	if currDeploymentSetting != nil {
-		deployment, err := currDeploymentSetting.ParseAppDeploymentSettings()
-		if err != nil {
-			return apperrors.New(err).WithMsgLog("failed to parse app deployment settings")
+		data.ExistingSettingID = currDeploymentSetting.ID
+		if currDeploymentSetting.IsActive() && !currDeploymentSetting.IsExpired() {
+			deployment, err := currDeploymentSetting.ParseAppDeploymentSettings()
+			if err != nil {
+				return apperrors.New(err).WithMsgLog("failed to parse app deployment settings")
+			}
+			data.DeploymentSettings = deployment
 		}
-		data.DeploymentSettings = deployment
 	}
 
 	// Loads registry auth if needs to
@@ -130,10 +134,13 @@ func (uc *AppUC) prepareUpdatingAppDeployment(
 		setting = data.DeploymentSettings.Setting
 	} else {
 		setting = &entity.Setting{
-			ID:        gofn.Must(ulid.NewStringULID()),
+			ID:        data.ExistingSettingID,
 			ObjectID:  app.ID,
 			Type:      base.SettingTypeDeployment,
 			CreatedAt: timeNow,
+		}
+		if setting.ID == "" {
+			setting.ID = gofn.Must(ulid.NewStringULID())
 		}
 	}
 	setting.Status = base.SettingStatusActive

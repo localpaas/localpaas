@@ -298,6 +298,8 @@ func (s *HTTPServer) registerRoutes() {
 		registryAuthGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateRegistryAuth)
 		registryAuthGroup.PUT("/:ID/meta", s.handlerRegistry.settingsHandler.UpdateRegistryAuthMeta)
 		registryAuthGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteRegistryAuth)
+		// Test connection
+		registryAuthGroup.POST("/test-conn", s.handlerRegistry.settingsHandler.TestRegistryAuthConn)
 	}
 
 	{ // ssl group

@@ -5,6 +5,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
+	"github.com/localpaas/localpaas/services/docker"
 )
 
 type RegistryAuthUC struct {
@@ -12,6 +13,7 @@ type RegistryAuthUC struct {
 	settingRepo       repository.SettingRepo
 	permissionManager permission.Manager
 	settingService    settingservice.SettingService
+	dockerManager     *docker.Manager
 }
 
 func NewRegistryAuthUC(
@@ -19,11 +21,13 @@ func NewRegistryAuthUC(
 	settingRepo repository.SettingRepo,
 	permissionManager permission.Manager,
 	settingService settingservice.SettingService,
+	dockerManager *docker.Manager,
 ) *RegistryAuthUC {
 	return &RegistryAuthUC{
 		db:                db,
 		settingRepo:       settingRepo,
 		permissionManager: permissionManager,
 		settingService:    settingService,
+		dockerManager:     dockerManager,
 	}
 }

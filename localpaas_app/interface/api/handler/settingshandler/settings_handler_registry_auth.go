@@ -7,6 +7,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/registryauthuc/registryauthdto"
 )
@@ -264,6 +265,39 @@ func (h *SettingsHandler) DeleteRegistryAuth(ctx *gin.Context) {
 	}
 
 	resp, err := h.registryAuthUC.DeleteRegistryAuth(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
+// TestRegistryAuthConn Tests registry auth connection
+// @Summary Tests registry auth connection
+// @Description Tests registry auth connection
+// @Tags    settings_registry_auth
+// @Produce json
+// @Id      testRegistryAuthConn
+// @Param   body body registryauthdto.TestRegistryAuthConnReq true "request data"
+// @Success 200 {object} registryauthdto.TestRegistryAuthConnResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /settings/registry-auth/test-conn [post]
+func (h *SettingsHandler) TestRegistryAuthConn(ctx *gin.Context) {
+	auth, err := h.authHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := registryauthdto.NewTestRegistryAuthConnReq()
+	if err := h.ParseJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.registryAuthUC.TestRegistryAuthConn(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
