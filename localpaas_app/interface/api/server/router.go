@@ -252,6 +252,8 @@ func (s *HTTPServer) registerRoutes() {
 		s3StorageGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateS3Storage)
 		s3StorageGroup.PUT("/:ID/meta", s.handlerRegistry.settingsHandler.UpdateS3StorageMeta)
 		s3StorageGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteS3Storage)
+		// Test connection
+		s3StorageGroup.POST("/test-conn", s.handlerRegistry.settingsHandler.TestS3StorageConn)
 	}
 
 	{ // ssh key group

@@ -7,6 +7,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/s3storageuc/s3storagedto"
 )
@@ -264,6 +265,39 @@ func (h *SettingsHandler) DeleteS3Storage(ctx *gin.Context) {
 	}
 
 	resp, err := h.s3StorageUC.DeleteS3Storage(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
+// TestS3StorageConn Test S3 storage connection
+// @Summary Test S3 storage connection
+// @Description Test S3 storage connection
+// @Tags    settings_s3_storage
+// @Produce json
+// @Id      testS3StorageConn
+// @Param   body body s3storagedto.TestS3StorageConnReq true "request data"
+// @Success 200 {object} s3storagedto.TestS3StorageConnResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /settings/s3-storages/test-conn [post]
+func (h *SettingsHandler) TestS3StorageConn(ctx *gin.Context) {
+	auth, err := h.authHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := s3storagedto.NewTestS3StorageConnReq()
+	if err := h.ParseJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.s3StorageUC.TestS3StorageConn(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

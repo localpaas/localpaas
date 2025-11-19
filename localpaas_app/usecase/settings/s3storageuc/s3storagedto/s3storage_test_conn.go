@@ -1,4 +1,4 @@
-package registryauthdto
+package s3storagedto
 
 import (
 	vld "github.com/tiendc/go-validator"
@@ -8,20 +8,16 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 )
 
-type TestRegistryAuthConnReq struct {
-	*RegistryAuthBaseReq
+type TestS3StorageConnReq struct {
+	*S3StorageBaseReq
 }
 
-func NewTestRegistryAuthConnReq() *TestRegistryAuthConnReq {
-	return &TestRegistryAuthConnReq{}
-}
-
-func (req *TestRegistryAuthConnReq) ModifyRequest() error {
-	return req.modifyRequest()
+func NewTestS3StorageConnReq() *TestS3StorageConnReq {
+	return &TestS3StorageConnReq{}
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *TestRegistryAuthConnReq) Validate() apperrors.ValidationErrors {
+func (req *TestS3StorageConnReq) Validate() apperrors.ValidationErrors {
 	// NOTE: make sure req.Name is not empty to not fail the validation
 	req.Name = gofn.Coalesce(req.Name, "x")
 
@@ -30,6 +26,6 @@ func (req *TestRegistryAuthConnReq) Validate() apperrors.ValidationErrors {
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type TestRegistryAuthConnResp struct {
+type TestS3StorageConnResp struct {
 	Meta *basedto.BaseMeta `json:"meta"`
 }

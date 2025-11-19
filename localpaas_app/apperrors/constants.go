@@ -151,3 +151,7 @@ var errorStatusMap = map[error]int{
 // errorWarnLevelMap defines the errors that are handled but unexpected to happen.
 // Every error defined in this map will be notified at WARN level instead of ERROR.
 var errorWarnLevelMap = map[error]bool{}
+
+func RegisterStatusMapping(err error, statusCode int) {
+	errorStatusMap[err] = statusCode
+}
