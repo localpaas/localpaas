@@ -15,19 +15,19 @@ import (
 )
 
 type UpdateUserReq struct {
-	ID               string                       `json:"-"`
-	Username         string                       `json:"username"`
-	Email            string                       `json:"email"`
-	FullName         string                       `json:"fullName"`
-	Position         *string                      `json:"position"`
-	Photo            *UserPhotoReq                `json:"photo"`
-	Status           *base.UserStatus             `json:"status"`
-	Role             *base.UserRole               `json:"role"`
-	Notes            *string                      `json:"notes"`
-	SecurityOption   *base.UserSecurityOption     `json:"securityOption"`
-	AccessExpiration *time.Time                   `json:"accessExpiration"`
-	ModuleAccesses   basedto.ModuleAccessSliceReq `json:"moduleAccesses"`
-	ProjectAccesses  basedto.ObjectAccessSliceReq `json:"projectAccesses"`
+	ID              string                       `json:"-"`
+	Username        string                       `json:"username"`
+	Email           string                       `json:"email"`
+	FullName        string                       `json:"fullName"`
+	Position        *string                      `json:"position"`
+	Photo           *UserPhotoReq                `json:"photo"`
+	Status          *base.UserStatus             `json:"status"`
+	Role            *base.UserRole               `json:"role"`
+	Notes           *string                      `json:"notes"`
+	SecurityOption  *base.UserSecurityOption     `json:"securityOption"`
+	AccessExpireAt  *time.Time                   `json:"accessExpireAt"`
+	ModuleAccesses  basedto.ModuleAccessSliceReq `json:"moduleAccesses"`
+	ProjectAccesses basedto.ObjectAccessSliceReq `json:"projectAccesses"`
 }
 
 func NewUpdateUserReq() *UpdateUserReq {

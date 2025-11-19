@@ -31,11 +31,11 @@ type BeginUserSignupResp struct {
 }
 
 type BeginUserSignupDataResp struct {
-	Username         string                  `json:"username"`
-	Email            string                  `json:"email"`
-	Role             base.UserRole           `json:"role"`
-	SecurityOption   base.UserSecurityOption `json:"securityOption"`
-	AccessExpiration *time.Time              `json:"accessExpiration"`
+	Username       string                  `json:"username"`
+	Email          string                  `json:"email"`
+	Role           base.UserRole           `json:"role"`
+	SecurityOption base.UserSecurityOption `json:"securityOption"`
+	AccessExpireAt *time.Time              `json:"accessExpireAt"`
 
 	MFATotpSecret string             `json:"mfaTotpSecret,omitempty"`
 	QRCode        *MFATotpQRCodeResp `json:"qrCode,omitempty"`

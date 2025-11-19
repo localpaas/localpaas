@@ -39,7 +39,7 @@ func (uc *UserUC) BeginUserSignup(
 		SecurityOption: user.SecurityOption,
 	}
 	if !user.AccessExpireAt.IsZero() {
-		resp.AccessExpiration = &user.AccessExpireAt
+		resp.AccessExpireAt = &user.AccessExpireAt
 	}
 
 	// Generate TOTP secret and QR code for user to setup 2FA

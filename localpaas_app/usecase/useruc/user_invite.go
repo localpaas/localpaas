@@ -127,7 +127,7 @@ func (uc *UserUC) preparePersistingUserInviteData(
 	user.Role = req.Role
 	user.Status = base.UserStatusPending
 	user.SecurityOption = req.SecurityOption
-	user.AccessExpireAt = req.AccessExpiration
+	user.AccessExpireAt = req.AccessExpireAt
 	user.UpdatedAt = timeNow
 
 	persistingData.UpsertingUsers = append(persistingData.UpsertingUsers, user)

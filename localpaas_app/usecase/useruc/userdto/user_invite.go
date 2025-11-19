@@ -12,13 +12,13 @@ import (
 )
 
 type InviteUserReq struct {
-	Email            string                       `json:"email"`
-	Role             base.UserRole                `json:"role"`
-	SecurityOption   base.UserSecurityOption      `json:"securityOption"`
-	AccessExpiration time.Time                    `json:"accessExpiration"`
-	SendInviteEmail  bool                         `json:"sendInviteEmail"`
-	ModuleAccesses   basedto.ModuleAccessSliceReq `json:"moduleAccesses"`
-	ProjectAccesses  basedto.ObjectAccessSliceReq `json:"projectAccesses"`
+	Email           string                       `json:"email"`
+	Role            base.UserRole                `json:"role"`
+	SecurityOption  base.UserSecurityOption      `json:"securityOption"`
+	AccessExpireAt  time.Time                    `json:"accessExpireAt"`
+	SendInviteEmail bool                         `json:"sendInviteEmail"`
+	ModuleAccesses  basedto.ModuleAccessSliceReq `json:"moduleAccesses"`
+	ProjectAccesses basedto.ObjectAccessSliceReq `json:"projectAccesses"`
 }
 
 func NewInviteUserReq() *InviteUserReq {

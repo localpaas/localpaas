@@ -137,8 +137,8 @@ func (uc *UserUC) prepareUpdatingUserData(
 	if req.SecurityOption != nil {
 		user.SecurityOption = *req.SecurityOption
 	}
-	if req.AccessExpiration != nil {
-		user.AccessExpireAt = *req.AccessExpiration
+	if req.AccessExpireAt != nil {
+		user.AccessExpireAt = *req.AccessExpireAt
 	}
 
 	if user.Status == base.UserStatusActive &&
