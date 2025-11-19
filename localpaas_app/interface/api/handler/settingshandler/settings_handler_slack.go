@@ -7,6 +7,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/slackuc/slackdto"
 )
@@ -264,6 +265,39 @@ func (h *SettingsHandler) DeleteSlack(ctx *gin.Context) {
 	}
 
 	resp, err := h.slackUC.DeleteSlack(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
+// TestSendSlackMsg Tests sending a msg
+// @Summary Tests sending a msg
+// @Description Tests sending a msg
+// @Tags    settings_slack
+// @Produce json
+// @Id      testSendSlackMsg
+// @Param   body body slackdto.TestSendSlackMsgReq true "request data"
+// @Success 200 {object} slackdto.TestSendSlackMsgResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /settings/slack/test-send-msg [post]
+func (h *SettingsHandler) TestSendSlackMsg(ctx *gin.Context) {
+	auth, err := h.authHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := slackdto.NewTestSendSlackMsgReq()
+	if err := h.ParseJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.slackUC.TestSendSlackMsg(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

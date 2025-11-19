@@ -4680,6 +4680,58 @@
         "x-codegen-request-body-name" : "body"
       }
     },
+    "/settings/slack/test-send-msg" : {
+      "post" : {
+        "description" : "Tests sending a msg",
+        "operationId" : "testSendSlackMsg",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.TestSendSlackMsgReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.TestSendSlackMsgResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Tests sending a msg",
+        "tags" : [ "settings_slack" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
     "/settings/slack/{ID}" : {
       "delete" : {
         "description" : "Deletes Slack setting",
@@ -9288,6 +9340,30 @@
           }
         },
         "required" : [ "createdAt", "id", "name", "updatedAt", "webhook" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.TestSendSlackMsgReq" : {
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "testMsg" : {
+            "type" : "string"
+          },
+          "webhook" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "name", "testMsg", "webhook" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.TestSendSlackMsgResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.UpdateSlackMetaReq" : {

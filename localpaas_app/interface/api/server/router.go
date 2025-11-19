@@ -288,6 +288,8 @@ func (s *HTTPServer) registerRoutes() {
 		slackGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateSlack)
 		slackGroup.PUT("/:ID/meta", s.handlerRegistry.settingsHandler.UpdateSlackMeta)
 		slackGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteSlack)
+		// Test connection
+		slackGroup.POST("/test-send-msg", s.handlerRegistry.settingsHandler.TestSendSlackMsg)
 	}
 
 	{ // registry auth group
