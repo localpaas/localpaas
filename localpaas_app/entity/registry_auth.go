@@ -3,6 +3,7 @@ package entity
 import (
 	"strings"
 
+	"github.com/docker/docker/api/types/registry"
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -13,6 +14,7 @@ import (
 type RegistryAuth struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+	Address  string `json:"address"`
 
 	// NOTE: for storing current containing setting only
 	Setting *Setting `json:"-"`
@@ -49,6 +51,18 @@ func (o *RegistryAuth) Decrypt() error {
 	}
 	o.Password = decrypted
 	return nil
+}
+
+func (o *RegistryAuth) GenerateAuthHeader() (string, error) {
+	h, err := registry.EncodeAuthConfig(registry.AuthConfig{
+		Username:      o.Username,
+		Password:      o.Password,
+		ServerAddress: o.Address,
+	})
+	if err != nil {
+		return "", apperrors.Wrap(err)
+	}
+	return h, nil
 }
 
 func (s *Setting) ParseRegistryAuth(decrypt bool) (*RegistryAuth, error) {

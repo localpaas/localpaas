@@ -67,7 +67,7 @@ func (uc *ProjectUC) loadProjectData(
 	req *projectdto.CreateProjectReq,
 	data *createProjectData,
 ) error {
-	data.ProjectKey = slugify.SlugifyEx(req.Name, nil, projectKeyMaxLen)
+	data.ProjectKey = slugify.SlugifyEx(req.Name, []string{"-", "_"}, projectKeyMaxLen)
 	if data.ProjectKey == "localpaas" { // this is the name used by LocalPaaS
 		return apperrors.New(apperrors.ErrNameUnavailable).WithMsgLog("project name is not allowed")
 	}

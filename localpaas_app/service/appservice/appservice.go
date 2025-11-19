@@ -3,6 +3,7 @@ package appservice
 import (
 	"context"
 
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
@@ -12,6 +13,9 @@ import (
 
 type AppService interface {
 	PersistAppData(ctx context.Context, db database.IDB, data *PersistingAppData) error
+
+	UpdateAppDeployment(ctx context.Context, app *entity.App, req *AppDeploymentReq) (
+		*AppDeploymentResp, error)
 }
 
 func NewAppService(

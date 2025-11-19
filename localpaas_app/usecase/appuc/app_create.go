@@ -90,7 +90,7 @@ func (uc *AppUC) loadAppData(
 	}
 	data.Project = project
 
-	data.AppKey = slugify.SlugifyEx(req.Name, nil, appKeyMaxLen)
+	data.AppKey = project.Key + "_" + slugify.SlugifyEx(req.Name, []string{"-", "_"}, appKeyMaxLen)
 
 	app, err := uc.appRepo.GetByKey(ctx, db, project.ID, data.AppKey)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {

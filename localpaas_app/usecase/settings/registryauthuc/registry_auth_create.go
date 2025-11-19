@@ -88,6 +88,7 @@ func (uc *RegistryAuthUC) preparePersistingRegistryAuth(
 	registryAuth := &entity.RegistryAuth{
 		Username: req.Username,
 		Password: req.Password,
+		Address:  req.Address,
 	}
 	setting.MustSetData(registryAuth.MustEncrypt())
 

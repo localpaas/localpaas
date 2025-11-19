@@ -9,3 +9,7 @@ type IDEntity interface {
 type NamedEntity interface {
 	GetName() string
 }
+
+type ObjectID struct {
+	ID string `json:"id"`
+}

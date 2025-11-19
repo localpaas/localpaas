@@ -220,7 +220,8 @@ func (s *HTTPServer) registerRoutes() {
 		appGroup.DELETE("/:appID/secrets/:secretID", s.handlerRegistry.appHandler.DeleteAppSecret)
 		// Domain SSL
 		appGroup.POST("/:appID/ssl/install", s.handlerRegistry.appHandler.InstallDomainSsl)
-
+		// Deployment
+		appGroup.POST("/:appID/deployment-source", s.handlerRegistry.appHandler.UpdateAppDeploymentSource)
 		// Logs
 		appGroup.GET("/:appID/runtime-logs", func(ctx *gin.Context) {
 			s.handlerRegistry.appHandler.GetAppRuntimeLogs(ctx, s.websocket)

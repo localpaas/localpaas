@@ -79,13 +79,12 @@ func (uc *RegistryAuthUC) prepareUpdatingRegistryAuth(
 	if req.Name != "" {
 		setting.Name = req.Name
 	}
-	if req.Address != "" {
-		setting.Kind = req.Address
-	}
+	setting.Kind = req.Address
 
 	registryAuth := &entity.RegistryAuth{
 		Username: req.Username,
 		Password: req.Password,
+		Address:  req.Address,
 	}
 	setting.MustSetData(registryAuth.MustEncrypt())
 

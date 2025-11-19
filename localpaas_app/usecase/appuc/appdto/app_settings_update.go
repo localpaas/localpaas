@@ -45,7 +45,7 @@ type DeploymentSettingsReq struct {
 
 func (req *DeploymentSettingsReq) ToEntity() *entity.AppDeploymentSettings {
 	return &entity.AppDeploymentSettings{
-		Test: req.Test,
+		// TODO: handle this
 	}
 }
 
