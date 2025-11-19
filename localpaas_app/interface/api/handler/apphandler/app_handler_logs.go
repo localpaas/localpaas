@@ -13,6 +13,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
+	"github.com/localpaas/localpaas/services/docker"
 )
 
 // To keep `apperrors` pkg imported and swag gen won't fail
@@ -96,8 +97,5 @@ func (h *AppHandler) GetAppRuntimeLogs(ctx *gin.Context, mel *melody.Melody) {
 	}()
 
 	_ = mel.HandleRequest(ctx.Writer, ctx.Request)
-	defer func() {
-		_ = recover()
-	}()
-	close(resp.Data.LogChan)
+	docker.CloseLogChan(resp.Data.LogChan)
 }

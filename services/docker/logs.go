@@ -159,3 +159,10 @@ func StartLogBatchScanning(ctx context.Context, logsReader io.ReadCloser, period
 
 	return logBatchChan
 }
+
+func CloseLogChan(logChan chan []*LogFrame) {
+	defer func() {
+		_ = recover()
+	}()
+	close(logChan)
+}
