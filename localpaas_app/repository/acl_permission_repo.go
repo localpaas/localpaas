@@ -159,7 +159,7 @@ func (repo *aclPermissionRepo) DeleteByResources(ctx context.Context, db databas
 		if condition == "" {
 			condition = fmt.Sprintf("(%s,%s) = (?,?)", subjectCol, resCol)
 		} else {
-			condition = fmt.Sprintf("OR (%s,%s) = (?,?)", subjectCol, resCol)
+			condition = fmt.Sprintf("%s OR (%s,%s) = (?,?)", condition, subjectCol, resCol)
 		}
 		args = append(args, subjectArg, resArg)
 	}
