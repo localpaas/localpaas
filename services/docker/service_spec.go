@@ -19,6 +19,7 @@ const (
 
 type ServiceSpec struct {
 	Name                 string               `json:"name"`
+	Labels               map[string]string    `json:"labels,omitempty"`
 	Image                string               `json:"image"`
 	Command              []string             `json:"command,omitempty"`
 	ServiceMode          ServiceMode          `json:"serviceMode"`
@@ -183,7 +184,8 @@ func (s *ServiceSpec) ToSwarmServiceSpec() (*swarm.ServiceSpec, error) {
 	return &swarm.ServiceSpec{
 		// Annotations
 		Annotations: swarm.Annotations{
-			Name: s.Name,
+			Name:   s.Name,
+			Labels: s.Labels,
 		},
 		// Task spec
 		TaskTemplate: swarm.TaskSpec{

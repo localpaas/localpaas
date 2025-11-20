@@ -175,7 +175,10 @@ func (uc *AppUC) preparePersistingAppSpecDefault(
 	}
 
 	serviceSpec := &docker.ServiceSpec{
-		Name:        app.Key,
+		Name: app.Key,
+		Labels: map[string]string{
+			docker.StackLabelNamespace: data.Project.Key,
+		},
 		Image:       "crccheck/hello-world:latest", // TODO: test image
 		ServiceMode: docker.ServiceModeReplicated,
 		Replicas:    1,

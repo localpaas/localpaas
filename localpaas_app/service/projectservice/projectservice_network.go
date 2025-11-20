@@ -8,6 +8,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/services/docker"
 )
 
 const (
@@ -25,7 +26,8 @@ func (s *projectService) CreateProjectNetworks(ctx context.Context, project *ent
 		opts.Scope = networkScope
 		opts.Attachable = true
 		opts.Labels = map[string]string{
-			networkLabelProjectKey: project.Key,
+			networkLabelProjectKey:     project.Key,
+			docker.StackLabelNamespace: project.Key,
 		}
 	})
 	if err != nil {
