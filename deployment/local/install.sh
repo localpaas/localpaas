@@ -6,7 +6,7 @@ echo "---------------------------------------------------------------"
 echo "INSTALL LocalPaaS LOCALLY"
 echo "---------------------------------------------------------------"
 
-LOCALPAAS_DIR=tmp/localpaas
+LOCALPAAS_DIR=.appdata/localpaas
 NGINX_ETC=$LOCALPAAS_DIR/nginx/etc
 NGINX_LOG=$LOCALPAAS_DIR/nginx/log
 NGINX_SHARE=$LOCALPAAS_DIR/nginx/share
@@ -52,8 +52,8 @@ docker network create --driver overlay --attachable localpaas_net || true
 
 # Deploy localpaas stack
 echo "Deploy localpaas stack..."
-cp deployment/local/app_stack_nginx.yaml tmp/localpaas.yaml
-docker stack deploy -c tmp/localpaas.yaml localpaas
+cp deployment/local/app_stack_nginx.yaml $LOCALPAAS_DIR/../localpaas.yaml
+docker stack deploy -c $LOCALPAAS_DIR/../localpaas.yaml localpaas
 
 sleep 5
 make seed-data-with-clear
