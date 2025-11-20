@@ -28,6 +28,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/nodeuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/volumeuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/basicauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/discorduc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/oauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/registryauthuc"
@@ -93,6 +94,7 @@ var Provides = []any{
 	slackuc.NewSlackUC,
 	discorduc.NewDiscordUC,
 	registryauthuc.NewRegistryAuthUC,
+	basicauthuc.NewBasicAuthUC,
 	ssluc.NewSslUC,
 
 	// Service

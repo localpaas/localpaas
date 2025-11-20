@@ -33,8 +33,6 @@ type SettingRepo interface {
 		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
 	Update(ctx context.Context, db database.IDB, setting *entity.Setting,
 		opts ...bunex.UpdateQueryOption) error
-	UpdateMulti(ctx context.Context, db database.IDB, settings []*entity.Setting,
-		opts ...bunex.UpdateQueryOption) error
 }
 
 type settingRepo struct {
@@ -197,16 +195,7 @@ func (repo *settingRepo) UpsertMulti(ctx context.Context, db database.IDB, setti
 
 func (repo *settingRepo) Update(ctx context.Context, db database.IDB, setting *entity.Setting,
 	opts ...bunex.UpdateQueryOption) error {
-	return repo.UpdateMulti(ctx, db, []*entity.Setting{setting}, opts...)
-}
-
-func (repo *settingRepo) UpdateMulti(ctx context.Context, db database.IDB, settings []*entity.Setting,
-	opts ...bunex.UpdateQueryOption) error {
-	if len(settings) == 0 {
-		return nil
-	}
-
-	query := db.NewUpdate().Model(&settings).WherePK()
+	query := db.NewUpdate().Model(setting).WherePK()
 	query = bunex.ApplyUpdate(query, opts...)
 
 	_, err := query.Exec(ctx)

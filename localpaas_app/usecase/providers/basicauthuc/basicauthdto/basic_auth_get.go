@@ -1,4 +1,4 @@
-package slackdto
+package basicauthdto
 
 import (
 	"time"
@@ -13,33 +13,34 @@ import (
 )
 
 const (
-	maskedWebhook = "****************"
+	maskedPassword = "********"
 )
 
-type GetSlackReq struct {
+type GetBasicAuthReq struct {
 	ID string `json:"-"`
 }
 
-func NewGetSlackReq() *GetSlackReq {
-	return &GetSlackReq{}
+func NewGetBasicAuthReq() *GetBasicAuthReq {
+	return &GetBasicAuthReq{}
 }
 
-func (req *GetSlackReq) Validate() apperrors.ValidationErrors {
+func (req *GetBasicAuthReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, basedto.ValidateID(&req.ID, true, "id")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type GetSlackResp struct {
+type GetBasicAuthResp struct {
 	Meta *basedto.BaseMeta `json:"meta"`
-	Data *SlackResp        `json:"data"`
+	Data *BasicAuthResp    `json:"data"`
 }
 
-type SlackResp struct {
+type BasicAuthResp struct {
 	ID        string             `json:"id"`
 	Name      string             `json:"name"`
 	Status    base.SettingStatus `json:"status"`
-	Webhook   string             `json:"webhook"`
+	Username  string             `json:"username"`
+	Password  string             `json:"password"`
 	Encrypted bool               `json:"encrypted,omitempty"`
 
 	CreatedAt time.Time  `json:"createdAt"`
@@ -47,12 +48,12 @@ type SlackResp struct {
 	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
 }
 
-func TransformSlack(setting *entity.Setting, decrypt bool) (resp *SlackResp, err error) {
+func TransformBasicAuth(setting *entity.Setting, decrypt bool) (resp *BasicAuthResp, err error) {
 	if err = copier.Copy(&resp, &setting); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	config, err := setting.ParseSlack(decrypt)
+	config, err := setting.ParseBasicAuth(decrypt)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -62,7 +63,7 @@ func TransformSlack(setting *entity.Setting, decrypt bool) (resp *SlackResp, err
 
 	resp.Encrypted = config.IsEncrypted()
 	if resp.Encrypted {
-		resp.Webhook = maskedWebhook
+		resp.Password = maskedPassword
 	}
 	return resp, nil
 }

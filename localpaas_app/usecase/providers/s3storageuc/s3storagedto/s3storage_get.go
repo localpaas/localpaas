@@ -37,7 +37,9 @@ type GetS3StorageResp struct {
 
 type S3StorageResp struct {
 	ID              string                        `json:"id"`
+	Kind            string                        `json:"kind,omitempty"`
 	Name            string                        `json:"name"`
+	Status          base.SettingStatus            `json:"status"`
 	AccessKeyID     string                        `json:"accessKeyId"`
 	SecretKey       string                        `json:"secretKey,omitempty"`
 	Region          string                        `json:"region"`

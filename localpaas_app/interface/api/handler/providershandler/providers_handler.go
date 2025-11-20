@@ -3,6 +3,7 @@ package providershandler
 import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/basicauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/discorduc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/oauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/registryauthuc"
@@ -23,6 +24,7 @@ type ProvidersHandler struct {
 	slackUC        *slackuc.SlackUC
 	discordUC      *discorduc.DiscordUC
 	registryAuthUC *registryauthuc.RegistryAuthUC
+	basicAuthUC    *basicauthuc.BasicAuthUC
 	sslUC          *ssluc.SslUC
 }
 
@@ -35,6 +37,7 @@ func NewProvidersHandler(
 	slackUC *slackuc.SlackUC,
 	discordUC *discorduc.DiscordUC,
 	registryAuthUC *registryauthuc.RegistryAuthUC,
+	basicAuthUC *basicauthuc.BasicAuthUC,
 	sslUC *ssluc.SslUC,
 ) *ProvidersHandler {
 	hdl := &ProvidersHandler{
@@ -46,6 +49,7 @@ func NewProvidersHandler(
 		slackUC:        slackUC,
 		discordUC:      discordUC,
 		registryAuthUC: registryAuthUC,
+		basicAuthUC:    basicAuthUC,
 		sslUC:          sslUC,
 	}
 	return hdl

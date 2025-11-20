@@ -320,6 +320,18 @@ func (s *HTTPServer) registerRoutes() {
 		registryAuthGroup.POST("/test-conn", s.handlerRegistry.providersHandler.TestRegistryAuthConn)
 	}
 
+	{ // basic auth group
+		basicAuthGroup := providerGroup.Group("/basic-auth")
+		// Info
+		basicAuthGroup.GET("/:ID", s.handlerRegistry.providersHandler.GetBasicAuth)
+		basicAuthGroup.GET("", s.handlerRegistry.providersHandler.ListBasicAuth)
+		// Creation & Update
+		basicAuthGroup.POST("", s.handlerRegistry.providersHandler.CreateBasicAuth)
+		basicAuthGroup.PUT("/:ID", s.handlerRegistry.providersHandler.UpdateBasicAuth)
+		basicAuthGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateBasicAuthMeta)
+		basicAuthGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteBasicAuth)
+	}
+
 	{ // ssl group
 		sslGroup := providerGroup.Group("/ssls")
 		// Info

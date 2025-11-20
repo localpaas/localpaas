@@ -6,6 +6,7 @@ import (
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
@@ -35,12 +36,13 @@ type GetSslResp struct {
 }
 
 type SslResp struct {
-	ID          string     `json:"id"`
-	Name        string     `json:"name"`
-	Certificate string     `json:"certificate"`
-	PrivateKey  string     `json:"privateKey"`
-	Expiration  *time.Time `json:"expiration" copy:",nilonzero"`
-	Encrypted   bool       `json:"encrypted,omitempty"`
+	ID          string             `json:"id"`
+	Name        string             `json:"name"`
+	Status      base.SettingStatus `json:"status"`
+	Certificate string             `json:"certificate"`
+	PrivateKey  string             `json:"privateKey"`
+	Expiration  *time.Time         `json:"expiration" copy:",nilonzero"`
+	Encrypted   bool               `json:"encrypted,omitempty"`
 
 	CreatedAt time.Time  `json:"createdAt"`
 	UpdatedAt time.Time  `json:"updatedAt"`

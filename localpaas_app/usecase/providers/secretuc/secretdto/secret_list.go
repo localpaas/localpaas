@@ -45,10 +45,12 @@ type ListSecretResp struct {
 }
 
 type SecretResp struct {
-	ID        string `json:"id"`
-	Key       string `json:"key"`
-	Value     string `json:"value"`
-	Encrypted bool   `json:"encrypted,omitempty"`
+	ID        string             `json:"id"`
+	Name      string             `json:"name,omitempty"`
+	Status    base.SettingStatus `json:"status"`
+	Key       string             `json:"key"`
+	Value     string             `json:"value"`
+	Encrypted bool               `json:"encrypted,omitempty"`
 
 	CreatedAt time.Time  `json:"createdAt"`
 	UpdatedAt time.Time  `json:"updatedAt"`

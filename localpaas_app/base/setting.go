@@ -18,6 +18,7 @@ const (
 	SettingTypeSlack        = SettingType("slack")
 	SettingTypeDiscord      = SettingType("discord")
 	SettingTypeRegistryAuth = SettingType("registry-auth")
+	SettingTypeBasicAuth    = SettingType("basic-auth")
 	SettingTypeSsl          = SettingType("ssl")
 )
 

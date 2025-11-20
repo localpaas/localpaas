@@ -38,6 +38,7 @@ type GetSSHKeyResp struct {
 type SSHKeyResp struct {
 	ID              string                     `json:"id"`
 	Name            string                     `json:"name"`
+	Status          base.SettingStatus         `json:"status"`
 	PrivateKey      string                     `json:"privateKey"`
 	Passphrase      string                     `json:"passphrase,omitempty"`
 	Encrypted       bool                       `json:"encrypted,omitempty"`

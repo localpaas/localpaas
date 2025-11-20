@@ -6,6 +6,7 @@ import (
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
@@ -35,10 +36,11 @@ type GetDiscordResp struct {
 }
 
 type DiscordResp struct {
-	ID        string `json:"id"`
-	Name      string `json:"name"`
-	Webhook   string `json:"webhook"`
-	Encrypted bool   `json:"encrypted,omitempty"`
+	ID        string             `json:"id"`
+	Name      string             `json:"name"`
+	Status    base.SettingStatus `json:"status"`
+	Webhook   string             `json:"webhook"`
+	Encrypted bool               `json:"encrypted,omitempty"`
 
 	CreatedAt time.Time  `json:"createdAt"`
 	UpdatedAt time.Time  `json:"updatedAt"`

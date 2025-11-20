@@ -6,6 +6,7 @@ import (
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
@@ -35,18 +36,19 @@ type GetOAuthResp struct {
 }
 
 type OAuthResp struct {
-	ID           string   `json:"id"`
-	Kind         string   `json:"kind,omitempty"`
-	Name         string   `json:"name"`
-	ClientID     string   `json:"clientId"`
-	ClientSecret string   `json:"clientSecret"`
-	Organization string   `json:"organization"`
-	CallbackURL  string   `json:"callbackURL,omitempty"`
-	AuthURL      string   `json:"authURL,omitempty"`
-	TokenURL     string   `json:"tokenURL,omitempty"`
-	ProfileURL   string   `json:"profileURL,omitempty"`
-	Scopes       []string `json:"scopes,omitempty"`
-	Encrypted    bool     `json:"encrypted,omitempty"`
+	ID           string             `json:"id"`
+	Kind         string             `json:"kind,omitempty"`
+	Name         string             `json:"name"`
+	Status       base.SettingStatus `json:"status"`
+	ClientID     string             `json:"clientId"`
+	ClientSecret string             `json:"clientSecret"`
+	Organization string             `json:"organization"`
+	CallbackURL  string             `json:"callbackURL,omitempty"`
+	AuthURL      string             `json:"authURL,omitempty"`
+	TokenURL     string             `json:"tokenURL,omitempty"`
+	ProfileURL   string             `json:"profileURL,omitempty"`
+	Scopes       []string           `json:"scopes,omitempty"`
+	Encrypted    bool               `json:"encrypted,omitempty"`
 
 	CreatedAt time.Time  `json:"createdAt"`
 	UpdatedAt time.Time  `json:"updatedAt"`
