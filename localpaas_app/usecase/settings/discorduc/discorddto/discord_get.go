@@ -1,4 +1,4 @@
-package slackdto
+package discorddto
 
 import (
 	"time"
@@ -15,26 +15,26 @@ const (
 	maskedWebhook = "****************"
 )
 
-type GetSlackReq struct {
+type GetDiscordReq struct {
 	ID string `json:"-"`
 }
 
-func NewGetSlackReq() *GetSlackReq {
-	return &GetSlackReq{}
+func NewGetDiscordReq() *GetDiscordReq {
+	return &GetDiscordReq{}
 }
 
-func (req *GetSlackReq) Validate() apperrors.ValidationErrors {
+func (req *GetDiscordReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, basedto.ValidateID(&req.ID, true, "id")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type GetSlackResp struct {
+type GetDiscordResp struct {
 	Meta *basedto.BaseMeta `json:"meta"`
-	Data *SlackResp        `json:"data"`
+	Data *DiscordResp      `json:"data"`
 }
 
-type SlackResp struct {
+type DiscordResp struct {
 	ID        string `json:"id"`
 	Name      string `json:"name"`
 	Webhook   string `json:"webhook"`
@@ -45,12 +45,12 @@ type SlackResp struct {
 	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
 }
 
-func TransformSlack(setting *entity.Setting, decrypt bool) (resp *SlackResp, err error) {
+func TransformDiscord(setting *entity.Setting, decrypt bool) (resp *DiscordResp, err error) {
 	if err = copier.Copy(&resp, &setting); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	config, err := setting.ParseSlack(decrypt)
+	config, err := setting.ParseDiscord(decrypt)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

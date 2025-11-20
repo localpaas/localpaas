@@ -1,4 +1,4 @@
-package slackuc
+package discorduc
 
 import (
 	"context"
@@ -15,22 +15,22 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/slackuc/slackdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/discorduc/discorddto"
 )
 
-func (uc *SlackUC) CreateSlack(
+func (uc *DiscordUC) CreateDiscord(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *slackdto.CreateSlackReq,
-) (*slackdto.CreateSlackResp, error) {
-	slackData := &createSlackData{}
-	err := uc.loadSlackData(ctx, uc.db, req, slackData)
+	req *discorddto.CreateDiscordReq,
+) (*discorddto.CreateDiscordResp, error) {
+	discordData := &createDiscordData{}
+	err := uc.loadDiscordData(ctx, uc.db, req, discordData)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	persistingData := &persistingSlackData{}
-	uc.preparePersistingSlack(req.SlackBaseReq, persistingData)
+	persistingData := &persistingDiscordData{}
+	uc.preparePersistingDiscord(req.DiscordBaseReq, persistingData)
 
 	err = transaction.Execute(ctx, uc.db, func(db database.Tx) error {
 		return uc.persistData(ctx, db, persistingData)
@@ -40,62 +40,62 @@ func (uc *SlackUC) CreateSlack(
 	}
 
 	createdItem := persistingData.UpsertingSettings[0]
-	return &slackdto.CreateSlackResp{
+	return &discorddto.CreateDiscordResp{
 		Data: &basedto.ObjectIDResp{ID: createdItem.ID},
 	}, nil
 }
 
-type createSlackData struct {
+type createDiscordData struct {
 }
 
-func (uc *SlackUC) loadSlackData(
+func (uc *DiscordUC) loadDiscordData(
 	ctx context.Context,
 	db database.IDB,
-	req *slackdto.CreateSlackReq,
-	_ *createSlackData,
+	req *discorddto.CreateDiscordReq,
+	_ *createDiscordData,
 ) error {
-	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeSlack, req.Name, false)
+	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeDiscord, req.Name, false)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}
 	if setting != nil {
-		return apperrors.NewAlreadyExist("Slack").
-			WithMsgLog("slack setting '%s' already exists", req.Name)
+		return apperrors.NewAlreadyExist("Discord").
+			WithMsgLog("discord setting '%s' already exists", req.Name)
 	}
 
 	return nil
 }
 
-type persistingSlackData struct {
+type persistingDiscordData struct {
 	settingservice.PersistingSettingData
 }
 
-func (uc *SlackUC) preparePersistingSlack(
-	req *slackdto.SlackBaseReq,
-	persistingData *persistingSlackData,
+func (uc *DiscordUC) preparePersistingDiscord(
+	req *discorddto.DiscordBaseReq,
+	persistingData *persistingDiscordData,
 ) {
 	timeNow := timeutil.NowUTC()
 	setting := &entity.Setting{
 		ID:        gofn.Must(ulid.NewStringULID()),
-		Type:      base.SettingTypeSlack,
+		Type:      base.SettingTypeDiscord,
 		Status:    base.SettingStatusActive,
 		Name:      req.Name,
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,
 	}
 
-	slack := &entity.Slack{
+	discord := &entity.Discord{
 		Webhook: req.Webhook,
 	}
-	setting.MustSetData(slack.MustEncrypt())
+	setting.MustSetData(discord.MustEncrypt())
 
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 }
 
-func (uc *SlackUC) persistData(
+func (uc *DiscordUC) persistData(
 	ctx context.Context,
 	db database.IDB,
-	persistingData *persistingSlackData,
+	persistingData *persistingDiscordData,
 ) error {
 	err := uc.settingService.PersistSettingData(ctx, db, &persistingData.PersistingSettingData)
 	if err != nil {

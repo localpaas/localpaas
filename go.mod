@@ -12,6 +12,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/credentials v1.18.25
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.20.8
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.91.0
+	github.com/bwmarrin/discordgo v0.29.0
 	github.com/containerd/errdefs v0.3.0
 	github.com/docker/docker v28.5.1+incompatible
 	github.com/gin-contrib/cors v1.7.6

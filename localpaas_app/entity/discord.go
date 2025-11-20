@@ -10,18 +10,18 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/cryptoutil"
 )
 
-type Slack struct {
+type Discord struct {
 	Webhook string `json:"webhook"`
 
 	// NOTE: for storing current containing setting only
 	Setting *Setting `json:"-"`
 }
 
-func (o *Slack) IsEncrypted() bool {
+func (o *Discord) IsEncrypted() bool {
 	return strings.HasPrefix(o.Webhook, base.SaltPrefix)
 }
 
-func (o *Slack) Encrypt() error {
+func (o *Discord) Encrypt() error {
 	if o.IsEncrypted() {
 		return nil
 	}
@@ -33,12 +33,12 @@ func (o *Slack) Encrypt() error {
 	return nil
 }
 
-func (o *Slack) MustEncrypt() *Slack {
+func (o *Discord) MustEncrypt() *Discord {
 	gofn.Must1(o.Encrypt())
 	return o
 }
 
-func (o *Slack) Decrypt() error {
+func (o *Discord) Decrypt() error {
 	if !o.IsEncrypted() {
 		return nil
 	}
@@ -50,9 +50,9 @@ func (o *Slack) Decrypt() error {
 	return nil
 }
 
-func (s *Setting) ParseSlack(decrypt bool) (*Slack, error) {
-	res := &Slack{Setting: s}
-	if s != nil && s.Data != "" && s.Type == base.SettingTypeSlack {
+func (s *Setting) ParseDiscord(decrypt bool) (*Discord, error) {
+	res := &Discord{Setting: s}
+	if s != nil && s.Data != "" && s.Type == base.SettingTypeDiscord {
 		err := s.parseData(res)
 		if err != nil {
 			return nil, apperrors.Wrap(err)

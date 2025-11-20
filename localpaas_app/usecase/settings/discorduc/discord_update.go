@@ -1,4 +1,4 @@
-package slackuc
+package discorduc
 
 import (
 	"context"
@@ -12,23 +12,23 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/slackuc/slackdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/discorduc/discorddto"
 )
 
-func (uc *SlackUC) UpdateSlack(
+func (uc *DiscordUC) UpdateDiscord(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *slackdto.UpdateSlackReq,
-) (*slackdto.UpdateSlackResp, error) {
+	req *discorddto.UpdateDiscordReq,
+) (*discorddto.UpdateDiscordResp, error) {
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
-		slackData := &updateSlackData{}
-		err := uc.loadSlackDataForUpdate(ctx, db, req, slackData)
+		discordData := &updateDiscordData{}
+		err := uc.loadDiscordDataForUpdate(ctx, db, req, discordData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
 
-		persistingData := &persistingSlackData{}
-		uc.prepareUpdatingSlack(req.SlackBaseReq, slackData, persistingData)
+		persistingData := &persistingDiscordData{}
+		uc.prepareUpdatingDiscord(req.DiscordBaseReq, discordData, persistingData)
 
 		return uc.persistData(ctx, db, persistingData)
 	})
@@ -36,20 +36,20 @@ func (uc *SlackUC) UpdateSlack(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &slackdto.UpdateSlackResp{}, nil
+	return &discorddto.UpdateDiscordResp{}, nil
 }
 
-type updateSlackData struct {
+type updateDiscordData struct {
 	Setting *entity.Setting
 }
 
-func (uc *SlackUC) loadSlackDataForUpdate(
+func (uc *DiscordUC) loadDiscordDataForUpdate(
 	ctx context.Context,
 	db database.IDB,
-	req *slackdto.UpdateSlackReq,
-	data *updateSlackData,
+	req *discorddto.UpdateDiscordReq,
+	data *updateDiscordData,
 ) error {
-	setting, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeSlack, req.ID, false,
+	setting, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeDiscord, req.ID, false,
 		bunex.SelectFor("UPDATE OF setting"),
 	)
 	if err != nil {
@@ -59,20 +59,20 @@ func (uc *SlackUC) loadSlackDataForUpdate(
 
 	// If name changes, validate the new one
 	if req.Name != "" && !strings.EqualFold(setting.Name, req.Name) {
-		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeSlack, req.Name, false)
+		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeDiscord, req.Name, false)
 		if conflictSetting != nil {
-			return apperrors.NewAlreadyExist("Slack").
-				WithMsgLog("slack setting '%s' already exists", req.Name)
+			return apperrors.NewAlreadyExist("Discord").
+				WithMsgLog("discord setting '%s' already exists", req.Name)
 		}
 	}
 
 	return nil
 }
 
-func (uc *SlackUC) prepareUpdatingSlack(
-	req *slackdto.SlackBaseReq,
-	data *updateSlackData,
-	persistingData *persistingSlackData,
+func (uc *DiscordUC) prepareUpdatingDiscord(
+	req *discorddto.DiscordBaseReq,
+	data *updateDiscordData,
+	persistingData *persistingDiscordData,
 ) {
 	timeNow := timeutil.NowUTC()
 	setting := data.Setting
@@ -80,10 +80,10 @@ func (uc *SlackUC) prepareUpdatingSlack(
 	if req.Name != "" {
 		setting.Name = req.Name
 	}
-	slack := &entity.Slack{
+	discord := &entity.Discord{
 		Webhook: req.Webhook,
 	}
-	setting.MustSetData(slack.MustEncrypt())
+	setting.MustSetData(discord.MustEncrypt())
 
 	setting.UpdatedAt = timeNow
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)

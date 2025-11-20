@@ -1,0 +1,38 @@
+package discord
+
+import (
+	"context"
+
+	"github.com/bwmarrin/discordgo"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+)
+
+type WebhookMessageOption func(webhook *discordgo.WebhookParams)
+
+func (c *Client) WebhookExecute(ctx context.Context, webhookURL string, wait bool, content string,
+	options ...WebhookMessageOption) (*discordgo.Message, error) {
+	webhookID, token, err := parseWebhookURL(webhookURL)
+	if err != nil {
+		return nil, apperrors.New(err)
+	}
+
+	discord, err := discordgo.New("Bot " + token)
+	if err != nil {
+		return nil, apperrors.New(err)
+	}
+
+	msg := &discordgo.WebhookParams{
+		Content: content,
+	}
+	for _, opt := range options {
+		opt(msg)
+	}
+	resp, err := discord.WebhookExecute(webhookID, token, wait, msg, func(cfg *discordgo.RequestConfig) {
+		cfg.Client = c.httpClient
+	})
+	if err != nil {
+		return nil, apperrors.New(err)
+	}
+	return resp, nil
+}

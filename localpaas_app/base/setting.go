@@ -16,6 +16,7 @@ const (
 	SettingTypeSSHKey       = SettingType("ssh-key")
 	SettingTypeAPIKey       = SettingType("api-key")
 	SettingTypeSlack        = SettingType("slack")
+	SettingTypeDiscord      = SettingType("discord")
 	SettingTypeRegistryAuth = SettingType("registry-auth")
 	SettingTypeSsl          = SettingType("ssl")
 )

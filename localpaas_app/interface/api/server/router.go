@@ -292,6 +292,20 @@ func (s *HTTPServer) registerRoutes() {
 		slackGroup.POST("/test-send-msg", s.handlerRegistry.settingsHandler.TestSendSlackMsg)
 	}
 
+	{ // discord group
+		discordGroup := settingGroup.Group("/discord")
+		// Info
+		discordGroup.GET("/:ID", s.handlerRegistry.settingsHandler.GetDiscord)
+		discordGroup.GET("", s.handlerRegistry.settingsHandler.ListDiscord)
+		// Creation & Update
+		discordGroup.POST("", s.handlerRegistry.settingsHandler.CreateDiscord)
+		discordGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateDiscord)
+		discordGroup.PUT("/:ID/meta", s.handlerRegistry.settingsHandler.UpdateDiscordMeta)
+		discordGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteDiscord)
+		// Test connection
+		discordGroup.POST("/test-send-msg", s.handlerRegistry.settingsHandler.TestSendDiscordMsg)
+	}
+
 	{ // registry auth group
 		registryAuthGroup := settingGroup.Group("/registry-auth")
 		// Info

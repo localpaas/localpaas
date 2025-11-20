@@ -19,7 +19,7 @@ func (uc *SlackUC) GetSlack(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := slackdto.TransformSlack(setting)
+	resp, err := slackdto.TransformSlack(setting, true)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

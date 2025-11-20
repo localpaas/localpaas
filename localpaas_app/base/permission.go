@@ -31,6 +31,7 @@ const (
 	ResourceTypeAPIKey       ResourceType = "api-key"
 	ResourceTypeSecret       ResourceType = "secret"
 	ResourceTypeSlack        ResourceType = "slack"
+	ResourceTypeDiscord      ResourceType = "discord"
 	ResourceTypeRegistryAuth ResourceType = "registry-auth"
 	ResourceTypeSsl          ResourceType = "ssl"
 )

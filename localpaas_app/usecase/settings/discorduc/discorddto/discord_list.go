@@ -1,4 +1,4 @@
-package slackdto
+package discorddto
 
 import (
 	vld "github.com/tiendc/go-validator"
@@ -9,15 +9,15 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 )
 
-type ListSlackReq struct {
+type ListDiscordReq struct {
 	Status []base.SettingStatus `json:"-" mapstructure:"status"`
 	Search string               `json:"-" mapstructure:"search"`
 
 	Paging basedto.Paging `json:"-"`
 }
 
-func NewListSlackReq() *ListSlackReq {
-	return &ListSlackReq{
+func NewListDiscordReq() *ListDiscordReq {
+	return &ListDiscordReq{
 		Paging: basedto.Paging{
 			// Default paging if unset by client
 			Sort: basedto.Orders{{Direction: basedto.DirectionAsc, ColumnName: "name"}},
@@ -25,21 +25,21 @@ func NewListSlackReq() *ListSlackReq {
 	}
 }
 
-func (req *ListSlackReq) Validate() apperrors.ValidationErrors {
+func (req *ListDiscordReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, basedto.ValidateSlice(req.Status, true, 0, base.AllSettingStatuses, "status")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type ListSlackResp struct {
-	Meta *basedto.Meta `json:"meta"`
-	Data []*SlackResp  `json:"data"`
+type ListDiscordResp struct {
+	Meta *basedto.Meta  `json:"meta"`
+	Data []*DiscordResp `json:"data"`
 }
 
-func TransformSlacks(settings []*entity.Setting, decrypt bool) (resp []*SlackResp, err error) {
-	resp = make([]*SlackResp, 0, len(settings))
+func TransformDiscords(settings []*entity.Setting, decrypt bool) (resp []*DiscordResp, err error) {
+	resp = make([]*DiscordResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformSlack(setting, decrypt)
+		item, err := TransformDiscord(setting, decrypt)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

@@ -106,5 +106,11 @@ VALUES ('01JAB9XED0GTXBSQDFVYAJ8WE1', 'oauth', 'github', 'Github', 'active',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WE7', 'registry-auth', 'docker.io', 'docker.io ro', 'active',
         '{"address": "docker.io", "password": "lpsalt:xpbKUbDCp7mDbQ== zzzou62KRIRxm5mfg4FFWivJGaVH19FhuglZa2bfOAhM7UDsxfCx2Z4HnRJUOqSPv3Nc/AEb9iCzrFzvd5sFNA==", "username": "localpaastest"}',
+        '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
+       ('01JAB9XED0GTXBSQDFVYAJ8WE8', 'slack', NULL, 'webhook 1', 'active',
+        '{"webhook": "lpsalt:DZo0n5FM9NmYuA== fWmMb9cLMAjgsYuaH4CJTeA74SDvHXko7EPNv1LCv5o9XSmhRdi88PKb3GYPipq7pk/GErXEX9OIc5oaJ3K4GZXQk9dTAo6wqhiSke8Db3LvP/iNdnieWaZEyOIyGTSOjMLSSRsqXTlCmcTFfQ=="}',
+        '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
+       ('01JAB9XED0GTXBSQDFVYAJ8WE9', 'discord', NULL, 'webhook 1', 'active',
+        '{"webhook": "lpsalt:Kbdv16CTSIEPug== SwC3ghbKUQ7Lbq87+rQFH0JHUuM6/g6ZpiiSfxF1Q/R9RxLS7AbnqFOe486Y2LtP38T9ePG5Vjw7ieqLKAVq+2kkiVDSjMejOqe872a2Op3EPM4Idl73+0XJDLN+2MkzEbMHsnqlTpr9ddskzUdhPXdV8hTPKgJ5gFgX73ffv2r8B74bVqDZrhqxoqKsbg4Ft4Rm9XU="}',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00')
 ON CONFLICT DO NOTHING;

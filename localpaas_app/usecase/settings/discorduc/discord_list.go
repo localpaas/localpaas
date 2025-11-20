@@ -1,4 +1,4 @@
-package slackuc
+package discorduc
 
 import (
 	"context"
@@ -7,16 +7,16 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/slackuc/slackdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/discorduc/discorddto"
 )
 
-func (uc *SlackUC) ListSlack(
+func (uc *DiscordUC) ListDiscord(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *slackdto.ListSlackReq,
-) (*slackdto.ListSlackResp, error) {
+	req *discorddto.ListDiscordReq,
+) (*discorddto.ListDiscordResp, error) {
 	listOpts := []bunex.SelectQueryOption{
-		bunex.SelectWhere("setting.type = ?", base.SettingTypeSlack),
+		bunex.SelectWhere("setting.type = ?", base.SettingTypeDiscord),
 	}
 
 	if len(req.Status) > 0 {
@@ -42,12 +42,12 @@ func (uc *SlackUC) ListSlack(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := slackdto.TransformSlacks(settings, false)
+	resp, err := discorddto.TransformDiscords(settings, false)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &slackdto.ListSlackResp{
+	return &discorddto.ListDiscordResp{
 		Meta: &basedto.Meta{Page: paging},
 		Data: resp,
 	}, nil

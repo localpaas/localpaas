@@ -3,6 +3,7 @@ package settingshandler
 import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/discorduc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/registryauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/s3storageuc"
@@ -20,6 +21,7 @@ type SettingsHandler struct {
 	sshKeyUC       *sshkeyuc.SSHKeyUC
 	secretUC       *secretuc.SecretUC
 	slackUC        *slackuc.SlackUC
+	discordUC      *discorduc.DiscordUC
 	registryAuthUC *registryauthuc.RegistryAuthUC
 	sslUC          *ssluc.SslUC
 }
@@ -31,6 +33,7 @@ func NewSettingsHandler(
 	sshKeyUC *sshkeyuc.SSHKeyUC,
 	secretUC *secretuc.SecretUC,
 	slackUC *slackuc.SlackUC,
+	discordUC *discorduc.DiscordUC,
 	registryAuthUC *registryauthuc.RegistryAuthUC,
 	sslUC *ssluc.SslUC,
 ) *SettingsHandler {
@@ -41,6 +44,7 @@ func NewSettingsHandler(
 		sshKeyUC:       sshKeyUC,
 		secretUC:       secretUC,
 		slackUC:        slackUC,
+		discordUC:      discordUC,
 		registryAuthUC: registryAuthUC,
 		sslUC:          sslUC,
 	}
