@@ -15,8 +15,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/config"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/oauthuc/oauthdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc/sessiondto"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc/oauthdto"
 )
 
 const (

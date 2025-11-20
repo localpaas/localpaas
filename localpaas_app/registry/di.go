@@ -9,8 +9,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/clusterhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projecthandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/providershandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
-	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/settingshandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/userhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/usersettingshandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/server"
@@ -28,15 +28,15 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/nodeuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/volumeuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/discorduc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/oauthuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/registryauthuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/s3storageuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/secretuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/slackuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/sshkeyuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/ssluc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/discorduc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/registryauthuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/s3storageuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/slackuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc"
 	"github.com/localpaas/localpaas/services/docker"
@@ -74,7 +74,7 @@ var Provides = []any{
 	userhandler.NewUserHandler,
 	projecthandler.NewProjectHandler,
 	apphandler.NewAppHandler,
-	settingshandler.NewSettingsHandler,
+	providershandler.NewProvidersHandler,
 	usersettingshandler.NewUserSettingsHandler,
 
 	// Use case

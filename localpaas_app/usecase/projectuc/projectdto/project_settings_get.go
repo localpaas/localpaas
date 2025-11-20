@@ -8,7 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc/secretdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/secretuc/secretdto"
 )
 
 type GetProjectSettingsReq struct {

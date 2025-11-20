@@ -40,14 +40,15 @@ type ResourceModule string
 
 const (
 	ResourceModuleSettings ResourceModule = "mod::settings"
+	ResourceModuleProvider ResourceModule = "mod::provider"
 	ResourceModuleCluster  ResourceModule = "mod::cluster"
 	ResourceModuleUser     ResourceModule = "mod::user"
 	ResourceModuleProject  ResourceModule = "mod::project"
 )
 
 var (
-	AllResourceModules = []ResourceModule{ResourceModuleSettings, ResourceModuleUser, ResourceModuleCluster,
-		ResourceModuleProject}
+	AllResourceModules = []ResourceModule{ResourceModuleSettings, ResourceModuleProvider, ResourceModuleUser,
+		ResourceModuleCluster, ResourceModuleProject}
 )
 
 type ActionType string

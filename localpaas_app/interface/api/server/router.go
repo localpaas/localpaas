@@ -11,8 +11,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/clusterhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projecthandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/providershandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
-	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/settingshandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/userhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/usersettingshandler"
 )
@@ -24,7 +24,7 @@ type HandlerRegistry struct {
 	userHandler         *userhandler.UserHandler
 	projectHandler      *projecthandler.ProjectHandler
 	appHandler          *apphandler.AppHandler
-	settingsHandler     *settingshandler.SettingsHandler
+	providersHandler    *providershandler.ProvidersHandler
 	userSettingsHandler *usersettingshandler.UserSettingsHandler
 }
 
@@ -35,7 +35,7 @@ func NewHandlerRegistry(
 	userHandler *userhandler.UserHandler,
 	projectHandler *projecthandler.ProjectHandler,
 	appHandler *apphandler.AppHandler,
-	settingsHandler *settingshandler.SettingsHandler,
+	providersHandler *providershandler.ProvidersHandler,
 	userSettingsHandler *usersettingshandler.UserSettingsHandler,
 ) *HandlerRegistry {
 	return &HandlerRegistry{
@@ -45,7 +45,7 @@ func NewHandlerRegistry(
 		userHandler:         userHandler,
 		projectHandler:      projectHandler,
 		appHandler:          appHandler,
-		settingsHandler:     settingsHandler,
+		providersHandler:    providersHandler,
 		userSettingsHandler: userSettingsHandler,
 	}
 }
@@ -228,108 +228,108 @@ func (s *HTTPServer) registerRoutes() {
 		})
 	}
 
-	settingGroup := apiGroup.Group("/settings")
+	providerGroup := apiGroup.Group("/providers")
 
 	{ // ssh key group
-		oauthGroup := settingGroup.Group("/oauth")
+		oauthGroup := providerGroup.Group("/oauth")
 		// Info
-		oauthGroup.GET("/:ID", s.handlerRegistry.settingsHandler.GetOAuth)
-		oauthGroup.GET("", s.handlerRegistry.settingsHandler.ListOAuth)
+		oauthGroup.GET("/:ID", s.handlerRegistry.providersHandler.GetOAuth)
+		oauthGroup.GET("", s.handlerRegistry.providersHandler.ListOAuth)
 		// Creation & Update
-		oauthGroup.POST("", s.handlerRegistry.settingsHandler.CreateOAuth)
-		oauthGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateOAuth)
-		oauthGroup.PUT("/:ID/meta", s.handlerRegistry.settingsHandler.UpdateOAuthMeta)
-		oauthGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteOAuth)
+		oauthGroup.POST("", s.handlerRegistry.providersHandler.CreateOAuth)
+		oauthGroup.PUT("/:ID", s.handlerRegistry.providersHandler.UpdateOAuth)
+		oauthGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateOAuthMeta)
+		oauthGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteOAuth)
 	}
 
 	{ // s3 storage group
-		s3StorageGroup := settingGroup.Group("/s3-storages")
+		s3StorageGroup := providerGroup.Group("/s3-storages")
 		// Info
-		s3StorageGroup.GET("/:ID", s.handlerRegistry.settingsHandler.GetS3Storage)
-		s3StorageGroup.GET("", s.handlerRegistry.settingsHandler.ListS3Storage)
+		s3StorageGroup.GET("/:ID", s.handlerRegistry.providersHandler.GetS3Storage)
+		s3StorageGroup.GET("", s.handlerRegistry.providersHandler.ListS3Storage)
 		// Creation & Update
-		s3StorageGroup.POST("", s.handlerRegistry.settingsHandler.CreateS3Storage)
-		s3StorageGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateS3Storage)
-		s3StorageGroup.PUT("/:ID/meta", s.handlerRegistry.settingsHandler.UpdateS3StorageMeta)
-		s3StorageGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteS3Storage)
+		s3StorageGroup.POST("", s.handlerRegistry.providersHandler.CreateS3Storage)
+		s3StorageGroup.PUT("/:ID", s.handlerRegistry.providersHandler.UpdateS3Storage)
+		s3StorageGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateS3StorageMeta)
+		s3StorageGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteS3Storage)
 		// Test connection
-		s3StorageGroup.POST("/test-conn", s.handlerRegistry.settingsHandler.TestS3StorageConn)
+		s3StorageGroup.POST("/test-conn", s.handlerRegistry.providersHandler.TestS3StorageConn)
 	}
 
 	{ // ssh key group
-		sshKeyGroup := settingGroup.Group("/ssh-keys")
+		sshKeyGroup := providerGroup.Group("/ssh-keys")
 		// Info
-		sshKeyGroup.GET("/:ID", s.handlerRegistry.settingsHandler.GetSSHKey)
-		sshKeyGroup.GET("", s.handlerRegistry.settingsHandler.ListSSHKey)
+		sshKeyGroup.GET("/:ID", s.handlerRegistry.providersHandler.GetSSHKey)
+		sshKeyGroup.GET("", s.handlerRegistry.providersHandler.ListSSHKey)
 		// Creation & Update
-		sshKeyGroup.POST("", s.handlerRegistry.settingsHandler.CreateSSHKey)
-		sshKeyGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateSSHKey)
-		sshKeyGroup.PUT("/:ID/meta", s.handlerRegistry.settingsHandler.UpdateSSHKeyMeta)
-		sshKeyGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteSSHKey)
+		sshKeyGroup.POST("", s.handlerRegistry.providersHandler.CreateSSHKey)
+		sshKeyGroup.PUT("/:ID", s.handlerRegistry.providersHandler.UpdateSSHKey)
+		sshKeyGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateSSHKeyMeta)
+		sshKeyGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteSSHKey)
 	}
 
 	{ // secrets group
-		secretGroup := settingGroup.Group("/secrets")
+		secretGroup := providerGroup.Group("/secrets")
 		// Info
-		secretGroup.GET("", s.handlerRegistry.settingsHandler.ListSecret)
+		secretGroup.GET("", s.handlerRegistry.providersHandler.ListSecret)
 		// Creation & Update
-		secretGroup.POST("", s.handlerRegistry.settingsHandler.CreateSecret)
-		secretGroup.PUT("/:ID/meta", s.handlerRegistry.settingsHandler.UpdateSecretMeta)
-		secretGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteSecret)
+		secretGroup.POST("", s.handlerRegistry.providersHandler.CreateSecret)
+		secretGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateSecretMeta)
+		secretGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteSecret)
 	}
 
 	{ // slack group
-		slackGroup := settingGroup.Group("/slack")
+		slackGroup := providerGroup.Group("/slack")
 		// Info
-		slackGroup.GET("/:ID", s.handlerRegistry.settingsHandler.GetSlack)
-		slackGroup.GET("", s.handlerRegistry.settingsHandler.ListSlack)
+		slackGroup.GET("/:ID", s.handlerRegistry.providersHandler.GetSlack)
+		slackGroup.GET("", s.handlerRegistry.providersHandler.ListSlack)
 		// Creation & Update
-		slackGroup.POST("", s.handlerRegistry.settingsHandler.CreateSlack)
-		slackGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateSlack)
-		slackGroup.PUT("/:ID/meta", s.handlerRegistry.settingsHandler.UpdateSlackMeta)
-		slackGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteSlack)
+		slackGroup.POST("", s.handlerRegistry.providersHandler.CreateSlack)
+		slackGroup.PUT("/:ID", s.handlerRegistry.providersHandler.UpdateSlack)
+		slackGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateSlackMeta)
+		slackGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteSlack)
 		// Test connection
-		slackGroup.POST("/test-send-msg", s.handlerRegistry.settingsHandler.TestSendSlackMsg)
+		slackGroup.POST("/test-send-msg", s.handlerRegistry.providersHandler.TestSendSlackMsg)
 	}
 
 	{ // discord group
-		discordGroup := settingGroup.Group("/discord")
+		discordGroup := providerGroup.Group("/discord")
 		// Info
-		discordGroup.GET("/:ID", s.handlerRegistry.settingsHandler.GetDiscord)
-		discordGroup.GET("", s.handlerRegistry.settingsHandler.ListDiscord)
+		discordGroup.GET("/:ID", s.handlerRegistry.providersHandler.GetDiscord)
+		discordGroup.GET("", s.handlerRegistry.providersHandler.ListDiscord)
 		// Creation & Update
-		discordGroup.POST("", s.handlerRegistry.settingsHandler.CreateDiscord)
-		discordGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateDiscord)
-		discordGroup.PUT("/:ID/meta", s.handlerRegistry.settingsHandler.UpdateDiscordMeta)
-		discordGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteDiscord)
+		discordGroup.POST("", s.handlerRegistry.providersHandler.CreateDiscord)
+		discordGroup.PUT("/:ID", s.handlerRegistry.providersHandler.UpdateDiscord)
+		discordGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateDiscordMeta)
+		discordGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteDiscord)
 		// Test connection
-		discordGroup.POST("/test-send-msg", s.handlerRegistry.settingsHandler.TestSendDiscordMsg)
+		discordGroup.POST("/test-send-msg", s.handlerRegistry.providersHandler.TestSendDiscordMsg)
 	}
 
 	{ // registry auth group
-		registryAuthGroup := settingGroup.Group("/registry-auth")
+		registryAuthGroup := providerGroup.Group("/registry-auth")
 		// Info
-		registryAuthGroup.GET("/:ID", s.handlerRegistry.settingsHandler.GetRegistryAuth)
-		registryAuthGroup.GET("", s.handlerRegistry.settingsHandler.ListRegistryAuth)
+		registryAuthGroup.GET("/:ID", s.handlerRegistry.providersHandler.GetRegistryAuth)
+		registryAuthGroup.GET("", s.handlerRegistry.providersHandler.ListRegistryAuth)
 		// Creation & Update
-		registryAuthGroup.POST("", s.handlerRegistry.settingsHandler.CreateRegistryAuth)
-		registryAuthGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateRegistryAuth)
-		registryAuthGroup.PUT("/:ID/meta", s.handlerRegistry.settingsHandler.UpdateRegistryAuthMeta)
-		registryAuthGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteRegistryAuth)
+		registryAuthGroup.POST("", s.handlerRegistry.providersHandler.CreateRegistryAuth)
+		registryAuthGroup.PUT("/:ID", s.handlerRegistry.providersHandler.UpdateRegistryAuth)
+		registryAuthGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateRegistryAuthMeta)
+		registryAuthGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteRegistryAuth)
 		// Test connection
-		registryAuthGroup.POST("/test-conn", s.handlerRegistry.settingsHandler.TestRegistryAuthConn)
+		registryAuthGroup.POST("/test-conn", s.handlerRegistry.providersHandler.TestRegistryAuthConn)
 	}
 
 	{ // ssl group
-		sslGroup := settingGroup.Group("/ssls")
+		sslGroup := providerGroup.Group("/ssls")
 		// Info
-		sslGroup.GET("/:ID", s.handlerRegistry.settingsHandler.GetSsl)
-		sslGroup.GET("", s.handlerRegistry.settingsHandler.ListSsl)
+		sslGroup.GET("/:ID", s.handlerRegistry.providersHandler.GetSsl)
+		sslGroup.GET("", s.handlerRegistry.providersHandler.ListSsl)
 		// Creation & Update
-		sslGroup.POST("", s.handlerRegistry.settingsHandler.CreateSsl)
-		sslGroup.PUT("/:ID", s.handlerRegistry.settingsHandler.UpdateSsl)
-		sslGroup.PUT("/:ID/meta", s.handlerRegistry.settingsHandler.UpdateSslMeta)
-		sslGroup.DELETE("/:ID", s.handlerRegistry.settingsHandler.DeleteSsl)
+		sslGroup.POST("", s.handlerRegistry.providersHandler.CreateSsl)
+		sslGroup.PUT("/:ID", s.handlerRegistry.providersHandler.UpdateSsl)
+		sslGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateSslMeta)
+		sslGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteSsl)
 	}
 }
 

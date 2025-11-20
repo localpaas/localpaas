@@ -80,11 +80,13 @@ VALUES ('user', '01JAB9XED0GTXBSQDFVYAJ8WA1', 'project', '01JAB9XED0GTXBSQDFVYAJ
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('user', '01JAB9XED0GTXBSQDFVYAJ8WA2', 'module', 'mod::settings', true, true, true,
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
+       ('user', '01JAB9XED0GTXBSQDFVYAJ8WA2', 'module', 'mod::provider', true, true, true,
+        '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('user', '01JAB9XED0GTXBSQDFVYAJ8WA2', 'module', 'mod::cluster', true, true, true,
         '2025-10-01 00:00:00', '2025-10-01 00:00:00')
 ON CONFLICT DO NOTHING;
 
--- Settings: OAuth
+-- Settings: Providers
 INSERT INTO settings (id, type, kind, name, status, data, created_at, updated_at)
 VALUES ('01JAB9XED0GTXBSQDFVYAJ8WE1', 'oauth', 'github', 'Github', 'active',
         '{"org": "localpaas-test", "clientId": "Iv23liObQsEr3GigALXt", "clientSecret": "lpsalt:27AyosacFwi8CA== EsRjd1QQkZ8YmKOqWMUM2iMvrY+MWShSv9CV5whZbXKq6wjB8H36U2oLFBLbWD06hJ+DUSzvUmEWjk2XrxRlkyN4MV4="}',

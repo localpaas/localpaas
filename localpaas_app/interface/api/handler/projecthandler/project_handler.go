@@ -4,7 +4,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/secretuc"
 )
 
 type ProjectHandler struct {
