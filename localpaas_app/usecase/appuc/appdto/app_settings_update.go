@@ -5,7 +5,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
 )
 
 type UpdateAppSettingsReq struct {
@@ -13,48 +12,7 @@ type UpdateAppSettingsReq struct {
 	AppID              string                 `json:"-"`
 	EnvVars            EnvVarsReq             `json:"envVars"`
 	DeploymentSettings *DeploymentSettingsReq `json:"deploymentSettings"`
-}
-
-type EnvVarsReq []*EnvVarReq
-
-type EnvVarReq struct {
-	Key        string `json:"key"`
-	Value      string `json:"value"`
-	IsBuildEnv bool   `json:"isBuildEnv"`
-}
-
-func (req *EnvVarReq) ToEntity() *entity.EnvVar {
-	return &entity.EnvVar{
-		Key:        req.Key,
-		Value:      req.Value,
-		IsBuildEnv: req.IsBuildEnv,
-	}
-}
-
-func (req *EnvVarsReq) validate(_ string) []vld.Validator { //nolint
-	if req == nil {
-		return nil
-	}
-	// TODO: add validation
-	return nil
-}
-
-type DeploymentSettingsReq struct {
-	Test string `json:"test"`
-}
-
-func (req *DeploymentSettingsReq) ToEntity() *entity.AppDeploymentSettings {
-	return &entity.AppDeploymentSettings{
-		// TODO: handle this
-	}
-}
-
-func (req *DeploymentSettingsReq) validate(_ string) []vld.Validator { //nolint
-	if req == nil {
-		return nil
-	}
-	// TODO: add validation
-	return nil
+	HttpSettings       *HttpSettingsReq       `json:"httpSettings"`
 }
 
 func NewUpdateAppSettingsReq() *UpdateAppSettingsReq {
@@ -68,6 +26,7 @@ func (req *UpdateAppSettingsReq) Validate() apperrors.ValidationErrors {
 	validators = append(validators, basedto.ValidateID(&req.AppID, true, "appId")...)
 	validators = append(validators, req.EnvVars.validate("envVars")...)
 	validators = append(validators, req.DeploymentSettings.validate("deploymentSettings")...)
+	validators = append(validators, req.HttpSettings.validate("httpSettings")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 

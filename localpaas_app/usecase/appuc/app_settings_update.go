@@ -3,8 +3,6 @@ package appuc
 import (
 	"context"
 
-	"github.com/tiendc/gofn"
-
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -13,7 +11,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
 )
 
@@ -30,9 +27,21 @@ func (uc *AppUC) UpdateAppSettings(
 		}
 
 		persistingData := &persistingAppData{}
-		uc.preparePersistingAppSettings(req, data, persistingData)
+		err = uc.preparePersistingAppSettings(req, data, persistingData)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 
-		return uc.persistData(ctx, db, persistingData)
+		err = uc.persistData(ctx, db, persistingData)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+
+		err = uc.applyAppSettings(ctx, db, req, data)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+		return nil
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -43,6 +52,10 @@ func (uc *AppUC) UpdateAppSettings(
 
 type updateAppSettingsData struct {
 	App *entity.App
+
+	EnvVarsData      appEnvVarsData
+	DeploymentData   appDeploymentData
+	HttpSettingsData appHttpSettingsData
 }
 
 func (uc *AppUC) loadAppSettingsDataForUpdate(
@@ -56,7 +69,9 @@ func (uc *AppUC) loadAppSettingsDataForUpdate(
 	case req.EnvVars != nil:
 		targetTypes = append(targetTypes, base.SettingTypeEnvVar)
 	case req.DeploymentSettings != nil:
-		targetTypes = append(targetTypes, base.SettingTypeDeployment)
+		targetTypes = append(targetTypes, base.SettingTypeAppDeployment)
+	case req.HttpSettings != nil:
+		targetTypes = append(targetTypes, base.SettingTypeAppHttp)
 	}
 
 	app, err := uc.appRepo.GetByID(ctx, db, req.ProjectID, req.AppID,
@@ -70,6 +85,28 @@ func (uc *AppUC) loadAppSettingsDataForUpdate(
 	}
 	data.App = app
 
+	for _, setting := range app.Settings {
+		switch setting.Type { //nolint:exhaustive
+		case base.SettingTypeEnvVar:
+			data.EnvVarsData.EnvVarsSettings = setting
+		case base.SettingTypeAppDeployment:
+			data.DeploymentData.DeploymentSettings = setting
+		case base.SettingTypeAppHttp:
+			data.HttpSettingsData.HttpSettings = setting
+		}
+	}
+
+	switch {
+	case req.EnvVars != nil:
+		err = uc.loadAppDataForUpdateEnvVars(ctx, db, req, data)
+	case req.DeploymentSettings != nil:
+		err = uc.loadAppDataForUpdateDeploymentSettings(ctx, db, req, data)
+	case req.HttpSettings != nil:
+		err = uc.loadAppDataForUpdateHttpSettings(ctx, db, req, data)
+	}
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
 	return nil
 }
 
@@ -77,43 +114,39 @@ func (uc *AppUC) preparePersistingAppSettings(
 	req *appdto.UpdateAppSettingsReq,
 	data *updateAppSettingsData,
 	persistingData *persistingAppData,
-) {
+) (err error) {
 	timeNow := timeutil.NowUTC()
-	app := data.App
 
-	if req.EnvVars != nil {
-		setting := app.GetSettingByType(base.SettingTypeEnvVar)
-		if setting == nil {
-			setting = &entity.Setting{
-				ID:        gofn.Must(ulid.NewStringULID()),
-				ObjectID:  app.ID,
-				Type:      base.SettingTypeEnvVar,
-				Status:    base.SettingStatusActive,
-				CreatedAt: timeNow,
-			}
-		}
-		setting.UpdatedAt = timeNow
-		setting.MustSetData(&entity.EnvVars{Data: gofn.MapSlice(req.EnvVars, func(v *appdto.EnvVarReq) *entity.EnvVar {
-			return v.ToEntity()
-		})})
-
-		persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
+	switch {
+	case req.EnvVars != nil:
+		err = uc.prepareUpdatingAppEnvVars(req, timeNow, data, persistingData)
+	case req.DeploymentSettings != nil:
+		err = uc.prepareUpdatingAppDeploymentSettings(req, timeNow, data, persistingData)
+	case req.HttpSettings != nil:
+		err = uc.prepareUpdatingAppHttpSettings(req, timeNow, data, persistingData)
 	}
-
-	if req.DeploymentSettings != nil {
-		setting := app.GetSettingByType(base.SettingTypeDeployment)
-		if setting == nil {
-			setting = &entity.Setting{
-				ID:        gofn.Must(ulid.NewStringULID()),
-				ObjectID:  app.ID,
-				Type:      base.SettingTypeDeployment,
-				Status:    base.SettingStatusActive,
-				CreatedAt: timeNow,
-			}
-		}
-		setting.UpdatedAt = timeNow
-		setting.MustSetData(req.DeploymentSettings.ToEntity())
-
-		persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
+	if err != nil {
+		return apperrors.Wrap(err)
 	}
+	return nil
+}
+
+func (uc *AppUC) applyAppSettings(
+	ctx context.Context,
+	db database.IDB,
+	req *appdto.UpdateAppSettingsReq,
+	data *updateAppSettingsData,
+) (err error) {
+	switch {
+	case req.EnvVars != nil:
+		err = uc.applyAppEnvVars(ctx, db, req, data)
+	case req.DeploymentSettings != nil:
+		err = uc.applyAppDeploymentSettings(ctx, db, req, data)
+	case req.HttpSettings != nil:
+		err = uc.applyAppHttpSettings(ctx, db, req, data)
+	}
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
 }

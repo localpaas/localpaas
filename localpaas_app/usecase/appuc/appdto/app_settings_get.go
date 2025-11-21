@@ -7,7 +7,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 )
 
 type GetAppSettingsReq struct {
@@ -39,28 +38,8 @@ type GetAppSettingsResp struct {
 
 type AppSettingsResp struct {
 	EnvVars            *EnvVarsResp            `json:"envVars,omitempty"`
-	ServiceSpec        *ServiceSpecResp        `json:"serviceSpec,omitempty"`
 	DeploymentSettings *DeploymentSettingsResp `json:"deploymentSettings,omitempty"`
-}
-
-type EnvVarsResp struct {
-	App       []*EnvVarResp `json:"app"`
-	ParentApp []*EnvVarResp `json:"parentApp"`
-	Project   []*EnvVarResp `json:"project"`
-}
-
-type EnvVarResp struct {
-	Key        string `json:"key"`
-	Value      string `json:"value"`
-	IsBuildEnv bool   `json:"isBuildEnv,omitempty"`
-}
-
-type ServiceSpecResp struct {
-	Test string `json:"test"`
-}
-
-type DeploymentSettingsResp struct {
-	Test string `json:"test"`
+	HttpSettings       *HttpSettingsResp       `json:"httpSettings,omitempty"`
 }
 
 func TransformAppSettings(app *entity.App) (resp *AppSettingsResp, err error) {
@@ -71,13 +50,15 @@ func TransformAppSettings(app *entity.App) (resp *AppSettingsResp, err error) {
 		switch setting.Type { //nolint:exhaustive
 		case base.SettingTypeEnvVar:
 			envVarSettings = append(envVarSettings, setting)
-		case base.SettingTypeServiceSpec:
-			resp.ServiceSpec, err = TransformServiceSpec(setting)
+
+		case base.SettingTypeAppDeployment:
+			resp.DeploymentSettings, err = TransformDeploymentSettings(setting)
 			if err != nil {
 				return nil, apperrors.Wrap(err)
 			}
-		case base.SettingTypeDeployment:
-			resp.DeploymentSettings, err = TransformDeploymentSettings(setting)
+
+		case base.SettingTypeAppHttp:
+			resp.HttpSettings, err = TransformHttpSettings(setting)
 			if err != nil {
 				return nil, apperrors.Wrap(err)
 			}
@@ -91,78 +72,5 @@ func TransformAppSettings(app *entity.App) (resp *AppSettingsResp, err error) {
 		}
 	}
 
-	return resp, nil
-}
-
-func TransformEnvVars(app *entity.App, envSettings []*entity.Setting) (resp *EnvVarsResp, err error) {
-	var appEnvVars, parentAppEnvVars, projectEnvVars *entity.EnvVars
-	for _, envSetting := range envSettings {
-		switch envSetting.ObjectID {
-		case app.ID:
-			appEnvVars, err = envSetting.ParseEnvVars()
-		case app.ProjectID:
-			projectEnvVars, err = envSetting.ParseEnvVars()
-		case app.ParentID:
-			parentAppEnvVars, err = envSetting.ParseEnvVars()
-		}
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-	}
-
-	resp = &EnvVarsResp{
-		App:       []*EnvVarResp{},
-		ParentApp: []*EnvVarResp{},
-		Project:   []*EnvVarResp{},
-	}
-	if appEnvVars != nil {
-		for _, v := range appEnvVars.Data {
-			resp.App = append(resp.App, &EnvVarResp{
-				Key:        v.Key,
-				Value:      v.Value,
-				IsBuildEnv: v.IsBuildEnv,
-			})
-		}
-	}
-	if parentAppEnvVars != nil {
-		for _, v := range parentAppEnvVars.Data {
-			resp.ParentApp = append(resp.ParentApp, &EnvVarResp{
-				Key:        v.Key,
-				Value:      v.Value,
-				IsBuildEnv: v.IsBuildEnv,
-			})
-		}
-	}
-	if projectEnvVars != nil {
-		for _, v := range projectEnvVars.Data {
-			resp.Project = append(resp.Project, &EnvVarResp{
-				Key:        v.Key,
-				Value:      v.Value,
-				IsBuildEnv: v.IsBuildEnv,
-			})
-		}
-	}
-	return resp, nil
-}
-
-func TransformServiceSpec(setting *entity.Setting) (resp *ServiceSpecResp, err error) {
-	data, err := setting.ParseAppServiceSpec()
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-	if err = copier.Copy(&resp, &data); err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-	return resp, nil
-}
-
-func TransformDeploymentSettings(setting *entity.Setting) (resp *DeploymentSettingsResp, err error) {
-	data, err := setting.ParseAppDeploymentSettings()
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-	if err = copier.Copy(&resp, &data); err != nil {
-		return nil, apperrors.Wrap(err)
-	}
 	return resp, nil
 }

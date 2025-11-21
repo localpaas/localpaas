@@ -28,7 +28,7 @@ type DeploymentCodeSource struct {
 
 func (s *Setting) ParseAppDeploymentSettings() (*AppDeploymentSettings, error) {
 	res := &AppDeploymentSettings{Setting: s}
-	if s != nil && s.Data != "" && s.Type == base.SettingTypeDeployment {
+	if s != nil && s.Data != "" && s.Type == base.SettingTypeAppDeployment {
 		return res, s.parseData(res)
 	}
 	return nil, nil

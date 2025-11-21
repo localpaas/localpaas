@@ -19,7 +19,7 @@ func (s *envVarService) BuildAppEnv(ctx context.Context, db database.IDB, app *e
 	objectIDs := gofn.ToSliceSkippingZero(app.ID, app.ParentID, app.ProjectID)
 	settings, _, err := s.settingRepo.List(ctx, db, nil,
 		bunex.SelectWhere("setting.type IN (?)",
-			[]base.SettingType{base.SettingTypeEnvVar, base.SettingTypeSecret}),
+			bunex.In([]base.SettingType{base.SettingTypeEnvVar, base.SettingTypeSecret})),
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
 		bunex.SelectWhere("setting.object_id IN (?)", bunex.In(objectIDs)),
 	)
