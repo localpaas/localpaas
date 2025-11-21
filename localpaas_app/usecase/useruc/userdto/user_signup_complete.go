@@ -31,6 +31,7 @@ type CompleteUserSignupReq struct {
 }
 
 type UserPhotoReq struct {
+	Delete     bool   `json:"delete"`
 	FileName   string `json:"fileName"`
 	DataBase64 string `json:"dataBase64"`
 

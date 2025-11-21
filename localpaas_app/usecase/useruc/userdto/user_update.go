@@ -1,8 +1,6 @@
 package userdto
 
 import (
-	"encoding/base64"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -20,7 +18,6 @@ type UpdateUserReq struct {
 	Email           string                       `json:"email"`
 	FullName        string                       `json:"fullName"`
 	Position        *string                      `json:"position"`
-	Photo           *UserPhotoReq                `json:"photo"`
 	Status          *base.UserStatus             `json:"status"`
 	Role            *base.UserRole               `json:"role"`
 	Notes           *string                      `json:"notes"`
@@ -38,11 +35,6 @@ func (req *UpdateUserReq) ModifyRequest() error {
 	req.Username = strings.TrimSpace(req.Username)
 	req.Email = strutil.NormalizeEmail(req.Email)
 	req.FullName = strings.TrimSpace(req.FullName)
-	// Parse photo
-	if req.Photo != nil && req.Photo.FileName != "" && req.Photo.DataBase64 != "" {
-		req.Photo.DataBytes, _ = base64.StdEncoding.DecodeString(req.Photo.DataBase64)
-		req.Photo.FileExt = strings.ToLower(filepath.Ext(req.Photo.FileName))
-	}
 	return nil
 }
 
@@ -55,7 +47,6 @@ func (req *UpdateUserReq) Validate() apperrors.ValidationErrors {
 		"fullName")...)
 	validators = append(validators, basedto.ValidateStr(req.Position, false,
 		minNameLen, maxNameLen, "position")...)
-	validators = append(validators, validateUserPhoto(req.Photo, "photo")...)
 	validators = append(validators, basedto.ValidateStrIn(req.Status, false, base.AllUserStatuses,
 		"status")...)
 	validators = append(validators, basedto.ValidateStrIn(req.Role, false, base.AllUserRoles,

@@ -96,7 +96,7 @@ func (uc *UserUC) loadUserProfileData(
 	}
 
 	// Save user photo to local disk
-	if req.Photo != nil && req.Photo.FileName != "" {
+	if req.Photo != nil && req.Photo.FileExt != "" && len(req.Photo.DataBytes) > 0 {
 		err = uc.userService.SaveUserPhoto(ctx, user, req.Photo.DataBytes, req.Photo.FileExt)
 		if err != nil {
 			return apperrors.Wrap(err)
@@ -128,7 +128,7 @@ func (uc *UserUC) preparePersistingUserProfileData(
 	if req.Position != nil {
 		user.Position = *req.Position
 	}
-	if req.Photo != nil && req.Photo.FileName == "" {
+	if req.Photo != nil && req.Photo.Delete {
 		user.Photo = ""
 	}
 	if req.Notes != nil {

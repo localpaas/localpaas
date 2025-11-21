@@ -90,14 +90,6 @@ func (uc *UserUC) loadUserDataForUpdate(
 		}
 	}
 
-	// Save user photo to local disk
-	if req.Photo != nil && req.Photo.FileName != "" {
-		err = uc.userService.SaveUserPhoto(ctx, user, req.Photo.DataBytes, req.Photo.FileExt)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
-	}
-
 	return nil
 }
 
@@ -121,9 +113,6 @@ func (uc *UserUC) prepareUpdatingUserData(
 	}
 	if req.Position != nil {
 		user.Position = *req.Position
-	}
-	if req.Photo != nil && req.Photo.FileName == "" {
-		user.Photo = ""
 	}
 	if req.Status != nil {
 		user.Status = *req.Status

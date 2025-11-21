@@ -11224,9 +11224,6 @@
           "notes" : {
             "type" : "string"
           },
-          "photo" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UserPhotoReq"
-          },
           "position" : {
             "type" : "string"
           },
@@ -11249,7 +11246,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "accessExpireAt", "email", "fullName", "moduleAccesses", "notes", "photo", "position", "projectAccesses", "role", "securityOption", "status", "username" ],
+        "required" : [ "accessExpireAt", "email", "fullName", "moduleAccesses", "notes", "position", "projectAccesses", "role", "securityOption", "status", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UpdateUserResp" : {
@@ -11326,11 +11323,14 @@
           "dataBase64" : {
             "type" : "string"
           },
+          "delete" : {
+            "type" : "boolean"
+          },
           "fileName" : {
             "type" : "string"
           }
         },
-        "required" : [ "dataBase64", "fileName" ],
+        "required" : [ "dataBase64", "delete", "fileName" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UserResp" : {
