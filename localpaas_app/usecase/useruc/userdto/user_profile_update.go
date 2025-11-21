@@ -31,7 +31,12 @@ func (req *UpdateProfileReq) ModifyRequest() error {
 	req.FullName = strings.TrimSpace(req.FullName)
 	// Parse photo
 	if req.Photo != nil && req.Photo.FileName != "" && req.Photo.DataBase64 != "" {
-		req.Photo.DataBytes, _ = base64.StdEncoding.DecodeString(req.Photo.DataBase64)
+		dataBase64 := req.Photo.DataBase64
+		// Image bas64 from FE can be in form: `data:image/png;base64,<data-in-base64>`
+		if strings.HasPrefix(dataBase64, "data:") {
+			dataBase64 = dataBase64[strings.Index(dataBase64, ",")+1:]
+		}
+		req.Photo.DataBytes, _ = base64.StdEncoding.DecodeString(dataBase64)
 		req.Photo.FileExt = strings.ToLower(filepath.Ext(req.Photo.FileName))
 	}
 	return nil

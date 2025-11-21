@@ -4,7 +4,7 @@ name = "LocalPaaS"
 version = 1
 base_url = "http://localhost" # dashboard base URL
 secret = "abc123"
-app_path = ".appdata"
+app_path = ".appdata/localpaas"
 
 [db]
     host = "localhost"
