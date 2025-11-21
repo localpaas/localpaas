@@ -6264,6 +6264,14 @@
       "get" : {
         "description" : "Gets session info of the current user",
         "operationId" : "getMe",
+        "parameters" : [ {
+          "description" : "`getAccesses=true/false`",
+          "in" : "query",
+          "name" : "getAccesses",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
         "responses" : {
           "200" : {
             "content" : {
@@ -7240,6 +7248,13 @@
           "in" : "path",
           "name" : "userID",
           "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`getAccesses=true/false`",
+          "in" : "query",
+          "name" : "getAccesses",
           "schema" : {
             "type" : "string"
           }
@@ -10604,7 +10619,7 @@
             "type" : "string"
           },
           "user" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.UserResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UserDetailsResp"
           }
         },
         "required" : [ "user" ],
@@ -10777,54 +10792,6 @@
           }
         },
         "required" : [ "data", "meta" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.UserResp" : {
-        "properties" : {
-          "accessExpireAt" : {
-            "type" : "string"
-          },
-          "createdAt" : {
-            "type" : "string"
-          },
-          "email" : {
-            "type" : "string"
-          },
-          "fullName" : {
-            "type" : "string"
-          },
-          "id" : {
-            "type" : "string"
-          },
-          "mfaSecret" : {
-            "type" : "string"
-          },
-          "notes" : {
-            "type" : "string"
-          },
-          "photo" : {
-            "type" : "string"
-          },
-          "position" : {
-            "type" : "string"
-          },
-          "role" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.UserRole"
-          },
-          "securityOption" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.UserSecurityOption"
-          },
-          "status" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.UserStatus"
-          },
-          "updatedAt" : {
-            "type" : "string"
-          },
-          "username" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "accessExpireAt", "createdAt", "email", "fullName", "id", "mfaSecret", "photo", "position", "role", "securityOption", "status", "updatedAt", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_usersettings_apikeyuc_apikeydto.APIKeyDataResp" : {

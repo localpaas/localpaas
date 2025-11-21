@@ -62,6 +62,7 @@ func (h *UserHandler) ListUserBase(ctx *gin.Context) {
 // @Produce json
 // @Id      getUser
 // @Param   userID path string true "user ID"
+// @Param   getAccesses query string false "`getAccesses=true/false`"
 // @Success 200 {object} userdto.GetUserResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo

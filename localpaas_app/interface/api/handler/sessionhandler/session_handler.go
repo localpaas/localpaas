@@ -42,6 +42,7 @@ func NewSessionHandler(
 // @Tags    sessions
 // @Produce json
 // @Id      getMe
+// @Param   getAccesses query string false "`getAccesses=true/false`"
 // @Success 200 {object} sessiondto.GetMeResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
@@ -54,6 +55,11 @@ func (h *SessionHandler) GetMe(ctx *gin.Context) {
 	}
 
 	req := sessiondto.NewGetMeReq()
+	if err = h.ParseRequest(ctx, req, nil); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
 	resp, err := h.sessionUC.GetMe(h.RequestCtx(ctx), user, req)
 	if err != nil {
 		h.RenderError(ctx, err)
