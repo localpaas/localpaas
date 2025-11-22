@@ -17,6 +17,7 @@ const (
 )
 
 type APIKey struct {
+	KeyID        string          `json:"keyId"`
 	SecretKey    string          `json:"secretKey"`
 	AccessAction base.ActionType `json:"accessAction,omitempty"`
 

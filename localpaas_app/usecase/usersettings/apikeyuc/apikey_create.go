@@ -35,10 +35,7 @@ func (uc *APIKeyUC) CreateAPIKey(
 	}
 
 	persistingData := &persistingAPIKeyData{}
-	err = uc.preparePersistingAPIKey(req, apiKeyData, persistingData)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
+	uc.preparePersistingAPIKey(req, apiKeyData, persistingData)
 
 	err = transaction.Execute(ctx, uc.db, func(db database.Tx) error {
 		return uc.persistData(ctx, db, persistingData)
@@ -66,7 +63,7 @@ func (uc *APIKeyUC) loadAPIKeyData(
 	ctx context.Context,
 	db database.IDB,
 	auth *basedto.Auth,
-	_ *apikeydto.CreateAPIKeyReq,
+	req *apikeydto.CreateAPIKeyReq,
 	data *createAPIKeyData,
 ) error {
 	data.ActingUser = auth.User.User
@@ -77,13 +74,13 @@ func (uc *APIKeyUC) loadAPIKeyData(
 	data.SecretKey = secretKey
 
 	// Make sure there is no duplicated key in the db
-	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeAPIKey, keyID, false)
+	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeAPIKey, req.Name, false)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}
 	if setting != nil {
 		return apperrors.NewAlreadyExist("APIKey").
-			WithMsgLog("API key '%s' setting already exists", keyID)
+			WithMsgLog("API key '%s' already exists", req.Name)
 	}
 
 	return nil
@@ -97,32 +94,27 @@ func (uc *APIKeyUC) preparePersistingAPIKey(
 	req *apikeydto.CreateAPIKeyReq,
 	data *createAPIKeyData,
 	persistingData *persistingAPIKeyData,
-) error {
+) {
 	timeNow := timeutil.NowUTC()
 	setting := &entity.Setting{
 		ID:        gofn.Must(ulid.NewStringULID()),
 		Type:      base.SettingTypeAPIKey,
 		Status:    base.SettingStatusActive,
 		ObjectID:  data.ActingUser.ID,
-		Name:      data.KeyID,
+		Name:      req.Name,
 		ExpireAt:  req.ExpireAt,
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,
 	}
 
 	apiKey := &entity.APIKey{
+		KeyID:        data.KeyID,
 		SecretKey:    data.SecretKey,
 		AccessAction: req.AccessAction,
 	}
-	err := apiKey.Hash()
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	setting.MustSetData(apiKey)
+	setting.MustSetData(apiKey.MustHash())
 
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
-
-	return nil
 }
 
 func (uc *APIKeyUC) persistData(

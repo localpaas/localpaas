@@ -12,10 +12,12 @@ import (
 )
 
 const (
+	nameMaxLength     = 50
 	expirationYearMax = 1
 )
 
 type CreateAPIKeyReq struct {
+	Name         string          `json:"name"`
 	AccessAction base.ActionType `json:"accessAction"`
 	ExpireAt     time.Time       `json:"expireAt"`
 }
@@ -28,6 +30,8 @@ func NewCreateAPIKeyReq() *CreateAPIKeyReq {
 func (req *CreateAPIKeyReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	timeNow := timeutil.NowUTC()
+	validators = append(validators, basedto.ValidateStr(&req.Name, true, 1, nameMaxLength,
+		"name")...)
 	validators = append(validators, basedto.ValidateStrIn(&req.AccessAction, false, base.AllActionTypes,
 		"accessAction")...)
 	validators = append(validators, basedto.ValidateTime(&req.ExpireAt, false, timeNow,

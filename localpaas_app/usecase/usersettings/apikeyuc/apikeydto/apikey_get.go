@@ -12,10 +12,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 )
 
-const (
-	maskedSecretKey = "****************"
-)
-
 type GetAPIKeyReq struct {
 	ID string `json:"-"`
 }
@@ -36,10 +32,11 @@ type GetAPIKeyResp struct {
 }
 
 type APIKeyResp struct {
-	ID           string          `json:"id"`
-	KeyID        string          `json:"keyId"`
-	SecretKey    string          `json:"secretKey"`
-	AccessAction base.ActionType `json:"accessAction,omitempty"`
+	ID           string             `json:"id"`
+	Name         string             `json:"name"`
+	Status       base.SettingStatus `json:"status"`
+	KeyID        string             `json:"keyId"`
+	AccessAction base.ActionType    `json:"accessAction,omitempty"`
 
 	CreatedAt time.Time  `json:"createdAt"`
 	UpdatedAt time.Time  `json:"updatedAt"`
@@ -50,14 +47,13 @@ func TransformAPIKey(setting *entity.Setting) (resp *APIKeyResp, err error) {
 	if err = copier.Copy(&resp, &setting); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	resp.KeyID = setting.Name
-	resp.SecretKey = maskedSecretKey
 
 	apiKey, err := setting.ParseAPIKey()
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 	if apiKey != nil {
+		resp.KeyID = apiKey.KeyID
 		resp.AccessAction = apiKey.AccessAction
 	}
 	return resp, nil

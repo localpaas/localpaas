@@ -10778,14 +10778,17 @@
           "keyId" : {
             "type" : "string"
           },
-          "secretKey" : {
+          "name" : {
             "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
           },
           "updatedAt" : {
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "id", "keyId", "secretKey", "updatedAt" ],
+        "required" : [ "createdAt", "id", "keyId", "name", "status", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_usersettings_apikeyuc_apikeydto.CreateAPIKeyReq" : {
@@ -10795,9 +10798,12 @@
           },
           "expireAt" : {
             "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
           }
         },
-        "required" : [ "accessAction", "expireAt" ],
+        "required" : [ "accessAction", "expireAt", "name" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_usersettings_apikeyuc_apikeydto.CreateAPIKeyResp" : {
