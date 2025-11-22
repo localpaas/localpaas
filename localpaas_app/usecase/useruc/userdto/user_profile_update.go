@@ -32,7 +32,7 @@ func (req *UpdateProfileReq) ModifyRequest() error {
 	// Parse photo
 	if req.Photo != nil && req.Photo.FileName != "" && req.Photo.DataBase64 != "" {
 		dataBase64 := req.Photo.DataBase64
-		// Image bas64 from FE can be in form: `data:image/png;base64,<data-in-base64>`
+		// Image base64 from FE can be in form: `data:image/png;base64,<data-in-base64>`
 		if strings.HasPrefix(dataBase64, "data:") {
 			dataBase64 = dataBase64[strings.Index(dataBase64, ",")+1:]
 		}

@@ -16,7 +16,7 @@ const (
 	minNameLen = 1
 	maxNameLen = 100
 
-	maxUserPhotoSize = 500 * 1024 * 1024 // 500KB
+	maxUserPhotoSize = 300 * 1024 // 300KB
 
 	minNotesLen = 1
 	maxNotesLen = 10000
