@@ -2,16 +2,12 @@ package sessionuc
 
 import (
 	"context"
-	"errors"
-	"fmt"
-	"math/rand"
 	"strings"
 
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc/sessiondto"
@@ -33,53 +29,30 @@ func (uc *SessionUC) CreateOAuthSession(
 	}
 
 	dbUser, err := uc.userRepo.GetByEmail(ctx, uc.db, email)
-	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
+	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	var username string
-	if dbUser != nil {
-		username = dbUser.Username
-	} else {
-		username = strings.SplitN(email, "@", 2)[0] //nolint:mnd
-		conflictUser, err := uc.userRepo.GetByUsername(ctx, uc.db, username)
-		if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-			return nil, apperrors.Wrap(err)
-		}
-		if conflictUser != nil {
-			username += fmt.Sprintf("-%d", 1000+rand.Intn(9000)) //nolint
-		}
+	// Make synchronization as info of user may be changed in the IdP system
+	updateCols := make(map[string]struct{})
+	if strings.HasPrefix(dbUser.Photo, "http") && len(oauthUser.AvatarURL) < externalAvatarURLMaxLen {
+		dbUser.Photo = oauthUser.AvatarURL
+		dbUser.UpdatedAt = timeutil.NowUTC()
+		updateCols["photo"] = struct{}{}
+		updateCols["updated_at"] = struct{}{}
 	}
-
-	fullName := strings.Join(gofn.ToSliceSkippingZero(oauthUser.FirstName, oauthUser.LastName), " ")
-	fullName = gofn.Coalesce(fullName, oauthUser.NickName, username)
-
-	if dbUser == nil {
-		// User makes the first login to our service
-		timeNow := timeutil.NowUTC()
-		dbUser = &entity.User{
-			Username:       username,
-			Email:          email,
-			FullName:       fullName,
-			Photo:          gofn.If(len(oauthUser.AvatarURL) < externalAvatarURLMaxLen, oauthUser.AvatarURL, ""), //nolint
-			Role:           base.UserRoleMember,
-			Status:         base.UserStatusActive,
-			SecurityOption: base.UserSecurityEnforceSSO,
-			CreatedAt:      timeNow,
-			UpdatedAt:      timeNow,
-		}
-		if err = uc.userRepo.Insert(ctx, uc.db, dbUser); err != nil {
-			return nil, apperrors.New(err).WithMsgLog("failed to insert new user to db: %s", dbUser.Email)
-		}
-	} else {
-		// Make synchronization as info of user may be changed in the IdP system
-		var updateCols []string
-		if strings.HasPrefix(dbUser.Photo, "http") && len(oauthUser.AvatarURL) < externalAvatarURLMaxLen {
-			dbUser.Photo = oauthUser.AvatarURL
-			updateCols = append(updateCols, "photo")
-		}
-		// Saves the user (NOTE: ignore the error as it may not be important)
-		_ = uc.userRepo.Update(ctx, uc.db, dbUser, bunex.UpdateColumns(updateCols...))
+	if dbUser.Status == base.UserStatusPending && dbUser.LastAccess.IsZero() {
+		dbUser.Status = base.UserStatusActive
+		dbUser.UpdatedAt = timeutil.NowUTC()
+		dbUser.LastAccess = dbUser.UpdatedAt
+		updateCols["status"] = struct{}{}
+		updateCols["updated_at"] = struct{}{}
+		updateCols["last_access"] = struct{}{}
+	}
+	// Saves the user
+	err = uc.userRepo.Update(ctx, uc.db, dbUser, bunex.UpdateColumns(gofn.MapKeys(updateCols)...))
+	if err != nil {
+		return nil, apperrors.Wrap(err)
 	}
 
 	sessionResp, err := uc.createSession(ctx, &sessiondto.BaseCreateSessionReq{User: dbUser})
