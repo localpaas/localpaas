@@ -69,7 +69,7 @@ func (uc *UserUC) loadUserDataForDelete(
 			bunex.SelectWhere("id != ?", user.ID),
 			bunex.SelectWhere("role = ?", base.UserRoleAdmin),
 			bunex.SelectWhere("status = ?", base.UserStatusActive),
-			bunex.SelectWhere("access_expire_at > NOW()"),
+			bunex.SelectWhere("access_expire_at IS NULL OR access_expire_at > NOW()"),
 			bunex.SelectLimit(1),
 		)
 		if err != nil {
