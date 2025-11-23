@@ -42,7 +42,11 @@ func (uc *AppUC) CreateApp(
 		}
 
 		persistingData = &persistingAppData{}
-		uc.preparePersistingApp(req, appData, persistingData)
+		err = uc.preparePersistingApp(ctx, req, appData, persistingData)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+
 		createdApp = persistingData.UpsertingApps[0]
 
 		// Create a service in docker for the app
@@ -109,10 +113,11 @@ type persistingAppData struct {
 }
 
 func (uc *AppUC) preparePersistingApp(
+	ctx context.Context,
 	req *appdto.CreateAppReq,
 	data *createAppData,
 	persistingData *persistingAppData,
-) {
+) error {
 	timeNow := timeutil.NowUTC()
 	project := data.Project
 	app := &entity.App{
@@ -124,7 +129,12 @@ func (uc *AppUC) preparePersistingApp(
 
 	uc.preparePersistingAppBase(app, req.AppBaseReq, timeNow, persistingData)
 	uc.preparePersistingAppTags(app, req.Tags, 0, persistingData)
-	uc.preparePersistingAppSpecDefault(app, timeNow, data, persistingData)
+	err := uc.preparePersistingAppSettingsDefault(ctx, app, timeNow, data, persistingData)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	return nil
 }
 
 func (uc *AppUC) preparePersistingAppBase(
@@ -159,12 +169,13 @@ func (uc *AppUC) preparePersistingAppTags(
 	}
 }
 
-func (uc *AppUC) preparePersistingAppSpecDefault(
+func (uc *AppUC) preparePersistingAppSettingsDefault(
+	ctx context.Context,
 	app *entity.App,
 	timeNow time.Time,
 	data *createAppData,
 	persistingData *persistingAppData,
-) {
+) error {
 	setting := &entity.Setting{
 		ID:        gofn.Must(ulid.NewStringULID()),
 		ObjectID:  app.ID,
@@ -190,9 +201,26 @@ func (uc *AppUC) preparePersistingAppSpecDefault(
 		},
 	}
 	setting.MustSetData(serviceSpec)
-
 	data.ServiceSpec = serviceSpec
-	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
+
+	httpSettings := &entity.AppHttpSettings{}
+	err := uc.nginxService.InitAppConfig(ctx, app, httpSettings)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	httpSettingsObj := &entity.Setting{
+		ID:        gofn.Must(ulid.NewStringULID()),
+		Type:      base.SettingTypeAppHttp,
+		Status:    base.SettingStatusActive,
+		ObjectID:  app.ID,
+		CreatedAt: timeNow,
+		UpdatedAt: timeNow,
+	}
+	httpSettingsObj.MustSetData(httpSettings)
+	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, httpSettingsObj)
+
+	return nil
 }
 
 func (uc *AppUC) persistData(

@@ -14,20 +14,20 @@ import (
 // To keep `apperrors` pkg imported and swag gen won't fail
 type _ *apperrors.ErrorInfo
 
-// InstallDomainSsl Installs domain SSL
-// @Summary Installs domain SSL
-// @Description Installs domain SSL
+// ObtainDomainSsl Obtains domain SSL
+// @Summary Obtains domain SSL
+// @Description Obtains domain SSL
 // @Tags    apps
 // @Produce json
-// @Id      installDomainSsl
+// @Id      obtainDomainSsl
 // @Param   projectID path string true "project ID"
 // @Param   appID path string true "app ID"
-// @Param   body body appdto.InstallDomainSslReq true "request data"
-// @Success 200 {object} appdto.InstallDomainSslResp
+// @Param   body body appdto.ObtainDomainSslReq true "request data"
+// @Success 200 {object} appdto.ObtainDomainSslResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/apps/{appID}/ssl/install [post]
-func (h *AppHandler) InstallDomainSsl(ctx *gin.Context) {
+// @Router  /projects/{projectID}/apps/{appID}/ssl/obtain [post]
+func (h *AppHandler) ObtainDomainSsl(ctx *gin.Context) {
 	projectID, err := h.ParseStringParam(ctx, "projectID")
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -52,7 +52,7 @@ func (h *AppHandler) InstallDomainSsl(ctx *gin.Context) {
 		return
 	}
 
-	req := appdto.NewInstallDomainSslReq()
+	req := appdto.NewObtainDomainSslReq()
 	req.ProjectID = projectID
 	req.AppID = appID
 	if err := h.ParseJSONBody(ctx, req); err != nil {
@@ -60,7 +60,7 @@ func (h *AppHandler) InstallDomainSsl(ctx *gin.Context) {
 		return
 	}
 
-	resp, err := h.appUC.InstallDomainSsl(h.RequestCtx(ctx), auth, req)
+	resp, err := h.appUC.ObtainDomainSsl(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

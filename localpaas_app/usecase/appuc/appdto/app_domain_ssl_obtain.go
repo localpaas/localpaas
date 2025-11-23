@@ -1,6 +1,8 @@
 package appdto
 
 import (
+	"strings"
+
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -11,18 +13,23 @@ const (
 	domainMaxLen = 100
 )
 
-type InstallDomainSslReq struct {
+type ObtainDomainSslReq struct {
 	ProjectID string `json:"-"`
 	AppID     string `json:"-"`
 	Domain    string `json:"domain"`
 }
 
-func NewInstallDomainSslReq() *InstallDomainSslReq {
-	return &InstallDomainSslReq{}
+func NewObtainDomainSslReq() *ObtainDomainSslReq {
+	return &ObtainDomainSslReq{}
+}
+
+func (req *ObtainDomainSslReq) ModifyRequest() error {
+	req.Domain = strings.TrimSpace(strings.ToLower(req.Domain))
+	return nil
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *InstallDomainSslReq) Validate() apperrors.ValidationErrors {
+func (req *ObtainDomainSslReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, basedto.ValidateID(&req.ProjectID, true, "projectId")...)
 	validators = append(validators, basedto.ValidateID(&req.AppID, true, "appId")...)
@@ -30,7 +37,7 @@ func (req *InstallDomainSslReq) Validate() apperrors.ValidationErrors {
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type InstallDomainSslResp struct {
+type ObtainDomainSslResp struct {
 	Meta *basedto.BaseMeta     `json:"meta"`
 	Data *basedto.ObjectIDResp `json:"data"`
 }

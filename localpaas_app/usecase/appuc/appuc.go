@@ -6,6 +6,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 	"github.com/localpaas/localpaas/localpaas_app/service/appservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/envvarservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/nginxservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/projectservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
 	"github.com/localpaas/localpaas/services/docker"
@@ -23,6 +24,7 @@ type AppUC struct {
 	appService        appservice.AppService
 	projectService    projectservice.ProjectService
 	envVarService     envvarservice.EnvVarService
+	nginxService      nginxservice.NginxService
 	dockerManager     *docker.Manager
 	letsencryptClient *letsencrypt.Client
 }
@@ -38,6 +40,7 @@ func NewAppUC(
 	appService appservice.AppService,
 	projectService projectservice.ProjectService,
 	envVarService envvarservice.EnvVarService,
+	nginxService nginxservice.NginxService,
 	dockerManager *docker.Manager,
 	letsencryptClient *letsencrypt.Client,
 ) *AppUC {
@@ -52,6 +55,7 @@ func NewAppUC(
 		appService:        appService,
 		projectService:    projectService,
 		envVarService:     envVarService,
+		nginxService:      nginxService,
 		dockerManager:     dockerManager,
 		letsencryptClient: letsencryptClient,
 	}

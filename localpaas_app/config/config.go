@@ -66,6 +66,12 @@ func (cfg *Config) HttpPathUserPhoto() string {
 	return "/files/user/photo/"
 }
 
+/// SSL CERTS
+
+func (cfg *Config) DataPathCerts() string {
+	return filepath.Join(cfg.AppPath, "certs")
+}
+
 /// NGINX
 
 func (cfg *Config) DataPathNginx() string {
@@ -73,6 +79,9 @@ func (cfg *Config) DataPathNginx() string {
 }
 func (cfg *Config) DataPathNginxEtc() string {
 	return filepath.Join(cfg.DataPathNginx(), "etc")
+}
+func (cfg *Config) DataPathNginxEtcConf() string {
+	return filepath.Join(cfg.DataPathNginxEtc(), "conf.d")
 }
 func (cfg *Config) DataPathNginxShare() string {
 	return filepath.Join(cfg.DataPathNginx(), "share")

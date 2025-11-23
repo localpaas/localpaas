@@ -5,8 +5,10 @@ import (
 	"io"
 
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/api/types/swarm"
 
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/tracerr"
 )
 
@@ -22,6 +24,20 @@ func (m *Manager) ServiceList(ctx context.Context, options ...ServiceListOption)
 		return nil, tracerr.Wrap(err)
 	}
 	return resp, nil
+}
+
+func (m *Manager) ServiceGetByName(ctx context.Context, serviceName string) (*swarm.Service, error) {
+	resp, err := m.ServiceList(ctx, func(options *swarm.ServiceListOptions) {
+		options.Filters = filters.NewArgs(filters.Arg("name", serviceName))
+	})
+	if err != nil {
+		return nil, tracerr.Wrap(err)
+	}
+	if len(resp) == 0 {
+		return nil, apperrors.NewNotFound("DockerService").
+			WithMsgLog("service '%s' not found", serviceName)
+	}
+	return &resp[0], nil
 }
 
 type ServiceCreateOption func(options *swarm.ServiceCreateOptions)

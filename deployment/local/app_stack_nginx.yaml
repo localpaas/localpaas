@@ -27,7 +27,7 @@ services:
       - ./localpaas/nginx/etc:/etc/nginx
       - ./localpaas/nginx/log:/var/log/nginx
       - ./localpaas/nginx/share:/usr/share/nginx
-      - ./localpaas/letsencrypt/etc:/etc/letsencrypt
+      - ./localpaas/certs:/var/lib/localpaas/certs
 
     deploy:
       mode: replicated

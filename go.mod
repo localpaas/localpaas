@@ -29,6 +29,7 @@ require (
 	github.com/markbates/goth v1.82.0
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/mozillazg/go-slugify v0.2.0
+	github.com/nginxinc/nginx-go-crossplane v0.4.84
 	github.com/nicksnyder/go-i18n/v2 v2.6.0
 	github.com/oklog/ulid/v2 v2.1.1
 	github.com/olahol/melody v1.4.0
@@ -118,6 +119,7 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.13-0.20220915233716-71ac16282d12 // indirect
+	github.com/jstemmer/go-junit-report v1.0.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect

@@ -1,8 +1,7 @@
 server {
-    listen              80;
     listen              443 ssl;
-    server_name         app.localhost;
-    set                 $upstream http://127.0.0.1:10000;
+    server_name         ((server_name));
+    set                 $upstream ((upstream));
     ssl_certificate     /usr/share/nginx/certs/fake/local.crt;
     ssl_certificate_key /usr/share/nginx/certs/fake/local.key;
 

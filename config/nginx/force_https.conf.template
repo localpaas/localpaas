@@ -1,0 +1,13 @@
+server {
+    listen       80;
+    server_name  ((server_name));
+
+    location / {
+        return 302 https://$http_host$request_uri;
+    }
+
+    # Used by Let's Encrypt
+    location /.well-known/acme-challenge/ {
+        root /usr/share/nginx/domains;
+    }
+}
