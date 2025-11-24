@@ -85,6 +85,20 @@ func (m *Manager) ServiceUpdate(ctx context.Context, serviceID string, version *
 	return &resp, nil
 }
 
+func (m *Manager) ServiceForceUpdate(ctx context.Context, serviceID string) error {
+	service, _, err := m.client.ServiceInspectWithRaw(ctx, serviceID, swarm.ServiceInspectOptions{})
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	service.Spec.TaskTemplate.ForceUpdate++
+	_, err = m.client.ServiceUpdate(ctx, serviceID, service.Version, service.Spec, swarm.ServiceUpdateOptions{})
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
 func (m *Manager) ServiceRemove(ctx context.Context, serviceID string) error {
 	if serviceID == "" {
 		return nil

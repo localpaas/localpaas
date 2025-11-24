@@ -12,6 +12,7 @@ import (
 
 type NginxService interface {
 	GetNginxSwarmService(ctx context.Context) (*swarm.Service, error)
+	RestartNginxSwarmService(ctx context.Context) error
 
 	ReloadNginxConfig(ctx context.Context) error
 	ResetNginxConfig(ctx context.Context) error

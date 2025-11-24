@@ -19,3 +19,16 @@ func (s *nginxService) GetNginxSwarmService(ctx context.Context) (*swarm.Service
 	}
 	return service, nil
 }
+
+func (s *nginxService) RestartNginxSwarmService(ctx context.Context) error {
+	service, err := s.GetNginxSwarmService(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	err = s.dockerManager.ServiceForceUpdate(ctx, service.ID)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
