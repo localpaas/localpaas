@@ -10,6 +10,7 @@ import (
 
 type PersistingProjectData struct {
 	UpsertingProjects []*entity.Project
+	UpsertingApps     []*entity.App
 	UpsertingTags     []*entity.ProjectTag
 	UpsertingSettings []*entity.Setting
 	UpsertingAccesses []*entity.ACLPermission
@@ -36,6 +37,13 @@ func (s *projectService) PersistProjectData(ctx context.Context, db database.IDB
 	// Projects
 	err = s.projectRepo.UpsertMulti(ctx, db, persistingData.UpsertingProjects,
 		entity.ProjectUpsertingConflictCols, entity.ProjectUpsertingUpdateCols)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	// Apps
+	err = s.appRepo.UpsertMulti(ctx, db, persistingData.UpsertingApps,
+		entity.AppUpsertingConflictCols, entity.AppUpsertingUpdateCols)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

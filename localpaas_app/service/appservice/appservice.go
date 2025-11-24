@@ -7,12 +7,14 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
+	"github.com/localpaas/localpaas/localpaas_app/service/nginxservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
 	"github.com/localpaas/localpaas/services/docker"
 )
 
 type AppService interface {
 	PersistAppData(ctx context.Context, db database.IDB, data *PersistingAppData) error
+	DeleteApp(ctx context.Context, app *entity.App) error
 
 	UpdateAppDeployment(ctx context.Context, app *entity.App, req *AppDeploymentReq) (
 		*AppDeploymentResp, error)
@@ -24,6 +26,7 @@ func NewAppService(
 	settingRepo repository.SettingRepo,
 	permissionManager permission.Manager,
 	userService userservice.UserService,
+	nginxService nginxservice.NginxService,
 	dockerManager *docker.Manager,
 ) AppService {
 	return &appService{
@@ -32,6 +35,7 @@ func NewAppService(
 		settingRepo:       settingRepo,
 		permissionManager: permissionManager,
 		userService:       userService,
+		nginxService:      nginxService,
 		dockerManager:     dockerManager,
 	}
 }
@@ -42,5 +46,6 @@ type appService struct {
 	settingRepo       repository.SettingRepo
 	permissionManager permission.Manager
 	userService       userservice.UserService
+	nginxService      nginxservice.NginxService
 	dockerManager     *docker.Manager
 }

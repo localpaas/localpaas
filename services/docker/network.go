@@ -37,8 +37,8 @@ func (m *Manager) NetworkCreate(ctx context.Context, name string, options ...Net
 	return &resp, nil
 }
 
-func (m *Manager) NetworkRemove(ctx context.Context, name string) error {
-	err := m.client.NetworkRemove(ctx, name)
+func (m *Manager) NetworkRemove(ctx context.Context, idOrName string) error {
+	err := m.client.NetworkRemove(ctx, idOrName)
 	if err != nil {
 		return tracerr.Wrap(err)
 	}

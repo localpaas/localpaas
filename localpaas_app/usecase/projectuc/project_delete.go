@@ -4,11 +4,11 @@ import (
 	"context"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc/projectdto"
 )
@@ -28,9 +28,18 @@ func (uc *ProjectUC) DeleteProject(
 		persistingData := &persistingProjectData{}
 		uc.prepareDeletingProject(projectData, persistingData)
 
-		// TODO: handle project deletion
+		err = uc.persistData(ctx, db, persistingData)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 
-		return uc.persistData(ctx, db, persistingData)
+		// Remove project and its app in infra
+		err = uc.projectService.DeleteProject(ctx, projectData.Project)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+
+		return nil
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -51,15 +60,14 @@ func (uc *ProjectUC) loadProjectDataForDelete(
 ) error {
 	project, err := uc.projectRepo.GetByID(ctx, db, req.ProjectID,
 		bunex.SelectFor("UPDATE OF project"),
+		bunex.SelectRelation("Apps",
+			bunex.SelectWhere("app.deleted_at IS NULL"),
+		),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 	data.Project = project
-
-	if project.Status == base.ProjectStatusDeleting { //nolint
-		// TODO: handle task deletion if previously failed
-	}
 
 	return nil
 }
@@ -68,7 +76,13 @@ func (uc *ProjectUC) prepareDeletingProject(
 	data *deleteProjectData,
 	persistingData *persistingProjectData,
 ) {
+	timeNow := timeutil.NowUTC()
 	project := data.Project
-	project.Status = base.ProjectStatusDeleting
+	project.DeletedAt = timeNow
 	persistingData.UpsertingProjects = append(persistingData.UpsertingProjects, project)
+
+	for _, app := range project.Apps {
+		app.DeletedAt = timeNow
+		persistingData.UpsertingApps = append(persistingData.UpsertingApps, app)
+	}
 }

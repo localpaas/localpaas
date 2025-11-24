@@ -45,3 +45,11 @@ func (s *networkService) ListProjectNetworks(ctx context.Context, project *entit
 	}
 	return res, nil
 }
+
+func (s *networkService) RemoveProjectNetwork(ctx context.Context, project *entity.Project) error {
+	err := s.dockerManager.NetworkRemove(ctx, project.GetDefaultNetworkName())
+	if err != nil {
+		return apperrors.NewInfra(err)
+	}
+	return nil
+}
