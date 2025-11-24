@@ -31,5 +31,11 @@ func (req *UpdateAppSettingsReq) Validate() apperrors.ValidationErrors {
 }
 
 type UpdateAppSettingsResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.BaseMeta          `json:"meta"`
+	Data *UpdateAppSettingsDataResp `json:"data"`
+}
+
+type UpdateAppSettingsDataResp struct {
+	Errors   []string `json:"errors,omitempty"`
+	Warnings []string `json:"warnings,omitempty"`
 }

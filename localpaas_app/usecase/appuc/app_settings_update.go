@@ -56,6 +56,8 @@ type updateAppSettingsData struct {
 	EnvVarsData      appEnvVarsData
 	DeploymentData   appDeploymentData
 	HttpSettingsData appHttpSettingsData
+	Errors           []string // stores errors
+	Warnings         []string // stores warnings
 }
 
 func (uc *AppUC) loadAppSettingsDataForUpdate(

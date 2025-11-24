@@ -65,12 +65,17 @@ func (uc *AppUC) applyAppEnvVars(
 	data *updateAppSettingsData,
 ) error {
 	app := data.App
-	envVars, err := uc.envVarService.BuildAppEnv(ctx, db, app, false)
+	envs, err := uc.envVarService.BuildAppEnv(ctx, db, app, false)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	if len(envVars) == 0 { // we will send no ENV vars to the containers of the app
-		envVars = []string{}
+
+	envVars := make([]string, 0, len(envs))
+	for _, env := range envs {
+		envVars = append(envVars, env.ToString("="))
+		if env.Error != "" {
+			data.Errors = append(data.Errors, env.Error)
+		}
 	}
 
 	service, err := uc.dockerManager.ServiceInspect(ctx, app.ServiceID)

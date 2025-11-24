@@ -8267,6 +8267,23 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.UpdateAppSettingsDataResp" : {
+        "properties" : {
+          "errors" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "warnings" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          }
+        },
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.UpdateAppSettingsReq" : {
         "properties" : {
           "deploymentSettings" : {
@@ -8287,11 +8304,14 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.UpdateAppSettingsResp" : {
         "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.UpdateAppSettingsDataResp"
+          },
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
           }
         },
-        "required" : [ "meta" ],
+        "required" : [ "data", "meta" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_imageuc_imagedto.CreateImageReq" : {

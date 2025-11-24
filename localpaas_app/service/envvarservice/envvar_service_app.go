@@ -2,7 +2,6 @@ package envvarservice
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/tiendc/gofn"
 
@@ -13,9 +12,19 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 )
 
+type EnvVar struct {
+	Key   string
+	Value string
+	Error string
+}
+
+func (env *EnvVar) ToString(sep string) string {
+	return env.Key + sep + env.Value
+}
+
 //nolint:gocognit
 func (s *envVarService) BuildAppEnv(ctx context.Context, db database.IDB, app *entity.App, buildPhase bool) (
-	res []string, err error) {
+	res []*EnvVar, err error) {
 	objectIDs := gofn.ToSliceSkippingZero(app.ID, app.ParentID, app.ProjectID)
 	settings, _, err := s.settingRepo.List(ctx, db, nil,
 		bunex.SelectWhere("setting.type IN (?)",
@@ -27,12 +36,12 @@ func (s *envVarService) BuildAppEnv(ctx context.Context, db database.IDB, app *e
 		return nil, apperrors.Wrap(err)
 	}
 
-	mapAppEnv := make(map[string]string, 20)                   //nolint
-	mapParentAppEnv := make(map[string]string, 20)             //nolint
-	mapProjectEnv := make(map[string]string, 20)               //nolint
-	mapAppSecret := make(map[string]*entity.Setting, 10)       //nolint
-	mapParentAppSecret := make(map[string]*entity.Setting, 10) //nolint
-	mapProjectSecret := make(map[string]*entity.Setting, 10)   //nolint
+	mapAppEnv := make(map[string]string, 20)                  //nolint
+	mapParentAppEnv := make(map[string]string, 20)            //nolint
+	mapProjectEnv := make(map[string]string, 20)              //nolint
+	mapAppSecret := make(map[string]*entity.Secret, 10)       //nolint
+	mapParentAppSecret := make(map[string]*entity.Secret, 10) //nolint
+	mapProjectSecret := make(map[string]*entity.Secret, 10)   //nolint
 
 	for _, setting := range settings {
 		if setting.Type == base.SettingTypeEnvVar {
@@ -64,13 +73,17 @@ func (s *envVarService) BuildAppEnv(ctx context.Context, db database.IDB, app *e
 		}
 
 		if setting.Type == base.SettingTypeSecret {
+			secret, err := setting.ParseSecret(false) // decryption takes time, so do it when needed only
+			if err != nil {
+				return nil, apperrors.Wrap(err)
+			}
 			switch setting.ObjectID {
 			case app.ID:
-				mapAppSecret[setting.Name] = setting
+				mapAppSecret[setting.Name] = secret
 			case app.ParentID:
-				mapParentAppSecret[setting.Name] = setting
+				mapParentAppSecret[setting.Name] = secret
 			case app.ProjectID:
-				mapProjectSecret[setting.Name] = setting
+				mapProjectSecret[setting.Name] = secret
 			}
 		}
 	}
@@ -84,11 +97,18 @@ func (s *envVarService) BuildAppEnv(ctx context.Context, db database.IDB, app *e
 		appEnv[k] = v
 	}
 
-	// TODO: parse all secrets within the ENV values of the app
-
-	// Construct ENV vars into a slice of `k=v`
+	// Construct result
+	res = make([]*EnvVar, 0, len(appEnv))
 	for k, v := range appEnv {
-		res = append(res, fmt.Sprintf("%s=%s", k, v))
+		res = append(res, &EnvVar{Key: k, Value: v})
 	}
+
+	// Process all references within the ENV values
+	secretStores := []map[string]*entity.Secret{mapAppSecret, mapParentAppSecret, mapProjectSecret}
+	envStores := []map[string]string{mapAppEnv, mapParentAppEnv, mapProjectEnv}
+	for _, env := range res {
+		s.ProcessEnvVarRefs(env, secretStores, envStores)
+	}
+
 	return res, nil
 }
