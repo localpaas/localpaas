@@ -77,11 +77,7 @@ func (s *nginxService) ApplyAppConfig(ctx context.Context, app *entity.App,
 
 	// Not enabled, delete the config file, then return
 	if httpSettings == nil || !httpSettings.Enabled {
-		err = os.Remove(confPath)
-		if err != nil && !os.IsNotExist(err) {
-			return apperrors.Wrap(err)
-		}
-		return nil
+		return s.RemoveAppConfig(ctx, app)
 	}
 
 	// Http settings is enabled

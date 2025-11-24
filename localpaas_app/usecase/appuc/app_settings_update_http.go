@@ -103,5 +103,11 @@ func (uc *AppUC) applyAppHttpSettings(
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+
+	err = uc.appService.UpdateAppGlobalRoutingNetwork(ctx, data.App, data.HttpSettingsData.HttpSettings)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
 	return nil
 }
