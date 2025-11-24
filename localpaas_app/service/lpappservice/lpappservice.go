@@ -12,8 +12,13 @@ import (
 type LpAppService interface {
 	GetLpAppSwarmService(ctx context.Context) (*swarm.Service, error)
 	RestartLpAppSwarmService(ctx context.Context) error
-
 	ReloadLpAppConfig(ctx context.Context) error
+
+	GetLpDbSwarmService(ctx context.Context) (*swarm.Service, error)
+	RestartLpDbSwarmService(ctx context.Context) error
+
+	GetLpCacheSwarmService(ctx context.Context) (*swarm.Service, error)
+	RestartLpCacheSwarmService(ctx context.Context) error
 }
 
 func NewLpAppService(

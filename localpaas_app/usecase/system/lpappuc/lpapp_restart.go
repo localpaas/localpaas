@@ -2,6 +2,7 @@ package lpappuc
 
 import (
 	"context"
+	"errors"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -11,9 +12,20 @@ import (
 func (uc *LpAppUC) RestartLpApp(
 	ctx context.Context,
 	_ *basedto.Auth,
-	_ *lpappdto.RestartLpAppReq,
+	req *lpappdto.RestartLpAppReq,
 ) (*lpappdto.RestartLpAppResp, error) {
-	err := uc.lpAppService.RestartLpAppSwarmService(ctx)
+	var errCache, errDb, errMain error
+	if req.RestartCacheApp {
+		errCache = uc.lpAppService.RestartLpCacheSwarmService(ctx)
+	}
+	if req.RestartDbApp {
+		errDb = uc.lpAppService.RestartLpDbSwarmService(ctx)
+	}
+	if req.RestartMainApp {
+		errMain = uc.lpAppService.RestartLpAppSwarmService(ctx)
+	}
+
+	err := errors.Join(errMain, errDb, errCache)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

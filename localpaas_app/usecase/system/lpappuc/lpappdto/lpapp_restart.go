@@ -6,6 +6,9 @@ import (
 )
 
 type RestartLpAppReq struct {
+	RestartMainApp  bool `json:"restartMainApp"`
+	RestartDbApp    bool `json:"restartDbApp"`
+	RestartCacheApp bool `json:"restartCacheApp"`
 }
 
 func NewRestartLpAppReq() *RestartLpAppReq {

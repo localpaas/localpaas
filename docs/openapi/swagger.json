@@ -11353,6 +11353,18 @@
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_system_lpappuc_lpappdto.RestartLpAppReq" : {
+        "properties" : {
+          "restartCacheApp" : {
+            "type" : "boolean"
+          },
+          "restartDbApp" : {
+            "type" : "boolean"
+          },
+          "restartMainApp" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "restartCacheApp", "restartDbApp", "restartMainApp" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_system_lpappuc_lpappdto.RestartLpAppResp" : {
