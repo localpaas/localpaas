@@ -11,6 +11,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projecthandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/providershandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/systemhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/userhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/usersettingshandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/server"
@@ -40,6 +41,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/sshkeyuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/ssluc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/system/nginxuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc"
 	"github.com/localpaas/localpaas/services/docker"
@@ -77,6 +79,7 @@ var Provides = []any{
 	apphandler.NewAppHandler,
 	providershandler.NewProvidersHandler,
 	usersettingshandler.NewUserSettingsHandler,
+	systemhandler.NewSystemHandler,
 
 	// Use case
 	nodeuc.NewNodeUC,
@@ -96,6 +99,7 @@ var Provides = []any{
 	registryauthuc.NewRegistryAuthUC,
 	basicauthuc.NewBasicAuthUC,
 	ssluc.NewSslUC,
+	nginxuc.NewNginxUC,
 
 	// Service
 	clusterservice.NewClusterService,

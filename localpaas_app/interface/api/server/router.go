@@ -13,6 +13,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projecthandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/providershandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/systemhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/userhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/usersettingshandler"
 )
@@ -26,6 +27,7 @@ type HandlerRegistry struct {
 	appHandler          *apphandler.AppHandler
 	providersHandler    *providershandler.ProvidersHandler
 	userSettingsHandler *usersettingshandler.UserSettingsHandler
+	systemHandler       *systemhandler.SystemHandler
 }
 
 func NewHandlerRegistry(
@@ -37,6 +39,7 @@ func NewHandlerRegistry(
 	appHandler *apphandler.AppHandler,
 	providersHandler *providershandler.ProvidersHandler,
 	userSettingsHandler *usersettingshandler.UserSettingsHandler,
+	systemHandler *systemhandler.SystemHandler,
 ) *HandlerRegistry {
 	return &HandlerRegistry{
 		authHandler:         authHandler,
@@ -47,6 +50,7 @@ func NewHandlerRegistry(
 		appHandler:          appHandler,
 		providersHandler:    providersHandler,
 		userSettingsHandler: userSettingsHandler,
+		systemHandler:       systemHandler,
 	}
 }
 
@@ -340,6 +344,14 @@ func (s *HTTPServer) registerRoutes() {
 		sslGroup.PUT("/:ID", s.handlerRegistry.providersHandler.UpdateSsl)
 		sslGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateSslMeta)
 		sslGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteSsl)
+	}
+
+	systemGroup := apiGroup.Group("/system")
+
+	{ // nginx group
+		nginxGroup := systemGroup.Group("/nginx")
+		// Config
+		nginxGroup.POST("/config/reload", s.handlerRegistry.systemHandler.ReloadNginxConfig)
 	}
 }
 

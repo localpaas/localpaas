@@ -45,11 +45,12 @@ const (
 	ResourceModuleCluster  ResourceModule = "mod::cluster"
 	ResourceModuleUser     ResourceModule = "mod::user"
 	ResourceModuleProject  ResourceModule = "mod::project"
+	ResourceModuleSystem   ResourceModule = "mod::system"
 )
 
 var (
 	AllResourceModules = []ResourceModule{ResourceModuleSettings, ResourceModuleProvider, ResourceModuleUser,
-		ResourceModuleCluster, ResourceModuleProject}
+		ResourceModuleCluster, ResourceModuleProject, ResourceModuleSystem}
 )
 
 type ActionType string
