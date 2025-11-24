@@ -18,6 +18,7 @@ func main() {
 	app := fx.New(
 		fx.Provide(provides...),
 		fx.Invoke(internal.InitLogger),
+		fx.Invoke(internal.InitConfig),
 		fx.Invoke(internal.ValidateConfig),
 		fx.Invoke(internal.InitDBConnection),
 		fx.Invoke(internal.InitCache),

@@ -356,6 +356,14 @@ func (s *HTTPServer) registerRoutes() {
 		nginxGroup.POST("/config/reload", s.handlerRegistry.systemHandler.ReloadNginxConfig)
 		nginxGroup.POST("/config/reset", s.handlerRegistry.systemHandler.ResetNginxConfig)
 	}
+
+	{ // localpaas app group
+		lpAppGroup := systemGroup.Group("/localpaas")
+		// Process
+		lpAppGroup.POST("/restart", s.handlerRegistry.systemHandler.RestartLocalPaasApp)
+		// Config
+		lpAppGroup.POST("/config/reload", s.handlerRegistry.systemHandler.ReloadLocalPaasAppConfig)
+	}
 }
 
 func routePing(c *gin.Context) {

@@ -21,6 +21,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/appservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/clusterservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/envvarservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/lpappservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/networkservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/nginxservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/projectservice"
@@ -41,6 +42,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/sshkeyuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/ssluc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/system/lpappuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/nginxuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc"
@@ -100,6 +102,7 @@ var Provides = []any{
 	basicauthuc.NewBasicAuthUC,
 	ssluc.NewSslUC,
 	nginxuc.NewNginxUC,
+	lpappuc.NewLpAppUC,
 
 	// Service
 	clusterservice.NewClusterService,
@@ -110,6 +113,7 @@ var Provides = []any{
 	settingservice.NewSettingService,
 	envvarservice.NewEnvVarService,
 	nginxservice.NewNginxService,
+	lpappservice.NewLpAppService,
 
 	// Repo: User
 	repository.NewUserRepo,

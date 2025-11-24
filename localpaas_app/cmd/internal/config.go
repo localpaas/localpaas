@@ -4,6 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"go.uber.org/fx"
 
@@ -14,6 +17,36 @@ import (
 var (
 	ErrInvalidConfig = errors.New("invalid config")
 )
+
+func InitConfig(lc fx.Lifecycle, _ *config.Config, logger logging.Logger) {
+	lc.Append(fx.Hook{
+		OnStart: func(_ context.Context) error {
+			// Register the channel to receive SIGHUP signal
+			sigs := make(chan os.Signal, 1)
+			signal.Notify(sigs, syscall.SIGHUP)
+
+			// Start a goroutine to handle incoming signals
+			go func() {
+				for {
+					sig := <-sigs // Block until a signal is received
+					switch sig {
+					case syscall.SIGHUP:
+						logger.Info("SIGHUP received: Reloading configuration...")
+						_, err := config.ReloadConfig()
+						if err != nil {
+							logger.Errorf("Failed to load configuration: %s", err)
+						} else {
+							logger.Info("SIGHUP handling: Configuration reloaded.")
+						}
+					default:
+						// Do nothing
+					}
+				}
+			}()
+			return nil
+		},
+	})
+}
 
 func ValidateConfig(lc fx.Lifecycle, cfg *config.Config, logger logging.Logger) {
 	lc.Append(fx.Hook{

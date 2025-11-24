@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	configFile = "config.toml"
-	envPrefix  = "LP"
+	configFileName = "config.toml"
+	envPrefix      = "LP"
 )
 
 const (
@@ -31,7 +31,10 @@ var (
 	ErrConfigFileNotFound = errors.New("config file not found")
 )
 
-var Current *Config
+var (
+	Current        *Config
+	lastConfigFile string
+)
 
 type Config struct {
 	Env      string `toml:"env" env:"LP_ENV"`
@@ -100,29 +103,53 @@ func (cfg *Config) DataPathLetsEncryptEtc() string {
 }
 
 func LoadConfig() (*Config, error) {
+	cfg, err := loadConfig("")
+	if err != nil {
+		return nil, tracerr.Wrap(err)
+	}
+	Current = cfg
+	return cfg, nil
+}
+
+func loadConfig(configFile string) (*Config, error) {
 	config := &Config{}
 
-	appPath := os.Getenv("LP_APP_PATH")
-	if appPath == "" {
-		appPath = "/var/lib/localpaas"
-	}
-	configFile := filepath.Join(appPath, configFile)
-
-	if _, err := os.Stat(configFile); errors.Is(err, os.ErrNotExist) {
-		configFile = os.Getenv("LP_CONFIG_FILE")
-		if configFile == "" {
-			return nil, fmt.Errorf("%w: LP_CONFIG_FILE must be defined", ErrConfigFileUnset)
+	if configFile == "" {
+		appPath := os.Getenv("LP_APP_PATH")
+		if appPath == "" {
+			appPath = "/var/lib/localpaas"
 		}
+		configFile = filepath.Join(appPath, configFileName)
+
 		if _, err := os.Stat(configFile); errors.Is(err, os.ErrNotExist) {
-			return nil, fmt.Errorf("%w: %s", ErrConfigFileNotFound, configFile)
+			configFile = os.Getenv("LP_CONFIG_FILE")
+			if configFile == "" {
+				return nil, fmt.Errorf("%w: LP_CONFIG_FILE must be defined", ErrConfigFileUnset)
+			}
 		}
 	}
 
-	cfgr := configor.New(&configor.Config{ENVPrefix: envPrefix})
-	if err := cfgr.Load(config, configFile); err != nil {
+	if _, err := os.Stat(configFile); os.IsNotExist(err) {
+		return nil, fmt.Errorf("%w: %s", ErrConfigFileNotFound, configFile)
+	}
+
+	err := configor.New(&configor.Config{ENVPrefix: envPrefix}).Load(config, configFile)
+	if err != nil {
 		return config, tracerr.Wrap(err)
 	}
 
-	Current = config
+	lastConfigFile = configFile
 	return config, nil
+}
+
+func ReloadConfig() (*Config, error) {
+	newConfig, err := loadConfig(lastConfigFile)
+	if err != nil {
+		return nil, tracerr.Wrap(err)
+	}
+
+	// TODO: validate then apply a certain portion of the new config
+
+	Current = newConfig
+	return newConfig, nil
 }
