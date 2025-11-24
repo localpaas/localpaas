@@ -9,37 +9,37 @@ import (
 )
 
 type AppHttpSettings struct {
-	Enabled          bool           `json:"enabled"`
-	Domains          []*AppDomain   `json:"domains,omitempty"`
-	DomainRedirect   string         `json:"domainRedirect,omitempty"`
-	ContainerPort    int            `json:"containerPort,omitempty"`
-	ForceHttps       bool           `json:"forceHttps,omitempty"`
-	WebsocketEnabled bool           `json:"websocketEnabled,omitempty"`
-	BasicAuth        ObjectID       `json:"basicAuth,omitzero"`
-	NginxSettings    *NginxSettings `json:"nginxSettings,omitempty"`
+	Enabled bool         `json:"enabled"`
+	Domains []*AppDomain `json:"domains,omitempty"`
 
 	// NOTE: for storing current containing setting only
 	Setting *Setting `json:"-"`
 }
 
 type AppDomain struct {
-	Domain  string   `json:"domain"`
-	SslCert ObjectID `json:"sslCert,omitzero"`
+	Enabled          bool           `json:"enabled"`
+	Domain           string         `json:"domain"`
+	DomainRedirect   string         `json:"domainRedirect,omitempty"`
+	SslCert          ObjectID       `json:"sslCert,omitzero"`
+	ContainerPort    int            `json:"containerPort,omitempty"`
+	ForceHttps       bool           `json:"forceHttps,omitempty"`
+	WebsocketEnabled bool           `json:"websocketEnabled,omitempty"`
+	BasicAuth        ObjectID       `json:"basicAuth,omitzero"`
+	NginxSettings    *NginxSettings `json:"nginxSettings,omitempty"`
 }
 
 type NginxSettings struct {
-	Enabled        bool              `json:"enabled"`
 	RootDirectives []*NginxDirective `json:"rootDirectives,omitempty"`
 	ServerBlock    *NginxServerBlock `json:"serverBlock"`
 }
 
 type NginxServerBlock struct {
-	Invisible  bool              `json:"invisible,omitempty"`
+	Hide       bool              `json:"hide,omitempty"`
 	Directives []*NginxDirective `json:"directives"`
 }
 
 type NginxDirective struct {
-	Invisible bool `json:"invisible,omitempty"`
+	Hide bool `json:"hide,omitempty"`
 	*crossplane.Directive
 }
 

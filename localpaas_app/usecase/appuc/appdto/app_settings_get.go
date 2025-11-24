@@ -42,34 +42,32 @@ type AppSettingsResp struct {
 	HttpSettings       *HttpSettingsResp       `json:"httpSettings,omitempty"`
 }
 
-func TransformAppSettings(app *entity.App) (resp *AppSettingsResp, err error) {
+type AppSettingsTransformationInput struct {
+	App                *entity.App
+	EnvVars            []*entity.EnvVars
+	DeploymentSettings *entity.AppDeploymentSettings
+	HttpSettings       *entity.AppHttpSettings
+
+	DefaultNginxSettings *entity.NginxSettings
+	ReferenceSettingMap  map[string]*entity.Setting
+}
+
+func TransformAppSettings(input *AppSettingsTransformationInput) (resp *AppSettingsResp, err error) {
 	resp = &AppSettingsResp{}
 
-	var envVarSettings []*entity.Setting
-	for _, setting := range app.Settings {
-		switch setting.Type { //nolint:exhaustive
-		case base.SettingTypeEnvVar:
-			envVarSettings = append(envVarSettings, setting)
-
-		case base.SettingTypeAppDeployment:
-			resp.DeploymentSettings, err = TransformDeploymentSettings(setting)
-			if err != nil {
-				return nil, apperrors.Wrap(err)
-			}
-
-		case base.SettingTypeAppHttp:
-			resp.HttpSettings, err = TransformHttpSettings(setting)
-			if err != nil {
-				return nil, apperrors.Wrap(err)
-			}
-		}
+	resp.DeploymentSettings, err = TransformDeploymentSettings(input)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
 	}
 
-	if len(envVarSettings) > 0 {
-		resp.EnvVars, err = TransformEnvVars(app, envVarSettings)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
+	resp.HttpSettings, err = TransformHttpSettings(input)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	resp.EnvVars, err = TransformEnvVars(input)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
 	}
 
 	return resp, nil

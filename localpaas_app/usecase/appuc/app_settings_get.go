@@ -8,6 +8,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
 )
@@ -38,7 +40,15 @@ func (uc *AppUC) GetAppSettings(
 	}
 	app.Settings = settings
 
-	resp, err := appdto.TransformAppSettings(app)
+	input := &appdto.AppSettingsTransformationInput{
+		App: app,
+	}
+	err = uc.loadAppSettingsReferenceData(ctx, uc.db, input)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	resp, err := appdto.TransformAppSettings(input)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -46,4 +56,95 @@ func (uc *AppUC) GetAppSettings(
 	return &appdto.GetAppSettingsResp{
 		Data: resp,
 	}, nil
+}
+
+func (uc *AppUC) loadAppSettingsReferenceData(
+	ctx context.Context,
+	db database.IDB,
+	input *appdto.AppSettingsTransformationInput,
+) (err error) {
+	app := input.App
+
+	for _, setting := range app.Settings {
+		switch setting.Type { //nolint:exhaustive
+		case base.SettingTypeEnvVar:
+			envVars, err := setting.ParseEnvVars()
+			if err != nil {
+				return apperrors.Wrap(err)
+			}
+			input.EnvVars = append(input.EnvVars, envVars)
+
+		case base.SettingTypeAppDeployment:
+			input.DeploymentSettings, err = setting.ParseAppDeploymentSettings()
+			if err != nil {
+				return apperrors.Wrap(err)
+			}
+
+		case base.SettingTypeAppHttp:
+			input.HttpSettings, err = setting.ParseAppHttpSettings()
+			if err != nil {
+				return apperrors.Wrap(err)
+			}
+		}
+	}
+
+	// Reference data for Http settings
+	if input.HttpSettings != nil {
+		err = uc.loadAppHttpSettingsReferenceData(ctx, db, input)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+	}
+
+	// Reference data for deployment settings
+	if input.DeploymentSettings != nil {
+		err = uc.loadAppDeploymentSettingsReferenceData(ctx, db, input)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+	}
+
+	return nil
+}
+
+func (uc *AppUC) loadAppHttpSettingsReferenceData(
+	ctx context.Context,
+	db database.IDB,
+	input *appdto.AppSettingsTransformationInput,
+) (err error) {
+	var settingIDs []string
+	for _, domain := range input.HttpSettings.Domains {
+		if domain.SslCert.ID != "" {
+			settingIDs = append(settingIDs, domain.SslCert.ID)
+		}
+		if domain.BasicAuth.ID != "" {
+			settingIDs = append(settingIDs, domain.BasicAuth.ID)
+		}
+	}
+
+	settings, err := uc.settingRepo.ListByIDs(ctx, db, settingIDs)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	input.ReferenceSettingMap = make(map[string]*entity.Setting, len(settings))
+	for _, setting := range settings {
+		input.ReferenceSettingMap[setting.ID] = setting
+	}
+
+	input.DefaultNginxSettings, err = uc.nginxService.GetDefaultNginxConfig()
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	return nil
+}
+
+func (uc *AppUC) loadAppDeploymentSettingsReferenceData(
+	_ context.Context,
+	_ database.IDB,
+	_ *appdto.AppSettingsTransformationInput,
+) (err error) {
+	// TODO: add implementation
+	return nil
 }

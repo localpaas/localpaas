@@ -3,7 +3,6 @@ package appdto
 import (
 	vld "github.com/tiendc/go-validator"
 
-	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 )
 
@@ -51,19 +50,20 @@ type EnvVarResp struct {
 	IsBuildEnv bool   `json:"isBuildEnv,omitempty"`
 }
 
-func TransformEnvVars(app *entity.App, envSettings []*entity.Setting) (resp *EnvVarsResp, err error) {
+func TransformEnvVars(input *AppSettingsTransformationInput) (resp *EnvVarsResp, err error) {
+	if len(input.EnvVars) == 0 {
+		return nil, nil
+	}
+
 	var appEnvVars, parentAppEnvVars, projectEnvVars *entity.EnvVars
-	for _, envSetting := range envSettings {
-		switch envSetting.ObjectID {
-		case app.ID:
-			appEnvVars, err = envSetting.ParseEnvVars()
-		case app.ProjectID:
-			projectEnvVars, err = envSetting.ParseEnvVars()
-		case app.ParentID:
-			parentAppEnvVars, err = envSetting.ParseEnvVars()
-		}
-		if err != nil {
-			return nil, apperrors.Wrap(err)
+	for _, env := range input.EnvVars {
+		switch env.Setting.ObjectID {
+		case input.App.ID:
+			appEnvVars = env
+		case input.App.ProjectID:
+			projectEnvVars = env
+		case input.App.ParentID:
+			parentAppEnvVars = env
 		}
 	}
 

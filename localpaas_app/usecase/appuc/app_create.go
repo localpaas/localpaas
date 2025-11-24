@@ -42,10 +42,7 @@ func (uc *AppUC) CreateApp(
 		}
 
 		persistingData = &persistingAppData{}
-		err = uc.preparePersistingApp(ctx, req, appData, persistingData)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
+		uc.preparePersistingApp(req, appData, persistingData)
 
 		createdApp = persistingData.UpsertingApps[0]
 
@@ -113,11 +110,10 @@ type persistingAppData struct {
 }
 
 func (uc *AppUC) preparePersistingApp(
-	ctx context.Context,
 	req *appdto.CreateAppReq,
 	data *createAppData,
 	persistingData *persistingAppData,
-) error {
+) {
 	timeNow := timeutil.NowUTC()
 	project := data.Project
 	app := &entity.App{
@@ -129,12 +125,7 @@ func (uc *AppUC) preparePersistingApp(
 
 	uc.preparePersistingAppBase(app, req.AppBaseReq, timeNow, persistingData)
 	uc.preparePersistingAppTags(app, req.Tags, 0, persistingData)
-	err := uc.preparePersistingAppSettingsDefault(ctx, app, timeNow, data, persistingData)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	return nil
+	uc.preparePersistingAppSettingsDefault(app, timeNow, data, persistingData)
 }
 
 func (uc *AppUC) preparePersistingAppBase(
@@ -170,12 +161,11 @@ func (uc *AppUC) preparePersistingAppTags(
 }
 
 func (uc *AppUC) preparePersistingAppSettingsDefault(
-	ctx context.Context,
 	app *entity.App,
 	timeNow time.Time,
 	data *createAppData,
 	persistingData *persistingAppData,
-) error {
+) {
 	dbServiceSpec := &entity.Setting{
 		ID:        gofn.Must(ulid.NewStringULID()),
 		ObjectID:  app.ID,
@@ -203,12 +193,8 @@ func (uc *AppUC) preparePersistingAppSettingsDefault(
 	dbServiceSpec.MustSetData(serviceSpec)
 	data.ServiceSpec = serviceSpec
 
+	// Init empty http settings
 	httpSettings := &entity.AppHttpSettings{}
-	err := uc.nginxService.InitAppConfig(ctx, app, httpSettings)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
 	dbHttpSettings := &entity.Setting{
 		ID:        gofn.Must(ulid.NewStringULID()),
 		Type:      base.SettingTypeAppHttp,
@@ -219,8 +205,6 @@ func (uc *AppUC) preparePersistingAppSettingsDefault(
 	}
 	dbHttpSettings.MustSetData(httpSettings)
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, dbHttpSettings)
-
-	return nil
 }
 
 func (uc *AppUC) persistData(

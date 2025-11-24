@@ -51,53 +51,41 @@ func (uc *AppUC) prepareUpdatingAppHttpSettings(
 	dbSetting.Status = base.SettingStatusActive
 	dbSetting.ExpireAt = time.Time{}
 
-	// Existing settings
-	existingHttpSettings, err := data.HttpSettingsData.DbHttpSettings.ParseAppHttpSettings()
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
 	httpReq := req.HttpSettings
 	newHttpSettings := &entity.AppHttpSettings{
 		Setting: dbSetting,
 		Enabled: httpReq.Enabled,
 		Domains: gofn.MapSlice(httpReq.Domains, func(r *appdto.DomainReq) *entity.AppDomain {
 			return &entity.AppDomain{
-				Domain:  r.Domain,
-				SslCert: entity.ObjectID{ID: r.SslCert.ID},
+				Enabled:          r.Enabled,
+				Domain:           r.Domain,
+				DomainRedirect:   r.DomainRedirect,
+				SslCert:          entity.ObjectID{ID: r.SslCert.ID},
+				ContainerPort:    r.ContainerPort,
+				ForceHttps:       r.ForceHttps,
+				WebsocketEnabled: r.WebsocketEnabled,
+				BasicAuth:        entity.ObjectID{ID: r.BasicAuth.ID},
+				NginxSettings: &entity.NginxSettings{
+					RootDirectives: gofn.MapSlice(r.NginxSettings.RootDirectives,
+						func(r *appdto.NginxDirectiveReq) *entity.NginxDirective {
+							return &entity.NginxDirective{
+								Hide:      r.Hide,
+								Directive: r.Directive,
+							}
+						}),
+					ServerBlock: &entity.NginxServerBlock{
+						Hide: r.NginxSettings.ServerBlock.Hide,
+						Directives: gofn.MapSlice(r.NginxSettings.ServerBlock.Directives,
+							func(r *appdto.NginxDirectiveReq) *entity.NginxDirective {
+								return &entity.NginxDirective{
+									Hide:      r.Hide,
+									Directive: r.Directive,
+								}
+							}),
+					},
+				},
 			}
 		}),
-		DomainRedirect:   httpReq.DomainRedirect,
-		ContainerPort:    httpReq.ContainerPort,
-		ForceHttps:       httpReq.ForceHttps,
-		WebsocketEnabled: httpReq.WebsocketEnabled,
-		BasicAuth:        entity.ObjectID{ID: httpReq.BasicAuth.ID},
-	}
-
-	// If `nginxSettings` is not sent from FE, use the existing
-	if httpReq.NginxSettings == nil {
-		newHttpSettings.NginxSettings = existingHttpSettings.NginxSettings
-	} else {
-		newHttpSettings.NginxSettings = &entity.NginxSettings{
-			Enabled: httpReq.NginxSettings.Enabled,
-			RootDirectives: gofn.MapSlice(httpReq.NginxSettings.RootDirectives,
-				func(r *appdto.NginxDirectiveReq) *entity.NginxDirective {
-					return &entity.NginxDirective{
-						Invisible: r.Invisible,
-						Directive: r.Directive,
-					}
-				}),
-			ServerBlock: &entity.NginxServerBlock{
-				Invisible: httpReq.NginxSettings.ServerBlock.Invisible,
-				Directives: gofn.MapSlice(httpReq.NginxSettings.ServerBlock.Directives,
-					func(r *appdto.NginxDirectiveReq) *entity.NginxDirective {
-						return &entity.NginxDirective{
-							Invisible: r.Invisible,
-							Directive: r.Directive,
-						}
-					}),
-			},
-		}
 	}
 	data.HttpSettingsData.HttpSettings = newHttpSettings
 

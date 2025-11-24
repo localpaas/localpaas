@@ -160,6 +160,12 @@ func (c *Block) AddDirectives(directives ...*crossplane.Directive) {
 	c.inner.Block = append(c.inner.Block, directives...)
 }
 
+func (c *Block) SetDirectiveArgs(name string, args []string, n int) {
+	for _, directive := range c.DirectivesByName(name, n) {
+		directive.Args = args
+	}
+}
+
 func blocksByName(directives crossplane.Directives, name string, n int) (blocks []*Block) {
 	for _, dir := range directives {
 		if !dir.IsBlock() {

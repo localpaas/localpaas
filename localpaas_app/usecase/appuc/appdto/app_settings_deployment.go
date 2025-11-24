@@ -5,7 +5,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 )
 
@@ -90,12 +89,11 @@ type DeploymentCodeSourceResp struct {
 	Enabled bool `json:"enabled"`
 }
 
-func TransformDeploymentSettings(setting *entity.Setting) (resp *DeploymentSettingsResp, err error) {
-	data, err := setting.ParseAppDeploymentSettings()
-	if err != nil {
-		return nil, apperrors.Wrap(err)
+func TransformDeploymentSettings(input *AppSettingsTransformationInput) (resp *DeploymentSettingsResp, err error) {
+	if input.DeploymentSettings == nil {
+		return nil, nil
 	}
-	if err = copier.Copy(&resp, &data); err != nil {
+	if err = copier.Copy(&resp, input.DeploymentSettings); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 	return resp, nil

@@ -6,8 +6,9 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/basicauthuc/basicauthdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/ssluc/ssldto"
 )
 
 //
@@ -15,14 +16,8 @@ import (
 //
 
 type HttpSettingsReq struct {
-	Enabled          bool                `json:"enabled"`
-	Domains          []*DomainReq        `json:"domains"`
-	DomainRedirect   string              `json:"domainRedirect"`
-	ContainerPort    int                 `json:"containerPort"`
-	ForceHttps       bool                `json:"forceHttps"`
-	WebsocketEnabled bool                `json:"websocketEnabled"`
-	BasicAuth        basedto.ObjectIDReq `json:"basicAuth"`
-	NginxSettings    *NginxSettingsReq   `json:"nginxSettings"`
+	Enabled bool         `json:"enabled"`
+	Domains []*DomainReq `json:"domains"`
 }
 
 // nolint
@@ -38,8 +33,15 @@ func (req *HttpSettingsReq) validate(field string) (res []vld.Validator) {
 }
 
 type DomainReq struct {
-	Domain  string              `json:"domain"`
-	SslCert basedto.ObjectIDReq `json:"sslCert"`
+	Enabled          bool                `json:"enabled"`
+	Domain           string              `json:"domain"`
+	DomainRedirect   string              `json:"domainRedirect"`
+	SslCert          basedto.ObjectIDReq `json:"sslCert"`
+	ContainerPort    int                 `json:"containerPort"`
+	ForceHttps       bool                `json:"forceHttps"`
+	WebsocketEnabled bool                `json:"websocketEnabled"`
+	BasicAuth        basedto.ObjectIDReq `json:"basicAuth"`
+	NginxSettings    *NginxSettingsReq   `json:"nginxSettings"`
 }
 
 // nolint
@@ -55,18 +57,17 @@ func (req *DomainReq) validate(field string) (res []vld.Validator) {
 }
 
 type NginxSettingsReq struct {
-	Enabled        bool                 `json:"enabled"`
 	RootDirectives []*NginxDirectiveReq `json:"rootDirectives"`
 	ServerBlock    *NginxServerBlockReq `json:"serverBlock"`
 }
 
 type NginxServerBlockReq struct {
-	Invisible  bool                 `json:"invisible"`
+	Hide       bool                 `json:"hide"`
 	Directives []*NginxDirectiveReq `json:"directives"`
 }
 
 type NginxDirectiveReq struct {
-	Invisible bool `json:"invisible"`
+	Hide bool `json:"hide"`
 	*crossplane.Directive
 }
 
@@ -75,44 +76,70 @@ type NginxDirectiveReq struct {
 //
 
 type HttpSettingsResp struct {
-	Enabled          bool                     `json:"enabled"`
-	Domains          []*DomainResp            `json:"domains"`
-	DomainRedirect   string                   `json:"domainRedirect"`
-	ContainerPort    int                      `json:"containerPort"`
-	ForceHttps       bool                     `json:"forceHttps"`
-	WebsocketEnabled bool                     `json:"websocketEnabled"`
-	BasicAuth        *basedto.NamedObjectResp `json:"basicAuth"`
-	NginxSettings    *NginxSettingsResp       `json:"nginxSettings"`
+	Enabled              bool               `json:"enabled"`
+	Domains              []*DomainResp      `json:"domains"`
+	DefaultNginxSettings *NginxSettingsResp `json:"defaultNginxSettings"`
 }
 
 type DomainResp struct {
-	Domain  string                   `json:"domain"`
-	SslCert *basedto.NamedObjectResp `json:"sslCert"`
+	Enabled          bool                        `json:"enabled"`
+	Domain           string                      `json:"domain"`
+	DomainRedirect   string                      `json:"domainRedirect"`
+	SslCert          *ssldto.SslResp             `json:"sslCert"`
+	ContainerPort    int                         `json:"containerPort"`
+	ForceHttps       bool                        `json:"forceHttps"`
+	WebsocketEnabled bool                        `json:"websocketEnabled"`
+	BasicAuth        *basicauthdto.BasicAuthResp `json:"basicAuth"`
+	NginxSettings    *NginxSettingsResp          `json:"nginxSettings"`
 }
 
 type NginxSettingsResp struct {
-	Enabled        bool                  `json:"enabled"`
-	RootDirectives []*NginxDirectiveResp `json:"rootDirectives"`
+	RootDirectives []*NginxDirectiveResp `json:"rootDirectives,omitempty"`
 	ServerBlock    *NginxServerBlockResp `json:"serverBlock"`
 }
 
 type NginxServerBlockResp struct {
-	Invisible  bool                  `json:"invisible"`
+	Hide       bool                  `json:"hide,omitempty"`
 	Directives []*NginxDirectiveResp `json:"directives"`
 }
 
 type NginxDirectiveResp struct {
-	Invisible bool `json:"invisible"`
+	Hide bool `json:"hide,omitempty"`
 	*crossplane.Directive
 }
 
-func TransformHttpSettings(setting *entity.Setting) (resp *HttpSettingsResp, err error) {
-	data, err := setting.ParseAppHttpSettings()
-	if err != nil {
+func TransformHttpSettings(input *AppSettingsTransformationInput) (resp *HttpSettingsResp, err error) {
+	if input.HttpSettings == nil {
+		return nil, nil
+	}
+
+	if err = copier.Copy(&resp, input.HttpSettings); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	if err = copier.Copy(&resp, &data); err != nil {
+
+	for _, domain := range resp.Domains {
+		if domain.SslCert != nil && domain.SslCert.ID != "" {
+			sslResp, _ := ssldto.TransformSsl(input.ReferenceSettingMap[domain.SslCert.ID], false)
+			if sslResp != nil {
+				domain.SslCert = sslResp
+			}
+		} else {
+			domain.SslCert = nil
+		}
+
+		if domain.BasicAuth != nil && domain.BasicAuth.ID != "" {
+			basicAuthResp, _ := basicauthdto.TransformBasicAuth(input.ReferenceSettingMap[domain.BasicAuth.ID], false)
+			if basicAuthResp != nil {
+				domain.BasicAuth = basicAuthResp
+			}
+		} else {
+			domain.BasicAuth = nil
+		}
+	}
+
+	if err = copier.Copy(&resp.DefaultNginxSettings, input.DefaultNginxSettings); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+
 	return resp, nil
 }

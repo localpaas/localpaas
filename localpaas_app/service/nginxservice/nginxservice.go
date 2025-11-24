@@ -17,7 +17,7 @@ type NginxService interface {
 	ReloadNginxConfig(ctx context.Context) error
 	ResetNginxConfig(ctx context.Context) error
 
-	InitAppConfig(ctx context.Context, app *entity.App, httpSettings *entity.AppHttpSettings) error
+	GetDefaultNginxConfig() (*entity.NginxSettings, error)
 	ApplyAppConfig(ctx context.Context, app *entity.App, httpSettings *entity.AppHttpSettings) error
 	RemoveAppConfig(ctx context.Context, app *entity.App) error
 }

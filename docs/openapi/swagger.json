@@ -7760,18 +7760,6 @@
         "required" : [ "access", "id" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_basedto.NamedObjectResp" : {
-        "properties" : {
-          "id" : {
-            "type" : "string"
-          },
-          "name" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "id", "name" ],
-        "type" : "object"
-      },
       "github_com_localpaas_localpaas_localpaas_app_basedto.ObjectAccessReq" : {
         "properties" : {
           "access" : {
@@ -8140,26 +8128,68 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DomainReq" : {
         "properties" : {
+          "basicAuth" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
+          },
+          "containerPort" : {
+            "type" : "integer"
+          },
           "domain" : {
             "type" : "string"
           },
+          "domainRedirect" : {
+            "type" : "string"
+          },
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "forceHttps" : {
+            "type" : "boolean"
+          },
+          "nginxSettings" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxSettingsReq"
+          },
           "sslCert" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
+          },
+          "websocketEnabled" : {
+            "type" : "boolean"
           }
         },
-        "required" : [ "domain", "sslCert" ],
+        "required" : [ "basicAuth", "containerPort", "domain", "domainRedirect", "enabled", "forceHttps", "nginxSettings", "sslCert", "websocketEnabled" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DomainResp" : {
         "properties" : {
+          "basicAuth" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_basicauthuc_basicauthdto.BasicAuthResp"
+          },
+          "containerPort" : {
+            "type" : "integer"
+          },
           "domain" : {
             "type" : "string"
           },
+          "domainRedirect" : {
+            "type" : "string"
+          },
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "forceHttps" : {
+            "type" : "boolean"
+          },
+          "nginxSettings" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxSettingsResp"
+          },
           "sslCert" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.NamedObjectResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_ssluc_ssldto.SslResp"
+          },
+          "websocketEnabled" : {
+            "type" : "boolean"
           }
         },
-        "required" : [ "domain", "sslCert" ],
+        "required" : [ "basicAuth", "containerPort", "domain", "domainRedirect", "enabled", "forceHttps", "nginxSettings", "sslCert", "websocketEnabled" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.EnvVarReq" : {
@@ -8254,15 +8284,6 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HttpSettingsReq" : {
         "properties" : {
-          "basicAuth" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
-          },
-          "containerPort" : {
-            "type" : "integer"
-          },
-          "domainRedirect" : {
-            "type" : "string"
-          },
           "domains" : {
             "items" : {
               "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DomainReq"
@@ -8271,30 +8292,15 @@
           },
           "enabled" : {
             "type" : "boolean"
-          },
-          "forceHttps" : {
-            "type" : "boolean"
-          },
-          "nginxSettings" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxSettingsReq"
-          },
-          "websocketEnabled" : {
-            "type" : "boolean"
           }
         },
-        "required" : [ "basicAuth", "containerPort", "domainRedirect", "domains", "enabled", "forceHttps", "nginxSettings", "websocketEnabled" ],
+        "required" : [ "domains", "enabled" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HttpSettingsResp" : {
         "properties" : {
-          "basicAuth" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.NamedObjectResp"
-          },
-          "containerPort" : {
-            "type" : "integer"
-          },
-          "domainRedirect" : {
-            "type" : "string"
+          "defaultNginxSettings" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxSettingsResp"
           },
           "domains" : {
             "items" : {
@@ -8304,18 +8310,9 @@
           },
           "enabled" : {
             "type" : "boolean"
-          },
-          "forceHttps" : {
-            "type" : "boolean"
-          },
-          "nginxSettings" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxSettingsResp"
-          },
-          "websocketEnabled" : {
-            "type" : "boolean"
           }
         },
-        "required" : [ "basicAuth", "containerPort", "domainRedirect", "domains", "enabled", "forceHttps", "nginxSettings", "websocketEnabled" ],
+        "required" : [ "defaultNginxSettings", "domains", "enabled" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.ListAppBaseResp" : {
@@ -8371,14 +8368,14 @@
           "file" : {
             "type" : "string"
           },
+          "hide" : {
+            "type" : "boolean"
+          },
           "includes" : {
             "items" : {
               "type" : "integer"
             },
             "type" : "array"
-          },
-          "invisible" : {
-            "type" : "boolean"
           },
           "line" : {
             "type" : "integer"
@@ -8388,7 +8385,7 @@
             "type" : "boolean"
           }
         },
-        "required" : [ "args", "directive", "invisible", "line" ],
+        "required" : [ "args", "directive", "hide", "line" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxDirectiveResp" : {
@@ -8414,14 +8411,14 @@
           "file" : {
             "type" : "string"
           },
+          "hide" : {
+            "type" : "boolean"
+          },
           "includes" : {
             "items" : {
               "type" : "integer"
             },
             "type" : "array"
-          },
-          "invisible" : {
-            "type" : "boolean"
           },
           "line" : {
             "type" : "integer"
@@ -8431,7 +8428,7 @@
             "type" : "boolean"
           }
         },
-        "required" : [ "args", "directive", "invisible", "line" ],
+        "required" : [ "args", "directive", "line" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxServerBlockReq" : {
@@ -8442,11 +8439,11 @@
             },
             "type" : "array"
           },
-          "invisible" : {
+          "hide" : {
             "type" : "boolean"
           }
         },
-        "required" : [ "directives", "invisible" ],
+        "required" : [ "directives", "hide" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxServerBlockResp" : {
@@ -8457,18 +8454,15 @@
             },
             "type" : "array"
           },
-          "invisible" : {
+          "hide" : {
             "type" : "boolean"
           }
         },
-        "required" : [ "directives", "invisible" ],
+        "required" : [ "directives" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxSettingsReq" : {
         "properties" : {
-          "enabled" : {
-            "type" : "boolean"
-          },
           "rootDirectives" : {
             "items" : {
               "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxDirectiveReq"
@@ -8479,14 +8473,11 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxServerBlockReq"
           }
         },
-        "required" : [ "enabled", "rootDirectives", "serverBlock" ],
+        "required" : [ "rootDirectives", "serverBlock" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxSettingsResp" : {
         "properties" : {
-          "enabled" : {
-            "type" : "boolean"
-          },
           "rootDirectives" : {
             "items" : {
               "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxDirectiveResp"
@@ -8497,7 +8488,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxServerBlockResp"
           }
         },
-        "required" : [ "enabled", "rootDirectives", "serverBlock" ],
+        "required" : [ "serverBlock" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.ObtainDomainSslReq" : {

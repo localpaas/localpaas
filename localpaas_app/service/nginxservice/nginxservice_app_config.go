@@ -47,15 +47,13 @@ var (
 	}()
 )
 
-func (s *nginxService) InitAppConfig(_ context.Context, _ *entity.App, httpSettings *entity.AppHttpSettings) error {
+func (s *nginxService) GetDefaultNginxConfig() (*entity.NginxSettings, error) {
 	conf, err := nginxParseConfDefault(string(defaultConfTemplate))
 	if err != nil {
-		return apperrors.Wrap(err)
+		return nil, apperrors.Wrap(err)
 	}
 
-	httpSettings.NginxSettings = &entity.NginxSettings{
-		Enabled: true,
-	}
+	nginxSettings := &entity.NginxSettings{}
 	for _, block := range conf.BlocksByName("server", -1) {
 		directives := gofn.MapSlice(block.AllDirectives(), func(d *crossplane.Directive) *entity.NginxDirective {
 			return &entity.NginxDirective{
@@ -63,12 +61,12 @@ func (s *nginxService) InitAppConfig(_ context.Context, _ *entity.App, httpSetti
 			}
 		})
 		if len(directives) > 0 {
-			httpSettings.NginxSettings.ServerBlock = &entity.NginxServerBlock{
+			nginxSettings.ServerBlock = &entity.NginxServerBlock{
 				Directives: directives,
 			}
 		}
 	}
-	return nil
+	return nginxSettings, nil
 }
 
 func (s *nginxService) ApplyAppConfig(ctx context.Context, app *entity.App,
@@ -83,7 +81,7 @@ func (s *nginxService) ApplyAppConfig(ctx context.Context, app *entity.App,
 	// Http settings is enabled
 	buf := bytes.NewBuffer(make([]byte, 0, defaultConfBuf))
 	for _, domain := range httpSettings.Domains {
-		err = s.buildConfigForDomain(app, httpSettings, domain, buf)
+		err = s.buildConfigForDomain(app, domain, buf)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -103,19 +101,19 @@ func (s *nginxService) ApplyAppConfig(ctx context.Context, app *entity.App,
 	return nil
 }
 
-func (s *nginxService) buildConfigForDomain(app *entity.App, httpSettings *entity.AppHttpSettings,
-	domain *entity.AppDomain, buf *bytes.Buffer) (err error) {
-	if httpSettings.ForceHttps {
+func (s *nginxService) buildConfigForDomain(app *entity.App, domain *entity.AppDomain, buf *bytes.Buffer) error {
+	if !domain.Enabled {
+		return nil
+	}
+
+	if domain.ForceHttps {
 		conf, err := nginxParseConfDefault(string(forceHttpsConfTemplate))
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
 
 		conf.IterBlocksByName("server", func(block *nginx.Block, _ int) bool {
-			block.IterDirectivesByName("server_name", func(dir *crossplane.Directive, _ int) bool {
-				dir.Args = []string{domain.Domain}
-				return true
-			})
+			block.SetDirectiveArgs("server_name", []string{domain.Domain}, 1)
 			return true
 		})
 
@@ -132,7 +130,7 @@ func (s *nginxService) buildConfigForDomain(app *entity.App, httpSettings *entit
 		sslKeyPath = dirPath + "/private.key"
 	}
 
-	isRedirect := httpSettings.DomainRedirect != "" && domain.Domain != httpSettings.DomainRedirect
+	isRedirect := domain.DomainRedirect != "" && domain.Domain != domain.DomainRedirect
 	if isRedirect {
 		conf, err := nginxParseConfDefault(string(redirectConfTemplate))
 		if err != nil {
@@ -140,23 +138,16 @@ func (s *nginxService) buildConfigForDomain(app *entity.App, httpSettings *entit
 		}
 
 		conf.IterBlocksByName("server", func(block *nginx.Block, _ int) bool {
-			block.IterDirectivesByName("server_name", func(dir *crossplane.Directive, _ int) bool {
-				dir.Args = []string{domain.Domain}
-				return true
-			})
+			block.SetDirectiveArgs("server_name", []string{domain.Domain}, 1)
+
 			if sslCertPath != "" && sslKeyPath != "" {
-				block.IterDirectivesByName("ssl_certificate", func(dir *crossplane.Directive, _ int) bool {
-					dir.Args = []string{sslCertPath}
-					return true
-				})
-				block.IterDirectivesByName("ssl_certificate_key", func(dir *crossplane.Directive, _ int) bool {
-					dir.Args = []string{sslKeyPath}
-					return true
-				})
+				block.SetDirectiveArgs("ssl_certificate", []string{sslCertPath}, 1)
+				block.SetDirectiveArgs("ssl_certificate_key", []string{sslKeyPath}, 1)
 			}
+
 			conf.IterBlocksByName("location", func(block *nginx.Block, _ int) bool {
 				block.IterDirectivesByName("return", func(directive *crossplane.Directive, _ int) bool {
-					target := fmt.Sprintf("https://%s$request_uri", httpSettings.DomainRedirect)
+					target := fmt.Sprintf("https://%s$request_uri", domain.DomainRedirect)
 					directive.Args = []string{directive.Args[0], target}
 					return true
 				})
@@ -171,8 +162,8 @@ func (s *nginxService) buildConfigForDomain(app *entity.App, httpSettings *entit
 		}
 	}
 
-	if !isRedirect && httpSettings.NginxSettings.ServerBlock != nil {
-		directives := gofn.MapSlice(httpSettings.NginxSettings.ServerBlock.Directives,
+	if !isRedirect && domain.NginxSettings.ServerBlock != nil {
+		directives := gofn.MapSlice(domain.NginxSettings.ServerBlock.Directives,
 			func(directive *entity.NginxDirective) *crossplane.Directive {
 				return directive.Directive
 			})
@@ -181,21 +172,14 @@ func (s *nginxService) buildConfigForDomain(app *entity.App, httpSettings *entit
 		conf.AddBlock(nginx.NewServerBlock(directives...))
 
 		conf.IterBlocksByName("server", func(block *nginx.Block, _ int) bool {
-			block.IterDirectivesByName("server_name", func(dir *crossplane.Directive, _ int) bool {
-				dir.Args = []string{domain.Domain}
-				return true
-			})
+			block.SetDirectiveArgs("server_name", []string{domain.Domain}, 1)
+
 			if sslCertPath != "" && sslKeyPath != "" {
-				block.IterDirectivesByName("ssl_certificate", func(dir *crossplane.Directive, _ int) bool {
-					dir.Args = []string{sslCertPath}
-					return true
-				})
-				block.IterDirectivesByName("ssl_certificate_key", func(dir *crossplane.Directive, _ int) bool {
-					dir.Args = []string{sslKeyPath}
-					return true
-				})
+				block.SetDirectiveArgs("ssl_certificate", []string{sslCertPath}, 1)
+				block.SetDirectiveArgs("ssl_certificate_key", []string{sslKeyPath}, 1)
 			}
-			upstream := fmt.Sprintf("http://%s:%d", app.Key, httpSettings.ContainerPort)
+
+			upstream := fmt.Sprintf("http://%s:%d", app.Key, domain.ContainerPort)
 			block.IterDirectivesByName("set", func(dir *crossplane.Directive, _ int) bool {
 				if dir.Args[0] == "$upstream" {
 					dir.Args[1] = upstream
@@ -205,7 +189,7 @@ func (s *nginxService) buildConfigForDomain(app *entity.App, httpSettings *entit
 			return true
 		})
 
-		err = nginxBuildConfDefault(conf, buf)
+		err := nginxBuildConfDefault(conf, buf)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}

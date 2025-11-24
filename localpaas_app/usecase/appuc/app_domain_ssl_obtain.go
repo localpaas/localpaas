@@ -153,7 +153,10 @@ func (uc *AppUC) preparePersistingDomainSslData(
 	httpSettings := data.HttpSettings
 	domainSettings := httpSettings.GetDomain(req.Domain)
 	if domainSettings == nil {
-		domainSettings = &entity.AppDomain{Domain: req.Domain}
+		domainSettings = &entity.AppDomain{
+			Enabled: true,
+			Domain:  req.Domain,
+		}
 		httpSettings.Domains = append(httpSettings.Domains, domainSettings)
 	}
 	domainSettings.SslCert.ID = dbSsl.ID
