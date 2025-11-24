@@ -5,6 +5,10 @@ server {
     ssl_certificate     /usr/share/nginx/certs/fake/local.crt;
     ssl_certificate_key /usr/share/nginx/certs/fake/local.key;
 
+    # internal DNS resolver provided by Docker Swarm
+    # https://docs.docker.com/engine/userguide/networking/configure-dns/
+    resolver 127.0.0.11 valid=10s;
+
     client_max_body_size 300m;
 
     gzip on;
