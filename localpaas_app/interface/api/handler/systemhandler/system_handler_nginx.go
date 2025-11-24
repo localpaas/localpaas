@@ -49,3 +49,39 @@ func (h *SystemHandler) ReloadNginxConfig(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, resp)
 }
+
+// ResetNginxConfig Resets nginx config files
+// @Summary Resets nginx config files
+// @Description Resets nginx config files
+// @Tags    system_nginx
+// @Produce json
+// @Id      resetNginxConfig
+// @Param   body body nginxdto.ResetNginxConfigReq true "request data"
+// @Success 200 {object} nginxdto.ResetNginxConfigResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /system/nginx/config/reset [post]
+func (h *SystemHandler) ResetNginxConfig(ctx *gin.Context) {
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceModule: base.ResourceModuleSystem,
+		Action:         base.ActionTypeWrite,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := nginxdto.NewResetNginxConfigReq()
+	if err := h.ParseJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.nginxUC.ResetNginxConfig(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}

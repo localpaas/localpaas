@@ -352,6 +352,7 @@ func (s *HTTPServer) registerRoutes() {
 		nginxGroup := systemGroup.Group("/nginx")
 		// Config
 		nginxGroup.POST("/config/reload", s.handlerRegistry.systemHandler.ReloadNginxConfig)
+		nginxGroup.POST("/config/reset", s.handlerRegistry.systemHandler.ResetNginxConfig)
 	}
 }
 

@@ -6331,6 +6331,58 @@
         "x-codegen-request-body-name" : "body"
       }
     },
+    "/system/nginx/config/reset" : {
+      "post" : {
+        "description" : "Resets nginx config files",
+        "operationId" : "resetNginxConfig",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_system_nginxuc_nginxdto.ResetNginxConfigReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_system_nginxuc_nginxdto.ResetNginxConfigResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Resets nginx config files",
+        "tags" : [ "system_nginx" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
     "/users" : {
       "get" : {
         "description" : "Lists users",
@@ -11136,6 +11188,18 @@
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_system_nginxuc_nginxdto.ReloadNginxConfigResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_system_nginxuc_nginxdto.ResetNginxConfigReq" : {
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_system_nginxuc_nginxdto.ResetNginxConfigResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
