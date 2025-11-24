@@ -51,8 +51,15 @@ func (uc *AppUC) prepareUpdatingAppHttpSettings(
 	dbSetting.Status = base.SettingStatusActive
 	dbSetting.ExpireAt = time.Time{}
 
+	// Existing settings
+	existingHttpSettings, err := data.HttpSettingsData.DbHttpSettings.ParseAppHttpSettings()
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
 	httpReq := req.HttpSettings
-	data.HttpSettingsData.HttpSettings = &entity.AppHttpSettings{
+	newHttpSettings := &entity.AppHttpSettings{
+		Setting: dbSetting,
 		Enabled: httpReq.Enabled,
 		Domains: gofn.MapSlice(httpReq.Domains, func(r *appdto.DomainReq) *entity.AppDomain {
 			return &entity.AppDomain{
@@ -65,7 +72,13 @@ func (uc *AppUC) prepareUpdatingAppHttpSettings(
 		ForceHttps:       httpReq.ForceHttps,
 		WebsocketEnabled: httpReq.WebsocketEnabled,
 		BasicAuth:        entity.ObjectID{ID: httpReq.BasicAuth.ID},
-		NginxSettings: &entity.NginxSettings{
+	}
+
+	// If `nginxSettings` is not sent from FE, use the existing
+	if httpReq.NginxSettings == nil {
+		newHttpSettings.NginxSettings = existingHttpSettings.NginxSettings
+	} else {
+		newHttpSettings.NginxSettings = &entity.NginxSettings{
 			Enabled: httpReq.NginxSettings.Enabled,
 			RootDirectives: gofn.MapSlice(httpReq.NginxSettings.RootDirectives,
 				func(r *appdto.NginxDirectiveReq) *entity.NginxDirective {
@@ -84,11 +97,11 @@ func (uc *AppUC) prepareUpdatingAppHttpSettings(
 						}
 					}),
 			},
-		},
-		Setting: dbSetting,
+		}
 	}
+	data.HttpSettingsData.HttpSettings = newHttpSettings
 
-	dbSetting.MustSetData(data.HttpSettingsData.HttpSettings)
+	dbSetting.MustSetData(newHttpSettings)
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, dbSetting)
 	return nil
 }
