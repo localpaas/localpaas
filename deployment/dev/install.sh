@@ -10,21 +10,23 @@ echo "---------------------------------------------------------------"
 docker system prune -a -f
 
 LOCALPAAS_DIR=localpaas
+LOCALPAAS_CERTS=$LOCALPAAS_DIR/certs
+
+mkdir -p $LOCALPAAS_DIR
+mkdir -p $LOCALPAAS_CERTS
+
 NGINX_ETC=$LOCALPAAS_DIR/nginx/etc
 NGINX_LOG=$LOCALPAAS_DIR/nginx/log
 NGINX_SHARE=$LOCALPAAS_DIR/nginx/share
 NGINX_CERTS=$NGINX_SHARE/certs
-LETSENCRYPT_ETC=$LOCALPAAS_DIR/letsencrypt/etc
 
-mkdir -p $LOCALPAAS_DIR
 mkdir -p $NGINX_ETC/conf.d
 mkdir -p $NGINX_LOG
 mkdir -p $NGINX_SHARE
 mkdir -p $NGINX_SHARE/default
 mkdir -p $NGINX_SHARE/domains
-mkdir -p $NGINX_SHARE/domains/app.dev.localpaas.com
+mkdir -p $NGINX_SHARE/html
 mkdir -p $NGINX_CERTS/fake
-mkdir -p $LETSENCRYPT_ETC
 
 # Download nginx conf files
 echo "Download nginx config files..."
