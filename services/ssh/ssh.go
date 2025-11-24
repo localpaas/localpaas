@@ -1,13 +1,13 @@
 package ssh
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
 
 	"github.com/tiendc/gofn"
 	"golang.org/x/crypto/ssh"
-	"golang.org/x/net/context"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )

@@ -15,8 +15,8 @@ import (
 )
 
 type appHttpSettingsData struct {
-	HttpSettings       *entity.Setting
-	ParsedHttpSettings *entity.AppHttpSettings
+	DbHttpSettings *entity.Setting
+	HttpSettings   *entity.AppHttpSettings
 }
 
 func (uc *AppUC) loadAppDataForUpdateHttpSettings(
@@ -29,31 +29,30 @@ func (uc *AppUC) loadAppDataForUpdateHttpSettings(
 	return nil
 }
 
-//nolint:unparam
 func (uc *AppUC) prepareUpdatingAppHttpSettings(
 	req *appdto.UpdateAppSettingsReq,
 	timeNow time.Time,
 	data *updateAppSettingsData,
 	persistingData *persistingAppData,
-) error {
+) error { //nolint
 	app := data.App
-	setting := data.HttpSettingsData.HttpSettings
+	dbSetting := data.HttpSettingsData.DbHttpSettings
 
-	if setting == nil {
-		setting = &entity.Setting{
+	if dbSetting == nil {
+		dbSetting = &entity.Setting{
 			ID:        gofn.Must(ulid.NewStringULID()),
 			ObjectID:  app.ID,
 			Type:      base.SettingTypeAppHttp,
 			CreatedAt: timeNow,
 		}
-		data.HttpSettingsData.HttpSettings = setting
+		data.HttpSettingsData.DbHttpSettings = dbSetting
 	}
-	setting.UpdatedAt = timeNow
-	setting.Status = base.SettingStatusActive
-	setting.ExpireAt = time.Time{}
+	dbSetting.UpdatedAt = timeNow
+	dbSetting.Status = base.SettingStatusActive
+	dbSetting.ExpireAt = time.Time{}
 
 	httpReq := req.HttpSettings
-	data.HttpSettingsData.ParsedHttpSettings = &entity.AppHttpSettings{
+	data.HttpSettingsData.HttpSettings = &entity.AppHttpSettings{
 		Enabled: httpReq.Enabled,
 		Domains: gofn.MapSlice(httpReq.Domains, func(r *appdto.DomainReq) *entity.AppDomain {
 			return &entity.AppDomain{
@@ -86,11 +85,11 @@ func (uc *AppUC) prepareUpdatingAppHttpSettings(
 					}),
 			},
 		},
-		Setting: setting,
+		Setting: dbSetting,
 	}
 
-	setting.MustSetData(data.HttpSettingsData.ParsedHttpSettings)
-	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
+	dbSetting.MustSetData(data.HttpSettingsData.HttpSettings)
+	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, dbSetting)
 	return nil
 }
 
@@ -100,7 +99,7 @@ func (uc *AppUC) applyAppHttpSettings(
 	_ *appdto.UpdateAppSettingsReq,
 	data *updateAppSettingsData,
 ) error {
-	err := uc.nginxService.ApplyAppConfig(ctx, data.App, data.HttpSettingsData.ParsedHttpSettings)
+	err := uc.nginxService.ApplyAppConfig(ctx, data.App, data.HttpSettingsData.HttpSettings)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

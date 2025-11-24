@@ -176,7 +176,7 @@ func (uc *AppUC) preparePersistingAppSettingsDefault(
 	data *createAppData,
 	persistingData *persistingAppData,
 ) error {
-	setting := &entity.Setting{
+	dbServiceSpec := &entity.Setting{
 		ID:        gofn.Must(ulid.NewStringULID()),
 		ObjectID:  app.ID,
 		Type:      base.SettingTypeServiceSpec,
@@ -200,7 +200,7 @@ func (uc *AppUC) preparePersistingAppSettingsDefault(
 			},
 		},
 	}
-	setting.MustSetData(serviceSpec)
+	dbServiceSpec.MustSetData(serviceSpec)
 	data.ServiceSpec = serviceSpec
 
 	httpSettings := &entity.AppHttpSettings{}
@@ -209,7 +209,7 @@ func (uc *AppUC) preparePersistingAppSettingsDefault(
 		return apperrors.Wrap(err)
 	}
 
-	httpSettingsObj := &entity.Setting{
+	dbHttpSettings := &entity.Setting{
 		ID:        gofn.Must(ulid.NewStringULID()),
 		Type:      base.SettingTypeAppHttp,
 		Status:    base.SettingStatusActive,
@@ -217,8 +217,8 @@ func (uc *AppUC) preparePersistingAppSettingsDefault(
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,
 	}
-	httpSettingsObj.MustSetData(httpSettings)
-	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, httpSettingsObj)
+	dbHttpSettings.MustSetData(httpSettings)
+	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, dbHttpSettings)
 
 	return nil
 }

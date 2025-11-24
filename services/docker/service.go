@@ -62,7 +62,7 @@ type ServiceUpdateOption func(options *swarm.ServiceUpdateOptions)
 
 func (m *Manager) ServiceUpdate(ctx context.Context, serviceID string, version *swarm.Version,
 	service *swarm.ServiceSpec, options ...ServiceUpdateOption) (*swarm.ServiceUpdateResponse, error) {
-	if service == nil {
+	if serviceID == "" || service == nil {
 		return nil, nil
 	}
 	opts := swarm.ServiceUpdateOptions{}
@@ -86,6 +86,9 @@ func (m *Manager) ServiceUpdate(ctx context.Context, serviceID string, version *
 }
 
 func (m *Manager) ServiceRemove(ctx context.Context, serviceID string) error {
+	if serviceID == "" {
+		return nil
+	}
 	err := m.client.ServiceRemove(ctx, serviceID)
 	if err != nil {
 		return tracerr.Wrap(err)
@@ -97,6 +100,10 @@ type ServiceInspectOption func(*swarm.ServiceInspectOptions)
 
 func (m *Manager) ServiceInspect(ctx context.Context, serviceID string, options ...ServiceInspectOption) (
 	*swarm.Service, []byte, error) {
+	if serviceID == "" {
+		return nil, nil, nil
+	}
+
 	opts := swarm.ServiceInspectOptions{}
 	for _, opt := range options {
 		opt(&opts)
@@ -109,6 +116,9 @@ func (m *Manager) ServiceInspect(ctx context.Context, serviceID string, options 
 }
 
 func (m *Manager) ServiceExists(ctx context.Context, serviceID string) bool {
+	if serviceID == "" {
+		return false
+	}
 	resp, _, err := m.ServiceInspect(ctx, serviceID)
 	return err == nil && resp != nil
 }
@@ -117,6 +127,10 @@ type ContainerLogsOption func(*container.LogsOptions)
 
 func (m *Manager) ServiceLogs(ctx context.Context, serviceID string, options ...ContainerLogsOption) (
 	io.ReadCloser, error) {
+	if serviceID == "" {
+		return nil, nil
+	}
+
 	opts := container.LogsOptions{}
 	for _, opt := range options {
 		opt(&opts)

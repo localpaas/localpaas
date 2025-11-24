@@ -16,7 +16,7 @@ import (
 )
 
 type appEnvVarsData struct {
-	EnvVarsSettings *entity.Setting
+	DbEnvVarsSettings *entity.Setting
 }
 
 func (uc *AppUC) loadAppDataForUpdateEnvVars(
@@ -36,25 +36,25 @@ func (uc *AppUC) prepareUpdatingAppEnvVars(
 	persistingData *persistingAppData,
 ) error {
 	app := data.App
-	setting := data.EnvVarsData.EnvVarsSettings
+	dbSetting := data.EnvVarsData.DbEnvVarsSettings
 
-	if setting == nil {
-		setting = &entity.Setting{
+	if dbSetting == nil {
+		dbSetting = &entity.Setting{
 			ID:        gofn.Must(ulid.NewStringULID()),
 			ObjectID:  app.ID,
 			Type:      base.SettingTypeEnvVar,
 			CreatedAt: timeNow,
 		}
 	}
-	setting.UpdatedAt = timeNow
-	setting.ExpireAt = time.Time{}
-	setting.Status = base.SettingStatusActive
+	dbSetting.UpdatedAt = timeNow
+	dbSetting.ExpireAt = time.Time{}
+	dbSetting.Status = base.SettingStatusActive
 
-	setting.MustSetData(&entity.EnvVars{Data: gofn.MapSlice(req.EnvVars, func(v *appdto.EnvVarReq) *entity.EnvVar {
+	dbSetting.MustSetData(&entity.EnvVars{Data: gofn.MapSlice(req.EnvVars, func(v *appdto.EnvVarReq) *entity.EnvVar {
 		return v.ToEntity()
 	})})
 
-	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
+	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, dbSetting)
 	return nil
 }
 

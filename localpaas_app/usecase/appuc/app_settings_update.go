@@ -88,11 +88,11 @@ func (uc *AppUC) loadAppSettingsDataForUpdate(
 	for _, setting := range app.Settings {
 		switch setting.Type { //nolint:exhaustive
 		case base.SettingTypeEnvVar:
-			data.EnvVarsData.EnvVarsSettings = setting
+			data.EnvVarsData.DbEnvVarsSettings = setting
 		case base.SettingTypeAppDeployment:
-			data.DeploymentData.DeploymentSettings = setting
+			data.DeploymentData.DbDeploymentSettings = setting
 		case base.SettingTypeAppHttp:
-			data.HttpSettingsData.HttpSettings = setting
+			data.HttpSettingsData.DbHttpSettings = setting
 		}
 	}
 

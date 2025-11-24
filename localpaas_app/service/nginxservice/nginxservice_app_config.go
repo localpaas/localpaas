@@ -244,3 +244,22 @@ func nginxBuildConfDefault(conf *nginx.Config, buf *bytes.Buffer, options ...ngi
 	}
 	return nil
 }
+
+func (s *nginxService) RemoveAppConfig(ctx context.Context, app *entity.App) error {
+	confPath := filepath.Join(config.Current.DataPathNginxEtcConf(), app.Key+".conf")
+	err := os.Remove(confPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		}
+		return apperrors.Wrap(err)
+	}
+
+	// Requests nginx to reload the config files
+	err = s.ReloadNginxConfig(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	return nil
+}

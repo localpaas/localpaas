@@ -28,9 +28,24 @@ func (uc *AppUC) DeleteApp(
 		persistingData := &persistingAppData{}
 		uc.prepareDeletingApp(appData, persistingData)
 
-		// TODO: handle app deletion
+		err = uc.persistData(ctx, db, persistingData)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 
-		return uc.persistData(ctx, db, persistingData)
+		// Remove service for the app in docker
+		err = uc.dockerManager.ServiceRemove(ctx, appData.App.ServiceID)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+
+		// Remove app config from nginx
+		err = uc.nginxService.RemoveAppConfig(ctx, appData.App)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+
+		return nil
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)

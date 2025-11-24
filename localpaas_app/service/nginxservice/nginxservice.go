@@ -16,6 +16,7 @@ type NginxService interface {
 
 	InitAppConfig(ctx context.Context, app *entity.App, httpSettings *entity.AppHttpSettings) error
 	ApplyAppConfig(ctx context.Context, app *entity.App, httpSettings *entity.AppHttpSettings) error
+	RemoveAppConfig(ctx context.Context, app *entity.App) error
 }
 
 func NewNginxService(

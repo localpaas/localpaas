@@ -17,10 +17,9 @@ import (
 )
 
 type appDeploymentData struct {
-	DeploymentSettings *entity.Setting
-
-	ParsedDeploymentSettings *entity.AppDeploymentSettings
-	RegistryAuth             *entity.RegistryAuth
+	DbDeploymentSettings *entity.Setting
+	DeploymentSettings   *entity.AppDeploymentSettings
+	RegistryAuth         *entity.RegistryAuth
 }
 
 func (uc *AppUC) loadAppDataForUpdateDeploymentSettings(
@@ -32,14 +31,14 @@ func (uc *AppUC) loadAppDataForUpdateDeploymentSettings(
 	deploymentData := data.DeploymentData
 
 	// Parse the current deployment settings
-	deploymentSettings := deploymentData.DeploymentSettings
-	if deploymentSettings != nil {
-		if deploymentSettings.IsActive() && !deploymentSettings.IsExpired() {
-			deployment, err := deploymentSettings.ParseAppDeploymentSettings()
+	dbDeploymentSettings := deploymentData.DbDeploymentSettings
+	if dbDeploymentSettings != nil {
+		if dbDeploymentSettings.IsActive() && !dbDeploymentSettings.IsExpired() {
+			deployment, err := dbDeploymentSettings.ParseAppDeploymentSettings()
 			if err != nil {
 				return apperrors.New(err).WithMsgLog("failed to parse app deployment settings")
 			}
-			deploymentData.ParsedDeploymentSettings = deployment
+			deploymentData.DeploymentSettings = deployment
 		}
 	}
 
@@ -68,28 +67,28 @@ func (uc *AppUC) prepareUpdatingAppDeploymentSettings(
 	persistingData *persistingAppData,
 ) error {
 	app := data.App
-	setting := data.DeploymentData.DeploymentSettings
+	dbDeploymentSettings := data.DeploymentData.DbDeploymentSettings
 
-	if setting == nil {
-		setting = &entity.Setting{
+	if dbDeploymentSettings == nil {
+		dbDeploymentSettings = &entity.Setting{
 			ID:        gofn.Must(ulid.NewStringULID()),
 			ObjectID:  app.ID,
 			Type:      base.SettingTypeAppDeployment,
 			CreatedAt: timeNow,
 		}
 	}
-	setting.UpdatedAt = timeNow
-	setting.ExpireAt = time.Time{}
-	setting.Status = base.SettingStatusActive
+	dbDeploymentSettings.UpdatedAt = timeNow
+	dbDeploymentSettings.ExpireAt = time.Time{}
+	dbDeploymentSettings.Status = base.SettingStatusActive
 
-	deploymentSettings := data.DeploymentData.ParsedDeploymentSettings
+	deploymentSettings := data.DeploymentData.DeploymentSettings
 	if deploymentSettings == nil {
 		deploymentSettings = &entity.AppDeploymentSettings{
-			Setting:     setting,
+			Setting:     dbDeploymentSettings,
 			ImageSource: &entity.DeploymentImageSource{},
 			CodeSource:  &entity.DeploymentCodeSource{},
 		}
-		data.DeploymentData.ParsedDeploymentSettings = deploymentSettings
+		data.DeploymentData.DeploymentSettings = deploymentSettings
 	}
 	if req.DeploymentSettings.ImageSource != nil {
 		if err := copier.Copy(deploymentSettings.ImageSource, req.DeploymentSettings.ImageSource); err != nil {
@@ -101,9 +100,9 @@ func (uc *AppUC) prepareUpdatingAppDeploymentSettings(
 			return apperrors.Wrap(err)
 		}
 	}
-	setting.MustSetData(deploymentSettings)
+	dbDeploymentSettings.MustSetData(deploymentSettings)
 
-	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
+	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, dbDeploymentSettings)
 	return nil
 }
 
@@ -117,7 +116,7 @@ func (uc *AppUC) applyAppDeploymentSettings(
 
 	// Update service of the app in docker
 	_, err := uc.appService.UpdateAppDeployment(ctx, data.App, &appservice.AppDeploymentReq{
-		Deployment:              deploymentData.ParsedDeploymentSettings,
+		Deployment:              deploymentData.DeploymentSettings,
 		ImageSourceRegistryAuth: deploymentData.RegistryAuth,
 	})
 	if err != nil {

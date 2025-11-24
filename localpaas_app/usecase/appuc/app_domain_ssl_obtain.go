@@ -93,7 +93,6 @@ func (uc *AppUC) loadAppDataForObtainDomainSsl(
 
 	setting := app.GetSettingByType(base.SettingTypeAppHttp)
 	if setting == nil {
-		// TODO: handle this case
 		return apperrors.NewNotFound("AppHttpSetting")
 	}
 
@@ -102,7 +101,7 @@ func (uc *AppUC) loadAppDataForObtainDomainSsl(
 		return apperrors.Wrap(err)
 	}
 
-	domainSettings := data.HttpSettings.GetDomain(req.Domain)
+	domainSettings := httpSettings.GetDomain(req.Domain)
 	if domainSettings != nil && domainSettings.SslCert.ID != "" {
 		return apperrors.New(apperrors.ErrAlreadyExist).
 			WithMsgLog("ssl for domain '%s' already exists", req.Domain)
@@ -119,7 +118,7 @@ func (uc *AppUC) preparePersistingDomainSslData(
 	persistingData *persistingAppData,
 ) {
 	timeNow := timeutil.NowUTC()
-	sslSetting := &entity.Setting{
+	dbSsl := &entity.Setting{
 		ID:        gofn.Must(ulid.NewStringULID()),
 		Type:      base.SettingTypeSsl,
 		Status:    base.SettingStatusActive,
@@ -129,27 +128,27 @@ func (uc *AppUC) preparePersistingDomainSslData(
 		UpdatedAt: timeNow,
 	}
 
-	sslCert := &entity.Ssl{
+	ssl := &entity.Ssl{
 		Certificate: string(data.ObtainedCerts.Certificate),
 		PrivateKey:  string(data.ObtainedCerts.PrivateKey),
-		// Expiration:  timeutil.NowUTC().Add(90 * 24 * time.Hour),
-		Setting: sslSetting,
+		Setting:     dbSsl,
 	}
-	data.SslCert = sslCert
+	data.SslCert = ssl
 
-	sslSetting.MustSetData(sslCert.MustEncrypt())
-	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, sslSetting)
+	dbSsl.MustSetData(ssl.MustEncrypt())
+	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, dbSsl)
 
-	domainSettings := data.HttpSettings.GetDomain(req.Domain)
+	httpSettings := data.HttpSettings
+	domainSettings := httpSettings.GetDomain(req.Domain)
 	if domainSettings == nil {
 		domainSettings = &entity.AppDomain{Domain: req.Domain}
-		data.HttpSettings.Domains = append(data.HttpSettings.Domains, domainSettings)
+		httpSettings.Domains = append(httpSettings.Domains, domainSettings)
 	}
-	domainSettings.SslCert.ID = sslSetting.ID
+	domainSettings.SslCert.ID = dbSsl.ID
 
 	// Enables the HTTP settings
-	data.HttpSettings.Enabled = true
-	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, data.HttpSettings.Setting)
+	httpSettings.Enabled = true
+	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, httpSettings.Setting)
 }
 
 func (uc *AppUC) applyDomainSsl(
@@ -163,7 +162,7 @@ func (uc *AppUC) applyDomainSsl(
 		return apperrors.Wrap(err)
 	}
 
-	err = uc.nginxService.InitAppConfig(ctx, data.App, data.HttpSettings)
+	err = uc.nginxService.ApplyAppConfig(ctx, data.App, data.HttpSettings)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
