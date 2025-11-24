@@ -99,27 +99,27 @@ func (m *Manager) ServiceRemove(ctx context.Context, serviceID string) error {
 type ServiceInspectOption func(*swarm.ServiceInspectOptions)
 
 func (m *Manager) ServiceInspect(ctx context.Context, serviceID string, options ...ServiceInspectOption) (
-	*swarm.Service, []byte, error) {
+	*swarm.Service, error) {
 	if serviceID == "" {
-		return nil, nil, nil
+		return nil, nil
 	}
 
 	opts := swarm.ServiceInspectOptions{}
 	for _, opt := range options {
 		opt(&opts)
 	}
-	resp, data, err := m.client.ServiceInspectWithRaw(ctx, serviceID, opts)
+	resp, _, err := m.client.ServiceInspectWithRaw(ctx, serviceID, opts)
 	if err != nil {
-		return nil, nil, tracerr.Wrap(err)
+		return nil, tracerr.Wrap(err)
 	}
-	return &resp, data, nil
+	return &resp, nil
 }
 
 func (m *Manager) ServiceExists(ctx context.Context, serviceID string) bool {
 	if serviceID == "" {
 		return false
 	}
-	resp, _, err := m.ServiceInspect(ctx, serviceID)
+	resp, err := m.ServiceInspect(ctx, serviceID)
 	return err == nil && resp != nil
 }
 

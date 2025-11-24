@@ -3,9 +3,6 @@ package projectservice
 import (
 	"context"
 
-	"github.com/docker/docker/api/types/network"
-
-	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
@@ -15,9 +12,6 @@ import (
 
 type ProjectService interface {
 	PersistProjectData(ctx context.Context, db database.IDB, data *PersistingProjectData) error
-
-	CreateProjectNetworks(ctx context.Context, project *entity.Project) (*network.CreateResponse, error)
-	ListProjectNetworks(ctx context.Context, project *entity.Project) ([]network.Summary, error)
 }
 
 func NewProjectService(

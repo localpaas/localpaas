@@ -1,4 +1,4 @@
-package appservice
+package networkservice
 
 import (
 	"context"
@@ -9,13 +9,14 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 )
 
-const (
-	globalRoutingNetwork = "localpaas_net"
-)
-
-func (s *appService) UpdateAppGlobalRoutingNetwork(ctx context.Context, app *entity.App,
+func (s *networkService) UpdateAppGlobalRoutingNetwork(ctx context.Context, app *entity.App,
 	httpSettings *entity.AppHttpSettings) error {
-	service, _, err := s.dockerManager.ServiceInspect(ctx, app.ServiceID)
+	globalNetworkID, err := s.FindGlobalRoutingNetworkID(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	service, err := s.dockerManager.ServiceInspect(ctx, app.ServiceID)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -23,17 +24,17 @@ func (s *appService) UpdateAppGlobalRoutingNetwork(ctx context.Context, app *ent
 	spec := &service.Spec
 	networks := make([]swarm.NetworkAttachmentConfig, 0, len(spec.TaskTemplate.Networks)+1)
 	for _, net := range spec.TaskTemplate.Networks {
-		if httpSettings.Enabled && net.Target == globalRoutingNetwork {
+		if httpSettings.Enabled && (net.Target == GlobalRoutingNetwork || net.Target == globalNetworkID) {
 			return nil // app is attached to the external net already
 		}
-		if !httpSettings.Enabled && net.Target == globalRoutingNetwork {
+		if !httpSettings.Enabled && (net.Target == GlobalRoutingNetwork || net.Target == globalNetworkID) {
 			continue
 		}
 		networks = append(networks, net)
 	}
 	if httpSettings.Enabled {
 		networks = append(networks, swarm.NetworkAttachmentConfig{
-			Target: globalRoutingNetwork,
+			Target: globalNetworkID,
 		})
 	}
 	spec.TaskTemplate.Networks = networks

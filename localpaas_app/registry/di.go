@@ -20,6 +20,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/appservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/clusterservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/envvarservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/networkservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/nginxservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/projectservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
@@ -101,6 +102,7 @@ var Provides = []any{
 	userservice.NewUserService,
 	projectservice.NewProjectService,
 	appservice.NewAppService,
+	networkservice.NewNetworkService,
 	settingservice.NewSettingService,
 	envvarservice.NewEnvVarService,
 	nginxservice.NewNginxService,

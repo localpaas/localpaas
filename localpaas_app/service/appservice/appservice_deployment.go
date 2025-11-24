@@ -32,7 +32,7 @@ func (s *appService) updateAppDeploymentImageSource(ctx context.Context, app *en
 	*AppDeploymentResp, error) {
 	imageSource := req.Deployment.ImageSource
 
-	service, _, err := s.dockerManager.ServiceInspect(ctx, app.ServiceID)
+	service, err := s.dockerManager.ServiceInspect(ctx, app.ServiceID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

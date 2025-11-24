@@ -1,0 +1,33 @@
+package networkservice
+
+import (
+	"context"
+
+	"github.com/docker/docker/api/types/network"
+
+	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/repository"
+	"github.com/localpaas/localpaas/services/docker"
+)
+
+type NetworkService interface {
+	CreateProjectNetwork(ctx context.Context, project *entity.Project) (*network.CreateResponse, error)
+	ListProjectNetworks(ctx context.Context, project *entity.Project) ([]network.Summary, error)
+
+	UpdateAppGlobalRoutingNetwork(ctx context.Context, app *entity.App, httpSettings *entity.AppHttpSettings) error
+}
+
+func NewNetworkService(
+	settingRepo repository.SettingRepo,
+	dockerManager *docker.Manager,
+) NetworkService {
+	return &networkService{
+		settingRepo:   settingRepo,
+		dockerManager: dockerManager,
+	}
+}
+
+type networkService struct {
+	settingRepo   repository.SettingRepo
+	dockerManager *docker.Manager
+}

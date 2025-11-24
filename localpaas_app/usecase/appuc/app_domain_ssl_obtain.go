@@ -181,7 +181,7 @@ func (uc *AppUC) applyDomainSsl(
 		return apperrors.Wrap(err)
 	}
 
-	err = uc.appService.UpdateAppGlobalRoutingNetwork(ctx, data.App, data.HttpSettings)
+	err = uc.networkService.UpdateAppGlobalRoutingNetwork(ctx, data.App, data.HttpSettings)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

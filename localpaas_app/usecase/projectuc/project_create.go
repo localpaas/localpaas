@@ -47,7 +47,7 @@ func (uc *ProjectUC) CreateProject(
 	createdProject := persistingData.UpsertingProjects[0]
 
 	// Create default network for the project
-	_, err = uc.projectService.CreateProjectNetworks(ctx, createdProject)
+	_, err = uc.networkService.CreateProjectNetwork(ctx, createdProject)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

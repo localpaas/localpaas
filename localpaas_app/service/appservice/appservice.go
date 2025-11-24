@@ -16,7 +16,6 @@ type AppService interface {
 
 	UpdateAppDeployment(ctx context.Context, app *entity.App, req *AppDeploymentReq) (
 		*AppDeploymentResp, error)
-	UpdateAppGlobalRoutingNetwork(ctx context.Context, app *entity.App, httpSettings *entity.AppHttpSettings) error
 }
 
 func NewAppService(

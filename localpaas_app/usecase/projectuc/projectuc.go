@@ -4,6 +4,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
+	"github.com/localpaas/localpaas/localpaas_app/service/networkservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/projectservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
 	"github.com/localpaas/localpaas/services/docker"
@@ -17,6 +18,7 @@ type ProjectUC struct {
 	permissionManager permission.Manager
 	userService       userservice.UserService
 	projectService    projectservice.ProjectService
+	networkService    networkservice.NetworkService
 	dockerManager     *docker.Manager
 }
 
@@ -28,6 +30,7 @@ func NewProjectUC(
 	permissionManager permission.Manager,
 	userService userservice.UserService,
 	projectService projectservice.ProjectService,
+	networkService networkservice.NetworkService,
 	dockerManager *docker.Manager,
 ) *ProjectUC {
 	return &ProjectUC{
@@ -38,6 +41,7 @@ func NewProjectUC(
 		permissionManager: permissionManager,
 		userService:       userService,
 		projectService:    projectService,
+		networkService:    networkService,
 		dockerManager:     dockerManager,
 	}
 }

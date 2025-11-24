@@ -73,7 +73,7 @@ func (uc *AppUC) applyAppEnvVars(
 		envVars = []string{}
 	}
 
-	service, _, err := uc.dockerManager.ServiceInspect(ctx, app.ServiceID)
+	service, err := uc.dockerManager.ServiceInspect(ctx, app.ServiceID)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
