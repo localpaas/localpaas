@@ -75,18 +75,21 @@ func (uc *SslUC) prepareUpdatingSsl(
 	persistingData *persistingSslData,
 ) {
 	timeNow := timeutil.NowUTC()
-	setting := data.Setting
+	dbSsl := data.Setting
 	if req.Name != "" {
-		setting.Name = req.Name
+		dbSsl.Name = req.Name
 	}
 
 	ssl := &entity.Ssl{
 		Certificate: req.Certificate,
 		PrivateKey:  req.PrivateKey,
+		KeySize:     req.KeySize,
+		Provider:    req.Provider,
+		Email:       req.Email,
 		Expiration:  req.Expiration,
 	}
-	setting.MustSetData(ssl.MustEncrypt())
+	dbSsl.MustSetData(ssl.MustEncrypt())
 
-	setting.UpdatedAt = timeNow
-	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
+	dbSsl.UpdatedAt = timeNow
+	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, dbSsl)
 }

@@ -13,10 +13,16 @@ const (
 	domainMaxLen = 100
 )
 
+var (
+	allowedKeySizes = []int{0, 2048, 3072, 4096}
+)
+
 type ObtainDomainSslReq struct {
 	ProjectID string `json:"-"`
 	AppID     string `json:"-"`
 	Domain    string `json:"domain"`
+	Email     string `json:"email"`
+	KeySize   int    `json:"keySize"`
 }
 
 func NewObtainDomainSslReq() *ObtainDomainSslReq {
@@ -34,6 +40,8 @@ func (req *ObtainDomainSslReq) Validate() apperrors.ValidationErrors {
 	validators = append(validators, basedto.ValidateID(&req.ProjectID, true, "projectId")...)
 	validators = append(validators, basedto.ValidateID(&req.AppID, true, "appId")...)
 	validators = append(validators, basedto.ValidateStr(&req.Domain, true, 1, domainMaxLen, "domain")...)
+	validators = append(validators, basedto.ValidateEmail(&req.Email, false, "email")...)
+	validators = append(validators, basedto.ValidateNumberIn(&req.KeySize, false, allowedKeySizes, "keySize")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 

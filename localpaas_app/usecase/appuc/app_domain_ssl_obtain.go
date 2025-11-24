@@ -19,6 +19,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
+	"github.com/localpaas/localpaas/services/letsencrypt"
 )
 
 func (uc *AppUC) ObtainDomainSsl(
@@ -26,12 +27,19 @@ func (uc *AppUC) ObtainDomainSsl(
 	auth *basedto.Auth,
 	req *appdto.ObtainDomainSslReq,
 ) (*appdto.ObtainDomainSslResp, error) {
-	certificates, err := uc.letsencryptClient.ObtainCertificate(ctx, []string{req.Domain}, "", "")
+	email := gofn.Coalesce(req.Email, config.Current.SSL.LeUserEmail)
+	leClient, err := letsencrypt.NewClient(email, req.KeySize, config.Current.DataPathNginxShareDomains())
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	certificates, err := leClient.ObtainCertificate(ctx, []string{req.Domain})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 	appData := &obtainSslData{
 		ObtainedCerts: certificates,
+		Email:         email,
 	}
 
 	err = transaction.Execute(ctx, uc.db, func(db database.Tx) error {
@@ -69,6 +77,7 @@ type obtainSslData struct {
 	HttpSettings  *entity.AppHttpSettings
 	SslCert       *entity.Ssl
 	ObtainedCerts *certificate.Resource
+	Email         string
 }
 
 func (uc *AppUC) loadAppDataForObtainDomainSsl(
@@ -91,12 +100,12 @@ func (uc *AppUC) loadAppDataForObtainDomainSsl(
 	}
 	data.App = app
 
-	setting := app.GetSettingByType(base.SettingTypeAppHttp)
-	if setting == nil {
+	dbSetting := app.GetSettingByType(base.SettingTypeAppHttp)
+	if dbSetting == nil {
 		return apperrors.NewNotFound("AppHttpSetting")
 	}
 
-	httpSettings, err := setting.ParseAppHttpSettings()
+	httpSettings, err := dbSetting.ParseAppHttpSettings()
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -129,9 +138,12 @@ func (uc *AppUC) preparePersistingDomainSslData(
 	}
 
 	ssl := &entity.Ssl{
+		Setting:     dbSsl,
 		Certificate: string(data.ObtainedCerts.Certificate),
 		PrivateKey:  string(data.ObtainedCerts.PrivateKey),
-		Setting:     dbSsl,
+		KeySize:     req.KeySize,
+		Provider:    base.SslProviderLetsEncrypt,
+		Email:       data.Email,
 	}
 	data.SslCert = ssl
 
@@ -148,6 +160,8 @@ func (uc *AppUC) preparePersistingDomainSslData(
 
 	// Enables the HTTP settings
 	httpSettings.Enabled = true
+	httpSettings.Setting.MustSetData(httpSettings)
+
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, httpSettings.Setting)
 }
 

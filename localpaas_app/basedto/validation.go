@@ -299,7 +299,7 @@ func ValidateSliceEx[T comparable, S ~[]T](s S, unique bool, minLen, maxLen int,
 	return result
 }
 
-func ValidateStr(s *string, required bool, minLen, maxLen int, field string) (result []vld.Validator) {
+func ValidateStr[T ~string](s *T, required bool, minLen, maxLen int, field string) (result []vld.Validator) {
 	if required {
 		result = append(result, vld.Required(s).OnError(
 			vld.SetField(field, nil),
@@ -430,6 +430,23 @@ func ValidateNumber[T int | uint](v *T, required bool, min, max T, field string)
 			vld.SetField(field, nil),
 			vld.SetCustomKey("ERR_VLD_VALUE_NOT_IN_RANGE"),
 		))
+	}
+	return result
+}
+
+func ValidateNumberIn[T int | uint](v *T, required bool, allowedValues []T, field string) (result []vld.Validator) {
+	if required {
+		result = append(result, vld.Must(v != nil).OnError(
+			vld.SetField(field, nil),
+			vld.SetCustomKey("ERR_VLD_VALUE_REQUIRED"),
+		))
+	}
+	if v != nil && len(allowedValues) > 0 {
+		result = append(result,
+			vld.NumIn(v, allowedValues...).OnError(
+				vld.SetField(field, nil),
+				vld.SetCustomKey("ERR_VLD_VALUE_NOT_IN_LIST"),
+			))
 	}
 	return result
 }

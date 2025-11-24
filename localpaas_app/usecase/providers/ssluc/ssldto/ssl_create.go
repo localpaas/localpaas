@@ -7,6 +7,7 @@ import (
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 )
 
@@ -20,10 +21,13 @@ type CreateSslReq struct {
 }
 
 type SslBaseReq struct {
-	Name        string    `json:"name"`
-	Certificate string    `json:"certificate"`
-	PrivateKey  string    `json:"privateKey"`
-	Expiration  time.Time `json:"expiration"`
+	Name        string           `json:"name"`
+	Certificate string           `json:"certificate"`
+	PrivateKey  string           `json:"privateKey"`
+	KeySize     int              `json:"keySize"`
+	Provider    base.SslProvider `json:"provider"`
+	Email       string           `json:"email"`
+	Expiration  time.Time        `json:"expiration"`
 }
 
 func (req *SslBaseReq) modifyRequest() error {
@@ -38,6 +42,8 @@ func (req *SslBaseReq) validate(field string) (res []vld.Validator) {
 	res = append(res, basedto.ValidateStr(&req.Name, true, 1, nameMaxLen, field+"name")...)
 	res = append(res, basedto.ValidateStr(&req.Certificate, true, 1, keyMaxLen, field+"certificate")...)
 	res = append(res, basedto.ValidateStr(&req.PrivateKey, true, 1, keyMaxLen, field+"privateKey")...)
+	res = append(res, basedto.ValidateStr(&req.Provider, false, 1, nameMaxLen, field+"provider")...)
+	res = append(res, basedto.ValidateEmail(&req.Email, false, field+"email")...)
 	return res
 }
 

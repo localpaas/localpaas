@@ -75,11 +75,12 @@ func (uc *SslUC) preparePersistingSsl(
 	persistingData *persistingSslData,
 ) {
 	timeNow := timeutil.NowUTC()
-	setting := &entity.Setting{
+	dbSsl := &entity.Setting{
 		ID:        gofn.Must(ulid.NewStringULID()),
 		Type:      base.SettingTypeSsl,
 		Status:    base.SettingStatusActive,
 		Name:      req.Name,
+		Kind:      string(req.Provider),
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,
 	}
@@ -87,11 +88,14 @@ func (uc *SslUC) preparePersistingSsl(
 	ssl := &entity.Ssl{
 		Certificate: req.Certificate,
 		PrivateKey:  req.PrivateKey,
+		KeySize:     req.KeySize,
+		Provider:    req.Provider,
+		Email:       req.Email,
 		Expiration:  req.Expiration,
 	}
-	setting.MustSetData(ssl.MustEncrypt())
+	dbSsl.MustSetData(ssl.MustEncrypt())
 
-	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
+	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, dbSsl)
 }
 
 func (uc *SslUC) persistData(

@@ -87,7 +87,7 @@ func (s *nginxService) ApplyAppConfig(ctx context.Context, app *entity.App,
 	// Http settings is enabled
 	buf := bytes.NewBuffer(make([]byte, 0, defaultConfBuf))
 	for _, domain := range httpSettings.Domains {
-		err = s.buildConfigForDomain(httpSettings, domain, buf)
+		err = s.buildConfigForDomain(app, httpSettings, domain, buf)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -107,8 +107,8 @@ func (s *nginxService) ApplyAppConfig(ctx context.Context, app *entity.App,
 	return nil
 }
 
-func (s *nginxService) buildConfigForDomain(httpSettings *entity.AppHttpSettings, domain *entity.AppDomain,
-	buf *bytes.Buffer) (err error) {
+func (s *nginxService) buildConfigForDomain(app *entity.App, httpSettings *entity.AppHttpSettings,
+	domain *entity.AppDomain, buf *bytes.Buffer) (err error) {
 	if httpSettings.ForceHttps {
 		conf, err := nginxParseConfDefault(string(forceHttpsConfTemplate))
 		if err != nil {
@@ -199,7 +199,7 @@ func (s *nginxService) buildConfigForDomain(httpSettings *entity.AppHttpSettings
 					return true
 				})
 			}
-			upstream := fmt.Sprintf("http://%s:%d", domain.Domain, httpSettings.ContainerPort)
+			upstream := fmt.Sprintf("http://%s:%d", app.Key, httpSettings.ContainerPort)
 			block.IterDirectivesByName("set", func(dir *crossplane.Directive, _ int) bool {
 				if dir.Args[0] == "$upstream" {
 					dir.Args[1] = upstream

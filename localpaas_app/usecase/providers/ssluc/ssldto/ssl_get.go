@@ -41,6 +41,9 @@ type SslResp struct {
 	Status      base.SettingStatus `json:"status"`
 	Certificate string             `json:"certificate"`
 	PrivateKey  string             `json:"privateKey"`
+	KeySize     int                `json:"keySize"`
+	Provider    string             `json:"provider"`
+	Email       string             `json:"email"`
 	Expiration  *time.Time         `json:"expiration" copy:",nilonzero"`
 	Encrypted   bool               `json:"encrypted,omitempty"`
 

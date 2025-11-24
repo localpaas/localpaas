@@ -12,9 +12,12 @@ import (
 )
 
 type Ssl struct {
-	Certificate string    `json:"certificate"`
-	PrivateKey  string    `json:"privateKey"`
-	Expiration  time.Time `json:"expiration,omitzero"`
+	Certificate string           `json:"certificate"`
+	PrivateKey  string           `json:"privateKey"`
+	KeySize     int              `json:"keySize"`
+	Provider    base.SslProvider `json:"provider,omitempty"`
+	Email       string           `json:"email"`
+	Expiration  time.Time        `json:"expiration,omitzero"`
 
 	// NOTE: for storing current containing setting only
 	Setting *Setting `json:"-"`

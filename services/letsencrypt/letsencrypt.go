@@ -6,15 +6,14 @@ import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
-	"os"
 
 	"github.com/go-acme/lego/providers/http/webroot"
+	"github.com/go-acme/lego/v4/certcrypto"
 	"github.com/go-acme/lego/v4/certificate"
 	"github.com/go-acme/lego/v4/lego"
 	"github.com/go-acme/lego/v4/registration"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/config"
 )
 
 type Client struct {
@@ -40,7 +39,7 @@ func (u *User) GetPrivateKey() crypto.PrivateKey {
 	return u.PrivateKey
 }
 
-func NewClient(email, http01NginxRoot string) (client *Client, err error) {
+func NewClient(email string, keySize int, http01NginxRoot string) (client *Client, err error) {
 	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
 		return nil, apperrors.New(err).WithMsgLog("failed to generate private key for user")
@@ -52,8 +51,15 @@ func NewClient(email, http01NginxRoot string) (client *Client, err error) {
 	}
 	cfg := lego.NewConfig(&user)
 
-	// Default is RSA2048
-	// cfg.Certificate.KeyType = certcrypto.RSA2048
+	//nolint Default is RSA2048
+	switch keySize {
+	case 2048:
+		cfg.Certificate.KeyType = certcrypto.RSA2048
+	case 3072:
+		cfg.Certificate.KeyType = certcrypto.RSA3072
+	case 4096:
+		cfg.Certificate.KeyType = certcrypto.RSA4096
+	}
 
 	c, err := lego.NewClient(cfg)
 	if err != nil {
@@ -76,15 +82,6 @@ func NewClient(email, http01NginxRoot string) (client *Client, err error) {
 	}, nil
 }
 
-func NewClientFromConfig(cfg *config.Config) (client *Client, err error) {
-	nginxWebroot := cfg.DataPathNginxShareDomains()
-	err = os.MkdirAll(nginxWebroot, 0755) //nolint
-	if err != nil {
-		return nil, apperrors.New(err).WithMsgLog("failed to create nginx webroot directory")
-	}
-	return NewClient(cfg.SSL.LeUserEmail, nginxWebroot)
-}
-
 func (client *Client) registerUser(_ context.Context) error {
 	if client.user.Registration != nil {
 		return nil
@@ -97,8 +94,7 @@ func (client *Client) registerUser(_ context.Context) error {
 	return nil
 }
 
-func (client *Client) ObtainCertificate(ctx context.Context, domains []string,
-	savePrivateKeyPath, saveCertPath string) (*certificate.Resource, error) {
+func (client *Client) ObtainCertificate(ctx context.Context, domains []string) (*certificate.Resource, error) {
 	// New users will need to register
 	err := client.registerUser(ctx)
 	if err != nil {
@@ -111,27 +107,6 @@ func (client *Client) ObtainCertificate(ctx context.Context, domains []string,
 	})
 	if err != nil {
 		return nil, apperrors.New(err).WithMsgLog("failed to obtain certificate")
-	}
-
-	if savePrivateKeyPath != "" {
-		privKeyFile, err := os.Create(savePrivateKeyPath)
-		if err != nil {
-			return nil, apperrors.New(err).WithMsgLog("failed to create private key file")
-		}
-		_, err = privKeyFile.Write(certificates.PrivateKey)
-		if err != nil {
-			return nil, apperrors.New(err).WithMsgLog("failed to write data to private key file")
-		}
-	}
-	if saveCertPath != "" {
-		certFile, err := os.Create(saveCertPath)
-		if err != nil {
-			return nil, apperrors.New(err).WithMsgLog("failed to create certificate file")
-		}
-		_, err = certFile.Write(certificates.Certificate)
-		if err != nil {
-			return nil, apperrors.New(err).WithMsgLog("failed to write data to certificate file")
-		}
 	}
 
 	return certificates, nil
