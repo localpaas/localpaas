@@ -112,7 +112,7 @@ func (uc *S3StorageUC) preparePersistingS3StorageProjects(
 				SubjectID:    projectReq.ID,
 				ResourceType: base.ResourceTypeS3Storage,
 				ResourceID:   setting.ID,
-				Actions:      entity.AccessActions{Read: projectReq.Allowed},
+				Actions:      base.AccessActions{Read: projectReq.Allowed},
 				CreatedAt:    timeNow,
 				UpdatedAt:    timeNow,
 			})
@@ -133,7 +133,7 @@ func (uc *S3StorageUC) preparePersistingS3StorageApps(
 				SubjectID:    appReq.ID,
 				ResourceType: base.ResourceTypeS3Storage,
 				ResourceID:   setting.ID,
-				Actions:      entity.AccessActions{Read: appReq.Allowed},
+				Actions:      base.AccessActions{Read: appReq.Allowed},
 				CreatedAt:    timeNow,
 				UpdatedAt:    timeNow,
 			})

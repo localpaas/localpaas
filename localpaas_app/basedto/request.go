@@ -4,7 +4,7 @@ import (
 	"mime/multipart"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
 // Paging is used to store pagination request from client side
@@ -128,7 +128,7 @@ func (req *ObjectIDSliceReq) AppendID(id string) {
 // ObjectAccessReq request input for requesting access to an object
 type ObjectAccessReq struct {
 	ObjectIDReq
-	Access entity.AccessActions `json:"access"`
+	Access base.AccessActions `json:"access"`
 }
 
 type ObjectAccessSliceReq []*ObjectAccessReq
@@ -144,7 +144,7 @@ func (req ObjectAccessSliceReq) ToIDStringSlice() []string {
 // ModuleAccessReq request input for requesting access to a module
 type ModuleAccessReq struct {
 	ModuleIDReq
-	Access entity.AccessActions `json:"access"`
+	Access base.AccessActions `json:"access"`
 }
 
 type ModuleIDReq struct {

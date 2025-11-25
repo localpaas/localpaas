@@ -10,7 +10,7 @@ import (
 type BaseCreateSessionReq struct {
 	User         *entity.User
 	IsAPIKey     bool
-	AccessAction base.ActionType
+	AccessAction *base.AccessActions
 }
 
 type BaseCreateSessionResp struct {

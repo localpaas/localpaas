@@ -109,7 +109,7 @@ func (uc *SSHKeyUC) preparePersistingSSHKeyProjects(
 				SubjectID:    projectReq.ID,
 				ResourceType: base.ResourceTypeSSHKey,
 				ResourceID:   setting.ID,
-				Actions:      entity.AccessActions{Read: projectReq.Allowed},
+				Actions:      base.AccessActions{Read: projectReq.Allowed},
 				CreatedAt:    timeNow,
 				UpdatedAt:    timeNow,
 			})
@@ -130,7 +130,7 @@ func (uc *SSHKeyUC) preparePersistingSSHKeyApps(
 				SubjectID:    appReq.ID,
 				ResourceType: base.ResourceTypeSSHKey,
 				ResourceID:   setting.ID,
-				Actions:      entity.AccessActions{Read: appReq.Allowed},
+				Actions:      base.AccessActions{Read: appReq.Allowed},
 				CreatedAt:    timeNow,
 				UpdatedAt:    timeNow,
 			})

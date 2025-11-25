@@ -72,8 +72,40 @@ var (
 	}
 )
 
-func ActionTypeCmp(a1, s2 ActionType) int {
-	return mapActionValues[a1] - mapActionValues[s2]
+type AccessActions struct {
+	Read   bool `json:"read"`
+	Write  bool `json:"write"`
+	Delete bool `json:"delete"`
+}
+
+func (a *AccessActions) Equal(other AccessActions) bool {
+	if a.Delete && other.Delete {
+		return true
+	}
+	if a.Delete == other.Delete && a.Write && other.Write {
+		return true
+	}
+	return a.Read == other.Read && a.Write == other.Write && a.Delete == other.Delete
+}
+
+func (a *AccessActions) IsFullAccess() bool {
+	return a.Read && a.Write && a.Delete
+}
+
+func (a *AccessActions) IsNoAccess() bool {
+	return !a.Read && !a.Write && !a.Delete
+}
+
+func ActionAllowed(action ActionType, access AccessActions) bool {
+	switch action {
+	case ActionTypeRead:
+		return access.Read || access.Write || access.Delete
+	case ActionTypeWrite:
+		return access.Write
+	case ActionTypeDelete:
+		return access.Delete
+	}
+	return false
 }
 
 type PermissionResource struct {

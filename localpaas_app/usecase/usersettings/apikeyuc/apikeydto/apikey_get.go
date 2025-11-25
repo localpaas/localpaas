@@ -36,7 +36,7 @@ type APIKeyResp struct {
 	Name         string             `json:"name"`
 	Status       base.SettingStatus `json:"status"`
 	KeyID        string             `json:"keyId"`
-	AccessAction base.ActionType    `json:"accessAction,omitempty"`
+	AccessAction base.AccessActions `json:"accessAction"`
 
 	CreatedAt time.Time  `json:"createdAt"`
 	UpdatedAt time.Time  `json:"updatedAt"`
@@ -49,9 +49,9 @@ func TransformAPIKey(setting *entity.Setting) (resp *APIKeyResp, err error) {
 	}
 
 	apiKey := setting.MustAsAPIKey()
-	if apiKey != nil {
-		resp.KeyID = apiKey.KeyID
-		resp.AccessAction = apiKey.AccessAction
+	if err = copier.Copy(&resp, apiKey); err != nil {
+		return nil, apperrors.Wrap(err)
 	}
+
 	return resp, nil
 }

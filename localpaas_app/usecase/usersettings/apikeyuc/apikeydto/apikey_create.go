@@ -17,9 +17,9 @@ const (
 )
 
 type CreateAPIKeyReq struct {
-	Name         string          `json:"name"`
-	AccessAction base.ActionType `json:"accessAction"`
-	ExpireAt     time.Time       `json:"expireAt"`
+	Name         string              `json:"name"`
+	AccessAction *base.AccessActions `json:"accessAction"`
+	ExpireAt     time.Time           `json:"expireAt"`
 }
 
 func NewCreateAPIKeyReq() *CreateAPIKeyReq {
@@ -32,8 +32,6 @@ func (req *CreateAPIKeyReq) Validate() apperrors.ValidationErrors {
 	timeNow := timeutil.NowUTC()
 	validators = append(validators, basedto.ValidateStr(&req.Name, true, 1, nameMaxLength,
 		"name")...)
-	validators = append(validators, basedto.ValidateStrIn(&req.AccessAction, false, base.AllActionTypes,
-		"accessAction")...)
 	validators = append(validators, basedto.ValidateTime(&req.ExpireAt, false, timeNow,
 		timeNow.AddDate(expirationYearMax, 0, 0), "expireAt")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))

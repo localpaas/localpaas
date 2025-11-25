@@ -3,7 +3,7 @@ package basedto
 import (
 	"time"
 
-	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
 const (
@@ -57,7 +57,7 @@ type NamedObjectSliceResp []*NamedObjectResp
 
 type ObjectAccessResp struct {
 	NamedObjectResp
-	Access entity.AccessActions `json:"access"`
+	Access base.AccessActions `json:"access"`
 }
 
 type ObjectAccessSliceResp []*ObjectAccessResp

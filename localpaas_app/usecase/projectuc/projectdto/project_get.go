@@ -54,7 +54,7 @@ type ProjectAppResp struct {
 
 type ProjectUserAccessResp struct {
 	*basedto.UserBaseResp
-	Access entity.AccessActions `json:"access"`
+	Access base.AccessActions `json:"access"`
 }
 
 type ProjectBaseResp struct {

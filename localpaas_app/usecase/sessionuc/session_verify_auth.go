@@ -16,8 +16,8 @@ func (uc *SessionUC) VerifyAuth(ctx context.Context, auth *basedto.Auth, accessC
 	}
 
 	// Requested action is higher than the one limited within the session settings
-	if auth.User.AuthClaims.AccessAction != "" &&
-		base.ActionTypeCmp(accessCheck.Action, auth.User.AuthClaims.AccessAction) > 0 {
+	limitAccess := auth.User.AuthClaims.AccessAction
+	if limitAccess != nil && !base.ActionAllowed(accessCheck.Action, *limitAccess) {
 		return apperrors.New(apperrors.ErrUnauthorized).
 			WithMsgLog("requested action is not allowed by session settings")
 	}

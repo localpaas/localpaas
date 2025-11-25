@@ -8,11 +8,11 @@ import (
 // AuthClaims the claims for authentication
 type AuthClaims struct {
 	BaseClaims
-	UID          string          `json:"uid"`
-	UserID       string          `json:"userId"`
-	IsRefresh    bool            `json:"isRefresh,omitempty"`
-	IsAPIKey     bool            `json:"isAPIKey,omitempty"`
-	AccessAction base.ActionType `json:"access,omitempty"`
+	UID          string              `json:"uid"`
+	UserID       string              `json:"userId"`
+	IsRefresh    bool                `json:"isRefresh,omitempty"`
+	IsAPIKey     bool                `json:"isAPIKey,omitempty"`
+	AccessAction *base.AccessActions `json:"access,omitempty"`
 }
 
 // GenerateAccessToken generates access token

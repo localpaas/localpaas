@@ -17,9 +17,9 @@ const (
 )
 
 type APIKey struct {
-	KeyID        string          `json:"keyId"`
-	SecretKey    string          `json:"secretKey"`
-	AccessAction base.ActionType `json:"accessAction,omitempty"`
+	KeyID        string              `json:"keyId"`
+	SecretKey    string              `json:"secretKey"`
+	AccessAction *base.AccessActions `json:"accessAction,omitempty"`
 }
 
 func (o *APIKey) IsHashed() bool {
