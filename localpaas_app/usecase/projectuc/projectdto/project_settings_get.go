@@ -43,7 +43,8 @@ type ProjectSettingsResp struct {
 }
 
 type EnvVarsResp struct {
-	Project []*EnvVarResp `json:"project"`
+	Project   []*EnvVarResp `json:"project"`
+	UpdateVer int           `json:"updateVer"`
 }
 
 type EnvVarResp struct {
@@ -53,11 +54,13 @@ type EnvVarResp struct {
 }
 
 type SecretsResp struct {
-	Project []*secretdto.SecretResp `json:"project"`
+	Project   []*secretdto.SecretResp `json:"project"`
+	UpdateVer int                     `json:"updateVer"`
 }
 
 type GeneralSettingsResp struct {
-	Test string `json:"test"`
+	Test      string `json:"test"`
+	UpdateVer int    `json:"updateVer"`
 }
 
 func TransformProjectSettings(project *entity.Project) (resp *ProjectSettingsResp, err error) {

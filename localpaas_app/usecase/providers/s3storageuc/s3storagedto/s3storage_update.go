@@ -8,7 +8,8 @@ import (
 )
 
 type UpdateS3StorageReq struct {
-	ID string `json:"-"`
+	ID        string `json:"-"`
+	UpdateVer int    `json:"updateVer"`
 	*S3StoragePartialReq
 }
 

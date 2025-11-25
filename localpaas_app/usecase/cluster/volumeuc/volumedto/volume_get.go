@@ -43,6 +43,7 @@ type VolumeResp struct {
 	Size              int64                  `json:"size"`
 	CreatedAt         time.Time              `json:"createdAt"`
 	ClusterVolumeSpec *ClusterVolumeSpecResp `json:"clusterVolumeSpec"`
+	UpdateVer         int                    `json:"updateVer"`
 }
 
 type ClusterVolumeSpecResp struct {
@@ -62,6 +63,7 @@ func TransformVolume(vol *volume.Volume, _ bool) *VolumeResp {
 	}
 	if vol.ClusterVolume != nil {
 		resp.ID = vol.ClusterVolume.ID
+		resp.UpdateVer = int(vol.ClusterVolume.Version.Index) //nolint:gosec
 	}
 	if vol.UsageData != nil {
 		resp.RefCount = vol.UsageData.RefCount

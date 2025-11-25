@@ -7910,6 +7910,9 @@
             },
             "type" : "array"
           },
+          "updateVer" : {
+            "type" : "integer"
+          },
           "updatedAt" : {
             "type" : "string"
           },
@@ -7920,7 +7923,7 @@
             "type" : "array"
           }
         },
-        "required" : [ "createdAt", "id", "key", "name", "note", "photo", "status", "tags", "updatedAt", "userAccesses" ],
+        "required" : [ "createdAt", "id", "key", "name", "note", "photo", "status", "tags", "updateVer", "updatedAt", "userAccesses" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppRuntimeLogsDataResp" : {
@@ -8112,9 +8115,12 @@
           },
           "imageSource" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentImageSourceReq"
+          },
+          "updateVer" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "codeSource", "imageSource" ],
+        "required" : [ "codeSource", "imageSource", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentSettingsResp" : {
@@ -8124,9 +8130,12 @@
           },
           "imageSource" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentImageSourceResp"
+          },
+          "updateVer" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "codeSource", "imageSource" ],
+        "required" : [ "codeSource", "imageSource", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DomainReq" : {
@@ -8225,6 +8234,21 @@
         "required" : [ "key", "value" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.EnvVarsReq" : {
+        "properties" : {
+          "envVars" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.EnvVarReq"
+            },
+            "type" : "array"
+          },
+          "updateVer" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "envVars", "updateVer" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.EnvVarsResp" : {
         "properties" : {
           "app" : {
@@ -8244,9 +8268,12 @@
               "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.EnvVarResp"
             },
             "type" : "array"
+          },
+          "updateVer" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "app", "parentApp", "project" ],
+        "required" : [ "app", "parentApp", "project", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.GetAppResp" : {
@@ -8295,9 +8322,12 @@
           },
           "enabled" : {
             "type" : "boolean"
+          },
+          "updateVer" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "domains", "enabled" ],
+        "required" : [ "domains", "enabled", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HttpSettingsResp" : {
@@ -8313,9 +8343,12 @@
           },
           "enabled" : {
             "type" : "boolean"
+          },
+          "updateVer" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "defaultNginxSettings", "domains", "enabled" ],
+        "required" : [ "defaultNginxSettings", "domains", "enabled", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.ListAppBaseResp" : {
@@ -8544,10 +8577,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentSettingsReq"
           },
           "envVars" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.EnvVarReq"
-            },
-            "type" : "array"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.EnvVarsReq"
           },
           "httpSettings" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HttpSettingsReq"
@@ -8647,9 +8677,12 @@
           },
           "size" : {
             "type" : "integer"
+          },
+          "updateVer" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "createdAt", "id", "labels", "repoTags", "size" ],
+        "required" : [ "createdAt", "id", "labels", "repoTags", "size", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_imageuc_imagedto.ListImageResp" : {
@@ -8885,11 +8918,14 @@
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.NodeStatus"
           },
+          "updateVer" : {
+            "type" : "integer"
+          },
           "updatedAt" : {
             "type" : "string"
           }
         },
-        "required" : [ "addr", "availability", "createdAt", "engineDesc", "hostname", "id", "isLeader", "labels", "name", "platform", "resources", "role", "status", "updatedAt" ],
+        "required" : [ "addr", "availability", "createdAt", "engineDesc", "hostname", "id", "isLeader", "labels", "name", "platform", "resources", "role", "status", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.UpdateNodeReq" : {
@@ -8908,9 +8944,12 @@
           },
           "role" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.NodeRole"
+          },
+          "updateVer" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "availability", "labels", "name", "role" ],
+        "required" : [ "availability", "labels", "name", "role", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.UpdateNodeResp" : {
@@ -9079,9 +9118,12 @@
               "type" : "object"
             },
             "type" : "object"
+          },
+          "updateVer" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "clusterVolumeSpec", "createdAt", "driver", "id", "labels", "mountpoint", "options", "refCount", "scope", "size", "status" ],
+        "required" : [ "clusterVolumeSpec", "createdAt", "driver", "id", "labels", "mountpoint", "options", "refCount", "scope", "size", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.CreateProjectReq" : {
@@ -9202,9 +9244,12 @@
               "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.EnvVarResp"
             },
             "type" : "array"
+          },
+          "updateVer" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "project" ],
+        "required" : [ "project", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.GeneralSettingsReq" : {
@@ -9220,9 +9265,12 @@
         "properties" : {
           "test" : {
             "type" : "string"
+          },
+          "updateVer" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "test" ],
+        "required" : [ "test", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.GetProjectResp" : {
@@ -9348,6 +9396,9 @@
             },
             "type" : "array"
           },
+          "updateVer" : {
+            "type" : "integer"
+          },
           "updatedAt" : {
             "type" : "string"
           },
@@ -9358,7 +9409,7 @@
             "type" : "array"
           }
         },
-        "required" : [ "apps", "createdAt", "id", "key", "name", "note", "photo", "status", "tags", "updatedAt", "userAccesses" ],
+        "required" : [ "apps", "createdAt", "id", "key", "name", "note", "photo", "status", "tags", "updateVer", "updatedAt", "userAccesses" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.ProjectSettingsResp" : {
@@ -9406,9 +9457,12 @@
               "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_secretuc_secretdto.SecretResp"
             },
             "type" : "array"
+          },
+          "updateVer" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "project" ],
+        "required" : [ "project", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.UpdateProjectSettingsReq" : {
@@ -9458,6 +9512,9 @@
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
           },
+          "updateVer" : {
+            "type" : "integer"
+          },
           "updatedAt" : {
             "type" : "string"
           },
@@ -9465,7 +9522,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "id", "name", "password", "status", "updatedAt", "username" ],
+        "required" : [ "createdAt", "id", "name", "password", "status", "updateVer", "updatedAt", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_basicauthuc_basicauthdto.CreateBasicAuthReq" : {
@@ -9538,9 +9595,12 @@
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          },
+          "updateVer" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "expireAt", "status" ],
+        "required" : [ "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_basicauthuc_basicauthdto.UpdateBasicAuthMetaResp" : {
@@ -9560,11 +9620,14 @@
           "password" : {
             "type" : "string"
           },
+          "updateVer" : {
+            "type" : "integer"
+          },
           "username" : {
             "type" : "string"
           }
         },
-        "required" : [ "name", "password", "username" ],
+        "required" : [ "name", "password", "updateVer", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_basicauthuc_basicauthdto.UpdateBasicAuthResp" : {
@@ -9629,6 +9692,9 @@
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
           },
+          "updateVer" : {
+            "type" : "integer"
+          },
           "updatedAt" : {
             "type" : "string"
           },
@@ -9636,7 +9702,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "id", "name", "status", "updatedAt", "webhook" ],
+        "required" : [ "createdAt", "id", "name", "status", "updateVer", "updatedAt", "webhook" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_discorduc_discorddto.GetDiscordResp" : {
@@ -9697,9 +9763,12 @@
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          },
+          "updateVer" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "expireAt", "status" ],
+        "required" : [ "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_discorduc_discorddto.UpdateDiscordMetaResp" : {
@@ -9716,11 +9785,14 @@
           "name" : {
             "type" : "string"
           },
+          "updateVer" : {
+            "type" : "integer"
+          },
           "webhook" : {
             "type" : "string"
           }
         },
-        "required" : [ "name", "webhook" ],
+        "required" : [ "name", "updateVer", "webhook" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_discorduc_discorddto.UpdateDiscordResp" : {
@@ -9869,11 +9941,14 @@
           "tokenURL" : {
             "type" : "string"
           },
+          "updateVer" : {
+            "type" : "integer"
+          },
           "updatedAt" : {
             "type" : "string"
           }
         },
-        "required" : [ "clientId", "clientSecret", "createdAt", "id", "name", "organization", "status", "updatedAt" ],
+        "required" : [ "clientId", "clientSecret", "createdAt", "id", "name", "organization", "status", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_oauthuc_oauthdto.UpdateOAuthMetaReq" : {
@@ -9883,9 +9958,12 @@
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          },
+          "updateVer" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "expireAt", "status" ],
+        "required" : [ "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_oauthuc_oauthdto.UpdateOAuthMetaResp" : {
@@ -9928,9 +10006,12 @@
           },
           "tokenURL" : {
             "type" : "string"
+          },
+          "updateVer" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "authURL", "callbackURL", "clientId", "clientSecret", "name", "organization", "profileURL", "scopes", "tokenURL" ],
+        "required" : [ "authURL", "callbackURL", "clientId", "clientSecret", "name", "organization", "profileURL", "scopes", "tokenURL", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_oauthuc_oauthdto.UpdateOAuthResp" : {
@@ -10034,6 +10115,9 @@
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
           },
+          "updateVer" : {
+            "type" : "integer"
+          },
           "updatedAt" : {
             "type" : "string"
           },
@@ -10041,7 +10125,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "address", "createdAt", "id", "name", "password", "status", "updatedAt", "username" ],
+        "required" : [ "address", "createdAt", "id", "name", "password", "status", "updateVer", "updatedAt", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_registryauthuc_registryauthdto.TestRegistryAuthConnReq" : {
@@ -10078,9 +10162,12 @@
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          },
+          "updateVer" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "expireAt", "status" ],
+        "required" : [ "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_registryauthuc_registryauthdto.UpdateRegistryAuthMetaResp" : {
@@ -10103,11 +10190,14 @@
           "password" : {
             "type" : "string"
           },
+          "updateVer" : {
+            "type" : "integer"
+          },
           "username" : {
             "type" : "string"
           }
         },
-        "required" : [ "address", "name", "password", "username" ],
+        "required" : [ "address", "name", "password", "updateVer", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_registryauthuc_registryauthdto.UpdateRegistryAuthResp" : {
@@ -10308,11 +10398,14 @@
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
           },
+          "updateVer" : {
+            "type" : "integer"
+          },
           "updatedAt" : {
             "type" : "string"
           }
         },
-        "required" : [ "accessKeyId", "bucket", "createdAt", "endpoint", "id", "name", "projectAccesses", "region", "status", "updatedAt" ],
+        "required" : [ "accessKeyId", "bucket", "createdAt", "endpoint", "id", "name", "projectAccesses", "region", "status", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_s3storageuc_s3storagedto.TestS3StorageConnReq" : {
@@ -10361,9 +10454,12 @@
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          },
+          "updateVer" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "expireAt", "status" ],
+        "required" : [ "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_s3storageuc_s3storagedto.UpdateS3StorageMetaResp" : {
@@ -10400,9 +10496,12 @@
           },
           "secretKey" : {
             "type" : "string"
+          },
+          "updateVer" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "accessKeyId", "bucket", "endpoint", "name", "projectAccesses", "region", "secretKey" ],
+        "required" : [ "accessKeyId", "bucket", "endpoint", "name", "projectAccesses", "region", "secretKey", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_s3storageuc_s3storagedto.UpdateS3StorageResp" : {
@@ -10488,6 +10587,9 @@
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
           },
+          "updateVer" : {
+            "type" : "integer"
+          },
           "updatedAt" : {
             "type" : "string"
           },
@@ -10495,7 +10597,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "id", "key", "status", "updatedAt", "value" ],
+        "required" : [ "createdAt", "id", "key", "status", "updateVer", "updatedAt", "value" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_secretuc_secretdto.UpdateSecretMetaReq" : {
@@ -10505,9 +10607,12 @@
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          },
+          "updateVer" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "expireAt", "status" ],
+        "required" : [ "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_secretuc_secretdto.UpdateSecretMetaResp" : {
@@ -10599,6 +10704,9 @@
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
           },
+          "updateVer" : {
+            "type" : "integer"
+          },
           "updatedAt" : {
             "type" : "string"
           },
@@ -10606,7 +10714,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "id", "name", "status", "updatedAt", "webhook" ],
+        "required" : [ "createdAt", "id", "name", "status", "updateVer", "updatedAt", "webhook" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_slackuc_slackdto.TestSendSlackMsgReq" : {
@@ -10640,9 +10748,12 @@
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          },
+          "updateVer" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "expireAt", "status" ],
+        "required" : [ "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_slackuc_slackdto.UpdateSlackMetaResp" : {
@@ -10659,11 +10770,14 @@
           "name" : {
             "type" : "string"
           },
+          "updateVer" : {
+            "type" : "integer"
+          },
           "webhook" : {
             "type" : "string"
           }
         },
-        "required" : [ "name", "webhook" ],
+        "required" : [ "name", "updateVer", "webhook" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_slackuc_slackdto.UpdateSlackResp" : {
@@ -10843,11 +10957,14 @@
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
           },
+          "updateVer" : {
+            "type" : "integer"
+          },
           "updatedAt" : {
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "id", "name", "privateKey", "projectAccesses", "status", "updatedAt" ],
+        "required" : [ "createdAt", "id", "name", "privateKey", "projectAccesses", "status", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_sshkeyuc_sshkeydto.UpdateSSHKeyMetaReq" : {
@@ -10857,9 +10974,12 @@
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          },
+          "updateVer" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "expireAt", "status" ],
+        "required" : [ "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_sshkeyuc_sshkeydto.UpdateSSHKeyMetaResp" : {
@@ -10887,9 +11007,12 @@
               "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_sshkeyuc_sshkeydto.SSHKeyProjectAccessReq"
             },
             "type" : "array"
+          },
+          "updateVer" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "name", "passphrase", "privateKey", "projectAccesses" ],
+        "required" : [ "name", "passphrase", "privateKey", "projectAccesses", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_sshkeyuc_sshkeydto.UpdateSSHKeyResp" : {
@@ -11014,11 +11137,14 @@
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
           },
+          "updateVer" : {
+            "type" : "integer"
+          },
           "updatedAt" : {
             "type" : "string"
           }
         },
-        "required" : [ "certificate", "createdAt", "email", "expiration", "id", "keySize", "name", "privateKey", "provider", "status", "updatedAt" ],
+        "required" : [ "certificate", "createdAt", "email", "expiration", "id", "keySize", "name", "privateKey", "provider", "status", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_ssluc_ssldto.UpdateSslMetaReq" : {
@@ -11028,9 +11154,12 @@
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          },
+          "updateVer" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "expireAt", "status" ],
+        "required" : [ "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_ssluc_ssldto.UpdateSslMetaResp" : {
@@ -11064,9 +11193,12 @@
           },
           "provider" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SslProvider"
+          },
+          "updateVer" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "certificate", "email", "expiration", "keySize", "name", "privateKey", "provider" ],
+        "required" : [ "certificate", "email", "expiration", "keySize", "name", "privateKey", "provider", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_ssluc_ssldto.UpdateSslResp" : {
@@ -11444,11 +11576,14 @@
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
           },
+          "updateVer" : {
+            "type" : "integer"
+          },
           "updatedAt" : {
             "type" : "string"
           }
         },
-        "required" : [ "accessAction", "createdAt", "id", "keyId", "name", "status", "updatedAt" ],
+        "required" : [ "accessAction", "createdAt", "id", "keyId", "name", "status", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_usersettings_apikeyuc_apikeydto.CreateAPIKeyReq" : {
@@ -11521,9 +11656,12 @@
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          },
+          "updateVer" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "expireAt", "status" ],
+        "required" : [ "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_usersettings_apikeyuc_apikeydto.UpdateAPIKeyMetaResp" : {

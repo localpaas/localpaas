@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS settings
     status       VARCHAR(20) NOT NULL CONSTRAINT chk_status CHECK
                     (status IN ('active','pending','disabled','expired')) DEFAULT 'active',
     data         JSONB NULL,
+    update_ver   BIGINT NOT NULL DEFAULT 1,
 
     created_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,

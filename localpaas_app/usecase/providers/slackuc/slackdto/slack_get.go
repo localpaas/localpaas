@@ -41,6 +41,7 @@ type SlackResp struct {
 	Status    base.SettingStatus `json:"status"`
 	Webhook   string             `json:"webhook"`
 	Encrypted bool               `json:"encrypted,omitempty"`
+	UpdateVer int                `json:"updateVer"`
 
 	CreatedAt time.Time  `json:"createdAt"`
 	UpdatedAt time.Time  `json:"updatedAt"`

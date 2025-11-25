@@ -8,7 +8,8 @@ import (
 )
 
 type UpdateSlackReq struct {
-	ID string `json:"-"`
+	ID        string `json:"-"`
+	UpdateVer int    `json:"updateVer"`
 	*SlackBaseReq
 }
 

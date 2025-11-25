@@ -193,7 +193,7 @@ func (p *manager) LoadObjectAccesses(ctx context.Context, db database.IDB, check
 		bunex.SelectWhere("deleted_at IS NULL"),
 		bunex.SelectWhere("status = ?", base.UserStatusActive),
 		bunex.SelectWhere("(access_expire_at IS NULL OR access_expire_at > NOW())"),
-		bunex.SelectWhere("(role = ?", base.UserRoleAdmin),
+		bunex.SelectWhere("role = ?", base.UserRoleAdmin),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)

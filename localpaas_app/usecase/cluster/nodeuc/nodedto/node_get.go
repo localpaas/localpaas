@@ -51,6 +51,7 @@ type NodeResp struct {
 	Platform     *NodePlatformResp     `json:"platform"`
 	Resources    *NodeResources        `json:"resources"`
 	EngineDesc   *NodeEngineDescResp   `json:"engineDesc"`
+	UpdateVer    int                   `json:"updateVer"`
 
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
@@ -96,6 +97,7 @@ func TransformNode(node *swarm.Node, detailed bool) *NodeResp {
 			CPUs:     node.Description.Resources.NanoCPUs / docker.UnitCPUNano,
 			MemoryMB: node.Description.Resources.MemoryBytes / docker.UnitMemMB,
 		},
+		UpdateVer: int(node.Version.Index), //nolint:gosec
 		CreatedAt: node.CreatedAt,
 		UpdatedAt: node.UpdatedAt,
 	}

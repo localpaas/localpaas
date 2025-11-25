@@ -19,6 +19,7 @@ const (
 type DeploymentSettingsReq struct {
 	ImageSource *DeploymentImageSourceReq `json:"imageSource"`
 	CodeSource  *DeploymentCodeSourceReq  `json:"codeSource"`
+	UpdateVer   int                       `json:"updateVer"`
 }
 
 func (req *DeploymentSettingsReq) Validate() apperrors.ValidationErrors {
@@ -77,6 +78,7 @@ func (req *DeploymentCodeSourceReq) validate(field string) (res []vld.Validator)
 type DeploymentSettingsResp struct {
 	ImageSource *DeploymentImageSourceResp `json:"imageSource"`
 	CodeSource  *DeploymentCodeSourceResp  `json:"codeSource"`
+	UpdateVer   int                        `json:"updateVer"`
 }
 
 type DeploymentImageSourceResp struct {

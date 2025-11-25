@@ -37,6 +37,7 @@ type APIKeyResp struct {
 	Status       base.SettingStatus `json:"status"`
 	KeyID        string             `json:"keyId"`
 	AccessAction base.AccessActions `json:"accessAction"`
+	UpdateVer    int                `json:"updateVer"`
 
 	CreatedAt time.Time  `json:"createdAt"`
 	UpdatedAt time.Time  `json:"updatedAt"`

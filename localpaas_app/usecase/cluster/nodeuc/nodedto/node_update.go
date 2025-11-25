@@ -14,6 +14,7 @@ type UpdateNodeReq struct {
 	Labels       map[string]string     `json:"labels"`
 	Role         base.NodeRole         `json:"role"`
 	Availability base.NodeAvailability `json:"availability"`
+	UpdateVer    int                   `json:"updateVer"`
 }
 
 func NewUpdateNodeReq() *UpdateNodeReq {

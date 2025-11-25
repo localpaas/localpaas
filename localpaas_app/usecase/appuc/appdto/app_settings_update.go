@@ -10,7 +10,7 @@ import (
 type UpdateAppSettingsReq struct {
 	ProjectID          string                 `json:"-"`
 	AppID              string                 `json:"-"`
-	EnvVars            EnvVarsReq             `json:"envVars"`
+	EnvVars            *EnvVarsReq            `json:"envVars"`
 	DeploymentSettings *DeploymentSettingsReq `json:"deploymentSettings"`
 	HttpSettings       *HttpSettingsReq       `json:"httpSettings"`
 }

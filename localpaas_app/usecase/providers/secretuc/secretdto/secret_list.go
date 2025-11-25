@@ -51,6 +51,7 @@ type SecretResp struct {
 	Key       string             `json:"key"`
 	Value     string             `json:"value"`
 	Encrypted bool               `json:"encrypted,omitempty"`
+	UpdateVer int                `json:"updateVer"`
 
 	CreatedAt time.Time  `json:"createdAt"`
 	UpdatedAt time.Time  `json:"updatedAt"`

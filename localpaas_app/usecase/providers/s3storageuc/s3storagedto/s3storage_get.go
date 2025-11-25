@@ -47,6 +47,7 @@ type S3StorageResp struct {
 	Endpoint        string                        `json:"endpoint"`
 	ProjectAccesses []*S3StorageProjectAccessResp `json:"projectAccesses"`
 	Encrypted       bool                          `json:"encrypted,omitempty"`
+	UpdateVer       int                           `json:"updateVer"`
 
 	CreatedAt time.Time  `json:"createdAt"`
 	UpdatedAt time.Time  `json:"updatedAt"`

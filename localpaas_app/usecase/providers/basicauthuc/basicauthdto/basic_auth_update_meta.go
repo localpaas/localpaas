@@ -11,9 +11,10 @@ import (
 )
 
 type UpdateBasicAuthMetaReq struct {
-	ID       string              `json:"-"`
-	Status   *base.SettingStatus `json:"status"`
-	ExpireAt *time.Time          `json:"expireAt"`
+	ID        string              `json:"-"`
+	Status    *base.SettingStatus `json:"status"`
+	ExpireAt  *time.Time          `json:"expireAt"`
+	UpdateVer int                 `json:"updateVer"`
 }
 
 func NewUpdateBasicAuthMetaReq() *UpdateBasicAuthMetaReq {

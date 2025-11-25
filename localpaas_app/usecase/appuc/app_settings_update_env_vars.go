@@ -50,9 +50,11 @@ func (uc *AppUC) prepareUpdatingAppEnvVars(
 	dbSetting.ExpireAt = time.Time{}
 	dbSetting.Status = base.SettingStatusActive
 
-	dbSetting.MustSetData(&entity.EnvVars{Data: gofn.MapSlice(req.EnvVars, func(v *appdto.EnvVarReq) *entity.EnvVar {
-		return v.ToEntity()
-	})})
+	dbSetting.MustSetData(&entity.EnvVars{
+		Data: gofn.MapSlice(req.EnvVars.EnvVars, func(v *appdto.EnvVarReq) *entity.EnvVar {
+			return v.ToEntity()
+		}),
+	})
 
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, dbSetting)
 	return nil

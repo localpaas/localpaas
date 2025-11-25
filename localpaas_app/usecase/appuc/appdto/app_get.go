@@ -43,6 +43,7 @@ type AppResp struct {
 	Note         string               `json:"note"`
 	Tags         []string             `json:"tags" copy:"-"` // manual copy AppTag -> string
 	UserAccesses []*AppUserAccessResp `json:"userAccesses"`
+	UpdateVer    int                  `json:"updateVer"`
 
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`

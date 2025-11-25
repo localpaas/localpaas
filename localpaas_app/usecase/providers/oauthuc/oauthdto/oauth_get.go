@@ -49,6 +49,7 @@ type OAuthResp struct {
 	ProfileURL   string             `json:"profileURL,omitempty"`
 	Scopes       []string           `json:"scopes,omitempty"`
 	Encrypted    bool               `json:"encrypted,omitempty"`
+	UpdateVer    int                `json:"updateVer"`
 
 	CreatedAt time.Time  `json:"createdAt"`
 	UpdatedAt time.Time  `json:"updatedAt"`

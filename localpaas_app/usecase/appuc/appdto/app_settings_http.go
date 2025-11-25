@@ -16,8 +16,9 @@ import (
 //
 
 type HttpSettingsReq struct {
-	Enabled bool         `json:"enabled"`
-	Domains []*DomainReq `json:"domains"`
+	Enabled   bool         `json:"enabled"`
+	Domains   []*DomainReq `json:"domains"`
+	UpdateVer int          `json:"updateVer"`
 }
 
 // nolint
@@ -79,6 +80,7 @@ type HttpSettingsResp struct {
 	Enabled              bool               `json:"enabled"`
 	Domains              []*DomainResp      `json:"domains"`
 	DefaultNginxSettings *NginxSettingsResp `json:"defaultNginxSettings"`
+	UpdateVer            int                `json:"updateVer"`
 }
 
 type DomainResp struct {

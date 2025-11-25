@@ -42,6 +42,7 @@ type ProjectResp struct {
 	Tags         []string                 `json:"tags" copy:"-"` // manual copy ProjectTag -> string
 	Apps         []*ProjectAppResp        `json:"apps"`
 	UserAccesses []*ProjectUserAccessResp `json:"userAccesses"`
+	UpdateVer    int                      `json:"updateVer"`
 
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`

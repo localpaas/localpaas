@@ -10,7 +10,10 @@ import (
 // REQUEST
 //
 
-type EnvVarsReq []*EnvVarReq
+type EnvVarsReq struct {
+	EnvVars   []*EnvVarReq `json:"envVars"`
+	UpdateVer int          `json:"updateVer"`
+}
 
 type EnvVarReq struct {
 	Key        string `json:"key"`
@@ -42,6 +45,7 @@ type EnvVarsResp struct {
 	App       []*EnvVarResp `json:"app"`
 	ParentApp []*EnvVarResp `json:"parentApp"`
 	Project   []*EnvVarResp `json:"project"`
+	UpdateVer int           `json:"updateVer"`
 }
 
 type EnvVarResp struct {

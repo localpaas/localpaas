@@ -36,6 +36,7 @@ type ImageResp struct {
 	Size      int64             `json:"size"`
 	RepoTags  []string          `json:"repoTags"`
 	CreatedAt time.Time         `json:"createdAt"`
+	UpdateVer int               `json:"updateVer"`
 }
 
 func TransformImage(img *image.Summary, _ bool) *ImageResp {

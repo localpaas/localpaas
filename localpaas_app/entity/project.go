@@ -9,16 +9,17 @@ import (
 var (
 	ProjectUpsertingConflictCols = []string{"id"}
 	ProjectUpsertingUpdateCols   = []string{"name", "key", "photo", "status", "note",
-		"updated_at", "deleted_at"}
+		"update_ver", "updated_at", "deleted_at"}
 )
 
 type Project struct {
-	ID     string `bun:",pk"`
-	Name   string
-	Key    string
-	Photo  string `bun:",nullzero"`
-	Status base.ProjectStatus
-	Note   string `bun:",nullzero"`
+	ID        string `bun:",pk"`
+	Name      string
+	Key       string
+	Photo     string `bun:",nullzero"`
+	Status    base.ProjectStatus
+	Note      string `bun:",nullzero"`
+	UpdateVer int64
 
 	CreatedAt time.Time `bun:",default:current_timestamp"`
 	UpdatedAt time.Time `bun:",default:current_timestamp"`

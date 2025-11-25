@@ -43,6 +43,7 @@ type SSHKeyResp struct {
 	Passphrase      string                     `json:"passphrase,omitempty"`
 	Encrypted       bool                       `json:"encrypted,omitempty"`
 	ProjectAccesses []*SSHKeyProjectAccessResp `json:"projectAccesses"`
+	UpdateVer       int                        `json:"updateVer"`
 
 	CreatedAt time.Time  `json:"createdAt"`
 	UpdatedAt time.Time  `json:"updatedAt"`

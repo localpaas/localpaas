@@ -46,6 +46,7 @@ type SslResp struct {
 	Email       string             `json:"email"`
 	Expiration  *time.Time         `json:"expiration" copy:",nilonzero"`
 	Encrypted   bool               `json:"encrypted,omitempty"`
+	UpdateVer   int                `json:"updateVer"`
 
 	CreatedAt time.Time  `json:"createdAt"`
 	UpdatedAt time.Time  `json:"updatedAt"`

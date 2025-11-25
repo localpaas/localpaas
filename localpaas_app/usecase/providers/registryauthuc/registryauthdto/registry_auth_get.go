@@ -43,6 +43,7 @@ type RegistryAuthResp struct {
 	Username  string             `json:"username"`
 	Password  string             `json:"password"`
 	Encrypted bool               `json:"encrypted,omitempty"`
+	UpdateVer int                `json:"updateVer"`
 
 	CreatedAt time.Time  `json:"createdAt"`
 	UpdatedAt time.Time  `json:"updatedAt"`
