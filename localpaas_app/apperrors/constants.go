@@ -81,6 +81,11 @@ var (
 	ErrInfraUnauthorized       = errors.New("ERR_INFRA_UNAUTHORIZED")
 )
 
+// Errors for cluster
+var (
+	ErrNodeRequiredByLocalPaasApp = errors.New("ERR_NODE_REQUIRED_BY_LOCAL_PAAS_APP")
+)
+
 // errorStatusMap - mapping from error to http status code
 var errorStatusMap = map[error]int{
 	// Base errors
@@ -148,6 +153,9 @@ var errorStatusMap = map[error]int{
 	ErrInfraUnavailable:        http.StatusConflict,
 	ErrInfraDataLoss:           http.StatusUnprocessableEntity,
 	ErrInfraUnauthorized:       http.StatusUnauthorized,
+
+	// Cluster errors
+	ErrNodeRequiredByLocalPaasApp: http.StatusForbidden,
 }
 
 // errorWarnLevelMap defines the errors that are handled but unexpected to happen.

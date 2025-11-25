@@ -20,6 +20,11 @@ func (uc *NodeUC) UpdateNode(
 		return nil, apperrors.NewInfra(err)
 	}
 
+	err = uc.verifyNodeUpdateChange(ctx, req, node)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
 	spec := &node.Spec
 
 	if req.Name != "" {
@@ -41,4 +46,31 @@ func (uc *NodeUC) UpdateNode(
 	}
 
 	return &nodedto.UpdateNodeResp{}, nil
+}
+
+func (uc *NodeUC) verifyNodeUpdateChange(
+	ctx context.Context,
+	req *nodedto.UpdateNodeReq,
+	node *swarm.Node,
+) error {
+	spec := &node.Spec
+
+	roleDemoting := swarm.NodeRole(req.Role) == swarm.NodeRoleWorker && spec.Role == swarm.NodeRoleManager
+	availabilityLosing := swarm.NodeAvailability(req.Availability) != swarm.NodeAvailabilityActive &&
+		spec.Availability == swarm.NodeAvailabilityActive
+
+	if roleDemoting || availabilityLosing {
+		tasks, err := uc.lpAppService.GetLpAppTasks(ctx)
+		if err != nil {
+			return apperrors.NewInfra(err)
+		}
+		allNodes := make(map[string]*swarm.Task)
+		for i := range tasks {
+			allNodes[tasks[i].NodeID] = &tasks[i]
+		}
+		if len(allNodes) == 1 && allNodes[node.ID] != nil {
+			return apperrors.New(apperrors.ErrNodeRequiredByLocalPaasApp).WithDisplayLevelHigh()
+		}
+	}
+	return nil
 }

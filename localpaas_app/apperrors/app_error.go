@@ -38,12 +38,14 @@ type AppError interface {
 	// WithMsgLog sets log message (used for debug purpose)
 	WithMsgLog(format string, args ...any) AppError
 
-	// WithDisplayLevel set display level
+	// DisplayLevel get/set display level
+	DisplayLevel() DisplayLevel
 	WithDisplayLevel(DisplayLevel) AppError
 	WithDisplayLevelHigh() AppError
 	WithDisplayLevelMedium() AppError
 
-	// WithFallbackToErrorMsg set fallback mode when translation missing
+	// FallbackToErrorMsg get/set fallback mode when translation missing
+	FallbackToErrorMsg() bool
 	WithFallbackToErrorMsg(flag bool) AppError
 
 	// Message builds representation message
@@ -103,6 +105,10 @@ func (e *appError) WithMsgLog(format string, args ...any) AppError {
 	return e
 }
 
+func (e *appError) DisplayLevel() DisplayLevel {
+	return e.displayLevel
+}
+
 func (e *appError) WithDisplayLevel(level DisplayLevel) AppError {
 	e.displayLevel = level
 	return e
@@ -116,6 +122,10 @@ func (e *appError) WithDisplayLevelHigh() AppError {
 func (e *appError) WithDisplayLevelMedium() AppError {
 	e.displayLevel = DisplayLevelMedium
 	return e
+}
+
+func (e *appError) FallbackToErrorMsg() bool {
+	return e.fallbackToErrorMsg
 }
 
 func (e *appError) WithFallbackToErrorMsg(flag bool) AppError {

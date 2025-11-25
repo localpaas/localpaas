@@ -11,6 +11,7 @@ import (
 
 type LpAppService interface {
 	GetLpAppSwarmService(ctx context.Context) (*swarm.Service, error)
+	GetLpAppTasks(ctx context.Context) ([]swarm.Task, error)
 	RestartLpAppSwarmService(ctx context.Context) error
 	ReloadLpAppConfig(ctx context.Context) error
 

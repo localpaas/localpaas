@@ -7588,6 +7588,11 @@
         "required" : [ "args", "directive", "line" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_apperrors.DisplayLevel" : {
+        "enum" : [ "high", "medium", "low" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "DisplayLevelHigh", "DisplayLevelMedium", "DisplayLevelLow" ]
+      },
       "github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo" : {
         "properties" : {
           "cause" : {
@@ -7601,6 +7606,9 @@
           },
           "detail" : {
             "type" : "string"
+          },
+          "displayLevel" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.DisplayLevel"
           },
           "errors" : {
             "items" : {
@@ -7621,7 +7629,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "code", "detail", "status", "title", "type" ],
+        "required" : [ "code", "detail", "status", "title" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_apperrors.InnerErrorInfo" : {
@@ -7642,10 +7650,20 @@
         "required" : [ "code", "message", "path" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_base.ActionType" : {
-        "enum" : [ "read", "write", "delete" ],
-        "type" : "string",
-        "x-enum-varnames" : [ "ActionTypeRead", "ActionTypeWrite", "ActionTypeDelete" ]
+      "github_com_localpaas_localpaas_localpaas_app_base.AccessActions" : {
+        "properties" : {
+          "delete" : {
+            "type" : "boolean"
+          },
+          "read" : {
+            "type" : "boolean"
+          },
+          "write" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "delete", "read", "write" ],
+        "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_base.AppStatus" : {
         "enum" : [ "active", "locked", "disabled", "deleting" ],
@@ -7750,7 +7768,7 @@
       "github_com_localpaas_localpaas_localpaas_app_basedto.ModuleAccessReq" : {
         "properties" : {
           "access" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.AccessActions"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.AccessActions"
           },
           "id" : {
             "description" : "could be module name",
@@ -7763,7 +7781,7 @@
       "github_com_localpaas_localpaas_localpaas_app_basedto.ObjectAccessReq" : {
         "properties" : {
           "access" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.AccessActions"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.AccessActions"
           },
           "id" : {
             "type" : "string"
@@ -7775,7 +7793,7 @@
       "github_com_localpaas_localpaas_localpaas_app_basedto.ObjectAccessResp" : {
         "properties" : {
           "access" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.AccessActions"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.AccessActions"
           },
           "id" : {
             "type" : "string"
@@ -7839,21 +7857,6 @@
           }
         },
         "required" : [ "email", "fullName", "id", "photo", "username" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_entity.AccessActions" : {
-        "properties" : {
-          "delete" : {
-            "type" : "boolean"
-          },
-          "read" : {
-            "type" : "boolean"
-          },
-          "write" : {
-            "type" : "boolean"
-          }
-        },
-        "required" : [ "delete", "read", "write" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppBaseResp" : {
@@ -7949,7 +7952,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppUserAccessResp" : {
         "properties" : {
           "access" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.AccessActions"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.AccessActions"
           },
           "email" : {
             "type" : "string"
@@ -9375,7 +9378,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.ProjectUserAccessResp" : {
         "properties" : {
           "access" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.AccessActions"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.AccessActions"
           },
           "email" : {
             "type" : "string"
@@ -11421,7 +11424,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_usersettings_apikeyuc_apikeydto.APIKeyResp" : {
         "properties" : {
           "accessAction" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.ActionType"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.AccessActions"
           },
           "createdAt" : {
             "type" : "string"
@@ -11445,13 +11448,13 @@
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "id", "keyId", "name", "status", "updatedAt" ],
+        "required" : [ "accessAction", "createdAt", "id", "keyId", "name", "status", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_usersettings_apikeyuc_apikeydto.CreateAPIKeyReq" : {
         "properties" : {
           "accessAction" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.ActionType"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.AccessActions"
           },
           "expireAt" : {
             "type" : "string"

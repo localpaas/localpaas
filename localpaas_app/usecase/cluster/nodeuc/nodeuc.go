@@ -5,6 +5,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 	"github.com/localpaas/localpaas/localpaas_app/service/clusterservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/lpappservice"
 	"github.com/localpaas/localpaas/services/docker"
 )
 
@@ -13,6 +14,7 @@ type NodeUC struct {
 	settingRepo       repository.SettingRepo
 	permissionManager permission.Manager
 	clusterService    clusterservice.ClusterService
+	lpAppService      lpappservice.LpAppService
 	dockerManager     *docker.Manager
 }
 
@@ -21,6 +23,7 @@ func NewNodeUC(
 	settingRepo repository.SettingRepo,
 	permissionManager permission.Manager,
 	clusterService clusterservice.ClusterService,
+	lpAppService lpappservice.LpAppService,
 	dockerManager *docker.Manager,
 ) *NodeUC {
 	return &NodeUC{
@@ -28,6 +31,7 @@ func NewNodeUC(
 		settingRepo:       settingRepo,
 		permissionManager: permissionManager,
 		clusterService:    clusterService,
+		lpAppService:      lpAppService,
 		dockerManager:     dockerManager,
 	}
 }
