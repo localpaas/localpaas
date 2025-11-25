@@ -13,6 +13,14 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/translation"
 )
 
+type DisplayLevel string
+
+const (
+	DisplayLevelHigh   DisplayLevel = "high"
+	DisplayLevelMedium DisplayLevel = "medium"
+	DisplayLevelLow    DisplayLevel = "low"
+)
+
 // AppError represents an error type to be used for any issue within the app.
 // This error type is designed to be able to carry much extra information
 // and ability to translate the error message into a specific language.
@@ -30,6 +38,14 @@ type AppError interface {
 	// WithMsgLog sets log message (used for debug purpose)
 	WithMsgLog(format string, args ...any) AppError
 
+	// WithDisplayLevel set display level
+	WithDisplayLevel(DisplayLevel) AppError
+	WithDisplayLevelHigh() AppError
+	WithDisplayLevelMedium() AppError
+
+	// WithFallbackToErrorMsg set fallback mode when translation missing
+	WithFallbackToErrorMsg(flag bool) AppError
+
 	// Message builds representation message
 	Message(lang translation.Lang) (msg string, transErr error)
 	// Build builds error info for JSON API recommendation
@@ -41,11 +57,13 @@ type AppError interface {
 
 // appError implements AppError interface
 type appError struct {
-	err      error
-	cause    error
-	params   map[string]any
-	ntParams map[string]any // non-translation params
-	msgLog   string
+	err                error
+	cause              error
+	params             map[string]any
+	ntParams           map[string]any // non-translation params
+	msgLog             string
+	displayLevel       DisplayLevel
+	fallbackToErrorMsg bool // when translation missing
 }
 
 // Error implements `error` interface
@@ -85,6 +103,26 @@ func (e *appError) WithMsgLog(format string, args ...any) AppError {
 	return e
 }
 
+func (e *appError) WithDisplayLevel(level DisplayLevel) AppError {
+	e.displayLevel = level
+	return e
+}
+
+func (e *appError) WithDisplayLevelHigh() AppError {
+	e.displayLevel = DisplayLevelHigh
+	return e
+}
+
+func (e *appError) WithDisplayLevelMedium() AppError {
+	e.displayLevel = DisplayLevelMedium
+	return e
+}
+
+func (e *appError) WithFallbackToErrorMsg(flag bool) AppError {
+	e.fallbackToErrorMsg = flag
+	return e
+}
+
 // Build - builder (status, code, title, detail)
 func (e *appError) Build(lang translation.Lang) *ErrorInfo {
 	errInfo := &ErrorInfo{}
@@ -101,11 +139,15 @@ func (e *appError) Build(lang translation.Lang) *ErrorInfo {
 	if transErr != nil {
 		// This is not error, just notify dev team about missing translation
 		notifyTranslationMissing(transErr, lang)
+		if e.fallbackToErrorMsg {
+			detail = e.err.Error()
+		}
 	}
 
 	errInfo.Title = http.StatusText(errInfo.Status)
 	errInfo.Detail = detail
 	errInfo.DebugLog = e.msgLog
+	errInfo.DisplayLevel = e.displayLevel
 	if e.cause != nil {
 		errInfo.Cause = e.cause.Error()
 	} else {
@@ -135,23 +177,27 @@ func (e *appError) Message(lang translation.Lang) (msg string, transErr error) {
 		}
 	}
 
-	// All of handled errors should have translation to guide users.
-	// If it's the error that doesn't have translation, it's unexpected error.
-	if !e.isErrHavingTranslation() {
-		msg, _ := translation.Localize(lang, ErrInternalServer.Error())
-		return msg, transErr //nolint:wrapcheck
+	msgID := e.UnwrapTilRoot().Error()
+	missingTranslation := false
+	if strings.HasPrefix(msgID, "ERR_") {
+		var err error
+		msg, err = translation.LocalizeEx(lang, msgID, params)
+		if err != nil {
+			transErr = multierror.Append(transErr, err)
+			missingTranslation = true
+		}
+	} else {
+		missingTranslation = true
 	}
 
-	msgID := e.UnwrapTilRoot().Error()
-	if msg, err := translation.LocalizeEx(lang, msgID, params); err != nil {
-		transErr = multierror.Append(transErr, err)
-		// When the translation is missing, we cannot show correct message to users.
-		// That's why just show 500 message. At least we can notify to define translations.
-		msg, _ := translation.Localize(lang, ErrInternalServer.Error())
-		return msg, transErr //nolint:wrapcheck
-	} else {
-		return msg, transErr //nolint:wrapcheck
+	if missingTranslation {
+		if e.fallbackToErrorMsg {
+			msg = e.Error()
+		} else {
+			msg, _ = translation.Localize(lang, ErrInternalServer.Error()) // Show error 500
+		}
 	}
+	return msg, transErr //nolint:wrapcheck
 }
 
 // Is - implements errors.Is.
@@ -210,13 +256,6 @@ func (e *appError) getMappingStatus() int {
 	}
 }
 
-func (e *appError) isErrHavingTranslation() bool {
-	// Every error has prefix `ERR_` in regulation, and every defined error has translation.
-	// Error key without having prefix `ERR_` won't be translated, they may be from a 3rd party library,
-	// and we don't wrap them on purpose or a mistake.
-	return strings.HasPrefix(e.UnwrapTilRoot().Error(), "ERR_")
-}
-
 func notifyTranslationMissing(e error, _ translation.Lang) {
 	// the error format is something like this:
 	// 1 error occurred:
@@ -236,8 +275,9 @@ func New(err error) AppError {
 		return e // already is a AppError, no need to wrap
 	}
 	return &appError{
-		ntParams: map[string]any{},
-		params:   map[string]any{},
-		err:      goerrors.Wrap(err, 1),
+		ntParams:           map[string]any{},
+		params:             map[string]any{},
+		fallbackToErrorMsg: true,
+		err:                goerrors.Wrap(err, 1),
 	}
 }

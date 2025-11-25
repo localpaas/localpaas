@@ -11,6 +11,9 @@ import (
 )
 
 const (
+	errVldStatusCode   = http.StatusBadRequest
+	errVldDisplayLevel = ""
+
 	errKeyVldCommonDetail = "ERR_VLD_COMMON_DETAIL"
 )
 
@@ -44,11 +47,12 @@ func (e ValidationErrors) Build(lang translation.Lang) *ErrorInfo {
 	}
 
 	return &ErrorInfo{
-		Title:       http.StatusText(http.StatusBadRequest),
-		Status:      http.StatusBadRequest,
-		Code:        ErrValidation.Error(),
-		Detail:      detail,
-		InnerErrors: vldErrs,
+		Title:        http.StatusText(errVldStatusCode),
+		Status:       errVldStatusCode,
+		Code:         ErrValidation.Error(),
+		Detail:       detail,
+		DisplayLevel: errVldDisplayLevel,
+		InnerErrors:  vldErrs,
 	}
 }
 

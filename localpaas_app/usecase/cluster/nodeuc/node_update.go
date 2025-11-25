@@ -20,7 +20,7 @@ func (uc *NodeUC) UpdateNode(
 		return nil, apperrors.NewInfra(err)
 	}
 
-	spec := node.Spec
+	spec := &node.Spec
 
 	if req.Name != "" {
 		spec.Annotations.Name = req.Name //nolint
@@ -35,7 +35,7 @@ func (uc *NodeUC) UpdateNode(
 		spec.Availability = swarm.NodeAvailability(req.Availability)
 	}
 
-	err = uc.dockerManager.NodeUpdate(ctx, req.NodeID, &node.Version, &spec)
+	err = uc.dockerManager.NodeUpdate(ctx, req.NodeID, &node.Version, spec)
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
 	}
