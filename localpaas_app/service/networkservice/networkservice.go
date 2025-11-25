@@ -15,7 +15,7 @@ type NetworkService interface {
 	ListProjectNetworks(ctx context.Context, project *entity.Project) ([]network.Summary, error)
 	RemoveProjectNetwork(ctx context.Context, project *entity.Project) error
 
-	UpdateAppGlobalRoutingNetwork(ctx context.Context, app *entity.App, httpSettings *entity.AppHttpSettings) error
+	UpdateAppGlobalRoutingNetwork(ctx context.Context, app *entity.App, httpSettings *entity.Setting) error
 }
 
 func NewNetworkService(

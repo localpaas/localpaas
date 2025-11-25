@@ -19,57 +19,61 @@ type OAuth struct {
 	TokenURL     string   `json:"tokenURL,omitempty"`
 	ProfileURL   string   `json:"profileURL,omitempty"`
 	Scopes       []string `json:"scopes,omitempty"`
-
-	// NOTE: for storing current containing setting only
-	Setting *Setting `json:"-"`
 }
 
 func (o *OAuth) IsEncrypted() bool {
 	return strings.HasPrefix(o.ClientSecret, base.SaltPrefix)
 }
 
-func (o *OAuth) Encrypt() error {
+func (o *OAuth) Encrypt() (*OAuth, error) {
 	if o.IsEncrypted() {
-		return nil
+		return o, nil
 	}
 	encrypted, err := cryptoutil.EncryptBase64(o.ClientSecret, base.DefaultSaltLen)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return o, apperrors.Wrap(err)
 	}
 	o.ClientSecret = encrypted
-	return nil
+	return o, nil
 }
 
 func (o *OAuth) MustEncrypt() *OAuth {
-	gofn.Must1(o.Encrypt())
-	return o
+	return gofn.Must(o.Encrypt())
 }
 
-func (o *OAuth) Decrypt() error {
+func (o *OAuth) Decrypt() (*OAuth, error) {
 	if !o.IsEncrypted() {
-		return nil
+		return o, nil
 	}
 	decrypted, err := cryptoutil.DecryptBase64(o.ClientSecret)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return o, apperrors.Wrap(err)
 	}
 	o.ClientSecret = decrypted
-	return nil
+	return o, nil
 }
 
-func (s *Setting) ParseOAuth(decrypt bool) (*OAuth, error) {
-	res := &OAuth{Setting: s}
-	if s != nil && s.Data != "" && s.Type == base.SettingTypeOAuth {
-		err := s.parseData(res)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-		if decrypt {
-			if err = res.Decrypt(); err != nil {
-				return nil, apperrors.Wrap(err)
-			}
+func (o *OAuth) MustDecrypt() *OAuth {
+	return gofn.Must(o.Decrypt())
+}
+
+func (s *Setting) AsOAuth() (*OAuth, error) {
+	if s.parsedData != nil {
+		res, ok := s.parsedData.(*OAuth)
+		if !ok {
+			return nil, apperrors.NewTypeInvalid()
 		}
 		return res, nil
 	}
+	res := &OAuth{}
+	if s.Data != "" && s.Type == base.SettingTypeOAuth {
+		if err := s.parseData(res); err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	}
 	return res, nil
+}
+
+func (s *Setting) MustAsOAuth() *OAuth {
+	return gofn.Must(s.AsOAuth())
 }

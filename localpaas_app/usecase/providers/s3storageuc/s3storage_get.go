@@ -28,7 +28,8 @@ func (uc *S3StorageUC) GetS3Storage(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := s3storagedto.TransformS3Storage(setting, true)
+	setting.MustAsS3Storage().MustDecrypt()
+	resp, err := s3storagedto.TransformS3Storage(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

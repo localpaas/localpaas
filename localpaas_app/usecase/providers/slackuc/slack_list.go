@@ -42,7 +42,7 @@ func (uc *SlackUC) ListSlack(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := slackdto.TransformSlacks(settings, false)
+	resp, err := slackdto.TransformSlacks(settings)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

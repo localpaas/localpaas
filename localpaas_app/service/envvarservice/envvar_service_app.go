@@ -45,10 +45,7 @@ func (s *envVarService) BuildAppEnv(ctx context.Context, db database.IDB, app *e
 
 	for _, setting := range settings {
 		if setting.Type == base.SettingTypeEnvVar {
-			vars, err := setting.ParseEnvVars()
-			if err != nil {
-				return nil, apperrors.Wrap(err)
-			}
+			vars := setting.MustAsEnvVars()
 			switch setting.ObjectID {
 			case app.ID:
 				for _, env := range vars.Data {
@@ -73,10 +70,7 @@ func (s *envVarService) BuildAppEnv(ctx context.Context, db database.IDB, app *e
 		}
 
 		if setting.Type == base.SettingTypeSecret {
-			secret, err := setting.ParseSecret(false) // decryption takes time, so do it when needed only
-			if err != nil {
-				return nil, apperrors.Wrap(err)
-			}
+			secret := setting.MustAsSecret() // decryption takes time, so do it when needed only
 			switch setting.ObjectID {
 			case app.ID:
 				mapAppSecret[setting.Name] = secret

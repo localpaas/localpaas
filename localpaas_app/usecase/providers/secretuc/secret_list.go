@@ -49,7 +49,7 @@ func (uc *SecretUC) ListSecret(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := secretdto.TransformSecrets(settings, false)
+	resp, err := secretdto.TransformSecrets(settings)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

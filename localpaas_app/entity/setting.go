@@ -35,6 +35,9 @@ type Setting struct {
 	ObjectUser     *User            `bun:"rel:belongs-to,join:object_id=id"`
 	ObjectProject  *Project         `bun:"rel:belongs-to,join:object_id=id"`
 	ObjectApp      *App             `bun:"rel:belongs-to,join:object_id=id"`
+
+	// NOTE: temporary field
+	parsedData any
 }
 
 // GetID implements IDEntity interface
@@ -68,6 +71,7 @@ func (s *Setting) parseData(structPtr any) error {
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+	s.parsedData = structPtr
 	return nil
 }
 
@@ -77,6 +81,7 @@ func (s *Setting) SetData(data any) error {
 		return apperrors.Wrap(err)
 	}
 	s.Data = reflectutil.UnsafeBytesToStr(b)
+	s.parsedData = data
 	return nil
 }
 

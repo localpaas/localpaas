@@ -13,30 +13,26 @@ import (
 type SSHKey struct {
 	PrivateKey string `json:"privateKey"`
 	Passphrase string `json:"passphrase,omitempty"`
-
-	// NOTE: for storing current containing setting only
-	Setting *Setting `json:"-"`
 }
 
 func (o *SSHKey) IsEncrypted() bool {
 	return o.IsPrivateKeyEncrypted() || o.IsPassphraseEncrypted()
 }
 
-func (o *SSHKey) Encrypt() error {
-	if err := o.EncryptPrivateKey(); err != nil {
-		return apperrors.Wrap(err)
+func (o *SSHKey) Encrypt() (*SSHKey, error) {
+	if _, err := o.EncryptPrivateKey(); err != nil {
+		return o, apperrors.Wrap(err)
 	}
 	return o.EncryptPassphrase()
 }
 
 func (o *SSHKey) MustEncrypt() *SSHKey {
-	gofn.Must1(o.Encrypt())
-	return o
+	return gofn.Must(o.Encrypt())
 }
 
-func (o *SSHKey) Decrypt() error {
-	if err := o.DecryptPrivateKey(); err != nil {
-		return apperrors.Wrap(err)
+func (o *SSHKey) Decrypt() (*SSHKey, error) {
+	if _, err := o.DecryptPrivateKey(); err != nil {
+		return o, apperrors.Wrap(err)
 	}
 	return o.DecryptPassphrase()
 }
@@ -45,87 +41,93 @@ func (o *SSHKey) IsPrivateKeyEncrypted() bool {
 	return strings.HasPrefix(o.PrivateKey, base.SaltPrefix)
 }
 
-func (o *SSHKey) EncryptPrivateKey() error {
+func (o *SSHKey) EncryptPrivateKey() (*SSHKey, error) {
 	if o.IsPrivateKeyEncrypted() {
-		return nil
+		return o, nil
 	}
 	encrypted, err := cryptoutil.EncryptBase64(o.PrivateKey, base.DefaultSaltLen)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return o, apperrors.Wrap(err)
 	}
 	o.PrivateKey = encrypted
-	return nil
+	return o, nil
 }
 
 func (o *SSHKey) MustEncryptPrivateKey() *SSHKey {
-	gofn.Must1(o.EncryptPrivateKey())
-	return o
+	return gofn.Must(o.EncryptPrivateKey())
 }
 
-func (o *SSHKey) DecryptPrivateKey() error {
+func (o *SSHKey) DecryptPrivateKey() (*SSHKey, error) {
 	if !o.IsPrivateKeyEncrypted() {
-		return nil
+		return o, nil
 	}
 	decrypted, err := cryptoutil.DecryptBase64(o.PrivateKey)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return o, apperrors.Wrap(err)
 	}
 	o.PrivateKey = decrypted
-	return nil
+	return o, nil
 }
 
 func (o *SSHKey) IsPassphraseEncrypted() bool {
 	return strings.HasPrefix(o.Passphrase, base.SaltPrefix)
 }
 
-func (o *SSHKey) EncryptPassphrase() error {
+func (o *SSHKey) EncryptPassphrase() (*SSHKey, error) {
 	if o.IsPassphraseEncrypted() {
-		return nil
+		return o, nil
 	}
 	if o.Passphrase == "" {
-		return nil
+		return o, nil
 	}
 	encrypted, err := cryptoutil.EncryptBase64(o.Passphrase, base.DefaultSaltLen)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return o, apperrors.Wrap(err)
 	}
 	o.Passphrase = encrypted
-	return nil
+	return o, nil
 }
 
 func (o *SSHKey) MustEncryptPassphrase() *SSHKey {
-	gofn.Must1(o.EncryptPassphrase())
-	return o
+	return gofn.Must(o.EncryptPassphrase())
 }
 
-func (o *SSHKey) DecryptPassphrase() error {
+func (o *SSHKey) DecryptPassphrase() (*SSHKey, error) {
 	if !o.IsPassphraseEncrypted() {
-		return nil
+		return o, nil
 	}
 	if o.Passphrase == "" {
-		return nil
+		return o, nil
 	}
 	decrypted, err := cryptoutil.DecryptBase64(o.Passphrase)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return o, apperrors.Wrap(err)
 	}
 	o.Passphrase = decrypted
-	return nil
+	return o, nil
 }
 
-func (s *Setting) ParseSSHKey(decrypt bool) (*SSHKey, error) {
-	res := &SSHKey{Setting: s}
-	if s != nil && s.Data != "" && s.Type == base.SettingTypeSSHKey {
-		err := s.parseData(res)
-		if err != nil {
-			return nil, err
-		}
-		if decrypt {
-			if err = res.Decrypt(); err != nil {
-				return nil, apperrors.Wrap(err)
-			}
+func (o *SSHKey) MustDecrypt() *SSHKey {
+	return gofn.Must(o.Decrypt())
+}
+
+func (s *Setting) AsSSHKey() (*SSHKey, error) {
+	if s.parsedData != nil {
+		res, ok := s.parsedData.(*SSHKey)
+		if !ok {
+			return nil, apperrors.NewTypeInvalid()
 		}
 		return res, nil
 	}
+	res := &SSHKey{}
+	if s.Data != "" && s.Type == base.SettingTypeSSHKey {
+		if err := s.parseData(res); err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	}
 	return res, nil
+}
+
+func (s *Setting) MustAsSSHKey() *SSHKey {
+	return gofn.Must(s.AsSSHKey())
 }

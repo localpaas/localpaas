@@ -47,15 +47,12 @@ type SlackResp struct {
 	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
 }
 
-func TransformSlack(setting *entity.Setting, decrypt bool) (resp *SlackResp, err error) {
+func TransformSlack(setting *entity.Setting) (resp *SlackResp, err error) {
 	if err = copier.Copy(&resp, &setting); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	config, err := setting.ParseSlack(decrypt)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
+	config := setting.MustAsSlack()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
 	}

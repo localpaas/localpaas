@@ -28,7 +28,8 @@ func (uc *SSHKeyUC) GetSSHKey(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := sshkeydto.TransformSSHKey(setting, true)
+	setting.MustAsSSHKey().MustDecrypt()
+	resp, err := sshkeydto.TransformSSHKey(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

@@ -66,14 +66,11 @@ type S3StorageAppAccessResp struct {
 	Allowed bool   `json:"allowed"`
 }
 
-func TransformS3Storage(setting *entity.Setting, decrypt bool) (resp *S3StorageResp, err error) {
+func TransformS3Storage(setting *entity.Setting) (resp *S3StorageResp, err error) {
 	if err = copier.Copy(&resp, &setting); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	s3Config, err := setting.ParseS3Storage(decrypt)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
+	s3Config := setting.MustAsS3Storage()
 	if err = copier.Copy(&resp, &s3Config); err != nil {
 		return nil, apperrors.Wrap(err)
 	}

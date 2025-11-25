@@ -52,15 +52,12 @@ type SslResp struct {
 	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
 }
 
-func TransformSsl(setting *entity.Setting, decrypt bool) (resp *SslResp, err error) {
+func TransformSsl(setting *entity.Setting) (resp *SslResp, err error) {
 	if err = copier.Copy(&resp, &setting); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	config, err := setting.ParseSsl(decrypt)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
+	config := setting.MustAsSsl()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
 	}

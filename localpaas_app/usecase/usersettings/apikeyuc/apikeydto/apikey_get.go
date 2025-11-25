@@ -48,10 +48,7 @@ func TransformAPIKey(setting *entity.Setting) (resp *APIKeyResp, err error) {
 		return nil, apperrors.Wrap(err)
 	}
 
-	apiKey, err := setting.ParseAPIKey()
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
+	apiKey := setting.MustAsAPIKey()
 	if apiKey != nil {
 		resp.KeyID = apiKey.KeyID
 		resp.AccessAction = apiKey.AccessAction

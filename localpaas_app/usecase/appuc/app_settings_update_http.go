@@ -15,8 +15,7 @@ import (
 )
 
 type appHttpSettingsData struct {
-	DbHttpSettings *entity.Setting
-	HttpSettings   *entity.AppHttpSettings
+	HttpSettings *entity.Setting
 }
 
 func (uc *AppUC) loadAppDataForUpdateHttpSettings(
@@ -36,24 +35,23 @@ func (uc *AppUC) prepareUpdatingAppHttpSettings(
 	persistingData *persistingAppData,
 ) error { //nolint
 	app := data.App
-	dbSetting := data.HttpSettingsData.DbHttpSettings
+	dbHttpSettings := data.HttpSettingsData.HttpSettings
 
-	if dbSetting == nil {
-		dbSetting = &entity.Setting{
+	if dbHttpSettings == nil {
+		dbHttpSettings = &entity.Setting{
 			ID:        gofn.Must(ulid.NewStringULID()),
 			ObjectID:  app.ID,
 			Type:      base.SettingTypeAppHttp,
 			CreatedAt: timeNow,
 		}
-		data.HttpSettingsData.DbHttpSettings = dbSetting
+		data.HttpSettingsData.HttpSettings = dbHttpSettings
 	}
-	dbSetting.UpdatedAt = timeNow
-	dbSetting.Status = base.SettingStatusActive
-	dbSetting.ExpireAt = time.Time{}
+	dbHttpSettings.UpdatedAt = timeNow
+	dbHttpSettings.Status = base.SettingStatusActive
+	dbHttpSettings.ExpireAt = time.Time{}
 
 	httpReq := req.HttpSettings
 	newHttpSettings := &entity.AppHttpSettings{
-		Setting: dbSetting,
 		Enabled: httpReq.Enabled,
 		Domains: gofn.MapSlice(httpReq.Domains, func(r *appdto.DomainReq) *entity.AppDomain {
 			return &entity.AppDomain{
@@ -87,10 +85,9 @@ func (uc *AppUC) prepareUpdatingAppHttpSettings(
 			}
 		}),
 	}
-	data.HttpSettingsData.HttpSettings = newHttpSettings
 
-	dbSetting.MustSetData(newHttpSettings)
-	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, dbSetting)
+	dbHttpSettings.MustSetData(newHttpSettings)
+	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, dbHttpSettings)
 	return nil
 }
 

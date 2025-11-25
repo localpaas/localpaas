@@ -49,16 +49,13 @@ type RegistryAuthResp struct {
 	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
 }
 
-func TransformRegistryAuth(setting *entity.Setting, decrypt bool) (resp *RegistryAuthResp, err error) {
+func TransformRegistryAuth(setting *entity.Setting) (resp *RegistryAuthResp, err error) {
 	if err = copier.Copy(&resp, &setting); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 	resp.Address = setting.Kind
 
-	config, err := setting.ParseRegistryAuth(decrypt)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
+	config := setting.MustAsRegistryAuth()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
 	}

@@ -42,7 +42,7 @@ func (uc *SslUC) ListSsl(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := ssldto.TransformSsls(settings, false)
+	resp, err := ssldto.TransformSsls(settings)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

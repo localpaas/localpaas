@@ -17,6 +17,7 @@ ERR_VALIDATION = "Validation failed"
 ERR_REQUEST_TOO_FREQUENTLY = "Request too frequently"
 ERR_ACTION_NOT_ALLOWED = "Action is not allowed"
 ERR_TOKEN_INVALID = "Token is invalid"
+ERR_TYPE_INVALID = "Type is invalid"
 ERR_NOT_IMPLEMENTED = "Not implemented"
 ERR_UNSUPPORTED = "Unsupported"
 

@@ -55,15 +55,12 @@ type OAuthResp struct {
 	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
 }
 
-func TransformOAuth(setting *entity.Setting, baseCallbackURL string, decrypt bool) (resp *OAuthResp, err error) {
+func TransformOAuth(setting *entity.Setting, baseCallbackURL string) (resp *OAuthResp, err error) {
 	if err = copier.Copy(&resp, &setting); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	config, err := setting.ParseOAuth(decrypt)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
+	config := setting.MustAsOAuth()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
 	}

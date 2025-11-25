@@ -42,7 +42,7 @@ func (uc *DiscordUC) ListDiscord(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := discorddto.TransformDiscords(settings, false)
+	resp, err := discorddto.TransformDiscords(settings)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

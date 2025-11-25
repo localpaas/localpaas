@@ -15,65 +15,69 @@ type Secret struct {
 	Key    string `json:"k"`
 	Value  string `json:"v"`
 	Base64 bool   `json:"b64"`
-
-	// NOTE: for storing current containing setting only
-	Setting *Setting `json:"-"`
 }
 
 func (o *Secret) IsEncrypted() bool {
 	return strings.HasPrefix(o.Value, base.SaltPrefix)
 }
 
-func (o *Secret) Encrypt() error {
+func (o *Secret) Encrypt() (*Secret, error) {
 	if o.IsEncrypted() {
-		return nil
+		return o, nil
 	}
 	encrypted, err := cryptoutil.EncryptBase64(o.Value, base.DefaultSaltLen)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return o, apperrors.Wrap(err)
 	}
 	o.Value = encrypted
-	return nil
+	return o, nil
 }
 
 func (o *Secret) MustEncrypt() *Secret {
-	gofn.Must1(o.Encrypt())
-	return o
+	return gofn.Must(o.Encrypt())
 }
 
-func (o *Secret) Decrypt() error {
+func (o *Secret) Decrypt() (*Secret, error) {
 	if !o.IsEncrypted() {
-		return nil
+		return o, nil
 	}
 	decrypted, err := cryptoutil.DecryptBase64(o.Value)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return o, apperrors.Wrap(err)
 	}
 	o.Value = decrypted
-	return nil
+	return o, nil
+}
+
+func (o *Secret) MustDecrypt() *Secret {
+	return gofn.Must(o.Decrypt())
 }
 
 func (o *Secret) ValueAsBytes() []byte {
-	gofn.Must1(o.Decrypt())
+	o.MustDecrypt()
 	if o.Base64 {
 		return gofn.Must(base64.StdEncoding.DecodeString(o.Value))
 	}
 	return []byte(o.Value)
 }
 
-func (s *Setting) ParseSecret(decrypt bool) (*Secret, error) {
-	res := &Secret{Setting: s}
-	if s != nil && s.Data != "" && s.Type == base.SettingTypeSecret {
-		err := s.parseData(res)
-		if err != nil {
-			return nil, err
-		}
-		if decrypt {
-			if err = res.Decrypt(); err != nil {
-				return nil, apperrors.Wrap(err)
-			}
+func (s *Setting) AsSecret() (*Secret, error) {
+	if s.parsedData != nil {
+		res, ok := s.parsedData.(*Secret)
+		if !ok {
+			return nil, apperrors.NewTypeInvalid()
 		}
 		return res, nil
 	}
+	res := &Secret{}
+	if s.Data != "" && s.Type == base.SettingTypeSecret {
+		if err := s.parseData(res); err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	}
 	return res, nil
+}
+
+func (s *Setting) MustAsSecret() *Secret {
+	return gofn.Must(s.AsSecret())
 }

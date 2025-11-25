@@ -89,7 +89,7 @@ func (uc *SSHKeyUC) prepareUpdatingSSHKey(
 	}
 
 	if req.PrivateKey != nil {
-		sshKey, err := setting.ParseSSHKey(false)
+		sshKey, err := setting.AsSSHKey()
 		if err != nil {
 			return apperrors.Wrap(err)
 		}

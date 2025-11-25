@@ -55,7 +55,7 @@ func (uc *ImageUC) loadImageData(
 			return apperrors.Wrap(err)
 		}
 
-		data.RegistryAuth, err = regAuth.ParseRegistryAuth(true)
+		data.RegistryAuth, err = regAuth.MustAsRegistryAuth().Decrypt()
 		if err != nil {
 			return apperrors.Wrap(err)
 		}

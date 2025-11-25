@@ -13,57 +13,61 @@ import (
 type BasicAuth struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
-
-	// NOTE: for storing current containing setting only
-	Setting *Setting `json:"-"`
 }
 
 func (o *BasicAuth) IsEncrypted() bool {
 	return strings.HasPrefix(o.Password, base.SaltPrefix)
 }
 
-func (o *BasicAuth) Encrypt() error {
+func (o *BasicAuth) Encrypt() (*BasicAuth, error) {
 	if o.IsEncrypted() {
-		return nil
+		return o, nil
 	}
 	encrypted, err := cryptoutil.EncryptBase64(o.Password, base.DefaultSaltLen)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return o, apperrors.Wrap(err)
 	}
 	o.Password = encrypted
-	return nil
+	return o, nil
 }
 
 func (o *BasicAuth) MustEncrypt() *BasicAuth {
-	gofn.Must1(o.Encrypt())
-	return o
+	return gofn.Must(o.Encrypt())
 }
 
-func (o *BasicAuth) Decrypt() error {
+func (o *BasicAuth) Decrypt() (*BasicAuth, error) {
 	if !o.IsEncrypted() {
-		return nil
+		return o, nil
 	}
 	decrypted, err := cryptoutil.DecryptBase64(o.Password)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return o, apperrors.Wrap(err)
 	}
 	o.Password = decrypted
-	return nil
+	return o, nil
 }
 
-func (s *Setting) ParseBasicAuth(decrypt bool) (*BasicAuth, error) {
-	res := &BasicAuth{Setting: s}
-	if s != nil && s.Data != "" && s.Type == base.SettingTypeBasicAuth {
-		err := s.parseData(res)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-		if decrypt {
-			if err = res.Decrypt(); err != nil {
-				return nil, apperrors.Wrap(err)
-			}
+func (o *BasicAuth) MustDecrypt() *BasicAuth {
+	return gofn.Must(o.Decrypt())
+}
+
+func (s *Setting) AsBasicAuth() (*BasicAuth, error) {
+	if s.parsedData != nil {
+		res, ok := s.parsedData.(*BasicAuth)
+		if !ok {
+			return nil, apperrors.NewTypeInvalid()
 		}
 		return res, nil
 	}
+	res := &BasicAuth{}
+	if s.Data != "" && s.Type == base.SettingTypeBasicAuth {
+		if err := s.parseData(res); err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	}
 	return res, nil
+}
+
+func (s *Setting) MustAsBasicAuth() *BasicAuth {
+	return gofn.Must(s.AsBasicAuth())
 }

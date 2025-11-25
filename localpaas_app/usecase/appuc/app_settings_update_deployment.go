@@ -17,9 +17,8 @@ import (
 )
 
 type appDeploymentData struct {
-	DbDeploymentSettings *entity.Setting
-	DeploymentSettings   *entity.AppDeploymentSettings
-	RegistryAuth         *entity.RegistryAuth
+	DeploymentSettings *entity.Setting
+	RegistryAuth       *entity.Setting
 }
 
 func (uc *AppUC) loadAppDataForUpdateDeploymentSettings(
@@ -31,26 +30,21 @@ func (uc *AppUC) loadAppDataForUpdateDeploymentSettings(
 	deploymentData := data.DeploymentData
 
 	// Parse the current deployment settings
-	dbDeploymentSettings := deploymentData.DbDeploymentSettings
-	if dbDeploymentSettings != nil {
-		if dbDeploymentSettings.IsActive() && !dbDeploymentSettings.IsExpired() {
-			deployment, err := dbDeploymentSettings.ParseAppDeploymentSettings()
+	deploymentSettings := deploymentData.DeploymentSettings
+	if deploymentSettings != nil {
+		if deploymentSettings.IsActive() && !deploymentSettings.IsExpired() {
+			_, err := deploymentSettings.AsAppDeploymentSettings()
 			if err != nil {
 				return apperrors.New(err).WithMsgLog("failed to parse app deployment settings")
 			}
-			deploymentData.DeploymentSettings = deployment
 		}
 	}
 
 	// Loads registry auth if needs to
 	imageSource := req.DeploymentSettings.ImageSource
 	if imageSource != nil && imageSource.RegistryAuth.ID != "" {
-		registryAuthSetting, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeRegistryAuth,
+		registryAuth, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeRegistryAuth,
 			imageSource.RegistryAuth.ID, true)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
-		registryAuth, err := registryAuthSetting.ParseRegistryAuth(true)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -67,7 +61,7 @@ func (uc *AppUC) prepareUpdatingAppDeploymentSettings(
 	persistingData *persistingAppData,
 ) error {
 	app := data.App
-	dbDeploymentSettings := data.DeploymentData.DbDeploymentSettings
+	dbDeploymentSettings := data.DeploymentData.DeploymentSettings
 
 	if dbDeploymentSettings == nil {
 		dbDeploymentSettings = &entity.Setting{
@@ -76,20 +70,17 @@ func (uc *AppUC) prepareUpdatingAppDeploymentSettings(
 			Type:      base.SettingTypeAppDeployment,
 			CreatedAt: timeNow,
 		}
+		data.DeploymentData.DeploymentSettings = dbDeploymentSettings
 	}
 	dbDeploymentSettings.UpdatedAt = timeNow
 	dbDeploymentSettings.ExpireAt = time.Time{}
 	dbDeploymentSettings.Status = base.SettingStatusActive
 
-	deploymentSettings := data.DeploymentData.DeploymentSettings
-	if deploymentSettings == nil {
-		deploymentSettings = &entity.AppDeploymentSettings{
-			Setting:     dbDeploymentSettings,
-			ImageSource: &entity.DeploymentImageSource{},
-			CodeSource:  &entity.DeploymentCodeSource{},
-		}
-		data.DeploymentData.DeploymentSettings = deploymentSettings
+	deploymentSettings := &entity.AppDeploymentSettings{
+		ImageSource: &entity.DeploymentImageSource{},
+		CodeSource:  &entity.DeploymentCodeSource{},
 	}
+
 	if req.DeploymentSettings.ImageSource != nil {
 		if err := copier.Copy(deploymentSettings.ImageSource, req.DeploymentSettings.ImageSource); err != nil {
 			return apperrors.Wrap(err)

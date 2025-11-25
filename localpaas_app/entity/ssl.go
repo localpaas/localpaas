@@ -18,57 +18,61 @@ type Ssl struct {
 	Provider    base.SslProvider `json:"provider,omitempty"`
 	Email       string           `json:"email"`
 	Expiration  time.Time        `json:"expiration,omitzero"`
-
-	// NOTE: for storing current containing setting only
-	Setting *Setting `json:"-"`
 }
 
 func (o *Ssl) IsEncrypted() bool {
 	return strings.HasPrefix(o.PrivateKey, base.SaltPrefix)
 }
 
-func (o *Ssl) Encrypt() error {
+func (o *Ssl) Encrypt() (*Ssl, error) {
 	if o.IsEncrypted() {
-		return nil
+		return o, nil
 	}
 	encrypted, err := cryptoutil.EncryptBase64(o.PrivateKey, base.DefaultSaltLen)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return o, apperrors.Wrap(err)
 	}
 	o.PrivateKey = encrypted
-	return nil
+	return o, nil
 }
 
 func (o *Ssl) MustEncrypt() *Ssl {
-	gofn.Must1(o.Encrypt())
-	return o
+	return gofn.Must(o.Encrypt())
 }
 
-func (o *Ssl) Decrypt() error {
+func (o *Ssl) Decrypt() (*Ssl, error) {
 	if !o.IsEncrypted() {
-		return nil
+		return o, nil
 	}
 	decrypted, err := cryptoutil.DecryptBase64(o.PrivateKey)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return o, apperrors.Wrap(err)
 	}
 	o.PrivateKey = decrypted
-	return nil
+	return o, nil
 }
 
-func (s *Setting) ParseSsl(decrypt bool) (*Ssl, error) {
-	res := &Ssl{Setting: s}
-	if s != nil && s.Data != "" && s.Type == base.SettingTypeSsl {
-		err := s.parseData(res)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-		if decrypt {
-			if err = res.Decrypt(); err != nil {
-				return nil, apperrors.Wrap(err)
-			}
+func (o *Ssl) MustDecrypt() *Ssl {
+	return gofn.Must(o.Decrypt())
+}
+
+func (s *Setting) AsSsl() (*Ssl, error) {
+	if s.parsedData != nil {
+		res, ok := s.parsedData.(*Ssl)
+		if !ok {
+			return nil, apperrors.NewTypeInvalid()
 		}
 		return res, nil
 	}
+	res := &Ssl{}
+	if s.Data != "" && s.Type == base.SettingTypeSsl {
+		if err := s.parseData(res); err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	}
 	return res, nil
+}
+
+func (s *Setting) MustAsSsl() *Ssl {
+	return gofn.Must(s.AsSsl())
 }

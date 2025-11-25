@@ -114,3 +114,11 @@ func NewInUse(name string) AppError {
 func NewInUseNT(name string) AppError { // NT: non translation param
 	return New(ErrResourceInUse).WithNTParam("Name", name)
 }
+
+// NewTypeInvalid return AppError for error TypeInvalid
+func NewTypeInvalid() AppError {
+	return New(ErrTypeInvalid)
+}
+func NewTypeInvalidNT() AppError { // NT: non translation param
+	return New(ErrTypeInvalid)
+}

@@ -48,15 +48,12 @@ type BasicAuthResp struct {
 	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
 }
 
-func TransformBasicAuth(setting *entity.Setting, decrypt bool) (resp *BasicAuthResp, err error) {
+func TransformBasicAuth(setting *entity.Setting) (resp *BasicAuthResp, err error) {
 	if err = copier.Copy(&resp, &setting); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	config, err := setting.ParseBasicAuth(decrypt)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
+	config := setting.MustAsBasicAuth()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
 	}

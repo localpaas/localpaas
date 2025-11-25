@@ -15,42 +15,42 @@ type RegistryAuth struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Address  string `json:"address"`
-
-	// NOTE: for storing current containing setting only
-	Setting *Setting `json:"-"`
 }
 
 func (o *RegistryAuth) IsEncrypted() bool {
 	return strings.HasPrefix(o.Password, base.SaltPrefix)
 }
 
-func (o *RegistryAuth) Encrypt() error {
+func (o *RegistryAuth) Encrypt() (*RegistryAuth, error) {
 	if o.IsEncrypted() {
-		return nil
+		return o, nil
 	}
 	encrypted, err := cryptoutil.EncryptBase64(o.Password, base.DefaultSaltLen)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return o, apperrors.Wrap(err)
 	}
 	o.Password = encrypted
-	return nil
+	return o, nil
 }
 
 func (o *RegistryAuth) MustEncrypt() *RegistryAuth {
-	gofn.Must1(o.Encrypt())
-	return o
+	return gofn.Must(o.Encrypt())
 }
 
-func (o *RegistryAuth) Decrypt() error {
+func (o *RegistryAuth) Decrypt() (*RegistryAuth, error) {
 	if !o.IsEncrypted() {
-		return nil
+		return o, nil
 	}
 	decrypted, err := cryptoutil.DecryptBase64(o.Password)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return o, apperrors.Wrap(err)
 	}
 	o.Password = decrypted
-	return nil
+	return o, nil
+}
+
+func (o *RegistryAuth) MustDecrypt() *RegistryAuth {
+	return gofn.Must(o.Decrypt())
 }
 
 func (o *RegistryAuth) GenerateAuthHeader() (string, error) {
@@ -65,19 +65,23 @@ func (o *RegistryAuth) GenerateAuthHeader() (string, error) {
 	return h, nil
 }
 
-func (s *Setting) ParseRegistryAuth(decrypt bool) (*RegistryAuth, error) {
-	res := &RegistryAuth{Setting: s}
-	if s != nil && s.Data != "" && s.Type == base.SettingTypeRegistryAuth {
-		err := s.parseData(res)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-		if decrypt {
-			if err = res.Decrypt(); err != nil {
-				return nil, apperrors.Wrap(err)
-			}
+func (s *Setting) AsRegistryAuth() (*RegistryAuth, error) {
+	if s.parsedData != nil {
+		res, ok := s.parsedData.(*RegistryAuth)
+		if !ok {
+			return nil, apperrors.NewTypeInvalid()
 		}
 		return res, nil
 	}
+	res := &RegistryAuth{}
+	if s.Data != "" && s.Type == base.SettingTypeRegistryAuth {
+		if err := s.parseData(res); err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	}
 	return res, nil
+}
+
+func (s *Setting) MustAsRegistryAuth() *RegistryAuth {
+	return gofn.Must(s.AsRegistryAuth())
 }

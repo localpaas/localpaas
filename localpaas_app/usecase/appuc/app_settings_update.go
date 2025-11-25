@@ -92,9 +92,9 @@ func (uc *AppUC) loadAppSettingsDataForUpdate(
 		case base.SettingTypeEnvVar:
 			data.EnvVarsData.DbEnvVarsSettings = setting
 		case base.SettingTypeAppDeployment:
-			data.DeploymentData.DbDeploymentSettings = setting
+			data.DeploymentData.DeploymentSettings = setting
 		case base.SettingTypeAppHttp:
-			data.HttpSettingsData.DbHttpSettings = setting
+			data.HttpSettingsData.HttpSettings = setting
 		}
 	}
 

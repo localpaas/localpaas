@@ -19,7 +19,8 @@ func (uc *SslUC) GetSsl(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := ssldto.TransformSsl(setting, true)
+	setting.MustAsSsl().MustDecrypt()
+	resp, err := ssldto.TransformSsl(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

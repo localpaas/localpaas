@@ -20,10 +20,7 @@ func (uc *SessionUC) LoginWithAPIKey(
 		return nil, uc.wrapSensitiveError(apperrors.ErrAPIKeyInvalid)
 	}
 
-	apiKey, err := apiKeySetting.ParseAPIKey()
-	if err != nil {
-		return nil, uc.wrapSensitiveError(err)
-	}
+	apiKey := apiKeySetting.MustAsAPIKey()
 	if apiKey == nil {
 		return nil, uc.wrapSensitiveError(apperrors.ErrAPIKeyMismatched)
 	}

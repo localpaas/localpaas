@@ -10,7 +10,8 @@ import (
 )
 
 func (s *networkService) UpdateAppGlobalRoutingNetwork(ctx context.Context, app *entity.App,
-	httpSettings *entity.AppHttpSettings) error {
+	dbHttpSettings *entity.Setting) error {
+	httpSettings := dbHttpSettings.MustAsAppHttpSettings()
 	globalNetworkID, err := s.FindGlobalRoutingNetworkID(ctx)
 	if err != nil {
 		return apperrors.Wrap(err)

@@ -88,7 +88,7 @@ func (uc *S3StorageUC) prepareUpdatingS3Storage(
 		setting.Name = *req.Name
 	}
 
-	s3Storage, err := setting.ParseS3Storage(false)
+	s3Storage, err := setting.AsS3Storage()
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

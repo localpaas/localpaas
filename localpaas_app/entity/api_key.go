@@ -20,31 +20,27 @@ type APIKey struct {
 	KeyID        string          `json:"keyId"`
 	SecretKey    string          `json:"secretKey"`
 	AccessAction base.ActionType `json:"accessAction,omitempty"`
-
-	// NOTE: for storing current containing setting only
-	Setting *Setting `json:"-"`
 }
 
 func (o *APIKey) IsHashed() bool {
 	return strings.HasPrefix(o.SecretKey, base.SaltPrefix)
 }
 
-func (o *APIKey) Hash() error {
+func (o *APIKey) Hash() (*APIKey, error) {
 	if o.IsHashed() {
-		return nil
+		return o, nil
 	}
 	secretHash, salt, err := randtoken.HashAsHex(o.SecretKey, base.DefaultSaltLen,
 		apiKeyHashingKeyLen, apiKeyHashingIteration)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return o, apperrors.Wrap(err)
 	}
 	o.SecretKey = cryptoutil.PackSecret(secretHash, salt)
-	return nil
+	return o, nil
 }
 
 func (o *APIKey) MustHash() *APIKey {
-	gofn.Must1(o.Hash())
-	return o
+	return gofn.Must(o.Hash())
 }
 
 func (o *APIKey) VerifyHash(secretKey string) error {
@@ -61,14 +57,23 @@ func (o *APIKey) VerifyHash(secretKey string) error {
 	return nil
 }
 
-func (s *Setting) ParseAPIKey() (*APIKey, error) {
-	res := &APIKey{Setting: s}
-	if s != nil && s.Data != "" && s.Type == base.SettingTypeAPIKey {
-		err := s.parseData(res)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
+func (s *Setting) AsAPIKey() (*APIKey, error) {
+	if s.parsedData != nil {
+		res, ok := s.parsedData.(*APIKey)
+		if !ok {
+			return nil, apperrors.NewTypeInvalid()
 		}
 		return res, nil
 	}
+	res := &APIKey{}
+	if s.Data != "" && s.Type == base.SettingTypeAPIKey {
+		if err := s.parseData(res); err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	}
 	return res, nil
+}
+
+func (s *Setting) MustAsAPIKey() *APIKey {
+	return gofn.Must(s.AsAPIKey())
 }

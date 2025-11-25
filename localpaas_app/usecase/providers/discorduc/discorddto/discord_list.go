@@ -36,10 +36,10 @@ type ListDiscordResp struct {
 	Data []*DiscordResp `json:"data"`
 }
 
-func TransformDiscords(settings []*entity.Setting, decrypt bool) (resp []*DiscordResp, err error) {
+func TransformDiscords(settings []*entity.Setting) (resp []*DiscordResp, err error) {
 	resp = make([]*DiscordResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformDiscord(setting, decrypt)
+		item, err := TransformDiscord(setting)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

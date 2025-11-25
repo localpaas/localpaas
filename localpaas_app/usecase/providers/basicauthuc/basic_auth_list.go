@@ -42,7 +42,7 @@ func (uc *BasicAuthUC) ListBasicAuth(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := basicauthdto.TransformBasicAuths(settings, false)
+	resp, err := basicauthdto.TransformBasicAuths(settings)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

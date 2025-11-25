@@ -4,16 +4,15 @@ import (
 	"strings"
 
 	crossplane "github.com/nginxinc/nginx-go-crossplane"
+	"github.com/tiendc/gofn"
 
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
 type AppHttpSettings struct {
 	Enabled bool         `json:"enabled"`
 	Domains []*AppDomain `json:"domains,omitempty"`
-
-	// NOTE: for storing current containing setting only
-	Setting *Setting `json:"-"`
 }
 
 type AppDomain struct {
@@ -53,10 +52,23 @@ func (s *AppHttpSettings) GetDomain(domain string) *AppDomain {
 	return nil
 }
 
-func (s *Setting) ParseAppHttpSettings() (*AppHttpSettings, error) {
-	res := &AppHttpSettings{Setting: s}
-	if s != nil && s.Data != "" && s.Type == base.SettingTypeAppHttp {
-		return res, s.parseData(res)
+func (s *Setting) AsAppHttpSettings() (*AppHttpSettings, error) {
+	if s.parsedData != nil {
+		res, ok := s.parsedData.(*AppHttpSettings)
+		if !ok {
+			return nil, apperrors.NewTypeInvalid()
+		}
+		return res, nil
 	}
-	return nil, nil
+	res := &AppHttpSettings{}
+	if s.Data != "" && s.Type == base.SettingTypeAppHttp {
+		if err := s.parseData(res); err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	}
+	return res, nil
+}
+
+func (s *Setting) MustAsAppHttpSettings() *AppHttpSettings {
+	return gofn.Must(s.AsAppHttpSettings())
 }

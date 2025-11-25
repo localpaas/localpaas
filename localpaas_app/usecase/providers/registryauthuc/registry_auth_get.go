@@ -19,7 +19,8 @@ func (uc *RegistryAuthUC) GetRegistryAuth(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := registryauthdto.TransformRegistryAuth(setting, true)
+	setting.MustAsRegistryAuth().MustDecrypt()
+	resp, err := registryauthdto.TransformRegistryAuth(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

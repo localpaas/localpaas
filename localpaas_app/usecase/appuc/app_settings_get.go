@@ -68,28 +68,18 @@ func (uc *AppUC) loadAppSettingsReferenceData(
 	for _, setting := range app.Settings {
 		switch setting.Type { //nolint:exhaustive
 		case base.SettingTypeEnvVar:
-			envVars, err := setting.ParseEnvVars()
-			if err != nil {
-				return apperrors.Wrap(err)
-			}
-			input.EnvVars = append(input.EnvVars, envVars)
+			input.EnvVars = append(input.EnvVars, setting)
 
 		case base.SettingTypeAppDeployment:
-			input.DeploymentSettings, err = setting.ParseAppDeploymentSettings()
-			if err != nil {
-				return apperrors.Wrap(err)
-			}
+			input.DeploymentSettings = setting
 
 		case base.SettingTypeAppHttp:
-			input.HttpSettings, err = setting.ParseAppHttpSettings()
-			if err != nil {
-				return apperrors.Wrap(err)
-			}
+			input.HttpSettings = setting
 		}
 	}
 
 	// Reference data for Http settings
-	if input.HttpSettings != nil {
+	if input.HttpSettings != nil && input.HttpSettings.MustAsAppHttpSettings() != nil {
 		err = uc.loadAppHttpSettingsReferenceData(ctx, db, input)
 		if err != nil {
 			return apperrors.Wrap(err)
@@ -113,7 +103,7 @@ func (uc *AppUC) loadAppHttpSettingsReferenceData(
 	input *appdto.AppSettingsTransformationInput,
 ) (err error) {
 	var settingIDs []string
-	for _, domain := range input.HttpSettings.Domains {
+	for _, domain := range input.HttpSettings.MustAsAppHttpSettings().Domains {
 		if domain.SslCert.ID != "" {
 			settingIDs = append(settingIDs, domain.SslCert.ID)
 		}

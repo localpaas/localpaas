@@ -10,8 +10,8 @@ import (
 )
 
 type AppDeploymentReq struct {
-	Deployment              *entity.AppDeploymentSettings
-	ImageSourceRegistryAuth *entity.RegistryAuth
+	Deployment              *entity.Setting
+	ImageSourceRegistryAuth *entity.Setting
 }
 
 type AppDeploymentResp struct {
@@ -19,10 +19,11 @@ type AppDeploymentResp struct {
 
 func (s *appService) UpdateAppDeployment(ctx context.Context, app *entity.App, req *AppDeploymentReq) (
 	*AppDeploymentResp, error) {
+	deploymentSettings := req.Deployment.MustAsAppDeploymentSettings()
 	switch {
-	case req.Deployment.ImageSource != nil && req.Deployment.ImageSource.Enabled:
+	case deploymentSettings.ImageSource != nil && deploymentSettings.ImageSource.Enabled:
 		return s.updateAppDeploymentImageSource(ctx, app, req)
-	case req.Deployment.CodeSource != nil && req.Deployment.CodeSource.Enabled:
+	case deploymentSettings.CodeSource != nil && deploymentSettings.CodeSource.Enabled:
 		return s.updateAppDeploymentImageSource(ctx, app, req)
 	}
 	return nil, nil
@@ -30,7 +31,7 @@ func (s *appService) UpdateAppDeployment(ctx context.Context, app *entity.App, r
 
 func (s *appService) updateAppDeploymentImageSource(ctx context.Context, app *entity.App, req *AppDeploymentReq) (
 	*AppDeploymentResp, error) {
-	imageSource := req.Deployment.ImageSource
+	imageSource := req.Deployment.MustAsAppDeploymentSettings().ImageSource
 
 	service, err := s.dockerManager.ServiceInspect(ctx, app.ServiceID)
 	if err != nil {
@@ -42,7 +43,7 @@ func (s *appService) updateAppDeploymentImageSource(ctx context.Context, app *en
 
 	var regAuthHeader string
 	if req.ImageSourceRegistryAuth != nil {
-		regAuthHeader, err = req.ImageSourceRegistryAuth.GenerateAuthHeader()
+		regAuthHeader, err = req.ImageSourceRegistryAuth.MustAsRegistryAuth().MustDecrypt().GenerateAuthHeader()
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

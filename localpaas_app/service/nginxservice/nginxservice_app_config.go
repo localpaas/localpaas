@@ -70,7 +70,8 @@ func (s *nginxService) GetDefaultNginxConfig() (*entity.NginxSettings, error) {
 }
 
 func (s *nginxService) ApplyAppConfig(ctx context.Context, app *entity.App,
-	httpSettings *entity.AppHttpSettings) (err error) {
+	dbHttpSettings *entity.Setting) (err error) {
+	httpSettings := dbHttpSettings.MustAsAppHttpSettings()
 	confPath := filepath.Join(config.Current.DataPathNginxEtcConf(), app.Key+".conf")
 
 	// Not enabled, delete the config file, then return

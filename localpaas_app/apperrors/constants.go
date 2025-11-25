@@ -26,6 +26,7 @@ var (
 	ErrNotImplemented       = errors.New("ERR_NOT_IMPLEMENTED")
 	ErrUnsupported          = errors.New("ERR_UNSUPPORTED")
 	ErrTokenInvalid         = errors.New("ERR_TOKEN_INVALID")
+	ErrTypeInvalid          = errors.New("ERR_TYPE_INVALID")
 	ErrValidation           = errors.New("ERR_VALIDATION")
 )
 
@@ -102,6 +103,7 @@ var errorStatusMap = map[error]int{
 	ErrNotImplemented:       http.StatusNotImplemented,
 	ErrUnsupported:          http.StatusNotImplemented,
 	ErrTokenInvalid:         http.StatusUnauthorized,
+	ErrTypeInvalid:          http.StatusInternalServerError,
 	ErrValidation:           http.StatusBadRequest,
 
 	// Session errors

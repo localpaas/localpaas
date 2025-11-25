@@ -57,16 +57,13 @@ type SecretResp struct {
 	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
 }
 
-func TransformSecret(setting *entity.Setting, decrypt bool) (resp *SecretResp, err error) {
+func TransformSecret(setting *entity.Setting) (resp *SecretResp, err error) {
 	if err = copier.Copy(&resp, &setting); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 	resp.Key = setting.Name
 
-	secret, err := setting.ParseSecret(decrypt)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
+	secret := setting.MustAsSecret()
 	if err = copier.Copy(&resp, &secret); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -78,10 +75,10 @@ func TransformSecret(setting *entity.Setting, decrypt bool) (resp *SecretResp, e
 	return resp, nil
 }
 
-func TransformSecrets(settings []*entity.Setting, decrypt bool) (resp []*SecretResp, err error) {
+func TransformSecrets(settings []*entity.Setting) (resp []*SecretResp, err error) {
 	resp = make([]*SecretResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformSecret(setting, decrypt)
+		item, err := TransformSecret(setting)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

@@ -1,15 +1,15 @@
 package entity
 
 import (
+	"github.com/tiendc/gofn"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
 type AppDeploymentSettings struct {
 	ImageSource *DeploymentImageSource `json:"imageSource"`
 	CodeSource  *DeploymentCodeSource  `json:"codeSource"`
-
-	// NOTE: for storing current containing setting only
-	Setting *Setting `json:"-"`
 }
 
 type DeploymentImageSource struct {
@@ -26,10 +26,23 @@ type DeploymentCodeSource struct {
 	RegistryAuth   ObjectID       `json:"registryAuth,omitzero"`
 }
 
-func (s *Setting) ParseAppDeploymentSettings() (*AppDeploymentSettings, error) {
-	res := &AppDeploymentSettings{Setting: s}
-	if s != nil && s.Data != "" && s.Type == base.SettingTypeAppDeployment {
-		return res, s.parseData(res)
+func (s *Setting) AsAppDeploymentSettings() (*AppDeploymentSettings, error) {
+	if s.parsedData != nil {
+		res, ok := s.parsedData.(*AppDeploymentSettings)
+		if !ok {
+			return nil, apperrors.NewTypeInvalid()
+		}
+		return res, nil
 	}
-	return nil, nil
+	res := &AppDeploymentSettings{}
+	if s.Data != "" && s.Type == base.SettingTypeAppDeployment {
+		if err := s.parseData(res); err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	}
+	return res, nil
+}
+
+func (s *Setting) MustAsAppDeploymentSettings() *AppDeploymentSettings {
+	return gofn.Must(s.AsAppDeploymentSettings())
 }

@@ -42,7 +42,7 @@ func (uc *RegistryAuthUC) ListRegistryAuth(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := registryauthdto.TransformRegistryAuths(settings, false)
+	resp, err := registryauthdto.TransformRegistryAuths(settings)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

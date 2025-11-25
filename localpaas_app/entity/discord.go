@@ -12,57 +12,61 @@ import (
 
 type Discord struct {
 	Webhook string `json:"webhook"`
-
-	// NOTE: for storing current containing setting only
-	Setting *Setting `json:"-"`
 }
 
 func (o *Discord) IsEncrypted() bool {
 	return strings.HasPrefix(o.Webhook, base.SaltPrefix)
 }
 
-func (o *Discord) Encrypt() error {
+func (o *Discord) Encrypt() (*Discord, error) {
 	if o.IsEncrypted() {
-		return nil
+		return o, nil
 	}
 	encrypted, err := cryptoutil.EncryptBase64(o.Webhook, base.DefaultSaltLen)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return o, apperrors.Wrap(err)
 	}
 	o.Webhook = encrypted
-	return nil
+	return o, nil
 }
 
 func (o *Discord) MustEncrypt() *Discord {
-	gofn.Must1(o.Encrypt())
-	return o
+	return gofn.Must(o.Encrypt())
 }
 
-func (o *Discord) Decrypt() error {
+func (o *Discord) Decrypt() (*Discord, error) {
 	if !o.IsEncrypted() {
-		return nil
+		return o, nil
 	}
 	decrypted, err := cryptoutil.DecryptBase64(o.Webhook)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return o, apperrors.Wrap(err)
 	}
 	o.Webhook = decrypted
-	return nil
+	return o, nil
 }
 
-func (s *Setting) ParseDiscord(decrypt bool) (*Discord, error) {
-	res := &Discord{Setting: s}
-	if s != nil && s.Data != "" && s.Type == base.SettingTypeDiscord {
-		err := s.parseData(res)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-		if decrypt {
-			if err = res.Decrypt(); err != nil {
-				return nil, apperrors.Wrap(err)
-			}
+func (o *Discord) MustDecrypt() *Discord {
+	return gofn.Must(o.Decrypt())
+}
+
+func (s *Setting) AsDiscord() (*Discord, error) {
+	if s.parsedData != nil {
+		res, ok := s.parsedData.(*Discord)
+		if !ok {
+			return nil, apperrors.NewTypeInvalid()
 		}
 		return res, nil
 	}
+	res := &Discord{}
+	if s.Data != "" && s.Type == base.SettingTypeDiscord {
+		if err := s.parseData(res); err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	}
 	return res, nil
+}
+
+func (s *Setting) MustAsDiscord() *Discord {
+	return gofn.Must(s.AsDiscord())
 }

@@ -77,12 +77,7 @@ func (uc *NodeUC) loadJoinNodeData(
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-
-	sshKey, err := sshKeySetting.ParseSSHKey(true)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	data.SSHKey = sshKey
+	data.SSHKey = sshKeySetting.MustAsSSHKey().MustDecrypt()
 
 	// Find join token from the cluster
 	theSwarm, err := uc.dockerManager.SwarmInspect(ctx)

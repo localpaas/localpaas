@@ -36,10 +36,10 @@ type ListSSHKeyResp struct {
 	Data []*SSHKeyResp `json:"data"`
 }
 
-func TransformSSHKeys(settings []*entity.Setting, decrypt bool) (resp []*SSHKeyResp, err error) {
+func TransformSSHKeys(settings []*entity.Setting) (resp []*SSHKeyResp, err error) {
 	resp = make([]*SSHKeyResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformSSHKey(setting, decrypt)
+		item, err := TransformSSHKey(setting)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

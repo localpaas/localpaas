@@ -44,9 +44,9 @@ type AppSettingsResp struct {
 
 type AppSettingsTransformationInput struct {
 	App                *entity.App
-	EnvVars            []*entity.EnvVars
-	DeploymentSettings *entity.AppDeploymentSettings
-	HttpSettings       *entity.AppHttpSettings
+	EnvVars            []*entity.Setting
+	DeploymentSettings *entity.Setting
+	HttpSettings       *entity.Setting
 
 	DefaultNginxSettings *entity.NginxSettings
 	ReferenceSettingMap  map[string]*entity.Setting

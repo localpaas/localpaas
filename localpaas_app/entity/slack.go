@@ -12,57 +12,61 @@ import (
 
 type Slack struct {
 	Webhook string `json:"webhook"`
-
-	// NOTE: for storing current containing setting only
-	Setting *Setting `json:"-"`
 }
 
 func (o *Slack) IsEncrypted() bool {
 	return strings.HasPrefix(o.Webhook, base.SaltPrefix)
 }
 
-func (o *Slack) Encrypt() error {
+func (o *Slack) Encrypt() (*Slack, error) {
 	if o.IsEncrypted() {
-		return nil
+		return o, nil
 	}
 	encrypted, err := cryptoutil.EncryptBase64(o.Webhook, base.DefaultSaltLen)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return o, apperrors.Wrap(err)
 	}
 	o.Webhook = encrypted
-	return nil
+	return o, nil
 }
 
 func (o *Slack) MustEncrypt() *Slack {
-	gofn.Must1(o.Encrypt())
-	return o
+	return gofn.Must(o.Encrypt())
 }
 
-func (o *Slack) Decrypt() error {
+func (o *Slack) Decrypt() (*Slack, error) {
 	if !o.IsEncrypted() {
-		return nil
+		return o, nil
 	}
 	decrypted, err := cryptoutil.DecryptBase64(o.Webhook)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return o, apperrors.Wrap(err)
 	}
 	o.Webhook = decrypted
-	return nil
+	return o, nil
 }
 
-func (s *Setting) ParseSlack(decrypt bool) (*Slack, error) {
-	res := &Slack{Setting: s}
-	if s != nil && s.Data != "" && s.Type == base.SettingTypeSlack {
-		err := s.parseData(res)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-		if decrypt {
-			if err = res.Decrypt(); err != nil {
-				return nil, apperrors.Wrap(err)
-			}
+func (o *Slack) MustDecrypt() *Slack {
+	return gofn.Must(o.Decrypt())
+}
+
+func (s *Setting) AsSlack() (*Slack, error) {
+	if s.parsedData != nil {
+		res, ok := s.parsedData.(*Slack)
+		if !ok {
+			return nil, apperrors.NewTypeInvalid()
 		}
 		return res, nil
 	}
+	res := &Slack{}
+	if s.Data != "" && s.Type == base.SettingTypeSlack {
+		if err := s.parseData(res); err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	}
 	return res, nil
+}
+
+func (s *Setting) MustAsSlack() *Slack {
+	return gofn.Must(s.AsSlack())
 }

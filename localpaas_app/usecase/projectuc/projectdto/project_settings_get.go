@@ -84,7 +84,7 @@ func TransformProjectSettings(project *entity.Project) (resp *ProjectSettingsRes
 	}
 
 	if len(allSecrets) > 0 {
-		secrets, err := secretdto.TransformSecrets(allSecrets, false)
+		secrets, err := secretdto.TransformSecrets(allSecrets)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}
@@ -100,10 +100,7 @@ func TransformEnvVars(setting *entity.Setting) (resp *EnvVarsResp, err error) {
 	if setting == nil {
 		return nil, nil
 	}
-	envVars, err := setting.ParseEnvVars()
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
+	envVars := setting.MustAsEnvVars()
 	if envVars != nil {
 		resp = &EnvVarsResp{
 			Project: []*EnvVarResp{},
@@ -120,7 +117,7 @@ func TransformEnvVars(setting *entity.Setting) (resp *EnvVarsResp, err error) {
 }
 
 func TransformGeneralSettings(setting *entity.Setting) (resp *GeneralSettingsResp, err error) {
-	data, err := setting.ParseProjectSettings()
+	data, err := setting.AsProjectSettings()
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

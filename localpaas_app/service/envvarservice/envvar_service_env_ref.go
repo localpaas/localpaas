@@ -27,7 +27,7 @@ func (s *envVarService) processEnvVarRefs(env *EnvVar, secretStores []map[string
 				if !exists {
 					continue
 				}
-				err := secret.Decrypt()
+				_, err := secret.Decrypt()
 				if err != nil {
 					env.Error += fmt.Sprintf("failed to parse secret '%s'\n", envName)
 					return match

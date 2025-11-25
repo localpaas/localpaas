@@ -57,13 +57,13 @@ func TransformEnvVars(input *AppSettingsTransformationInput) (resp *EnvVarsResp,
 
 	var appEnvVars, parentAppEnvVars, projectEnvVars *entity.EnvVars
 	for _, env := range input.EnvVars {
-		switch env.Setting.ObjectID {
+		switch env.ObjectID {
 		case input.App.ID:
-			appEnvVars = env
+			appEnvVars = env.MustAsEnvVars()
 		case input.App.ProjectID:
-			projectEnvVars = env
+			projectEnvVars = env.MustAsEnvVars()
 		case input.App.ParentID:
-			parentAppEnvVars = env
+			parentAppEnvVars = env.MustAsEnvVars()
 		}
 	}
 

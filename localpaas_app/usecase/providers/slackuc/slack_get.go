@@ -19,7 +19,8 @@ func (uc *SlackUC) GetSlack(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := slackdto.TransformSlack(setting, true)
+	setting.MustAsSlack().MustDecrypt()
+	resp, err := slackdto.TransformSlack(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

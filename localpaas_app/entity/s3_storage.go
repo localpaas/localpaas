@@ -16,57 +16,61 @@ type S3Storage struct {
 	Region      string `json:"region,omitempty"`
 	Bucket      string `json:"bucket,omitempty"`
 	Endpoint    string `json:"endpoint,omitempty"`
-
-	// NOTE: for storing current containing setting only
-	Setting *Setting `json:"-"`
 }
 
 func (o *S3Storage) IsEncrypted() bool {
 	return strings.HasPrefix(o.SecretKey, base.SaltPrefix)
 }
 
-func (o *S3Storage) Encrypt() error {
+func (o *S3Storage) Encrypt() (*S3Storage, error) {
 	if o.IsEncrypted() {
-		return nil
+		return o, nil
 	}
 	encrypted, err := cryptoutil.EncryptBase64(o.SecretKey, base.DefaultSaltLen)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return o, apperrors.Wrap(err)
 	}
 	o.SecretKey = encrypted
-	return nil
+	return o, nil
 }
 
 func (o *S3Storage) MustEncrypt() *S3Storage {
-	gofn.Must1(o.Encrypt())
-	return o
+	return gofn.Must(o.Encrypt())
 }
 
-func (o *S3Storage) Decrypt() error {
+func (o *S3Storage) Decrypt() (*S3Storage, error) {
 	if !o.IsEncrypted() {
-		return nil
+		return o, nil
 	}
 	decrypted, err := cryptoutil.DecryptBase64(o.SecretKey)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return o, apperrors.Wrap(err)
 	}
 	o.SecretKey = decrypted
-	return nil
+	return o, nil
 }
 
-func (s *Setting) ParseS3Storage(decrypt bool) (*S3Storage, error) {
-	res := &S3Storage{Setting: s}
-	if s != nil && s.Data != "" && s.Type == base.SettingTypeS3Storage {
-		err := s.parseData(res)
-		if err != nil {
-			return nil, err
-		}
-		if decrypt {
-			if err = res.Decrypt(); err != nil {
-				return nil, apperrors.Wrap(err)
-			}
+func (o *S3Storage) MustDecrypt() *S3Storage {
+	return gofn.Must(o.Decrypt())
+}
+
+func (s *Setting) AsS3Storage() (*S3Storage, error) {
+	if s.parsedData != nil {
+		res, ok := s.parsedData.(*S3Storage)
+		if !ok {
+			return nil, apperrors.NewTypeInvalid()
 		}
 		return res, nil
 	}
+	res := &S3Storage{}
+	if s.Data != "" && s.Type == base.SettingTypeS3Storage {
+		if err := s.parseData(res); err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	}
 	return res, nil
+}
+
+func (s *Setting) MustAsS3Storage() *S3Storage {
+	return gofn.Must(s.AsS3Storage())
 }
