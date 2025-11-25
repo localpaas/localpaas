@@ -75,6 +75,7 @@ func (uc *AppUC) GetAppRuntimeLogs(
 		// Solution: only send data to client after a period of time or when we have some frames.
 		logBatchChan := docker.StartLogBatchScanning(ctx, logsReader, defaultLogBatchPeriod, defaultLogBatchMaxFrame)
 		resp.LogChan = logBatchChan
+		resp.LogChanCloser = func() { _ = logsReader.Close() }
 	} else {
 		// Scan all data at once
 		for frame := range docker.StartLogScanning(ctx, logsReader) {

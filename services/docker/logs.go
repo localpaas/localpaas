@@ -21,7 +21,7 @@ type LogFrame struct {
 	Type LogType `json:"type"`
 }
 
-func StartLogScanning(ctx context.Context, logsReader io.ReadCloser) chan *LogFrame {
+func StartLogScanning(ctx context.Context, logsReader io.ReadCloser) <-chan *LogFrame {
 	scanner := bufio.NewScanner(logsReader)
 	channel := make(chan *LogFrame, 100) //nolint:mnd
 	_, hasDeadline := ctx.Deadline()
@@ -43,32 +43,11 @@ func StartLogScanning(ctx context.Context, logsReader io.ReadCloser) chan *LogFr
 		defer logsReader.Close()
 
 		for scanner.Scan() {
-			// Format structure of the logs data, see:
-			// https://docs.docker.com/reference/api/engine/version/v1.51/#tag/Container/operation/ContainerAttach
-			logBytes := scanner.Bytes()
-			var logType LogType
-
-			//nolint:mnd
-			if len(logBytes) > 8 {
-				switch logBytes[0] {
-				case 0:
-					logType = LogTypeStdin
-				case 1:
-					logType = LogTypeStdout
-				case 2:
-					logType = LogTypeStderr
-				}
-				logBytes = logBytes[8:]
-			}
-
-			frame := &LogFrame{
-				Data: string(logBytes),
-				Type: logType,
-			}
+			logFrame := parseLogFrame(scanner.Bytes())
 			select {
 			case <-ctx.Done():
 				return
-			case channel <- frame:
+			case channel <- logFrame:
 			}
 		}
 	}()
@@ -77,7 +56,7 @@ func StartLogScanning(ctx context.Context, logsReader io.ReadCloser) chan *LogFr
 }
 
 func StartLogBatchScanning(ctx context.Context, logsReader io.ReadCloser, period time.Duration,
-	maxFrame int) chan []*LogFrame {
+	maxFrame int) <-chan []*LogFrame {
 	logBatchChan := make(chan []*LogFrame, max(20, maxFrame)) //nolint:mnd
 
 	go func() {
@@ -112,30 +91,11 @@ func StartLogBatchScanning(ctx context.Context, logsReader io.ReadCloser, period
 
 		scanner := bufio.NewScanner(logsReader)
 		for scanner.Scan() {
-			// Format structure of the logs data, see:
-			// https://docs.docker.com/reference/api/engine/version/v1.51/#tag/Container/operation/ContainerAttach
-			logBytes := scanner.Bytes()
-			var logType LogType
-
-			//nolint:mnd
-			if len(logBytes) > 8 {
-				switch logBytes[0] {
-				case 0:
-					logType = LogTypeStdin
-				case 1:
-					logType = LogTypeStdout
-				case 2:
-					logType = LogTypeStderr
-				}
-				logBytes = logBytes[8:]
-			}
+			logFrame := parseLogFrame(scanner.Bytes())
 
 			sendImmediately := false
 			mu.Lock()
-			logFrames = append(logFrames, &LogFrame{
-				Data: string(logBytes),
-				Type: logType,
-			})
+			logFrames = append(logFrames, logFrame)
 			if len(logFrames) == maxFrame { // Send data immediately
 				sendImmediately = true
 			} else if sendTimer == nil { // Send data in at most `period` duration
@@ -160,9 +120,24 @@ func StartLogBatchScanning(ctx context.Context, logsReader io.ReadCloser, period
 	return logBatchChan
 }
 
-func CloseLogChan(logChan chan []*LogFrame) {
-	defer func() {
-		_ = recover()
-	}()
-	close(logChan)
+func parseLogFrame(logBytes []byte) *LogFrame {
+	var logType LogType
+	// Format structure of the logs data, see:
+	// https://docs.docker.com/reference/api/engine/version/v1.51/#tag/Container/operation/ContainerAttach
+	//nolint:mnd
+	if len(logBytes) > 8 {
+		switch logBytes[0] {
+		case 0:
+			logType = LogTypeStdin
+		case 1:
+			logType = LogTypeStdout
+		case 2:
+			logType = LogTypeStderr
+		}
+		logBytes = logBytes[8:]
+	}
+	return &LogFrame{
+		Data: string(logBytes),
+		Type: logType,
+	}
 }
