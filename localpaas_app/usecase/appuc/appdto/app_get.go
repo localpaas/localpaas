@@ -3,6 +3,7 @@ package appdto
 import (
 	"time"
 
+	"github.com/docker/docker/api/types/swarm"
 	vld "github.com/tiendc/go-validator"
 	"github.com/tiendc/gofn"
 
@@ -16,6 +17,7 @@ import (
 type GetAppReq struct {
 	ProjectID string `json:"-"`
 	AppID     string `json:"-"`
+	GetStats  bool   `json:"-" mapstructure:"getStats"`
 }
 
 func NewGetAppReq() *GetAppReq {
@@ -45,6 +47,9 @@ type AppResp struct {
 	UserAccesses []*AppUserAccessResp `json:"userAccesses"`
 	UpdateVer    int                  `json:"updateVer"`
 
+	// Stats of app, only returns when req.getStats=true
+	Stats *AppStatsResp `json:"stats"`
+
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 }
@@ -52,6 +57,12 @@ type AppResp struct {
 type AppUserAccessResp struct {
 	*basedto.UserBaseResp
 	Access base.AccessActions `json:"access"`
+}
+
+type AppStatsResp struct {
+	RunningTasks   int `json:"runningTasks"`
+	DesiredTasks   int `json:"desiredTasks"`
+	CompletedTasks int `json:"completedTasks"`
 }
 
 type AppBaseResp struct {
@@ -62,12 +73,17 @@ type AppBaseResp struct {
 	Status base.AppStatus `json:"status"`
 }
 
-func TransformApp(app *entity.App) (resp *AppResp, err error) {
+type AppTransformationInput struct {
+	SwarmServiceMap map[string]*swarm.Service
+}
+
+func TransformApp(app *entity.App, input *AppTransformationInput) (resp *AppResp, err error) {
 	if err = copier.Copy(&resp, &app); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 	resp.Tags = gofn.MapSlice(app.Tags, func(t *entity.AppTag) string { return t.Tag })
 	resp.UserAccesses = TransformUserAccesses(app.Accesses)
+	resp.Stats = TransformAppStats(app, input)
 	return resp, nil
 }
 
@@ -79,6 +95,22 @@ func TransformUserAccess(access *entity.ACLPermission) *AppUserAccessResp {
 	return &AppUserAccessResp{
 		UserBaseResp: basedto.TransformUserBase(access.SubjectUser),
 		Access:       access.Actions,
+	}
+}
+
+func TransformAppStats(app *entity.App, input *AppTransformationInput) *AppStatsResp {
+	if input == nil || input.SwarmServiceMap == nil {
+		return nil
+	}
+	service := input.SwarmServiceMap[app.ID]
+	if service == nil || service.ServiceStatus == nil {
+		return nil
+	}
+	//nolint
+	return &AppStatsResp{
+		RunningTasks:   int(service.ServiceStatus.RunningTasks),
+		DesiredTasks:   int(service.ServiceStatus.DesiredTasks),
+		CompletedTasks: int(service.ServiceStatus.CompletedTasks),
 	}
 }
 

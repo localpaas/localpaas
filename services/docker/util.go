@@ -1,9 +1,10 @@
 package docker
 
 import (
+	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/api/types/registry"
 
-	"github.com/localpaas/localpaas/localpaas_app/pkg/tracerr"
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
 func GenerateAuthHeader(username string, password string) (string, error) {
@@ -15,7 +16,17 @@ func GenerateAuthHeader(username string, password string) (string, error) {
 		Password: password,
 	})
 	if err != nil {
-		return "", tracerr.Wrap(err)
+		return "", apperrors.NewInfra(err)
 	}
 	return h, nil
+}
+
+func FilterAdd(f *filters.Args, key, value string) {
+	if f == nil {
+		return
+	}
+	if f.Len() == 0 {
+		*f = filters.NewArgs()
+	}
+	f.Add(key, value)
 }

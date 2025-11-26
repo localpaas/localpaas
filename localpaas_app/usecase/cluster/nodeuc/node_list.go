@@ -20,7 +20,7 @@ func (uc *NodeUC) ListNode(
 ) (*nodedto.ListNodeResp, error) {
 	nodes, err := uc.dockerManager.NodeList(ctx)
 	if err != nil {
-		return nil, apperrors.NewInfra(err)
+		return nil, apperrors.Wrap(err)
 	}
 
 	filterNodes := nodes

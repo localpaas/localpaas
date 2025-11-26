@@ -13,6 +13,7 @@ type ListAppReq struct {
 	ProjectID string           `json:"-"`
 	Status    []base.AppStatus `json:"-" mapstructure:"status"`
 	Search    string           `json:"-" mapstructure:"search"`
+	GetStats  bool             `json:"-" mapstructure:"getStats"`
 
 	Paging basedto.Paging `json:"-"`
 }
@@ -39,6 +40,14 @@ type ListAppResp struct {
 	Data []*AppResp    `json:"data"`
 }
 
-func TransformApps(apps []*entity.App) ([]*AppResp, error) {
-	return basedto.TransformObjectSlice(apps, TransformApp) //nolint:wrapcheck
+func TransformApps(apps []*entity.App, input *AppTransformationInput) ([]*AppResp, error) {
+	resp := make([]*AppResp, 0, len(apps))
+	for _, app := range apps {
+		appResp, err := TransformApp(app, input)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		resp = append(resp, appResp)
+	}
+	return resp, nil
 }

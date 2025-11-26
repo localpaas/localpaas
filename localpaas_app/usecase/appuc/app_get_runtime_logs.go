@@ -62,7 +62,7 @@ func (uc *AppUC) GetAppRuntimeLogs(
 		}
 	})
 	if err != nil {
-		return nil, apperrors.NewInfra(err)
+		return nil, apperrors.Wrap(err)
 	}
 
 	resp := &appdto.AppRuntimeLogsDataResp{}

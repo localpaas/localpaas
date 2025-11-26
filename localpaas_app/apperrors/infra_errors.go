@@ -1,46 +1,68 @@
 package apperrors
 
 import (
+	"errors"
+
 	"github.com/containerd/errdefs"
+)
+
+var (
+	IsInfraUnknown            = errdefs.IsUnknown
+	IsInfraInvalidArgument    = errdefs.IsInvalidArgument
+	IsInfraNotFound           = errdefs.IsNotFound
+	IsInfraAlreadyExists      = errdefs.IsAlreadyExists
+	IsInfraPermissionDenied   = errdefs.IsPermissionDenied
+	IsInfraResourceExhausted  = errdefs.IsResourceExhausted
+	IsInfraFailedPrecondition = errdefs.IsFailedPrecondition
+	IsInfraConflict           = errdefs.IsConflict
+	IsInfraNotModified        = errdefs.IsNotModified
+	IsInfraAborted            = errdefs.IsAborted
+	IsInfraOutOfRange         = errdefs.IsOutOfRange
+	IsInfraNotImplemented     = errdefs.IsNotImplemented
+	IsInfraInternal           = errdefs.IsInternal
+	IsInfraUnavailable        = errdefs.IsUnavailable
+	IsInfraDataLoss           = errdefs.IsDataLoss
+	IsInfraUnauthorized       = errdefs.IsUnauthorized
 )
 
 func NewInfra(err error) AppError {
 	if err == nil {
 		return nil
 	}
+	infraErr := ErrInfra
 	switch {
-	case errdefs.IsUnknown(err):
-		return New(ErrInfraUnknown).WithNTParam("Error", err.Error())
-	case errdefs.IsInvalidArgument(err):
-		return New(ErrInfraInvalidArgument).WithNTParam("Error", err.Error())
-	case errdefs.IsNotFound(err):
-		return New(ErrInfraNotFound).WithNTParam("Error", err.Error())
-	case errdefs.IsAlreadyExists(err):
-		return New(ErrInfraAlreadyExists).WithNTParam("Error", err.Error())
-	case errdefs.IsPermissionDenied(err):
-		return New(ErrInfraPermissionDenied).WithNTParam("Error", err.Error())
-	case errdefs.IsResourceExhausted(err):
-		return New(ErrInfraResourceExhausted).WithNTParam("Error", err.Error())
-	case errdefs.IsFailedPrecondition(err):
-		return New(ErrInfraFailedPrecondition).WithNTParam("Error", err.Error())
-	case errdefs.IsConflict(err):
-		return New(ErrInfraConflict).WithNTParam("Error", err.Error())
-	case errdefs.IsNotModified(err):
-		return New(ErrInfraNotModified).WithNTParam("Error", err.Error())
-	case errdefs.IsAborted(err):
-		return New(ErrInfraAborted).WithNTParam("Error", err.Error())
-	case errdefs.IsOutOfRange(err):
-		return New(ErrInfraOutOfRange).WithNTParam("Error", err.Error())
-	case errdefs.IsNotImplemented(err):
-		return New(ErrInfraNotImplemented).WithNTParam("Error", err.Error())
-	case errdefs.IsInternal(err):
-		return New(ErrInfraInternal).WithNTParam("Error", err.Error())
-	case errdefs.IsUnavailable(err):
-		return New(ErrInfraUnavailable).WithNTParam("Error", err.Error())
-	case errdefs.IsDataLoss(err):
-		return New(ErrInfraDataLoss).WithNTParam("Error", err.Error())
-	case errdefs.IsUnauthorized(err):
-		return New(ErrInfraUnauthorized).WithNTParam("Error", err.Error())
+	case IsInfraUnknown(err):
+		infraErr = ErrInfraUnknown
+	case IsInfraInvalidArgument(err):
+		infraErr = ErrInfraInvalidArgument
+	case IsInfraNotFound(err):
+		infraErr = ErrInfraNotFound
+	case IsInfraAlreadyExists(err):
+		infraErr = ErrInfraAlreadyExists
+	case IsInfraPermissionDenied(err):
+		infraErr = ErrInfraPermissionDenied
+	case IsInfraResourceExhausted(err):
+		infraErr = ErrInfraResourceExhausted
+	case IsInfraFailedPrecondition(err):
+		infraErr = ErrInfraFailedPrecondition
+	case IsInfraConflict(err):
+		infraErr = ErrInfraConflict
+	case IsInfraNotModified(err):
+		infraErr = ErrInfraNotModified
+	case IsInfraAborted(err):
+		infraErr = ErrInfraAborted
+	case IsInfraOutOfRange(err):
+		infraErr = ErrInfraOutOfRange
+	case IsInfraNotImplemented(err):
+		infraErr = ErrInfraNotImplemented
+	case IsInfraInternal(err):
+		infraErr = ErrInfraInternal
+	case IsInfraUnavailable(err):
+		infraErr = ErrInfraUnavailable
+	case IsInfraDataLoss(err):
+		infraErr = ErrInfraDataLoss
+	case IsInfraUnauthorized(err):
+		infraErr = ErrInfraUnauthorized
 	}
-	return New(err)
+	return New(errors.Join(infraErr, err)).WithNTParam("Error", err.Error())
 }

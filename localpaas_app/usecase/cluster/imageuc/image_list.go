@@ -19,7 +19,7 @@ func (uc *ImageUC) ListImage(
 ) (*imagedto.ListImageResp, error) {
 	images, err := uc.dockerManager.ImageList(ctx)
 	if err != nil {
-		return nil, apperrors.NewInfra(err)
+		return nil, apperrors.Wrap(err)
 	}
 
 	filterImages := images

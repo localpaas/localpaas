@@ -5,7 +5,7 @@ import (
 
 	"github.com/docker/docker/api/types/swarm"
 
-	"github.com/localpaas/localpaas/localpaas_app/pkg/tracerr"
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
 type ConfigListOption func(*swarm.ConfigListOptions)
@@ -17,7 +17,7 @@ func (m *Manager) ConfigList(ctx context.Context, options ...ConfigListOption) (
 	}
 	resp, err := m.client.ConfigList(ctx, opts)
 	if err != nil {
-		return nil, tracerr.Wrap(err)
+		return nil, apperrors.NewInfra(err)
 	}
 	return resp, nil
 }
@@ -25,7 +25,7 @@ func (m *Manager) ConfigList(ctx context.Context, options ...ConfigListOption) (
 func (m *Manager) ConfigInspect(ctx context.Context, configId string) (*swarm.Config, error) {
 	resp, _, err := m.client.ConfigInspectWithRaw(ctx, configId)
 	if err != nil {
-		return nil, tracerr.Wrap(err)
+		return nil, apperrors.NewInfra(err)
 	}
 	return &resp, nil
 }
@@ -45,7 +45,7 @@ func (m *Manager) ConfigCreate(ctx context.Context, name string, data []byte, op
 	}
 	resp, err := m.client.ConfigCreate(ctx, spec)
 	if err != nil {
-		return nil, tracerr.Wrap(err)
+		return nil, apperrors.NewInfra(err)
 	}
 	return &resp, nil
 }

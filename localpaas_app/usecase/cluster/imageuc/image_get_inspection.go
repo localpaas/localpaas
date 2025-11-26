@@ -17,7 +17,7 @@ func (uc *ImageUC) GetImageInspection(
 ) (*imagedto.GetImageInspectionResp, error) {
 	img, err := uc.dockerManager.ImageInspect(ctx, req.ImageID)
 	if err != nil {
-		return nil, apperrors.NewInfra(err)
+		return nil, apperrors.Wrap(err)
 	}
 
 	resp, err := json.MarshalIndent(img, "", "   ")

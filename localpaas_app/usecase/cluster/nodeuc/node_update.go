@@ -17,7 +17,7 @@ func (uc *NodeUC) UpdateNode(
 ) (*nodedto.UpdateNodeResp, error) {
 	node, _, err := uc.dockerManager.NodeInspect(ctx, req.NodeID)
 	if err != nil {
-		return nil, apperrors.NewInfra(err)
+		return nil, apperrors.Wrap(err)
 	}
 
 	err = uc.verifyNodeUpdateChange(ctx, req, node)
@@ -42,7 +42,7 @@ func (uc *NodeUC) UpdateNode(
 
 	err = uc.dockerManager.NodeUpdate(ctx, req.NodeID, &node.Version, spec)
 	if err != nil {
-		return nil, apperrors.NewInfra(err)
+		return nil, apperrors.Wrap(err)
 	}
 
 	return &nodedto.UpdateNodeResp{}, nil
@@ -66,7 +66,7 @@ func (uc *NodeUC) verifyNodeUpdateChange(
 	if roleDemoting || availabilityLosing {
 		tasks, err := uc.lpAppService.GetLpAppTasks(ctx)
 		if err != nil {
-			return apperrors.NewInfra(err)
+			return apperrors.Wrap(err)
 		}
 		allNodes := make(map[string]*swarm.Task)
 		for i := range tasks {

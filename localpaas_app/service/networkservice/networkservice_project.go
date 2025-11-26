@@ -28,7 +28,7 @@ func (s *networkService) CreateProjectNetwork(ctx context.Context, project *enti
 		}
 	})
 	if err != nil {
-		return nil, apperrors.NewInfra(err)
+		return nil, apperrors.Wrap(err)
 	}
 	return net, nil
 }
@@ -41,7 +41,7 @@ func (s *networkService) ListProjectNetworks(ctx context.Context, project *entit
 		)
 	})
 	if err != nil {
-		return nil, apperrors.NewInfra(err)
+		return nil, apperrors.Wrap(err)
 	}
 	return res, nil
 }
@@ -49,7 +49,7 @@ func (s *networkService) ListProjectNetworks(ctx context.Context, project *entit
 func (s *networkService) RemoveProjectNetwork(ctx context.Context, project *entity.Project) error {
 	err := s.dockerManager.NetworkRemove(ctx, project.GetDefaultNetworkName())
 	if err != nil {
-		return apperrors.NewInfra(err)
+		return apperrors.Wrap(err)
 	}
 	return nil
 }

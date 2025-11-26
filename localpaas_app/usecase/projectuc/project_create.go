@@ -23,6 +23,10 @@ const (
 	projectKeyMaxLen = 100
 )
 
+var (
+	unallowedProjectKey = []string{"localpaas"}
+)
+
 func (uc *ProjectUC) CreateProject(
 	ctx context.Context,
 	auth *basedto.Auth,
@@ -68,7 +72,7 @@ func (uc *ProjectUC) loadProjectData(
 	data *createProjectData,
 ) error {
 	data.ProjectKey = slugify.SlugifyEx(req.Name, []string{"-", "_"}, projectKeyMaxLen)
-	if data.ProjectKey == "localpaas" { // this is the name used by LocalPaaS
+	if gofn.Contain(unallowedProjectKey, data.ProjectKey) {
 		return apperrors.New(apperrors.ErrNameUnavailable).WithMsgLog("project name is not allowed")
 	}
 

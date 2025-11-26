@@ -31,7 +31,7 @@ func (uc *VolumeUC) ListVolume(
 		}
 	})
 	if err != nil {
-		return nil, apperrors.NewInfra(err)
+		return nil, apperrors.Wrap(err)
 	}
 
 	filterVolumes := volumes.Volumes

@@ -8,7 +8,7 @@ import (
 	"github.com/docker/docker/api/types/swarm"
 	"github.com/tiendc/gofn"
 
-	"github.com/localpaas/localpaas/localpaas_app/pkg/tracerr"
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
 const (
@@ -130,7 +130,7 @@ func (s *ServiceSpec) ToSwarmServiceSpec() (*swarm.ServiceSpec, error) {
 			Global: &swarm.GlobalService{},
 		}
 	default:
-		return nil, tracerr.Wrap(ErrServiceModeNotSupported)
+		return nil, apperrors.NewInfra(ErrServiceModeNotSupported)
 	}
 
 	// Volumes

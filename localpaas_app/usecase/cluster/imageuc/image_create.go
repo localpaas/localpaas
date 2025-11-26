@@ -30,7 +30,7 @@ func (uc *ImageUC) CreateImage(
 	}
 	_, err = uc.dockerManager.ImageCreate(ctx, req.Name, options)
 	if err != nil {
-		return nil, apperrors.NewInfra(err)
+		return nil, apperrors.Wrap(err)
 	}
 
 	return &imagedto.CreateImageResp{

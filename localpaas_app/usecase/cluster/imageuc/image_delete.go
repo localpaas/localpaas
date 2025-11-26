@@ -15,7 +15,7 @@ func (uc *ImageUC) DeleteImage(
 ) (*imagedto.DeleteImageResp, error) {
 	_, err := uc.dockerManager.ImageRemove(ctx, req.ImageID)
 	if err != nil {
-		return nil, apperrors.NewInfra(err)
+		return nil, apperrors.Wrap(err)
 	}
 
 	return &imagedto.DeleteImageResp{}, nil

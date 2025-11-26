@@ -45,7 +45,7 @@ func (uc *NodeUC) loadGetNodeJoinCommandData(
 	// Find join token from the cluster
 	theSwarm, err := uc.dockerManager.SwarmInspect(ctx)
 	if err != nil {
-		return apperrors.NewInfra(err)
+		return apperrors.Wrap(err)
 	}
 
 	joinToken := gofn.If(req.JoinAsManager, theSwarm.JoinTokens.Manager, theSwarm.JoinTokens.Worker) //nolint
@@ -60,7 +60,7 @@ func (uc *NodeUC) loadGetNodeJoinCommandData(
 		opts.Filters = filters.NewArgs(filters.Arg("role", "manager"))
 	})
 	if err != nil {
-		return apperrors.NewInfra(err)
+		return apperrors.Wrap(err)
 	}
 
 	var leaderAddr, managerAddr string

@@ -17,7 +17,7 @@ func (uc *NodeUC) GetNodeInspection(
 ) (*nodedto.GetNodeInspectionResp, error) {
 	node, _, err := uc.dockerManager.NodeInspect(ctx, req.NodeID)
 	if err != nil {
-		return nil, apperrors.NewInfra(err)
+		return nil, apperrors.Wrap(err)
 	}
 
 	resp, err := json.MarshalIndent(node, "", "   ")

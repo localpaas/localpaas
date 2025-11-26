@@ -3,7 +3,7 @@ package docker
 import (
 	"github.com/docker/docker/client"
 
-	"github.com/localpaas/localpaas/localpaas_app/pkg/tracerr"
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
 type Manager struct {
@@ -16,7 +16,7 @@ func New() (*Manager, error) {
 		client.WithAPIVersionNegotiation(),
 	)
 	if err != nil {
-		return nil, tracerr.Wrap(err)
+		return nil, apperrors.NewInfra(err)
 	}
 	manager.client = c
 	return manager, nil

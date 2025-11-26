@@ -8022,6 +8022,13 @@
           "photo" : {
             "type" : "string"
           },
+          "stats" : {
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppStatsResp"
+            } ],
+            "description" : "Stats of app, only returns when req.getStats=true",
+            "type" : "object"
+          },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.AppStatus"
           },
@@ -8045,7 +8052,7 @@
             "type" : "array"
           }
         },
-        "required" : [ "createdAt", "id", "key", "name", "note", "photo", "status", "tags", "updateVer", "updatedAt", "userAccesses" ],
+        "required" : [ "createdAt", "id", "key", "name", "note", "photo", "stats", "status", "tags", "updateVer", "updatedAt", "userAccesses" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppRuntimeLogsDataResp" : {
@@ -8072,6 +8079,21 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HttpSettingsResp"
           }
         },
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppStatsResp" : {
+        "properties" : {
+          "completedTasks" : {
+            "type" : "integer"
+          },
+          "desiredTasks" : {
+            "type" : "integer"
+          },
+          "runningTasks" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "completedTasks", "desiredTasks", "runningTasks" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppUserAccessResp" : {

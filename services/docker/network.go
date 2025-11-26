@@ -5,7 +5,7 @@ import (
 
 	"github.com/docker/docker/api/types/network"
 
-	"github.com/localpaas/localpaas/localpaas_app/pkg/tracerr"
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
 type NetworkListOption func(*network.ListOptions)
@@ -17,7 +17,7 @@ func (m *Manager) NetworkList(ctx context.Context, options ...NetworkListOption)
 	}
 	resp, err := m.client.NetworkList(ctx, opts)
 	if err != nil {
-		return nil, tracerr.Wrap(err)
+		return nil, apperrors.NewInfra(err)
 	}
 	return resp, nil
 }
@@ -32,7 +32,7 @@ func (m *Manager) NetworkCreate(ctx context.Context, name string, options ...Net
 	}
 	resp, err := m.client.NetworkCreate(ctx, name, opts)
 	if err != nil {
-		return nil, tracerr.Wrap(err)
+		return nil, apperrors.NewInfra(err)
 	}
 	return &resp, nil
 }
@@ -40,7 +40,7 @@ func (m *Manager) NetworkCreate(ctx context.Context, name string, options ...Net
 func (m *Manager) NetworkRemove(ctx context.Context, idOrName string) error {
 	err := m.client.NetworkRemove(ctx, idOrName)
 	if err != nil {
-		return tracerr.Wrap(err)
+		return apperrors.NewInfra(err)
 	}
 	return nil
 }
@@ -55,7 +55,7 @@ func (m *Manager) NetworkInspect(ctx context.Context, name string, options ...Ne
 	}
 	resp, err := m.client.NetworkInspect(ctx, name, opts)
 	if err != nil {
-		return nil, tracerr.Wrap(err)
+		return nil, apperrors.NewInfra(err)
 	}
 	return &resp, nil
 }

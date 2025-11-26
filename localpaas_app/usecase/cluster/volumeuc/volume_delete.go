@@ -15,7 +15,7 @@ func (uc *VolumeUC) DeleteVolume(
 ) (*volumedto.DeleteVolumeResp, error) {
 	err := uc.dockerManager.VolumeRemove(ctx, req.VolumeID, req.Force)
 	if err != nil {
-		return nil, apperrors.NewInfra(err)
+		return nil, apperrors.Wrap(err)
 	}
 
 	return &volumedto.DeleteVolumeResp{}, nil

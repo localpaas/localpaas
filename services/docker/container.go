@@ -5,7 +5,6 @@ import (
 	"sync"
 
 	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/filters"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
@@ -20,7 +19,7 @@ func (m *Manager) ContainerList(ctx context.Context, options ...ContainerListOpt
 	}
 	containers, err := m.client.ContainerList(ctx, opts)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.NewInfra(err)
 	}
 	return containers, nil
 }
@@ -29,10 +28,7 @@ func (m *Manager) ServiceContainerList(ctx context.Context, serviceID string, op
 	[]container.Summary, error) {
 	options = append(options, func(opts *container.ListOptions) {
 		opts.All = false
-		if opts.Filters.Len() == 0 {
-			opts.Filters = filters.NewArgs()
-		}
-		opts.Filters.Add("label", "com.docker.swarm.service.id="+serviceID)
+		FilterAdd(&opts.Filters, "label", "com.docker.swarm.service.id="+serviceID)
 	})
 	return m.ContainerList(ctx, options...)
 }
@@ -47,7 +43,7 @@ func (m *Manager) ContainerInspectMulti(ctx context.Context, containerIDs []stri
 	if len(containerIDs) == 1 {
 		resp, err := m.client.ContainerInspect(ctx, containerIDs[0])
 		if err != nil {
-			return nil, map[string]error{containerIDs[0]: apperrors.Wrap(err)}
+			return nil, map[string]error{containerIDs[0]: apperrors.NewInfra(err)}
 		}
 		return map[string]*container.InspectResponse{containerIDs[0]: &resp}, nil
 	}
@@ -63,7 +59,7 @@ func (m *Manager) ContainerInspectMulti(ctx context.Context, containerIDs []stri
 			resp, err := m.client.ContainerInspect(ctx, containerID)
 			mu.Lock()
 			if err != nil {
-				allErrors[containerID] = apperrors.Wrap(err)
+				allErrors[containerID] = apperrors.NewInfra(err)
 			} else {
 				allResults[containerID] = &resp
 			}
@@ -94,7 +90,7 @@ func (m *Manager) ContainerRestartMulti(ctx context.Context, containerIDs []stri
 	if len(containerIDs) == 1 {
 		err := m.client.ContainerRestart(ctx, containerIDs[0], *opts)
 		if err != nil {
-			return map[string]error{containerIDs[0]: apperrors.Wrap(err)}
+			return map[string]error{containerIDs[0]: apperrors.NewInfra(err)}
 		}
 		return nil
 	}
@@ -109,7 +105,7 @@ func (m *Manager) ContainerRestartMulti(ctx context.Context, containerIDs []stri
 			err := m.client.ContainerRestart(ctx, containerID, *opts)
 			if err != nil {
 				mu.Lock()
-				allErrors[containerID] = apperrors.Wrap(err)
+				allErrors[containerID] = apperrors.NewInfra(err)
 				mu.Unlock()
 			}
 		}()
@@ -130,7 +126,7 @@ func (m *Manager) ContainerKillMulti(ctx context.Context, containerIDs []string,
 	if len(containerIDs) == 1 {
 		err := m.client.ContainerKill(ctx, containerIDs[0], signal)
 		if err != nil {
-			return map[string]error{containerIDs[0]: apperrors.Wrap(err)}
+			return map[string]error{containerIDs[0]: apperrors.NewInfra(err)}
 		}
 		return nil
 	}
@@ -145,7 +141,7 @@ func (m *Manager) ContainerKillMulti(ctx context.Context, containerIDs []string,
 			err := m.client.ContainerKill(ctx, containerID, signal)
 			if err != nil {
 				mu.Lock()
-				allErrors[containerID] = apperrors.Wrap(err)
+				allErrors[containerID] = apperrors.NewInfra(err)
 				mu.Unlock()
 			}
 		}()

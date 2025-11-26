@@ -15,7 +15,7 @@ func (uc *VolumeUC) GetVolume(
 ) (*volumedto.GetVolumeResp, error) {
 	vol, _, err := uc.dockerManager.VolumeInspect(ctx, req.VolumeID)
 	if err != nil {
-		return nil, apperrors.NewInfra(err)
+		return nil, apperrors.Wrap(err)
 	}
 
 	return &volumedto.GetVolumeResp{

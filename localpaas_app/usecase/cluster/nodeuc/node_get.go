@@ -15,7 +15,7 @@ func (uc *NodeUC) GetNode(
 ) (*nodedto.GetNodeResp, error) {
 	node, _, err := uc.dockerManager.NodeInspect(ctx, req.NodeID)
 	if err != nil {
-		return nil, apperrors.NewInfra(err)
+		return nil, apperrors.Wrap(err)
 	}
 
 	return &nodedto.GetNodeResp{

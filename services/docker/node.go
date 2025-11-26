@@ -5,7 +5,7 @@ import (
 
 	"github.com/docker/docker/api/types/swarm"
 
-	"github.com/localpaas/localpaas/localpaas_app/pkg/tracerr"
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
 type NodeListOption func(*swarm.NodeListOptions)
@@ -17,7 +17,7 @@ func (m *Manager) NodeList(ctx context.Context, options ...NodeListOption) ([]sw
 	}
 	resp, err := m.client.NodeList(ctx, opts)
 	if err != nil {
-		return nil, tracerr.Wrap(err)
+		return nil, apperrors.NewInfra(err)
 	}
 	return resp, nil
 }
@@ -25,7 +25,7 @@ func (m *Manager) NodeList(ctx context.Context, options ...NodeListOption) ([]sw
 func (m *Manager) NodeInspect(ctx context.Context, nodeID string) (*swarm.Node, []byte, error) {
 	resp, data, err := m.client.NodeInspectWithRaw(ctx, nodeID)
 	if err != nil {
-		return nil, nil, tracerr.Wrap(err)
+		return nil, nil, apperrors.NewInfra(err)
 	}
 	return &resp, data, nil
 }
@@ -37,13 +37,13 @@ func (m *Manager) NodeUpdate(ctx context.Context, nodeID string, version *swarm.
 	if version == nil {
 		resp, _, err := m.client.NodeInspectWithRaw(ctx, nodeID)
 		if err != nil {
-			return tracerr.Wrap(err)
+			return apperrors.NewInfra(err)
 		}
 		version = &resp.Version
 	}
 	err := m.client.NodeUpdate(ctx, nodeID, *version, *spec)
 	if err != nil {
-		return tracerr.Wrap(err)
+		return apperrors.NewInfra(err)
 	}
 	return nil
 }
@@ -63,7 +63,7 @@ func (m *Manager) NodeRemove(ctx context.Context, nodeID string, options ...Node
 	}
 	err := m.client.NodeRemove(ctx, nodeID, opts)
 	if err != nil {
-		return tracerr.Wrap(err)
+		return apperrors.NewInfra(err)
 	}
 	return nil
 }

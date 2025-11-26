@@ -49,7 +49,7 @@ func (uc *AppUC) CreateApp(
 		// Create a service in docker for the app
 		res, err := uc.dockerManager.ServiceCreate(ctx, gofn.Must(appData.ServiceSpec.ToSwarmServiceSpec()))
 		if err != nil {
-			return apperrors.NewInfra(err)
+			return apperrors.Wrap(err)
 		}
 		if res.ID == "" { // should never happen
 			return apperrors.New(apperrors.ErrInfraInternal).
@@ -93,13 +93,14 @@ func (uc *AppUC) loadAppData(
 
 	data.AppKey = project.Key + "_" + slugify.SlugifyEx(req.Name, []string{"-", "_"}, appKeyMaxLen)
 
-	app, err := uc.appRepo.GetByKey(ctx, db, project.ID, data.AppKey)
+	// App keys must be unique globally
+	app, err := uc.appRepo.GetByKey(ctx, db, "", data.AppKey)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}
 	if app != nil {
 		return apperrors.NewAlreadyExist("App").
-			WithMsgLog("app '%s' already exists", data.AppKey)
+			WithMsgLog("app key '%s' already exists", data.AppKey)
 	}
 
 	return nil

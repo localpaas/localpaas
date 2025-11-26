@@ -23,7 +23,7 @@ func (uc *VolumeUC) CreateVolume(
 		options.Filters = filters.NewArgs(filters.Arg("name", req.Name))
 	})
 	if err != nil {
-		return nil, apperrors.NewInfra(err)
+		return nil, apperrors.Wrap(err)
 	}
 	if len(res.Volumes) > 0 {
 		return nil, apperrors.New(apperrors.ErrInfraAlreadyExists).
@@ -77,7 +77,7 @@ func (uc *VolumeUC) CreateVolume(
 	}
 	vol, err := uc.dockerManager.VolumeCreate(ctx, options)
 	if err != nil {
-		return nil, apperrors.NewInfra(err)
+		return nil, apperrors.Wrap(err)
 	}
 
 	volID := vol.Name

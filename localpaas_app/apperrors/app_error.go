@@ -231,12 +231,27 @@ func (e *appError) Unwrap() error {
 func (e *appError) UnwrapTilRoot() error {
 	lastErr := e.err
 	for {
-		err := errors.Unwrap(lastErr)
+		err := errorUnwrap(lastErr)
 		if err == nil {
 			return lastErr
 		}
 		lastErr = err
 	}
+}
+
+func errorUnwrap(err error) error {
+	u, ok := err.(interface{ Unwrap() error })
+	if ok {
+		return u.Unwrap() //nolint:wrapcheck
+	}
+	u2, ok := err.(interface{ Unwrap() []error })
+	if ok {
+		res := u2.Unwrap()
+		if len(res) > 0 {
+			return res[0]
+		}
+	}
+	return nil
 }
 
 func (e *appError) StackTrace() string {

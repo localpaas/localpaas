@@ -111,7 +111,7 @@ func (uc *AppUC) applyAppDeploymentSettings(
 		ImageSourceRegistryAuth: deploymentData.RegistryAuth,
 	})
 	if err != nil {
-		return apperrors.NewInfra(err)
+		return apperrors.Wrap(err)
 	}
 	return nil
 }

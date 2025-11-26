@@ -5,11 +5,9 @@ import (
 	"io"
 
 	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/api/types/swarm"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/tracerr"
 )
 
 type ServiceListOption func(options *swarm.ServiceListOptions)
@@ -21,20 +19,34 @@ func (m *Manager) ServiceList(ctx context.Context, options ...ServiceListOption)
 	}
 	resp, err := m.client.ServiceList(ctx, opts)
 	if err != nil {
-		return nil, tracerr.Wrap(err)
+		return nil, apperrors.NewInfra(err)
 	}
 	return resp, nil
 }
 
-func (m *Manager) ServiceGetByName(ctx context.Context, serviceName string) (*swarm.Service, error) {
-	resp, err := m.ServiceList(ctx, func(options *swarm.ServiceListOptions) {
-		options.Filters = filters.NewArgs(filters.Arg("name", serviceName))
+func (m *Manager) ServiceListByStack(ctx context.Context, namespace string, options ...ServiceListOption) (
+	[]swarm.Service, error) {
+	options = append(options, func(opts *swarm.ServiceListOptions) {
+		FilterAdd(&opts.Filters, "label", StackLabelNamespace+"="+namespace)
 	})
+	resp, err := m.ServiceList(ctx, options...)
 	if err != nil {
-		return nil, tracerr.Wrap(err)
+		return nil, apperrors.NewInfra(err)
+	}
+	return resp, nil
+}
+
+func (m *Manager) ServiceGetByName(ctx context.Context, serviceName string, options ...ServiceListOption) (
+	*swarm.Service, error) {
+	options = append(options, func(opts *swarm.ServiceListOptions) {
+		FilterAdd(&opts.Filters, "name", serviceName)
+	})
+	resp, err := m.ServiceList(ctx, options...)
+	if err != nil {
+		return nil, apperrors.NewInfra(err)
 	}
 	if len(resp) == 0 {
-		return nil, apperrors.NewNotFound("DockerService").
+		return nil, apperrors.New(apperrors.ErrInfraNotFound).
 			WithMsgLog("service '%s' not found", serviceName)
 	}
 	return &resp[0], nil
@@ -53,7 +65,7 @@ func (m *Manager) ServiceCreate(ctx context.Context, service *swarm.ServiceSpec,
 	}
 	resp, err := m.client.ServiceCreate(ctx, *service, opts)
 	if err != nil {
-		return nil, tracerr.Wrap(err)
+		return nil, apperrors.NewInfra(err)
 	}
 	return &resp, nil
 }
@@ -73,14 +85,14 @@ func (m *Manager) ServiceUpdate(ctx context.Context, serviceID string, version *
 	if version == nil {
 		resp, _, err := m.client.ServiceInspectWithRaw(ctx, serviceID, swarm.ServiceInspectOptions{})
 		if err != nil {
-			return nil, tracerr.Wrap(err)
+			return nil, apperrors.NewInfra(err)
 		}
 		version = &resp.Version
 	}
 
 	resp, err := m.client.ServiceUpdate(ctx, serviceID, *version, *service, opts)
 	if err != nil {
-		return nil, tracerr.Wrap(err)
+		return nil, apperrors.NewInfra(err)
 	}
 	return &resp, nil
 }
@@ -88,13 +100,13 @@ func (m *Manager) ServiceUpdate(ctx context.Context, serviceID string, version *
 func (m *Manager) ServiceForceUpdate(ctx context.Context, serviceID string) error {
 	service, _, err := m.client.ServiceInspectWithRaw(ctx, serviceID, swarm.ServiceInspectOptions{})
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.NewInfra(err)
 	}
 
 	service.Spec.TaskTemplate.ForceUpdate++
 	_, err = m.client.ServiceUpdate(ctx, serviceID, service.Version, service.Spec, swarm.ServiceUpdateOptions{})
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.NewInfra(err)
 	}
 	return nil
 }
@@ -105,7 +117,7 @@ func (m *Manager) ServiceRemove(ctx context.Context, serviceID string) error {
 	}
 	err := m.client.ServiceRemove(ctx, serviceID)
 	if err != nil {
-		return tracerr.Wrap(err)
+		return apperrors.NewInfra(err)
 	}
 	return nil
 }
@@ -124,7 +136,7 @@ func (m *Manager) ServiceInspect(ctx context.Context, serviceID string, options 
 	}
 	resp, _, err := m.client.ServiceInspectWithRaw(ctx, serviceID, opts)
 	if err != nil {
-		return nil, tracerr.Wrap(err)
+		return nil, apperrors.NewInfra(err)
 	}
 	return &resp, nil
 }
@@ -151,7 +163,7 @@ func (m *Manager) ServiceLogs(ctx context.Context, serviceID string, options ...
 	}
 	resp, err := m.client.ServiceLogs(ctx, serviceID, opts)
 	if err != nil {
-		return nil, tracerr.Wrap(err)
+		return nil, apperrors.NewInfra(err)
 	}
 	return resp, nil
 }

@@ -50,6 +50,7 @@ ERR_EMAIL_UNAVAILABLE = "Email address is not available"
 ERR_EMAIL_CHANGE_UNALLOWED = "Email changing is not allowed"
 
 # Infra errors
+ERR_INFRA = "{{.Error}}"
 ERR_INFRA_UNKNOWN = "{{.Error}}"
 ERR_INFRA_INVALID_ARGUMENT = "{{.Error}}"
 ERR_INFRA_NOT_FOUND = "{{.Error}}"

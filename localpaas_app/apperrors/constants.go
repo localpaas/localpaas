@@ -63,24 +63,25 @@ var (
 	ErrEmailChangeUnallowed        = errors.New("ERR_EMAIL_CHANGE_UNALLOWED")
 )
 
-// Errors from infrastructure
+// nolint Errors from infrastructure
 var (
+	ErrInfra                   = errors.New("ERR_INFRA")
 	ErrInfraUnknown            = errors.New("ERR_INFRA_UNKNOWN")
-	ErrInfraInvalidArgument    = errors.New("ERR_INFRA_INVALID_ARGUMENT")
-	ErrInfraNotFound           = errors.New("ERR_INFRA_NOT_FOUND")
-	ErrInfraAlreadyExists      = errors.New("ERR_INFRA_ALREADY_EXISTS")
+	ErrInfraInvalidArgument    = errors.Join(errors.New("ERR_INFRA_INVALID_ARGUMENT"), ErrParamInvalid)
+	ErrInfraNotFound           = errors.Join(errors.New("ERR_INFRA_NOT_FOUND"), ErrNotFound)
+	ErrInfraAlreadyExists      = errors.Join(errors.New("ERR_INFRA_ALREADY_EXISTS"), ErrAlreadyExist)
 	ErrInfraPermissionDenied   = errors.New("ERR_INFRA_PERMISSION_DENIED")
 	ErrInfraResourceExhausted  = errors.New("ERR_INFRA_RESOURCE_EXHAUSTED")
 	ErrInfraFailedPrecondition = errors.New("ERR_INFRA_FAILED_PRECONDITION")
-	ErrInfraConflict           = errors.New("ERR_INFRA_CONFLICT")
+	ErrInfraConflict           = errors.Join(errors.New("ERR_INFRA_CONFLICT"), ErrConflict)
 	ErrInfraNotModified        = errors.New("ERR_INFRA_NOT_MODIFIED")
 	ErrInfraAborted            = errors.New("ERR_INFRA_ABORTED")
 	ErrInfraOutOfRange         = errors.New("ERR_INFRA_OUT_OF_RANGE")
-	ErrInfraNotImplemented     = errors.New("ERR_INFRA_NOT_IMPLEMENTED")
-	ErrInfraInternal           = errors.New("ERR_INFRA_INTERNAL")
-	ErrInfraUnavailable        = errors.New("ERR_INFRA_UNAVAILABLE")
+	ErrInfraNotImplemented     = errors.Join(errors.New("ERR_INFRA_NOT_IMPLEMENTED"), ErrNotImplemented)
+	ErrInfraInternal           = errors.Join(errors.New("ERR_INFRA_INTERNAL"), ErrInternalServer)
+	ErrInfraUnavailable        = errors.Join(errors.New("ERR_INFRA_UNAVAILABLE"), ErrUnavailable)
 	ErrInfraDataLoss           = errors.New("ERR_INFRA_DATA_LOSS")
-	ErrInfraUnauthorized       = errors.New("ERR_INFRA_UNAUTHORIZED")
+	ErrInfraUnauthorized       = errors.Join(errors.New("ERR_INFRA_UNAUTHORIZED"), ErrUnauthorized)
 )
 
 // Errors for cluster
@@ -140,6 +141,7 @@ var errorStatusMap = map[error]int{
 	ErrEmailChangeUnallowed:        http.StatusUnprocessableEntity,
 
 	// Errors from infrastructure
+	ErrInfra:                   http.StatusInternalServerError,
 	ErrInfraUnknown:            http.StatusInternalServerError,
 	ErrInfraInvalidArgument:    http.StatusBadRequest,
 	ErrInfraNotFound:           http.StatusNotFound,
