@@ -5,6 +5,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/entity/appentity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
@@ -26,8 +27,13 @@ type UserService interface {
 	CheckPasswordStrength(password string) error
 
 	GenerateMFAToken(userID string, mfaType base.MFAType, trustedDeviceID string) (string, error)
+	ParseMFAToken(token string) (*appentity.MFATokenClaims, error)
 	GenerateMFATotpSetupToken(userID string, toptSecret string) (string, error)
+	ParseMFATotpSetupToken(token string) (*appentity.MFATotpSetupTokenClaims, error)
 	GenerateUserInviteToken(userID string) (string, error)
+	ParseUserInviteToken(token string) (*appentity.UserInviteTokenClaims, error)
+	GeneratePasswordResetToken(userID string) (string, error)
+	ParsePasswordResetToken(token string) (*appentity.PasswordResetTokenClaims, error)
 }
 
 func NewUserService(

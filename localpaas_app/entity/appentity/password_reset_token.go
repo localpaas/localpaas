@@ -4,7 +4,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/jwtsession"
 )
 
-type UserInviteTokenClaims struct {
+type PasswordResetTokenClaims struct {
 	jwtsession.BaseClaims
 	Kind   string `json:"kind"`
 	UserID string `json:"userId"`

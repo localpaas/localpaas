@@ -6,8 +6,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/entity/appentity"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/jwtsession"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/totp"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc/userdto"
 )
@@ -16,8 +14,7 @@ func (uc *UserUC) BeginUserSignup(
 	ctx context.Context,
 	req *userdto.BeginUserSignupReq,
 ) (*userdto.BeginUserSignupResp, error) {
-	inviteToken := &appentity.UserInviteTokenClaims{}
-	err := jwtsession.ParseToken(req.InviteToken, inviteToken)
+	inviteToken, err := uc.userService.ParseUserInviteToken(req.InviteToken)
 	if err != nil {
 		return nil, apperrors.New(apperrors.ErrTokenInvalid).WithCause(err)
 	}

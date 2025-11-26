@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	NoCheckCurrent = ""
+	SkipCheckingCurrentPassword = ""
 )
 
 const (

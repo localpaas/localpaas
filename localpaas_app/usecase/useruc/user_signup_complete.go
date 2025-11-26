@@ -7,10 +7,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
-	"github.com/localpaas/localpaas/localpaas_app/entity/appentity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/jwtsession"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/totp"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
@@ -57,9 +55,7 @@ func (uc *UserUC) loadUserSignupData(
 	req *userdto.CompleteUserSignupReq,
 	data *userSignupData,
 ) error {
-	// Parses invite token
-	inviteToken := &appentity.UserInviteTokenClaims{}
-	err := jwtsession.ParseToken(req.InviteToken, inviteToken)
+	inviteToken, err := uc.userService.ParseUserInviteToken(req.InviteToken)
 	if err != nil {
 		return apperrors.New(apperrors.ErrTokenInvalid).WithCause(err)
 	}
@@ -120,7 +116,7 @@ func (uc *UserUC) preparePersistingUserSignupData(
 			return apperrors.NewParamInvalid("Password").
 				WithMsgLog("password is required")
 		}
-		if err := uc.userService.ChangePassword(user, req.Password, userservice.NoCheckCurrent); err != nil {
+		if err := uc.userService.ChangePassword(user, req.Password, userservice.SkipCheckingCurrentPassword); err != nil {
 			return apperrors.Wrap(err)
 		}
 	}

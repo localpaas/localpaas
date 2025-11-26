@@ -6,8 +6,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
-	"github.com/localpaas/localpaas/localpaas_app/entity/appentity"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/jwtsession"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/totp"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc/sessiondto"
@@ -21,8 +19,8 @@ func (uc *SessionUC) LoginWithPasscode(
 	ctx context.Context,
 	req *sessiondto.LoginWithPasscodeReq,
 ) (resp *sessiondto.LoginWithPasscodeResp, err error) {
-	mfaTokenClaims := &appentity.MFATokenClaims{}
-	if err = jwtsession.ParseToken(req.MFAToken, mfaTokenClaims); err != nil {
+	mfaTokenClaims, err := uc.userService.ParseMFAToken(req.MFAToken)
+	if err != nil {
 		return nil, apperrors.New(apperrors.ErrTokenInvalid).WithCause(err)
 	}
 

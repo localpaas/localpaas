@@ -121,6 +121,8 @@ func (s *HTTPServer) registerRoutes() {
 		userGroup.GET("", s.handlerRegistry.userHandler.ListUser)
 		// Password
 		userGroup.PUT("/current/password", s.handlerRegistry.userHandler.UpdateUserPassword)
+		userGroup.POST("/:userID/password/request-reset", s.handlerRegistry.userHandler.RequestResetPassword)
+		userGroup.POST("/:userID/password/reset", s.handlerRegistry.userHandler.ResetPassword)
 		// Profile
 		userGroup.PUT("/current/profile", s.handlerRegistry.userHandler.UpdateUserProfile)
 		// Update (admin API)

@@ -6,10 +6,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/entity/appentity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/jwtsession"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/totp"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
@@ -21,12 +19,12 @@ func (uc *UserUC) CompleteMFATotpSetup(
 	auth *basedto.Auth,
 	req *userdto.CompleteMFATotpSetupReq,
 ) (*userdto.CompleteMFATotpSetupResp, error) {
-	mfaTotpSetupTokenClaims := &appentity.MFATotpSetupTokenClaims{}
-	if err := jwtsession.ParseToken(req.TotpToken, mfaTotpSetupTokenClaims); err != nil {
+	mfaTokenClaims, err := uc.userService.ParseMFATotpSetupToken(req.TotpToken)
+	if err != nil {
 		return nil, apperrors.New(apperrors.ErrTokenInvalid).WithCause(err)
 	}
 
-	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
+	err = transaction.Execute(ctx, uc.db, func(db database.Tx) error {
 		user, err := uc.userRepo.GetByID(ctx, db, auth.User.ID,
 			bunex.SelectFor("UPDATE"),
 		)
@@ -39,11 +37,11 @@ func (uc *UserUC) CompleteMFATotpSetup(
 		}
 
 		// Verify passcode
-		if !totp.VerifyPasscode(req.Passcode, mfaTotpSetupTokenClaims.Secret) {
+		if !totp.VerifyPasscode(req.Passcode, mfaTokenClaims.Secret) {
 			return apperrors.New(apperrors.ErrPasscodeMismatched)
 		}
 
-		user.TotpSecret = mfaTotpSetupTokenClaims.Secret
+		user.TotpSecret = mfaTokenClaims.Secret
 		if user.Status == base.UserStatusPending && user.SecurityOption == base.UserSecurityPassword2FA {
 			user.Status = base.UserStatusActive
 		}
