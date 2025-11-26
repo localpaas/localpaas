@@ -19,7 +19,7 @@ type Project struct {
 	Photo     string `bun:",nullzero"`
 	Status    base.ProjectStatus
 	Note      string `bun:",nullzero"`
-	UpdateVer int64
+	UpdateVer int
 
 	CreatedAt time.Time `bun:",default:current_timestamp"`
 	UpdatedAt time.Time `bun:",default:current_timestamp"`

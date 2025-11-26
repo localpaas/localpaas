@@ -87,15 +87,22 @@ func (uc *AppUC) loadAppSettingsDataForUpdate(
 	}
 	data.App = app
 
+	updateMatched := false
 	for _, setting := range app.Settings {
 		switch setting.Type { //nolint:exhaustive
 		case base.SettingTypeEnvVar:
-			data.EnvVarsData.DbEnvVarsSettings = setting
+			data.EnvVarsData.EnvVars = setting
+			updateMatched = req.EnvVars == nil || req.EnvVars.UpdateVer == setting.UpdateVer
 		case base.SettingTypeAppDeployment:
 			data.DeploymentData.DeploymentSettings = setting
+			updateMatched = req.DeploymentSettings == nil || req.DeploymentSettings.UpdateVer == setting.UpdateVer
 		case base.SettingTypeAppHttp:
 			data.HttpSettingsData.HttpSettings = setting
+			updateMatched = req.HttpSettings == nil || req.HttpSettings.UpdateVer == setting.UpdateVer
 		}
+	}
+	if !updateMatched {
+		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
 	}
 
 	switch {

@@ -47,6 +47,9 @@ func (uc *S3StorageUC) loadS3StorageDataForUpdateMeta(
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+	if req.UpdateVer != setting.UpdateVer {
+		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
+	}
 	data.Setting = setting
 
 	return nil

@@ -53,6 +53,10 @@ func (uc *NodeUC) verifyNodeUpdateChange(
 	req *nodedto.UpdateNodeReq,
 	node *swarm.Node,
 ) error {
+	if uint64(req.UpdateVer) != node.Version.Index { //nolint:gosec
+		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
+	}
+
 	spec := &node.Spec
 
 	roleDemoting := swarm.NodeRole(req.Role) == swarm.NodeRoleWorker && spec.Role == swarm.NodeRoleManager

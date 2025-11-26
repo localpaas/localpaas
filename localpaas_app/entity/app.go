@@ -22,7 +22,7 @@ type App struct {
 	ServiceID string `bun:",nullzero"`
 	Status    base.AppStatus
 	Note      string `bun:",nullzero"`
-	UpdateVer int64
+	UpdateVer int
 
 	CreatedAt time.Time `bun:",default:current_timestamp"`
 	UpdatedAt time.Time `bun:",default:current_timestamp"`
