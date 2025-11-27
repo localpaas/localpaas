@@ -87,13 +87,13 @@ func (uc *SslUC) preparePersistingSsl(
 
 	ssl := &entity.Ssl{
 		Certificate: req.Certificate,
-		PrivateKey:  req.PrivateKey,
+		PrivateKey:  entity.NewEncryptedField(req.PrivateKey),
 		KeySize:     req.KeySize,
 		Provider:    req.Provider,
 		Email:       req.Email,
 		Expiration:  req.Expiration,
 	}
-	dbSsl.MustSetData(ssl.MustEncrypt())
+	dbSsl.MustSetData(ssl)
 
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, dbSsl)
 }

@@ -84,9 +84,9 @@ func (uc *SlackUC) prepareUpdatingSlack(
 		setting.Name = req.Name
 	}
 	slack := &entity.Slack{
-		Webhook: req.Webhook,
+		Webhook: entity.NewEncryptedField(req.Webhook),
 	}
-	setting.MustSetData(slack.MustEncrypt())
+	setting.MustSetData(slack)
 
 	setting.UpdatedAt = timeNow
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)

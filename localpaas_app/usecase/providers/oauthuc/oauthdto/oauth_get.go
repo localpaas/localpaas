@@ -56,6 +56,11 @@ type OAuthResp struct {
 	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
 }
 
+func (resp *OAuthResp) CopyClientSecret(field entity.EncryptedField) error {
+	resp.ClientSecret = field.String()
+	return nil
+}
+
 func TransformOAuth(setting *entity.Setting, baseCallbackURL string) (resp *OAuthResp, err error) {
 	if err = copier.Copy(&resp, &setting); err != nil {
 		return nil, apperrors.Wrap(err)
@@ -68,7 +73,7 @@ func TransformOAuth(setting *entity.Setting, baseCallbackURL string) (resp *OAut
 
 	// Recalculate callbackURL for the oauth as it depends on the actual server address
 	resp.CallbackURL = baseCallbackURL + "/" + setting.Name
-	resp.Encrypted = config.IsEncrypted()
+	resp.Encrypted = config.ClientSecret.IsEncrypted()
 	if resp.Encrypted {
 		resp.ClientSecret = maskedSecretKey
 	}

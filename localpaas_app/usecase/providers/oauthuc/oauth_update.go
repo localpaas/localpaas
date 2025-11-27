@@ -87,7 +87,7 @@ func (uc *OAuthUC) prepareUpdatingOAuth(
 
 	oauth := &entity.OAuth{
 		ClientID:     req.ClientID,
-		ClientSecret: req.ClientSecret,
+		ClientSecret: entity.NewEncryptedField(req.ClientSecret),
 		Organization: req.Organization,
 		CallbackURL:  req.CallbackURL,
 		AuthURL:      req.AuthURL,
@@ -95,7 +95,7 @@ func (uc *OAuthUC) prepareUpdatingOAuth(
 		ProfileURL:   req.ProfileURL,
 		Scopes:       req.Scopes,
 	}
-	setting.MustSetData(oauth.MustEncrypt())
+	setting.MustSetData(oauth)
 
 	setting.UpdatedAt = timeNow
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)

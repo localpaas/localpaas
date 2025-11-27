@@ -50,6 +50,11 @@ type RegistryAuthResp struct {
 	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
 }
 
+func (resp *RegistryAuthResp) CopyPassword(field entity.EncryptedField) error {
+	resp.Password = field.String()
+	return nil
+}
+
 func TransformRegistryAuth(setting *entity.Setting) (resp *RegistryAuthResp, err error) {
 	if err = copier.Copy(&resp, &setting); err != nil {
 		return nil, apperrors.Wrap(err)
@@ -61,7 +66,7 @@ func TransformRegistryAuth(setting *entity.Setting) (resp *RegistryAuthResp, err
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp.Encrypted = config.IsEncrypted()
+	resp.Encrypted = config.Password.IsEncrypted()
 	if resp.Encrypted {
 		resp.Password = maskedPassword
 	}

@@ -100,13 +100,13 @@ func (uc *SSHKeyUC) prepareUpdatingSSHKey(
 			sshKey = &entity.SSHKey{}
 		}
 		if req.PrivateKey != nil {
-			sshKey.PrivateKey = *req.PrivateKey
+			sshKey.PrivateKey = entity.NewEncryptedField(*req.PrivateKey)
 		}
 		if req.Passphrase != nil {
-			sshKey.Passphrase = *req.Passphrase
+			sshKey.Passphrase = entity.NewEncryptedField(*req.Passphrase)
 		}
 
-		setting.MustSetData(sshKey.MustEncrypt())
+		setting.MustSetData(sshKey)
 	}
 
 	setting.UpdatedAt = timeNow

@@ -87,12 +87,12 @@ func (uc *S3StorageUC) preparePersistingS3Storage(
 
 	s3Storage := &entity.S3Storage{
 		AccessKeyID: req.AccessKeyID,
-		SecretKey:   req.SecretKey,
+		SecretKey:   entity.NewEncryptedField(req.SecretKey),
 		Region:      req.Region,
 		Bucket:      req.Bucket,
 		Endpoint:    req.Endpoint,
 	}
-	setting.MustSetData(s3Storage.MustEncrypt())
+	setting.MustSetData(s3Storage)
 
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 

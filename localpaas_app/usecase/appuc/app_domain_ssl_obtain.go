@@ -135,13 +135,13 @@ func (uc *AppUC) preparePersistingDomainSslData(
 
 	ssl := &entity.Ssl{
 		Certificate: string(data.ObtainedCerts.Certificate),
-		PrivateKey:  string(data.ObtainedCerts.PrivateKey),
+		PrivateKey:  entity.NewEncryptedField(string(data.ObtainedCerts.PrivateKey)),
 		KeySize:     req.KeySize,
 		Provider:    base.SslProviderLetsEncrypt,
 		Email:       data.Email,
 	}
 
-	dbSsl.MustSetData(ssl.MustEncrypt())
+	dbSsl.MustSetData(ssl)
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, dbSsl)
 
 	httpSettings := data.HttpSettings.MustAsAppHttpSettings()

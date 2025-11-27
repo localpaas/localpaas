@@ -95,10 +95,10 @@ func (uc *SecretUC) preparePersistingSecret(
 
 	secret := &entity.Secret{
 		Key:    req.Key,
-		Value:  req.Value,
+		Value:  entity.NewEncryptedField(req.Value),
 		Base64: req.Base64,
 	}
-	setting.MustSetData(secret.MustEncrypt())
+	setting.MustSetData(secret)
 
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 }

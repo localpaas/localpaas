@@ -86,9 +86,9 @@ func (uc *BasicAuthUC) preparePersistingBasicAuth(
 
 	basicAuth := &entity.BasicAuth{
 		Username: req.Username,
-		Password: req.Password,
+		Password: entity.NewEncryptedField(req.Password),
 	}
-	setting.MustSetData(basicAuth.MustEncrypt())
+	setting.MustSetData(basicAuth)
 
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 }

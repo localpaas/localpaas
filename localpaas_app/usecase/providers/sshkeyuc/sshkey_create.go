@@ -86,10 +86,10 @@ func (uc *SSHKeyUC) preparePersistingSSHKey(
 	}
 
 	sshKey := &entity.SSHKey{
-		PrivateKey: req.PrivateKey,
-		Passphrase: req.Passphrase,
+		PrivateKey: entity.NewEncryptedField(req.PrivateKey),
+		Passphrase: entity.NewEncryptedField(req.Passphrase),
 	}
-	setting.MustSetData(sshKey.MustEncrypt())
+	setting.MustSetData(sshKey)
 
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 

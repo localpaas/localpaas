@@ -89,3 +89,20 @@ func (s *Setting) SetData(data any) error {
 func (s *Setting) MustSetData(data any) {
 	gofn.Must1(s.SetData(data))
 }
+
+func parseSettingAs[T any](s *Setting, typ base.SettingType, newFn func() T) (res T, error error) {
+	if s.parsedData != nil {
+		res, ok := s.parsedData.(T)
+		if !ok {
+			return res, apperrors.NewTypeInvalid()
+		}
+		return res, nil
+	}
+	if s.Data != "" && s.Type == typ {
+		res = newFn()
+		if err := s.parseData(res); err != nil {
+			return res, apperrors.Wrap(err)
+		}
+	}
+	return res, nil
+}

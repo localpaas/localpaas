@@ -85,9 +85,9 @@ func (uc *DiscordUC) preparePersistingDiscord(
 	}
 
 	discord := &entity.Discord{
-		Webhook: req.Webhook,
+		Webhook: entity.NewEncryptedField(req.Webhook),
 	}
-	setting.MustSetData(discord.MustEncrypt())
+	setting.MustSetData(discord)
 
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 }

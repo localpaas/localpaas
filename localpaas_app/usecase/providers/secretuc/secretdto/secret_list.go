@@ -58,6 +58,11 @@ type SecretResp struct {
 	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
 }
 
+func (resp *SecretResp) CopySecretKey(field entity.EncryptedField) error {
+	resp.Value = field.String()
+	return nil
+}
+
 func TransformSecret(setting *entity.Setting) (resp *SecretResp, err error) {
 	if err = copier.Copy(&resp, &setting); err != nil {
 		return nil, apperrors.Wrap(err)
@@ -69,7 +74,7 @@ func TransformSecret(setting *entity.Setting) (resp *SecretResp, err error) {
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp.Encrypted = secret.IsEncrypted()
+	resp.Encrypted = secret.Value.IsEncrypted()
 	if resp.Encrypted {
 		resp.Value = maskedSecretValue
 	}

@@ -102,7 +102,7 @@ func (uc *S3StorageUC) prepareUpdatingS3Storage(
 		s3Storage.AccessKeyID = *req.AccessKeyID
 	}
 	if req.SecretKey != nil {
-		s3Storage.SecretKey = *req.SecretKey
+		s3Storage.SecretKey = entity.NewEncryptedField(*req.SecretKey)
 	}
 	if req.Region != nil {
 		s3Storage.Region = *req.Region
@@ -114,7 +114,7 @@ func (uc *S3StorageUC) prepareUpdatingS3Storage(
 		s3Storage.Endpoint = *req.Endpoint
 	}
 
-	setting.MustSetData(s3Storage.MustEncrypt())
+	setting.MustSetData(s3Storage)
 
 	setting.UpdatedAt = timeNow
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)

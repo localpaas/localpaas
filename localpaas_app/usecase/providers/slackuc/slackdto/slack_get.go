@@ -48,6 +48,11 @@ type SlackResp struct {
 	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
 }
 
+func (resp *SlackResp) CopyWebhook(field entity.EncryptedField) error {
+	resp.Webhook = field.String()
+	return nil
+}
+
 func TransformSlack(setting *entity.Setting) (resp *SlackResp, err error) {
 	if err = copier.Copy(&resp, &setting); err != nil {
 		return nil, apperrors.Wrap(err)
@@ -58,7 +63,7 @@ func TransformSlack(setting *entity.Setting) (resp *SlackResp, err error) {
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp.Encrypted = config.IsEncrypted()
+	resp.Encrypted = config.Webhook.IsEncrypted()
 	if resp.Encrypted {
 		resp.Webhook = maskedWebhook
 	}

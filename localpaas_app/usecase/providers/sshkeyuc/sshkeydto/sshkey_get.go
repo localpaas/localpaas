@@ -63,6 +63,16 @@ type SSHKeyAppAccessResp struct {
 	Allowed bool   `json:"allowed"`
 }
 
+func (resp *SSHKeyResp) CopyPrivateKey(field entity.EncryptedField) error {
+	resp.PrivateKey = field.String()
+	return nil
+}
+
+func (resp *SSHKeyResp) CopyPassphrase(field entity.EncryptedField) error {
+	resp.Passphrase = field.String()
+	return nil
+}
+
 func TransformSSHKey(setting *entity.Setting) (resp *SSHKeyResp, err error) {
 	if err = copier.Copy(&resp, &setting); err != nil {
 		return nil, apperrors.Wrap(err)
@@ -73,7 +83,7 @@ func TransformSSHKey(setting *entity.Setting) (resp *SSHKeyResp, err error) {
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp.Encrypted = sshKey.IsEncrypted()
+	resp.Encrypted = sshKey.PrivateKey.IsEncrypted()
 	if resp.Encrypted {
 		resp.PrivateKey = maskedSecretKey
 		if resp.Passphrase != "" {

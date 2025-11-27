@@ -67,6 +67,11 @@ type S3StorageAppAccessResp struct {
 	Allowed bool   `json:"allowed"`
 }
 
+func (resp *S3StorageResp) CopySecretKey(field entity.EncryptedField) error {
+	resp.SecretKey = field.String()
+	return nil
+}
+
 func TransformS3Storage(setting *entity.Setting) (resp *S3StorageResp, err error) {
 	if err = copier.Copy(&resp, &setting); err != nil {
 		return nil, apperrors.Wrap(err)
@@ -76,7 +81,7 @@ func TransformS3Storage(setting *entity.Setting) (resp *S3StorageResp, err error
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp.Encrypted = s3Config.IsEncrypted()
+	resp.Encrypted = s3Config.SecretKey.IsEncrypted()
 	if resp.Encrypted {
 		resp.SecretKey = maskedSecretKey
 	}

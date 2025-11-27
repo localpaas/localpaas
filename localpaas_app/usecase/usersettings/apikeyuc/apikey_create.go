@@ -109,10 +109,10 @@ func (uc *APIKeyUC) preparePersistingAPIKey(
 
 	apiKey := &entity.APIKey{
 		KeyID:        data.KeyID,
-		SecretKey:    data.SecretKey,
+		SecretKey:    entity.NewHashField(data.SecretKey),
 		AccessAction: req.AccessAction,
 	}
-	setting.MustSetData(apiKey.MustHash())
+	setting.MustSetData(apiKey)
 
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 }

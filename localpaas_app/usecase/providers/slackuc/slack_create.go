@@ -85,9 +85,9 @@ func (uc *SlackUC) preparePersistingSlack(
 	}
 
 	slack := &entity.Slack{
-		Webhook: req.Webhook,
+		Webhook: entity.NewEncryptedField(req.Webhook),
 	}
-	setting.MustSetData(slack.MustEncrypt())
+	setting.MustSetData(slack)
 
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 }
