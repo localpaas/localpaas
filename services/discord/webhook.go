@@ -10,7 +10,7 @@ import (
 
 type WebhookMessageOption func(webhook *discordgo.WebhookParams)
 
-func (c *Client) WebhookExecute(ctx context.Context, webhookURL string, wait bool, content string,
+func (c *Client) WebhookExecute(_ context.Context, webhookURL string, wait bool, content string,
 	options ...WebhookMessageOption) (*discordgo.Message, error) {
 	webhookID, token, err := parseWebhookURL(webhookURL)
 	if err != nil {
@@ -29,7 +29,7 @@ func (c *Client) WebhookExecute(ctx context.Context, webhookURL string, wait boo
 		opt(msg)
 	}
 	resp, err := discord.WebhookExecute(webhookID, token, wait, msg, func(cfg *discordgo.RequestConfig) {
-		cfg.Client = c.httpClient
+		cfg.Client = c.getHttpClient()
 	})
 	if err != nil {
 		return nil, apperrors.New(err)

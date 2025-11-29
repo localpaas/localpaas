@@ -75,6 +75,7 @@ func (s *EncryptedField) Set(value string) {
 }
 
 func (s *EncryptedField) encrypt() (string, error) {
+	// TODO: should we use Mutex?
 	if s.encrypted != "" {
 		return s.encrypted, nil
 	}
@@ -87,6 +88,7 @@ func (s *EncryptedField) encrypt() (string, error) {
 }
 
 func (s *EncryptedField) decrypt() (string, error) {
+	// TODO: should we use Mutex?
 	if s.decrypted != "" {
 		return s.decrypted, nil
 	}

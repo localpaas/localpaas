@@ -21,6 +21,7 @@ const (
 	SettingTypeRegistryAuth  = SettingType("registry-auth")
 	SettingTypeBasicAuth     = SettingType("basic-auth")
 	SettingTypeSsl           = SettingType("ssl")
+	SettingTypeGithubApp     = SettingType("github-app")
 )
 
 var (
