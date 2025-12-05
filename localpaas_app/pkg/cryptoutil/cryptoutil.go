@@ -122,16 +122,16 @@ func DecryptBase64(secret string) (plaintext string, err error) {
 }
 
 func PackSecret(secret, salt string) string {
-	return base.SaltPrefix + salt + " " + secret
+	return base.EncryptionSaltPrefix + salt + " " + secret
 }
 
 func UnpackSecret(secretText string) (secret string, salt string) {
-	if !strings.HasPrefix(secretText, base.SaltPrefix) {
+	if !strings.HasPrefix(secretText, base.EncryptionSaltPrefix) {
 		return secretText, ""
 	}
 	parts := strings.SplitN(secretText, " ", 2) //nolint:mnd
 	if len(parts) != 2 {                        //nolint:mnd
 		return secretText, ""
 	}
-	return parts[1], strings.TrimPrefix(parts[0], base.SaltPrefix)
+	return parts[1], strings.TrimPrefix(parts[0], base.EncryptionSaltPrefix)
 }

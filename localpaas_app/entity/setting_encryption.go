@@ -11,6 +11,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
 )
 
+const (
+	defaultSaltLen = 10
+)
+
 type EncryptedField struct {
 	encrypted string
 	decrypted string
@@ -65,7 +69,7 @@ func (s *EncryptedField) MustGetEncrypted() string {
 }
 
 func (s *EncryptedField) Set(value string) {
-	if strings.HasPrefix(value, base.SaltPrefix) {
+	if strings.HasPrefix(value, base.EncryptionSaltPrefix) {
 		s.encrypted = value
 		s.decrypted = ""
 	} else {
@@ -78,7 +82,7 @@ func (s *EncryptedField) encrypt() (string, error) {
 	if s.encrypted != "" {
 		return s.encrypted, nil
 	}
-	encrypted, err := cryptoutil.EncryptBase64(s.decrypted, base.DefaultSaltLen)
+	encrypted, err := cryptoutil.EncryptBase64(s.decrypted, defaultSaltLen)
 	if err != nil {
 		return "", apperrors.Wrap(err)
 	}

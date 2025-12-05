@@ -12,6 +12,11 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
 )
 
+const (
+	hashingKeyLen    = 32
+	hashingIteration = 1
+)
+
 type HashField struct {
 	secret       string
 	hashedSecret string
@@ -54,7 +59,7 @@ func (s *HashField) MustGet() string {
 }
 
 func (s *HashField) Set(value string) {
-	if strings.HasPrefix(value, base.SaltPrefix) {
+	if strings.HasPrefix(value, base.EncryptionSaltPrefix) {
 		s.hashedSecret = value
 		s.secret = ""
 	} else {
@@ -70,7 +75,7 @@ func (s *HashField) VerifyHash(secret string) error {
 		matched = hashedSecret == secret
 	} else {
 		matched = randtoken.VerifyHashHex(secret, hashedSecret, salt,
-			apiKeyHashingKeyLen, apiKeyHashingIteration)
+			hashingKeyLen, hashingIteration)
 	}
 	if !matched {
 		return apperrors.Wrap(apperrors.ErrAPIKeyMismatched)
@@ -82,8 +87,8 @@ func (s *HashField) hash() (string, error) {
 	if s.hashedSecret != "" {
 		return s.hashedSecret, nil
 	}
-	hashedSecret, salt, err := randtoken.HashAsHex(s.secret, base.DefaultSaltLen,
-		apiKeyHashingKeyLen, apiKeyHashingIteration)
+	hashedSecret, salt, err := randtoken.HashAsHex(s.secret, defaultSaltLen,
+		hashingKeyLen, hashingIteration)
 	if err != nil {
 		return "", apperrors.Wrap(err)
 	}

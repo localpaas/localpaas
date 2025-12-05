@@ -1,6 +1,5 @@
 package base
 
 const (
-	SaltPrefix     = "lpsalt:"
-	DefaultSaltLen = 10
+	EncryptionSaltPrefix = "lpsalt:"
 )
