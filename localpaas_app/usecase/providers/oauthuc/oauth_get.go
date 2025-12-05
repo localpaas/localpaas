@@ -2,9 +2,6 @@ package oauthuc
 
 import (
 	"context"
-	"net/url"
-
-	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -12,15 +9,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/oauthuc/oauthdto"
 )
-
-const (
-	ssoCallbackPath = "auth/sso/callback"
-)
-
-func (uc *OAuthUC) GetOAuthBaseCallbackURL() string {
-	// NOTE: to return correct callbackURL to users, we need to calculate it on the fly
-	return gofn.Must(url.JoinPath(config.Current.BaseAPIURL(), ssoCallbackPath))
-}
 
 func (uc *OAuthUC) GetOAuth(
 	ctx context.Context,
@@ -33,7 +21,7 @@ func (uc *OAuthUC) GetOAuth(
 	}
 
 	setting.MustAsOAuth().MustDecrypt()
-	resp, err := oauthdto.TransformOAuth(setting, uc.GetOAuthBaseCallbackURL())
+	resp, err := oauthdto.TransformOAuth(setting, config.Current.SsoBaseCallbackURL())
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

@@ -7,9 +7,9 @@ echo "INSTALL LocalPaaS LOCALLY"
 echo "---------------------------------------------------------------"
 
 # Delete all unused data that take the disk space
-docker system prune -a -f
+# docker system prune -a -f
 
-LOCALPAAS_DIR=localpaas
+LOCALPAAS_DIR=.appdata/localpaas
 LOCALPAAS_CERTS=$LOCALPAAS_DIR/certs
 
 mkdir -p $LOCALPAAS_DIR

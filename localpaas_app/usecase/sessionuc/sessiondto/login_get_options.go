@@ -25,5 +25,6 @@ type GetLoginOptionsResp struct {
 type LoginOptionResp struct {
 	Type    base.OAuthType `json:"type"`
 	Name    string         `json:"name"`
+	Icon    string         `json:"icon"`
 	AuthURL string         `json:"authURL"`
 }

@@ -20,7 +20,6 @@ type SessionHandler struct {
 	*handler.BaseHandler
 	authHandler *authhandler.AuthHandler
 	sessionUC   *sessionuc.SessionUC
-	oauthUC     *oauthuc.OAuthUC
 }
 
 func NewSessionHandler(
@@ -31,7 +30,6 @@ func NewSessionHandler(
 	hdl := &SessionHandler{
 		authHandler: authHandler,
 		sessionUC:   sessionUC,
-		oauthUC:     oauthUC,
 	}
 	return hdl
 }

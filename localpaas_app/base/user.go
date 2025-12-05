@@ -3,8 +3,8 @@ package base
 type UserRole string
 
 const (
-	UserRoleAdmin  = UserRole("admin")
-	UserRoleMember = UserRole("member")
+	UserRoleAdmin  UserRole = "admin"
+	UserRoleMember UserRole = "member"
 )
 
 var (
@@ -14,9 +14,9 @@ var (
 type UserStatus string
 
 const (
-	UserStatusActive   = UserStatus("active")
-	UserStatusPending  = UserStatus("pending")
-	UserStatusDisabled = UserStatus("disabled")
+	UserStatusActive   UserStatus = "active"
+	UserStatusPending  UserStatus = "pending"
+	UserStatusDisabled UserStatus = "disabled"
 )
 
 var (
@@ -26,9 +26,9 @@ var (
 type UserSecurityOption string
 
 const (
-	UserSecurityEnforceSSO   = UserSecurityOption("enforce-sso")
-	UserSecurityPassword2FA  = UserSecurityOption("password-2fa")
-	UserSecurityPasswordOnly = UserSecurityOption("password-only")
+	UserSecurityEnforceSSO   UserSecurityOption = "enforce-sso"
+	UserSecurityPassword2FA  UserSecurityOption = "password-2fa"
+	UserSecurityPasswordOnly UserSecurityOption = "password-only"
 )
 
 var (

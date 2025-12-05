@@ -5,16 +5,17 @@ import "github.com/tiendc/gofn"
 type OAuthType string
 
 const (
-	OAuthTypeGithub = OAuthType("github")
-	OAuthTypeGitlab = OAuthType("gitlab")
-	OAuthTypeGoogle = OAuthType("google")
+	OAuthTypeGithub    OAuthType = "github"
+	OAuthTypeGithubApp OAuthType = "github-app"
+	OAuthTypeGitlab    OAuthType = "gitlab"
+	OAuthTypeGoogle    OAuthType = "google"
 
 	// Custom OAuth types
-	OAuthTypeGitlabCustom = OAuthType("gitlab-custom")
+	OAuthTypeGitlabCustom OAuthType = "gitlab-custom"
 )
 
 var (
-	AllOAuthTypes = []OAuthType{OAuthTypeGithub, OAuthTypeGitlab, OAuthTypeGoogle,
+	AllOAuthTypes = []OAuthType{OAuthTypeGithub, OAuthTypeGithubApp, OAuthTypeGitlab, OAuthTypeGoogle,
 		OAuthTypeGitlabCustom}
 )
 

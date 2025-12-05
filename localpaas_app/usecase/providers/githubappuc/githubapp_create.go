@@ -1,4 +1,4 @@
-package oauthuc
+package githubappuc
 
 import (
 	"context"
@@ -15,22 +15,22 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/oauthuc/oauthdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/githubappuc/githubappdto"
 )
 
-func (uc *OAuthUC) CreateOAuth(
+func (uc *GithubAppUC) CreateGithubApp(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *oauthdto.CreateOAuthReq,
-) (*oauthdto.CreateOAuthResp, error) {
-	oauthData := &createOAuthData{}
-	err := uc.loadOAuthData(ctx, uc.db, req, oauthData)
+	req *githubappdto.CreateGithubAppReq,
+) (*githubappdto.CreateGithubAppResp, error) {
+	appData := &createGithubAppData{}
+	err := uc.loadGithubAppData(ctx, uc.db, req, appData)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	persistingData := &persistingOAuthData{}
-	uc.preparePersistingOAuth(req, oauthData, persistingData)
+	persistingData := &persistingGithubAppData{}
+	uc.preparePersistingGithubApp(req, appData, persistingData)
 
 	err = transaction.Execute(ctx, uc.db, func(db database.Tx) error {
 		return uc.persistData(ctx, db, persistingData)
@@ -40,83 +40,72 @@ func (uc *OAuthUC) CreateOAuth(
 	}
 
 	createdItem := persistingData.UpsertingSettings[0]
-	return &oauthdto.CreateOAuthResp{
+	return &githubappdto.CreateGithubAppResp{
 		Data: &basedto.ObjectIDResp{ID: createdItem.ID},
 	}, nil
 }
 
-type createOAuthData struct {
+type createGithubAppData struct {
 }
 
-func (uc *OAuthUC) loadOAuthData(
+func (uc *GithubAppUC) loadGithubAppData(
 	ctx context.Context,
 	db database.IDB,
-	req *oauthdto.CreateOAuthReq,
-	_ *createOAuthData,
+	req *githubappdto.CreateGithubAppReq,
+	_ *createGithubAppData,
 ) error {
-	uc.preprocessRequest(req.OAuthType, req.OAuthBaseReq)
-
-	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeOAuth, req.Organization, false)
+	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeGithubApp, req.Organization, false)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}
 	if setting != nil {
-		return apperrors.NewAlreadyExist("OAuth").
-			WithMsgLog("oauth setting '%s' already exists", req.Organization)
+		return apperrors.NewAlreadyExist("GithubApp").
+			WithMsgLog("github app setting '%s' already exists", req.Organization)
 	}
 
 	return nil
 }
 
-func (uc *OAuthUC) preprocessRequest(
-	oauthType base.OAuthType,
-	req *oauthdto.OAuthBaseReq,
-) {
-	if !base.IsCustomOAuthType(oauthType) {
-		req.AuthURL = ""
-		req.TokenURL = ""
-		req.ProfileURL = ""
-	}
-}
-
-type persistingOAuthData struct {
+type persistingGithubAppData struct {
 	settingservice.PersistingSettingData
 }
 
-func (uc *OAuthUC) preparePersistingOAuth(
-	req *oauthdto.CreateOAuthReq,
-	_ *createOAuthData,
-	persistingData *persistingOAuthData,
+func (uc *GithubAppUC) preparePersistingGithubApp(
+	req *githubappdto.CreateGithubAppReq,
+	_ *createGithubAppData,
+	persistingData *persistingGithubAppData,
 ) {
 	timeNow := timeutil.NowUTC()
 	setting := &entity.Setting{
 		ID:        gofn.Must(ulid.NewStringULID()),
-		Type:      base.SettingTypeOAuth,
+		Type:      base.SettingTypeGithubApp,
 		Status:    base.SettingStatusActive,
-		Kind:      string(req.OAuthType),
+		Kind:      string(base.SettingTypeGithubApp),
 		Name:      req.Organization,
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,
 	}
 
-	oauth := &entity.OAuth{
-		ClientID:     req.ClientID,
-		ClientSecret: entity.NewEncryptedField(req.ClientSecret),
-		Organization: req.Organization,
-		AuthURL:      req.AuthURL,
-		TokenURL:     req.TokenURL,
-		ProfileURL:   req.ProfileURL,
-		Scopes:       req.Scopes,
+	githubApp := &entity.GithubApp{
+		ClientID:       req.ClientID,
+		ClientSecret:   entity.NewEncryptedField(req.ClientSecret),
+		Organization:   req.Organization,
+		WebhookURL:     req.WebhookURL,
+		WebhookSecret:  entity.NewEncryptedField(req.WebhookSecret),
+		AppID:          req.AppID,
+		InstallationID: req.InstallationID,
+		PrivateKey:     entity.NewEncryptedField(req.PrivateKey),
+		SSOEnabled:     req.SSOEnabled,
 	}
-	setting.MustSetData(oauth)
+	setting.MustSetData(githubApp)
 
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 }
 
-func (uc *OAuthUC) persistData(
+func (uc *GithubAppUC) persistData(
 	ctx context.Context,
 	db database.IDB,
-	persistingData *persistingOAuthData,
+	persistingData *persistingGithubAppData,
 ) error {
 	err := uc.settingService.PersistSettingData(ctx, db, &persistingData.PersistingSettingData)
 	if err != nil {

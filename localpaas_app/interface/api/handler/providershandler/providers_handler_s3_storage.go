@@ -187,7 +187,7 @@ func (h *ProvidersHandler) UpdateS3Storage(ctx *gin.Context) {
 // @Description Updates S3 storage meta
 // @Tags    providers_s3_storage
 // @Produce json
-// @Id      updateS3StorageMetaProvider
+// @Id      updateS3StorageProviderMeta
 // @Param   ID path string true "provider ID"
 // @Param   body body s3storagedto.UpdateS3StorageMetaReq true "request data"
 // @Success 200 {object} s3storagedto.UpdateS3StorageMetaResp

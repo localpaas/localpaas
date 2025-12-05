@@ -3271,7 +3271,7 @@
     "/providers/basic-auth/{ID}/meta" : {
       "put" : {
         "description" : "Updates basic auth meta",
-        "operationId" : "updateBasicAuthMetaProvider",
+        "operationId" : "updateBasicAuthProviderMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -3658,7 +3658,7 @@
     "/providers/discord/{ID}/meta" : {
       "put" : {
         "description" : "Updates Discord meta provider",
-        "operationId" : "updateDiscordMetaProvider",
+        "operationId" : "updateDiscordProviderMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -3713,6 +3713,341 @@
         },
         "summary" : "Updates Discord meta provider",
         "tags" : [ "providers_discord" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/providers/github-apps" : {
+      "get" : {
+        "description" : "Lists github-app providers",
+        "operationId" : "listGithubAppProviders",
+        "parameters" : [ {
+          "description" : "`search=<target> (support *)`",
+          "in" : "query",
+          "name" : "search",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`pageOffset=offset`",
+          "in" : "query",
+          "name" : "pageOffset",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`pageLimit=limit`",
+          "in" : "query",
+          "name" : "pageLimit",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`sort=[-]field1|field2...`",
+          "in" : "query",
+          "name" : "sort",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.ListGithubAppResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Lists github-app providers",
+        "tags" : [ "providers_github_app" ]
+      },
+      "post" : {
+        "description" : "Creates a new github-app provider",
+        "operationId" : "createGithubAppProvider",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.CreateGithubAppReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.CreateGithubAppResp"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Creates a new github-app provider",
+        "tags" : [ "providers_github_app" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/providers/github-apps/{ID}" : {
+      "delete" : {
+        "description" : "Deletes github-app provider",
+        "operationId" : "deleteGithubAppProvider",
+        "parameters" : [ {
+          "description" : "provider ID",
+          "in" : "path",
+          "name" : "ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.DeleteGithubAppResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Deletes github-app provider",
+        "tags" : [ "providers_github_app" ]
+      },
+      "get" : {
+        "description" : "Gets github-app provider details",
+        "operationId" : "getGithubAppProvider",
+        "parameters" : [ {
+          "description" : "provider ID",
+          "in" : "path",
+          "name" : "ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.GetGithubAppResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Gets github-app provider details",
+        "tags" : [ "providers_github_app" ]
+      },
+      "put" : {
+        "description" : "Updates github-app",
+        "operationId" : "updateGithubAppProvider",
+        "parameters" : [ {
+          "description" : "provider ID",
+          "in" : "path",
+          "name" : "ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.UpdateGithubAppReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.UpdateGithubAppResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates github-app",
+        "tags" : [ "providers_github_app" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/providers/github-apps/{ID}/meta" : {
+      "put" : {
+        "description" : "Updates github-app meta",
+        "operationId" : "updateGithubAppProviderMeta",
+        "parameters" : [ {
+          "description" : "provider ID",
+          "in" : "path",
+          "name" : "ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.UpdateGithubAppMetaReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.UpdateGithubAppMetaResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates github-app meta",
+        "tags" : [ "providers_github_app" ],
         "x-codegen-request-body-name" : "body"
       }
     },
@@ -3993,7 +4328,7 @@
     "/providers/oauth/{ID}/meta" : {
       "put" : {
         "description" : "Updates oauth meta",
-        "operationId" : "updateOAuthMetaProvider",
+        "operationId" : "updateOAuthProviderMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -4380,7 +4715,7 @@
     "/providers/registry-auth/{ID}/meta" : {
       "put" : {
         "description" : "Updates registry auth meta",
-        "operationId" : "updateRegistryAuthMetaProvider",
+        "operationId" : "updateRegistryAuthProviderMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -4767,7 +5102,7 @@
     "/providers/s3-storages/{ID}/meta" : {
       "put" : {
         "description" : "Updates S3 storage meta",
-        "operationId" : "updateS3StorageMetaProvider",
+        "operationId" : "updateS3StorageProviderMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -5383,7 +5718,7 @@
     "/providers/slack/{ID}/meta" : {
       "put" : {
         "description" : "Updates Slack meta provider",
-        "operationId" : "updateSlackMetaProvider",
+        "operationId" : "updateSlackProviderMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -5718,7 +6053,7 @@
     "/providers/ssh-keys/{ID}/meta" : {
       "put" : {
         "description" : "Updates ssh-key meta",
-        "operationId" : "updateSSHKeyMetaProvider",
+        "operationId" : "updateSSHKeyProviderMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -6053,7 +6388,7 @@
     "/providers/ssls/{ID}/meta" : {
       "put" : {
         "description" : "Updates SSL meta",
-        "operationId" : "updateSslMetaProvider",
+        "operationId" : "updateSslProviderMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -7169,7 +7504,7 @@
     "/users/current/settings/api-keys/{ID}/meta" : {
       "put" : {
         "description" : "Updates API key meta",
-        "operationId" : "updateAPIKeyMetaSetting",
+        "operationId" : "updateAPIKeySettingMeta",
         "parameters" : [ {
           "description" : "API key ID",
           "in" : "path",
@@ -7813,9 +8148,9 @@
         "x-enum-varnames" : [ "NodeStatusUnknown", "NodeStatusDown", "NodeStatusReady", "NodeStatusDisconnected" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.OAuthType" : {
-        "enum" : [ "github", "gitlab", "google", "gitlab-custom" ],
+        "enum" : [ "github", "github-app", "gitlab", "google", "gitlab-custom" ],
         "type" : "string",
-        "x-enum-varnames" : [ "OAuthTypeGithub", "OAuthTypeGitlab", "OAuthTypeGoogle", "OAuthTypeGitlabCustom" ]
+        "x-enum-varnames" : [ "OAuthTypeGithub", "OAuthTypeGithubApp", "OAuthTypeGitlab", "OAuthTypeGoogle", "OAuthTypeGitlabCustom" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.ProjectStatus" : {
         "enum" : [ "active", "locked", "disabled", "deleting" ],
@@ -9948,9 +10283,75 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_oauthuc_oauthdto.CreateOAuthReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.CreateGithubAppReq" : {
         "properties" : {
-          "authURL" : {
+          "appId" : {
+            "type" : "string"
+          },
+          "clientId" : {
+            "type" : "string"
+          },
+          "clientSecret" : {
+            "type" : "string"
+          },
+          "installationId" : {
+            "type" : "string"
+          },
+          "organization" : {
+            "type" : "string"
+          },
+          "privateKey" : {
+            "type" : "string"
+          },
+          "ssoEnabled" : {
+            "type" : "boolean"
+          },
+          "webhookSecret" : {
+            "type" : "string"
+          },
+          "webhookURL" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "appId", "clientId", "clientSecret", "installationId", "organization", "privateKey", "ssoEnabled", "webhookSecret", "webhookURL" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.CreateGithubAppResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.DeleteGithubAppResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.GetGithubAppResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.GithubAppResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.GithubAppResp" : {
+        "properties" : {
+          "appId" : {
             "type" : "string"
           },
           "callbackURL" : {
@@ -9962,7 +10363,148 @@
           "clientSecret" : {
             "type" : "string"
           },
+          "createdAt" : {
+            "type" : "string"
+          },
+          "encrypted" : {
+            "type" : "boolean"
+          },
+          "expireAt" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "installationId" : {
+            "type" : "string"
+          },
+          "kind" : {
+            "type" : "string"
+          },
           "name" : {
+            "type" : "string"
+          },
+          "organization" : {
+            "type" : "string"
+          },
+          "privateKey" : {
+            "type" : "string"
+          },
+          "ssoEnabled" : {
+            "type" : "boolean"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          },
+          "updateVer" : {
+            "type" : "integer"
+          },
+          "updatedAt" : {
+            "type" : "string"
+          },
+          "webhookSecret" : {
+            "type" : "string"
+          },
+          "webhookURL" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "appId", "callbackURL", "clientId", "clientSecret", "createdAt", "id", "installationId", "kind", "name", "organization", "privateKey", "ssoEnabled", "status", "updateVer", "updatedAt", "webhookSecret", "webhookURL" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.ListGithubAppResp" : {
+        "properties" : {
+          "data" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.GithubAppResp"
+            },
+            "type" : "array"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.UpdateGithubAppMetaReq" : {
+        "properties" : {
+          "expireAt" : {
+            "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          },
+          "updateVer" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "expireAt", "status", "updateVer" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.UpdateGithubAppMetaResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.UpdateGithubAppReq" : {
+        "properties" : {
+          "appId" : {
+            "type" : "string"
+          },
+          "clientId" : {
+            "type" : "string"
+          },
+          "clientSecret" : {
+            "type" : "string"
+          },
+          "installationId" : {
+            "type" : "string"
+          },
+          "organization" : {
+            "type" : "string"
+          },
+          "privateKey" : {
+            "type" : "string"
+          },
+          "ssoEnabled" : {
+            "type" : "boolean"
+          },
+          "updateVer" : {
+            "type" : "integer"
+          },
+          "webhookSecret" : {
+            "type" : "string"
+          },
+          "webhookURL" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "appId", "clientId", "clientSecret", "installationId", "organization", "privateKey", "ssoEnabled", "updateVer", "webhookSecret", "webhookURL" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.UpdateGithubAppResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_oauthuc_oauthdto.CreateOAuthReq" : {
+        "properties" : {
+          "authURL" : {
+            "type" : "string"
+          },
+          "clientId" : {
+            "type" : "string"
+          },
+          "clientSecret" : {
             "type" : "string"
           },
           "oauthType" : {
@@ -9984,7 +10526,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "authURL", "callbackURL", "clientId", "clientSecret", "name", "oauthType", "organization", "profileURL", "scopes", "tokenURL" ],
+        "required" : [ "authURL", "clientId", "clientSecret", "oauthType", "organization", "profileURL", "scopes", "tokenURL" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_oauthuc_oauthdto.CreateOAuthResp" : {
@@ -10092,7 +10634,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "clientId", "clientSecret", "createdAt", "id", "name", "organization", "status", "updateVer", "updatedAt" ],
+        "required" : [ "callbackURL", "clientId", "clientSecret", "createdAt", "id", "kind", "name", "organization", "status", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_oauthuc_oauthdto.UpdateOAuthMetaReq" : {
@@ -10124,16 +10666,10 @@
           "authURL" : {
             "type" : "string"
           },
-          "callbackURL" : {
-            "type" : "string"
-          },
           "clientId" : {
             "type" : "string"
           },
           "clientSecret" : {
-            "type" : "string"
-          },
-          "name" : {
             "type" : "string"
           },
           "organization" : {
@@ -10155,7 +10691,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "authURL", "callbackURL", "clientId", "clientSecret", "name", "organization", "profileURL", "scopes", "tokenURL", "updateVer" ],
+        "required" : [ "authURL", "clientId", "clientSecret", "organization", "profileURL", "scopes", "tokenURL", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_oauthuc_oauthdto.UpdateOAuthResp" : {
@@ -11458,6 +11994,9 @@
           "authURL" : {
             "type" : "string"
           },
+          "icon" : {
+            "type" : "string"
+          },
           "name" : {
             "type" : "string"
           },
@@ -11465,7 +12004,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.OAuthType"
           }
         },
-        "required" : [ "authURL", "name", "type" ],
+        "required" : [ "authURL", "icon", "name", "type" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.LoginWithAPIKeyDataResp" : {

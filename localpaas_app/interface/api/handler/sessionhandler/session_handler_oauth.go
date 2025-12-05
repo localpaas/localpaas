@@ -2,7 +2,6 @@ package sessionhandler
 
 import (
 	"net/http"
-	"net/url"
 
 	"github.com/gin-gonic/gin"
 	"github.com/markbates/goth"
@@ -10,17 +9,11 @@ import (
 	"github.com/markbates/goth/providers/github"
 	"github.com/markbates/goth/providers/gitlab"
 	"github.com/markbates/goth/providers/google"
-	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/config"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/oauthuc/oauthdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc/sessiondto"
-)
-
-const (
-	ssoRedirectFEPathOnSuccess = "auth/sso/success"
 )
 
 // To keep `apperrors` pkg imported and swag gen won't fail
@@ -43,15 +36,8 @@ func (h *SessionHandler) SSOOAuthBegin(ctx *gin.Context) {
 		return
 	}
 
-	oauthType := base.OAuthType(provider)
-	if !base.IsValidOAuthType(oauthType) {
-		h.RenderError(ctx, apperrors.NewParamInvalid("OAuth").
-			WithMsgLog("%s OAuth is not valid", provider))
-		return
-	}
-
-	oauth, err := h.oauthUC.GetOAuthNoAuth(ctx, &oauthdto.GetOAuthNoAuthReq{
-		Kind:   provider,
+	oauth, err := h.sessionUC.GetLoginOAuth(ctx, &sessiondto.GetLoginOAuthReq{
+		ID:     provider,
 		Status: []base.SettingStatus{base.SettingStatusActive},
 	})
 	if err != nil {
@@ -60,27 +46,28 @@ func (h *SessionHandler) SSOOAuthBegin(ctx *gin.Context) {
 	}
 	if oauth == nil {
 		h.RenderError(ctx, apperrors.New(apperrors.ErrUnavailable).
-			WithMsgLog("%s OAuth SSO is not configured", provider))
+			WithMsgLog("OAuth %s is not configured", provider))
 		return
 	}
 
-	baseCallbackURL := h.oauthUC.GetOAuthBaseCallbackURL()
-	switch oauthType {
-	case base.OAuthTypeGithub:
-		goth.UseProviders(github.New(oauth.ClientID, oauth.ClientSecret, baseCallbackURL+"/"+provider, oauth.Scopes...))
+	baseCallbackURL := config.Current.SsoBaseCallbackURL()
+	var gothProvider goth.Provider
+	switch base.OAuthType(oauth.Kind) {
+	case base.OAuthTypeGithub, base.OAuthTypeGithubApp:
+		gothProvider = github.New(oauth.ClientID, oauth.ClientSecret, baseCallbackURL+"/"+provider, oauth.Scopes...)
 	case base.OAuthTypeGitlab:
-		goth.UseProviders(gitlab.New(oauth.ClientID, oauth.ClientSecret, baseCallbackURL+"/"+provider, oauth.Scopes...))
+		gothProvider = gitlab.New(oauth.ClientID, oauth.ClientSecret, baseCallbackURL+"/"+provider, oauth.Scopes...)
 	case base.OAuthTypeGoogle:
-		goth.UseProviders(google.New(oauth.ClientID, oauth.ClientSecret, baseCallbackURL+"/"+provider, oauth.Scopes...))
+		gothProvider = google.New(oauth.ClientID, oauth.ClientSecret, baseCallbackURL+"/"+provider, oauth.Scopes...)
 
 	// Custom types
 	case base.OAuthTypeGitlabCustom:
-		providerObj := gitlab.NewCustomisedURL(oauth.ClientID, oauth.ClientSecret,
+		gothProvider = gitlab.NewCustomisedURL(oauth.ClientID, oauth.ClientSecret,
 			baseCallbackURL+"/"+provider, oauth.AuthURL, oauth.TokenURL, oauth.ProfileURL,
 			oauth.Scopes...)
-		providerObj.SetName(provider)
-		goth.UseProviders(providerObj)
 	}
+	gothProvider.SetName(provider)
+	goth.UseProviders(gothProvider)
 
 	q := ctx.Request.URL.Query()
 	q.Add("provider", provider)
@@ -131,6 +118,5 @@ func (h *SessionHandler) SSOOAuthCallback(ctx *gin.Context) {
 	h.writeSessionDataToCookies(ctx, &sessionResp.BaseCreateSessionResp, false)
 
 	// Redirect client to front-end page
-	redirectURL := gofn.Must(url.JoinPath(config.Current.BaseURL, ssoRedirectFEPathOnSuccess))
-	ctx.Redirect(http.StatusFound, redirectURL)
+	ctx.Redirect(http.StatusFound, config.Current.DashboardSsoSuccessURL())
 }

@@ -4,6 +4,8 @@ import (
 	"context"
 	"strings"
 
+	"github.com/tiendc/gofn"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -62,8 +64,8 @@ func (uc *OAuthUC) loadOAuthDataForUpdate(
 	uc.preprocessRequest(base.OAuthType(setting.Kind), req.OAuthBaseReq)
 
 	// If name changes, validate the new one
-	if req.Name != "" && !strings.EqualFold(setting.Name, req.Name) {
-		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeOAuth, req.Name, false)
+	if req.Organization != "" && !strings.EqualFold(setting.Name, req.Organization) {
+		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeOAuth, req.Organization, false)
 		if conflictSetting != nil {
 			return apperrors.NewAlreadyExist("OAuth").
 				WithMsgLog("oauth '%s' already exists", conflictSetting.Name)
@@ -80,16 +82,12 @@ func (uc *OAuthUC) prepareUpdatingOAuth(
 ) {
 	timeNow := timeutil.NowUTC()
 	setting := data.Setting
-
-	if req.Name != "" {
-		setting.Name = req.Name
-	}
+	setting.Name = gofn.Coalesce(req.Organization, setting.Name)
 
 	oauth := &entity.OAuth{
 		ClientID:     req.ClientID,
 		ClientSecret: entity.NewEncryptedField(req.ClientSecret),
 		Organization: req.Organization,
-		CallbackURL:  req.CallbackURL,
 		AuthURL:      req.AuthURL,
 		TokenURL:     req.TokenURL,
 		ProfileURL:   req.ProfileURL,

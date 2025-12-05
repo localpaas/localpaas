@@ -7,32 +7,31 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/discorduc/discorddto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/githubappuc/githubappdto"
 )
 
 // To keep `apperrors` pkg imported and swag gen won't fail
 type _ *apperrors.ErrorInfo
 
-// ListDiscord Lists Discord providers
-// @Summary Lists Discord providers
-// @Description Lists Discord providers
-// @Tags    providers_discord
+// ListGithubApp Lists github-app providers
+// @Summary Lists github-app providers
+// @Description Lists github-app providers
+// @Tags    providers_github_app
 // @Produce json
-// @Id      listDiscordProviders
+// @Id      listGithubAppProviders
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
 // @Param   sort query string false "`sort=[-]field1|field2...`"
-// @Success 200 {object} discorddto.ListDiscordResp
+// @Success 200 {object} githubappdto.ListGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/discord [get]
-func (h *ProvidersHandler) ListDiscord(ctx *gin.Context) {
+// @Router  /providers/github-apps [get]
+func (h *ProvidersHandler) ListGithubApp(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeDiscord,
+		ResourceType:   base.ResourceTypeGithubApp,
 		Action:         base.ActionTypeRead,
 	})
 	if err != nil {
@@ -40,13 +39,13 @@ func (h *ProvidersHandler) ListDiscord(ctx *gin.Context) {
 		return
 	}
 
-	req := discorddto.NewListDiscordReq()
+	req := githubappdto.NewListGithubAppReq()
 	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.discordUC.ListDiscord(h.RequestCtx(ctx), auth, req)
+	resp, err := h.githubAppUC.ListGithubApp(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -55,18 +54,18 @@ func (h *ProvidersHandler) ListDiscord(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
-// GetDiscord Gets Discord provider details
-// @Summary Gets Discord provider details
-// @Description Gets Discord provider details
-// @Tags    providers_discord
+// GetGithubApp Gets github-app provider details
+// @Summary Gets github-app provider details
+// @Description Gets github-app provider details
+// @Tags    providers_github_app
 // @Produce json
-// @Id      getDiscordProvider
+// @Id      getGithubAppProvider
 // @Param   ID path string true "provider ID"
-// @Success 200 {object} discorddto.GetDiscordResp
+// @Success 200 {object} githubappdto.GetGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/discord/{ID} [get]
-func (h *ProvidersHandler) GetDiscord(ctx *gin.Context) {
+// @Router  /providers/github-apps/{ID} [get]
+func (h *ProvidersHandler) GetGithubApp(ctx *gin.Context) {
 	id, err := h.ParseStringParam(ctx, "ID")
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -75,7 +74,7 @@ func (h *ProvidersHandler) GetDiscord(ctx *gin.Context) {
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeDiscord,
+		ResourceType:   base.ResourceTypeGithubApp,
 		ResourceID:     id,
 		Action:         base.ActionTypeRead,
 	})
@@ -84,14 +83,14 @@ func (h *ProvidersHandler) GetDiscord(ctx *gin.Context) {
 		return
 	}
 
-	req := discorddto.NewGetDiscordReq()
+	req := githubappdto.NewGetGithubAppReq()
 	req.ID = id
 	if err = h.ParseRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.discordUC.GetDiscord(h.RequestCtx(ctx), auth, req)
+	resp, err := h.githubAppUC.GetGithubApp(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -100,20 +99,21 @@ func (h *ProvidersHandler) GetDiscord(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
-// CreateDiscord Creates a new Discord provider
-// @Summary Creates a new Discord provider
-// @Description Creates a new Discord provider
-// @Tags    providers_discord
+// CreateGithubApp Creates a new github-app provider
+// @Summary Creates a new github-app provider
+// @Description Creates a new github-app provider
+// @Tags    providers_github_app
 // @Produce json
-// @Id      createDiscordProvider
-// @Param   body body discorddto.CreateDiscordReq true "request data"
-// @Success 201 {object} discorddto.CreateDiscordResp
+// @Id      createGithubAppProvider
+// @Param   body body githubappdto.CreateGithubAppReq true "request data"
+// @Success 201 {object} githubappdto.CreateGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/discord [post]
-func (h *ProvidersHandler) CreateDiscord(ctx *gin.Context) {
+// @Router  /providers/github-apps [post]
+func (h *ProvidersHandler) CreateGithubApp(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceModule: base.ResourceModuleProvider,
+		ResourceType:   base.ResourceTypeGithubApp,
 		Action:         base.ActionTypeWrite,
 	})
 	if err != nil {
@@ -121,13 +121,13 @@ func (h *ProvidersHandler) CreateDiscord(ctx *gin.Context) {
 		return
 	}
 
-	req := discorddto.NewCreateDiscordReq()
+	req := githubappdto.NewCreateGithubAppReq()
 	if err := h.ParseJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.discordUC.CreateDiscord(h.RequestCtx(ctx), auth, req)
+	resp, err := h.githubAppUC.CreateGithubApp(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -136,19 +136,19 @@ func (h *ProvidersHandler) CreateDiscord(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, resp)
 }
 
-// UpdateDiscord Updates Discord provider
-// @Summary Updates Discord provider
-// @Description Updates Discord provider
-// @Tags    providers_discord
+// UpdateGithubApp Updates github-app
+// @Summary Updates github-app
+// @Description Updates github-app
+// @Tags    providers_github_app
 // @Produce json
-// @Id      updateDiscordProvider
+// @Id      updateGithubAppProvider
 // @Param   ID path string true "provider ID"
-// @Param   body body discorddto.UpdateDiscordReq true "request data"
-// @Success 200 {object} discorddto.UpdateDiscordResp
+// @Param   body body githubappdto.UpdateGithubAppReq true "request data"
+// @Success 200 {object} githubappdto.UpdateGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/discord/{ID} [put]
-func (h *ProvidersHandler) UpdateDiscord(ctx *gin.Context) {
+// @Router  /providers/github-apps/{ID} [put]
+func (h *ProvidersHandler) UpdateGithubApp(ctx *gin.Context) {
 	id, err := h.ParseStringParam(ctx, "ID")
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -157,7 +157,7 @@ func (h *ProvidersHandler) UpdateDiscord(ctx *gin.Context) {
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeDiscord,
+		ResourceType:   base.ResourceTypeGithubApp,
 		ResourceID:     id,
 		Action:         base.ActionTypeWrite,
 	})
@@ -166,14 +166,14 @@ func (h *ProvidersHandler) UpdateDiscord(ctx *gin.Context) {
 		return
 	}
 
-	req := discorddto.NewUpdateDiscordReq()
+	req := githubappdto.NewUpdateGithubAppReq()
 	req.ID = id
 	if err := h.ParseJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.discordUC.UpdateDiscord(h.RequestCtx(ctx), auth, req)
+	resp, err := h.githubAppUC.UpdateGithubApp(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -182,19 +182,19 @@ func (h *ProvidersHandler) UpdateDiscord(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
-// UpdateDiscordMeta Updates Discord meta provider
-// @Summary Updates Discord meta provider
-// @Description Updates Discord meta provider
-// @Tags    providers_discord
+// UpdateGithubAppMeta Updates github-app meta
+// @Summary Updates github-app meta
+// @Description Updates github-app meta
+// @Tags    providers_github_app
 // @Produce json
-// @Id      updateDiscordProviderMeta
+// @Id      updateGithubAppProviderMeta
 // @Param   ID path string true "provider ID"
-// @Param   body body discorddto.UpdateDiscordMetaReq true "request data"
-// @Success 200 {object} discorddto.UpdateDiscordMetaResp
+// @Param   body body githubappdto.UpdateGithubAppMetaReq true "request data"
+// @Success 200 {object} githubappdto.UpdateGithubAppMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/discord/{ID}/meta [put]
-func (h *ProvidersHandler) UpdateDiscordMeta(ctx *gin.Context) {
+// @Router  /providers/github-apps/{ID}/meta [put]
+func (h *ProvidersHandler) UpdateGithubAppMeta(ctx *gin.Context) {
 	id, err := h.ParseStringParam(ctx, "ID")
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -203,7 +203,7 @@ func (h *ProvidersHandler) UpdateDiscordMeta(ctx *gin.Context) {
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeDiscord,
+		ResourceType:   base.ResourceTypeGithubApp,
 		ResourceID:     id,
 		Action:         base.ActionTypeWrite,
 	})
@@ -212,14 +212,14 @@ func (h *ProvidersHandler) UpdateDiscordMeta(ctx *gin.Context) {
 		return
 	}
 
-	req := discorddto.NewUpdateDiscordMetaReq()
+	req := githubappdto.NewUpdateGithubAppMetaReq()
 	req.ID = id
 	if err := h.ParseJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.discordUC.UpdateDiscordMeta(h.RequestCtx(ctx), auth, req)
+	resp, err := h.githubAppUC.UpdateGithubAppMeta(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -228,18 +228,18 @@ func (h *ProvidersHandler) UpdateDiscordMeta(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
-// DeleteDiscord Deletes Discord provider
-// @Summary Deletes Discord provider
-// @Description Deletes Discord provider
-// @Tags    providers_discord
+// DeleteGithubApp Deletes github-app provider
+// @Summary Deletes github-app provider
+// @Description Deletes github-app provider
+// @Tags    providers_github_app
 // @Produce json
-// @Id      deleteDiscordProvider
+// @Id      deleteGithubAppProvider
 // @Param   ID path string true "provider ID"
-// @Success 200 {object} discorddto.DeleteDiscordResp
+// @Success 200 {object} githubappdto.DeleteGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/discord/{ID} [delete]
-func (h *ProvidersHandler) DeleteDiscord(ctx *gin.Context) {
+// @Router  /providers/github-apps/{ID} [delete]
+func (h *ProvidersHandler) DeleteGithubApp(ctx *gin.Context) {
 	id, err := h.ParseStringParam(ctx, "ID")
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -248,7 +248,7 @@ func (h *ProvidersHandler) DeleteDiscord(ctx *gin.Context) {
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeDiscord,
+		ResourceType:   base.ResourceTypeGithubApp,
 		ResourceID:     id,
 		Action:         base.ActionTypeDelete,
 	})
@@ -257,47 +257,14 @@ func (h *ProvidersHandler) DeleteDiscord(ctx *gin.Context) {
 		return
 	}
 
-	req := discorddto.NewDeleteDiscordReq()
+	req := githubappdto.NewDeleteGithubAppReq()
 	req.ID = id
 	if err := h.ParseRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.discordUC.DeleteDiscord(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
-}
-
-// TestSendDiscordMsg Tests sending a msg
-// @Summary Tests sending a msg
-// @Description Tests sending a msg
-// @Tags    providers_discord
-// @Produce json
-// @Id      testSendDiscordMsg
-// @Param   body body discorddto.TestSendDiscordMsgReq true "request data"
-// @Success 200 {object} discorddto.TestSendDiscordMsgResp
-// @Failure 400 {object} apperrors.ErrorInfo
-// @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/discord/test-send-msg [post]
-func (h *ProvidersHandler) TestSendDiscordMsg(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := discorddto.NewTestSendDiscordMsgReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.discordUC.TestSendDiscordMsg(h.RequestCtx(ctx), auth, req)
+	resp, err := h.githubAppUC.DeleteGithubApp(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

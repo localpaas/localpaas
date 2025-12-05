@@ -10,7 +10,6 @@ type OAuth struct {
 	ClientID     string         `json:"clientId"`
 	ClientSecret EncryptedField `json:"clientSecret"`
 	Organization string         `json:"org,omitempty"`
-	CallbackURL  string         `json:"callbackURL,omitempty"`
 	AuthURL      string         `json:"authURL,omitempty"`
 	TokenURL     string         `json:"tokenURL,omitempty"`
 	ProfileURL   string         `json:"profileURL,omitempty"`
@@ -23,7 +22,12 @@ func (s *OAuth) MustDecrypt() *OAuth {
 }
 
 func (s *Setting) AsOAuth() (*OAuth, error) {
-	return parseSettingAs(s, base.SettingTypeOAuth, func() *OAuth { return &OAuth{} })
+	settingType := base.SettingTypeOAuth
+	// Github-app setting can be parsed as OAuth
+	if s.Type == base.SettingTypeGithubApp {
+		settingType = base.SettingTypeGithubApp
+	}
+	return parseSettingAs(s, settingType, func() *OAuth { return &OAuth{} })
 }
 
 func (s *Setting) MustAsOAuth() *OAuth {

@@ -134,7 +134,7 @@ func (h *UserSettingsHandler) CreateAPIKey(ctx *gin.Context) {
 // @Description Updates API key meta
 // @Tags    user_settings_api_keys
 // @Produce json
-// @Id      updateAPIKeyMetaSetting
+// @Id      updateAPIKeySettingMeta
 // @Param   ID path string true "API key ID"
 // @Param   body body apikeydto.UpdateAPIKeyMetaReq true "request data"
 // @Success 200 {object} apikeydto.UpdateAPIKeyMetaResp

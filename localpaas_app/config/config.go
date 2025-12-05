@@ -3,12 +3,10 @@ package config
 import (
 	"errors"
 	"fmt"
-	"net/url"
 	"os"
 	"path/filepath"
 
 	"github.com/jinzhu/configor"
-	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/pkg/tracerr"
 )
@@ -56,51 +54,7 @@ type Config struct {
 func (cfg *Config) IsDevEnv() bool  { return cfg.Env == EnvDev }
 func (cfg *Config) IsProdEnv() bool { return cfg.Env == EnvProd }
 
-func (cfg *Config) BaseAPIURL() string {
-	return gofn.Must(url.JoinPath(cfg.BaseURL, cfg.HTTPServer.BasePath))
-}
-
-/// USER PHOTO
-
-func (cfg *Config) DataPathUserPhoto() string {
-	return filepath.Join(cfg.AppPath, "user", "photo")
-}
-func (cfg *Config) HttpPathUserPhoto() string {
-	return "/files/user/photo/"
-}
-
-/// SSL CERTS
-
-func (cfg *Config) DataPathCerts() string {
-	return filepath.Join(cfg.AppPath, "certs")
-}
-
-/// NGINX
-
-func (cfg *Config) DataPathNginx() string {
-	return filepath.Join(cfg.AppPath, "nginx")
-}
-func (cfg *Config) DataPathNginxEtc() string {
-	return filepath.Join(cfg.DataPathNginx(), "etc")
-}
-func (cfg *Config) DataPathNginxEtcConf() string {
-	return filepath.Join(cfg.DataPathNginxEtc(), "conf.d")
-}
-func (cfg *Config) DataPathNginxShare() string {
-	return filepath.Join(cfg.DataPathNginx(), "share")
-}
-func (cfg *Config) DataPathNginxShareDomains() string {
-	return filepath.Join(cfg.DataPathNginxShare(), "domains")
-}
-
-/// LETS ENCRYPT
-
-func (cfg *Config) DataPathLetsEncrypt() string {
-	return filepath.Join(cfg.AppPath, "letsencrypt")
-}
-func (cfg *Config) DataPathLetsEncryptEtc() string {
-	return filepath.Join(cfg.DataPathLetsEncrypt(), "etc")
-}
+/// LOAD CONFIG
 
 func LoadConfig() (*Config, error) {
 	cfg, err := loadConfig("")

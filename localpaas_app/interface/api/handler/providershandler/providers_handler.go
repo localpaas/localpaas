@@ -5,6 +5,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/basicauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/discorduc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/githubappuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/oauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/registryauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/s3storageuc"
@@ -26,6 +27,7 @@ type ProvidersHandler struct {
 	registryAuthUC *registryauthuc.RegistryAuthUC
 	basicAuthUC    *basicauthuc.BasicAuthUC
 	sslUC          *ssluc.SslUC
+	githubAppUC    *githubappuc.GithubAppUC
 }
 
 func NewProvidersHandler(
@@ -39,6 +41,7 @@ func NewProvidersHandler(
 	registryAuthUC *registryauthuc.RegistryAuthUC,
 	basicAuthUC *basicauthuc.BasicAuthUC,
 	sslUC *ssluc.SslUC,
+	githubAppUC *githubappuc.GithubAppUC,
 ) *ProvidersHandler {
 	hdl := &ProvidersHandler{
 		authHandler:    authHandler,
@@ -51,6 +54,7 @@ func NewProvidersHandler(
 		registryAuthUC: registryAuthUC,
 		basicAuthUC:    basicAuthUC,
 		sslUC:          sslUC,
+		githubAppUC:    githubAppUC,
 	}
 	return hdl
 }

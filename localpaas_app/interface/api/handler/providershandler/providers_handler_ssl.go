@@ -186,7 +186,7 @@ func (h *ProvidersHandler) UpdateSsl(ctx *gin.Context) {
 // @Description Updates SSL meta
 // @Tags    providers_ssl
 // @Produce json
-// @Id      updateSslMetaProvider
+// @Id      updateSslProviderMeta
 // @Param   ID path string true "provider ID"
 // @Param   body body ssldto.UpdateSslMetaReq true "request data"
 // @Success 200 {object} ssldto.UpdateSslMetaResp

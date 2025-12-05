@@ -187,7 +187,7 @@ func (h *ProvidersHandler) UpdateOAuth(ctx *gin.Context) {
 // @Description Updates oauth meta
 // @Tags    providers_oauth
 // @Produce json
-// @Id      updateOAuthMetaProvider
+// @Id      updateOAuthProviderMeta
 // @Param   ID path string true "provider ID"
 // @Param   body body oauthdto.UpdateOAuthMetaReq true "request data"
 // @Success 200 {object} oauthdto.UpdateOAuthMetaResp

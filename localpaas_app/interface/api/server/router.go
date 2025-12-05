@@ -234,7 +234,7 @@ func (s *HTTPServer) registerRoutes() {
 
 	providerGroup := apiGroup.Group("/providers")
 
-	{ // ssh key group
+	{ // oauth group
 		oauthGroup := providerGroup.Group("/oauth")
 		// Info
 		oauthGroup.GET("/:ID", s.handlerRegistry.providersHandler.GetOAuth)
@@ -244,6 +244,18 @@ func (s *HTTPServer) registerRoutes() {
 		oauthGroup.PUT("/:ID", s.handlerRegistry.providersHandler.UpdateOAuth)
 		oauthGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateOAuthMeta)
 		oauthGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteOAuth)
+	}
+
+	{ // github-app group
+		githubAppGroup := providerGroup.Group("/github-apps")
+		// Info
+		githubAppGroup.GET("/:ID", s.handlerRegistry.providersHandler.GetGithubApp)
+		githubAppGroup.GET("", s.handlerRegistry.providersHandler.ListGithubApp)
+		// Creation & Update
+		githubAppGroup.POST("", s.handlerRegistry.providersHandler.CreateGithubApp)
+		githubAppGroup.PUT("/:ID", s.handlerRegistry.providersHandler.UpdateGithubApp)
+		githubAppGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateGithubAppMeta)
+		githubAppGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteGithubApp)
 	}
 
 	{ // s3 storage group

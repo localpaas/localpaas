@@ -187,7 +187,7 @@ func (h *ProvidersHandler) UpdateSlack(ctx *gin.Context) {
 // @Description Updates Slack meta provider
 // @Tags    providers_slack
 // @Produce json
-// @Id      updateSlackMetaProvider
+// @Id      updateSlackProviderMeta
 // @Param   ID path string true "provider ID"
 // @Param   body body slackdto.UpdateSlackMetaReq true "request data"
 // @Success 200 {object} slackdto.UpdateSlackMetaResp

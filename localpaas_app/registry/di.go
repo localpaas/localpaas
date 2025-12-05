@@ -34,6 +34,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/basicauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/discorduc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/githubappuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/oauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/registryauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/s3storageuc"
@@ -101,6 +102,7 @@ var Provides = []any{
 	registryauthuc.NewRegistryAuthUC,
 	basicauthuc.NewBasicAuthUC,
 	ssluc.NewSslUC,
+	githubappuc.NewGithubAppUC,
 	nginxuc.NewNginxUC,
 	lpappuc.NewLpAppUC,
 

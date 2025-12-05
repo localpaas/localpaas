@@ -1,4 +1,4 @@
-package oauthuc
+package githubappuc
 
 import (
 	"context"
@@ -8,16 +8,16 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/oauthuc/oauthdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/githubappuc/githubappdto"
 )
 
-func (uc *OAuthUC) ListOAuth(
+func (uc *GithubAppUC) ListGithubApp(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *oauthdto.ListOAuthReq,
-) (*oauthdto.ListOAuthResp, error) {
+	req *githubappdto.ListGithubAppReq,
+) (*githubappdto.ListGithubAppResp, error) {
 	listOpts := []bunex.SelectQueryOption{
-		bunex.SelectWhere("setting.type = ?", base.SettingTypeOAuth),
+		bunex.SelectWhere("setting.type = ?", base.SettingTypeGithubApp),
 	}
 
 	if len(req.Status) > 0 {
@@ -43,12 +43,12 @@ func (uc *OAuthUC) ListOAuth(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := oauthdto.TransformOAuths(settings, config.Current.SsoBaseCallbackURL())
+	resp, err := githubappdto.TransformGithubApps(settings, config.Current.SsoBaseCallbackURL())
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &oauthdto.ListOAuthResp{
+	return &githubappdto.ListGithubAppResp{
 		Meta: &basedto.Meta{Page: paging},
 		Data: resp,
 	}, nil

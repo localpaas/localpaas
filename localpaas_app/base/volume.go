@@ -3,8 +3,8 @@ package base
 type VolumeDriver string
 
 const (
-	VolumeDriverLocal     = VolumeDriver("local")
-	VolumeDriverSeaweedFs = VolumeDriver("seaweedfs")
+	VolumeDriverLocal     VolumeDriver = "local"
+	VolumeDriverSeaweedFs VolumeDriver = "seaweedfs"
 )
 
 var (
@@ -14,8 +14,8 @@ var (
 type VolumeType string
 
 const (
-	VolumeTypeVolume = VolumeType("volume")
-	VolumeTypeNfs    = VolumeType("nfs")
+	VolumeTypeVolume VolumeType = "volume"
+	VolumeTypeNfs    VolumeType = "nfs"
 )
 
 var (
@@ -25,8 +25,8 @@ var (
 type VolumeScope string
 
 const (
-	VolumeScopeGlobal = VolumeScope("global")
-	VolumeScopeLocal  = VolumeScope("local")
+	VolumeScopeGlobal VolumeScope = "global"
+	VolumeScopeLocal  VolumeScope = "local"
 )
 
 var (

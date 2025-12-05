@@ -1,0 +1,34 @@
+package entity
+
+import (
+	"github.com/tiendc/gofn"
+
+	"github.com/localpaas/localpaas/localpaas_app/base"
+)
+
+type GithubApp struct {
+	ClientID       string         `json:"clientId"`
+	ClientSecret   EncryptedField `json:"clientSecret"`
+	Organization   string         `json:"org"`
+	WebhookURL     string         `json:"webhookURL"`
+	WebhookSecret  EncryptedField `json:"webhookSecret"`
+	AppID          string         `json:"appId"`
+	InstallationID string         `json:"installationId"`
+	PrivateKey     EncryptedField `json:"privateKey"`
+	SSOEnabled     bool           `json:"ssoEnabled"`
+}
+
+func (s *GithubApp) MustDecrypt() *GithubApp {
+	s.ClientSecret.MustGetPlain()
+	s.WebhookSecret.MustGetPlain()
+	s.PrivateKey.MustGetPlain()
+	return s
+}
+
+func (s *Setting) AsGithubApp() (*GithubApp, error) {
+	return parseSettingAs(s, base.SettingTypeGithubApp, func() *GithubApp { return &GithubApp{} })
+}
+
+func (s *Setting) MustAsGithubApp() *GithubApp {
+	return gofn.Must(s.AsGithubApp())
+}

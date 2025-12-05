@@ -37,13 +37,13 @@ type GetOAuthResp struct {
 
 type OAuthResp struct {
 	ID           string             `json:"id"`
-	Kind         string             `json:"kind,omitempty"`
+	Kind         string             `json:"kind"`
 	Name         string             `json:"name"`
 	Status       base.SettingStatus `json:"status"`
 	ClientID     string             `json:"clientId"`
 	ClientSecret string             `json:"clientSecret"`
 	Organization string             `json:"organization"`
-	CallbackURL  string             `json:"callbackURL,omitempty"`
+	CallbackURL  string             `json:"callbackURL"`
 	AuthURL      string             `json:"authURL,omitempty"`
 	TokenURL     string             `json:"tokenURL,omitempty"`
 	ProfileURL   string             `json:"profileURL,omitempty"`
@@ -72,7 +72,7 @@ func TransformOAuth(setting *entity.Setting, baseCallbackURL string) (resp *OAut
 	}
 
 	// Recalculate callbackURL for the oauth as it depends on the actual server address
-	resp.CallbackURL = baseCallbackURL + "/" + setting.Name
+	resp.CallbackURL = baseCallbackURL + "/" + setting.ID
 	resp.Encrypted = config.ClientSecret.IsEncrypted()
 	if resp.Encrypted {
 		resp.ClientSecret = maskedSecretKey

@@ -186,7 +186,7 @@ func (h *ProvidersHandler) UpdateSSHKey(ctx *gin.Context) {
 // @Description Updates ssh-key meta
 // @Tags    providers_ssh_key
 // @Produce json
-// @Id      updateSSHKeyMetaProvider
+// @Id      updateSSHKeyProviderMeta
 // @Param   ID path string true "provider ID"
 // @Param   body body sshkeydto.UpdateSSHKeyMetaReq true "request data"
 // @Success 200 {object} sshkeydto.UpdateSSHKeyMetaResp

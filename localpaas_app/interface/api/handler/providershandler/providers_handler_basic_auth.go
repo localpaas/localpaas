@@ -186,7 +186,7 @@ func (h *ProvidersHandler) UpdateBasicAuth(ctx *gin.Context) {
 // @Description Updates basic auth meta
 // @Tags    providers_basic_auth
 // @Produce json
-// @Id      updateBasicAuthMetaProvider
+// @Id      updateBasicAuthProviderMeta
 // @Param   ID path string true "provider ID"
 // @Param   body body basicauthdto.UpdateBasicAuthMetaReq true "request data"
 // @Success 200 {object} basicauthdto.UpdateBasicAuthMetaResp

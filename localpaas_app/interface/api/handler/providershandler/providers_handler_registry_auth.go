@@ -187,7 +187,7 @@ func (h *ProvidersHandler) UpdateRegistryAuth(ctx *gin.Context) {
 // @Description Updates registry auth meta
 // @Tags    providers_registry_auth
 // @Produce json
-// @Id      updateRegistryAuthMetaProvider
+// @Id      updateRegistryAuthProviderMeta
 // @Param   ID path string true "provider ID"
 // @Param   body body registryauthdto.UpdateRegistryAuthMetaReq true "request data"
 // @Success 200 {object} registryauthdto.UpdateRegistryAuthMetaResp

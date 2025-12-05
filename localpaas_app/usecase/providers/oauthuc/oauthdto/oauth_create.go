@@ -14,11 +14,9 @@ type CreateOAuthReq struct {
 }
 
 type OAuthBaseReq struct {
-	Name         string   `json:"name"`
 	ClientID     string   `json:"clientId"`
 	ClientSecret string   `json:"clientSecret"`
 	Organization string   `json:"organization"`
-	CallbackURL  string   `json:"callbackURL"`
 	AuthURL      string   `json:"authURL"`
 	TokenURL     string   `json:"tokenURL"`
 	ProfileURL   string   `json:"profileURL"`

@@ -1,20 +1,23 @@
-package oauthuc
+package sessionuc
 
 import (
 	"context"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/oauthuc/oauthdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc/sessiondto"
 )
 
-func (uc *OAuthUC) GetOAuthNoAuth(
+func (uc *SessionUC) GetLoginOAuth(
 	ctx context.Context,
-	req *oauthdto.GetOAuthNoAuthReq,
+	req *sessiondto.GetLoginOAuthReq,
 ) (*oauthdto.OAuthResp, error) {
 	listOpts := []bunex.SelectQueryOption{
-		bunex.SelectWhere("setting.type = ?", base.SettingTypeOAuth),
+		bunex.SelectWhere("setting.type = ? OR setting.type = ?",
+			base.SettingTypeOAuth, base.SettingTypeGithubApp),
 		bunex.SelectLimit(1),
 	}
 	if req.ID != "" {
@@ -39,7 +42,7 @@ func (uc *OAuthUC) GetOAuthNoAuth(
 	}
 
 	settings[0].MustAsOAuth().MustDecrypt()
-	resp, err := oauthdto.TransformOAuth(settings[0], uc.GetOAuthBaseCallbackURL())
+	resp, err := oauthdto.TransformOAuth(settings[0], config.Current.SsoBaseCallbackURL())
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
