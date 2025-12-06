@@ -12,6 +12,7 @@ type CreateGithubAppReq struct {
 }
 
 type GithubAppBaseReq struct {
+	Name           string `json:"name"`
 	ClientID       string `json:"clientId"`
 	ClientSecret   string `json:"clientSecret"`
 	Organization   string `json:"organization"`

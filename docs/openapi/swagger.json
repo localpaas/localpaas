@@ -10297,6 +10297,9 @@
           "installationId" : {
             "type" : "string"
           },
+          "name" : {
+            "type" : "string"
+          },
           "organization" : {
             "type" : "string"
           },
@@ -10313,7 +10316,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "appId", "clientId", "clientSecret", "installationId", "organization", "privateKey", "ssoEnabled", "webhookSecret", "webhookURL" ],
+        "required" : [ "appId", "clientId", "clientSecret", "installationId", "name", "organization", "privateKey", "ssoEnabled", "webhookSecret", "webhookURL" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.CreateGithubAppResp" : {
@@ -10465,6 +10468,9 @@
           "installationId" : {
             "type" : "string"
           },
+          "name" : {
+            "type" : "string"
+          },
           "organization" : {
             "type" : "string"
           },
@@ -10484,7 +10490,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "appId", "clientId", "clientSecret", "installationId", "organization", "privateKey", "ssoEnabled", "updateVer", "webhookSecret", "webhookURL" ],
+        "required" : [ "appId", "clientId", "clientSecret", "installationId", "name", "organization", "privateKey", "ssoEnabled", "updateVer", "webhookSecret", "webhookURL" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.UpdateGithubAppResp" : {
@@ -10507,6 +10513,9 @@
           "clientSecret" : {
             "type" : "string"
           },
+          "name" : {
+            "type" : "string"
+          },
           "oauthType" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.OAuthType"
           },
@@ -10526,7 +10535,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "authURL", "clientId", "clientSecret", "oauthType", "organization", "profileURL", "scopes", "tokenURL" ],
+        "required" : [ "authURL", "clientId", "clientSecret", "name", "oauthType", "organization", "profileURL", "scopes", "tokenURL" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_oauthuc_oauthdto.CreateOAuthResp" : {
@@ -10672,6 +10681,9 @@
           "clientSecret" : {
             "type" : "string"
           },
+          "name" : {
+            "type" : "string"
+          },
           "organization" : {
             "type" : "string"
           },
@@ -10691,7 +10703,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "authURL", "clientId", "clientSecret", "organization", "profileURL", "scopes", "tokenURL", "updateVer" ],
+        "required" : [ "authURL", "clientId", "clientSecret", "name", "organization", "profileURL", "scopes", "tokenURL", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_oauthuc_oauthdto.UpdateOAuthResp" : {

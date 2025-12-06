@@ -81,7 +81,7 @@ func (uc *GithubAppUC) preparePersistingGithubApp(
 		Type:      base.SettingTypeGithubApp,
 		Status:    base.SettingStatusActive,
 		Kind:      string(base.SettingTypeGithubApp),
-		Name:      req.Organization,
+		Name:      gofn.Coalesce(req.Name, req.Organization),
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,
 	}

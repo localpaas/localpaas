@@ -54,8 +54,6 @@ func (uc *OAuthUC) loadOAuthData(
 	req *oauthdto.CreateOAuthReq,
 	_ *createOAuthData,
 ) error {
-	uc.preprocessRequest(req.OAuthType, req.OAuthBaseReq)
-
 	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeOAuth, req.Organization, false)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
@@ -66,17 +64,6 @@ func (uc *OAuthUC) loadOAuthData(
 	}
 
 	return nil
-}
-
-func (uc *OAuthUC) preprocessRequest(
-	oauthType base.OAuthType,
-	req *oauthdto.OAuthBaseReq,
-) {
-	if !base.IsCustomOAuthType(oauthType) {
-		req.AuthURL = ""
-		req.TokenURL = ""
-		req.ProfileURL = ""
-	}
 }
 
 type persistingOAuthData struct {
@@ -94,7 +81,7 @@ func (uc *OAuthUC) preparePersistingOAuth(
 		Type:      base.SettingTypeOAuth,
 		Status:    base.SettingStatusActive,
 		Kind:      string(req.OAuthType),
-		Name:      req.Organization,
+		Name:      gofn.Coalesce(req.Name, req.Organization),
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,
 	}

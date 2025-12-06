@@ -61,7 +61,6 @@ func (uc *OAuthUC) loadOAuthDataForUpdate(
 		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
 	}
 	data.Setting = setting
-	uc.preprocessRequest(base.OAuthType(setting.Kind), req.OAuthBaseReq)
 
 	// If name changes, validate the new one
 	if req.Organization != "" && !strings.EqualFold(setting.Name, req.Organization) {
@@ -82,7 +81,7 @@ func (uc *OAuthUC) prepareUpdatingOAuth(
 ) {
 	timeNow := timeutil.NowUTC()
 	setting := data.Setting
-	setting.Name = gofn.Coalesce(req.Organization, setting.Name)
+	setting.Name = gofn.Coalesce(req.Name, req.Organization, setting.Name)
 
 	oauth := &entity.OAuth{
 		ClientID:     req.ClientID,

@@ -81,7 +81,7 @@ func (uc *GithubAppUC) prepareUpdatingGithubApp(
 ) {
 	timeNow := timeutil.NowUTC()
 	setting := data.Setting
-	setting.Name = gofn.Coalesce(req.Organization, setting.Name)
+	setting.Name = gofn.Coalesce(req.Name, req.Organization, setting.Name)
 
 	githubApp := &entity.GithubApp{
 		ClientID:       req.ClientID,
