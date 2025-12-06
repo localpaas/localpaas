@@ -10836,7 +10836,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.CreateGithubAppResp" : {
         "properties" : {
           "data" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.GithubAppCreationResp"
           },
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
@@ -10864,6 +10864,18 @@
           }
         },
         "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.GithubAppCreationResp" : {
+        "properties" : {
+          "callbackURL" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "callbackURL", "id" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.GithubAppResp" : {
@@ -11340,7 +11352,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_oauthuc_oauthdto.CreateOAuthResp" : {
         "properties" : {
           "data" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_oauthuc_oauthdto.OAuthCreationResp"
           },
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
@@ -11383,6 +11395,18 @@
           }
         },
         "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_oauthuc_oauthdto.OAuthCreationResp" : {
+        "properties" : {
+          "callbackURL" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "callbackURL", "id" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_oauthuc_oauthdto.OAuthResp" : {

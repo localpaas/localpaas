@@ -9,6 +9,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
@@ -41,7 +42,10 @@ func (uc *GithubAppUC) CreateGithubApp(
 
 	createdItem := persistingData.UpsertingSettings[0]
 	return &githubappdto.CreateGithubAppResp{
-		Data: &basedto.ObjectIDResp{ID: createdItem.ID},
+		Data: &githubappdto.GithubAppCreationResp{
+			ID:          createdItem.ID,
+			CallbackURL: config.Current.SsoBaseCallbackURL() + "/" + createdItem.ID,
+		},
 	}, nil
 }
 

@@ -42,6 +42,11 @@ func (req *CreateOAuthReq) Validate() apperrors.ValidationErrors {
 }
 
 type CreateOAuthResp struct {
-	Meta *basedto.BaseMeta     `json:"meta"`
-	Data *basedto.ObjectIDResp `json:"data"`
+	Meta *basedto.BaseMeta  `json:"meta"`
+	Data *OAuthCreationResp `json:"data"`
+}
+
+type OAuthCreationResp struct {
+	ID          string `json:"id"`
+	CallbackURL string `json:"callbackURL"`
 }

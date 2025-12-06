@@ -57,6 +57,11 @@ func (req *CreateGithubAppReq) Validate() apperrors.ValidationErrors {
 }
 
 type CreateGithubAppResp struct {
-	Meta *basedto.BaseMeta     `json:"meta"`
-	Data *basedto.ObjectIDResp `json:"data"`
+	Meta *basedto.BaseMeta      `json:"meta"`
+	Data *GithubAppCreationResp `json:"data"`
+}
+
+type GithubAppCreationResp struct {
+	ID          string `json:"id"`
+	CallbackURL string `json:"callbackURL"`
 }
