@@ -4,7 +4,7 @@ import "net/http"
 
 var (
 	DefaultClient = func() *http.Client {
-		return &http.Client{Transport: &http.Transport{Proxy: http.ProxyFromEnvironment}}
+		return &http.Client{Transport: http.DefaultTransport}
 	}()
 )
 
