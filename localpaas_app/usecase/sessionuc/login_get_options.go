@@ -13,11 +13,8 @@ import (
 
 var (
 	mapProviderIcon = map[base.OAuthType]string{
-		base.OAuthTypeGithub:       "github",
-		base.OAuthTypeGithubApp:    "github",
-		base.OAuthTypeGitlab:       "gitlab",
+		base.OAuthTypeGithubApp:    "github", // icon mapping for special oauth types only
 		base.OAuthTypeGitlabCustom: "gitlab",
-		base.OAuthTypeGoogle:       "google",
 	}
 )
 

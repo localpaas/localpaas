@@ -1,13 +1,12 @@
 package base
 
-import "github.com/tiendc/gofn"
-
 type OAuthType string
 
 const (
 	OAuthTypeGithub    OAuthType = "github"
 	OAuthTypeGithubApp OAuthType = "github-app"
 	OAuthTypeGitlab    OAuthType = "gitlab"
+	OAuthTypeGitea     OAuthType = "gitea"
 	OAuthTypeGoogle    OAuthType = "google"
 
 	// Custom OAuth types
@@ -15,8 +14,8 @@ const (
 )
 
 var (
-	AllOAuthTypes = []OAuthType{OAuthTypeGithub, OAuthTypeGithubApp, OAuthTypeGitlab, OAuthTypeGoogle,
-		OAuthTypeGitlabCustom}
+	AllOAuthTypes = []OAuthType{OAuthTypeGithub, OAuthTypeGithubApp, OAuthTypeGitlab, OAuthTypeGitea,
+		OAuthTypeGoogle, OAuthTypeGitlabCustom}
 )
 
 func IsCustomOAuthType(typ OAuthType) bool {
@@ -26,8 +25,4 @@ func IsCustomOAuthType(typ OAuthType) bool {
 	default:
 		return false
 	}
-}
-
-func IsValidOAuthType(typ OAuthType) bool {
-	return gofn.Contain(AllOAuthTypes, typ)
 }

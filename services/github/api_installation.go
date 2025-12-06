@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/google/go-github/v75/github"
+	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -16,7 +17,7 @@ func (app *App) ListInstallations(ctx context.Context, paging *basedto.Paging) (
 		Page:    0,
 	}
 	if paging != nil {
-		opts.Page = paging.Offset / paging.Limit
+		opts.Page = paging.Offset / gofn.Coalesce(paging.Limit, 1)
 		opts.PerPage = paging.Limit
 	}
 	output, _, err := app.client.Apps.ListInstallations(ctx, opts)

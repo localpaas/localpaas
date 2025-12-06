@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
+	"github.com/markbates/goth/providers/gitea"
 	"github.com/markbates/goth/providers/github"
 	"github.com/markbates/goth/providers/gitlab"
 	"github.com/markbates/goth/providers/google"
@@ -57,14 +58,15 @@ func (h *SessionHandler) SSOOAuthBegin(ctx *gin.Context) {
 		gothProvider = github.New(oauth.ClientID, oauth.ClientSecret, baseCallbackURL+"/"+provider, oauth.Scopes...)
 	case base.OAuthTypeGitlab:
 		gothProvider = gitlab.New(oauth.ClientID, oauth.ClientSecret, baseCallbackURL+"/"+provider, oauth.Scopes...)
+	case base.OAuthTypeGitea:
+		gothProvider = gitea.New(oauth.ClientID, oauth.ClientSecret, baseCallbackURL+"/"+provider, oauth.Scopes...)
 	case base.OAuthTypeGoogle:
 		gothProvider = google.New(oauth.ClientID, oauth.ClientSecret, baseCallbackURL+"/"+provider, oauth.Scopes...)
 
 	// Custom types
 	case base.OAuthTypeGitlabCustom:
 		gothProvider = gitlab.NewCustomisedURL(oauth.ClientID, oauth.ClientSecret,
-			baseCallbackURL+"/"+provider, oauth.AuthURL, oauth.TokenURL, oauth.ProfileURL,
-			oauth.Scopes...)
+			baseCallbackURL+"/"+provider, oauth.AuthURL, oauth.TokenURL, oauth.ProfileURL, oauth.Scopes...)
 	}
 	gothProvider.SetName(provider)
 	goth.UseProviders(gothProvider)

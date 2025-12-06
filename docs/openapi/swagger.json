@@ -8252,9 +8252,9 @@
         "x-enum-varnames" : [ "NodeStatusUnknown", "NodeStatusDown", "NodeStatusReady", "NodeStatusDisconnected" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.OAuthType" : {
-        "enum" : [ "github", "github-app", "gitlab", "google", "gitlab-custom" ],
+        "enum" : [ "github", "github-app", "gitlab", "gitea", "google", "gitlab-custom" ],
         "type" : "string",
-        "x-enum-varnames" : [ "OAuthTypeGithub", "OAuthTypeGithubApp", "OAuthTypeGitlab", "OAuthTypeGoogle", "OAuthTypeGitlabCustom" ]
+        "x-enum-varnames" : [ "OAuthTypeGithub", "OAuthTypeGithubApp", "OAuthTypeGitlab", "OAuthTypeGitea", "OAuthTypeGoogle", "OAuthTypeGitlabCustom" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.ProjectStatus" : {
         "enum" : [ "active", "locked", "disabled", "deleting" ],
