@@ -45,8 +45,10 @@ func NewSettingRepo() SettingRepo {
 func (repo *settingRepo) GetByID(ctx context.Context, db database.IDB, typ base.SettingType, id string, active bool,
 	opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
 	setting := &entity.Setting{}
-	query := db.NewSelect().Model(setting).Where("setting.id = ?", id).
-		Where("setting.type = ?", typ)
+	query := db.NewSelect().Model(setting).Where("setting.id = ?", id)
+	if typ != "" {
+		query = query.Where("setting.type = ?", typ)
+	}
 	if active {
 		query = query.Where("setting.status = ?", base.SettingStatusActive)
 	}

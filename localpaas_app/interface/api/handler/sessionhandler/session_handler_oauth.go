@@ -4,15 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
-	"github.com/markbates/goth/providers/gitea"
-	"github.com/markbates/goth/providers/github"
-	"github.com/markbates/goth/providers/gitlab"
-	"github.com/markbates/goth/providers/google"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc/sessiondto"
 )
@@ -37,39 +31,11 @@ func (h *SessionHandler) SSOOAuthBegin(ctx *gin.Context) {
 		return
 	}
 
-	oauth, err := h.sessionUC.GetLoginOAuth(ctx, &sessiondto.GetLoginOAuthReq{
-		ID:     provider,
-		Status: []base.SettingStatus{base.SettingStatusActive},
-	})
+	err = h.sessionUC.InitOAuthProvider(ctx, &sessiondto.InitOAuthProviderReq{Name: provider})
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
-	if oauth == nil {
-		h.RenderError(ctx, apperrors.New(apperrors.ErrUnavailable).
-			WithMsgLog("OAuth %s is not configured", provider))
-		return
-	}
-
-	baseCallbackURL := config.Current.SsoBaseCallbackURL()
-	var gothProvider goth.Provider
-	switch base.OAuthType(oauth.Kind) {
-	case base.OAuthTypeGithub, base.OAuthTypeGithubApp:
-		gothProvider = github.New(oauth.ClientID, oauth.ClientSecret, baseCallbackURL+"/"+provider, oauth.Scopes...)
-	case base.OAuthTypeGitlab:
-		gothProvider = gitlab.New(oauth.ClientID, oauth.ClientSecret, baseCallbackURL+"/"+provider, oauth.Scopes...)
-	case base.OAuthTypeGitea:
-		gothProvider = gitea.New(oauth.ClientID, oauth.ClientSecret, baseCallbackURL+"/"+provider, oauth.Scopes...)
-	case base.OAuthTypeGoogle:
-		gothProvider = google.New(oauth.ClientID, oauth.ClientSecret, baseCallbackURL+"/"+provider, oauth.Scopes...)
-
-	// Custom types
-	case base.OAuthTypeGitlabCustom:
-		gothProvider = gitlab.NewCustomisedURL(oauth.ClientID, oauth.ClientSecret,
-			baseCallbackURL+"/"+provider, oauth.AuthURL, oauth.TokenURL, oauth.ProfileURL, oauth.Scopes...)
-	}
-	gothProvider.SetName(provider)
-	goth.UseProviders(gothProvider)
 
 	q := ctx.Request.URL.Query()
 	q.Add("provider", provider)
