@@ -19,7 +19,7 @@ func (c *Client) PostWebhook(ctx context.Context, webhookURL, channel, text stri
 	for _, opt := range options {
 		opt(msg)
 	}
-	err := slack.PostWebhookCustomHTTPContext(ctx, webhookURL, c.httpClient, msg)
+	err := slack.PostWebhookCustomHTTPContext(ctx, webhookURL, c.getHttpClient(), msg)
 	if err != nil {
 		return apperrors.New(err)
 	}
