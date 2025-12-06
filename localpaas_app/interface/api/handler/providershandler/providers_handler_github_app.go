@@ -280,8 +280,8 @@ func (h *ProvidersHandler) DeleteGithubApp(ctx *gin.Context) {
 // @Tags    providers_github_app
 // @Produce json
 // @Id      testGithubAppConn
-// @Param   body body githubappdto.TestConnectGithubAppReq true "request data"
-// @Success 200 {object} githubappdto.TestConnectGithubAppResp
+// @Param   body body githubappdto.TestGithubAppConnReq true "request data"
+// @Success 200 {object} githubappdto.TestGithubAppConnResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/github-apps/test-conn [post]
@@ -292,13 +292,13 @@ func (h *ProvidersHandler) TestGithubAppConn(ctx *gin.Context) {
 		return
 	}
 
-	req := githubappdto.NewTestConnectGithubAppReq()
+	req := githubappdto.NewTestGithubAppConnReq()
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.githubAppUC.TestConnectGithubApp(h.RequestCtx(ctx), auth, req)
+	resp, err := h.githubAppUC.TestGithubAppConn(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

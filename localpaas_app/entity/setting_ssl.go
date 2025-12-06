@@ -1,8 +1,6 @@
 package entity
 
 import (
-	"time"
-
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -14,7 +12,6 @@ type Ssl struct {
 	KeySize     int              `json:"keySize"`
 	Provider    base.SslProvider `json:"provider,omitempty"`
 	Email       string           `json:"email"`
-	Expiration  time.Time        `json:"expiration,omitzero"`
 }
 
 func (o *Ssl) MustDecrypt() *Ssl {

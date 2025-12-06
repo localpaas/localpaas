@@ -36,6 +36,7 @@ const (
 	ResourceTypeBasicAuth    ResourceType = "basic-auth"
 	ResourceTypeSsl          ResourceType = "ssl"
 	ResourceTypeGithubApp    ResourceType = "github-app"
+	ResourceTypeGitToken     ResourceType = "git-token"
 )
 
 type ResourceModule string

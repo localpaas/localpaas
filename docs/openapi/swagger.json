@@ -3716,6 +3716,393 @@
         "x-codegen-request-body-name" : "body"
       }
     },
+    "/providers/git-tokens" : {
+      "get" : {
+        "description" : "Lists git-token providers",
+        "operationId" : "listGitTokenProviders",
+        "parameters" : [ {
+          "description" : "`search=<target> (support *)`",
+          "in" : "query",
+          "name" : "search",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`pageOffset=offset`",
+          "in" : "query",
+          "name" : "pageOffset",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`pageLimit=limit`",
+          "in" : "query",
+          "name" : "pageLimit",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`sort=[-]field1|field2...`",
+          "in" : "query",
+          "name" : "sort",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.ListGitTokenResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Lists git-token providers",
+        "tags" : [ "providers_git_token" ]
+      },
+      "post" : {
+        "description" : "Creates a new git-token provider",
+        "operationId" : "createGitTokenProvider",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.CreateGitTokenReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.CreateGitTokenResp"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Creates a new git-token provider",
+        "tags" : [ "providers_git_token" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/providers/git-tokens/test-conn" : {
+      "post" : {
+        "description" : "Test git-token connection",
+        "operationId" : "testGitTokenConn",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.TestGitTokenConnReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.TestGitTokenConnResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Test git-token connection",
+        "tags" : [ "providers_git_token" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/providers/git-tokens/{ID}" : {
+      "delete" : {
+        "description" : "Deletes git-token provider",
+        "operationId" : "deleteGitTokenProvider",
+        "parameters" : [ {
+          "description" : "provider ID",
+          "in" : "path",
+          "name" : "ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.DeleteGitTokenResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Deletes git-token provider",
+        "tags" : [ "providers_git_token" ]
+      },
+      "get" : {
+        "description" : "Gets git-token provider details",
+        "operationId" : "getGitTokenProvider",
+        "parameters" : [ {
+          "description" : "provider ID",
+          "in" : "path",
+          "name" : "ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.GetGitTokenResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Gets git-token provider details",
+        "tags" : [ "providers_git_token" ]
+      },
+      "put" : {
+        "description" : "Updates git-token",
+        "operationId" : "updateGitTokenProvider",
+        "parameters" : [ {
+          "description" : "provider ID",
+          "in" : "path",
+          "name" : "ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.UpdateGitTokenReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.UpdateGitTokenResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates git-token",
+        "tags" : [ "providers_git_token" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/providers/git-tokens/{ID}/meta" : {
+      "put" : {
+        "description" : "Updates git-token meta",
+        "operationId" : "updateGitTokenProviderMeta",
+        "parameters" : [ {
+          "description" : "provider ID",
+          "in" : "path",
+          "name" : "ID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.UpdateGitTokenMetaReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.UpdateGitTokenMetaResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates git-token meta",
+        "tags" : [ "providers_git_token" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
     "/providers/github-apps" : {
       "get" : {
         "description" : "Lists github-app providers",
@@ -3895,7 +4282,7 @@
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.TestConnectGithubAppReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.TestGithubAppConnReq"
               }
             }
           },
@@ -3907,7 +4294,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.TestConnectGithubAppResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.TestGithubAppConnResp"
                 }
               }
             },
@@ -8231,6 +8618,11 @@
         "type" : "string",
         "x-enum-varnames" : [ "AppStatusActive", "AppStatusLocked", "AppStatusDisabled", "AppStatusDeleting" ]
       },
+      "github_com_localpaas_localpaas_localpaas_app_base.GitTokenType" : {
+        "enum" : [ "github", "gitlab", "gitlab-custom", "gitea" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "GitTokenTypeGithub", "GitTokenTypeGitlab", "GitTokenTypeGitlabCustom", "GitTokenTypeGitea" ]
+      },
       "github_com_localpaas_localpaas_localpaas_app_base.MFAType" : {
         "enum" : [ "totp", "email" ],
         "type" : "string",
@@ -10603,7 +10995,7 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.TestConnectGithubAppReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.TestGithubAppConnReq" : {
         "properties" : {
           "appId" : {
             "type" : "integer"
@@ -10639,7 +11031,7 @@
         "required" : [ "appId", "clientId", "clientSecret", "installationId", "name", "organization", "privateKey", "ssoEnabled", "webhookSecret", "webhookURL" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.TestConnectGithubAppResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.TestGithubAppConnResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
@@ -10712,6 +11104,195 @@
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_githubappuc_githubappdto.UpdateGithubAppResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.CreateGitTokenReq" : {
+        "properties" : {
+          "expireAt" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "token" : {
+            "type" : "string"
+          },
+          "tokenType" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.GitTokenType"
+          },
+          "user" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "expireAt", "name", "token", "tokenType", "user" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.CreateGitTokenResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.DeleteGitTokenResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.GetGitTokenResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.GitTokenResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.GitTokenResp" : {
+        "properties" : {
+          "createdAt" : {
+            "type" : "string"
+          },
+          "encrypted" : {
+            "type" : "boolean"
+          },
+          "expireAt" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "kind" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          },
+          "token" : {
+            "type" : "string"
+          },
+          "updateVer" : {
+            "type" : "integer"
+          },
+          "updatedAt" : {
+            "type" : "string"
+          },
+          "user" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "createdAt", "id", "kind", "name", "status", "token", "updateVer", "updatedAt", "user" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.ListGitTokenResp" : {
+        "properties" : {
+          "data" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.GitTokenResp"
+            },
+            "type" : "array"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.TestGitTokenConnReq" : {
+        "properties" : {
+          "expireAt" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "token" : {
+            "type" : "string"
+          },
+          "user" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "expireAt", "name", "token", "user" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.TestGitTokenConnResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.UpdateGitTokenMetaReq" : {
+        "properties" : {
+          "expireAt" : {
+            "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          },
+          "updateVer" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "expireAt", "status", "updateVer" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.UpdateGitTokenMetaResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.UpdateGitTokenReq" : {
+        "properties" : {
+          "expireAt" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "token" : {
+            "type" : "string"
+          },
+          "updateVer" : {
+            "type" : "integer"
+          },
+          "user" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "expireAt", "name", "token", "updateVer", "user" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.UpdateGitTokenResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
@@ -11942,7 +12523,7 @@
           "email" : {
             "type" : "string"
           },
-          "expiration" : {
+          "expireAt" : {
             "type" : "string"
           },
           "keySize" : {
@@ -11958,7 +12539,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SslProvider"
           }
         },
-        "required" : [ "certificate", "email", "expiration", "keySize", "name", "privateKey", "provider" ],
+        "required" : [ "certificate", "email", "expireAt", "keySize", "name", "privateKey", "provider" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_ssluc_ssldto.CreateSslResp" : {
@@ -12023,9 +12604,6 @@
           "encrypted" : {
             "type" : "boolean"
           },
-          "expiration" : {
-            "type" : "string"
-          },
           "expireAt" : {
             "type" : "string"
           },
@@ -12054,7 +12632,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "certificate", "createdAt", "email", "expiration", "id", "keySize", "name", "privateKey", "provider", "status", "updateVer", "updatedAt" ],
+        "required" : [ "certificate", "createdAt", "email", "id", "keySize", "name", "privateKey", "provider", "status", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_ssluc_ssldto.UpdateSslMetaReq" : {
@@ -12089,7 +12667,7 @@
           "email" : {
             "type" : "string"
           },
-          "expiration" : {
+          "expireAt" : {
             "type" : "string"
           },
           "keySize" : {
@@ -12108,7 +12686,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "certificate", "email", "expiration", "keySize", "name", "privateKey", "provider", "updateVer" ],
+        "required" : [ "certificate", "email", "expireAt", "keySize", "name", "privateKey", "provider", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_ssluc_ssldto.UpdateSslResp" : {

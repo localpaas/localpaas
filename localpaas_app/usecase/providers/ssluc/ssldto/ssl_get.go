@@ -44,7 +44,6 @@ type SslResp struct {
 	KeySize     int                `json:"keySize"`
 	Provider    string             `json:"provider"`
 	Email       string             `json:"email"`
-	Expiration  *time.Time         `json:"expiration" copy:",nilonzero"`
 	Encrypted   bool               `json:"encrypted,omitempty"`
 	UpdateVer   int                `json:"updateVer"`
 

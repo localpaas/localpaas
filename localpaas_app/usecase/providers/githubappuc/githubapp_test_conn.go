@@ -10,11 +10,11 @@ import (
 	"github.com/localpaas/localpaas/services/github"
 )
 
-func (uc *GithubAppUC) TestConnectGithubApp(
+func (uc *GithubAppUC) TestGithubAppConn(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *githubappdto.TestConnectGithubAppReq,
-) (*githubappdto.TestConnectGithubAppResp, error) {
+	req *githubappdto.TestGithubAppConnReq,
+) (*githubappdto.TestGithubAppConnResp, error) {
 	app, err := github.NewApp(req.AppID, req.InstallationID, reflectutil.UnsafeStrToBytes(req.PrivateKey))
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -25,5 +25,5 @@ func (uc *GithubAppUC) TestConnectGithubApp(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &githubappdto.TestConnectGithubAppResp{}, nil
+	return &githubappdto.TestGithubAppConnResp{}, nil
 }

@@ -1,4 +1,4 @@
-package ssluc
+package gittokenuc
 
 import (
 	"context"
@@ -14,23 +14,23 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/ssluc/ssldto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/gittokenuc/gittokendto"
 )
 
-func (uc *SslUC) UpdateSsl(
+func (uc *GitTokenUC) UpdateGitToken(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *ssldto.UpdateSslReq,
-) (*ssldto.UpdateSslResp, error) {
+	req *gittokendto.UpdateGitTokenReq,
+) (*gittokendto.UpdateGitTokenResp, error) {
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
-		sslData := &updateSslData{}
-		err := uc.loadSslDataForUpdate(ctx, db, req, sslData)
+		tokenData := &updateGitTokenData{}
+		err := uc.loadGitTokenDataForUpdate(ctx, db, req, tokenData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
 
-		persistingData := &persistingSslData{}
-		uc.prepareUpdatingSsl(req.SslBaseReq, sslData, persistingData)
+		persistingData := &persistingGitTokenData{}
+		uc.prepareUpdatingGitToken(req.GitTokenBaseReq, tokenData, persistingData)
 
 		return uc.persistData(ctx, db, persistingData)
 	})
@@ -38,20 +38,20 @@ func (uc *SslUC) UpdateSsl(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &ssldto.UpdateSslResp{}, nil
+	return &gittokendto.UpdateGitTokenResp{}, nil
 }
 
-type updateSslData struct {
+type updateGitTokenData struct {
 	Setting *entity.Setting
 }
 
-func (uc *SslUC) loadSslDataForUpdate(
+func (uc *GitTokenUC) loadGitTokenDataForUpdate(
 	ctx context.Context,
 	db database.IDB,
-	req *ssldto.UpdateSslReq,
-	data *updateSslData,
+	req *gittokendto.UpdateGitTokenReq,
+	data *updateGitTokenData,
 ) error {
-	setting, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeSsl, req.ID, false,
+	setting, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeGitToken, req.ID, false,
 		bunex.SelectFor("UPDATE OF setting"),
 	)
 	if err != nil {
@@ -64,35 +64,33 @@ func (uc *SslUC) loadSslDataForUpdate(
 
 	// If name changes, validate the new one
 	if req.Name != "" && !strings.EqualFold(setting.Name, req.Name) {
-		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeSsl, req.Name, false)
+		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeGitToken, req.Name, false)
 		if conflictSetting != nil {
-			return apperrors.NewAlreadyExist("SSL").
-				WithMsgLog("ssl '%s' already exists", conflictSetting.Name)
+			return apperrors.NewAlreadyExist("GitToken").
+				WithMsgLog("git token '%s' already exists", conflictSetting.Name)
 		}
 	}
 
 	return nil
 }
 
-func (uc *SslUC) prepareUpdatingSsl(
-	req *ssldto.SslBaseReq,
-	data *updateSslData,
-	persistingData *persistingSslData,
+func (uc *GitTokenUC) prepareUpdatingGitToken(
+	req *gittokendto.GitTokenBaseReq,
+	data *updateGitTokenData,
+	persistingData *persistingGitTokenData,
 ) {
 	timeNow := timeutil.NowUTC()
 	setting := data.Setting
 	setting.UpdateVer++
 	setting.UpdatedAt = timeNow
 	setting.Name = gofn.Coalesce(req.Name, setting.Name)
+	setting.ExpireAt = req.ExpireAt
 
-	ssl := &entity.Ssl{
-		Certificate: req.Certificate,
-		PrivateKey:  entity.NewEncryptedField(req.PrivateKey),
-		KeySize:     req.KeySize,
-		Provider:    req.Provider,
-		Email:       req.Email,
+	githubApp := &entity.GitToken{
+		User:  req.User,
+		Token: entity.NewEncryptedField(req.Token),
 	}
-	setting.MustSetData(ssl)
+	setting.MustSetData(githubApp)
 
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 }

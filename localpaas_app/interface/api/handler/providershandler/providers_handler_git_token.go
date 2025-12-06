@@ -1,0 +1,308 @@
+package providershandler
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
+	"github.com/localpaas/localpaas/localpaas_app/permission"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/gittokenuc/gittokendto"
+)
+
+// To keep `apperrors` pkg imported and swag gen won't fail
+type _ *apperrors.ErrorInfo
+
+// ListGitToken Lists git-token providers
+// @Summary Lists git-token providers
+// @Description Lists git-token providers
+// @Tags    providers_git_token
+// @Produce json
+// @Id      listGitTokenProviders
+// @Param   search query string false "`search=<target> (support *)`"
+// @Param   pageOffset query int false "`pageOffset=offset`"
+// @Param   pageLimit query int false "`pageLimit=limit`"
+// @Param   sort query string false "`sort=[-]field1|field2...`"
+// @Success 200 {object} gittokendto.ListGitTokenResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /providers/git-tokens [get]
+func (h *ProvidersHandler) ListGitToken(ctx *gin.Context) {
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceModule: base.ResourceModuleProvider,
+		ResourceType:   base.ResourceTypeGitToken,
+		Action:         base.ActionTypeRead,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := gittokendto.NewListGitTokenReq()
+	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.gitTokenUC.ListGitToken(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
+// GetGitToken Gets git-token provider details
+// @Summary Gets git-token provider details
+// @Description Gets git-token provider details
+// @Tags    providers_git_token
+// @Produce json
+// @Id      getGitTokenProvider
+// @Param   ID path string true "provider ID"
+// @Success 200 {object} gittokendto.GetGitTokenResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /providers/git-tokens/{ID} [get]
+func (h *ProvidersHandler) GetGitToken(ctx *gin.Context) {
+	id, err := h.ParseStringParam(ctx, "ID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceModule: base.ResourceModuleProvider,
+		ResourceType:   base.ResourceTypeGitToken,
+		ResourceID:     id,
+		Action:         base.ActionTypeRead,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := gittokendto.NewGetGitTokenReq()
+	req.ID = id
+	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.gitTokenUC.GetGitToken(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
+// CreateGitToken Creates a new git-token provider
+// @Summary Creates a new git-token provider
+// @Description Creates a new git-token provider
+// @Tags    providers_git_token
+// @Produce json
+// @Id      createGitTokenProvider
+// @Param   body body gittokendto.CreateGitTokenReq true "request data"
+// @Success 201 {object} gittokendto.CreateGitTokenResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /providers/git-tokens [post]
+func (h *ProvidersHandler) CreateGitToken(ctx *gin.Context) {
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceModule: base.ResourceModuleProvider,
+		ResourceType:   base.ResourceTypeGitToken,
+		Action:         base.ActionTypeWrite,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := gittokendto.NewCreateGitTokenReq()
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.gitTokenUC.CreateGitToken(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, resp)
+}
+
+// UpdateGitToken Updates git-token
+// @Summary Updates git-token
+// @Description Updates git-token
+// @Tags    providers_git_token
+// @Produce json
+// @Id      updateGitTokenProvider
+// @Param   ID path string true "provider ID"
+// @Param   body body gittokendto.UpdateGitTokenReq true "request data"
+// @Success 200 {object} gittokendto.UpdateGitTokenResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /providers/git-tokens/{ID} [put]
+func (h *ProvidersHandler) UpdateGitToken(ctx *gin.Context) {
+	id, err := h.ParseStringParam(ctx, "ID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceModule: base.ResourceModuleProvider,
+		ResourceType:   base.ResourceTypeGitToken,
+		ResourceID:     id,
+		Action:         base.ActionTypeWrite,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := gittokendto.NewUpdateGitTokenReq()
+	req.ID = id
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.gitTokenUC.UpdateGitToken(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
+// UpdateGitTokenMeta Updates git-token meta
+// @Summary Updates git-token meta
+// @Description Updates git-token meta
+// @Tags    providers_git_token
+// @Produce json
+// @Id      updateGitTokenProviderMeta
+// @Param   ID path string true "provider ID"
+// @Param   body body gittokendto.UpdateGitTokenMetaReq true "request data"
+// @Success 200 {object} gittokendto.UpdateGitTokenMetaResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /providers/git-tokens/{ID}/meta [put]
+func (h *ProvidersHandler) UpdateGitTokenMeta(ctx *gin.Context) {
+	id, err := h.ParseStringParam(ctx, "ID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceModule: base.ResourceModuleProvider,
+		ResourceType:   base.ResourceTypeGitToken,
+		ResourceID:     id,
+		Action:         base.ActionTypeWrite,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := gittokendto.NewUpdateGitTokenMetaReq()
+	req.ID = id
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.gitTokenUC.UpdateGitTokenMeta(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
+// DeleteGitToken Deletes git-token provider
+// @Summary Deletes git-token provider
+// @Description Deletes git-token provider
+// @Tags    providers_git_token
+// @Produce json
+// @Id      deleteGitTokenProvider
+// @Param   ID path string true "provider ID"
+// @Success 200 {object} gittokendto.DeleteGitTokenResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /providers/git-tokens/{ID} [delete]
+func (h *ProvidersHandler) DeleteGitToken(ctx *gin.Context) {
+	id, err := h.ParseStringParam(ctx, "ID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceModule: base.ResourceModuleProvider,
+		ResourceType:   base.ResourceTypeGitToken,
+		ResourceID:     id,
+		Action:         base.ActionTypeDelete,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := gittokendto.NewDeleteGitTokenReq()
+	req.ID = id
+	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.gitTokenUC.DeleteGitToken(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
+// TestGitTokenConn Test git-token connection
+// @Summary Test git-token connection
+// @Description Test git-token connection
+// @Tags    providers_git_token
+// @Produce json
+// @Id      testGitTokenConn
+// @Param   body body gittokendto.TestGitTokenConnReq true "request data"
+// @Success 200 {object} gittokendto.TestGitTokenConnResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /providers/git-tokens/test-conn [post]
+func (h *ProvidersHandler) TestGitTokenConn(ctx *gin.Context) {
+	auth, err := h.authHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := gittokendto.NewTestGitTokenConnReq()
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.gitTokenUC.TestGitTokenConn(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}

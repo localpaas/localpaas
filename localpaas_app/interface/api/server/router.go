@@ -262,6 +262,20 @@ func (s *HTTPServer) registerRoutes() {
 		githubAppGroup.POST("/installations/list", s.handlerRegistry.providersHandler.ListAppInstallation)
 	}
 
+	{ // git-token group
+		gitTokenGroup := providerGroup.Group("/git-tokens")
+		// Info
+		gitTokenGroup.GET("/:ID", s.handlerRegistry.providersHandler.GetGitToken)
+		gitTokenGroup.GET("", s.handlerRegistry.providersHandler.ListGitToken)
+		// Creation & Update
+		gitTokenGroup.POST("", s.handlerRegistry.providersHandler.CreateGitToken)
+		gitTokenGroup.PUT("/:ID", s.handlerRegistry.providersHandler.UpdateGitToken)
+		gitTokenGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateGitTokenMeta)
+		gitTokenGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteGitToken)
+		// Test connection
+		gitTokenGroup.POST("/test-conn", s.handlerRegistry.providersHandler.TestGitTokenConn)
+	}
+
 	{ // s3 storage group
 		s3StorageGroup := providerGroup.Group("/s3-storages")
 		// Info

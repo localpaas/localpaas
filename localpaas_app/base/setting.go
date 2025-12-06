@@ -22,6 +22,7 @@ const (
 	SettingTypeBasicAuth     SettingType = "basic-auth"
 	SettingTypeSsl           SettingType = "ssl"
 	SettingTypeGithubApp     SettingType = "github-app"
+	SettingTypeGitToken      SettingType = "git-token"
 )
 
 var (

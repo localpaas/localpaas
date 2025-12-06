@@ -27,7 +27,7 @@ type SslBaseReq struct {
 	KeySize     int              `json:"keySize"`
 	Provider    base.SslProvider `json:"provider"`
 	Email       string           `json:"email"`
-	Expiration  time.Time        `json:"expiration"`
+	ExpireAt    time.Time        `json:"expireAt"`
 }
 
 func (req *SslBaseReq) modifyRequest() error {
