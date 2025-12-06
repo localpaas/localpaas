@@ -4,6 +4,8 @@ import (
 	"context"
 	"strings"
 
+	"github.com/tiendc/gofn"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -79,15 +81,14 @@ func (uc *DiscordUC) prepareUpdatingDiscord(
 ) {
 	timeNow := timeutil.NowUTC()
 	setting := data.Setting
+	setting.Name = gofn.Coalesce(req.Name, setting.Name)
+	setting.UpdateVer++
+	setting.UpdatedAt = timeNow
 
-	if req.Name != "" {
-		setting.Name = req.Name
-	}
 	discord := &entity.Discord{
 		Webhook: entity.NewEncryptedField(req.Webhook),
 	}
 	setting.MustSetData(discord)
 
-	setting.UpdatedAt = timeNow
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 }

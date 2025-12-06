@@ -61,6 +61,8 @@ func (uc *SSHKeyUC) prepareUpdatingSSHKeyMeta(
 ) {
 	timeNow := timeutil.NowUTC()
 	setting := data.Setting
+	setting.UpdateVer++
+	setting.UpdatedAt = timeNow
 
 	if req.Status != nil {
 		setting.Status = *req.Status
@@ -68,8 +70,6 @@ func (uc *SSHKeyUC) prepareUpdatingSSHKeyMeta(
 	if req.ExpireAt != nil {
 		setting.ExpireAt = *req.ExpireAt
 	}
-
-	setting.UpdatedAt = timeNow
 }
 
 func (uc *SSHKeyUC) persistSSHKeyMeta(
@@ -78,7 +78,7 @@ func (uc *SSHKeyUC) persistSSHKeyMeta(
 	data *updateSSHKeyData,
 ) error {
 	err := uc.settingRepo.Update(ctx, db, data.Setting,
-		bunex.UpdateColumns("updated_at", "status", "expire_at"),
+		bunex.UpdateColumns("update_ver", "updated_at", "status", "expire_at"),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)

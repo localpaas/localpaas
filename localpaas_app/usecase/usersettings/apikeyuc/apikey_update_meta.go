@@ -65,6 +65,8 @@ func (uc *APIKeyUC) prepareUpdatingAPIKeyMeta(
 ) {
 	timeNow := timeutil.NowUTC()
 	setting := data.Setting
+	setting.UpdateVer++
+	setting.UpdatedAt = timeNow
 
 	if req.Status != nil {
 		setting.Status = *req.Status
@@ -72,8 +74,6 @@ func (uc *APIKeyUC) prepareUpdatingAPIKeyMeta(
 	if req.ExpireAt != nil {
 		setting.ExpireAt = *req.ExpireAt
 	}
-
-	setting.UpdatedAt = timeNow
 }
 
 func (uc *APIKeyUC) persistAPIKeyMeta(
@@ -82,7 +82,7 @@ func (uc *APIKeyUC) persistAPIKeyMeta(
 	data *updateAPIKeyData,
 ) error {
 	err := uc.settingRepo.Update(ctx, db, data.Setting,
-		bunex.UpdateColumns("updated_at", "status", "expire_at"),
+		bunex.UpdateColumns("update_ver", "updated_at", "status", "expire_at"),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)

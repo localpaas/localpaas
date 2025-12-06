@@ -61,6 +61,8 @@ func (uc *S3StorageUC) prepareUpdatingS3StorageMeta(
 ) {
 	timeNow := timeutil.NowUTC()
 	setting := data.Setting
+	setting.UpdateVer++
+	setting.UpdatedAt = timeNow
 
 	if req.Status != nil {
 		setting.Status = *req.Status
@@ -68,8 +70,6 @@ func (uc *S3StorageUC) prepareUpdatingS3StorageMeta(
 	if req.ExpireAt != nil {
 		setting.ExpireAt = *req.ExpireAt
 	}
-
-	setting.UpdatedAt = timeNow
 }
 
 func (uc *S3StorageUC) persistS3StorageMeta(
@@ -78,7 +78,7 @@ func (uc *S3StorageUC) persistS3StorageMeta(
 	data *updateS3StorageData,
 ) error {
 	err := uc.settingRepo.Update(ctx, db, data.Setting,
-		bunex.UpdateColumns("updated_at", "status", "expire_at"),
+		bunex.UpdateColumns("update_ver", "updated_at", "status", "expire_at"),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)

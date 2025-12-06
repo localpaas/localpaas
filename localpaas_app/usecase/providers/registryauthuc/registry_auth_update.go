@@ -4,6 +4,8 @@ import (
 	"context"
 	"strings"
 
+	"github.com/tiendc/gofn"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -79,9 +81,9 @@ func (uc *RegistryAuthUC) prepareUpdatingRegistryAuth(
 ) {
 	timeNow := timeutil.NowUTC()
 	setting := data.Setting
-	if req.Name != "" {
-		setting.Name = req.Name
-	}
+	setting.UpdateVer++
+	setting.UpdatedAt = timeNow
+	setting.Name = gofn.Coalesce(req.Name, setting.Name)
 	setting.Kind = req.Address
 
 	registryAuth := &entity.RegistryAuth{
@@ -91,6 +93,5 @@ func (uc *RegistryAuthUC) prepareUpdatingRegistryAuth(
 	}
 	setting.MustSetData(registryAuth)
 
-	setting.UpdatedAt = timeNow
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 }

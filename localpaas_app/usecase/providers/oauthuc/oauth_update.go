@@ -82,6 +82,8 @@ func (uc *OAuthUC) prepareUpdatingOAuth(
 	timeNow := timeutil.NowUTC()
 	setting := data.Setting
 	setting.Name = gofn.Coalesce(req.Name, req.Organization, setting.Name)
+	setting.UpdateVer++
+	setting.UpdatedAt = timeNow
 
 	oauth := &entity.OAuth{
 		ClientID:     req.ClientID,
@@ -94,6 +96,5 @@ func (uc *OAuthUC) prepareUpdatingOAuth(
 	}
 	setting.MustSetData(oauth)
 
-	setting.UpdatedAt = timeNow
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 }

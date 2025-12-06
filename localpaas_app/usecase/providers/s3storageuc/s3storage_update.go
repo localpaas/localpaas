@@ -87,6 +87,8 @@ func (uc *S3StorageUC) prepareUpdatingS3Storage(
 ) error {
 	timeNow := timeutil.NowUTC()
 	setting := data.Setting
+	setting.UpdateVer++
+	setting.UpdatedAt = timeNow
 	if req.Name != nil {
 		setting.Name = *req.Name
 	}
@@ -115,8 +117,6 @@ func (uc *S3StorageUC) prepareUpdatingS3Storage(
 	}
 
 	setting.MustSetData(s3Storage)
-
-	setting.UpdatedAt = timeNow
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 
 	// Project accesses change

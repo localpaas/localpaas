@@ -4,6 +4,8 @@ import (
 	"context"
 	"strings"
 
+	"github.com/tiendc/gofn"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -79,9 +81,9 @@ func (uc *BasicAuthUC) prepareUpdatingBasicAuth(
 ) {
 	timeNow := timeutil.NowUTC()
 	setting := data.Setting
-	if req.Name != "" {
-		setting.Name = req.Name
-	}
+	setting.Name = gofn.Coalesce(req.Name, setting.Name)
+	setting.UpdateVer++
+	setting.UpdatedAt = timeNow
 
 	basicAuth := &entity.BasicAuth{
 		Username: req.Username,
@@ -89,6 +91,5 @@ func (uc *BasicAuthUC) prepareUpdatingBasicAuth(
 	}
 	setting.MustSetData(basicAuth)
 
-	setting.UpdatedAt = timeNow
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 }

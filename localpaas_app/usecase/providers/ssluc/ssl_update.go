@@ -4,6 +4,8 @@ import (
 	"context"
 	"strings"
 
+	"github.com/tiendc/gofn"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -78,10 +80,10 @@ func (uc *SslUC) prepareUpdatingSsl(
 	persistingData *persistingSslData,
 ) {
 	timeNow := timeutil.NowUTC()
-	dbSsl := data.Setting
-	if req.Name != "" {
-		dbSsl.Name = req.Name
-	}
+	setting := data.Setting
+	setting.UpdateVer++
+	setting.UpdatedAt = timeNow
+	setting.Name = gofn.Coalesce(req.Name, setting.Name)
 
 	ssl := &entity.Ssl{
 		Certificate: req.Certificate,
@@ -91,8 +93,7 @@ func (uc *SslUC) prepareUpdatingSsl(
 		Email:       req.Email,
 		Expiration:  req.Expiration,
 	}
-	dbSsl.MustSetData(ssl)
+	setting.MustSetData(ssl)
 
-	dbSsl.UpdatedAt = timeNow
-	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, dbSsl)
+	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 }

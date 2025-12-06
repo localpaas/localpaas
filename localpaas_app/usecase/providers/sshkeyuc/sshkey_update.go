@@ -87,6 +87,9 @@ func (uc *SSHKeyUC) prepareUpdatingSSHKey(
 ) error {
 	timeNow := timeutil.NowUTC()
 	setting := data.Setting
+	setting.UpdateVer++
+	setting.UpdatedAt = timeNow
+
 	if req.Name != nil {
 		setting.Name = *req.Name
 	}
@@ -109,7 +112,6 @@ func (uc *SSHKeyUC) prepareUpdatingSSHKey(
 		setting.MustSetData(sshKey)
 	}
 
-	setting.UpdatedAt = timeNow
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 
 	// Project accesses change

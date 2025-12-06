@@ -4,6 +4,8 @@ import (
 	"context"
 	"strings"
 
+	"github.com/tiendc/gofn"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -79,15 +81,14 @@ func (uc *SlackUC) prepareUpdatingSlack(
 ) {
 	timeNow := timeutil.NowUTC()
 	setting := data.Setting
+	setting.UpdateVer++
+	setting.UpdatedAt = timeNow
+	setting.Name = gofn.Coalesce(req.Name, setting.Name)
 
-	if req.Name != "" {
-		setting.Name = req.Name
-	}
 	slack := &entity.Slack{
 		Webhook: entity.NewEncryptedField(req.Webhook),
 	}
 	setting.MustSetData(slack)
 
-	setting.UpdatedAt = timeNow
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 }

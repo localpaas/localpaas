@@ -81,6 +81,8 @@ func (uc *GithubAppUC) prepareUpdatingGithubApp(
 ) {
 	timeNow := timeutil.NowUTC()
 	setting := data.Setting
+	setting.UpdateVer++
+	setting.UpdatedAt = timeNow
 	setting.Name = gofn.Coalesce(req.Name, req.Organization, setting.Name)
 
 	githubApp := &entity.GithubApp{
@@ -96,6 +98,5 @@ func (uc *GithubAppUC) prepareUpdatingGithubApp(
 	}
 	setting.MustSetData(githubApp)
 
-	setting.UpdatedAt = timeNow
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 }
