@@ -35,7 +35,7 @@ func (h *UserSettingsHandler) ListAPIKey(ctx *gin.Context) {
 	}
 
 	req := apikeydto.NewListAPIKeyReq()
-	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -75,7 +75,7 @@ func (h *UserSettingsHandler) GetAPIKey(ctx *gin.Context) {
 
 	req := apikeydto.NewGetAPIKeyReq()
 	req.ID = id
-	if err = h.ParseRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
+	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
 		h.RenderError(ctx, err)
 		return
 	}
@@ -115,7 +115,7 @@ func (h *UserSettingsHandler) CreateAPIKey(ctx *gin.Context) {
 	}
 
 	req := apikeydto.NewCreateAPIKeyReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -163,7 +163,7 @@ func (h *UserSettingsHandler) UpdateAPIKeyMeta(ctx *gin.Context) {
 
 	req := apikeydto.NewUpdateAPIKeyMetaReq()
 	req.ID = id
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -210,7 +210,7 @@ func (h *UserSettingsHandler) DeleteAPIKey(ctx *gin.Context) {
 
 	req := apikeydto.NewDeleteAPIKeyReq()
 	req.ID = id
-	if err := h.ParseRequest(ctx, req, nil); err != nil {
+	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

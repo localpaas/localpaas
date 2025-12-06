@@ -41,7 +41,7 @@ func (h *ProvidersHandler) ListS3Storage(ctx *gin.Context) {
 	}
 
 	req := s3storagedto.NewListS3StorageReq()
-	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -86,7 +86,7 @@ func (h *ProvidersHandler) GetS3Storage(ctx *gin.Context) {
 
 	req := s3storagedto.NewGetS3StorageReq()
 	req.ID = id
-	if err = h.ParseRequest(ctx, req, nil); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -122,7 +122,7 @@ func (h *ProvidersHandler) CreateS3Storage(ctx *gin.Context) {
 	}
 
 	req := s3storagedto.NewCreateS3StorageReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -168,7 +168,7 @@ func (h *ProvidersHandler) UpdateS3Storage(ctx *gin.Context) {
 
 	req := s3storagedto.NewUpdateS3StorageReq()
 	req.ID = id
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -214,7 +214,7 @@ func (h *ProvidersHandler) UpdateS3StorageMeta(ctx *gin.Context) {
 
 	req := s3storagedto.NewUpdateS3StorageMetaReq()
 	req.ID = id
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -259,7 +259,7 @@ func (h *ProvidersHandler) DeleteS3Storage(ctx *gin.Context) {
 
 	req := s3storagedto.NewDeleteS3StorageReq()
 	req.ID = id
-	if err := h.ParseRequest(ctx, req, nil); err != nil {
+	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -292,7 +292,7 @@ func (h *ProvidersHandler) TestS3StorageConn(ctx *gin.Context) {
 	}
 
 	req := s3storagedto.NewTestS3StorageConnReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

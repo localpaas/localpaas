@@ -40,7 +40,7 @@ func (h *ProvidersHandler) ListSsl(ctx *gin.Context) {
 	}
 
 	req := ssldto.NewListSslReq()
-	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -85,7 +85,7 @@ func (h *ProvidersHandler) GetSsl(ctx *gin.Context) {
 
 	req := ssldto.NewGetSslReq()
 	req.ID = id
-	if err = h.ParseRequest(ctx, req, nil); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -121,7 +121,7 @@ func (h *ProvidersHandler) CreateSsl(ctx *gin.Context) {
 	}
 
 	req := ssldto.NewCreateSslReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -167,7 +167,7 @@ func (h *ProvidersHandler) UpdateSsl(ctx *gin.Context) {
 
 	req := ssldto.NewUpdateSslReq()
 	req.ID = id
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -213,7 +213,7 @@ func (h *ProvidersHandler) UpdateSslMeta(ctx *gin.Context) {
 
 	req := ssldto.NewUpdateSslMetaReq()
 	req.ID = id
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -258,7 +258,7 @@ func (h *ProvidersHandler) DeleteSsl(ctx *gin.Context) {
 
 	req := ssldto.NewDeleteSslReq()
 	req.ID = id
-	if err := h.ParseRequest(ctx, req, nil); err != nil {
+	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

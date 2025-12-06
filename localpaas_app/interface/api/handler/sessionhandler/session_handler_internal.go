@@ -25,7 +25,7 @@ type _ *apperrors.ErrorInfo
 // @Router  /internal/auth/dev-mode-login [post]
 func (h *SessionHandler) DevModeLogin(ctx *gin.Context) {
 	req := sessiondto.NewDevModeLoginReq()
-	if err := h.ParseRequest(ctx, req, nil); err != nil {
+	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

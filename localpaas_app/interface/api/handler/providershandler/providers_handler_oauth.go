@@ -40,7 +40,7 @@ func (h *ProvidersHandler) ListOAuth(ctx *gin.Context) {
 	}
 
 	req := oauthdto.NewListOAuthReq()
-	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -85,7 +85,7 @@ func (h *ProvidersHandler) GetOAuth(ctx *gin.Context) {
 
 	req := oauthdto.NewGetOAuthReq()
 	req.ID = id
-	if err = h.ParseRequest(ctx, req, nil); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -122,7 +122,7 @@ func (h *ProvidersHandler) CreateOAuth(ctx *gin.Context) {
 	}
 
 	req := oauthdto.NewCreateOAuthReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -168,7 +168,7 @@ func (h *ProvidersHandler) UpdateOAuth(ctx *gin.Context) {
 
 	req := oauthdto.NewUpdateOAuthReq()
 	req.ID = id
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -214,7 +214,7 @@ func (h *ProvidersHandler) UpdateOAuthMeta(ctx *gin.Context) {
 
 	req := oauthdto.NewUpdateOAuthMetaReq()
 	req.ID = id
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -259,7 +259,7 @@ func (h *ProvidersHandler) DeleteOAuth(ctx *gin.Context) {
 
 	req := oauthdto.NewDeleteOAuthReq()
 	req.ID = id
-	if err := h.ParseRequest(ctx, req, nil); err != nil {
+	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

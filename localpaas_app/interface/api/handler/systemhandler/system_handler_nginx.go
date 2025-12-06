@@ -36,7 +36,7 @@ func (h *SystemHandler) ReloadNginxConfig(ctx *gin.Context) {
 	}
 
 	req := nginxdto.NewReloadNginxConfigReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -72,7 +72,7 @@ func (h *SystemHandler) ResetNginxConfig(ctx *gin.Context) {
 	}
 
 	req := nginxdto.NewResetNginxConfigReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -108,7 +108,7 @@ func (h *SystemHandler) RestartNginx(ctx *gin.Context) {
 	}
 
 	req := nginxdto.NewRestartNginxReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

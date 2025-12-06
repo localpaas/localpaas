@@ -34,7 +34,7 @@ func (h *UserHandler) UpdateUserPassword(ctx *gin.Context) {
 	}
 
 	req := userdto.NewUpdatePasswordReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -78,7 +78,7 @@ func (h *UserHandler) RequestResetPassword(ctx *gin.Context) {
 
 	req := userdto.NewRequestResetPasswordReq()
 	req.ID = userID
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -113,7 +113,7 @@ func (h *UserHandler) ResetPassword(ctx *gin.Context) {
 
 	req := userdto.NewResetPasswordReq()
 	req.ID = userID
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

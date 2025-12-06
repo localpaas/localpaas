@@ -41,7 +41,7 @@ func (h *ProvidersHandler) ListDiscord(ctx *gin.Context) {
 	}
 
 	req := discorddto.NewListDiscordReq()
-	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -86,7 +86,7 @@ func (h *ProvidersHandler) GetDiscord(ctx *gin.Context) {
 
 	req := discorddto.NewGetDiscordReq()
 	req.ID = id
-	if err = h.ParseRequest(ctx, req, nil); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -122,7 +122,7 @@ func (h *ProvidersHandler) CreateDiscord(ctx *gin.Context) {
 	}
 
 	req := discorddto.NewCreateDiscordReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -168,7 +168,7 @@ func (h *ProvidersHandler) UpdateDiscord(ctx *gin.Context) {
 
 	req := discorddto.NewUpdateDiscordReq()
 	req.ID = id
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -214,7 +214,7 @@ func (h *ProvidersHandler) UpdateDiscordMeta(ctx *gin.Context) {
 
 	req := discorddto.NewUpdateDiscordMetaReq()
 	req.ID = id
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -259,7 +259,7 @@ func (h *ProvidersHandler) DeleteDiscord(ctx *gin.Context) {
 
 	req := discorddto.NewDeleteDiscordReq()
 	req.ID = id
-	if err := h.ParseRequest(ctx, req, nil); err != nil {
+	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -292,7 +292,7 @@ func (h *ProvidersHandler) TestSendDiscordMsg(ctx *gin.Context) {
 	}
 
 	req := discorddto.NewTestSendDiscordMsgReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

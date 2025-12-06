@@ -41,7 +41,7 @@ func (h *ProjectHandler) ListProjectBase(ctx *gin.Context) {
 	}
 
 	req := projectdto.NewListProjectBaseReq()
-	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -82,7 +82,7 @@ func (h *ProjectHandler) ListProject(ctx *gin.Context) {
 	}
 
 	req := projectdto.NewListProjectReq()
-	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -127,7 +127,7 @@ func (h *ProjectHandler) GetProject(ctx *gin.Context) {
 
 	req := projectdto.NewGetProjectReq()
 	req.ID = projectID
-	if err = h.ParseRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
+	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
 		h.RenderError(ctx, err)
 		return
 	}

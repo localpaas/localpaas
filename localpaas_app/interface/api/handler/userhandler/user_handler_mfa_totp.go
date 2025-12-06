@@ -33,7 +33,7 @@ func (h *UserHandler) BeginMFATotpSetup(ctx *gin.Context) {
 	}
 
 	req := userdto.NewBeginMFATotpSetupReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -66,7 +66,7 @@ func (h *UserHandler) CompleteMFATotpSetup(ctx *gin.Context) {
 	}
 
 	req := userdto.NewCompleteMFATotpSetupReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -99,7 +99,7 @@ func (h *UserHandler) RemoveMFATotp(ctx *gin.Context) {
 	}
 
 	req := userdto.NewRemoveMFATotpReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

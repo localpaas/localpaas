@@ -41,7 +41,7 @@ func (h *ProvidersHandler) ListSlack(ctx *gin.Context) {
 	}
 
 	req := slackdto.NewListSlackReq()
-	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -86,7 +86,7 @@ func (h *ProvidersHandler) GetSlack(ctx *gin.Context) {
 
 	req := slackdto.NewGetSlackReq()
 	req.ID = id
-	if err = h.ParseRequest(ctx, req, nil); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -122,7 +122,7 @@ func (h *ProvidersHandler) CreateSlack(ctx *gin.Context) {
 	}
 
 	req := slackdto.NewCreateSlackReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -168,7 +168,7 @@ func (h *ProvidersHandler) UpdateSlack(ctx *gin.Context) {
 
 	req := slackdto.NewUpdateSlackReq()
 	req.ID = id
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -214,7 +214,7 @@ func (h *ProvidersHandler) UpdateSlackMeta(ctx *gin.Context) {
 
 	req := slackdto.NewUpdateSlackMetaReq()
 	req.ID = id
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -259,7 +259,7 @@ func (h *ProvidersHandler) DeleteSlack(ctx *gin.Context) {
 
 	req := slackdto.NewDeleteSlackReq()
 	req.ID = id
-	if err := h.ParseRequest(ctx, req, nil); err != nil {
+	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -292,7 +292,7 @@ func (h *ProvidersHandler) TestSendSlackMsg(ctx *gin.Context) {
 	}
 
 	req := slackdto.NewTestSendSlackMsgReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

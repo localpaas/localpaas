@@ -37,7 +37,7 @@ func (h *ProjectHandler) CreateProject(ctx *gin.Context) {
 	}
 
 	req := projectdto.NewCreateProjectReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -82,7 +82,7 @@ func (h *ProjectHandler) DeleteProject(ctx *gin.Context) {
 
 	req := projectdto.NewDeleteProjectReq()
 	req.ProjectID = projectID
-	if err := h.ParseRequest(ctx, req, nil); err != nil {
+	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

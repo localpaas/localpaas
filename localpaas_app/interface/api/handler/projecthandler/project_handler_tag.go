@@ -46,7 +46,7 @@ func (h *ProjectHandler) CreateProjectTag(ctx *gin.Context) {
 
 	req := projectdto.NewCreateProjectTagReq()
 	req.ProjectID = projectID
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -92,7 +92,7 @@ func (h *ProjectHandler) DeleteProjectTags(ctx *gin.Context) {
 
 	req := projectdto.NewDeleteProjectTagsReq()
 	req.ProjectID = projectID
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

@@ -46,7 +46,7 @@ func (h *UserHandler) UpdateUser(ctx *gin.Context) {
 
 	req := userdto.NewUpdateUserReq()
 	req.ID = userID
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -91,7 +91,7 @@ func (h *UserHandler) DeleteUser(ctx *gin.Context) {
 
 	req := userdto.NewDeleteUserReq()
 	req.ID = userID
-	if err := h.ParseRequest(ctx, req, nil); err != nil {
+	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

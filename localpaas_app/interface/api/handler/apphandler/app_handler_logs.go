@@ -62,7 +62,7 @@ func (h *AppHandler) GetAppRuntimeLogs(ctx *gin.Context, mel *melody.Melody) {
 	req := appdto.NewGetAppRuntimeLogsReq()
 	req.ProjectID = projectID
 	req.AppID = appID
-	if err := h.ParseRequest(ctx, req, nil); err != nil {
+	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

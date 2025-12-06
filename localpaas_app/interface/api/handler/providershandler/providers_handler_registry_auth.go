@@ -41,7 +41,7 @@ func (h *ProvidersHandler) ListRegistryAuth(ctx *gin.Context) {
 	}
 
 	req := registryauthdto.NewListRegistryAuthReq()
-	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -86,7 +86,7 @@ func (h *ProvidersHandler) GetRegistryAuth(ctx *gin.Context) {
 
 	req := registryauthdto.NewGetRegistryAuthReq()
 	req.ID = id
-	if err = h.ParseRequest(ctx, req, nil); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -122,7 +122,7 @@ func (h *ProvidersHandler) CreateRegistryAuth(ctx *gin.Context) {
 	}
 
 	req := registryauthdto.NewCreateRegistryAuthReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -168,7 +168,7 @@ func (h *ProvidersHandler) UpdateRegistryAuth(ctx *gin.Context) {
 
 	req := registryauthdto.NewUpdateRegistryAuthReq()
 	req.ID = id
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -214,7 +214,7 @@ func (h *ProvidersHandler) UpdateRegistryAuthMeta(ctx *gin.Context) {
 
 	req := registryauthdto.NewUpdateRegistryAuthMetaReq()
 	req.ID = id
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -259,7 +259,7 @@ func (h *ProvidersHandler) DeleteRegistryAuth(ctx *gin.Context) {
 
 	req := registryauthdto.NewDeleteRegistryAuthReq()
 	req.ID = id
-	if err := h.ParseRequest(ctx, req, nil); err != nil {
+	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -292,7 +292,7 @@ func (h *ProvidersHandler) TestRegistryAuthConn(ctx *gin.Context) {
 	}
 
 	req := registryauthdto.NewTestRegistryAuthConnReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

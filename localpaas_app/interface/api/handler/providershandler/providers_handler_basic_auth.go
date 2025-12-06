@@ -40,7 +40,7 @@ func (h *ProvidersHandler) ListBasicAuth(ctx *gin.Context) {
 	}
 
 	req := basicauthdto.NewListBasicAuthReq()
-	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -85,7 +85,7 @@ func (h *ProvidersHandler) GetBasicAuth(ctx *gin.Context) {
 
 	req := basicauthdto.NewGetBasicAuthReq()
 	req.ID = id
-	if err = h.ParseRequest(ctx, req, nil); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -121,7 +121,7 @@ func (h *ProvidersHandler) CreateBasicAuth(ctx *gin.Context) {
 	}
 
 	req := basicauthdto.NewCreateBasicAuthReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -167,7 +167,7 @@ func (h *ProvidersHandler) UpdateBasicAuth(ctx *gin.Context) {
 
 	req := basicauthdto.NewUpdateBasicAuthReq()
 	req.ID = id
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -213,7 +213,7 @@ func (h *ProvidersHandler) UpdateBasicAuthMeta(ctx *gin.Context) {
 
 	req := basicauthdto.NewUpdateBasicAuthMetaReq()
 	req.ID = id
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -258,7 +258,7 @@ func (h *ProvidersHandler) DeleteBasicAuth(ctx *gin.Context) {
 
 	req := basicauthdto.NewDeleteBasicAuthReq()
 	req.ID = id
-	if err := h.ParseRequest(ctx, req, nil); err != nil {
+	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

@@ -41,7 +41,7 @@ func (h *UserHandler) ListUserBase(ctx *gin.Context) {
 	}
 
 	req := userdto.NewListUserBaseReq()
-	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -87,7 +87,7 @@ func (h *UserHandler) GetUser(ctx *gin.Context) {
 
 	req := userdto.NewGetUserReq()
 	req.ID = userID
-	if err = h.ParseRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
+	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
 		h.RenderError(ctx, err)
 		return
 	}
@@ -128,7 +128,7 @@ func (h *UserHandler) ListUser(ctx *gin.Context) {
 	}
 
 	req := userdto.NewListUserReq()
-	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

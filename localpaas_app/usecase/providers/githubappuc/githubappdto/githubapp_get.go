@@ -46,8 +46,8 @@ type GithubAppResp struct {
 	CallbackURL    string             `json:"callbackURL"`
 	WebhookURL     string             `json:"webhookURL"`
 	WebhookSecret  string             `json:"webhookSecret"`
-	AppID          string             `json:"appId"`
-	InstallationID string             `json:"installationId"`
+	AppID          int64              `json:"appId"`
+	InstallationID int64              `json:"installationId"`
 	PrivateKey     string             `json:"privateKey"`
 	SSOEnabled     bool               `json:"ssoEnabled"`
 	Encrypted      bool               `json:"encrypted,omitempty"`

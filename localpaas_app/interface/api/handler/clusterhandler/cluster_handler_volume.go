@@ -41,7 +41,7 @@ func (h *ClusterHandler) ListVolume(ctx *gin.Context) {
 	}
 
 	req := volumedto.NewListVolumeReq()
-	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -86,7 +86,7 @@ func (h *ClusterHandler) GetVolume(ctx *gin.Context) {
 
 	req := volumedto.NewGetVolumeReq()
 	req.VolumeID = volumeID
-	if err = h.ParseRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
+	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
 		h.RenderError(ctx, err)
 		return
 	}
@@ -131,7 +131,7 @@ func (h *ClusterHandler) GetVolumeInspection(ctx *gin.Context) {
 
 	req := volumedto.NewGetVolumeInspectionReq()
 	req.VolumeID = volumeID
-	if err = h.ParseRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
+	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
 		h.RenderError(ctx, err)
 		return
 	}
@@ -168,7 +168,7 @@ func (h *ClusterHandler) CreateVolume(ctx *gin.Context) {
 	}
 
 	req := volumedto.NewCreateVolumeReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -214,7 +214,7 @@ func (h *ClusterHandler) DeleteVolume(ctx *gin.Context) {
 
 	req := volumedto.NewDeleteVolumeReq()
 	req.VolumeID = volumeID
-	if err = h.ParseRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
+	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
 		h.RenderError(ctx, err)
 		return
 	}

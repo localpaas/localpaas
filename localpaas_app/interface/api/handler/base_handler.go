@@ -170,7 +170,33 @@ func (h *BaseHandler) parseQuery(ctx *gin.Context, query any) error {
 	return nil
 }
 
-// ParseRequest parses request query, then validate the request.
+// ParseAndValidateRequest parses request query, then validate the request.
+//
+// See ParseRequest.
+func (h *BaseHandler) ParseAndValidateRequest(ctx *gin.Context, reqStruct any, paging *basedto.Paging) error {
+	err := h.ParseRequest(ctx, reqStruct, paging)
+	if err != nil {
+		return apperrors.New(err)
+	}
+
+	// Execute custom modifier for the request input
+	if modifier, ok := reqStruct.(basedto.ReqModifier); ok {
+		if err = modifier.ModifyRequest(); err != nil {
+			return apperrors.New(err)
+		}
+	}
+
+	// Execute custom validator for the request input
+	if validator, ok := reqStruct.(basedto.ReqValidator); ok {
+		if vldErrs := validator.Validate(); len(vldErrs) > 0 {
+			return vldErrs
+		}
+	}
+
+	return nil
+}
+
+// ParseRequest parses request query.
 //
 // The request struct should be defined similarly as:
 //
@@ -187,21 +213,6 @@ func (h *BaseHandler) ParseRequest(ctx *gin.Context, reqStruct any, paging *base
 			return err
 		}
 	}
-
-	// Execute custom modifier for the request input
-	if modifier, ok := reqStruct.(basedto.ReqModifier); ok {
-		if err := modifier.ModifyRequest(); err != nil {
-			return apperrors.New(err)
-		}
-	}
-
-	// Execute custom validator for the request input
-	if validator, ok := reqStruct.(basedto.ReqValidator); ok {
-		if vldErrs := validator.Validate(); len(vldErrs) > 0 {
-			return vldErrs
-		}
-	}
-
 	return nil
 }
 
@@ -235,7 +246,31 @@ func (h *BaseHandler) ParseUintParam(ctx *gin.Context, paramName string) (uint, 
 	return uint(value), nil
 }
 
-// ParseJSONBody parse request body as JSON, then validate the result
+// ParseAndValidateJSONBody parse request body as JSON, then validate the result
+func (h *BaseHandler) ParseAndValidateJSONBody(ctx *gin.Context, reqStruct any) error {
+	err := h.ParseJSONBody(ctx, reqStruct)
+	if err != nil {
+		return apperrors.New(err)
+	}
+
+	// Execute custom modifier for the request input
+	if modifier, ok := reqStruct.(basedto.ReqModifier); ok {
+		if err = modifier.ModifyRequest(); err != nil {
+			return apperrors.New(err)
+		}
+	}
+
+	// Execute custom validator for the request input
+	if validator, ok := reqStruct.(basedto.ReqValidator); ok {
+		if vldErrs := validator.Validate(); len(vldErrs) > 0 {
+			return vldErrs
+		}
+	}
+
+	return nil
+}
+
+// ParseJSONBody parse request body as JSON
 func (h *BaseHandler) ParseJSONBody(ctx *gin.Context, reqStruct any) error {
 	var buf bytes.Buffer
 	ctx.Request.Body = io.NopCloser(io.TeeReader(ctx.Request.Body, &buf))
@@ -250,21 +285,6 @@ func (h *BaseHandler) ParseJSONBody(ctx *gin.Context, reqStruct any) error {
 	}
 
 	ctx.Request.Body = io.NopCloser(&buf)
-
-	// Execute custom modifier for the request input
-	if modifier, ok := reqStruct.(basedto.ReqModifier); ok {
-		if err := modifier.ModifyRequest(); err != nil {
-			return apperrors.New(err)
-		}
-	}
-
-	// Execute custom validator for the request input
-	if validator, ok := reqStruct.(basedto.ReqValidator); ok {
-		if vldErrs := validator.Validate(); len(vldErrs) > 0 {
-			return vldErrs
-		}
-	}
-
 	return nil
 }
 

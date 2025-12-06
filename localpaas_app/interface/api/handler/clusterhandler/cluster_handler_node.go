@@ -41,7 +41,7 @@ func (h *ClusterHandler) ListNode(ctx *gin.Context) {
 	}
 
 	req := nodedto.NewListNodeReq()
-	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -86,7 +86,7 @@ func (h *ClusterHandler) GetNode(ctx *gin.Context) {
 
 	req := nodedto.NewGetNodeReq()
 	req.NodeID = nodeID
-	if err = h.ParseRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
+	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
 		h.RenderError(ctx, err)
 		return
 	}
@@ -131,7 +131,7 @@ func (h *ClusterHandler) GetNodeInspection(ctx *gin.Context) {
 
 	req := nodedto.NewGetNodeInspectionReq()
 	req.NodeID = nodeID
-	if err = h.ParseRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
+	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
 		h.RenderError(ctx, err)
 		return
 	}
@@ -177,7 +177,7 @@ func (h *ClusterHandler) UpdateNode(ctx *gin.Context) {
 
 	req := nodedto.NewUpdateNodeReq()
 	req.NodeID = nodeID
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -223,7 +223,7 @@ func (h *ClusterHandler) DeleteNode(ctx *gin.Context) {
 
 	req := nodedto.NewDeleteNodeReq()
 	req.NodeID = nodeID
-	if err = h.ParseRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
+	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
 		h.RenderError(ctx, err)
 		return
 	}
@@ -260,7 +260,7 @@ func (h *ClusterHandler) JoinNode(ctx *gin.Context) {
 	}
 
 	req := nodedto.NewJoinNodeReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -297,7 +297,7 @@ func (h *ClusterHandler) GetNodeJoinCommand(ctx *gin.Context) {
 	}
 
 	req := nodedto.NewGetNodeJoinCommandReq()
-	if err := h.ParseRequest(ctx, req, nil); err != nil {
+	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

@@ -55,7 +55,7 @@ func (h *AppHandler) GetAppSettings(ctx *gin.Context) {
 	req := appdto.NewGetAppSettingsReq()
 	req.ProjectID = projectID
 	req.AppID = appID
-	if err := h.ParseRequest(ctx, req, nil); err != nil {
+	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -110,7 +110,7 @@ func (h *AppHandler) UpdateAppSettings(ctx *gin.Context) {
 	req := appdto.NewUpdateAppSettingsReq()
 	req.ProjectID = projectID
 	req.AppID = appID
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

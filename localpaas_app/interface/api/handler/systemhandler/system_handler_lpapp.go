@@ -36,7 +36,7 @@ func (h *SystemHandler) ReloadLocalPaasAppConfig(ctx *gin.Context) {
 	}
 
 	req := lpappdto.NewReloadLpAppConfigReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -72,7 +72,7 @@ func (h *SystemHandler) RestartLocalPaasApp(ctx *gin.Context) {
 	}
 
 	req := lpappdto.NewRestartLpAppReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

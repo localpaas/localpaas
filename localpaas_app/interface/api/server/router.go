@@ -256,6 +256,10 @@ func (s *HTTPServer) registerRoutes() {
 		githubAppGroup.PUT("/:ID", s.handlerRegistry.providersHandler.UpdateGithubApp)
 		githubAppGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateGithubAppMeta)
 		githubAppGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteGithubApp)
+		// Test connection
+		githubAppGroup.POST("/test-conn", s.handlerRegistry.providersHandler.TestGithubAppConn)
+		// Installation
+		githubAppGroup.POST("/installations/list", s.handlerRegistry.providersHandler.ListAppInstallation)
 	}
 
 	{ // s3 storage group

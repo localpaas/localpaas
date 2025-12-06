@@ -36,7 +36,7 @@ func (h *UserHandler) InviteUser(ctx *gin.Context) {
 	}
 
 	req := userdto.NewInviteUserReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -63,7 +63,7 @@ func (h *UserHandler) InviteUser(ctx *gin.Context) {
 // @Router  /users/signup-begin [post]
 func (h *UserHandler) BeginUserSignup(ctx *gin.Context) {
 	req := userdto.NewBeginUserSignupReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -90,7 +90,7 @@ func (h *UserHandler) BeginUserSignup(ctx *gin.Context) {
 // @Router  /users/signup-complete [post]
 func (h *UserHandler) CompleteUserSignup(ctx *gin.Context) {
 	req := userdto.NewCompleteUserSignupReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

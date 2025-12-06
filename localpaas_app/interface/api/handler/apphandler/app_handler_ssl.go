@@ -55,7 +55,7 @@ func (h *AppHandler) ObtainDomainSsl(ctx *gin.Context) {
 	req := appdto.NewObtainDomainSslReq()
 	req.ProjectID = projectID
 	req.AppID = appID
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

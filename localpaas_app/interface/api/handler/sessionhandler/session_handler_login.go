@@ -39,7 +39,7 @@ const (
 // @Router  /auth/login-options [get]
 func (h *SessionHandler) LoginGetOptions(ctx *gin.Context) {
 	req := sessiondto.NewGetLoginOptionsReq()
-	if err := h.ParseRequest(ctx, req, nil); err != nil {
+	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -68,7 +68,7 @@ func (h *SessionHandler) LoginGetOptions(ctx *gin.Context) {
 func (h *SessionHandler) LoginWithPassword(ctx *gin.Context) {
 	req := sessiondto.NewLoginWithPasswordReq()
 	req.AcceptLanguage = h.ParseRequestLang(ctx)
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -100,7 +100,7 @@ func (h *SessionHandler) LoginWithPassword(ctx *gin.Context) {
 // @Router  /auth/login-with-passcode [post]
 func (h *SessionHandler) LoginWithPasscode(ctx *gin.Context) {
 	req := sessiondto.NewLoginWithPasscodeReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -132,7 +132,7 @@ func (h *SessionHandler) LoginWithPasscode(ctx *gin.Context) {
 // @Router  /auth/login-with-api-key [post]
 func (h *SessionHandler) LoginWithAPIKey(ctx *gin.Context) {
 	req := sessiondto.NewLoginWithAPIKeyReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

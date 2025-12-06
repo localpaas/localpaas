@@ -31,7 +31,7 @@ func (h *SessionHandler) DeleteSession(ctx *gin.Context) {
 
 	req := sessiondto.NewDeleteSessionReq()
 	req.User = user
-	if err = h.ParseRequest(ctx, req, nil); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -67,7 +67,7 @@ func (h *SessionHandler) DeleteAllSessions(ctx *gin.Context) {
 
 	req := sessiondto.NewDeleteAllSessionsReq()
 	req.User = user
-	if err = h.ParseJSONBody(ctx, req); err != nil {
+	if err = h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

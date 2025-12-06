@@ -51,7 +51,7 @@ func (h *AppHandler) ListAppBase(ctx *gin.Context) {
 
 	req := appdto.NewListAppBaseReq()
 	req.ProjectID = projectID
-	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -102,7 +102,7 @@ func (h *AppHandler) ListApp(ctx *gin.Context) {
 
 	req := appdto.NewListAppReq()
 	req.ProjectID = projectID
-	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -156,7 +156,7 @@ func (h *AppHandler) GetApp(ctx *gin.Context) {
 	req := appdto.NewGetAppReq()
 	req.ProjectID = projectID
 	req.AppID = appID
-	if err = h.ParseRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
+	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
 		h.RenderError(ctx, err)
 		return
 	}

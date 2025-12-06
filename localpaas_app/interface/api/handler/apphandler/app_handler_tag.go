@@ -55,7 +55,7 @@ func (h *AppHandler) CreateAppTag(ctx *gin.Context) {
 	req := appdto.NewCreateAppTagReq()
 	req.ProjectID = projectID
 	req.AppID = appID
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -110,7 +110,7 @@ func (h *AppHandler) DeleteAppTags(ctx *gin.Context) {
 	req := appdto.NewDeleteAppTagsReq()
 	req.ProjectID = projectID
 	req.AppID = appID
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

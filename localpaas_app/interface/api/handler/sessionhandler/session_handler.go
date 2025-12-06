@@ -53,7 +53,7 @@ func (h *SessionHandler) GetMe(ctx *gin.Context) {
 	}
 
 	req := sessiondto.NewGetMeReq()
-	if err = h.ParseRequest(ctx, req, nil); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

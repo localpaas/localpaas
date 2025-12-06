@@ -7,6 +7,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/githubappuc/githubappdto"
 )
@@ -40,7 +41,7 @@ func (h *ProvidersHandler) ListGithubApp(ctx *gin.Context) {
 	}
 
 	req := githubappdto.NewListGithubAppReq()
-	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -85,7 +86,7 @@ func (h *ProvidersHandler) GetGithubApp(ctx *gin.Context) {
 
 	req := githubappdto.NewGetGithubAppReq()
 	req.ID = id
-	if err = h.ParseRequest(ctx, req, nil); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -122,7 +123,7 @@ func (h *ProvidersHandler) CreateGithubApp(ctx *gin.Context) {
 	}
 
 	req := githubappdto.NewCreateGithubAppReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -168,7 +169,7 @@ func (h *ProvidersHandler) UpdateGithubApp(ctx *gin.Context) {
 
 	req := githubappdto.NewUpdateGithubAppReq()
 	req.ID = id
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -214,7 +215,7 @@ func (h *ProvidersHandler) UpdateGithubAppMeta(ctx *gin.Context) {
 
 	req := githubappdto.NewUpdateGithubAppMetaReq()
 	req.ID = id
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -259,12 +260,82 @@ func (h *ProvidersHandler) DeleteGithubApp(ctx *gin.Context) {
 
 	req := githubappdto.NewDeleteGithubAppReq()
 	req.ID = id
-	if err := h.ParseRequest(ctx, req, nil); err != nil {
+	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
 	resp, err := h.githubAppUC.DeleteGithubApp(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
+// TestGithubAppConn Test github app connection
+// @Summary Test github app connection
+// @Description Test github app connection
+// @Tags    providers_github_app
+// @Produce json
+// @Id      testGithubAppConn
+// @Param   body body githubappdto.TestConnectGithubAppReq true "request data"
+// @Success 200 {object} githubappdto.TestConnectGithubAppResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /providers/github-apps/test-conn [post]
+func (h *ProvidersHandler) TestGithubAppConn(ctx *gin.Context) {
+	auth, err := h.authHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := githubappdto.NewTestConnectGithubAppReq()
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.githubAppUC.TestConnectGithubApp(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
+// ListAppInstallation List github app installation
+// @Summary List github app installation
+// @Description List github app installation
+// @Tags    providers_github_app
+// @Produce json
+// @Id      listAppInstallation
+// @Param   body body githubappdto.ListAppInstallationReq true "request data"
+// @Success 200 {object} githubappdto.ListAppInstallationResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /providers/github-apps/installations/list [post]
+func (h *ProvidersHandler) ListAppInstallation(ctx *gin.Context) {
+	auth, err := h.authHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := githubappdto.NewListAppInstallationReq()
+	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+	if err = h.ParseAndValidateJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.githubAppUC.ListAppInstallation(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

@@ -41,7 +41,7 @@ func (h *ClusterHandler) ListImage(ctx *gin.Context) {
 	}
 
 	req := imagedto.NewListImageReq()
-	if err = h.ParseRequest(ctx, req, &req.Paging); err != nil {
+	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -86,7 +86,7 @@ func (h *ClusterHandler) GetImage(ctx *gin.Context) {
 
 	req := imagedto.NewGetImageReq()
 	req.ImageID = imageID
-	if err = h.ParseRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
+	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
 		h.RenderError(ctx, err)
 		return
 	}
@@ -131,7 +131,7 @@ func (h *ClusterHandler) GetImageInspection(ctx *gin.Context) {
 
 	req := imagedto.NewGetImageInspectionReq()
 	req.ImageID = imageID
-	if err = h.ParseRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
+	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
 		h.RenderError(ctx, err)
 		return
 	}
@@ -168,7 +168,7 @@ func (h *ClusterHandler) CreateImage(ctx *gin.Context) {
 	}
 
 	req := imagedto.NewCreateImageReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -213,7 +213,7 @@ func (h *ClusterHandler) DeleteImage(ctx *gin.Context) {
 
 	req := imagedto.NewDeleteImageReq()
 	req.ImageID = imageID
-	if err = h.ParseRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
+	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
 		h.RenderError(ctx, err)
 		return
 	}

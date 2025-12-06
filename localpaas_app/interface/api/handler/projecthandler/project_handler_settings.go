@@ -46,7 +46,7 @@ func (h *ProjectHandler) GetProjectSettings(ctx *gin.Context) {
 
 	req := projectdto.NewGetProjectSettingsReq()
 	req.ProjectID = projectID
-	if err := h.ParseRequest(ctx, req, nil); err != nil {
+	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -92,7 +92,7 @@ func (h *ProjectHandler) UpdateProjectSettings(ctx *gin.Context) {
 
 	req := projectdto.NewUpdateProjectSettingsReq()
 	req.ProjectID = projectID
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

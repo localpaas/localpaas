@@ -47,7 +47,7 @@ func (h *AppHandler) CreateApp(ctx *gin.Context) {
 
 	req := appdto.NewCreateAppReq()
 	req.ProjectID = projectID
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
@@ -102,7 +102,7 @@ func (h *AppHandler) DeleteApp(ctx *gin.Context) {
 	req := appdto.NewDeleteAppReq()
 	req.ProjectID = projectID
 	req.AppID = appID
-	if err := h.ParseRequest(ctx, req, nil); err != nil {
+	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

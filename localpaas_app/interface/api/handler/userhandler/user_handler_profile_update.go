@@ -32,7 +32,7 @@ func (h *UserHandler) UpdateUserProfile(ctx *gin.Context) {
 	}
 
 	req := userdto.NewUpdateProfileReq()
-	if err := h.ParseJSONBody(ctx, req); err != nil {
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}

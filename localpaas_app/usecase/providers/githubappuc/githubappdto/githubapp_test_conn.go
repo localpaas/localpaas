@@ -1,0 +1,31 @@
+package githubappdto
+
+import (
+	vld "github.com/tiendc/go-validator"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/basedto"
+)
+
+type TestConnectGithubAppReq struct {
+	*GithubAppBaseReq
+}
+
+func NewTestConnectGithubAppReq() *TestConnectGithubAppReq {
+	return &TestConnectGithubAppReq{}
+}
+
+func (req *TestConnectGithubAppReq) ModifyRequest() error {
+	return req.modifyRequest()
+}
+
+// Validate implements interface basedto.ReqValidator
+func (req *TestConnectGithubAppReq) Validate() apperrors.ValidationErrors {
+	var validators []vld.Validator
+	validators = append(validators, req.validate("")...)
+	return apperrors.NewValidationErrors(vld.Validate(validators...))
+}
+
+type TestConnectGithubAppResp struct {
+	Meta *basedto.BaseMeta `json:"meta"`
+}

@@ -12,8 +12,8 @@ type GithubApp struct {
 	Organization   string         `json:"org"`
 	WebhookURL     string         `json:"webhookURL"`
 	WebhookSecret  EncryptedField `json:"webhookSecret"`
-	AppID          string         `json:"appId"`
-	InstallationID string         `json:"installationId"`
+	AppID          int64          `json:"appId"`
+	InstallationID int64          `json:"installationId"`
 	PrivateKey     EncryptedField `json:"privateKey"`
 	SSOEnabled     bool           `json:"ssoEnabled"`
 }
