@@ -9,19 +9,19 @@ import (
 )
 
 type CreateOAuthReq struct {
-	OAuthType base.OAuthType `json:"oauthType"`
 	*OAuthBaseReq
 }
 
 type OAuthBaseReq struct {
-	Name         string   `json:"name"`
-	ClientID     string   `json:"clientId"`
-	ClientSecret string   `json:"clientSecret"`
-	Organization string   `json:"organization"`
-	AuthURL      string   `json:"authURL"`
-	TokenURL     string   `json:"tokenURL"`
-	ProfileURL   string   `json:"profileURL"`
-	Scopes       []string `json:"scopes"`
+	Kind         base.OAuthKind `json:"kind"`
+	Name         string         `json:"name"`
+	ClientID     string         `json:"clientId"`
+	ClientSecret string         `json:"clientSecret"`
+	Organization string         `json:"organization"`
+	AuthURL      string         `json:"authURL"`
+	TokenURL     string         `json:"tokenURL"`
+	ProfileURL   string         `json:"profileURL"`
+	Scopes       []string       `json:"scopes"`
 }
 
 func (req *OAuthBaseReq) validate(_ string) []vld.Validator {
@@ -36,7 +36,6 @@ func NewCreateOAuthReq() *CreateOAuthReq {
 // Validate implements interface basedto.ReqValidator
 func (req *CreateOAuthReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, basedto.ValidateStrIn(&req.OAuthType, true, base.AllOAuthTypes, "oauthType")...)
 	validators = append(validators, req.validate("")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }

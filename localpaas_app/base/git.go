@@ -1,15 +1,15 @@
 package base
 
-type GitTokenType string
+type GitSource string
 
 const (
-	GitTokenTypeGithub       GitTokenType = "github"
-	GitTokenTypeGitlab       GitTokenType = "gitlab"
-	GitTokenTypeGitlabCustom GitTokenType = "gitlab-custom"
-	GitTokenTypeGitea        GitTokenType = "gitea"
+	GitSourceGithub       GitSource = "github"
+	GitSourceGitlab       GitSource = "gitlab"
+	GitSourceGitlabCustom GitSource = "gitlab-custom"
+	GitSourceGitea        GitSource = "gitea"
 )
 
 var (
-	AllGitTokenTypes = []GitTokenType{GitTokenTypeGithub, GitTokenTypeGitlab, GitTokenTypeGitlabCustom,
-		GitTokenTypeGitea}
+	AllGitSources = []GitSource{GitSourceGithub, GitSourceGitlab, GitSourceGitlabCustom,
+		GitSourceGitea}
 )

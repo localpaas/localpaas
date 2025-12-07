@@ -10,8 +10,11 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 )
 
-func (app *App) ListInstallations(ctx context.Context, paging *basedto.Paging) (
+func (c *Client) ListInstallations(ctx context.Context, paging *basedto.Paging) (
 	[]*github.Installation, *basedto.PagingMeta, error) {
+	if !c.isAppClient() {
+		return nil, nil, apperrors.Wrap(ErrGithubAppClientRequired)
+	}
 	opts := &github.ListOptions{
 		PerPage: defaultPerPage,
 		Page:    0,
@@ -20,7 +23,7 @@ func (app *App) ListInstallations(ctx context.Context, paging *basedto.Paging) (
 		opts.Page = paging.Offset / gofn.Coalesce(paging.Limit, 1)
 		opts.PerPage = paging.Limit
 	}
-	output, _, err := app.client.Apps.ListInstallations(ctx, opts)
+	output, _, err := c.client.Apps.ListInstallations(ctx, opts)
 	if err != nil {
 		return nil, nil, apperrors.Wrap(err)
 	}
@@ -31,8 +34,11 @@ func (app *App) ListInstallations(ctx context.Context, paging *basedto.Paging) (
 	}, nil
 }
 
-func (app *App) ListAllInstallations(ctx context.Context, options ...ListOption) ([]*github.Installation, error) {
-	output, err := listAll(ctx, app.client,
+func (c *Client) ListAllInstallations(ctx context.Context, options ...ListOption) ([]*github.Installation, error) {
+	if !c.isAppClient() {
+		return nil, apperrors.Wrap(ErrGithubAppClientRequired)
+	}
+	output, err := listAll(ctx, c.client,
 		func(ctx context.Context, client *github.Client, opts *github.ListOptions) (
 			[]*github.Installation, *github.Response, error) {
 			for _, option := range options {

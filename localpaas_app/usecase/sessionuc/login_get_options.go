@@ -12,9 +12,9 @@ import (
 )
 
 var (
-	mapProviderIcon = map[base.OAuthType]string{
-		base.OAuthTypeGithubApp:    "github", // icon mapping for special oauth types only
-		base.OAuthTypeGitlabCustom: "gitlab",
+	mapProviderIcon = map[base.OAuthKind]string{
+		base.OAuthKindGithubApp:    "github", // icon mapping for special oauth types only
+		base.OAuthKindGitlabCustom: "gitlab",
 	}
 )
 
@@ -41,7 +41,7 @@ func (uc *SessionUC) GetLoginOptions(
 			}
 		}
 
-		oauthType := base.OAuthType(setting.Kind)
+		oauthType := base.OAuthKind(setting.Kind)
 		resp = append(resp, &sessiondto.LoginOptionResp{
 			Type:    oauthType,
 			Name:    setting.Name,

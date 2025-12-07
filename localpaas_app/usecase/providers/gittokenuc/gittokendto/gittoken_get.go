@@ -37,7 +37,7 @@ type GetGitTokenResp struct {
 
 type GitTokenResp struct {
 	ID        string             `json:"id"`
-	Kind      string             `json:"kind"`
+	Kind      base.GitSource     `json:"kind"`
 	Name      string             `json:"name"`
 	Status    base.SettingStatus `json:"status"`
 	User      string             `json:"user"`

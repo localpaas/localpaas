@@ -81,6 +81,7 @@ func (uc *OAuthUC) prepareUpdatingOAuth(
 ) {
 	timeNow := timeutil.NowUTC()
 	setting := data.Setting
+	setting.Kind = gofn.Coalesce(string(req.Kind), setting.Kind)
 	setting.Name = gofn.Coalesce(req.Name, req.Organization, setting.Name)
 	setting.UpdateVer++
 	setting.UpdatedAt = timeNow

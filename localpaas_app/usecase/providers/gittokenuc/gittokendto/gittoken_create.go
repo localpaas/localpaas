@@ -12,15 +12,15 @@ import (
 )
 
 type CreateGitTokenReq struct {
-	TokenType base.GitTokenType `json:"tokenType"`
 	*GitTokenBaseReq
 }
 
 type GitTokenBaseReq struct {
-	Name     string    `json:"name"`
-	User     string    `json:"user"`
-	Token    string    `json:"token"`
-	ExpireAt time.Time `json:"expireAt"`
+	Kind     base.GitSource `json:"kind"`
+	Name     string         `json:"name"`
+	User     string         `json:"user"`
+	Token    string         `json:"token"`
+	ExpireAt time.Time      `json:"expireAt"`
 }
 
 func (req *GitTokenBaseReq) modifyRequest() error {
@@ -46,7 +46,6 @@ func (req *CreateGitTokenReq) ModifyRequest() error {
 // Validate implements interface basedto.ReqValidator
 func (req *CreateGitTokenReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, basedto.ValidateStrIn(&req.TokenType, true, base.AllGitTokenTypes, "tokenType")...)
 	validators = append(validators, req.validate("")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }

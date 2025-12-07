@@ -8618,10 +8618,10 @@
         "type" : "string",
         "x-enum-varnames" : [ "AppStatusActive", "AppStatusLocked", "AppStatusDisabled", "AppStatusDeleting" ]
       },
-      "github_com_localpaas_localpaas_localpaas_app_base.GitTokenType" : {
+      "github_com_localpaas_localpaas_localpaas_app_base.GitSource" : {
         "enum" : [ "github", "gitlab", "gitlab-custom", "gitea" ],
         "type" : "string",
-        "x-enum-varnames" : [ "GitTokenTypeGithub", "GitTokenTypeGitlab", "GitTokenTypeGitlabCustom", "GitTokenTypeGitea" ]
+        "x-enum-varnames" : [ "GitSourceGithub", "GitSourceGitlab", "GitSourceGitlabCustom", "GitSourceGitea" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.MFAType" : {
         "enum" : [ "totp", "email" ],
@@ -8643,10 +8643,10 @@
         "type" : "string",
         "x-enum-varnames" : [ "NodeStatusUnknown", "NodeStatusDown", "NodeStatusReady", "NodeStatusDisconnected" ]
       },
-      "github_com_localpaas_localpaas_localpaas_app_base.OAuthType" : {
+      "github_com_localpaas_localpaas_localpaas_app_base.OAuthKind" : {
         "enum" : [ "github", "github-app", "gitlab", "gitea", "google", "gitlab-custom" ],
         "type" : "string",
-        "x-enum-varnames" : [ "OAuthTypeGithub", "OAuthTypeGithubApp", "OAuthTypeGitlab", "OAuthTypeGitea", "OAuthTypeGoogle", "OAuthTypeGitlabCustom" ]
+        "x-enum-varnames" : [ "OAuthKindGithub", "OAuthKindGithubApp", "OAuthKindGitlab", "OAuthKindGitea", "OAuthKindGoogle", "OAuthKindGitlabCustom" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.ProjectStatus" : {
         "enum" : [ "active", "locked", "disabled", "deleting" ],
@@ -11129,20 +11129,20 @@
           "expireAt" : {
             "type" : "string"
           },
+          "kind" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.GitSource"
+          },
           "name" : {
             "type" : "string"
           },
           "token" : {
             "type" : "string"
           },
-          "tokenType" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.GitTokenType"
-          },
           "user" : {
             "type" : "string"
           }
         },
-        "required" : [ "expireAt", "name", "token", "tokenType", "user" ],
+        "required" : [ "expireAt", "kind", "name", "token", "user" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.CreateGitTokenResp" : {
@@ -11193,7 +11193,7 @@
             "type" : "string"
           },
           "kind" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.GitSource"
           },
           "name" : {
             "type" : "string"
@@ -11237,6 +11237,9 @@
           "expireAt" : {
             "type" : "string"
           },
+          "kind" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.GitSource"
+          },
           "name" : {
             "type" : "string"
           },
@@ -11247,7 +11250,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "expireAt", "name", "token", "user" ],
+        "required" : [ "expireAt", "kind", "name", "token", "user" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.TestGitTokenConnResp" : {
@@ -11288,6 +11291,9 @@
           "expireAt" : {
             "type" : "string"
           },
+          "kind" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.GitSource"
+          },
           "name" : {
             "type" : "string"
           },
@@ -11301,7 +11307,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "expireAt", "name", "token", "updateVer", "user" ],
+        "required" : [ "expireAt", "kind", "name", "token", "updateVer", "user" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.UpdateGitTokenResp" : {
@@ -11324,11 +11330,11 @@
           "clientSecret" : {
             "type" : "string"
           },
+          "kind" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.OAuthKind"
+          },
           "name" : {
             "type" : "string"
-          },
-          "oauthType" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.OAuthType"
           },
           "organization" : {
             "type" : "string"
@@ -11346,7 +11352,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "authURL", "clientId", "clientSecret", "name", "oauthType", "organization", "profileURL", "scopes", "tokenURL" ],
+        "required" : [ "authURL", "clientId", "clientSecret", "kind", "name", "organization", "profileURL", "scopes", "tokenURL" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_oauthuc_oauthdto.CreateOAuthResp" : {
@@ -11436,7 +11442,7 @@
             "type" : "string"
           },
           "kind" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.OAuthKind"
           },
           "name" : {
             "type" : "string"
@@ -11504,6 +11510,9 @@
           "clientSecret" : {
             "type" : "string"
           },
+          "kind" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.OAuthKind"
+          },
           "name" : {
             "type" : "string"
           },
@@ -11526,7 +11535,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "authURL", "clientId", "clientSecret", "name", "organization", "profileURL", "scopes", "tokenURL", "updateVer" ],
+        "required" : [ "authURL", "clientId", "clientSecret", "kind", "name", "organization", "profileURL", "scopes", "tokenURL", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_oauthuc_oauthdto.UpdateOAuthResp" : {
@@ -12833,7 +12842,7 @@
             "type" : "string"
           },
           "type" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.OAuthType"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.OAuthKind"
           }
         },
         "required" : [ "authURL", "icon", "name", "type" ],

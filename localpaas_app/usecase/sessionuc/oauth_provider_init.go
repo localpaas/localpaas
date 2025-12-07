@@ -29,18 +29,18 @@ func (uc *SessionUC) InitOAuthProvider(
 	callbackURL := config.Current.SsoBaseCallbackURL() + "/" + req.Name
 
 	var provider goth.Provider
-	switch base.OAuthType(setting.Kind) {
-	case base.OAuthTypeGithub, base.OAuthTypeGithubApp:
+	switch base.OAuthKind(setting.Kind) {
+	case base.OAuthKindGithub, base.OAuthKindGithubApp:
 		provider = github.New(oauth.ClientID, clientSecret, callbackURL, oauth.Scopes...)
-	case base.OAuthTypeGitlab:
+	case base.OAuthKindGitlab:
 		provider = gitlab.New(oauth.ClientID, clientSecret, callbackURL, oauth.Scopes...)
-	case base.OAuthTypeGitea:
+	case base.OAuthKindGitea:
 		provider = gitea.New(oauth.ClientID, clientSecret, callbackURL, oauth.Scopes...)
-	case base.OAuthTypeGoogle:
+	case base.OAuthKindGoogle:
 		provider = google.New(oauth.ClientID, clientSecret, callbackURL, oauth.Scopes...)
 
 	// Custom types
-	case base.OAuthTypeGitlabCustom:
+	case base.OAuthKindGitlabCustom:
 		provider = gitlab.NewCustomisedURL(oauth.ClientID, clientSecret, callbackURL,
 			oauth.AuthURL, oauth.TokenURL, oauth.ProfileURL, oauth.Scopes...)
 	}

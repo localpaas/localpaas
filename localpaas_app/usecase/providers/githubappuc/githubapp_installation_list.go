@@ -15,12 +15,12 @@ func (uc *GithubAppUC) ListAppInstallation(
 	auth *basedto.Auth,
 	req *githubappdto.ListAppInstallationReq,
 ) (*githubappdto.ListAppInstallationResp, error) {
-	app, err := github.NewApp(req.AppID, req.InstallationID, reflectutil.UnsafeStrToBytes(req.PrivateKey))
+	client, err := github.NewFromApp(req.AppID, req.InstallationID, reflectutil.UnsafeStrToBytes(req.PrivateKey))
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	installations, pagingMeta, err := app.ListInstallations(ctx, &req.Paging)
+	installations, pagingMeta, err := client.ListInstallations(ctx, &req.Paging)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

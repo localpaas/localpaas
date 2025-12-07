@@ -1,26 +1,26 @@
 package base
 
-type OAuthType string
+type OAuthKind string
 
 const (
-	OAuthTypeGithub    OAuthType = "github"
-	OAuthTypeGithubApp OAuthType = "github-app"
-	OAuthTypeGitlab    OAuthType = "gitlab"
-	OAuthTypeGitea     OAuthType = "gitea"
-	OAuthTypeGoogle    OAuthType = "google"
+	OAuthKindGithub    OAuthKind = "github"
+	OAuthKindGithubApp OAuthKind = "github-app"
+	OAuthKindGitlab    OAuthKind = "gitlab"
+	OAuthKindGitea     OAuthKind = "gitea"
+	OAuthKindGoogle    OAuthKind = "google"
 
 	// Custom OAuth types
-	OAuthTypeGitlabCustom OAuthType = "gitlab-custom"
+	OAuthKindGitlabCustom OAuthKind = "gitlab-custom"
 )
 
 var (
-	AllOAuthTypes = []OAuthType{OAuthTypeGithub, OAuthTypeGithubApp, OAuthTypeGitlab, OAuthTypeGitea,
-		OAuthTypeGoogle, OAuthTypeGitlabCustom}
+	AllOAuthKinds = []OAuthKind{OAuthKindGithub, OAuthKindGithubApp, OAuthKindGitlab, OAuthKindGitea,
+		OAuthKindGoogle, OAuthKindGitlabCustom}
 )
 
-func IsCustomOAuthType(typ OAuthType) bool {
-	switch typ { //nolint:exhaustive
-	case OAuthTypeGitlabCustom:
+func IsCustomOAuthKind(kind OAuthKind) bool {
+	switch kind { //nolint:exhaustive
+	case OAuthKindGitlabCustom:
 		return true
 	default:
 		return false

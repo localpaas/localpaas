@@ -37,7 +37,7 @@ type GetOAuthResp struct {
 
 type OAuthResp struct {
 	ID           string             `json:"id"`
-	Kind         string             `json:"kind"`
+	Kind         base.OAuthKind     `json:"kind"`
 	Name         string             `json:"name"`
 	Status       base.SettingStatus `json:"status"`
 	ClientID     string             `json:"clientId"`

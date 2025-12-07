@@ -80,7 +80,7 @@ func (uc *GitTokenUC) preparePersistingGitToken(
 		ID:        gofn.Must(ulid.NewStringULID()),
 		Type:      base.SettingTypeGitToken,
 		Status:    base.SettingStatusActive,
-		Kind:      string(req.TokenType),
+		Kind:      string(req.Kind),
 		Name:      req.Name,
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,

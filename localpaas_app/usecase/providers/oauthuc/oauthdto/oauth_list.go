@@ -10,6 +10,7 @@ import (
 )
 
 type ListOAuthReq struct {
+	Kind   []base.OAuthKind     `json:"-" mapstructure:"kind"`
 	Status []base.SettingStatus `json:"-" mapstructure:"status"`
 	Search string               `json:"-" mapstructure:"search"`
 
@@ -27,6 +28,7 @@ func NewListOAuthReq() *ListOAuthReq {
 
 func (req *ListOAuthReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
+	validators = append(validators, basedto.ValidateSlice(req.Kind, true, 0, base.AllOAuthKinds, "kind")...)
 	validators = append(validators, basedto.ValidateSlice(req.Status, true, 0, base.AllSettingStatuses, "status")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }

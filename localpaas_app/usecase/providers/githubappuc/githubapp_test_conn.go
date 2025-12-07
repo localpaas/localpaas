@@ -15,12 +15,12 @@ func (uc *GithubAppUC) TestGithubAppConn(
 	auth *basedto.Auth,
 	req *githubappdto.TestGithubAppConnReq,
 ) (*githubappdto.TestGithubAppConnResp, error) {
-	app, err := github.NewApp(req.AppID, req.InstallationID, reflectutil.UnsafeStrToBytes(req.PrivateKey))
+	client, err := github.NewFromApp(req.AppID, req.InstallationID, reflectutil.UnsafeStrToBytes(req.PrivateKey))
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	_, _, err = app.ListInstallations(ctx, &basedto.Paging{Limit: 1})
+	_, _, err = client.ListInstallations(ctx, &basedto.Paging{Limit: 1})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

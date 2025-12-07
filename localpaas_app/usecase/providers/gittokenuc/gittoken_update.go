@@ -83,6 +83,7 @@ func (uc *GitTokenUC) prepareUpdatingGitToken(
 	setting := data.Setting
 	setting.UpdateVer++
 	setting.UpdatedAt = timeNow
+	setting.Kind = gofn.Coalesce(string(req.Kind), setting.Kind)
 	setting.Name = gofn.Coalesce(req.Name, setting.Name)
 	setting.ExpireAt = req.ExpireAt
 
