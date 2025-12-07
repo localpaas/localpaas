@@ -11,7 +11,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 )
 
 type GetUserReq struct {
@@ -39,16 +38,17 @@ type UserDetailsResp struct {
 }
 
 type UserResp struct {
-	ID             string                  `json:"id"`
-	Username       string                  `json:"username"`
-	Email          string                  `json:"email"`
-	Role           base.UserRole           `json:"role"`
-	Status         base.UserStatus         `json:"status"`
-	FullName       string                  `json:"fullName"`
-	Photo          string                  `json:"photo"`
-	Position       string                  `json:"position"`
-	SecurityOption base.UserSecurityOption `json:"securityOption"`
-	Notes          string                  `json:"notes,omitempty"`
+	ID               string                  `json:"id"`
+	Username         string                  `json:"username"`
+	Email            string                  `json:"email"`
+	Role             base.UserRole           `json:"role"`
+	Status           base.UserStatus         `json:"status"`
+	FullName         string                  `json:"fullName"`
+	Photo            string                  `json:"photo"`
+	Position         string                  `json:"position"`
+	SecurityOption   base.UserSecurityOption `json:"securityOption"`
+	MfaTotpActivated bool                    `json:"mfaTotpActivated,omitempty"`
+	Notes            string                  `json:"notes,omitempty"`
 
 	CreatedAt      time.Time  `json:"createdAt"`
 	UpdatedAt      time.Time  `json:"updatedAt"`
@@ -57,8 +57,8 @@ type UserResp struct {
 }
 
 func TransformUserDetails(user *entity.User) (resp *UserDetailsResp, err error) {
-	var userResp *UserResp
-	if err = copier.Copy(&userResp, &user); err != nil {
+	userResp, err := TransformUser(user)
+	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 	resp = &UserDetailsResp{

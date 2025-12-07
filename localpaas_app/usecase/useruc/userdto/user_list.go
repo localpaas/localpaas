@@ -42,6 +42,7 @@ func TransformUser(user *entity.User) (resp *UserResp, err error) {
 	if err = copier.Copy(&resp, user); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+	resp.MfaTotpActivated = user.TotpSecret != ""
 	return resp, nil
 }
 

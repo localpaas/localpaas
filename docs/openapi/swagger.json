@@ -13648,6 +13648,9 @@
           "lastAccess" : {
             "type" : "string"
           },
+          "mfaTotpActivated" : {
+            "type" : "boolean"
+          },
           "moduleAccesses" : {
             "items" : {
               "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectAccessResp"
@@ -13722,6 +13725,9 @@
           },
           "lastAccess" : {
             "type" : "string"
+          },
+          "mfaTotpActivated" : {
+            "type" : "boolean"
           },
           "notes" : {
             "type" : "string"
