@@ -122,3 +122,19 @@ func NewTypeInvalid() AppError {
 func NewTypeInvalidNT() AppError { // NT: non translation param
 	return New(ErrTypeInvalid)
 }
+
+// NewUnsupported return AppError for error Unsupported
+func NewUnsupported() AppError {
+	return New(ErrUnsupported)
+}
+func NewUnsupportedNT() AppError { // NT: non translation param
+	return New(ErrUnsupported)
+}
+
+// NewNotImplemented return AppError for error NotImplemented
+func NewNotImplemented() AppError {
+	return New(ErrNotImplemented)
+}
+func NewNotImplementedNT() AppError { // NT: non translation param
+	return New(ErrNotImplemented)
+}

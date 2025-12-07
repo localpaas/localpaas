@@ -42,7 +42,7 @@ func (uc *GitTokenUC) testGithubTokenConn(
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	_, err = client.ListRepos(ctx, github.ListOptionPerPage(1))
+	_, _, err = client.ListRepos(ctx, &basedto.Paging{Limit: 1})
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

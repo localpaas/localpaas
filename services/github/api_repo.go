@@ -4,42 +4,63 @@ import (
 	"context"
 
 	"github.com/google/go-github/v75/github"
+	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/basedto"
 )
 
-func (c *Client) ListRepos(ctx context.Context, options ...ListOption) ([]*github.Repository, error) {
+func (c *Client) ListRepos(ctx context.Context, paging *basedto.Paging) (
+	[]*github.Repository, *basedto.PagingMeta, error) {
 	if c.isAppClient() {
-		return c.listAppRepos(ctx, options...)
+		return c.listAppRepos(ctx, paging)
 	}
-	return c.listUserRepos(ctx, options...)
+	return c.listUserRepos(ctx, paging)
 }
 
-func (c *Client) listAppRepos(ctx context.Context, options ...ListOption) ([]*github.Repository, error) {
-	opts := &github.ListOptions{}
-	for _, option := range options {
-		option(opts)
+func (c *Client) listAppRepos(ctx context.Context, paging *basedto.Paging) (
+	[]*github.Repository, *basedto.PagingMeta, error) {
+	opts := &github.ListOptions{
+		PerPage: defaultListPageSize,
+		Page:    0,
+	}
+	if paging != nil {
+		opts.Page = paging.Offset / gofn.Coalesce(paging.Limit, 1)
+		opts.PerPage = paging.Limit
 	}
 	output, _, err := c.client.Apps.ListRepos(ctx, opts)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, nil, apperrors.Wrap(err)
 	}
-	return output.Repositories, nil
+	return output.Repositories, &basedto.PagingMeta{
+		Offset: opts.Page * opts.PerPage,
+		Limit:  opts.PerPage,
+		Total:  -1,
+	}, nil
 }
 
-func (c *Client) listUserRepos(ctx context.Context, options ...ListOption) ([]*github.Repository, error) {
-	opts := &github.ListOptions{}
-	for _, option := range options {
-		option(opts)
+func (c *Client) listUserRepos(ctx context.Context, paging *basedto.Paging) (
+	[]*github.Repository, *basedto.PagingMeta, error) {
+	opts := &github.ListOptions{
+		PerPage: defaultListPageSize,
+		Page:    0,
+	}
+	if paging != nil {
+		opts.Page = paging.Offset / gofn.Coalesce(paging.Limit, 1)
+		opts.PerPage = paging.Limit
 	}
 	output, _, err := c.client.Repositories.ListByAuthenticatedUser(ctx,
 		&github.RepositoryListByAuthenticatedUserOptions{
 			ListOptions: *opts,
 		})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, nil, apperrors.Wrap(err)
 	}
-	return output, nil
+	return output, &basedto.PagingMeta{
+		Offset: opts.Page * opts.PerPage,
+		Limit:  opts.PerPage,
+		Total:  -1,
+	}, nil
 }
 
 func (c *Client) ListAllRepos(ctx context.Context, options ...ListOption) ([]*github.Repository, error) {

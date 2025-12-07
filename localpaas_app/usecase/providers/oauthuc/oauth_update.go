@@ -63,8 +63,8 @@ func (uc *OAuthUC) loadOAuthDataForUpdate(
 	data.Setting = setting
 
 	// If name changes, validate the new one
-	if req.Organization != "" && !strings.EqualFold(setting.Name, req.Organization) {
-		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeOAuth, req.Organization, false)
+	if req.Name != "" && !strings.EqualFold(setting.Name, req.Name) {
+		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeOAuth, req.Name, false)
 		if conflictSetting != nil {
 			return apperrors.NewAlreadyExist("OAuth").
 				WithMsgLog("oauth '%s' already exists", conflictSetting.Name)

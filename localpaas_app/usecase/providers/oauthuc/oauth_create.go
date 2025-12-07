@@ -58,13 +58,14 @@ func (uc *OAuthUC) loadOAuthData(
 	req *oauthdto.CreateOAuthReq,
 	_ *createOAuthData,
 ) error {
-	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeOAuth, req.Organization, false)
+	name := gofn.Coalesce(req.Name, req.Organization)
+	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeOAuth, name, false)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}
 	if setting != nil {
 		return apperrors.NewAlreadyExist("OAuth").
-			WithMsgLog("oauth setting '%s' already exists", req.Organization)
+			WithMsgLog("oauth setting '%s' already exists", name)
 	}
 
 	return nil

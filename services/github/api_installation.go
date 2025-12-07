@@ -16,7 +16,7 @@ func (c *Client) ListInstallations(ctx context.Context, paging *basedto.Paging) 
 		return nil, nil, apperrors.Wrap(ErrGithubAppClientRequired)
 	}
 	opts := &github.ListOptions{
-		PerPage: defaultPerPage,
+		PerPage: defaultListPageSize,
 		Page:    0,
 	}
 	if paging != nil {

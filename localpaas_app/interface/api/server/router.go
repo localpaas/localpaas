@@ -10,6 +10,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/apphandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/clusterhandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/gitsourcehandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projecthandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/providershandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
@@ -28,6 +29,7 @@ type HandlerRegistry struct {
 	providersHandler    *providershandler.ProvidersHandler
 	userSettingsHandler *usersettingshandler.UserSettingsHandler
 	systemHandler       *systemhandler.SystemHandler
+	gitSourceHandler    *gitsourcehandler.GitSourceHandler
 }
 
 func NewHandlerRegistry(
@@ -40,6 +42,7 @@ func NewHandlerRegistry(
 	providersHandler *providershandler.ProvidersHandler,
 	userSettingsHandler *usersettingshandler.UserSettingsHandler,
 	systemHandler *systemhandler.SystemHandler,
+	gitSourceHandler *gitsourcehandler.GitSourceHandler,
 ) *HandlerRegistry {
 	return &HandlerRegistry{
 		authHandler:         authHandler,
@@ -51,6 +54,7 @@ func NewHandlerRegistry(
 		providersHandler:    providersHandler,
 		userSettingsHandler: userSettingsHandler,
 		systemHandler:       systemHandler,
+		gitSourceHandler:    gitSourceHandler,
 	}
 }
 
@@ -395,6 +399,12 @@ func (s *HTTPServer) registerRoutes() {
 		lpAppGroup.POST("/restart", s.handlerRegistry.systemHandler.RestartLocalPaasApp)
 		// Config
 		lpAppGroup.POST("/config/reload", s.handlerRegistry.systemHandler.ReloadLocalPaasAppConfig)
+	}
+
+	{ // git source group
+		gitSourceGroup := apiGroup.Group("/git-source")
+		// Repo
+		gitSourceGroup.GET("/:settingID/repositories", s.handlerRegistry.gitSourceHandler.ListGitRepo)
 	}
 }
 

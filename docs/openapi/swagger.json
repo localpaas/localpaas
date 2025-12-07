@@ -1269,6 +1269,83 @@
         "tags" : [ "cluster_volumes" ]
       }
     },
+    "/git-source/{settingID}/repositories" : {
+      "get" : {
+        "description" : "Lists repo",
+        "operationId" : "listGitRepo",
+        "parameters" : [ {
+          "description" : "github-app ID or git-token ID",
+          "in" : "path",
+          "name" : "settingID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`search=<target> (support *)`",
+          "in" : "query",
+          "name" : "search",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`pageOffset=offset`",
+          "in" : "query",
+          "name" : "pageOffset",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`pageLimit=limit`",
+          "in" : "query",
+          "name" : "pageLimit",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`sort=[-]field1|field2...`",
+          "in" : "query",
+          "name" : "sort",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_gitsourceuc_gitsourcedto.ListRepoResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Lists repo",
+        "tags" : [ "git_source" ]
+      }
+    },
     "/internal/auth/dev-mode-login" : {
       "post" : {
         "description" : "Login user for dev mode. `user_id` params is required.",
@@ -10099,6 +10176,48 @@
           }
         },
         "required" : [ "clusterVolumeSpec", "createdAt", "driver", "id", "labels", "mountpoint", "options", "refCount", "scope", "size", "status", "updateVer" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_gitsourceuc_gitsourcedto.ListRepoResp" : {
+        "properties" : {
+          "data" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_gitsourceuc_gitsourcedto.RepoResp"
+            },
+            "type" : "array"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_gitsourceuc_gitsourcedto.RepoResp" : {
+        "properties" : {
+          "cloneURL" : {
+            "type" : "string"
+          },
+          "defaultBranch" : {
+            "type" : "string"
+          },
+          "fullName" : {
+            "type" : "string"
+          },
+          "gitURL" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "masterBranch" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "cloneURL", "defaultBranch", "fullName", "gitURL", "id", "masterBranch", "name" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.CreateProjectReq" : {

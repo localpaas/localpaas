@@ -8,6 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/apphandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/clusterhandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/gitsourcehandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projecthandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/providershandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
@@ -31,6 +32,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/imageuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/nodeuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/volumeuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/gitsourceuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/basicauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/discorduc"
@@ -84,6 +86,7 @@ var Provides = []any{
 	providershandler.NewProvidersHandler,
 	usersettingshandler.NewUserSettingsHandler,
 	systemhandler.NewSystemHandler,
+	gitsourcehandler.NewGitSourceHandler,
 
 	// Use case
 	nodeuc.NewNodeUC,
@@ -107,6 +110,7 @@ var Provides = []any{
 	gittokenuc.NewGitTokenUC,
 	nginxuc.NewNginxUC,
 	lpappuc.NewLpAppUC,
+	gitsourceuc.NewGitSourceUC,
 
 	// Service
 	clusterservice.NewClusterService,

@@ -9,7 +9,8 @@ import (
 )
 
 const (
-	defaultPerPage = 100
+	defaultListPageSize = 100
+	MaxListPageSize     = 100
 )
 
 type ListOption func(*github.ListOptions)
@@ -31,7 +32,7 @@ type listFunc[T any] func(context.Context, *github.Client, *github.ListOptions) 
 func listAll[T any](ctx context.Context, client *github.Client, fn listFunc[T]) (output []T, err error) {
 	opts := &github.ListOptions{
 		Page:    0,
-		PerPage: defaultPerPage,
+		PerPage: defaultListPageSize,
 	}
 	for {
 		result, resp, err := fn(ctx, client, opts)
