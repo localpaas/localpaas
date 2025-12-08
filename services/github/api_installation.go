@@ -3,26 +3,31 @@ package github
 import (
 	"context"
 
-	"github.com/google/go-github/v75/github"
-	"github.com/tiendc/gofn"
+	gogithub "github.com/google/go-github/v75/github"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 )
 
-func (c *Client) ListInstallations(ctx context.Context, paging *basedto.Paging) (
-	[]*github.Installation, *basedto.PagingMeta, error) {
-	if !c.isAppClient() {
+type ListInstallationOption func(options *gogithub.ListOptions)
+
+func (c *Client) ListInstallations(
+	ctx context.Context,
+	paging *basedto.Paging,
+	options ...ListInstallationOption,
+) ([]*gogithub.Installation, *basedto.PagingMeta, error) {
+	if !c.IsAppClient() {
 		return nil, nil, apperrors.Wrap(ErrGithubAppClientRequired)
 	}
-	opts := &github.ListOptions{
-		PerPage: defaultListPageSize,
-		Page:    0,
+
+	opts, maxItems := createListOpts(paging)
+	if maxItems > 0 && maxItems > MaxListPageSize {
+		return c.ListAllInstallations(ctx, paging, options...)
 	}
-	if paging != nil {
-		opts.Page = paging.Offset / gofn.Coalesce(paging.Limit, 1)
-		opts.PerPage = paging.Limit
+	for _, opt := range options {
+		opt(opts)
 	}
+
 	output, _, err := c.client.Apps.ListInstallations(ctx, opts)
 	if err != nil {
 		return nil, nil, apperrors.Wrap(err)
@@ -34,20 +39,43 @@ func (c *Client) ListInstallations(ctx context.Context, paging *basedto.Paging) 
 	}, nil
 }
 
-func (c *Client) ListAllInstallations(ctx context.Context, options ...ListOption) ([]*github.Installation, error) {
-	if !c.isAppClient() {
-		return nil, apperrors.Wrap(ErrGithubAppClientRequired)
+func (c *Client) ListAllInstallations(
+	ctx context.Context,
+	paging *basedto.Paging,
+	options ...ListInstallationOption,
+) ([]*gogithub.Installation, *basedto.PagingMeta, error) {
+	if !c.IsAppClient() {
+		return nil, nil, apperrors.Wrap(ErrGithubAppClientRequired)
 	}
-	output, err := listAll(ctx, c.client,
-		func(ctx context.Context, client *github.Client, opts *github.ListOptions) (
-			[]*github.Installation, *github.Response, error) {
-			for _, option := range options {
-				option(opts)
-			}
-			return client.Apps.ListInstallations(ctx, opts)
-		})
-	if err != nil {
-		return nil, apperrors.Wrap(err)
+
+	opts, maxItems := createListOpts(paging)
+	for _, opt := range options {
+		opt(opts)
 	}
-	return output, nil
+
+	var output []*gogithub.Installation
+	client := c.client
+	for {
+		result, resp, err := client.Apps.ListInstallations(ctx, opts)
+		if err != nil {
+			return nil, nil, apperrors.Wrap(err)
+		}
+		output = append(output, result...)
+		if resp.NextPage <= 0 || opts.Page == resp.NextPage || resp.Rate.Remaining <= 0 {
+			break
+		}
+		if maxItems > 0 && len(output) >= maxItems {
+			break
+		}
+		opts.Page = resp.NextPage
+	}
+
+	pagingMeta := &basedto.PagingMeta{
+		Total: len(output),
+	}
+	if paging != nil {
+		pagingMeta.Offset = paging.Offset
+		pagingMeta.Limit = paging.Limit
+	}
+	return output, pagingMeta, nil
 }

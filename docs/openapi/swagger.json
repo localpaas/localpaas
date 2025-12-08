@@ -10210,14 +10210,11 @@
           "id" : {
             "type" : "string"
           },
-          "masterBranch" : {
-            "type" : "string"
-          },
           "name" : {
             "type" : "string"
           }
         },
-        "required" : [ "cloneURL", "defaultBranch", "fullName", "gitURL", "id", "masterBranch", "name" ],
+        "required" : [ "cloneURL", "defaultBranch", "fullName", "gitURL", "id", "name" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.CreateProjectReq" : {

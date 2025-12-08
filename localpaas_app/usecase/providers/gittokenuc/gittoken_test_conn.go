@@ -8,6 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/gittokenuc/gittokendto"
 	"github.com/localpaas/localpaas/services/github"
+	"github.com/localpaas/localpaas/services/gitlab"
 )
 
 func (uc *GitTokenUC) TestGitTokenConn(
@@ -42,7 +43,7 @@ func (uc *GitTokenUC) testGithubTokenConn(
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	_, _, err = client.ListRepos(ctx, &basedto.Paging{Limit: 1})
+	_, _, err = client.ListUserRepos(ctx, &basedto.Paging{Limit: 1})
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -50,11 +51,18 @@ func (uc *GitTokenUC) testGithubTokenConn(
 }
 
 func (uc *GitTokenUC) testGitlabTokenConn(
-	_ context.Context,
-	_ *gittokendto.TestGitTokenConnReq,
+	ctx context.Context,
+	req *gittokendto.TestGitTokenConnReq,
 ) error {
-	// TODO: add implementation
-	return apperrors.Wrap(apperrors.ErrNotImplemented)
+	client, err := gitlab.NewFromToken(req.Token)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	_, _, err = client.ListAllProjects(ctx, &basedto.Paging{Limit: 1})
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
 }
 
 func (uc *GitTokenUC) testGiteaTokenConn(

@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/bradleyfalzon/ghinstallation/v2"
-	"github.com/google/go-github/v75/github"
+	gogithub "github.com/google/go-github/v75/github"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -20,11 +20,15 @@ type Client struct {
 	appsTransport    *ghinstallation.AppsTransport
 	installTransport *ghinstallation.Transport
 
-	client *github.Client
+	client *gogithub.Client
 }
 
-func (c *Client) isAppClient() bool {
+func (c *Client) IsAppClient() bool {
 	return c.appID > 0
+}
+
+func (c *Client) IsTokenClient() bool {
+	return c.personalToken != ""
 }
 
 func NewFromApp(appID, installationID int64, privateKey []byte) (*Client, error) {
@@ -40,9 +44,9 @@ func NewFromApp(appID, installationID int64, privateKey []byte) (*Client, error)
 	}
 	if installationID != 0 {
 		client.installTransport = ghinstallation.NewFromAppsTransport(appTr, installationID)
-		client.client = github.NewClient(&http.Client{Transport: client.installTransport})
+		client.client = gogithub.NewClient(&http.Client{Transport: client.installTransport})
 	} else {
-		client.client = github.NewClient(&http.Client{Transport: client.appsTransport})
+		client.client = gogithub.NewClient(&http.Client{Transport: client.appsTransport})
 	}
 
 	return client, nil
@@ -51,7 +55,9 @@ func NewFromApp(appID, installationID int64, privateKey []byte) (*Client, error)
 func NewFromPersonalToken(personalToken string) (*Client, error) {
 	client := &Client{
 		personalToken: personalToken,
-		client:        github.NewClient(&http.Client{Transport: NewPatTransport(http.DefaultTransport, personalToken)}),
+		client: gogithub.NewClient(&http.Client{
+			Transport: NewPatTransport(http.DefaultTransport, personalToken),
+		}),
 	}
 	return client, nil
 }
@@ -70,6 +76,10 @@ func NewFromSetting(setting *entity.Setting) (*Client, error) {
 		return NewFromApp(githubApp.AppID, githubApp.InstallationID, reflectutil.UnsafeStrToBytes(privateKey))
 
 	case base.SettingTypeGitToken:
+		if base.GitSource(setting.Kind) != base.GitSourceGithub {
+			return nil, apperrors.New(ErrAccessProviderInvalid).
+				WithMsgLog("git source '%s' is invalid", setting.Kind)
+		}
 		gitToken, err := setting.AsGitToken()
 		if err != nil {
 			return nil, apperrors.Wrap(err)
@@ -81,6 +91,7 @@ func NewFromSetting(setting *entity.Setting) (*Client, error) {
 		return NewFromPersonalToken(token)
 
 	default:
-		return nil, apperrors.Wrap(ErrGithubAccessProviderInvalid)
+		return nil, apperrors.New(ErrAccessProviderInvalid).
+			WithMsgLog("setting type '%s' is invalid", setting.Type)
 	}
 }

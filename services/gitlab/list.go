@@ -1,7 +1,7 @@
-package github
+package gitlab
 
 import (
-	gogithub "github.com/google/go-github/v75/github"
+	gogitlab "gitlab.com/gitlab-org/api/client-go"
 
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 )
@@ -11,13 +11,13 @@ const (
 	MaxListPageSize     = 100
 )
 
-func createListOpts(paging *basedto.Paging) (opts *gogithub.ListOptions, maxItems int) {
-	opts = &gogithub.ListOptions{
+func createListOpts(paging *basedto.Paging) (opts *gogitlab.ListOptions, maxItems int64) {
+	opts = &gogitlab.ListOptions{
 		PerPage: defaultListPageSize,
 	}
 	if paging != nil {
-		opts.Page = paging.ToPage()
-		opts.PerPage = paging.ToPageSize()
+		opts.Page = int64(paging.ToPage())
+		opts.PerPage = int64(paging.ToPageSize())
 	}
 	maxItems = -1
 	if opts.PerPage > MaxListPageSize {

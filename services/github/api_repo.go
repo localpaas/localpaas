@@ -3,31 +3,25 @@ package github
 import (
 	"context"
 
-	"github.com/google/go-github/v75/github"
-	"github.com/tiendc/gofn"
+	gogithub "github.com/google/go-github/v75/github"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 )
 
-func (c *Client) ListRepos(ctx context.Context, paging *basedto.Paging) (
-	[]*github.Repository, *basedto.PagingMeta, error) {
-	if c.isAppClient() {
-		return c.listAppRepos(ctx, paging)
+func (c *Client) ListAppRepos(
+	ctx context.Context,
+	paging *basedto.Paging,
+) ([]*gogithub.Repository, *basedto.PagingMeta, error) {
+	if !c.IsAppClient() {
+		return nil, nil, apperrors.Wrap(ErrGithubAppClientRequired)
 	}
-	return c.listUserRepos(ctx, paging)
-}
 
-func (c *Client) listAppRepos(ctx context.Context, paging *basedto.Paging) (
-	[]*github.Repository, *basedto.PagingMeta, error) {
-	opts := &github.ListOptions{
-		PerPage: defaultListPageSize,
-		Page:    0,
+	opts, maxItems := createListOpts(paging)
+	if maxItems > 0 && maxItems > MaxListPageSize {
+		return c.ListAllAppRepos(ctx, paging)
 	}
-	if paging != nil {
-		opts.Page = paging.Offset / gofn.Coalesce(paging.Limit, 1)
-		opts.PerPage = paging.Limit
-	}
+
 	output, _, err := c.client.Apps.ListRepos(ctx, opts)
 	if err != nil {
 		return nil, nil, apperrors.Wrap(err)
@@ -39,20 +33,66 @@ func (c *Client) listAppRepos(ctx context.Context, paging *basedto.Paging) (
 	}, nil
 }
 
-func (c *Client) listUserRepos(ctx context.Context, paging *basedto.Paging) (
-	[]*github.Repository, *basedto.PagingMeta, error) {
-	opts := &github.ListOptions{
-		PerPage: defaultListPageSize,
-		Page:    0,
+func (c *Client) ListAllAppRepos(
+	ctx context.Context,
+	paging *basedto.Paging,
+) ([]*gogithub.Repository, *basedto.PagingMeta, error) {
+	if !c.IsAppClient() {
+		return nil, nil, apperrors.Wrap(ErrGithubAppClientRequired)
+	}
+
+	opts, maxItems := createListOpts(paging)
+	var output []*gogithub.Repository
+	client := c.client
+	for {
+		result, resp, err := client.Apps.ListRepos(ctx, opts)
+		if err != nil {
+			return nil, nil, apperrors.Wrap(err)
+		}
+		output = append(output, result.Repositories...)
+		if resp.NextPage <= 0 || opts.Page == resp.NextPage || resp.Rate.Remaining <= 0 {
+			break
+		}
+		if maxItems > 0 && len(output) >= maxItems {
+			break
+		}
+		opts.Page = resp.NextPage
+	}
+
+	pagingMeta := &basedto.PagingMeta{
+		Total: len(output),
 	}
 	if paging != nil {
-		opts.Page = paging.Offset / gofn.Coalesce(paging.Limit, 1)
-		opts.PerPage = paging.Limit
+		pagingMeta.Offset = paging.Offset
+		pagingMeta.Limit = paging.Limit
 	}
-	output, _, err := c.client.Repositories.ListByAuthenticatedUser(ctx,
-		&github.RepositoryListByAuthenticatedUserOptions{
-			ListOptions: *opts,
-		})
+	return output, pagingMeta, nil
+}
+
+type ListUserRepoOption func(options *gogithub.RepositoryListByAuthenticatedUserOptions)
+
+func (c *Client) ListUserRepos(
+	ctx context.Context,
+	paging *basedto.Paging,
+	options ...ListUserRepoOption,
+) ([]*gogithub.Repository, *basedto.PagingMeta, error) {
+	if !c.IsTokenClient() {
+		return nil, nil, apperrors.Wrap(ErrGithubTokenClientRequired)
+	}
+
+	opts, maxItems := createListOpts(paging)
+	if maxItems > 0 && maxItems > MaxListPageSize {
+		return c.ListAllUserRepos(ctx, paging)
+	}
+
+	listOpts := &gogithub.RepositoryListByAuthenticatedUserOptions{
+		ListOptions: *opts,
+	}
+	for _, option := range options {
+		option(listOpts)
+	}
+
+	output, _, err := c.client.Repositories.ListByAuthenticatedUser(ctx, listOpts)
 	if err != nil {
 		return nil, nil, apperrors.Wrap(err)
 	}
@@ -63,49 +103,46 @@ func (c *Client) listUserRepos(ctx context.Context, paging *basedto.Paging) (
 	}, nil
 }
 
-func (c *Client) ListAllRepos(ctx context.Context, options ...ListOption) ([]*github.Repository, error) {
-	if c.isAppClient() {
-		return c.listAllAppRepos(ctx, options...)
+func (c *Client) ListAllUserRepos(
+	ctx context.Context,
+	paging *basedto.Paging,
+	options ...ListUserRepoOption,
+) ([]*gogithub.Repository, *basedto.PagingMeta, error) {
+	if !c.IsTokenClient() {
+		return nil, nil, apperrors.Wrap(ErrGithubTokenClientRequired)
 	}
-	return c.listAllUserRepos(ctx, options...)
-}
 
-func (c *Client) listAllAppRepos(ctx context.Context, options ...ListOption) ([]*github.Repository, error) {
-	output, err := listAll(ctx, c.client,
-		func(ctx context.Context, client *github.Client, opts *github.ListOptions) (
-			[]*github.Repository, *github.Response, error) {
-			for _, option := range options {
-				option(opts)
-			}
-			output, resp, err := client.Apps.ListRepos(ctx, opts)
-			if err != nil {
-				return nil, nil, apperrors.Wrap(err)
-			}
-			return output.Repositories, resp, nil
-		})
-	if err != nil {
-		return nil, apperrors.Wrap(err)
+	opts, maxItems := createListOpts(paging)
+	listOpts := &gogithub.RepositoryListByAuthenticatedUserOptions{
+		ListOptions: *opts,
 	}
-	return output, nil
-}
+	for _, option := range options {
+		option(listOpts)
+	}
 
-func (c *Client) listAllUserRepos(ctx context.Context, options ...ListOption) ([]*github.Repository, error) {
-	listOpts := &github.RepositoryListByAuthenticatedUserOptions{}
-	output, err := listAll(ctx, c.client,
-		func(ctx context.Context, client *github.Client, opts *github.ListOptions) (
-			[]*github.Repository, *github.Response, error) {
-			for _, option := range options {
-				option(opts)
-			}
-			listOpts.ListOptions = *opts
-			output, resp, err := c.client.Repositories.ListByAuthenticatedUser(ctx, listOpts)
-			if err != nil {
-				return nil, nil, apperrors.Wrap(err)
-			}
-			return output, resp, nil
-		})
-	if err != nil {
-		return nil, apperrors.Wrap(err)
+	var output []*gogithub.Repository
+	client := c.client
+	for {
+		result, resp, err := client.Repositories.ListByAuthenticatedUser(ctx, listOpts)
+		if err != nil {
+			return nil, nil, apperrors.Wrap(err)
+		}
+		output = append(output, result...)
+		if resp.NextPage <= 0 || opts.Page == resp.NextPage || resp.Rate.Remaining <= 0 {
+			break
+		}
+		if maxItems > 0 && len(output) >= maxItems {
+			break
+		}
+		opts.Page = resp.NextPage
 	}
-	return output, nil
+
+	pagingMeta := &basedto.PagingMeta{
+		Total: len(output),
+	}
+	if paging != nil {
+		pagingMeta.Offset = paging.Offset
+		pagingMeta.Limit = paging.Limit
+	}
+	return output, pagingMeta, nil
 }

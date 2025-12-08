@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/go-github/v75/github"
 	vld "github.com/tiendc/go-validator"
+	gogitlab "gitlab.com/gitlab-org/api/client-go"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -35,7 +36,6 @@ type RepoResp struct {
 	Name          string `json:"name"`
 	FullName      string `json:"fullName"`
 	DefaultBranch string `json:"defaultBranch"`
-	MasterBranch  string `json:"masterBranch"`
 	CloneURL      string `json:"cloneURL"`
 	GitURL        string `json:"gitURL"`
 }
@@ -50,6 +50,26 @@ func TransformGithubRepo(repo *github.Repository) (resp *RepoResp, err error) {
 
 func TransformGithubRepos(repos []*github.Repository) ([]*RepoResp, error) {
 	resp, err := basedto.TransformObjectSlice(repos, TransformGithubRepo)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return resp, nil
+}
+
+func TransformGitlabProject(project *gogitlab.Project) (resp *RepoResp, err error) {
+	resp = &RepoResp{
+		ID:            strconv.FormatInt(project.ID, 10),
+		Name:          project.Name,
+		FullName:      project.PathWithNamespace,
+		CloneURL:      project.HTTPURLToRepo,
+		GitURL:        project.SSHURLToRepo,
+		DefaultBranch: project.DefaultBranch,
+	}
+	return resp, nil
+}
+
+func TransformGitlabProjects(projects []*gogitlab.Project) ([]*RepoResp, error) {
+	resp, err := basedto.TransformObjectSlice(projects, TransformGitlabProject)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

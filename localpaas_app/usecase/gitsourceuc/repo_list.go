@@ -12,6 +12,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/gitsourceuc/gitsourcedto"
 	"github.com/localpaas/localpaas/services/github"
+	"github.com/localpaas/localpaas/services/gitlab"
 )
 
 func (uc *GitSourceUC) ListRepo(
@@ -56,19 +57,13 @@ func (uc *GitSourceUC) listGithubRepo(
 
 	var repos []*gogithub.Repository
 	var pagingMeta *basedto.PagingMeta
-	if req.Paging.Limit > github.MaxListPageSize {
-		repos, err = client.ListAllRepos(ctx)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-		pagingMeta = &basedto.PagingMeta{
-			Total: len(repos),
-		}
+	if client.IsAppClient() {
+		repos, pagingMeta, err = client.ListAppRepos(ctx, &req.Paging)
 	} else {
-		repos, pagingMeta, err = client.ListRepos(ctx, &req.Paging)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
+		repos, pagingMeta, err = client.ListUserRepos(ctx, &req.Paging)
+	}
+	if err != nil {
+		return nil, apperrors.Wrap(err)
 	}
 
 	resp, err := gitsourcedto.TransformGithubRepos(repos)
@@ -83,12 +78,29 @@ func (uc *GitSourceUC) listGithubRepo(
 }
 
 func (uc *GitSourceUC) listGitlabRepo(
-	_ context.Context,
-	_ *gitsourcedto.ListRepoReq,
-	_ *entity.Setting,
+	ctx context.Context,
+	req *gitsourcedto.ListRepoReq,
+	setting *entity.Setting,
 ) (*gitsourcedto.ListRepoResp, error) {
-	// TODO: add implementation
-	return nil, apperrors.Wrap(apperrors.ErrNotImplemented)
+	client, err := gitlab.NewFromSetting(setting)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	projects, pagingMeta, err := client.ListProjects(ctx, &req.Paging)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	resp, err := gitsourcedto.TransformGitlabProjects(projects)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	return &gitsourcedto.ListRepoResp{
+		Meta: &basedto.Meta{Page: pagingMeta},
+		Data: resp,
+	}, nil
 }
 
 func (uc *GitSourceUC) listGiteaRepo(

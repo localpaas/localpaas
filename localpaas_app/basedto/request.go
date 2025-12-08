@@ -3,6 +3,8 @@ package basedto
 import (
 	"mime/multipart"
 
+	"github.com/tiendc/gofn"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
@@ -20,6 +22,14 @@ func (p *Paging) Orders() Orders {
 
 func (p *Paging) OffsetEnd() int {
 	return p.Offset + p.Limit - 1
+}
+
+func (p *Paging) ToPage() int {
+	return p.Offset / gofn.Coalesce(p.Limit, 1)
+}
+
+func (p *Paging) ToPageSize() int {
+	return p.Limit
 }
 
 type Direction string
