@@ -88,8 +88,9 @@ func (uc *GitTokenUC) preparePersistingGitToken(
 	}
 
 	githubApp := &entity.GitToken{
-		User:  req.User,
-		Token: entity.NewEncryptedField(req.Token),
+		User:    req.User,
+		Token:   entity.NewEncryptedField(req.Token),
+		BaseURL: req.BaseURL,
 	}
 	setting.MustSetData(githubApp)
 

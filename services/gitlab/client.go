@@ -6,23 +6,32 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/infra/httpclient"
 )
 
 type Client struct {
-	token string
+	token   string
+	baseURL string
 
 	client      *gogitlab.Client
 	currentUser *gogitlab.User
 }
 
-func NewFromToken(token string) (*Client, error) {
-	client, err := gogitlab.NewClient(token)
+func NewFromToken(token string, baseURL string) (*Client, error) {
+	options := []gogitlab.ClientOptionFunc{
+		gogitlab.WithHTTPClient(httpclient.DefaultClient),
+	}
+	if baseURL != "" {
+		options = append(options, gogitlab.WithBaseURL(baseURL))
+	}
+	client, err := gogitlab.NewClient(token, options...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 	return &Client{
-		token:  token,
-		client: client,
+		token:   token,
+		baseURL: baseURL,
+		client:  client,
 	}, nil
 }
 
@@ -30,7 +39,8 @@ func NewFromSetting(setting *entity.Setting) (*Client, error) {
 	switch setting.Type { //nolint:exhaustive
 	case base.SettingTypeGitToken:
 		gitToken, err := setting.AsGitToken()
-		if base.GitSource(setting.Kind) != base.GitSourceGitlab {
+		gitSource := base.GitSource(setting.Kind)
+		if gitSource != base.GitSourceGitlab && gitSource != base.GitSourceGitlabCustom {
 			return nil, apperrors.New(ErrAccessProviderInvalid).
 				WithMsgLog("git source '%s' is invalid", setting.Kind)
 		}
@@ -41,7 +51,7 @@ func NewFromSetting(setting *entity.Setting) (*Client, error) {
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}
-		return NewFromToken(token)
+		return NewFromToken(token, gitToken.BaseURL)
 
 	default:
 		return nil, apperrors.Wrap(ErrAccessProviderInvalid)

@@ -11242,6 +11242,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.CreateGitTokenReq" : {
         "properties" : {
+          "baseURL" : {
+            "type" : "string"
+          },
           "expireAt" : {
             "type" : "string"
           },
@@ -11258,7 +11261,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "expireAt", "kind", "name", "token", "user" ],
+        "required" : [ "baseURL", "expireAt", "kind", "name", "token", "user" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.CreateGitTokenResp" : {
@@ -11296,6 +11299,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.GitTokenResp" : {
         "properties" : {
+          "baseURL" : {
+            "type" : "string"
+          },
           "createdAt" : {
             "type" : "string"
           },
@@ -11330,7 +11336,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "id", "kind", "name", "status", "token", "updateVer", "updatedAt", "user" ],
+        "required" : [ "baseURL", "createdAt", "id", "kind", "name", "status", "token", "updateVer", "updatedAt", "user" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.ListGitTokenResp" : {
@@ -11350,6 +11356,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.TestGitTokenConnReq" : {
         "properties" : {
+          "baseURL" : {
+            "type" : "string"
+          },
           "expireAt" : {
             "type" : "string"
           },
@@ -11366,7 +11375,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "expireAt", "kind", "name", "token", "user" ],
+        "required" : [ "baseURL", "expireAt", "kind", "name", "token", "user" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.TestGitTokenConnResp" : {
@@ -11404,6 +11413,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.UpdateGitTokenReq" : {
         "properties" : {
+          "baseURL" : {
+            "type" : "string"
+          },
           "expireAt" : {
             "type" : "string"
           },
@@ -11423,7 +11435,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "expireAt", "kind", "name", "token", "updateVer", "user" ],
+        "required" : [ "baseURL", "expireAt", "kind", "name", "token", "updateVer", "user" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_gittokenuc_gittokendto.UpdateGitTokenResp" : {

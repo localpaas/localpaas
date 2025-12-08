@@ -20,7 +20,7 @@ func (uc *GitTokenUC) TestGitTokenConn(
 	switch req.Kind { //nolint:exhaustive
 	case base.GitSourceGithub:
 		err = uc.testGithubTokenConn(ctx, req)
-	case base.GitSourceGitlab:
+	case base.GitSourceGitlab, base.GitSourceGitlabCustom:
 		err = uc.testGitlabTokenConn(ctx, req)
 	case base.GitSourceGitea:
 		err = uc.testGiteaTokenConn(ctx, req)
@@ -54,7 +54,7 @@ func (uc *GitTokenUC) testGitlabTokenConn(
 	ctx context.Context,
 	req *gittokendto.TestGitTokenConnReq,
 ) error {
-	client, err := gitlab.NewFromToken(req.Token)
+	client, err := gitlab.NewFromToken(req.Token, req.BaseURL)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

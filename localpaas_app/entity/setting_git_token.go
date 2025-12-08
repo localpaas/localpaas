@@ -7,8 +7,9 @@ import (
 )
 
 type GitToken struct {
-	User  string         `json:"user"`
-	Token EncryptedField `json:"token"`
+	User    string         `json:"user"`
+	Token   EncryptedField `json:"token"`
+	BaseURL string         `json:"baseURL"`
 }
 
 func (s *GitToken) MustDecrypt() *GitToken {

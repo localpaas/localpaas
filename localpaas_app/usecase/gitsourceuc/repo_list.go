@@ -35,7 +35,7 @@ func (uc *GitSourceUC) ListRepo(
 		switch base.GitSource(setting.Kind) { //nolint:exhaustive
 		case base.GitSourceGithub:
 			return uc.listGithubRepo(ctx, req, setting)
-		case base.GitSourceGitlab:
+		case base.GitSourceGitlab, base.GitSourceGitlabCustom:
 			return uc.listGitlabRepo(ctx, req, setting)
 		case base.GitSourceGitea:
 			return uc.listGiteaRepo(ctx, req, setting)

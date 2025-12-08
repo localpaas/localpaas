@@ -20,6 +20,7 @@ type GitTokenBaseReq struct {
 	Name     string         `json:"name"`
 	User     string         `json:"user"`
 	Token    string         `json:"token"`
+	BaseURL  string         `json:"baseURL"`
 	ExpireAt time.Time      `json:"expireAt"`
 }
 
@@ -27,6 +28,7 @@ func (req *GitTokenBaseReq) modifyRequest() error {
 	req.Name = strings.TrimSpace(req.Name)
 	req.User = strings.TrimSpace(req.User)
 	req.Token = strings.TrimSpace(req.Token)
+	req.BaseURL = strings.TrimSpace(req.BaseURL)
 	return nil
 }
 

@@ -135,5 +135,8 @@ VALUES ('01JAB9XED0GTXBSQDFVYAJ8WE1', 'oauth', 'github', 'Github', 'active',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WK2', 'git-token', 'gitlab', 'localpaas-test', 'active',
         '{"user": "tiendc85", "token": "lpsalt:gm8tw+8Lc0bivA== C8x6lh/XiXzJV11bt5Qx8uTn8/nctmtx+V8siciv7vQjfQeYcrbU0sB2CexZXR8Xv7k4J8DDaCeJd6jioBn9A2buiraTHGr30LLUa2VJkHVA5ATVAQ=="}',
+        '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
+       ('01JAB9XED0GTXBSQDFVYAJ8WK3', 'git-token', 'gitlab-custom', 'localpaas-test', 'active',
+        '{"user": "tiendc85", "baseURL": "https://gitlab.com/api/v4", "token": "lpsalt:gm8tw+8Lc0bivA== C8x6lh/XiXzJV11bt5Qx8uTn8/nctmtx+V8siciv7vQjfQeYcrbU0sB2CexZXR8Xv7k4J8DDaCeJd6jioBn9A2buiraTHGr30LLUa2VJkHVA5ATVAQ=="}',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00')
 ON CONFLICT DO NOTHING;

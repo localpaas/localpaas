@@ -42,6 +42,7 @@ type GitTokenResp struct {
 	Status    base.SettingStatus `json:"status"`
 	User      string             `json:"user"`
 	Token     string             `json:"token"`
+	BaseURL   string             `json:"baseURL"`
 	Encrypted bool               `json:"encrypted,omitempty"`
 	UpdateVer int                `json:"updateVer"`
 
