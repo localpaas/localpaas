@@ -60,13 +60,13 @@ func (h *ProvidersHandler) ListSsl(ctx *gin.Context) {
 // @Tags    providers_ssl
 // @Produce json
 // @Id      getSslProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Success 200 {object} ssldto.GetSslResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssls/{ID} [get]
+// @Router  /providers/ssls/{id} [get]
 func (h *ProvidersHandler) GetSsl(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -141,14 +141,14 @@ func (h *ProvidersHandler) CreateSsl(ctx *gin.Context) {
 // @Tags    providers_ssl
 // @Produce json
 // @Id      updateSslProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Param   body body ssldto.UpdateSslReq true "request data"
 // @Success 200 {object} ssldto.UpdateSslResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssls/{ID} [put]
+// @Router  /providers/ssls/{id} [put]
 func (h *ProvidersHandler) UpdateSsl(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -187,14 +187,14 @@ func (h *ProvidersHandler) UpdateSsl(ctx *gin.Context) {
 // @Tags    providers_ssl
 // @Produce json
 // @Id      updateSslProviderMeta
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Param   body body ssldto.UpdateSslMetaReq true "request data"
 // @Success 200 {object} ssldto.UpdateSslMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssls/{ID}/meta [put]
+// @Router  /providers/ssls/{id}/meta [put]
 func (h *ProvidersHandler) UpdateSslMeta(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -233,13 +233,13 @@ func (h *ProvidersHandler) UpdateSslMeta(ctx *gin.Context) {
 // @Tags    providers_ssl
 // @Produce json
 // @Id      deleteSslProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Success 200 {object} ssldto.DeleteSslResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssls/{ID} [delete]
+// @Router  /providers/ssls/{id} [delete]
 func (h *ProvidersHandler) DeleteSsl(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

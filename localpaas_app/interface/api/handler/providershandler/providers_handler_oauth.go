@@ -60,13 +60,13 @@ func (h *ProvidersHandler) ListOAuth(ctx *gin.Context) {
 // @Tags    providers_oauth
 // @Produce json
 // @Id      getOAuthProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Success 200 {object} oauthdto.GetOAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/oauth/{ID} [get]
+// @Router  /providers/oauth/{id} [get]
 func (h *ProvidersHandler) GetOAuth(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -142,14 +142,14 @@ func (h *ProvidersHandler) CreateOAuth(ctx *gin.Context) {
 // @Tags    providers_oauth
 // @Produce json
 // @Id      updateOAuthProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Param   body body oauthdto.UpdateOAuthReq true "request data"
 // @Success 200 {object} oauthdto.UpdateOAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/oauth/{ID} [put]
+// @Router  /providers/oauth/{id} [put]
 func (h *ProvidersHandler) UpdateOAuth(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -188,14 +188,14 @@ func (h *ProvidersHandler) UpdateOAuth(ctx *gin.Context) {
 // @Tags    providers_oauth
 // @Produce json
 // @Id      updateOAuthProviderMeta
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Param   body body oauthdto.UpdateOAuthMetaReq true "request data"
 // @Success 200 {object} oauthdto.UpdateOAuthMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/oauth/{ID}/meta [put]
+// @Router  /providers/oauth/{id}/meta [put]
 func (h *ProvidersHandler) UpdateOAuthMeta(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -234,13 +234,13 @@ func (h *ProvidersHandler) UpdateOAuthMeta(ctx *gin.Context) {
 // @Tags    providers_oauth
 // @Produce json
 // @Id      deleteOAuthProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Success 200 {object} oauthdto.DeleteOAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/oauth/{ID} [delete]
+// @Router  /providers/oauth/{id} [delete]
 func (h *ProvidersHandler) DeleteOAuth(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

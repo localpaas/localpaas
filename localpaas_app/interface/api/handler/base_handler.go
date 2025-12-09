@@ -17,6 +17,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/strutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/translation"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/system/syserroruc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/system/syserroruc/syserrordto"
 )
 
 var (
@@ -35,7 +37,17 @@ var (
 )
 
 // BaseHandler base handler for every other handler to inherit from
-type BaseHandler struct{}
+type BaseHandler struct {
+	sysErrorUC *syserroruc.SysErrorUC
+}
+
+func NewBaseHandler(
+	sysErrorUC *syserroruc.SysErrorUC,
+) *BaseHandler {
+	return &BaseHandler{
+		sysErrorUC: sysErrorUC,
+	}
+}
 
 func (h *BaseHandler) RequestCtx(ginCtx *gin.Context) context.Context {
 	// TODO: for now just use the input context without any conversion
@@ -51,7 +63,7 @@ func (h *BaseHandler) RenderResponse(ctx *gin.Context, status int, body any) {
 func (h *BaseHandler) RenderError(ctx *gin.Context, err error) {
 	// Parse the error
 	errInfo, errType := apperrors.ParseError(err, h.ParseRequestLang(ctx))
-	h.NotifyError(ctx, err, errInfo, errType)
+	h.SaveError(ctx, err, errInfo, errType)
 
 	// Remove the error details from the response if we are in production env
 	if config.Current.IsProdEnv() {
@@ -70,10 +82,12 @@ func (h *BaseHandler) RenderError(ctx *gin.Context, err error) {
 	ctx.JSON(errInfo.Status, errInfo)
 }
 
-// NotifyError notifies error
-func (h *BaseHandler) NotifyError(_ *gin.Context, _ error, _ *apperrors.ErrorInfo,
-	_ apperrors.ErrLevel) {
-	// TODO: do nothing now
+// SaveError save error in to DB
+func (h *BaseHandler) SaveError(ctx *gin.Context, _ error, errInfo *apperrors.ErrorInfo,
+	errLevel apperrors.ErrLevel) {
+	_, _ = h.sysErrorUC.CreateSysError(ctx, &syserrordto.CreateSysErrorReq{
+		ErrorInfo: errInfo,
+	})
 }
 
 // parsePagination parses paging and sorting params

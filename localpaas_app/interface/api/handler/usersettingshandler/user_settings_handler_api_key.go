@@ -55,13 +55,13 @@ func (h *UserSettingsHandler) ListAPIKey(ctx *gin.Context) {
 // @Tags    user_settings_api_keys
 // @Produce json
 // @Id      getAPIKeySetting
-// @Param   ID path string true "s3 storage ID"
+// @Param   id path string true "s3 storage ID"
 // @Success 200 {object} apikeydto.GetAPIKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /users/current/settings/api-keys/{ID} [get]
+// @Router  /users/current/settings/api-keys/{id} [get]
 func (h *UserSettingsHandler) GetAPIKey(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -135,14 +135,14 @@ func (h *UserSettingsHandler) CreateAPIKey(ctx *gin.Context) {
 // @Tags    user_settings_api_keys
 // @Produce json
 // @Id      updateAPIKeySettingMeta
-// @Param   ID path string true "API key ID"
+// @Param   id path string true "API key ID"
 // @Param   body body apikeydto.UpdateAPIKeyMetaReq true "request data"
 // @Success 200 {object} apikeydto.UpdateAPIKeyMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /users/current/settings/api-keys/{ID}/meta [put]
+// @Router  /users/current/settings/api-keys/{id}/meta [put]
 func (h *UserSettingsHandler) UpdateAPIKeyMeta(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -183,13 +183,13 @@ func (h *UserSettingsHandler) UpdateAPIKeyMeta(ctx *gin.Context) {
 // @Tags    user_settings_api_keys
 // @Produce json
 // @Id      deleteAPIKeySetting
-// @Param   ID path string true "API key ID"
+// @Param   id path string true "API key ID"
 // @Success 200 {object} apikeydto.DeleteAPIKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /users/current/settings/api-keys/{ID} [delete]
+// @Router  /users/current/settings/api-keys/{id} [delete]
 func (h *UserSettingsHandler) DeleteAPIKey(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

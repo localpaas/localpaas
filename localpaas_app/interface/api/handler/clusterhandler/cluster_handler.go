@@ -17,16 +17,17 @@ type ClusterHandler struct {
 }
 
 func NewClusterHandler(
+	baseHandler *handler.BaseHandler,
 	authHandler *authhandler.AuthHandler,
 	nodeUC *nodeuc.NodeUC,
 	volumeUC *volumeuc.VolumeUC,
 	imageUC *imageuc.ImageUC,
 ) *ClusterHandler {
-	hdl := &ClusterHandler{
+	return &ClusterHandler{
+		BaseHandler: baseHandler,
 		authHandler: authHandler,
 		nodeUC:      nodeUC,
 		volumeUC:    volumeUC,
 		imageUC:     imageUC,
 	}
-	return hdl
 }

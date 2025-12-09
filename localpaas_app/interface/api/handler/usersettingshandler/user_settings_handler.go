@@ -13,12 +13,13 @@ type UserSettingsHandler struct {
 }
 
 func NewUserSettingsHandler(
+	baseHandler *handler.BaseHandler,
 	authHandler *authhandler.AuthHandler,
 	apiKeyUC *apikeyuc.APIKeyUC,
 ) *UserSettingsHandler {
-	hdl := &UserSettingsHandler{
+	return &UserSettingsHandler{
+		BaseHandler: baseHandler,
 		authHandler: authHandler,
 		apiKeyUC:    apiKeyUC,
 	}
-	return hdl
 }

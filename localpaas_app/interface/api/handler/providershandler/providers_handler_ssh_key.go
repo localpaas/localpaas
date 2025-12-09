@@ -60,13 +60,13 @@ func (h *ProvidersHandler) ListSSHKey(ctx *gin.Context) {
 // @Tags    providers_ssh_key
 // @Produce json
 // @Id      getSSHKeyProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Success 200 {object} sshkeydto.GetSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssh-keys/{ID} [get]
+// @Router  /providers/ssh-keys/{id} [get]
 func (h *ProvidersHandler) GetSSHKey(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -141,14 +141,14 @@ func (h *ProvidersHandler) CreateSSHKey(ctx *gin.Context) {
 // @Tags    providers_ssh_key
 // @Produce json
 // @Id      updateSSHKeyProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Param   body body sshkeydto.UpdateSSHKeyReq true "request data"
 // @Success 200 {object} sshkeydto.UpdateSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssh-keys/{ID} [put]
+// @Router  /providers/ssh-keys/{id} [put]
 func (h *ProvidersHandler) UpdateSSHKey(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -187,14 +187,14 @@ func (h *ProvidersHandler) UpdateSSHKey(ctx *gin.Context) {
 // @Tags    providers_ssh_key
 // @Produce json
 // @Id      updateSSHKeyProviderMeta
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Param   body body sshkeydto.UpdateSSHKeyMetaReq true "request data"
 // @Success 200 {object} sshkeydto.UpdateSSHKeyMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssh-keys/{ID}/meta [put]
+// @Router  /providers/ssh-keys/{id}/meta [put]
 func (h *ProvidersHandler) UpdateSSHKeyMeta(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -233,13 +233,13 @@ func (h *ProvidersHandler) UpdateSSHKeyMeta(ctx *gin.Context) {
 // @Tags    providers_ssh_key
 // @Produce json
 // @Id      deleteSSHKeyProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Success 200 {object} sshkeydto.DeleteSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssh-keys/{ID} [delete]
+// @Router  /providers/ssh-keys/{id} [delete]
 func (h *ProvidersHandler) DeleteSSHKey(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

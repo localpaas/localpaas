@@ -61,13 +61,13 @@ func (h *ProvidersHandler) ListDiscord(ctx *gin.Context) {
 // @Tags    providers_discord
 // @Produce json
 // @Id      getDiscordProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Success 200 {object} discorddto.GetDiscordResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/discord/{ID} [get]
+// @Router  /providers/discord/{id} [get]
 func (h *ProvidersHandler) GetDiscord(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -142,14 +142,14 @@ func (h *ProvidersHandler) CreateDiscord(ctx *gin.Context) {
 // @Tags    providers_discord
 // @Produce json
 // @Id      updateDiscordProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Param   body body discorddto.UpdateDiscordReq true "request data"
 // @Success 200 {object} discorddto.UpdateDiscordResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/discord/{ID} [put]
+// @Router  /providers/discord/{id} [put]
 func (h *ProvidersHandler) UpdateDiscord(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -188,14 +188,14 @@ func (h *ProvidersHandler) UpdateDiscord(ctx *gin.Context) {
 // @Tags    providers_discord
 // @Produce json
 // @Id      updateDiscordProviderMeta
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Param   body body discorddto.UpdateDiscordMetaReq true "request data"
 // @Success 200 {object} discorddto.UpdateDiscordMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/discord/{ID}/meta [put]
+// @Router  /providers/discord/{id}/meta [put]
 func (h *ProvidersHandler) UpdateDiscordMeta(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -234,13 +234,13 @@ func (h *ProvidersHandler) UpdateDiscordMeta(ctx *gin.Context) {
 // @Tags    providers_discord
 // @Produce json
 // @Id      deleteDiscordProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Success 200 {object} discorddto.DeleteDiscordResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/discord/{ID} [delete]
+// @Router  /providers/discord/{id} [delete]
 func (h *ProvidersHandler) DeleteDiscord(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

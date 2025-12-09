@@ -61,13 +61,13 @@ func (h *ProvidersHandler) ListRegistryAuth(ctx *gin.Context) {
 // @Tags    providers_registry_auth
 // @Produce json
 // @Id      getRegistryAuthProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Success 200 {object} registryauthdto.GetRegistryAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/registry-auth/{ID} [get]
+// @Router  /providers/registry-auth/{id} [get]
 func (h *ProvidersHandler) GetRegistryAuth(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -142,14 +142,14 @@ func (h *ProvidersHandler) CreateRegistryAuth(ctx *gin.Context) {
 // @Tags    providers_registry_auth
 // @Produce json
 // @Id      updateRegistryAuthProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Param   body body registryauthdto.UpdateRegistryAuthReq true "request data"
 // @Success 200 {object} registryauthdto.UpdateRegistryAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/registry-auth/{ID} [put]
+// @Router  /providers/registry-auth/{id} [put]
 func (h *ProvidersHandler) UpdateRegistryAuth(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -188,14 +188,14 @@ func (h *ProvidersHandler) UpdateRegistryAuth(ctx *gin.Context) {
 // @Tags    providers_registry_auth
 // @Produce json
 // @Id      updateRegistryAuthProviderMeta
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Param   body body registryauthdto.UpdateRegistryAuthMetaReq true "request data"
 // @Success 200 {object} registryauthdto.UpdateRegistryAuthMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/registry-auth/{ID}/meta [put]
+// @Router  /providers/registry-auth/{id}/meta [put]
 func (h *ProvidersHandler) UpdateRegistryAuthMeta(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -234,13 +234,13 @@ func (h *ProvidersHandler) UpdateRegistryAuthMeta(ctx *gin.Context) {
 // @Tags    providers_registry_auth
 // @Produce json
 // @Id      deleteRegistryAuthProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Success 200 {object} registryauthdto.DeleteRegistryAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/registry-auth/{ID} [delete]
+// @Router  /providers/registry-auth/{id} [delete]
 func (h *ProvidersHandler) DeleteRegistryAuth(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

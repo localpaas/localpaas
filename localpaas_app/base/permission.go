@@ -38,6 +38,7 @@ const (
 	ResourceTypeGithubApp    ResourceType = "github-app"
 	ResourceTypeGitToken     ResourceType = "git-token"
 	ResourceTypeCronJob      ResourceType = "cron-job"
+	ResourceTypeSysError     ResourceType = "sys-error"
 )
 
 type ResourceModule string

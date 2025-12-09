@@ -22,12 +22,13 @@ type AuthHandler struct {
 }
 
 func NewAuthHandler(
+	baseHandler *handler.BaseHandler,
 	sessionUC *sessionuc.SessionUC,
 ) *AuthHandler {
-	hdl := &AuthHandler{
-		sessionUC: sessionUC,
+	return &AuthHandler{
+		BaseHandler: baseHandler,
+		sessionUC:   sessionUC,
 	}
-	return hdl
 }
 
 func (h *AuthHandler) GetCurrentUser(ctx *gin.Context) (*basedto.User, error) {

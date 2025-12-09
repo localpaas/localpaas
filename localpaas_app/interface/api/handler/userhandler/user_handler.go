@@ -12,10 +12,14 @@ type UserHandler struct {
 	userUC      *useruc.UserUC
 }
 
-func NewUserHandler(authHandler *authhandler.AuthHandler, userUC *useruc.UserUC) *UserHandler {
-	hdl := &UserHandler{
+func NewUserHandler(
+	baseHandler *handler.BaseHandler,
+	authHandler *authhandler.AuthHandler,
+	userUC *useruc.UserUC,
+) *UserHandler {
+	return &UserHandler{
+		BaseHandler: baseHandler,
 		authHandler: authHandler,
 		userUC:      userUC,
 	}
-	return hdl
 }

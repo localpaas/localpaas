@@ -15,14 +15,15 @@ type AppHandler struct {
 }
 
 func NewAppHandler(
+	baseHandler *handler.BaseHandler,
 	authHandler *authhandler.AuthHandler,
 	appUC *appuc.AppUC,
 	secretUC *secretuc.SecretUC,
 ) *AppHandler {
-	hdl := &AppHandler{
+	return &AppHandler{
+		BaseHandler: baseHandler,
 		authHandler: authHandler,
 		appUC:       appUC,
 		secretUC:    secretUC,
 	}
-	return hdl
 }

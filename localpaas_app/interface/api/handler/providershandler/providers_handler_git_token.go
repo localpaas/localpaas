@@ -61,13 +61,13 @@ func (h *ProvidersHandler) ListGitToken(ctx *gin.Context) {
 // @Tags    providers_git_token
 // @Produce json
 // @Id      getGitTokenProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Success 200 {object} gittokendto.GetGitTokenResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/git-tokens/{ID} [get]
+// @Router  /providers/git-tokens/{id} [get]
 func (h *ProvidersHandler) GetGitToken(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -143,14 +143,14 @@ func (h *ProvidersHandler) CreateGitToken(ctx *gin.Context) {
 // @Tags    providers_git_token
 // @Produce json
 // @Id      updateGitTokenProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Param   body body gittokendto.UpdateGitTokenReq true "request data"
 // @Success 200 {object} gittokendto.UpdateGitTokenResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/git-tokens/{ID} [put]
+// @Router  /providers/git-tokens/{id} [put]
 func (h *ProvidersHandler) UpdateGitToken(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -189,14 +189,14 @@ func (h *ProvidersHandler) UpdateGitToken(ctx *gin.Context) {
 // @Tags    providers_git_token
 // @Produce json
 // @Id      updateGitTokenProviderMeta
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Param   body body gittokendto.UpdateGitTokenMetaReq true "request data"
 // @Success 200 {object} gittokendto.UpdateGitTokenMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/git-tokens/{ID}/meta [put]
+// @Router  /providers/git-tokens/{id}/meta [put]
 func (h *ProvidersHandler) UpdateGitTokenMeta(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -235,13 +235,13 @@ func (h *ProvidersHandler) UpdateGitTokenMeta(ctx *gin.Context) {
 // @Tags    providers_git_token
 // @Produce json
 // @Id      deleteGitTokenProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Success 200 {object} gittokendto.DeleteGitTokenResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/git-tokens/{ID} [delete]
+// @Router  /providers/git-tokens/{id} [delete]
 func (h *ProvidersHandler) DeleteGitToken(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

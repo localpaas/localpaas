@@ -8,7 +8,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/oauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc/sessiondto"
 )
@@ -23,15 +22,15 @@ type SessionHandler struct {
 }
 
 func NewSessionHandler(
+	baseHandler *handler.BaseHandler,
 	authHandler *authhandler.AuthHandler,
 	sessionUC *sessionuc.SessionUC,
-	oauthUC *oauthuc.OAuthUC,
 ) *SessionHandler {
-	hdl := &SessionHandler{
+	return &SessionHandler{
+		BaseHandler: baseHandler,
 		authHandler: authHandler,
 		sessionUC:   sessionUC,
 	}
-	return hdl
 }
 
 // GetMe Gets session info of the current user

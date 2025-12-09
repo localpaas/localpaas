@@ -60,13 +60,13 @@ func (h *ProvidersHandler) ListBasicAuth(ctx *gin.Context) {
 // @Tags    providers_basic_auth
 // @Produce json
 // @Id      getBasicAuthProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Success 200 {object} basicauthdto.GetBasicAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/basic-auth/{ID} [get]
+// @Router  /providers/basic-auth/{id} [get]
 func (h *ProvidersHandler) GetBasicAuth(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -141,14 +141,14 @@ func (h *ProvidersHandler) CreateBasicAuth(ctx *gin.Context) {
 // @Tags    providers_basic_auth
 // @Produce json
 // @Id      updateBasicAuthProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Param   body body basicauthdto.UpdateBasicAuthReq true "request data"
 // @Success 200 {object} basicauthdto.UpdateBasicAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/basic-auth/{ID} [put]
+// @Router  /providers/basic-auth/{id} [put]
 func (h *ProvidersHandler) UpdateBasicAuth(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -187,14 +187,14 @@ func (h *ProvidersHandler) UpdateBasicAuth(ctx *gin.Context) {
 // @Tags    providers_basic_auth
 // @Produce json
 // @Id      updateBasicAuthProviderMeta
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Param   body body basicauthdto.UpdateBasicAuthMetaReq true "request data"
 // @Success 200 {object} basicauthdto.UpdateBasicAuthMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/basic-auth/{ID}/meta [put]
+// @Router  /providers/basic-auth/{id}/meta [put]
 func (h *ProvidersHandler) UpdateBasicAuthMeta(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -233,13 +233,13 @@ func (h *ProvidersHandler) UpdateBasicAuthMeta(ctx *gin.Context) {
 // @Tags    providers_basic_auth
 // @Produce json
 // @Id      deleteBasicAuthProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Success 200 {object} basicauthdto.DeleteBasicAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/basic-auth/{ID} [delete]
+// @Router  /providers/basic-auth/{id} [delete]
 func (h *ProvidersHandler) DeleteBasicAuth(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

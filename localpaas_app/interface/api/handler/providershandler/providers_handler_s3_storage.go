@@ -61,13 +61,13 @@ func (h *ProvidersHandler) ListS3Storage(ctx *gin.Context) {
 // @Tags    providers_s3_storage
 // @Produce json
 // @Id      getS3StorageProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Success 200 {object} s3storagedto.GetS3StorageResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/s3-storages/{ID} [get]
+// @Router  /providers/s3-storages/{id} [get]
 func (h *ProvidersHandler) GetS3Storage(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -142,14 +142,14 @@ func (h *ProvidersHandler) CreateS3Storage(ctx *gin.Context) {
 // @Tags    providers_s3_storage
 // @Produce json
 // @Id      updateS3StorageProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Param   body body s3storagedto.UpdateS3StorageReq true "request data"
 // @Success 200 {object} s3storagedto.UpdateS3StorageResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/s3-storages/{ID} [put]
+// @Router  /providers/s3-storages/{id} [put]
 func (h *ProvidersHandler) UpdateS3Storage(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -188,14 +188,14 @@ func (h *ProvidersHandler) UpdateS3Storage(ctx *gin.Context) {
 // @Tags    providers_s3_storage
 // @Produce json
 // @Id      updateS3StorageProviderMeta
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Param   body body s3storagedto.UpdateS3StorageMetaReq true "request data"
 // @Success 200 {object} s3storagedto.UpdateS3StorageMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/s3-storages/{ID}/meta [put]
+// @Router  /providers/s3-storages/{id}/meta [put]
 func (h *ProvidersHandler) UpdateS3StorageMeta(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -234,13 +234,13 @@ func (h *ProvidersHandler) UpdateS3StorageMeta(ctx *gin.Context) {
 // @Tags    providers_s3_storage
 // @Produce json
 // @Id      deleteS3StorageProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Success 200 {object} s3storagedto.DeleteS3StorageResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/s3-storages/{ID} [delete]
+// @Router  /providers/s3-storages/{id} [delete]
 func (h *ProvidersHandler) DeleteS3Storage(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

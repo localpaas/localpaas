@@ -13,12 +13,13 @@ type GitSourceHandler struct {
 }
 
 func NewGitSourceHandler(
+	baseHandler *handler.BaseHandler,
 	authHandler *authhandler.AuthHandler,
 	gitSourceUC *gitsourceuc.GitSourceUC,
 ) *GitSourceHandler {
-	hdl := &GitSourceHandler{
+	return &GitSourceHandler{
+		BaseHandler: baseHandler,
 		authHandler: authHandler,
 		gitSourceUC: gitSourceUC,
 	}
-	return hdl
 }

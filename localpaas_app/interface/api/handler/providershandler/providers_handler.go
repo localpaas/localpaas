@@ -35,6 +35,7 @@ type ProvidersHandler struct {
 }
 
 func NewProvidersHandler(
+	baseHandler *handler.BaseHandler,
 	authHandler *authhandler.AuthHandler,
 	oauthUC *oauthuc.OAuthUC,
 	s3StorageUC *s3storageuc.S3StorageUC,
@@ -49,7 +50,8 @@ func NewProvidersHandler(
 	gitTokenUC *gittokenuc.GitTokenUC,
 	cronJobUC *cronjobuc.CronJobUC,
 ) *ProvidersHandler {
-	hdl := &ProvidersHandler{
+	return &ProvidersHandler{
+		BaseHandler:    baseHandler,
 		authHandler:    authHandler,
 		oauthUC:        oauthUC,
 		s3StorageUC:    s3StorageUC,
@@ -64,5 +66,4 @@ func NewProvidersHandler(
 		gitTokenUC:     gitTokenUC,
 		cronJobUC:      cronJobUC,
 	}
-	return hdl
 }

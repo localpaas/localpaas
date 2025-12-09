@@ -61,13 +61,13 @@ func (h *ProvidersHandler) ListGithubApp(ctx *gin.Context) {
 // @Tags    providers_github_app
 // @Produce json
 // @Id      getGithubAppProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Success 200 {object} githubappdto.GetGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/github-apps/{ID} [get]
+// @Router  /providers/github-apps/{id} [get]
 func (h *ProvidersHandler) GetGithubApp(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -143,14 +143,14 @@ func (h *ProvidersHandler) CreateGithubApp(ctx *gin.Context) {
 // @Tags    providers_github_app
 // @Produce json
 // @Id      updateGithubAppProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Param   body body githubappdto.UpdateGithubAppReq true "request data"
 // @Success 200 {object} githubappdto.UpdateGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/github-apps/{ID} [put]
+// @Router  /providers/github-apps/{id} [put]
 func (h *ProvidersHandler) UpdateGithubApp(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -189,14 +189,14 @@ func (h *ProvidersHandler) UpdateGithubApp(ctx *gin.Context) {
 // @Tags    providers_github_app
 // @Produce json
 // @Id      updateGithubAppProviderMeta
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Param   body body githubappdto.UpdateGithubAppMetaReq true "request data"
 // @Success 200 {object} githubappdto.UpdateGithubAppMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/github-apps/{ID}/meta [put]
+// @Router  /providers/github-apps/{id}/meta [put]
 func (h *ProvidersHandler) UpdateGithubAppMeta(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -235,13 +235,13 @@ func (h *ProvidersHandler) UpdateGithubAppMeta(ctx *gin.Context) {
 // @Tags    providers_github_app
 // @Produce json
 // @Id      deleteGithubAppProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Success 200 {object} githubappdto.DeleteGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/github-apps/{ID} [delete]
+// @Router  /providers/github-apps/{id} [delete]
 func (h *ProvidersHandler) DeleteGithubApp(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

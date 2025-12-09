@@ -61,13 +61,13 @@ func (h *ProvidersHandler) ListSlack(ctx *gin.Context) {
 // @Tags    providers_slack
 // @Produce json
 // @Id      getSlackProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Success 200 {object} slackdto.GetSlackResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/slack/{ID} [get]
+// @Router  /providers/slack/{id} [get]
 func (h *ProvidersHandler) GetSlack(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -142,14 +142,14 @@ func (h *ProvidersHandler) CreateSlack(ctx *gin.Context) {
 // @Tags    providers_slack
 // @Produce json
 // @Id      updateSlackProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Param   body body slackdto.UpdateSlackReq true "request data"
 // @Success 200 {object} slackdto.UpdateSlackResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/slack/{ID} [put]
+// @Router  /providers/slack/{id} [put]
 func (h *ProvidersHandler) UpdateSlack(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -188,14 +188,14 @@ func (h *ProvidersHandler) UpdateSlack(ctx *gin.Context) {
 // @Tags    providers_slack
 // @Produce json
 // @Id      updateSlackProviderMeta
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Param   body body slackdto.UpdateSlackMetaReq true "request data"
 // @Success 200 {object} slackdto.UpdateSlackMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/slack/{ID}/meta [put]
+// @Router  /providers/slack/{id}/meta [put]
 func (h *ProvidersHandler) UpdateSlackMeta(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -234,13 +234,13 @@ func (h *ProvidersHandler) UpdateSlackMeta(ctx *gin.Context) {
 // @Tags    providers_slack
 // @Produce json
 // @Id      deleteSlackProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Success 200 {object} slackdto.DeleteSlackResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/slack/{ID} [delete]
+// @Router  /providers/slack/{id} [delete]
 func (h *ProvidersHandler) DeleteSlack(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

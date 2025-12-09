@@ -5,6 +5,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/infra/logging"
 	"github.com/localpaas/localpaas/localpaas_app/infra/rediscache"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/apphandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/clusterhandler"
@@ -49,6 +50,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/lpappuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/nginxuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/system/syserroruc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc"
 	"github.com/localpaas/localpaas/services/docker"
@@ -78,6 +80,7 @@ var Provides = []any{
 
 	// Route handler
 	server.NewHandlerRegistry, // for all handler list
+	handler.NewBaseHandler,
 	authhandler.NewAuthHandler,
 	clusterhandler.NewClusterHandler,
 	sessionhandler.NewSessionHandler,
@@ -90,6 +93,7 @@ var Provides = []any{
 	gitsourcehandler.NewGitSourceHandler,
 
 	// Use case
+	syserroruc.NewSysErrorUC,
 	nodeuc.NewNodeUC,
 	volumeuc.NewVolumeUC,
 	imageuc.NewImageUC,
@@ -139,6 +143,8 @@ var Provides = []any{
 	repository.NewSettingRepo,
 	// Repo: Task
 	repository.NewTaskRepo,
+	// Repo: Sys error
+	repository.NewSysErrorRepo,
 	// Others
 	repository.NewLoginTrustedDeviceRepo,
 

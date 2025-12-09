@@ -60,13 +60,13 @@ func (h *ProvidersHandler) ListCronJob(ctx *gin.Context) {
 // @Tags    providers_cron_job
 // @Produce json
 // @Id      getCronJobProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Success 200 {object} cronjobdto.GetCronJobResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/cron-jobs/{ID} [get]
+// @Router  /providers/cron-jobs/{id} [get]
 func (h *ProvidersHandler) GetCronJob(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -142,14 +142,14 @@ func (h *ProvidersHandler) CreateCronJob(ctx *gin.Context) {
 // @Tags    providers_cron_job
 // @Produce json
 // @Id      updateCronJobProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Param   body body cronjobdto.UpdateCronJobReq true "request data"
 // @Success 200 {object} cronjobdto.UpdateCronJobResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/cron-jobs/{ID} [put]
+// @Router  /providers/cron-jobs/{id} [put]
 func (h *ProvidersHandler) UpdateCronJob(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -188,14 +188,14 @@ func (h *ProvidersHandler) UpdateCronJob(ctx *gin.Context) {
 // @Tags    providers_cron_job
 // @Produce json
 // @Id      updateCronJobProviderMeta
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Param   body body cronjobdto.UpdateCronJobMetaReq true "request data"
 // @Success 200 {object} cronjobdto.UpdateCronJobMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/cron-jobs/{ID}/meta [put]
+// @Router  /providers/cron-jobs/{id}/meta [put]
 func (h *ProvidersHandler) UpdateCronJobMeta(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -234,13 +234,13 @@ func (h *ProvidersHandler) UpdateCronJobMeta(ctx *gin.Context) {
 // @Tags    providers_cron_job
 // @Produce json
 // @Id      deleteCronJobProvider
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Success 200 {object} cronjobdto.DeleteCronJobResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/cron-jobs/{ID} [delete]
+// @Router  /providers/cron-jobs/{id} [delete]
 func (h *ProvidersHandler) DeleteCronJob(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

@@ -148,12 +148,12 @@ func (s *HTTPServer) registerRoutes() {
 	{ // API key group
 		apiKeyGroup := userSettingGroup.Group("/api-keys")
 		// Info
-		apiKeyGroup.GET("/:ID", s.handlerRegistry.userSettingsHandler.GetAPIKey)
+		apiKeyGroup.GET("/:id", s.handlerRegistry.userSettingsHandler.GetAPIKey)
 		apiKeyGroup.GET("", s.handlerRegistry.userSettingsHandler.ListAPIKey)
 		// Creation & Update
 		apiKeyGroup.POST("", s.handlerRegistry.userSettingsHandler.CreateAPIKey)
-		apiKeyGroup.PUT("/:ID/meta", s.handlerRegistry.userSettingsHandler.UpdateAPIKeyMeta)
-		apiKeyGroup.DELETE("/:ID", s.handlerRegistry.userSettingsHandler.DeleteAPIKey)
+		apiKeyGroup.PUT("/:id/meta", s.handlerRegistry.userSettingsHandler.UpdateAPIKeyMeta)
+		apiKeyGroup.DELETE("/:id", s.handlerRegistry.userSettingsHandler.DeleteAPIKey)
 	}
 
 	clusterGroup := apiGroup.Group("/cluster")
@@ -241,25 +241,25 @@ func (s *HTTPServer) registerRoutes() {
 	{ // oauth group
 		oauthGroup := providerGroup.Group("/oauth")
 		// Info
-		oauthGroup.GET("/:ID", s.handlerRegistry.providersHandler.GetOAuth)
+		oauthGroup.GET("/:id", s.handlerRegistry.providersHandler.GetOAuth)
 		oauthGroup.GET("", s.handlerRegistry.providersHandler.ListOAuth)
 		// Creation & Update
 		oauthGroup.POST("", s.handlerRegistry.providersHandler.CreateOAuth)
-		oauthGroup.PUT("/:ID", s.handlerRegistry.providersHandler.UpdateOAuth)
-		oauthGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateOAuthMeta)
-		oauthGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteOAuth)
+		oauthGroup.PUT("/:id", s.handlerRegistry.providersHandler.UpdateOAuth)
+		oauthGroup.PUT("/:id/meta", s.handlerRegistry.providersHandler.UpdateOAuthMeta)
+		oauthGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteOAuth)
 	}
 
 	{ // github-app group
 		githubAppGroup := providerGroup.Group("/github-apps")
 		// Info
-		githubAppGroup.GET("/:ID", s.handlerRegistry.providersHandler.GetGithubApp)
+		githubAppGroup.GET("/:id", s.handlerRegistry.providersHandler.GetGithubApp)
 		githubAppGroup.GET("", s.handlerRegistry.providersHandler.ListGithubApp)
 		// Creation & Update
 		githubAppGroup.POST("", s.handlerRegistry.providersHandler.CreateGithubApp)
-		githubAppGroup.PUT("/:ID", s.handlerRegistry.providersHandler.UpdateGithubApp)
-		githubAppGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateGithubAppMeta)
-		githubAppGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteGithubApp)
+		githubAppGroup.PUT("/:id", s.handlerRegistry.providersHandler.UpdateGithubApp)
+		githubAppGroup.PUT("/:id/meta", s.handlerRegistry.providersHandler.UpdateGithubAppMeta)
+		githubAppGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteGithubApp)
 		// Test connection
 		githubAppGroup.POST("/test-conn", s.handlerRegistry.providersHandler.TestGithubAppConn)
 		// Installation
@@ -269,13 +269,13 @@ func (s *HTTPServer) registerRoutes() {
 	{ // git-token group
 		gitTokenGroup := providerGroup.Group("/git-tokens")
 		// Info
-		gitTokenGroup.GET("/:ID", s.handlerRegistry.providersHandler.GetGitToken)
+		gitTokenGroup.GET("/:id", s.handlerRegistry.providersHandler.GetGitToken)
 		gitTokenGroup.GET("", s.handlerRegistry.providersHandler.ListGitToken)
 		// Creation & Update
 		gitTokenGroup.POST("", s.handlerRegistry.providersHandler.CreateGitToken)
-		gitTokenGroup.PUT("/:ID", s.handlerRegistry.providersHandler.UpdateGitToken)
-		gitTokenGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateGitTokenMeta)
-		gitTokenGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteGitToken)
+		gitTokenGroup.PUT("/:id", s.handlerRegistry.providersHandler.UpdateGitToken)
+		gitTokenGroup.PUT("/:id/meta", s.handlerRegistry.providersHandler.UpdateGitTokenMeta)
+		gitTokenGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteGitToken)
 		// Test connection
 		gitTokenGroup.POST("/test-conn", s.handlerRegistry.providersHandler.TestGitTokenConn)
 	}
@@ -283,13 +283,13 @@ func (s *HTTPServer) registerRoutes() {
 	{ // s3 storage group
 		s3StorageGroup := providerGroup.Group("/s3-storages")
 		// Info
-		s3StorageGroup.GET("/:ID", s.handlerRegistry.providersHandler.GetS3Storage)
+		s3StorageGroup.GET("/:id", s.handlerRegistry.providersHandler.GetS3Storage)
 		s3StorageGroup.GET("", s.handlerRegistry.providersHandler.ListS3Storage)
 		// Creation & Update
 		s3StorageGroup.POST("", s.handlerRegistry.providersHandler.CreateS3Storage)
-		s3StorageGroup.PUT("/:ID", s.handlerRegistry.providersHandler.UpdateS3Storage)
-		s3StorageGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateS3StorageMeta)
-		s3StorageGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteS3Storage)
+		s3StorageGroup.PUT("/:id", s.handlerRegistry.providersHandler.UpdateS3Storage)
+		s3StorageGroup.PUT("/:id/meta", s.handlerRegistry.providersHandler.UpdateS3StorageMeta)
+		s3StorageGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteS3Storage)
 		// Test connection
 		s3StorageGroup.POST("/test-conn", s.handlerRegistry.providersHandler.TestS3StorageConn)
 	}
@@ -297,13 +297,13 @@ func (s *HTTPServer) registerRoutes() {
 	{ // ssh key group
 		sshKeyGroup := providerGroup.Group("/ssh-keys")
 		// Info
-		sshKeyGroup.GET("/:ID", s.handlerRegistry.providersHandler.GetSSHKey)
+		sshKeyGroup.GET("/:id", s.handlerRegistry.providersHandler.GetSSHKey)
 		sshKeyGroup.GET("", s.handlerRegistry.providersHandler.ListSSHKey)
 		// Creation & Update
 		sshKeyGroup.POST("", s.handlerRegistry.providersHandler.CreateSSHKey)
-		sshKeyGroup.PUT("/:ID", s.handlerRegistry.providersHandler.UpdateSSHKey)
-		sshKeyGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateSSHKeyMeta)
-		sshKeyGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteSSHKey)
+		sshKeyGroup.PUT("/:id", s.handlerRegistry.providersHandler.UpdateSSHKey)
+		sshKeyGroup.PUT("/:id/meta", s.handlerRegistry.providersHandler.UpdateSSHKeyMeta)
+		sshKeyGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteSSHKey)
 	}
 
 	{ // secrets group
@@ -312,20 +312,20 @@ func (s *HTTPServer) registerRoutes() {
 		secretGroup.GET("", s.handlerRegistry.providersHandler.ListSecret)
 		// Creation & Update
 		secretGroup.POST("", s.handlerRegistry.providersHandler.CreateSecret)
-		secretGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateSecretMeta)
-		secretGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteSecret)
+		secretGroup.PUT("/:id/meta", s.handlerRegistry.providersHandler.UpdateSecretMeta)
+		secretGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteSecret)
 	}
 
 	{ // slack group
 		slackGroup := providerGroup.Group("/slack")
 		// Info
-		slackGroup.GET("/:ID", s.handlerRegistry.providersHandler.GetSlack)
+		slackGroup.GET("/:id", s.handlerRegistry.providersHandler.GetSlack)
 		slackGroup.GET("", s.handlerRegistry.providersHandler.ListSlack)
 		// Creation & Update
 		slackGroup.POST("", s.handlerRegistry.providersHandler.CreateSlack)
-		slackGroup.PUT("/:ID", s.handlerRegistry.providersHandler.UpdateSlack)
-		slackGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateSlackMeta)
-		slackGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteSlack)
+		slackGroup.PUT("/:id", s.handlerRegistry.providersHandler.UpdateSlack)
+		slackGroup.PUT("/:id/meta", s.handlerRegistry.providersHandler.UpdateSlackMeta)
+		slackGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteSlack)
 		// Test connection
 		slackGroup.POST("/test-send-msg", s.handlerRegistry.providersHandler.TestSendSlackMsg)
 	}
@@ -333,13 +333,13 @@ func (s *HTTPServer) registerRoutes() {
 	{ // discord group
 		discordGroup := providerGroup.Group("/discord")
 		// Info
-		discordGroup.GET("/:ID", s.handlerRegistry.providersHandler.GetDiscord)
+		discordGroup.GET("/:id", s.handlerRegistry.providersHandler.GetDiscord)
 		discordGroup.GET("", s.handlerRegistry.providersHandler.ListDiscord)
 		// Creation & Update
 		discordGroup.POST("", s.handlerRegistry.providersHandler.CreateDiscord)
-		discordGroup.PUT("/:ID", s.handlerRegistry.providersHandler.UpdateDiscord)
-		discordGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateDiscordMeta)
-		discordGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteDiscord)
+		discordGroup.PUT("/:id", s.handlerRegistry.providersHandler.UpdateDiscord)
+		discordGroup.PUT("/:id/meta", s.handlerRegistry.providersHandler.UpdateDiscordMeta)
+		discordGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteDiscord)
 		// Test connection
 		discordGroup.POST("/test-send-msg", s.handlerRegistry.providersHandler.TestSendDiscordMsg)
 	}
@@ -347,13 +347,13 @@ func (s *HTTPServer) registerRoutes() {
 	{ // registry auth group
 		registryAuthGroup := providerGroup.Group("/registry-auth")
 		// Info
-		registryAuthGroup.GET("/:ID", s.handlerRegistry.providersHandler.GetRegistryAuth)
+		registryAuthGroup.GET("/:id", s.handlerRegistry.providersHandler.GetRegistryAuth)
 		registryAuthGroup.GET("", s.handlerRegistry.providersHandler.ListRegistryAuth)
 		// Creation & Update
 		registryAuthGroup.POST("", s.handlerRegistry.providersHandler.CreateRegistryAuth)
-		registryAuthGroup.PUT("/:ID", s.handlerRegistry.providersHandler.UpdateRegistryAuth)
-		registryAuthGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateRegistryAuthMeta)
-		registryAuthGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteRegistryAuth)
+		registryAuthGroup.PUT("/:id", s.handlerRegistry.providersHandler.UpdateRegistryAuth)
+		registryAuthGroup.PUT("/:id/meta", s.handlerRegistry.providersHandler.UpdateRegistryAuthMeta)
+		registryAuthGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteRegistryAuth)
 		// Test connection
 		registryAuthGroup.POST("/test-conn", s.handlerRegistry.providersHandler.TestRegistryAuthConn)
 	}
@@ -361,40 +361,47 @@ func (s *HTTPServer) registerRoutes() {
 	{ // basic auth group
 		basicAuthGroup := providerGroup.Group("/basic-auth")
 		// Info
-		basicAuthGroup.GET("/:ID", s.handlerRegistry.providersHandler.GetBasicAuth)
+		basicAuthGroup.GET("/:id", s.handlerRegistry.providersHandler.GetBasicAuth)
 		basicAuthGroup.GET("", s.handlerRegistry.providersHandler.ListBasicAuth)
 		// Creation & Update
 		basicAuthGroup.POST("", s.handlerRegistry.providersHandler.CreateBasicAuth)
-		basicAuthGroup.PUT("/:ID", s.handlerRegistry.providersHandler.UpdateBasicAuth)
-		basicAuthGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateBasicAuthMeta)
-		basicAuthGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteBasicAuth)
+		basicAuthGroup.PUT("/:id", s.handlerRegistry.providersHandler.UpdateBasicAuth)
+		basicAuthGroup.PUT("/:id/meta", s.handlerRegistry.providersHandler.UpdateBasicAuthMeta)
+		basicAuthGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteBasicAuth)
 	}
 
 	{ // ssl group
 		sslGroup := providerGroup.Group("/ssls")
 		// Info
-		sslGroup.GET("/:ID", s.handlerRegistry.providersHandler.GetSsl)
+		sslGroup.GET("/:id", s.handlerRegistry.providersHandler.GetSsl)
 		sslGroup.GET("", s.handlerRegistry.providersHandler.ListSsl)
 		// Creation & Update
 		sslGroup.POST("", s.handlerRegistry.providersHandler.CreateSsl)
-		sslGroup.PUT("/:ID", s.handlerRegistry.providersHandler.UpdateSsl)
-		sslGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateSslMeta)
-		sslGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteSsl)
+		sslGroup.PUT("/:id", s.handlerRegistry.providersHandler.UpdateSsl)
+		sslGroup.PUT("/:id/meta", s.handlerRegistry.providersHandler.UpdateSslMeta)
+		sslGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteSsl)
 	}
 
 	{ // cron-job group
 		cronJobGroup := providerGroup.Group("/cron-jobs")
 		// Info
-		cronJobGroup.GET("/:ID", s.handlerRegistry.providersHandler.GetCronJob)
+		cronJobGroup.GET("/:id", s.handlerRegistry.providersHandler.GetCronJob)
 		cronJobGroup.GET("", s.handlerRegistry.providersHandler.ListCronJob)
 		// Creation & Update
 		cronJobGroup.POST("", s.handlerRegistry.providersHandler.CreateCronJob)
-		cronJobGroup.PUT("/:ID", s.handlerRegistry.providersHandler.UpdateCronJob)
-		cronJobGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateCronJobMeta)
-		cronJobGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteCronJob)
+		cronJobGroup.PUT("/:id", s.handlerRegistry.providersHandler.UpdateCronJob)
+		cronJobGroup.PUT("/:id/meta", s.handlerRegistry.providersHandler.UpdateCronJobMeta)
+		cronJobGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteCronJob)
 	}
 
 	systemGroup := apiGroup.Group("/system")
+
+	{ // error group
+		errorGroup := systemGroup.Group("/errors")
+		errorGroup.GET("", s.handlerRegistry.systemHandler.ListSysError)
+		errorGroup.GET("/:id", s.handlerRegistry.systemHandler.GetSysError)
+		errorGroup.DELETE("/:id", s.handlerRegistry.systemHandler.DeleteSysError)
+	}
 
 	{ // nginx group
 		nginxGroup := systemGroup.Group("/nginx")

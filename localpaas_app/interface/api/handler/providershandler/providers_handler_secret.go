@@ -96,14 +96,14 @@ func (h *ProvidersHandler) CreateSecret(ctx *gin.Context) {
 // @Tags    providers_secrets
 // @Produce json
 // @Id      updateSecretMeta
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Param   body body secretdto.UpdateSecretMetaReq true "request data"
 // @Success 201 {object} secretdto.UpdateSecretMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/secrets/{ID}/meta [put]
+// @Router  /providers/secrets/{id}/meta [put]
 func (h *ProvidersHandler) UpdateSecretMeta(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -142,13 +142,13 @@ func (h *ProvidersHandler) UpdateSecretMeta(ctx *gin.Context) {
 // @Tags    providers_secrets
 // @Produce json
 // @Id      deleteSecret
-// @Param   ID path string true "provider ID"
+// @Param   id path string true "provider ID"
 // @Success 200 {object} secretdto.DeleteSecretResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/secrets/{ID} [delete]
+// @Router  /providers/secrets/{id} [delete]
 func (h *ProvidersHandler) DeleteSecret(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "ID")
+	id, err := h.ParseStringParam(ctx, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

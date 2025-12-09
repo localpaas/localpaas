@@ -15,14 +15,15 @@ type ProjectHandler struct {
 }
 
 func NewProjectHandler(
+	baseHandler *handler.BaseHandler,
 	authHandler *authhandler.AuthHandler,
 	projectUC *projectuc.ProjectUC,
 	secretUC *secretuc.SecretUC,
 ) *ProjectHandler {
-	hdl := &ProjectHandler{
+	return &ProjectHandler{
+		BaseHandler: baseHandler,
 		authHandler: authHandler,
 		projectUC:   projectUC,
 		secretUC:    secretUC,
 	}
-	return hdl
 }

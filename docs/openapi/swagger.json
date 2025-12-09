@@ -3190,14 +3190,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/basic-auth/{ID}" : {
+    "/providers/basic-auth/{id}" : {
       "delete" : {
         "description" : "Deletes basic auth provider",
         "operationId" : "deleteBasicAuthProvider",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -3244,7 +3244,7 @@
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -3291,7 +3291,7 @@
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -3345,14 +3345,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/basic-auth/{ID}/meta" : {
+    "/providers/basic-auth/{id}/meta" : {
       "put" : {
         "description" : "Updates basic auth meta",
         "operationId" : "updateBasicAuthProviderMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -3525,14 +3525,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/cron-jobs/{ID}" : {
+    "/providers/cron-jobs/{id}" : {
       "delete" : {
         "description" : "Deletes cron-job provider",
         "operationId" : "deleteCronJobProvider",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -3579,7 +3579,7 @@
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -3626,7 +3626,7 @@
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -3680,14 +3680,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/cron-jobs/{ID}/meta" : {
+    "/providers/cron-jobs/{id}/meta" : {
       "put" : {
         "description" : "Updates cron-job meta",
         "operationId" : "updateCronJobProviderMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -3912,14 +3912,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/discord/{ID}" : {
+    "/providers/discord/{id}" : {
       "delete" : {
         "description" : "Deletes Discord provider",
         "operationId" : "deleteDiscordProvider",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -3966,7 +3966,7 @@
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -4013,7 +4013,7 @@
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -4067,14 +4067,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/discord/{ID}/meta" : {
+    "/providers/discord/{id}/meta" : {
       "put" : {
         "description" : "Updates Discord meta provider",
         "operationId" : "updateDiscordProviderMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -4299,14 +4299,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/git-tokens/{ID}" : {
+    "/providers/git-tokens/{id}" : {
       "delete" : {
         "description" : "Deletes git-token provider",
         "operationId" : "deleteGitTokenProvider",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -4353,7 +4353,7 @@
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -4400,7 +4400,7 @@
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -4454,14 +4454,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/git-tokens/{ID}/meta" : {
+    "/providers/git-tokens/{id}/meta" : {
       "put" : {
         "description" : "Updates git-token meta",
         "operationId" : "updateGitTokenProviderMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -4738,14 +4738,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/github-apps/{ID}" : {
+    "/providers/github-apps/{id}" : {
       "delete" : {
         "description" : "Deletes github-app provider",
         "operationId" : "deleteGithubAppProvider",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -4792,7 +4792,7 @@
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -4839,7 +4839,7 @@
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -4893,14 +4893,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/github-apps/{ID}/meta" : {
+    "/providers/github-apps/{id}/meta" : {
       "put" : {
         "description" : "Updates github-app meta",
         "operationId" : "updateGithubAppProviderMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -5073,14 +5073,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/oauth/{ID}" : {
+    "/providers/oauth/{id}" : {
       "delete" : {
         "description" : "Deletes oauth provider",
         "operationId" : "deleteOAuthProvider",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -5127,7 +5127,7 @@
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -5174,7 +5174,7 @@
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -5228,14 +5228,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/oauth/{ID}/meta" : {
+    "/providers/oauth/{id}/meta" : {
       "put" : {
         "description" : "Updates oauth meta",
         "operationId" : "updateOAuthProviderMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -5460,14 +5460,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/registry-auth/{ID}" : {
+    "/providers/registry-auth/{id}" : {
       "delete" : {
         "description" : "Deletes registry auth provider",
         "operationId" : "deleteRegistryAuthProvider",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -5514,7 +5514,7 @@
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -5561,7 +5561,7 @@
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -5615,14 +5615,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/registry-auth/{ID}/meta" : {
+    "/providers/registry-auth/{id}/meta" : {
       "put" : {
         "description" : "Updates registry auth meta",
         "operationId" : "updateRegistryAuthProviderMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -5847,14 +5847,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/s3-storages/{ID}" : {
+    "/providers/s3-storages/{id}" : {
       "delete" : {
         "description" : "Deletes S3 storage provider",
         "operationId" : "deleteS3StorageProvider",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -5901,7 +5901,7 @@
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -5948,7 +5948,7 @@
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -6002,14 +6002,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/s3-storages/{ID}/meta" : {
+    "/providers/s3-storages/{id}/meta" : {
       "put" : {
         "description" : "Updates S3 storage meta",
         "operationId" : "updateS3StorageProviderMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -6182,14 +6182,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/secrets/{ID}" : {
+    "/providers/secrets/{id}" : {
       "delete" : {
         "description" : "Deletes a secret",
         "operationId" : "deleteSecret",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -6231,14 +6231,14 @@
         "tags" : [ "providers_secrets" ]
       }
     },
-    "/providers/secrets/{ID}/meta" : {
+    "/providers/secrets/{id}/meta" : {
       "put" : {
         "description" : "Updates secret meta",
         "operationId" : "updateSecretMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -6463,14 +6463,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/slack/{ID}" : {
+    "/providers/slack/{id}" : {
       "delete" : {
         "description" : "Deletes Slack provider",
         "operationId" : "deleteSlackProvider",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -6517,7 +6517,7 @@
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -6564,7 +6564,7 @@
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -6618,14 +6618,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/slack/{ID}/meta" : {
+    "/providers/slack/{id}/meta" : {
       "put" : {
         "description" : "Updates Slack meta provider",
         "operationId" : "updateSlackProviderMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -6798,14 +6798,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/ssh-keys/{ID}" : {
+    "/providers/ssh-keys/{id}" : {
       "delete" : {
         "description" : "Deletes sshkey provider",
         "operationId" : "deleteSSHKeyProvider",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -6852,7 +6852,7 @@
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -6899,7 +6899,7 @@
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -6953,14 +6953,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/ssh-keys/{ID}/meta" : {
+    "/providers/ssh-keys/{id}/meta" : {
       "put" : {
         "description" : "Updates ssh-key meta",
         "operationId" : "updateSSHKeyProviderMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -7133,14 +7133,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/ssls/{ID}" : {
+    "/providers/ssls/{id}" : {
       "delete" : {
         "description" : "Deletes SSL provider",
         "operationId" : "deleteSslProvider",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -7187,7 +7187,7 @@
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -7234,7 +7234,7 @@
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -7288,14 +7288,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/ssls/{ID}/meta" : {
+    "/providers/ssls/{id}/meta" : {
       "put" : {
         "description" : "Updates SSL meta",
         "operationId" : "updateSslProviderMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -7515,6 +7515,185 @@
         },
         "summary" : "Refreshes the current user session",
         "tags" : [ "sessions" ]
+      }
+    },
+    "/system/errors" : {
+      "get" : {
+        "description" : "Lists sys errors",
+        "operationId" : "listSysError",
+        "parameters" : [ {
+          "description" : "`status=<target>`",
+          "in" : "query",
+          "name" : "status",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`code=<target>`",
+          "in" : "query",
+          "name" : "code",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`search=<target> (support *)`",
+          "in" : "query",
+          "name" : "search",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`pageOffset=offset`",
+          "in" : "query",
+          "name" : "pageOffset",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`pageLimit=limit`",
+          "in" : "query",
+          "name" : "pageLimit",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`sort=[-]field1|field2...`",
+          "in" : "query",
+          "name" : "sort",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_system_syserroruc_syserrordto.ListSysErrorResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Lists sys errors",
+        "tags" : [ "system_errors" ]
+      }
+    },
+    "/system/errors/{id}" : {
+      "delete" : {
+        "description" : "Deletes sys error",
+        "operationId" : "deleteSysError",
+        "parameters" : [ {
+          "description" : "error ID",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_system_syserroruc_syserrordto.DeleteSysErrorResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Deletes sys error",
+        "tags" : [ "system_errors" ]
+      },
+      "get" : {
+        "description" : "Gets sys error",
+        "operationId" : "getSysError",
+        "parameters" : [ {
+          "description" : "error ID",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_system_syserroruc_syserrordto.GetSysErrorResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Gets sys error",
+        "tags" : [ "system_errors" ]
       }
     },
     "/system/localpaas/config/reload" : {
@@ -8308,14 +8487,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/users/current/settings/api-keys/{ID}" : {
+    "/users/current/settings/api-keys/{id}" : {
       "delete" : {
         "description" : "Deletes an API key",
         "operationId" : "deleteAPIKeySetting",
         "parameters" : [ {
           "description" : "API key ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -8362,7 +8541,7 @@
         "parameters" : [ {
           "description" : "s3 storage ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -8404,14 +8583,14 @@
         "tags" : [ "user_settings_api_keys" ]
       }
     },
-    "/users/current/settings/api-keys/{ID}/meta" : {
+    "/users/current/settings/api-keys/{id}/meta" : {
       "put" : {
         "description" : "Updates API key meta",
         "operationId" : "updateAPIKeySettingMeta",
         "parameters" : [ {
           "description" : "API key ID",
           "in" : "path",
-          "name" : "ID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -13676,6 +13855,75 @@
           }
         },
         "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_system_syserroruc_syserrordto.DeleteSysErrorResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_system_syserroruc_syserrordto.GetSysErrorResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_system_syserroruc_syserrordto.SysErrorResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_system_syserroruc_syserrordto.ListSysErrorResp" : {
+        "properties" : {
+          "data" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_system_syserroruc_syserrordto.SysErrorResp"
+            },
+            "type" : "array"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_system_syserroruc_syserrordto.SysErrorResp" : {
+        "properties" : {
+          "cause" : {
+            "type" : "string"
+          },
+          "code" : {
+            "type" : "string"
+          },
+          "createdAt" : {
+            "type" : "string"
+          },
+          "debugLog" : {
+            "type" : "string"
+          },
+          "detail" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "requestId" : {
+            "type" : "string"
+          },
+          "stackTrace" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "cause", "code", "createdAt", "debugLog", "detail", "id", "requestId", "stackTrace", "status" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_usersettings_apikeyuc_apikeydto.APIKeyDataResp" : {
