@@ -26,6 +26,7 @@ require (
 	github.com/google/go-github/v75 v75.0.0
 	github.com/h2non/filetype v1.1.3
 	github.com/hashicorp/go-multierror v1.1.1
+	github.com/hibiken/asynq v0.25.1
 	github.com/jackc/pgx/v5 v5.7.6
 	github.com/jinzhu/configor v1.2.2
 	github.com/markbates/goth v1.82.0
@@ -37,7 +38,7 @@ require (
 	github.com/olahol/melody v1.4.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pquerna/otp v1.5.0
-	github.com/redis/go-redis/v9 v9.16.0
+	github.com/redis/go-redis/v9 v9.17.2
 	github.com/samber/lo v1.52.0
 	github.com/slack-go/slack v0.17.3
 	github.com/stretchr/testify v1.11.1
@@ -109,6 +110,7 @@ require (
 	github.com/goccy/go-yaml v1.18.0 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.2 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/mux v1.6.2 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
@@ -146,8 +148,10 @@ require (
 	github.com/puzpuzpuz/xsync/v3 v3.5.1 // indirect
 	github.com/quic-go/qpack v0.5.1 // indirect
 	github.com/quic-go/quic-go v0.55.0 // indirect
+	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
 	github.com/rs/zerolog v1.34.0 // indirect
+	github.com/spf13/cast v1.10.0 // indirect
 	github.com/swaggo/swag v1.16.6 // indirect
 	github.com/tiendc/go-rflutil v0.0.0-20240919184510-8a396d31868e // indirect
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
@@ -169,7 +173,7 @@ require (
 	golang.org/x/net v0.47.0 // indirect
 	golang.org/x/oauth2 v0.33.0 // indirect
 	golang.org/x/sync v0.18.0 // indirect
-	golang.org/x/sys v0.38.0 // indirect
+	golang.org/x/sys v0.39.0 // indirect
 	golang.org/x/time v0.14.0 // indirect
 	golang.org/x/tools v0.38.0 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
