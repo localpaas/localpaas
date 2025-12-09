@@ -1,0 +1,133 @@
+package repository
+
+import (
+	"context"
+	"database/sql"
+	"errors"
+
+	"github.com/uptrace/bun"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/infra/database"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+)
+
+type TaskRepo interface {
+	GetByID(ctx context.Context, db database.IDB, typ base.TaskType, id string,
+		opts ...bunex.SelectQueryOption) (*entity.Task, error)
+	List(ctx context.Context, db database.IDB, paging *basedto.Paging,
+		opts ...bunex.SelectQueryOption) ([]*entity.Task, *basedto.PagingMeta, error)
+	ListByIDs(ctx context.Context, db database.IDB, ids []string,
+		opts ...bunex.SelectQueryOption) ([]*entity.Task, error)
+
+	Upsert(ctx context.Context, db database.IDB, task *entity.Task,
+		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
+	UpsertMulti(ctx context.Context, db database.IDB, tasks []*entity.Task,
+		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
+	Update(ctx context.Context, db database.IDB, task *entity.Task,
+		opts ...bunex.UpdateQueryOption) error
+}
+
+type taskRepo struct {
+}
+
+func NewTaskRepo() TaskRepo {
+	return &taskRepo{}
+}
+
+func (repo *taskRepo) GetByID(ctx context.Context, db database.IDB, typ base.TaskType, id string,
+	opts ...bunex.SelectQueryOption) (*entity.Task, error) {
+	task := &entity.Task{}
+	query := db.NewSelect().Model(task).Where("task.id = ?", id)
+	if typ != "" {
+		query = query.Where("task.type = ?", typ)
+	}
+	query = bunex.ApplySelect(query, opts...)
+
+	err := query.Scan(ctx)
+	if task == nil || errors.Is(err, sql.ErrNoRows) {
+		return nil, apperrors.NewNotFound("Task").WithCause(err)
+	}
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return task, nil
+}
+
+func (repo *taskRepo) List(ctx context.Context, db database.IDB, paging *basedto.Paging,
+	opts ...bunex.SelectQueryOption) ([]*entity.Task, *basedto.PagingMeta, error) {
+	var tasks []*entity.Task
+	query := db.NewSelect().Model(&tasks)
+	query = bunex.ApplySelect(query, opts...)
+
+	pagingMeta := newPagingMeta(paging)
+
+	// Counts the total first
+	if paging != nil {
+		total, err := query.Count(ctx)
+		if err != nil {
+			return nil, nil, apperrors.Wrap(err)
+		}
+		pagingMeta.Total = total
+	}
+
+	// Applies pagination
+	query = bunex.ApplyPagination(query, paging)
+	err := query.Scan(ctx)
+	if err != nil {
+		return nil, nil, wrapPaginationError(err, paging)
+	}
+	return tasks, pagingMeta, nil
+}
+
+func (repo *taskRepo) ListByIDs(ctx context.Context, db database.IDB, ids []string,
+	opts ...bunex.SelectQueryOption) ([]*entity.Task, error) {
+	if len(ids) == 0 {
+		return nil, nil
+	}
+	var tasks []*entity.Task
+	query := db.NewSelect().Model(&tasks).Where("task.id IN (?)", bun.In(ids))
+	query = bunex.ApplySelect(query, opts...)
+
+	err := query.Scan(ctx)
+	if err != nil {
+		return nil, apperrors.New(err)
+	}
+	return tasks, nil
+}
+
+func (repo *taskRepo) Upsert(ctx context.Context, db database.IDB, task *entity.Task,
+	conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error {
+	return repo.UpsertMulti(ctx, db, []*entity.Task{task}, conflictCols, updateCols, opts...)
+}
+
+func (repo *taskRepo) UpsertMulti(ctx context.Context, db database.IDB, tasks []*entity.Task,
+	conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error {
+	if len(tasks) == 0 {
+		return nil
+	}
+	query := db.NewInsert().Model(&tasks)
+	query = bunex.ApplyInsert(query, opts...)
+	query = bunex.ApplyUpsert(query, conflictCols, updateCols)
+
+	_, err := query.Exec(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (repo *taskRepo) Update(ctx context.Context, db database.IDB, task *entity.Task,
+	opts ...bunex.UpdateQueryOption) error {
+	query := db.NewUpdate().Model(task).WherePK()
+	query = bunex.ApplyUpdate(query, opts...)
+
+	_, err := query.Exec(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}

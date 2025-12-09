@@ -58,13 +58,14 @@ func (uc *GithubAppUC) loadGithubAppData(
 	req *githubappdto.CreateGithubAppReq,
 	_ *createGithubAppData,
 ) error {
-	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeGithubApp, req.Organization, false)
+	name := gofn.Coalesce(req.Name, req.Organization)
+	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeGithubApp, name, false)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}
 	if setting != nil {
 		return apperrors.NewAlreadyExist("GithubApp").
-			WithMsgLog("github app setting '%s' already exists", req.Organization)
+			WithMsgLog("github app setting '%s' already exists", name)
 	}
 
 	return nil

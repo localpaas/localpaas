@@ -382,6 +382,18 @@ func (s *HTTPServer) registerRoutes() {
 		sslGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteSsl)
 	}
 
+	{ // cron-job group
+		cronJobGroup := providerGroup.Group("/cron-jobs")
+		// Info
+		cronJobGroup.GET("/:ID", s.handlerRegistry.providersHandler.GetCronJob)
+		cronJobGroup.GET("", s.handlerRegistry.providersHandler.ListCronJob)
+		// Creation & Update
+		cronJobGroup.POST("", s.handlerRegistry.providersHandler.CreateCronJob)
+		cronJobGroup.PUT("/:ID", s.handlerRegistry.providersHandler.UpdateCronJob)
+		cronJobGroup.PUT("/:ID/meta", s.handlerRegistry.providersHandler.UpdateCronJobMeta)
+		cronJobGroup.DELETE("/:ID", s.handlerRegistry.providersHandler.DeleteCronJob)
+	}
+
 	systemGroup := apiGroup.Group("/system")
 
 	{ // nginx group

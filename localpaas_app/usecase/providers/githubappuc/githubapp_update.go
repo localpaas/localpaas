@@ -63,8 +63,9 @@ func (uc *GithubAppUC) loadGithubAppDataForUpdate(
 	data.Setting = setting
 
 	// If name changes, validate the new one
-	if req.Organization != "" && !strings.EqualFold(setting.Name, req.Organization) {
-		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeGithubApp, req.Organization, false)
+	name := gofn.Coalesce(req.Name, setting.Name, req.Organization)
+	if name != "" && !strings.EqualFold(setting.Name, name) {
+		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeGithubApp, name, false)
 		if conflictSetting != nil {
 			return apperrors.NewAlreadyExist("GithubApp").
 				WithMsgLog("github app '%s' already exists", conflictSetting.Name)
@@ -83,7 +84,7 @@ func (uc *GithubAppUC) prepareUpdatingGithubApp(
 	setting := data.Setting
 	setting.UpdateVer++
 	setting.UpdatedAt = timeNow
-	setting.Name = gofn.Coalesce(req.Name, req.Organization, setting.Name)
+	setting.Name = gofn.Coalesce(req.Name, setting.Name, req.Organization)
 
 	githubApp := &entity.GithubApp{
 		ClientID:       req.ClientID,

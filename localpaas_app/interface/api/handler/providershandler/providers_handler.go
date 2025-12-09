@@ -4,6 +4,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/basicauthuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/cronjobuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/discorduc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/githubappuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/gittokenuc"
@@ -30,6 +31,7 @@ type ProvidersHandler struct {
 	sslUC          *ssluc.SslUC
 	githubAppUC    *githubappuc.GithubAppUC
 	gitTokenUC     *gittokenuc.GitTokenUC
+	cronJobUC      *cronjobuc.CronJobUC
 }
 
 func NewProvidersHandler(
@@ -45,6 +47,7 @@ func NewProvidersHandler(
 	sslUC *ssluc.SslUC,
 	githubAppUC *githubappuc.GithubAppUC,
 	gitTokenUC *gittokenuc.GitTokenUC,
+	cronJobUC *cronjobuc.CronJobUC,
 ) *ProvidersHandler {
 	hdl := &ProvidersHandler{
 		authHandler:    authHandler,
@@ -59,6 +62,7 @@ func NewProvidersHandler(
 		sslUC:          sslUC,
 		githubAppUC:    githubAppUC,
 		gitTokenUC:     gitTokenUC,
+		cronJobUC:      cronJobUC,
 	}
 	return hdl
 }

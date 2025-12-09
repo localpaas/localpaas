@@ -23,6 +23,7 @@ const (
 	SettingTypeSsl           SettingType = "ssl"
 	SettingTypeGithubApp     SettingType = "github-app"
 	SettingTypeGitToken      SettingType = "git-token"
+	SettingTypeCronJob       SettingType = "cron-job"
 )
 
 var (

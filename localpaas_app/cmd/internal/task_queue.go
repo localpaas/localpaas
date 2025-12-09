@@ -20,6 +20,7 @@ func InitTaskQueue(lc fx.Lifecycle, client rediscache.Client, logger logging.Log
 			err := taskqueue.StartServer(client, tasks.InitTaskHandlers, logger)
 			if err != nil {
 				logger.Errorf("failed to start task queue server: %v", err)
+				return apperrors.Wrap(err)
 			}
 
 			logger.Infof("starting task queue client...")

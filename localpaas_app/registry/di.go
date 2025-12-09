@@ -35,6 +35,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/gitsourceuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/basicauthuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/cronjobuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/discorduc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/githubappuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/gittokenuc"
@@ -111,6 +112,7 @@ var Provides = []any{
 	nginxuc.NewNginxUC,
 	lpappuc.NewLpAppUC,
 	gitsourceuc.NewGitSourceUC,
+	cronjobuc.NewCronJobUC,
 
 	// Service
 	clusterservice.NewClusterService,
@@ -135,6 +137,8 @@ var Provides = []any{
 	repository.NewACLPermissionRepo,
 	// Repo: Setting
 	repository.NewSettingRepo,
+	// Repo: Task
+	repository.NewTaskRepo,
 	// Others
 	repository.NewLoginTrustedDeviceRepo,
 

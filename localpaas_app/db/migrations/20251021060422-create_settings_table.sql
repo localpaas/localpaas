@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS settings
     type         VARCHAR(100) NOT NULL,
     kind         VARCHAR(100) NULL,
     name         VARCHAR(100) NULL,
-    version      VARCHAR(10) NOT NULL DEFAULT '1',
+    version      INT2 NOT NULL DEFAULT 1,
     status       VARCHAR(20) NOT NULL CONSTRAINT chk_status CHECK
                     (status IN ('active','pending','disabled','expired')) DEFAULT 'active',
     data         JSONB NULL,
