@@ -81,6 +81,7 @@ func (uc *SslUC) preparePersistingSsl(
 		Status:    base.SettingStatusActive,
 		Name:      req.Name,
 		Kind:      string(req.Provider),
+		Version:   entity.CurrentSslVersion,
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,
 	}

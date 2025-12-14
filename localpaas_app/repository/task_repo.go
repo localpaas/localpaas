@@ -18,7 +18,7 @@ import (
 type TaskRepo interface {
 	GetByID(ctx context.Context, db database.IDB, typ base.TaskType, id string,
 		opts ...bunex.SelectQueryOption) (*entity.Task, error)
-	List(ctx context.Context, db database.IDB, paging *basedto.Paging,
+	List(ctx context.Context, db database.IDB, jobID string, paging *basedto.Paging,
 		opts ...bunex.SelectQueryOption) ([]*entity.Task, *basedto.PagingMeta, error)
 	ListByIDs(ctx context.Context, db database.IDB, ids []string,
 		opts ...bunex.SelectQueryOption) ([]*entity.Task, error)
@@ -57,10 +57,13 @@ func (repo *taskRepo) GetByID(ctx context.Context, db database.IDB, typ base.Tas
 	return task, nil
 }
 
-func (repo *taskRepo) List(ctx context.Context, db database.IDB, paging *basedto.Paging,
+func (repo *taskRepo) List(ctx context.Context, db database.IDB, jobID string, paging *basedto.Paging,
 	opts ...bunex.SelectQueryOption) ([]*entity.Task, *basedto.PagingMeta, error) {
 	var tasks []*entity.Task
 	query := db.NewSelect().Model(&tasks)
+	if jobID != "" {
+		query = query.Where("task.job_id = ?", jobID)
+	}
 	query = bunex.ApplySelect(query, opts...)
 
 	pagingMeta := newPagingMeta(paging)

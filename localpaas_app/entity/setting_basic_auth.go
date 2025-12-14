@@ -6,6 +6,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
+const (
+	CurrentBasicAuthVersion = 1
+)
+
 type BasicAuth struct {
 	Username string         `json:"username"`
 	Password EncryptedField `json:"password"`

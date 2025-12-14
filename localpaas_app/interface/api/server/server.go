@@ -50,56 +50,63 @@ func NewHTTPServer(
 	logger logging.Logger,
 	handlerRegistry *HandlerRegistry,
 ) Server {
-	engine := gin.New()
 	s := &HTTPServer{
 		config:          config,
-		engine:          engine,
-		websocket:       melody.New(),
 		handlerRegistry: handlerRegistry,
 		logger:          logger,
-		Server: &http.Server{
-			Addr:           config.HTTPServer.BindingAddress(),
-			ReadTimeout:    10 * time.Second, //nolint:mnd
-			WriteTimeout:   10 * time.Second, //nolint:mnd
-			MaxHeaderBytes: 1 << 20,          //nolint:mnd
-			Handler:        engine,
-		},
+	}
+	return s
+}
+
+func (s *HTTPServer) init() {
+	engine := gin.New()
+	s.engine = engine
+	s.websocket = melody.New()
+	s.Server = &http.Server{
+		Addr:           s.config.HTTPServer.BindingAddress(),
+		ReadTimeout:    10 * time.Second, //nolint:mnd
+		WriteTimeout:   10 * time.Second, //nolint:mnd
+		MaxHeaderBytes: 1 << 20,          //nolint:mnd
+		Handler:        engine,
 	}
 
 	// Configures middlewares
 	engine.Use(
-		recovery.Recovery(config),
-		loggermiddleware.Logger(logger),
+		recovery.Recovery(s.config),
+		loggermiddleware.Logger(s.logger),
 		secureheaders.SecureHeaders,
-		cors.CORS(config),
+		cors.CORS(s.config),
 	)
 
-	if !config.IsProdEnv() {
+	if !s.config.IsProdEnv() {
 		engine.Use(ginlogger.SetLogger())
 	} else {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
 	s.registerRoutes()
-
-	return s
 }
 
 func (s *HTTPServer) Start() error {
+	if s.Server == nil {
+		s.init()
+	}
+
 	err := s.ListenAndServe()
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-
 	return nil
 }
 
 func (s *HTTPServer) Stop(ctx context.Context) error {
+	if s.Server == nil {
+		return nil
+	}
 	err := s.Shutdown(ctx)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-
 	return nil
 }
 

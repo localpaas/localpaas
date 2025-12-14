@@ -15,7 +15,7 @@ type Cmdable interface {
 }
 
 type Client interface {
-	Cmdable
+	redis.UniversalClient
 	Close() error
 }
 

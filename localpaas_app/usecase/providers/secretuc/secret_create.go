@@ -89,6 +89,7 @@ func (uc *SecretUC) preparePersistingSecret(
 		Status:    base.SettingStatusActive,
 		Name:      req.Key,
 		ObjectID:  req.ObjectID,
+		Version:   entity.CurrentSecretVersion,
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,
 	}

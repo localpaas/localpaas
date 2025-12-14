@@ -4,8 +4,10 @@ import (
 	"strings"
 
 	vld "github.com/tiendc/go-validator"
+	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 )
 
@@ -14,14 +16,19 @@ type CreateCronJobReq struct {
 }
 
 type CronJobBaseReq struct {
-	Name    string `json:"name"`
-	Cron    string `json:"cron"`
-	Command string `json:"command"`
+	Name           string            `json:"name"`
+	Kind           base.TaskType     `json:"kind"`
+	Cron           string            `json:"cron"`
+	Priority       base.TaskPriority `json:"priority"`
+	MaxRetry       int               `json:"maxRetry"`
+	RetryDelaySecs int               `json:"retryDelaySecs"`
+	Command        string            `json:"command"`
 }
 
 func (req *CronJobBaseReq) modifyRequest() error {
 	req.Name = strings.TrimSpace(req.Name)
 	req.Cron = strings.TrimSpace(req.Cron)
+	req.Priority = gofn.Coalesce(req.Priority, base.TaskPriorityDefault)
 	return nil
 }
 

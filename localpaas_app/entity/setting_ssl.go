@@ -6,6 +6,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
+const (
+	CurrentSslVersion = 1
+)
+
 type Ssl struct {
 	Certificate string           `json:"certificate"`
 	PrivateKey  EncryptedField   `json:"privateKey"`

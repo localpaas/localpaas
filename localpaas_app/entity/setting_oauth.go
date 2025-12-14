@@ -6,6 +6,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
+const (
+	CurrentOAuthVersion = 1
+)
+
 type OAuth struct {
 	ClientID     string         `json:"clientId"`
 	ClientSecret EncryptedField `json:"clientSecret"`

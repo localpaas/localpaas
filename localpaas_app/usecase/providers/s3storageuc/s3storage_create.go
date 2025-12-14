@@ -81,6 +81,7 @@ func (uc *S3StorageUC) preparePersistingS3Storage(
 		Type:      base.SettingTypeS3Storage,
 		Status:    base.SettingStatusActive,
 		Name:      req.Name,
+		Version:   entity.CurrentS3StorageVersion,
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,
 	}

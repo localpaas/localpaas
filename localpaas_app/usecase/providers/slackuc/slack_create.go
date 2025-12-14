@@ -80,6 +80,7 @@ func (uc *SlackUC) preparePersistingSlack(
 		Type:      base.SettingTypeSlack,
 		Status:    base.SettingStatusActive,
 		Name:      req.Name,
+		Version:   entity.CurrentSlackVersion,
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,
 	}

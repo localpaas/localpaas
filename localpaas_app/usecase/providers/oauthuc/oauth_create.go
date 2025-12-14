@@ -87,6 +87,7 @@ func (uc *OAuthUC) preparePersistingOAuth(
 		Status:    base.SettingStatusActive,
 		Kind:      string(req.Kind),
 		Name:      gofn.Coalesce(req.Name, req.Organization),
+		Version:   entity.CurrentOAuthVersion,
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,
 	}

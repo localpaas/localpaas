@@ -9254,6 +9254,16 @@
         "type" : "string",
         "x-enum-varnames" : [ "SslProviderLetsEncrypt", "SslProviderCustom" ]
       },
+      "github_com_localpaas_localpaas_localpaas_app_base.TaskPriority" : {
+        "enum" : [ "low", "default", "critical" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "TaskPriorityLow", "TaskPriorityDefault", "TaskPriorityCritical" ]
+      },
+      "github_com_localpaas_localpaas_localpaas_app_base.TaskType" : {
+        "enum" : [ "task:schedule", "task:test", "task:git-clone" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "TaskTypeSchedule", "TaskTypeTest", "TaskTypeGitClone" ]
+      },
       "github_com_localpaas_localpaas_localpaas_app_base.UserRole" : {
         "enum" : [ "admin", "member" ],
         "type" : "string",
@@ -11252,11 +11262,23 @@
           "cron" : {
             "type" : "string"
           },
+          "kind" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.TaskType"
+          },
+          "maxRetry" : {
+            "type" : "integer"
+          },
           "name" : {
             "type" : "string"
+          },
+          "priority" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.TaskPriority"
+          },
+          "retryDelaySecs" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "command", "cron", "name" ],
+        "required" : [ "command", "cron", "kind", "maxRetry", "name", "priority", "retryDelaySecs" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_cronjobuc_cronjobdto.CreateCronJobResp" : {
@@ -11294,8 +11316,17 @@
           "kind" : {
             "type" : "string"
           },
+          "maxRetry" : {
+            "type" : "integer"
+          },
           "name" : {
             "type" : "string"
+          },
+          "priority" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.TaskPriority"
+          },
+          "retryDelaySecs" : {
+            "type" : "integer"
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
@@ -11307,7 +11338,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "command", "createdAt", "cron", "id", "initialTime", "kind", "name", "status", "updateVer", "updatedAt" ],
+        "required" : [ "command", "createdAt", "cron", "id", "initialTime", "kind", "maxRetry", "name", "priority", "retryDelaySecs", "status", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_cronjobuc_cronjobdto.DeleteCronJobResp" : {
@@ -11378,14 +11409,26 @@
           "cron" : {
             "type" : "string"
           },
+          "kind" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.TaskType"
+          },
+          "maxRetry" : {
+            "type" : "integer"
+          },
           "name" : {
             "type" : "string"
+          },
+          "priority" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.TaskPriority"
+          },
+          "retryDelaySecs" : {
+            "type" : "integer"
           },
           "updateVer" : {
             "type" : "integer"
           }
         },
-        "required" : [ "command", "cron", "name", "updateVer" ],
+        "required" : [ "command", "cron", "kind", "maxRetry", "name", "priority", "retryDelaySecs", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_cronjobuc_cronjobdto.UpdateCronJobResp" : {

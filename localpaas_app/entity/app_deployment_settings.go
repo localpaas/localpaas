@@ -7,6 +7,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
+const (
+	CurrentAppDeploymentSettingsVersion = 1
+)
+
 type AppDeploymentSettings struct {
 	ImageSource *DeploymentImageSource `json:"imageSource"`
 	CodeSource  *DeploymentCodeSource  `json:"codeSource"`

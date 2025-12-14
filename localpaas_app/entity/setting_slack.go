@@ -6,6 +6,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
+const (
+	CurrentSlackVersion = 1
+)
+
 type Slack struct {
 	Webhook EncryptedField `json:"webhook"`
 }

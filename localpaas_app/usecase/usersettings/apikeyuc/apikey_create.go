@@ -102,6 +102,7 @@ func (uc *APIKeyUC) preparePersistingAPIKey(
 		Status:    base.SettingStatusActive,
 		ObjectID:  data.ActingUser.ID,
 		Name:      req.Name,
+		Version:   entity.CurrentAPIKeyVersion,
 		ExpireAt:  req.ExpireAt,
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,

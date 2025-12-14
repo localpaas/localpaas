@@ -6,6 +6,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
+const (
+	CurrentEnvVarsVersion = 1
+)
+
 type EnvVars struct {
 	Data []*EnvVar `json:"data"`
 }

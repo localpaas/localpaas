@@ -3,6 +3,7 @@ package registry
 import (
 	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
+	"github.com/localpaas/localpaas/localpaas_app/infra/gocronqueue"
 	"github.com/localpaas/localpaas/localpaas_app/infra/logging"
 	"github.com/localpaas/localpaas/localpaas_app/infra/rediscache"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler"
@@ -29,6 +30,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/projectservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
+	"github.com/localpaas/localpaas/localpaas_app/taskqueue"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/imageuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/nodeuc"
@@ -77,6 +79,11 @@ var Provides = []any{
 
 	// Infra
 	docker.New,
+	gocronqueue.NewServer,
+	gocronqueue.NewClient,
+
+	// Task queue
+	taskqueue.NewTaskQueue,
 
 	// Route handler
 	server.NewHandlerRegistry, // for all handler list
@@ -143,6 +150,7 @@ var Provides = []any{
 	repository.NewSettingRepo,
 	// Repo: Task
 	repository.NewTaskRepo,
+	repository.NewUpdatingTaskRepo,
 	// Repo: Sys error
 	repository.NewSysErrorRepo,
 	// Others

@@ -7,6 +7,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
+const (
+	CurrentProjectSettingsVersion = 1
+)
+
 type ProjectSettings struct {
 	Test string `json:"test"`
 }

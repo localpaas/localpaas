@@ -80,6 +80,7 @@ func (uc *BasicAuthUC) preparePersistingBasicAuth(
 		Type:      base.SettingTypeBasicAuth,
 		Status:    base.SettingStatusActive,
 		Name:      req.Name,
+		Version:   entity.CurrentBasicAuthVersion,
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,
 	}

@@ -76,6 +76,7 @@ func (h *BaseHandler) RenderError(ctx *gin.Context, err error) {
 		}
 	}
 
+	errInfo.DisplayLevel = apperrors.DisplayLevelHigh
 	// Always remove the stack trace regardless of env due to concern of response body length
 	errInfo.StackTrace = ""
 

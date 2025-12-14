@@ -10,6 +10,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
+const (
+	CurrentAppHttpSettingsVersion = 1
+)
+
 type AppHttpSettings struct {
 	Enabled bool         `json:"enabled"`
 	Domains []*AppDomain `json:"domains,omitempty"`
