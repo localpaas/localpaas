@@ -6,6 +6,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
+const (
+	CurrentDiscordVersion = 1
+)
+
 type Discord struct {
 	Webhook EncryptedField `json:"webhook"`
 }

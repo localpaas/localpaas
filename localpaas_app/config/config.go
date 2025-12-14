@@ -29,6 +29,14 @@ var (
 	ErrConfigFileNotFound = errors.New("config file not found")
 )
 
+type RunMode string
+
+const (
+	RunModeApp            RunMode = "app"
+	RunModeWorker         RunMode = "worker"
+	RunModeEmbeddedWorker RunMode = "embedded-worker"
+)
+
 var (
 	Current        *Config
 	lastConfigFile string
@@ -38,11 +46,12 @@ type Config struct {
 	Env      string `toml:"env" env:"LP_ENV"`
 	Platform string `toml:"platform" env:"LP_PLATFORM"`
 
-	Name    string `toml:"name" env:"LP_APP_NAME" default:"LocalPaaS"`
-	Version int    `toml:"version" env:"LP_APP_VERSION"`
-	BaseURL string `toml:"base_url" env:"LP_APP_BASE_URL"`
-	Secret  string `toml:"secret" env:"LP_APP_SECRET" default:"abc123"`
-	AppPath string `toml:"app_path" env:"LP_APP_PATH" default:"/var/lib/localpaas"`
+	Name    string  `toml:"name" env:"LP_APP_NAME" default:"LocalPaaS"`
+	Version int     `toml:"version" env:"LP_APP_VERSION"`
+	RunMode RunMode `toml:"run_mode" env:"LP_APP_RUN_MODE" default:"app"`
+	BaseURL string  `toml:"base_url" env:"LP_APP_BASE_URL"`
+	Secret  string  `toml:"secret" env:"LP_APP_SECRET" default:"abc123"`
+	AppPath string  `toml:"app_path" env:"LP_APP_PATH" default:"/var/lib/localpaas"`
 
 	HTTPServer HTTPServer `toml:"http_server"`
 	DB         DB         `toml:"db"`

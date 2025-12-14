@@ -6,6 +6,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
+const (
+	CurrentGitTokenVersion = 1
+)
+
 type GitToken struct {
 	User    string         `json:"user"`
 	Token   EncryptedField `json:"token"`

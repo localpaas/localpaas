@@ -6,6 +6,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
+const (
+	CurrentSSHKeyVersion = 1
+)
+
 type SSHKey struct {
 	PrivateKey EncryptedField `json:"privateKey"`
 	Passphrase EncryptedField `json:"passphrase,omitzero"`

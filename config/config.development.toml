@@ -2,6 +2,7 @@ env = "development"
 platform = "remote"
 name = "LocalPaaS"
 version = 1
+run_mode = "embedded-worker"
 base_url = "https://app.dev.localpaas.com" # dashboard base URL
 secret = "abc123"
 app_path = "/var/lib/localpaas"

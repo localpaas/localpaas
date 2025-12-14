@@ -6,6 +6,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
+const (
+	CurrentS3StorageVersion = 1
+)
+
 type S3Storage struct {
 	AccessKeyID string         `json:"accessKeyId"`
 	SecretKey   EncryptedField `json:"secretKey"`

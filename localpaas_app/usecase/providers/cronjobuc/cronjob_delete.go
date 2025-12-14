@@ -19,8 +19,9 @@ func (uc *CronJobUC) DeleteCronJob(
 	auth *basedto.Auth,
 	req *cronjobdto.DeleteCronJobReq,
 ) (*cronjobdto.DeleteCronJobResp, error) {
+	var jobData *deleteCronJobData
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
-		jobData := &deleteCronJobData{}
+		jobData = &deleteCronJobData{}
 		err := uc.loadCronJobDataForDelete(ctx, db, req, jobData)
 		if err != nil {
 			return apperrors.Wrap(err)
@@ -35,11 +36,18 @@ func (uc *CronJobUC) DeleteCronJob(
 		return nil, apperrors.Wrap(err)
 	}
 
+	// Post deletion: unschedule future tasks of the job
+	err = uc.taskQueue.UnscheduleTasks(ctx, jobData.UnschedulingTasks)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
 	return &cronjobdto.DeleteCronJobResp{}, nil
 }
 
 type deleteCronJobData struct {
-	Setting *entity.Setting
+	Setting           *entity.Setting
+	UnschedulingTasks []*entity.Task
 }
 
 func (uc *CronJobUC) loadCronJobDataForDelete(
@@ -50,11 +58,15 @@ func (uc *CronJobUC) loadCronJobDataForDelete(
 ) error {
 	setting, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeCronJob, req.ID, false,
 		bunex.SelectFor("UPDATE OF setting"),
+		bunex.SelectRelation("Tasks",
+			bunex.SelectWhere("task.run_at >= NOW()"),
+		),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 	data.Setting = setting
+	data.UnschedulingTasks = setting.Tasks
 
 	return nil
 }

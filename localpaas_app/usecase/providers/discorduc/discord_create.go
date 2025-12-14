@@ -80,6 +80,7 @@ func (uc *DiscordUC) preparePersistingDiscord(
 		Type:      base.SettingTypeDiscord,
 		Status:    base.SettingStatusActive,
 		Name:      req.Name,
+		Version:   entity.CurrentDiscordVersion,
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,
 	}

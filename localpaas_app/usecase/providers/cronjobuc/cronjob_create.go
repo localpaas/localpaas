@@ -30,10 +30,23 @@ func (uc *CronJobUC) CreateCronJob(
 	}
 
 	persistingData := &persistingCronJobData{}
-	uc.preparePersistingCronJob(req, jobData, persistingData)
+	err = uc.preparePersistingCronJob(req, jobData, persistingData)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
 
 	err = transaction.Execute(ctx, uc.db, func(db database.Tx) error {
-		return uc.persistData(ctx, db, persistingData)
+		err = uc.persistData(ctx, db, persistingData)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+
+		err = uc.taskQueue.ScheduleTasks(ctx, persistingData.UpsertingTasks)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+
+		return nil
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -53,7 +66,7 @@ func (uc *CronJobUC) loadCronJobData(
 	db database.IDB,
 	req *cronjobdto.CreateCronJobReq,
 	_ *createCronJobData,
-) error {
+) (err error) {
 	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeCronJob, req.Name, false)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
@@ -68,32 +81,43 @@ func (uc *CronJobUC) loadCronJobData(
 
 type persistingCronJobData struct {
 	settingservice.PersistingSettingData
+	UpsertingTasks []*entity.Task
 }
 
 func (uc *CronJobUC) preparePersistingCronJob(
 	req *cronjobdto.CreateCronJobReq,
 	_ *createCronJobData,
 	persistingData *persistingCronJobData,
-) {
+) error {
 	timeNow := timeutil.NowUTC()
 	setting := &entity.Setting{
 		ID:        gofn.Must(ulid.NewStringULID()),
 		Type:      base.SettingTypeCronJob,
 		Status:    base.SettingStatusActive,
-		Kind:      string(base.SettingTypeCronJob),
+		Kind:      string(req.Kind),
 		Name:      req.Name,
+		Version:   entity.CurrentCronJobVersion,
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,
 	}
 
 	cronJob := &entity.CronJob{
-		Cron:        req.Cron,
-		InitialTime: timeNow,
-		Command:     req.Command,
+		Cron:           req.Cron,
+		InitialTime:    timeNow,
+		Priority:       req.Priority,
+		MaxRetry:       req.MaxRetry,
+		RetryDelaySecs: req.RetryDelaySecs,
+		Command:        req.Command,
 	}
-	setting.MustSetData(cronJob)
+	// Parse the cron expression to make sure it's valid
+	_, err := cronJob.ParseCron()
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
 
+	setting.MustSetData(cronJob)
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
+	return nil
 }
 
 func (uc *CronJobUC) persistData(
@@ -102,6 +126,11 @@ func (uc *CronJobUC) persistData(
 	persistingData *persistingCronJobData,
 ) error {
 	err := uc.settingService.PersistSettingData(ctx, db, &persistingData.PersistingSettingData)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	err = uc.taskRepo.UpsertMulti(ctx, db, persistingData.UpsertingTasks,
+		entity.TaskUpsertingConflictCols, entity.TaskUpsertingUpdateCols)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

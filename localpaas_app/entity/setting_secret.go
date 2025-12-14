@@ -8,6 +8,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
+const (
+	CurrentSecretVersion = 1
+)
+
 type Secret struct {
 	Key    string         `json:"k"`
 	Value  EncryptedField `json:"v"`

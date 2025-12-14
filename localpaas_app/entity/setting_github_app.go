@@ -6,6 +6,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
+const (
+	CurrentGithubAppVersion = 1
+)
+
 type GithubApp struct {
 	ClientID       string         `json:"clientId"`
 	ClientSecret   EncryptedField `json:"clientSecret"`

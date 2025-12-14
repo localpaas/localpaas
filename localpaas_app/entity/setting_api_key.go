@@ -6,6 +6,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
+const (
+	CurrentAPIKeyVersion = 1
+)
+
 type APIKey struct {
 	KeyID        string              `json:"keyId"`
 	SecretKey    HashField           `json:"secretKey"`

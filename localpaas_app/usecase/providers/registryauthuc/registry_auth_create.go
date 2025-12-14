@@ -81,6 +81,7 @@ func (uc *RegistryAuthUC) preparePersistingRegistryAuth(
 		Status:    base.SettingStatusActive,
 		Kind:      req.Address,
 		Name:      req.Name,
+		Version:   entity.CurrentRegistryAuthVersion,
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,
 	}

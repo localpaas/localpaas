@@ -42,7 +42,8 @@ func (uc *CronJobUC) UpdateCronJob(
 }
 
 type updateCronJobData struct {
-	Setting *entity.Setting
+	Setting       *entity.Setting
+	DeletingTasks []*entity.Task
 }
 
 func (uc *CronJobUC) loadCronJobDataForUpdate(
@@ -72,6 +73,22 @@ func (uc *CronJobUC) loadCronJobDataForUpdate(
 		}
 	}
 
+	job, err := setting.AsCronJob()
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	if req.Cron != job.Cron {
+		data.DeletingTasks, _, err = uc.taskRepo.List(ctx, db, setting.ID, nil,
+			bunex.SelectFor("UPDATE OF task SKIP LOCKED"),
+			bunex.SelectWhere("task.status IN (?)", bunex.InItems(base.TaskStatusNotStarted,
+				base.TaskStatusInProgress, base.TaskStatusFailed)),
+		)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+	}
+
 	return nil
 }
 
@@ -87,10 +104,23 @@ func (uc *CronJobUC) prepareUpdatingCronJob(
 	setting.Name = gofn.Coalesce(req.Name, setting.Name)
 
 	cronJob := &entity.CronJob{
-		Cron:    req.Cron,
-		Command: req.Command,
+		Cron:           req.Cron,
+		InitialTime:    timeNow,
+		Priority:       req.Priority,
+		MaxRetry:       req.MaxRetry,
+		RetryDelaySecs: req.RetryDelaySecs,
+		Command:        req.Command,
 	}
 	setting.MustSetData(cronJob)
-
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
+
+	// Deleting tasks
+	for _, task := range data.DeletingTasks {
+		if task.Status != base.TaskStatusNotStarted {
+			task.MaxRetry = task.Retry // failed task, we don't want to delete it, but need to prevent it from retrying
+		} else {
+			task.DeletedAt = timeutil.NowUTC()
+		}
+		persistingData.UpsertingTasks = append(persistingData.UpsertingTasks, task)
+	}
 }

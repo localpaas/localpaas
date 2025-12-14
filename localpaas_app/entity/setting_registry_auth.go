@@ -8,6 +8,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
+const (
+	CurrentRegistryAuthVersion = 1
+)
+
 type RegistryAuth struct {
 	Username string         `json:"username"`
 	Password EncryptedField `json:"password"`

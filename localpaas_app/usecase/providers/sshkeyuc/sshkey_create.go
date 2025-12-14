@@ -81,6 +81,7 @@ func (uc *SSHKeyUC) preparePersistingSSHKey(
 		Type:      base.SettingTypeSSHKey,
 		Status:    base.SettingStatusActive,
 		Name:      req.Name,
+		Version:   entity.CurrentSSHKeyVersion,
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,
 	}

@@ -37,6 +37,7 @@ type Setting struct {
 	ObjectUser     *User            `bun:"rel:belongs-to,join:object_id=id"`
 	ObjectProject  *Project         `bun:"rel:belongs-to,join:object_id=id"`
 	ObjectApp      *App             `bun:"rel:belongs-to,join:object_id=id"`
+	Tasks          []*Task          `bun:"rel:has-many,join:id=job_id"`
 
 	// NOTE: temporary field
 	parsedData any

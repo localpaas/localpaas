@@ -82,6 +82,7 @@ func (uc *GitTokenUC) preparePersistingGitToken(
 		Status:    base.SettingStatusActive,
 		Kind:      string(req.Kind),
 		Name:      req.Name,
+		Version:   entity.CurrentGithubAppVersion,
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,
 		ExpireAt:  req.ExpireAt,
