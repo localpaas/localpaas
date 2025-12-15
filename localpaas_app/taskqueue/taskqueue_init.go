@@ -3,11 +3,13 @@ package taskqueue
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/entity/cacheentity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/infra/gocronqueue"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
@@ -15,9 +17,13 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 )
 
+const (
+	taskInfoCacheExp = 24 * time.Hour
+)
+
 func (q *taskQueue) Start(cfg *config.Config) error {
 	// Initialize task queue worker if configured
-	if cfg.RunMode == "worker" || cfg.RunMode == "embedded-worker" {
+	if cfg.RunMode == config.RunModeWorker || cfg.RunMode == config.RunModeEmbeddedWorker {
 		go func() {
 			q.logger.Infof("starting task queue server...")
 			err := q.server.Start(gocronqueue.StartConfig{
@@ -31,7 +37,7 @@ func (q *taskQueue) Start(cfg *config.Config) error {
 			}
 		}()
 	}
-	if cfg.RunMode == "app" || cfg.RunMode == "embedded-worker" {
+	if cfg.RunMode == config.RunModeApp || cfg.RunMode == config.RunModeEmbeddedWorker {
 		q.logger.Infof("starting task queue client...")
 	}
 
@@ -101,20 +107,19 @@ func (q *taskQueue) runTask(
 			task.Retry++
 		}
 
-		// Mark the task as `in-progress` by inserting a new record
-		// NOTE: we must use `q.db` to not bound the writing to this transaction
-		inProgressTask := &entity.UpdatingTask{
+		// Mark the task as `in-progress` by inserting a new record in to cache
+		taskInfo := &cacheentity.TaskInfo{
 			ID:        task.ID,
+			Status:    base.TaskStatusInProgress,
 			StartedAt: task.StartedAt,
 		}
-		err = q.updatingTaskRepo.Upsert(ctx, q.db, inProgressTask,
-			entity.UpdatingTaskUpsertingConflictCols, entity.UpdatingTaskUpsertingUpdateCols)
+		err = q.cacheTaskInfoRepo.Set(ctx, task.ID, taskInfo, taskInfoCacheExp)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
 
 		defer func() {
-			err = q.updatingTaskRepo.Delete(ctx, db, inProgressTask)
+			_ = q.cacheTaskInfoRepo.Del(ctx, task.ID)
 			err = q.taskRepo.Update(ctx, db, task)
 		}()
 

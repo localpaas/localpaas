@@ -36,6 +36,20 @@ func UpdateWhereOr(queryStr string, args ...any) UpdateQueryOption {
 	}
 }
 
+func UpdateWhereIn[T any](queryStr string, slice []T) UpdateQueryOption {
+	if len(slice) == 0 {
+		return UpdateWhere("1=0")
+	}
+	return UpdateWhere(queryStr, In(slice))
+}
+
+func UpdateWhereNotIn[T any](queryStr string, slice []T) UpdateQueryOption {
+	if len(slice) == 0 {
+		return UpdateWhere("1=1")
+	}
+	return UpdateWhere(queryStr, In(slice))
+}
+
 // ApplyUpdate applies extra update queries to the bun query
 func ApplyUpdate(query *bun.UpdateQuery, opts ...UpdateQueryOption) *bun.UpdateQuery {
 	for _, opt := range opts {

@@ -39,6 +39,7 @@ const (
 	ResourceTypeGitToken     ResourceType = "git-token"
 	ResourceTypeCronJob      ResourceType = "cron-job"
 	ResourceTypeSysError     ResourceType = "sys-error"
+	ResourceTypeTask         ResourceType = "task"
 )
 
 type ResourceModule string

@@ -1,0 +1,148 @@
+package systemhandler
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/permission"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/taskuc/taskdto"
+)
+
+// To keep `apperrors` pkg imported and swag gen won't fail
+type _ *apperrors.ErrorInfo
+
+// ListTask Lists task
+// @Summary Lists task
+// @Description Lists task
+// @Tags    system_tasks
+// @Produce json
+// @Id      listTask
+// @Param   jobId query string false "`jobId=<target>`"
+// @Param   status query string false "`status=<target>`"
+// @Param   search query string false "`search=<target> (support *)`"
+// @Param   pageOffset query int false "`pageOffset=offset`"
+// @Param   pageLimit query int false "`pageLimit=limit`"
+// @Param   sort query string false "`sort=[-]field1|field2...`"
+// @Success 200 {object} taskdto.ListTaskResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /system/tasks [get]
+func (h *SystemHandler) ListTask(ctx *gin.Context) {
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceModule: base.ResourceModuleSystem,
+		ResourceType:   base.ResourceTypeTask,
+		Action:         base.ActionTypeRead,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := taskdto.NewListTaskReq()
+	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.taskUC.ListTask(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
+// GetTask Gets task
+// @Summary Gets task
+// @Description Gets task
+// @Tags    system_tasks
+// @Produce json
+// @Id      getTask
+// @Param   id path string true "task ID"
+// @Success 200 {object} taskdto.GetTaskResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /tasks/{id} [get]
+func (h *SystemHandler) GetTask(ctx *gin.Context) {
+	id, err := h.ParseStringParam(ctx, "id")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceModule: base.ResourceModuleSystem,
+		ResourceType:   base.ResourceTypeTask,
+		ResourceID:     id,
+		Action:         base.ActionTypeRead,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := taskdto.NewGetTaskReq()
+	req.ID = id
+	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.taskUC.GetTask(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
+// UpdateTaskMeta Updates task meta
+// @Summary Updates task meta
+// @Description Updates task meta
+// @Tags    system_tasks
+// @Produce json
+// @Id      updateTaskMeta
+// @Param   id path string true "task ID"
+// @Param   body body taskdto.UpdateTaskMetaReq true "request data"
+// @Success 200 {object} taskdto.UpdateTaskMetaResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /system/tasks/{id}/meta [put]
+func (h *SystemHandler) UpdateTaskMeta(ctx *gin.Context) {
+	id, err := h.ParseStringParam(ctx, "id")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceModule: base.ResourceModuleSystem,
+		ResourceType:   base.ResourceTypeTask,
+		ResourceID:     id,
+		Action:         base.ActionTypeWrite,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := taskdto.NewUpdateTaskMetaReq()
+	req.ID = id
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.taskUC.UpdateTaskMeta(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}

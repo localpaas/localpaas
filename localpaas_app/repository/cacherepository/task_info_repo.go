@@ -1,0 +1,93 @@
+package cacherepository
+
+import (
+	"context"
+	"fmt"
+	"time"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/entity/cacheentity"
+	"github.com/localpaas/localpaas/localpaas_app/infra/rediscache"
+)
+
+type TaskInfoRepo interface {
+	Get(ctx context.Context, taskID string) (*cacheentity.TaskInfo, error)
+	MGet(ctx context.Context, taskIDs []string) (map[string]*cacheentity.TaskInfo, error)
+	GetAll(ctx context.Context) (map[string]*cacheentity.TaskInfo, error)
+	Set(ctx context.Context, taskID string, taskInfo *cacheentity.TaskInfo, exp time.Duration) error
+	Del(ctx context.Context, taskID string) error
+}
+
+type taskInfoRepo struct {
+	client rediscache.Client
+}
+
+func NewTaskInfoRepo(client rediscache.Client) TaskInfoRepo {
+	return &taskInfoRepo{client: client}
+}
+
+func (repo *taskInfoRepo) Get(ctx context.Context, taskID string) (*cacheentity.TaskInfo, error) {
+	resp, err := rediscache.Get(ctx, repo.client, repo.formatKey(taskID),
+		rediscache.NewJSONValue[*cacheentity.TaskInfo])
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return resp, nil
+}
+
+func (repo *taskInfoRepo) MGet(ctx context.Context, taskIDs []string) (map[string]*cacheentity.TaskInfo, error) {
+	if len(taskIDs) == 0 {
+		return nil, nil
+	}
+	keys := make([]string, 0, len(taskIDs))
+	for _, taskID := range taskIDs {
+		keys = append(keys, repo.formatKey(taskID))
+	}
+	return repo.mGet(ctx, keys)
+}
+
+func (repo *taskInfoRepo) GetAll(ctx context.Context) (map[string]*cacheentity.TaskInfo, error) {
+	keys, err := rediscache.Keys(ctx, repo.client, repo.formatKey("*"))
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	if len(keys) == 0 {
+		return nil, nil
+	}
+	return repo.mGet(ctx, keys)
+}
+
+func (repo *taskInfoRepo) mGet(ctx context.Context, keys []string) (map[string]*cacheentity.TaskInfo, error) {
+	resp, err := rediscache.MGet(ctx, repo.client, keys, rediscache.NewJSONValue[*cacheentity.TaskInfo])
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	result := make(map[string]*cacheentity.TaskInfo, len(resp))
+	for _, info := range resp {
+		if info != nil {
+			result[info.ID] = info
+		}
+	}
+	return result, nil
+}
+
+func (repo *taskInfoRepo) Set(ctx context.Context, taskID string, taskInfo *cacheentity.TaskInfo,
+	exp time.Duration) error {
+	err := rediscache.Set(ctx, repo.client, repo.formatKey(taskID), rediscache.NewJSONValue(taskInfo), exp)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (repo *taskInfoRepo) Del(ctx context.Context, taskID string) error {
+	err := rediscache.Del(ctx, repo.client, repo.formatKey(taskID))
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (repo *taskInfoRepo) formatKey(taskID string) string {
+	return fmt.Sprintf("task:%s", taskID)
+}

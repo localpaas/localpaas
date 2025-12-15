@@ -53,6 +53,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/lpappuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/nginxuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/syserroruc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/taskuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc"
 	"github.com/localpaas/localpaas/services/docker"
@@ -124,6 +125,7 @@ var Provides = []any{
 	lpappuc.NewLpAppUC,
 	gitsourceuc.NewGitSourceUC,
 	cronjobuc.NewCronJobUC,
+	taskuc.NewTaskUC,
 
 	// Service
 	clusterservice.NewClusterService,
@@ -150,7 +152,6 @@ var Provides = []any{
 	repository.NewSettingRepo,
 	// Repo: Task
 	repository.NewTaskRepo,
-	repository.NewUpdatingTaskRepo,
 	// Repo: Sys error
 	repository.NewSysErrorRepo,
 	// Others
@@ -159,4 +160,5 @@ var Provides = []any{
 	// Cache Repo
 	cacherepository.NewUserTokenRepo,
 	cacherepository.NewMFAPasscodeRepo,
+	cacherepository.NewTaskInfoRepo,
 }

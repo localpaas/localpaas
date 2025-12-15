@@ -24,6 +24,20 @@ func DeleteWhereOr(queryStr string, args ...any) DeleteQueryOption {
 	}
 }
 
+func DeleteWhereIn[T any](queryStr string, slice []T) DeleteQueryOption {
+	if len(slice) == 0 {
+		return DeleteWhere("1=0")
+	}
+	return DeleteWhere(queryStr, In(slice))
+}
+
+func DeleteWhereNotIn[T any](queryStr string, slice []T) DeleteQueryOption {
+	if len(slice) == 0 {
+		return DeleteWhere("1=1")
+	}
+	return DeleteWhere(queryStr, In(slice))
+}
+
 func DeleteWithForceDelete() DeleteQueryOption {
 	return func(query *bun.DeleteQuery) *bun.DeleteQuery {
 		return query.ForceDelete()

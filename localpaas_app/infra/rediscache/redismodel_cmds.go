@@ -38,6 +38,9 @@ func Get[T any](ctx context.Context, cmder Cmdable, key string, valueCreator Val
 
 func MGet[T any](ctx context.Context, cmder Cmdable, keys []string, valueCreator ValueCreator[T]) (
 	values []T, err error) {
+	if len(keys) == 0 {
+		return values, nil
+	}
 	slice, err := cmder.MGet(ctx, keys...).Result()
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
@@ -49,6 +52,11 @@ func MGet[T any](ctx context.Context, cmder Cmdable, keys []string, valueCreator
 	var valDefault T
 	for _, item := range slice {
 		model := valueCreator(valDefault)
+		itemBytes := ParseBytes(item)
+		if len(itemBytes) == 0 {
+			values = append(values, model.GetData())
+			continue
+		}
 		err = model.RedisUnmarshal(ParseBytes(item))
 		if err != nil {
 			return nil, apperrors.New(err).WithMsgLog("failed to unmarshal value")
@@ -74,6 +82,9 @@ func Set[T any](ctx context.Context, cmder Cmdable, key string, value Value[T], 
 
 func MSet[T any](ctx context.Context, cmder Cmdable, keys []string, values []Value[T],
 	expiration time.Duration) (err error) {
+	if len(keys) == 0 {
+		return nil
+	}
 	setValues := make([]any, 0, len(values)*2) //nolint:mnd
 	for i, v := range values {
 		item, err := v.RedisMarshal()

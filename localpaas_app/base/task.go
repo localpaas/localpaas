@@ -25,6 +25,7 @@ const (
 var (
 	AllTaskStatuses = []TaskStatus{TaskStatusNotStarted, TaskStatusInProgress, TaskStatusCanceled,
 		TaskStatusDone, TaskStatusFailed}
+	AllTaskSettableStatuses = []TaskStatus{TaskStatusCanceled}
 )
 
 type TaskPriority string

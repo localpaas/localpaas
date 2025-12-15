@@ -150,6 +150,9 @@ func (s *Server) executeTask(task *entity.Task) error {
 }
 
 func (s *Server) Shutdown() error {
+	if s.scheduler == nil {
+		return nil
+	}
 	err := s.scheduler.Shutdown()
 	if err != nil {
 		return apperrors.Wrap(err)

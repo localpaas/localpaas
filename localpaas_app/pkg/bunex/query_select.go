@@ -70,6 +70,20 @@ func SelectWhereOrGroup(opts ...SelectQueryOption) SelectQueryOption {
 	}
 }
 
+func SelectWhereIn[T any](queryStr string, slice []T) SelectQueryOption {
+	if len(slice) == 0 {
+		return SelectWhere("1=0")
+	}
+	return SelectWhere(queryStr, In(slice))
+}
+
+func SelectWhereNotIn[T any](queryStr string, slice []T) SelectQueryOption {
+	if len(slice) == 0 {
+		return SelectWhere("1=1")
+	}
+	return SelectWhere(queryStr, In(slice))
+}
+
 func SelectJoin(join string, args ...any) SelectQueryOption {
 	return func(query *bun.SelectQuery) *bun.SelectQuery {
 		return query.Join(join, args...)

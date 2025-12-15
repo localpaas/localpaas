@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS tasks
     id               VARCHAR(100) PRIMARY KEY,
     job_id           VARCHAR(100) NULL,
     type             VARCHAR(100) NOT NULL,
-    version          INT2 NOT NULL DEFAULT 1,
     status           VARCHAR(20) NOT NULL CONSTRAINT chk_status CHECK
                         (status IN ('not-started','canceled','failed','done')) DEFAULT 'not-started',
     priority         VARCHAR(20) NOT NULL DEFAULT 'default',
@@ -13,6 +12,8 @@ CREATE TABLE IF NOT EXISTS tasks
     retry_delay_secs INT4 NOT NULL DEFAULT 0,
     args             JSON NULL,
     runs             JSON NULL,
+    version          INT2 NOT NULL DEFAULT 1,
+    update_ver       INT4 NOT NULL DEFAULT 1,
 
     run_at           TIMESTAMPTZ NOT NULL,
     started_at       TIMESTAMPTZ NULL,
@@ -32,12 +33,5 @@ CREATE INDEX idx_tasks_status ON tasks(status);
 CREATE INDEX idx_tasks_run_at ON tasks(run_at);
 CREATE INDEX idx_tasks_deleted_at ON tasks(deleted_at);
 
-CREATE TABLE IF NOT EXISTS updating_tasks
-(
-    id               VARCHAR(100) PRIMARY KEY,
-    started_at       TIMESTAMPTZ NOT NULL
-);
-
 -- +migrate Down
-DROP TABLE IF EXISTS updating_tasks;
 DROP TABLE IF EXISTS tasks;

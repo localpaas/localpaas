@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS projects
     photo        VARCHAR(255) NULL,
     status       VARCHAR(100) NOT NULL,
     note         VARCHAR(10000) NULL,
-    update_ver   BIGINT NOT NULL DEFAULT 1,
+    update_ver   INT4 NOT NULL DEFAULT 1,
 
     created_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,

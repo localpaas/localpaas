@@ -9,6 +9,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/gocronqueue"
 	"github.com/localpaas/localpaas/localpaas_app/infra/logging"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
+	"github.com/localpaas/localpaas/localpaas_app/repository/cacherepository"
 )
 
 type TaskQueue interface {
@@ -20,13 +21,13 @@ type TaskQueue interface {
 }
 
 type taskQueue struct {
-	db               *database.DB
-	logger           logging.Logger
-	server           *gocronqueue.Server
-	client           *gocronqueue.Client
-	settingRepo      repository.SettingRepo
-	taskRepo         repository.TaskRepo
-	updatingTaskRepo repository.UpdatingTaskRepo
+	db                *database.DB
+	logger            logging.Logger
+	server            *gocronqueue.Server
+	client            *gocronqueue.Client
+	settingRepo       repository.SettingRepo
+	taskRepo          repository.TaskRepo
+	cacheTaskInfoRepo cacherepository.TaskInfoRepo
 }
 
 func NewTaskQueue(
@@ -36,15 +37,15 @@ func NewTaskQueue(
 	client *gocronqueue.Client,
 	settingRepo repository.SettingRepo,
 	taskRepo repository.TaskRepo,
-	updatingTaskRepo repository.UpdatingTaskRepo,
+	cacheTaskInfoRepo cacherepository.TaskInfoRepo,
 ) TaskQueue {
 	return &taskQueue{
-		db:               db,
-		logger:           logger,
-		server:           server,
-		client:           client,
-		settingRepo:      settingRepo,
-		taskRepo:         taskRepo,
-		updatingTaskRepo: updatingTaskRepo,
+		db:                db,
+		logger:            logger,
+		server:            server,
+		client:            client,
+		settingRepo:       settingRepo,
+		taskRepo:          taskRepo,
+		cacheTaskInfoRepo: cacheTaskInfoRepo,
 	}
 }

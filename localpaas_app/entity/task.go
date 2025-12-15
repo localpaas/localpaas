@@ -16,7 +16,7 @@ const (
 var (
 	TaskUpsertingConflictCols = []string{"id"}
 	TaskUpsertingUpdateCols   = []string{"job_id", "type", "status", "args",
-		"priority", "max_retry", "retry", "retry_delay_secs", "runs", "version",
+		"priority", "max_retry", "retry", "retry_delay_secs", "runs", "version", "update_ver",
 		"run_at", "started_at", "ended_at", "updated_at", "deleted_at"}
 )
 
@@ -29,9 +29,10 @@ type Task struct {
 	MaxRetry       int
 	Retry          int
 	RetryDelaySecs int
-	Args           string
-	Runs           string
+	Args           string `bun:",nullzero"`
+	Runs           string `bun:",nullzero"`
 	Version        int
+	UpdateVer      int
 
 	RunAt     time.Time
 	StartedAt time.Time `bun:",nullzero"`
@@ -41,8 +42,7 @@ type Task struct {
 	UpdatedAt time.Time `bun:",default:current_timestamp"`
 	DeletedAt time.Time `bun:",soft_delete,nullzero"`
 
-	Job          *Setting      `bun:"rel:belongs-to,join:job_id=id"`
-	UpdatingTask *UpdatingTask `bun:"rel:has-one,join:id=id"`
+	Job *Setting `bun:"rel:belongs-to,join:job_id=id"`
 }
 
 // GetID implements IDEntity interface
@@ -81,14 +81,4 @@ type TaskRun struct {
 	StartedAt time.Time `json:"startedAt"`
 	EndedAt   time.Time `json:"endedAt"`
 	Error     string    `json:"error,omitempty"`
-}
-
-var (
-	UpdatingTaskUpsertingConflictCols = []string{"id"}
-	UpdatingTaskUpsertingUpdateCols   = []string{"started_at"}
-)
-
-type UpdatingTask struct {
-	ID        string `bun:",pk"`
-	StartedAt time.Time
 }

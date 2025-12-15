@@ -396,6 +396,13 @@ func (s *HTTPServer) registerRoutes() {
 
 	systemGroup := apiGroup.Group("/system")
 
+	{ // task group
+		taskGroup := systemGroup.Group("/tasks")
+		taskGroup.GET("", s.handlerRegistry.systemHandler.ListTask)
+		taskGroup.GET("/:id", s.handlerRegistry.systemHandler.GetTask)
+		taskGroup.PUT("/:id/meta", s.handlerRegistry.systemHandler.UpdateTaskMeta)
+	}
+
 	{ // error group
 		errorGroup := systemGroup.Group("/errors")
 		errorGroup.GET("", s.handlerRegistry.systemHandler.ListSysError)
