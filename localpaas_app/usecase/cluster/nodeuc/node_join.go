@@ -46,16 +46,12 @@ func (uc *NodeUC) JoinNode(
 		Passphrase: data.SSHKey.Passphrase.MustGetPlain(),
 		Command:    command,
 	})
-
-	var errorMessage string
 	if err != nil {
-		errorMessage = err.Error()
+		return nil, apperrors.New(apperrors.ErrInfraActionFailed).WithParam("Error", err.Error())
 	}
 
 	return &nodedto.JoinNodeResp{
 		Data: &nodedto.JoinNodeDataResp{
-			Success:       err == nil,
-			ErrorMessage:  errorMessage,
 			CommandOutput: output,
 		},
 	}, nil

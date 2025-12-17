@@ -10532,15 +10532,9 @@
         "properties" : {
           "commandOutput" : {
             "type" : "string"
-          },
-          "errorMessage" : {
-            "type" : "string"
-          },
-          "success" : {
-            "type" : "boolean"
           }
         },
-        "required" : [ "commandOutput", "errorMessage", "success" ],
+        "required" : [ "commandOutput" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.JoinNodeReq" : {

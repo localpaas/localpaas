@@ -66,6 +66,7 @@ var (
 // nolint Errors from infrastructure
 var (
 	ErrInfra                   = errors.New("ERR_INFRA")
+	ErrInfraActionFailed       = errors.New("ERR_INFRA_ACTION_FAILED")
 	ErrInfraUnknown            = errors.New("ERR_INFRA_UNKNOWN")
 	ErrInfraInvalidArgument    = errors.Join(errors.New("ERR_INFRA_INVALID_ARGUMENT"), ErrParamInvalid)
 	ErrInfraNotFound           = errors.Join(errors.New("ERR_INFRA_NOT_FOUND"), ErrNotFound)
@@ -142,6 +143,7 @@ var errorStatusMap = map[error]int{
 
 	// Errors from infrastructure
 	ErrInfra:                   http.StatusInternalServerError,
+	ErrInfraActionFailed:       http.StatusUnprocessableEntity,
 	ErrInfraUnknown:            http.StatusInternalServerError,
 	ErrInfraInvalidArgument:    http.StatusBadRequest,
 	ErrInfraNotFound:           http.StatusNotFound,
