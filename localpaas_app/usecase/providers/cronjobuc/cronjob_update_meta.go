@@ -26,7 +26,17 @@ func (uc *CronJobUC) UpdateCronJobMeta(
 		}
 
 		uc.prepareUpdatingCronJobMeta(req, jobData)
-		return uc.persistCronJobMeta(ctx, db, jobData)
+		err = uc.persistCronJobMeta(ctx, db, jobData)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+
+		err = uc.taskQueue.ScheduleTasksForCronJob(ctx, db, jobData.Setting, jobData.UnscheduleCurrentTasks)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+
+		return nil
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -51,6 +61,8 @@ func (uc *CronJobUC) loadCronJobDataForUpdateMeta(
 		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
 	}
 	data.Setting = setting
+
+	data.UnscheduleCurrentTasks = true
 
 	return nil
 }

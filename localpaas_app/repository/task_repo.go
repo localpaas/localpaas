@@ -23,11 +23,13 @@ type TaskRepo interface {
 	ListByIDs(ctx context.Context, db database.IDB, ids []string,
 		opts ...bunex.SelectQueryOption) ([]*entity.Task, error)
 
-	Upsert(ctx context.Context, db database.IDB, task *entity.Task,
-		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
-	UpsertMulti(ctx context.Context, db database.IDB, tasks []*entity.Task,
-		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
+	Upsert(ctx context.Context, db database.IDB, task *entity.Task, conflictCols, updateCols []string,
+		opts ...bunex.InsertQueryOption) error
+	UpsertMulti(ctx context.Context, db database.IDB, tasks []*entity.Task, conflictCols, updateCols []string,
+		opts ...bunex.InsertQueryOption) error
 	Update(ctx context.Context, db database.IDB, task *entity.Task,
+		opts ...bunex.UpdateQueryOption) error
+	UpdateMulti(ctx context.Context, db database.IDB, tasks []*entity.Task,
 		opts ...bunex.UpdateQueryOption) error
 }
 
@@ -126,6 +128,18 @@ func (repo *taskRepo) UpsertMulti(ctx context.Context, db database.IDB, tasks []
 func (repo *taskRepo) Update(ctx context.Context, db database.IDB, task *entity.Task,
 	opts ...bunex.UpdateQueryOption) error {
 	query := db.NewUpdate().Model(task).WherePK()
+	query = bunex.ApplyUpdate(query, opts...)
+
+	_, err := query.Exec(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (repo *taskRepo) UpdateMulti(ctx context.Context, db database.IDB, tasks []*entity.Task,
+	opts ...bunex.UpdateQueryOption) error {
+	query := db.NewUpdate().Model(&tasks).Bulk()
 	query = bunex.ApplyUpdate(query, opts...)
 
 	_, err := query.Exec(ctx)

@@ -57,6 +57,7 @@ type Config struct {
 	DB         DB         `toml:"db"`
 	Cache      Cache      `toml:"cache"`
 	Session    Session    `toml:"session"`
+	TaskQueue  TaskQueue  `toml:"task_queue"`
 	SSL        SSL        `toml:"ssl"`
 }
 

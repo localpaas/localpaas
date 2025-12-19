@@ -9458,9 +9458,9 @@
         "x-enum-varnames" : [ "TaskStatusNotStarted", "TaskStatusInProgress", "TaskStatusCanceled", "TaskStatusDone", "TaskStatusFailed" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.TaskType" : {
-        "enum" : [ "task:schedule", "task:test", "task:git-clone" ],
+        "enum" : [ "task:test", "task:git-clone" ],
         "type" : "string",
-        "x-enum-varnames" : [ "TaskTypeSchedule", "TaskTypeTest", "TaskTypeGitClone" ]
+        "x-enum-varnames" : [ "TaskTypeTest", "TaskTypeGitClone" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.UserRole" : {
         "enum" : [ "admin", "member" ],

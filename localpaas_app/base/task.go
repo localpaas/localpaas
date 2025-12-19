@@ -3,13 +3,12 @@ package base
 type TaskType string
 
 const (
-	TaskTypeSchedule TaskType = "task:schedule"
 	TaskTypeTest     TaskType = "task:test"
 	TaskTypeGitClone TaskType = "task:git-clone"
 )
 
 var (
-	AllTaskTypes = []TaskType{TaskTypeSchedule, TaskTypeTest, TaskTypeGitClone}
+	AllTaskTypes = []TaskType{TaskTypeTest, TaskTypeGitClone}
 )
 
 type TaskStatus string
@@ -38,4 +37,18 @@ const (
 
 var (
 	AllTaskPriorities = []TaskPriority{TaskPriorityLow, TaskPriorityDefault, TaskPriorityCritical}
+
+	//nolint:mnd
+	mapPriorityValues = map[TaskPriority]int{
+		TaskPriorityLow:      3,
+		TaskPriorityDefault:  6,
+		TaskPriorityCritical: 10,
+	}
 )
+
+func (p TaskPriority) Cmp(priority TaskPriority) int {
+	if p == priority {
+		return 0
+	}
+	return mapPriorityValues[p] - mapPriorityValues[priority]
+}

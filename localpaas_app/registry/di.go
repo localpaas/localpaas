@@ -3,7 +3,6 @@ package registry
 import (
 	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/infra/gocronqueue"
 	"github.com/localpaas/localpaas/localpaas_app/infra/logging"
 	"github.com/localpaas/localpaas/localpaas_app/infra/rediscache"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler"
@@ -80,8 +79,6 @@ var Provides = []any{
 
 	// Infra
 	docker.New,
-	gocronqueue.NewServer,
-	gocronqueue.NewClient,
 
 	// Task queue
 	taskqueue.NewTaskQueue,

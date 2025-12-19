@@ -8,19 +8,19 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 )
 
-func (q *taskQueue) NewTestTaskProcessor() func(taskID string, payload string) error {
-	return func(taskID string, payload string) error {
+func (q *taskQueue) NewTaskTestProcessor() func(taskID string, payload string) (time.Time, error) {
+	return func(taskID string, payload string) (time.Time, error) {
 		return q.runTask(context.Background(), taskID, payload, q.doTestTask)
 	}
 }
 
 func (q *taskQueue) doTestTask(
 	ctx context.Context,
-	db database.IDB,
+	db database.Tx,
 	task *entity.Task,
 ) error {
 	// TODO: add implementation
-	print(">>>>>>>>>>>>>>>>>>>>> doTestTask ", time.Now().String(), "\n") //nolint
-	time.Sleep(10 * time.Second) //nolint
+	print(">>>>>>>>>>>>>>>>>>>>> doTestTask ", time.Now().String(), task.Job.Name, "\n") //nolint
+	time.Sleep(3 * time.Second)                                                          //nolint
 	return nil
 }

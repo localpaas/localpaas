@@ -8,133 +8,181 @@ import (
 	"time"
 
 	"github.com/go-co-op/gocron/v2"
+	"github.com/redis/go-redis/v9"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/logging"
-	"github.com/localpaas/localpaas/localpaas_app/infra/rediscache"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
 const (
-	queueConcurrency = 5
-
-	defaultTaskCheckInterval = 60 * time.Second
+	defaultConcurrency        = 5
+	taskHighPriorityLookAhead = 1 * time.Second
+	taskLowPriorityDelay      = 500 * time.Millisecond
 )
 
 var (
 	ErrTaskProcessorNotFound = errors.New("task processor not found")
 )
 
-type TaskProcessorFunc func(taskID string, payload string) error
+type TaskProcessorFunc func(taskID string, payload string) (time.Time, error)
 
 type Server struct {
-	mu        sync.RWMutex
+	config    *Config
 	scheduler gocron.Scheduler
-	logger    logging.Logger
-	jobMap    map[string]gocron.Job // task.ID -> job
-	config    StartConfig
+	jobMap    map[string]*jobData // task.ID -> job data
+	mu        sync.RWMutex
 }
 
-type StartConfig struct {
-	TaskMap           map[base.TaskType]TaskProcessorFunc
-	TaskCheckFunc     func(context.Context) ([]*entity.Task, error)
-	TaskCheckInterval time.Duration
+type Config struct {
+	Concurrency int
+	TaskMap     map[base.TaskType]TaskProcessorFunc
+	RedisClient redis.UniversalClient
+	Logger      logging.Logger
+
+	TaskCheckFunc      func(ctx context.Context) ([]*entity.Task, error)
+	TaskCheckInterval  time.Duration
+	TaskCreateFunc     func(ctx context.Context) error
+	TaskCreateInterval time.Duration
 }
 
-func NewServer(redisClient rediscache.Client, logger logging.Logger) (*Server, error) {
+type jobData struct {
+	Job      gocron.Job
+	RunAt    time.Time
+	Priority base.TaskPriority
+}
+
+func NewServer(config *Config) (*Server, error) {
+	if config.Concurrency <= 0 {
+		config.Concurrency = defaultConcurrency
+	}
+	scheduler, err := gocron.NewScheduler(
+		gocron.WithLimitConcurrentJobs(uint(config.Concurrency), gocron.LimitModeWait),
+	)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
 	return &Server{
-		logger: logger,
+		scheduler: scheduler,
+		config:    config,
+		jobMap:    make(map[string]*jobData, 20), //nolint:mnd
 	}, nil
 }
 
-func (s *Server) init() error {
-	scheduler, err := gocron.NewScheduler(gocron.WithLimitConcurrentJobs(queueConcurrency, gocron.LimitModeWait))
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	s.scheduler = scheduler
-	s.jobMap = make(map[string]gocron.Job, 20) //nolint:mnd
-	return nil
-}
-
-func (s *Server) Start(startConfig StartConfig) error {
-	err := s.init()
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	if startConfig.TaskCheckInterval <= 0 {
-		startConfig.TaskCheckInterval = defaultTaskCheckInterval
-	}
-
-	s.config = startConfig
+func (s *Server) Start() error {
 	s.scheduler.Start()
 
-	// Start a job to scan for new tasks from DB
-	_, err = s.scheduler.NewJob(
-		gocron.DurationJob(startConfig.TaskCheckInterval),
-		gocron.NewTask(s.scanTasks),
-	)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	_ = s.scanTasks()
+	// Start a job to periodically create new tasks from cron jobs
+	go func() {
+		for range time.Tick(s.config.TaskCreateInterval) {
+			s.createTasks()
+		}
+	}()
+	s.createTasks()
+
+	// Start a job to periodically scan for new tasks from DB
+	go func() {
+		for range time.Tick(s.config.TaskCheckInterval) {
+			s.scanTasks()
+		}
+	}()
+	s.scanTasks()
 
 	return nil
 }
 
-func (s *Server) scanTasks() error {
+func (s *Server) createTasks() {
+	defer func() {
+		if r := recover(); r != nil {
+			s.config.Logger.Errorf("panic when create new tasks: %v", r)
+		}
+	}()
+	err := s.config.TaskCreateFunc(context.Background())
+	if err != nil {
+		s.config.Logger.Errorf("failed to create new tasks: %v", err)
+	}
+}
+
+func (s *Server) scanTasks() {
+	defer func() {
+		if r := recover(); r != nil {
+			s.config.Logger.Errorf("panic when scan tasks for running: %v", r)
+		}
+	}()
+
 	tasks, err := s.config.TaskCheckFunc(context.Background())
 	if err != nil {
-		s.logger.Errorf("failed to scan new tasks: %v", err)
-		return apperrors.Wrap(err)
+		s.config.Logger.Errorf("failed to scan new tasks: %v", err)
+		return
 	}
-	err = s.scheduleTasks(tasks)
-	if err != nil {
-		s.logger.Errorf("failed to schedule new tasks: %v", err)
-		return apperrors.Wrap(err)
-	}
-	return nil
-}
-
-//nolint:unparam
-func (s *Server) scheduleTasks(tasks []*entity.Task) error {
-	timeNow := timeutil.NowUTC()
 	for _, task := range tasks {
-		var startAt gocron.OneTimeJobStartAtOption
-		if task.RunAt.Before(timeNow) {
-			startAt = gocron.OneTimeJobStartImmediately()
-		} else {
-			startAt = gocron.OneTimeJobStartDateTime(task.RunAt)
-		}
-		job, err := s.scheduler.NewJob(
-			gocron.OneTimeJob(startAt),
-			gocron.NewTask(func() {
-				err := s.executeTask(task)
-				if err != nil {
-					s.logger.Errorf("failed to execute task '%v', id %s: %v", task.Type, task.ID, err)
-				}
-			}),
-		)
+		err = s.ScheduleTask(task, task.ShouldRunAt())
 		if err != nil {
-			s.logger.Errorf("failed to schedule task %s: %v", task.ID, err)
-		}
-		err = s.addJob(job, task)
-		if err != nil {
-			s.logger.Errorf("failed to add job for task %s: %v", task.ID, err)
+			s.config.Logger.Errorf("failed to schedule new tasks: %v", err)
+			return
 		}
 	}
+}
+
+func (s *Server) ScheduleTask(task *entity.Task, runAt time.Time) error {
+	if !s.shouldSchedule(task, runAt) {
+		return nil
+	}
+	var startAt gocron.OneTimeJobStartAtOption
+	if runAt.IsZero() || runAt.Before(timeutil.NowUTC()) {
+		startAt = gocron.OneTimeJobStartImmediately()
+	} else {
+		startAt = gocron.OneTimeJobStartDateTime(runAt)
+	}
+	job, err := s.scheduler.NewJob(
+		gocron.OneTimeJob(startAt),
+		gocron.NewTask(func() {
+			err := s.executeTask(task, true)
+			if err != nil {
+				s.config.Logger.Errorf("failed to execute task '%v', id %s: %v", task.Type, task.ID, err)
+			}
+		}),
+	)
+	if err != nil {
+		s.config.Logger.Errorf("failed to schedule task %s: %v", task.ID, err)
+		return apperrors.Wrap(err)
+	}
+	s.addJob(task, job, runAt)
 	return nil
 }
 
-func (s *Server) executeTask(task *entity.Task) error {
-	defer func() {
-		err := s.CancelTaskJob(task)
-		if err != nil {
-			s.logger.Errorf("failed to remove job for task %s: %v", task.ID, err)
+func (s *Server) UnscheduleTask(task *entity.Task) error {
+	s.removeJob(task, true)
+	return nil
+}
+
+func (s *Server) shouldSchedule(task *entity.Task, runAt time.Time) bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	existingJob := s.jobMap[task.ID]
+	if existingJob != nil && existingJob.RunAt.Equal(runAt) {
+		return false
+	}
+	return true
+}
+
+func (s *Server) executeTask(task *entity.Task, priorityCheck bool) error {
+	// Skip this task and queue it for running later if there is higher priority task
+	if priorityCheck && task.Priority != base.TaskPriorityCritical {
+		priorityJob := s.findPriorityJob(task, timeutil.NowUTC())
+		if priorityJob != nil {
+			err := s.ScheduleTask(task, priorityJob.RunAt.Add(taskLowPriorityDelay))
+			if err != nil {
+				return apperrors.Wrap(err)
+			}
+			return nil
 		}
+	}
+
+	defer func() {
+		s.removeJob(task, false)
 	}()
 
 	execFunc := s.config.TaskMap[task.Type]
@@ -142,43 +190,74 @@ func (s *Server) executeTask(task *entity.Task) error {
 		return fmt.Errorf("%w: task processor func not found for task type '%v'",
 			ErrTaskProcessorNotFound, task.Type)
 	}
-	err := execFunc(task.ID, task.Args)
+	rescheduleAt, err := execFunc(task.ID, task.Args)
 	if err != nil {
+		if !rescheduleAt.IsZero() {
+			err := s.ScheduleTask(task, rescheduleAt)
+			if err != nil {
+				return apperrors.Wrap(err)
+			}
+		}
 		return apperrors.Wrap(err)
 	}
 	return nil
+}
+
+func (s *Server) addJob(task *entity.Task, job gocron.Job, runAt time.Time) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if currJob := s.jobMap[task.ID]; currJob != nil {
+		if currJob.Job == job {
+			return
+		}
+		_ = s.scheduler.RemoveJob(currJob.Job.ID())
+	}
+	s.jobMap[task.ID] = &jobData{
+		Job:      job,
+		RunAt:    runAt,
+		Priority: task.Priority,
+	}
+}
+
+func (s *Server) removeJob(task *entity.Task, unschedule bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if currJob := s.jobMap[task.ID]; currJob != nil {
+		if unschedule {
+			_ = s.scheduler.RemoveJob(currJob.Job.ID())
+		}
+		delete(s.jobMap, task.ID)
+	}
+}
+
+func (s *Server) findPriorityJob(currentTask *entity.Task, runAt time.Time) *jobData {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	for taskID, job := range s.jobMap {
+		if taskID == currentTask.ID {
+			continue
+		}
+		if job.Priority.Cmp(currentTask.Priority) <= 0 {
+			continue
+		}
+		diff := job.RunAt.Sub(runAt)
+		if -taskHighPriorityLookAhead < diff && diff < taskHighPriorityLookAhead {
+			return job
+		}
+	}
+	return nil
+}
+
+func (s *Server) ScheduleNextTask(task *entity.Task, _ time.Time) error {
+	return s.executeTask(task, false)
 }
 
 func (s *Server) Shutdown() error {
-	if s.scheduler == nil {
-		return nil
-	}
-	err := s.scheduler.Shutdown()
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	return nil
-}
-
-func (s *Server) addJob(job gocron.Job, task *entity.Task) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	if currJob := s.jobMap[task.ID]; currJob != nil {
-		if currJob == job {
-			return nil
+	if s.scheduler != nil {
+		err := s.scheduler.Shutdown()
+		if err != nil {
+			return apperrors.Wrap(err)
 		}
-		_ = s.scheduler.RemoveJob(job.ID())
 	}
-	s.jobMap[task.ID] = job
-	return nil
-}
-
-func (s *Server) CancelTaskJob(task *entity.Task) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	if currJob := s.jobMap[task.ID]; currJob != nil {
-		_ = s.scheduler.RemoveJob(currJob.ID())
-	}
-	delete(s.jobMap, task.ID)
 	return nil
 }

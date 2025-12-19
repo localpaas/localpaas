@@ -22,8 +22,9 @@ func (uc *CronJobUC) UpdateCronJob(
 	auth *basedto.Auth,
 	req *cronjobdto.UpdateCronJobReq,
 ) (*cronjobdto.UpdateCronJobResp, error) {
+	var jobData *updateCronJobData
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
-		jobData := &updateCronJobData{}
+		jobData = &updateCronJobData{}
 		err := uc.loadCronJobDataForUpdate(ctx, db, req, jobData)
 		if err != nil {
 			return apperrors.Wrap(err)
@@ -32,7 +33,17 @@ func (uc *CronJobUC) UpdateCronJob(
 		persistingData := &persistingCronJobData{}
 		uc.prepareUpdatingCronJob(req.CronJobBaseReq, jobData, persistingData)
 
-		return uc.persistData(ctx, db, persistingData)
+		err = uc.persistData(ctx, db, persistingData)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+
+		err = uc.taskQueue.ScheduleTasksForCronJob(ctx, db, jobData.Setting, jobData.UnscheduleCurrentTasks)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+
+		return nil
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -42,8 +53,8 @@ func (uc *CronJobUC) UpdateCronJob(
 }
 
 type updateCronJobData struct {
-	Setting       *entity.Setting
-	DeletingTasks []*entity.Task
+	Setting                *entity.Setting
+	UnscheduleCurrentTasks bool
 }
 
 func (uc *CronJobUC) loadCronJobDataForUpdate(
@@ -79,14 +90,7 @@ func (uc *CronJobUC) loadCronJobDataForUpdate(
 	}
 
 	if req.Cron != job.Cron {
-		data.DeletingTasks, _, err = uc.taskRepo.List(ctx, db, setting.ID, nil,
-			bunex.SelectFor("UPDATE OF task SKIP LOCKED"),
-			bunex.SelectWhere("task.status IN (?)", bunex.InItems(base.TaskStatusNotStarted,
-				base.TaskStatusInProgress, base.TaskStatusFailed)),
-		)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
+		data.UnscheduleCurrentTasks = true
 	}
 
 	return nil
@@ -113,14 +117,4 @@ func (uc *CronJobUC) prepareUpdatingCronJob(
 	}
 	setting.MustSetData(cronJob)
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
-
-	// Deleting tasks
-	for _, task := range data.DeletingTasks {
-		if task.Status != base.TaskStatusNotStarted {
-			task.MaxRetry = task.Retry // failed task, we don't want to delete it, but need to prevent it from retrying
-		} else {
-			task.DeletedAt = timeutil.NowUTC()
-		}
-		persistingData.UpsertingTasks = append(persistingData.UpsertingTasks, task)
-	}
 }

@@ -36,14 +36,14 @@ func UpdateWhereOr(queryStr string, args ...any) UpdateQueryOption {
 	}
 }
 
-func UpdateWhereIn[T any](queryStr string, slice []T) UpdateQueryOption {
+func UpdateWhereIn[T any](queryStr string, slice ...T) UpdateQueryOption {
 	if len(slice) == 0 {
 		return UpdateWhere("1=0")
 	}
 	return UpdateWhere(queryStr, In(slice))
 }
 
-func UpdateWhereNotIn[T any](queryStr string, slice []T) UpdateQueryOption {
+func UpdateWhereNotIn[T any](queryStr string, slice ...T) UpdateQueryOption {
 	if len(slice) == 0 {
 		return UpdateWhere("1=1")
 	}

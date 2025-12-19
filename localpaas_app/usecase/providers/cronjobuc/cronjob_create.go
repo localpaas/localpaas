@@ -41,7 +41,7 @@ func (uc *CronJobUC) CreateCronJob(
 			return apperrors.Wrap(err)
 		}
 
-		err = uc.taskQueue.ScheduleTasks(ctx, persistingData.UpsertingTasks)
+		err = uc.taskQueue.ScheduleTasksForCronJob(ctx, db, persistingData.UpsertingSettings[0], false)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}

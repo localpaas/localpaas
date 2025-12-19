@@ -70,14 +70,14 @@ func SelectWhereOrGroup(opts ...SelectQueryOption) SelectQueryOption {
 	}
 }
 
-func SelectWhereIn[T any](queryStr string, slice []T) SelectQueryOption {
+func SelectWhereIn[T any](queryStr string, slice ...T) SelectQueryOption {
 	if len(slice) == 0 {
 		return SelectWhere("1=0")
 	}
 	return SelectWhere(queryStr, In(slice))
 }
 
-func SelectWhereNotIn[T any](queryStr string, slice []T) SelectQueryOption {
+func SelectWhereNotIn[T any](queryStr string, slice ...T) SelectQueryOption {
 	if len(slice) == 0 {
 		return SelectWhere("1=1")
 	}
@@ -101,9 +101,9 @@ func SelectRelation(name string, opts ...SelectQueryOption) SelectQueryOption {
 	}
 }
 
-func SelectOrder(orderBy string) SelectQueryOption {
+func SelectOrder(orderBy ...string) SelectQueryOption {
 	return func(query *bun.SelectQuery) *bun.SelectQuery {
-		return query.Order(orderBy)
+		return query.Order(orderBy...)
 	}
 }
 
