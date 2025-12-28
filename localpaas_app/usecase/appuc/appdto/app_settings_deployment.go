@@ -17,15 +17,17 @@ const (
 //
 
 type DeploymentSettingsReq struct {
-	ImageSource *DeploymentImageSourceReq `json:"imageSource"`
-	CodeSource  *DeploymentCodeSourceReq  `json:"codeSource"`
-	UpdateVer   int                       `json:"updateVer"`
+	ImageSource   *DeploymentImageSourceReq   `json:"imageSource"`
+	RepoSource    *DeploymentRepoSourceReq    `json:"repoSource"`
+	TarballSource *DeploymentTarballSourceReq `json:"tarballSource"`
+	UpdateVer     int                         `json:"updateVer"`
 }
 
 func (req *DeploymentSettingsReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.ImageSource.validate("imageSource")...)
-	validators = append(validators, req.CodeSource.validate("codeSource")...)
+	validators = append(validators, req.RepoSource.validate("repoSource")...)
+	validators = append(validators, req.TarballSource.validate("tarballSource")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
@@ -39,7 +41,7 @@ func (req *DeploymentSettingsReq) validate(_ string) []vld.Validator { //nolint
 
 type DeploymentImageSourceReq struct {
 	Enabled      bool                `json:"enabled"`
-	Name         string              `json:"name"`
+	Image        string              `json:"image"`
 	RegistryAuth basedto.ObjectIDReq `json:"registryAuth"`
 }
 
@@ -50,18 +52,34 @@ func (req *DeploymentImageSourceReq) validate(field string) (res []vld.Validator
 	if field != "" {
 		field += "."
 	}
-	res = append(res, basedto.ValidateStr(&req.Name, true, 1, imageNameMaxLen, field+"name")...)
+	res = append(res, basedto.ValidateStr(&req.Image, true, 1, imageNameMaxLen, field+"image")...)
 	res = append(res, basedto.ValidateObjectIDReq(&req.RegistryAuth, false, field+"registryAuth")...)
 	return res
 }
 
-type DeploymentCodeSourceReq struct {
+type DeploymentRepoSourceReq struct {
 	Enabled bool `json:"enabled"`
 	// TODO: add implementation
 }
 
 // nolint
-func (req *DeploymentCodeSourceReq) validate(field string) (res []vld.Validator) {
+func (req *DeploymentRepoSourceReq) validate(field string) (res []vld.Validator) {
+	if req == nil {
+		return
+	}
+	if field != "" {
+		field += "."
+	}
+	return res
+}
+
+type DeploymentTarballSourceReq struct {
+	Enabled bool `json:"enabled"`
+	// TODO: add implementation
+}
+
+// nolint
+func (req *DeploymentTarballSourceReq) validate(field string) (res []vld.Validator) {
 	if req == nil {
 		return
 	}
@@ -76,18 +94,23 @@ func (req *DeploymentCodeSourceReq) validate(field string) (res []vld.Validator)
 //
 
 type DeploymentSettingsResp struct {
-	ImageSource *DeploymentImageSourceResp `json:"imageSource"`
-	CodeSource  *DeploymentCodeSourceResp  `json:"codeSource"`
-	UpdateVer   int                        `json:"updateVer"`
+	ImageSource   *DeploymentImageSourceResp   `json:"imageSource"`
+	RepoSource    *DeploymentRepoSourceResp    `json:"repoSource"`
+	TarballSource *DeploymentTarballSourceResp `json:"tarballSource"`
+	UpdateVer     int                          `json:"updateVer"`
 }
 
 type DeploymentImageSourceResp struct {
 	Enabled      bool                `json:"enabled"`
-	Name         string              `json:"name"`
+	Image        string              `json:"image"`
 	RegistryAuth basedto.ObjectIDReq `json:"registryAuth"`
 }
 
-type DeploymentCodeSourceResp struct {
+type DeploymentRepoSourceResp struct {
+	Enabled bool `json:"enabled"`
+}
+
+type DeploymentTarballSourceResp struct {
 	Enabled bool `json:"enabled"`
 }
 

@@ -91,7 +91,7 @@ func (uc *AppUC) loadAppData(
 	}
 	data.Project = project
 
-	data.AppKey = project.Key + "_" + slugify.SlugifyEx(req.Name, []string{"-", "_"}, appKeyMaxLen)
+	data.AppKey = project.Key + "_" + slugify.SlugifyEx(req.Name, nil, appKeyMaxLen)
 
 	// App keys must be unique globally
 	app, err := uc.appRepo.GetByKey(ctx, db, "", data.AppKey)

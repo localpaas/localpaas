@@ -27,7 +27,7 @@ var (
 	ErrTaskProcessorNotFound = errors.New("task processor not found")
 )
 
-type TaskProcessorFunc func(taskID string, payload string) (time.Time, error)
+type TaskExecutorFunc func(taskID string, payload string) (time.Time, error)
 
 type Server struct {
 	config    *Config
@@ -38,7 +38,7 @@ type Server struct {
 
 type Config struct {
 	Concurrency int
-	TaskMap     map[base.TaskType]TaskProcessorFunc
+	TaskMap     map[base.TaskType]TaskExecutorFunc
 	RedisClient redis.UniversalClient
 	Logger      logging.Logger
 

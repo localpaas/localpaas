@@ -1,6 +1,7 @@
 # Base errors
 ERR_UNAUTHORIZED = "Unauthorized"
 ERR_INTERNAL_SERVER = "Unexpected error"
+ERR_PANIC = "Panic: {{.Error}}"
 ERR_BAD_REQUEST = "Bad request"
 ERR_PARAM_INVALID = "Parameter {{.Name}} invalid"
 ERR_UNAVAILABLE = "{{.Name}} unavailable"

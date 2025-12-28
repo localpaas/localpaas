@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/redis/go-redis/v9"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/entity/cacheentity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/rediscache"
@@ -15,6 +17,7 @@ type TaskInfoRepo interface {
 	MGet(ctx context.Context, taskIDs []string) (map[string]*cacheentity.TaskInfo, error)
 	GetAll(ctx context.Context) (map[string]*cacheentity.TaskInfo, error)
 	Set(ctx context.Context, taskID string, taskInfo *cacheentity.TaskInfo, exp time.Duration) error
+	Update(ctx context.Context, taskID string, taskInfo *cacheentity.TaskInfo) error
 	Del(ctx context.Context, taskID string) error
 }
 
@@ -26,7 +29,10 @@ func NewTaskInfoRepo(client rediscache.Client) TaskInfoRepo {
 	return &taskInfoRepo{client: client}
 }
 
-func (repo *taskInfoRepo) Get(ctx context.Context, taskID string) (*cacheentity.TaskInfo, error) {
+func (repo *taskInfoRepo) Get(
+	ctx context.Context,
+	taskID string,
+) (*cacheentity.TaskInfo, error) {
 	resp, err := rediscache.Get(ctx, repo.client, repo.formatKey(taskID),
 		rediscache.NewJSONValue[*cacheentity.TaskInfo])
 	if err != nil {
@@ -35,7 +41,10 @@ func (repo *taskInfoRepo) Get(ctx context.Context, taskID string) (*cacheentity.
 	return resp, nil
 }
 
-func (repo *taskInfoRepo) MGet(ctx context.Context, taskIDs []string) (map[string]*cacheentity.TaskInfo, error) {
+func (repo *taskInfoRepo) MGet(
+	ctx context.Context,
+	taskIDs []string,
+) (map[string]*cacheentity.TaskInfo, error) {
 	if len(taskIDs) == 0 {
 		return nil, nil
 	}
@@ -46,7 +55,9 @@ func (repo *taskInfoRepo) MGet(ctx context.Context, taskIDs []string) (map[strin
 	return repo.mGet(ctx, keys)
 }
 
-func (repo *taskInfoRepo) GetAll(ctx context.Context) (map[string]*cacheentity.TaskInfo, error) {
+func (repo *taskInfoRepo) GetAll(
+	ctx context.Context,
+) (map[string]*cacheentity.TaskInfo, error) {
 	keys, err := rediscache.Keys(ctx, repo.client, repo.formatKey("*"))
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -57,8 +68,12 @@ func (repo *taskInfoRepo) GetAll(ctx context.Context) (map[string]*cacheentity.T
 	return repo.mGet(ctx, keys)
 }
 
-func (repo *taskInfoRepo) mGet(ctx context.Context, keys []string) (map[string]*cacheentity.TaskInfo, error) {
-	resp, err := rediscache.MGet(ctx, repo.client, keys, rediscache.NewJSONValue[*cacheentity.TaskInfo])
+func (repo *taskInfoRepo) mGet(
+	ctx context.Context,
+	keys []string,
+) (map[string]*cacheentity.TaskInfo, error) {
+	resp, err := rediscache.MGet(ctx, repo.client, keys,
+		rediscache.NewJSONValue[*cacheentity.TaskInfo])
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -71,9 +86,27 @@ func (repo *taskInfoRepo) mGet(ctx context.Context, keys []string) (map[string]*
 	return result, nil
 }
 
-func (repo *taskInfoRepo) Set(ctx context.Context, taskID string, taskInfo *cacheentity.TaskInfo,
-	exp time.Duration) error {
-	err := rediscache.Set(ctx, repo.client, repo.formatKey(taskID), rediscache.NewJSONValue(taskInfo), exp)
+func (repo *taskInfoRepo) Set(
+	ctx context.Context,
+	taskID string,
+	taskInfo *cacheentity.TaskInfo,
+	exp time.Duration,
+) error {
+	err := rediscache.Set(ctx, repo.client, repo.formatKey(taskID),
+		rediscache.NewJSONValue(taskInfo), exp)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (repo *taskInfoRepo) Update(
+	ctx context.Context,
+	taskID string,
+	taskInfo *cacheentity.TaskInfo,
+) error {
+	err := rediscache.SetXX(ctx, repo.client, repo.formatKey(taskID),
+		rediscache.NewJSONValue(taskInfo), redis.KeepTTL)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -89,5 +122,5 @@ func (repo *taskInfoRepo) Del(ctx context.Context, taskID string) error {
 }
 
 func (repo *taskInfoRepo) formatKey(taskID string) string {
-	return fmt.Sprintf("task:%s", taskID)
+	return fmt.Sprintf("task:%s:info", taskID)
 }

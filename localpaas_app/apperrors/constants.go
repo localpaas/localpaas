@@ -8,6 +8,7 @@ import (
 // Base errors with equivalent http status code
 var (
 	ErrInternalServer       = errors.New("ERR_INTERNAL_SERVER")
+	ErrPanic                = errors.New("ERR_PANIC")
 	ErrBadRequest           = errors.New("ERR_BAD_REQUEST")
 	ErrParamInvalid         = errors.New("ERR_PARAM_INVALID")
 	ErrUnavailable          = errors.New("ERR_UNAVAILABLE")
@@ -94,6 +95,7 @@ var (
 var errorStatusMap = map[error]int{
 	// Base errors
 	ErrInternalServer:       http.StatusInternalServerError,
+	ErrPanic:                http.StatusInternalServerError,
 	ErrBadRequest:           http.StatusBadRequest,
 	ErrParamInvalid:         http.StatusBadRequest,
 	ErrUnavailable:          http.StatusBadRequest,

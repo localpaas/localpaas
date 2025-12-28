@@ -51,6 +51,11 @@ func ParseErrorDetail(err error, lang translation.Lang) (detail string) {
 	return detail
 }
 
+// NewPanic return AppError for error Panic
+func NewPanic(err string) AppError {
+	return New(ErrPanic).WithNTParam("Error", err)
+}
+
 // NewNotFound return AppError for error NotFound
 func NewNotFound(name string) AppError {
 	return New(ErrNotFound).WithParam("Name", name)

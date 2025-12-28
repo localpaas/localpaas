@@ -10,6 +10,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/nginxservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/projectservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
+	"github.com/localpaas/localpaas/localpaas_app/taskqueue"
 	"github.com/localpaas/localpaas/services/docker"
 )
 
@@ -19,6 +20,7 @@ type AppUC struct {
 	projectRepo       repository.ProjectRepo
 	appRepo           repository.AppRepo
 	settingRepo       repository.SettingRepo
+	deploymentRepo    repository.DeploymentRepo
 	permissionManager permission.Manager
 	userService       userservice.UserService
 	appService        appservice.AppService
@@ -27,6 +29,7 @@ type AppUC struct {
 	envVarService     envvarservice.EnvVarService
 	nginxService      nginxservice.NginxService
 	dockerManager     *docker.Manager
+	taskQueue         taskqueue.TaskQueue
 }
 
 func NewAppUC(
@@ -35,6 +38,7 @@ func NewAppUC(
 	projectRepo repository.ProjectRepo,
 	appRepo repository.AppRepo,
 	settingRepo repository.SettingRepo,
+	deploymentRepo repository.DeploymentRepo,
 	permissionManager permission.Manager,
 	userService userservice.UserService,
 	appService appservice.AppService,
@@ -43,6 +47,7 @@ func NewAppUC(
 	envVarService envvarservice.EnvVarService,
 	nginxService nginxservice.NginxService,
 	dockerManager *docker.Manager,
+	taskQueue taskqueue.TaskQueue,
 ) *AppUC {
 	return &AppUC{
 		db:                db,
@@ -50,6 +55,7 @@ func NewAppUC(
 		projectRepo:       projectRepo,
 		appRepo:           appRepo,
 		settingRepo:       settingRepo,
+		deploymentRepo:    deploymentRepo,
 		permissionManager: permissionManager,
 		userService:       userService,
 		appService:        appService,
@@ -58,5 +64,6 @@ func NewAppUC(
 		envVarService:     envVarService,
 		nginxService:      nginxService,
 		dockerManager:     dockerManager,
+		taskQueue:         taskQueue,
 	}
 }

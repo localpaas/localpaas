@@ -19,14 +19,16 @@ func (uc *AppUC) UpdateAppSettings(
 	auth *basedto.Auth,
 	req *appdto.UpdateAppSettingsReq,
 ) (*appdto.UpdateAppSettingsResp, error) {
+	var data *updateAppSettingsData
+	var persistingData *persistingAppData
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
-		data := &updateAppSettingsData{}
+		data = &updateAppSettingsData{}
 		err := uc.loadAppSettingsDataForUpdate(ctx, db, req, data)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
 
-		persistingData := &persistingAppData{}
+		persistingData = &persistingAppData{}
 		err = uc.preparePersistingAppSettings(req, data, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
@@ -37,12 +39,17 @@ func (uc *AppUC) UpdateAppSettings(
 			return apperrors.Wrap(err)
 		}
 
-		err = uc.applyAppSettings(ctx, db, req, data)
+		err = uc.applyAppSettings(ctx, db, req, data, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
 		return nil
 	})
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	err = uc.postTransactionAppSettings(ctx, uc.db, req, data, persistingData)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -62,7 +69,7 @@ type updateAppSettingsData struct {
 
 func (uc *AppUC) loadAppSettingsDataForUpdate(
 	ctx context.Context,
-	db database.IDB,
+	db database.Tx,
 	req *appdto.UpdateAppSettingsReq,
 	data *updateAppSettingsData,
 ) error {
@@ -87,7 +94,7 @@ func (uc *AppUC) loadAppSettingsDataForUpdate(
 	}
 	data.App = app
 
-	updateMatched := false
+	updateMatched := true
 	for _, setting := range app.Settings {
 		switch setting.Type { //nolint:exhaustive
 		case base.SettingTypeEnvVar:
@@ -142,17 +149,39 @@ func (uc *AppUC) preparePersistingAppSettings(
 
 func (uc *AppUC) applyAppSettings(
 	ctx context.Context,
-	db database.IDB,
+	db database.Tx,
 	req *appdto.UpdateAppSettingsReq,
 	data *updateAppSettingsData,
+	persistingData *persistingAppData,
 ) (err error) {
 	switch {
 	case req.EnvVars != nil:
-		err = uc.applyAppEnvVars(ctx, db, req, data)
+		err = uc.applyAppEnvVars(ctx, db, req, data, persistingData)
 	case req.DeploymentSettings != nil:
-		err = uc.applyAppDeploymentSettings(ctx, db, req, data)
+		err = uc.applyAppDeploymentSettings(ctx, db, req, data, persistingData)
 	case req.HttpSettings != nil:
-		err = uc.applyAppHttpSettings(ctx, db, req, data)
+		err = uc.applyAppHttpSettings(ctx, db, req, data, persistingData)
+	}
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (uc *AppUC) postTransactionAppSettings(
+	ctx context.Context,
+	db database.IDB,
+	req *appdto.UpdateAppSettingsReq,
+	data *updateAppSettingsData,
+	persistingData *persistingAppData,
+) (err error) {
+	switch {
+	case req.EnvVars != nil:
+		err = uc.postTransactionAppEnvVars(ctx, db, req, data, persistingData)
+	case req.DeploymentSettings != nil:
+		err = uc.postTransactionAppDeploymentSettings(ctx, db, req, data, persistingData)
+	case req.HttpSettings != nil:
+		err = uc.postTransactionAppHttpSettings(ctx, db, req, data, persistingData)
 	}
 	if err != nil {
 		return apperrors.Wrap(err)

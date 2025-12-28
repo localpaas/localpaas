@@ -81,28 +81,17 @@ services:
         protocol: tcp
         mode: host
 
-  whodb:
-    image: clidey/whodb:latest
+  redis_ui:
+    image: redislabs/redisinsight:latest
     networks:
-      - localpaas_net
       - internal_net
     ports:
-      - target: 8080 # Container port
-        published: 38081 # Host port exposed on the nodes
+      - target: 5540 # Container port
+        published: 35540 # Host port exposed on the nodes
         protocol: tcp
         mode: host
-
-#  redis_ui:
-#    image: redislabs/redisinsight:latest
-#    networks:
-#      - internal_net
-#    ports:
-#      - target: 8001 # Container port
-#        published: 38001 # Host port exposed on the nodes
-#        protocol: tcp
-#        mode: host
-#    volumes:
-#      - redis_ui:/data
+    volumes:
+      - redis_ui:/data
 
 # Define the overlay network for Swarm
 networks:

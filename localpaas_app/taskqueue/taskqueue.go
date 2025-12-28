@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
@@ -17,6 +18,7 @@ import (
 type TaskQueue interface {
 	Start() error
 	Shutdown() error
+	RegisterExecutor(typ base.TaskType, processorFunc TaskExecutorFunc)
 
 	ScheduleTask(ctx context.Context, task *entity.Task) error
 	UnscheduleTask(ctx context.Context, task *entity.Task) error
@@ -34,6 +36,8 @@ type taskQueue struct {
 	settingRepo       repository.SettingRepo
 	taskRepo          repository.TaskRepo
 	cacheTaskInfoRepo cacherepository.TaskInfoRepo
+
+	taskExecutorMap map[base.TaskType]gocronqueue.TaskExecutorFunc
 }
 
 func NewTaskQueue(
@@ -58,10 +62,10 @@ func NewTaskQueue(
 
 func (q *taskQueue) Start() (err error) {
 	// Initialize task queue worker if configured
-	if q.config.RunMode == config.RunModeWorker || q.config.RunMode == config.RunModeEmbeddedWorker {
+	if q.isWorkerMode() {
 		q.logger.Infof("starting task queue server...")
 		q.server, err = gocronqueue.NewServer(&gocronqueue.Config{
-			TaskMap:            q.getTaskMap(),
+			TaskMap:            q.taskExecutorMap,
 			RedisClient:        q.redisClient,
 			Logger:             q.logger,
 			Concurrency:        q.config.TaskQueue.Concurrency,
@@ -108,4 +112,8 @@ func (q *taskQueue) Shutdown() error {
 		}
 	}
 	return nil
+}
+
+func (q *taskQueue) isWorkerMode() bool {
+	return q.config.RunMode == config.RunModeWorker || q.config.RunMode == config.RunModeEmbeddedWorker
 }

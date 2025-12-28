@@ -96,5 +96,5 @@ func (h *AppHandler) GetAppRuntimeLogs(ctx *gin.Context, mel *melody.Melody) {
 	}()
 
 	_ = mel.HandleRequest(ctx.Writer, ctx.Request)
-	resp.Data.LogChanCloser()
+	_ = resp.Data.LogChanCloser()
 }

@@ -3,59 +3,40 @@ package appservice
 import (
 	"context"
 
-	"github.com/docker/docker/api/types/swarm"
-
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/infra/database"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
-type AppDeploymentReq struct {
-	Deployment              *entity.Setting
-	ImageSourceRegistryAuth *entity.Setting
-}
-
-type AppDeploymentResp struct {
-}
-
-func (s *appService) UpdateAppDeployment(ctx context.Context, app *entity.App, req *AppDeploymentReq) (
-	*AppDeploymentResp, error) {
-	deploymentSettings := req.Deployment.MustAsAppDeploymentSettings()
-	switch {
-	case deploymentSettings.ImageSource != nil && deploymentSettings.ImageSource.Enabled:
-		return s.updateAppDeploymentImageSource(ctx, app, req)
-	case deploymentSettings.CodeSource != nil && deploymentSettings.CodeSource.Enabled:
-		return s.updateAppDeploymentImageSource(ctx, app, req)
-	}
-	return nil, nil
-}
-
-func (s *appService) updateAppDeploymentImageSource(ctx context.Context, app *entity.App, req *AppDeploymentReq) (
-	*AppDeploymentResp, error) {
-	imageSource := req.Deployment.MustAsAppDeploymentSettings().ImageSource
-
-	service, err := s.dockerManager.ServiceInspect(ctx, app.ServiceID)
+func (s *appService) CancelAllDeployments(ctx context.Context, db database.Tx, app *entity.App) error {
+	// Cancel all not-started deployments in the DB
+	deployments, _, err := s.deploymentRepo.List(ctx, db, app.ID, nil,
+		bunex.SelectWhere("deployment.status = ?", base.DeploymentStatusNotStarted),
+		bunex.SelectFor("UPDATE OF deployment SKIP LOCKED"),
+	)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return apperrors.Wrap(err)
 	}
 
-	spec := &service.Spec
-	spec.TaskTemplate.ContainerSpec.Image = imageSource.Name
-
-	var regAuthHeader string
-	if req.ImageSourceRegistryAuth != nil {
-		regAuthHeader, err = req.ImageSourceRegistryAuth.MustAsRegistryAuth().MustDecrypt().GenerateAuthHeader()
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
+	timeNow := timeutil.NowUTC()
+	for _, deployment := range deployments {
+		deployment.Status = base.DeploymentStatusCanceled
+		deployment.UpdatedAt = timeNow
 	}
-
-	_, err = s.dockerManager.ServiceUpdate(ctx, app.ServiceID, &service.Version, spec,
-		func(options *swarm.ServiceUpdateOptions) {
-			options.EncodedRegistryAuth = regAuthHeader
-		})
+	err = s.deploymentRepo.UpsertMulti(ctx, db, deployments,
+		entity.DeploymentUpsertingConflictCols, []string{"status", "updated_at"})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return apperrors.Wrap(err)
 	}
 
-	return &AppDeploymentResp{}, nil
+	// Cancel all in-progress deployments
+	err = s.deploymentInfoRepo.CancelAllOfApp(ctx, app.ID)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	return nil
 }

@@ -24,8 +24,10 @@ type SettingRepo interface {
 		opts ...bunex.SelectQueryOption) (*entity.Setting, error)
 	List(ctx context.Context, db database.IDB, paging *basedto.Paging,
 		opts ...bunex.SelectQueryOption) ([]*entity.Setting, *basedto.PagingMeta, error)
-	ListByIDs(ctx context.Context, db database.IDB, ids []string,
+	ListByIDs(ctx context.Context, db database.IDB, ids []string, active bool,
 		opts ...bunex.SelectQueryOption) ([]*entity.Setting, error)
+	ListByIDsAsMap(ctx context.Context, db database.IDB, ids []string, active bool,
+		opts ...bunex.SelectQueryOption) (map[string]*entity.Setting, error)
 
 	Upsert(ctx context.Context, db database.IDB, setting *entity.Setting,
 		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
@@ -154,13 +156,16 @@ func (repo *settingRepo) List(ctx context.Context, db database.IDB, paging *base
 	return settings, pagingMeta, nil
 }
 
-func (repo *settingRepo) ListByIDs(ctx context.Context, db database.IDB, ids []string,
+func (repo *settingRepo) ListByIDs(ctx context.Context, db database.IDB, ids []string, active bool,
 	opts ...bunex.SelectQueryOption) ([]*entity.Setting, error) {
 	if len(ids) == 0 {
 		return nil, nil
 	}
 	var settings []*entity.Setting
 	query := db.NewSelect().Model(&settings).Where("setting.id IN (?)", bun.In(ids))
+	if active {
+		query = query.Where("setting.status = ?", base.SettingStatusActive)
+	}
 	query = bunex.ApplySelect(query, opts...)
 
 	err := query.Scan(ctx)
@@ -169,9 +174,22 @@ func (repo *settingRepo) ListByIDs(ctx context.Context, db database.IDB, ids []s
 	}
 
 	if hasChange, _ := repo.updateExpiredSettings(ctx, db, settings); hasChange {
-		return repo.ListByIDs(ctx, db, ids, opts...)
+		return repo.ListByIDs(ctx, db, ids, active, opts...)
 	}
 	return settings, nil
+}
+
+func (repo *settingRepo) ListByIDsAsMap(ctx context.Context, db database.IDB, ids []string, active bool,
+	opts ...bunex.SelectQueryOption) (map[string]*entity.Setting, error) {
+	settings, err := repo.ListByIDs(ctx, db, ids, active, opts...)
+	if err != nil {
+		return nil, apperrors.New(err)
+	}
+	res := make(map[string]*entity.Setting, len(settings))
+	for _, setting := range settings {
+		res[setting.ID] = setting
+	}
+	return res, nil
 }
 
 func (repo *settingRepo) Upsert(ctx context.Context, db database.IDB, setting *entity.Setting,

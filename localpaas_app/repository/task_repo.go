@@ -29,8 +29,6 @@ type TaskRepo interface {
 		opts ...bunex.InsertQueryOption) error
 	Update(ctx context.Context, db database.IDB, task *entity.Task,
 		opts ...bunex.UpdateQueryOption) error
-	UpdateMulti(ctx context.Context, db database.IDB, tasks []*entity.Task,
-		opts ...bunex.UpdateQueryOption) error
 }
 
 type taskRepo struct {
@@ -137,6 +135,7 @@ func (repo *taskRepo) Update(ctx context.Context, db database.IDB, task *entity.
 	return nil
 }
 
+// NOTE: this UpdateMulti may not work properly with JSON columns defined as string in the entity struct
 func (repo *taskRepo) UpdateMulti(ctx context.Context, db database.IDB, tasks []*entity.Task,
 	opts ...bunex.UpdateQueryOption) error {
 	query := db.NewUpdate().Model(&tasks).Bulk()

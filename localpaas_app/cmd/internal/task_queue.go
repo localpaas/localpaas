@@ -8,9 +8,15 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/infra/logging"
 	"github.com/localpaas/localpaas/localpaas_app/taskqueue"
+	"github.com/localpaas/localpaas/localpaas_app/taskqueue/initializer"
 )
 
-func InitTaskQueue(lc fx.Lifecycle, taskQueue taskqueue.TaskQueue, logger logging.Logger) {
+func InitTaskQueue(
+	lc fx.Lifecycle,
+	taskQueue taskqueue.TaskQueue,
+	_ *initializer.WorkerInitializer,
+	logger logging.Logger,
+) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			logger.Infof("initializing task queue...")

@@ -59,3 +59,17 @@ func (m *Manager) ImageInspect(ctx context.Context, imageID string) (*image.Insp
 	}
 	return &resp, nil
 }
+
+type ImagePullOption func(options *image.PullOptions)
+
+func (m *Manager) ImagePull(ctx context.Context, refStr string, options ...ImagePullOption) (io.ReadCloser, error) {
+	opts := image.PullOptions{}
+	for _, opt := range options {
+		opt(&opts)
+	}
+	resp, err := m.client.ImagePull(ctx, refStr, opts)
+	if err != nil {
+		return nil, apperrors.NewInfra(err)
+	}
+	return resp, nil
+}

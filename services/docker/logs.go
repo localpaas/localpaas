@@ -8,6 +8,12 @@ import (
 	"time"
 )
 
+type LogKind string
+
+const (
+	LogKindContainer LogKind = "container"
+)
+
 type LogType string
 
 const (
@@ -21,13 +27,14 @@ type LogFrame struct {
 	Type LogType `json:"type"`
 }
 
-func StartLogScanning(ctx context.Context, logsReader io.ReadCloser) <-chan *LogFrame {
-	scanner := bufio.NewScanner(logsReader)
+func StartLogScanning(ctx context.Context, reader io.ReadCloser, kind LogKind) (
+	logChan <-chan *LogFrame, closeFunc func() error) {
+	scanner := bufio.NewScanner(reader)
 	channel := make(chan *LogFrame, 100) //nolint:mnd
 	_, hasDeadline := ctx.Deadline()
 	if hasDeadline {
 		context.AfterFunc(ctx, func() {
-			_ = logsReader.Close()
+			_ = reader.Close()
 		})
 	}
 
@@ -40,10 +47,10 @@ func StartLogScanning(ctx context.Context, logsReader io.ReadCloser) <-chan *Log
 		}()
 
 		// Close logs stream
-		defer logsReader.Close()
+		defer reader.Close()
 
 		for scanner.Scan() {
-			logFrame := parseLogFrame(scanner.Bytes())
+			logFrame := parseLogFrame(scanner.Bytes(), kind)
 			select {
 			case <-ctx.Done():
 				return
@@ -52,11 +59,11 @@ func StartLogScanning(ctx context.Context, logsReader io.ReadCloser) <-chan *Log
 		}
 	}()
 
-	return channel
+	return channel, func() error { return reader.Close() }
 }
 
-func StartLogBatchScanning(ctx context.Context, logsReader io.ReadCloser, period time.Duration,
-	maxFrame int) <-chan []*LogFrame {
+func StartLogBatchScanning(ctx context.Context, logsReader io.ReadCloser, kind LogKind,
+	maxSendingPeriod time.Duration, maxFrame int) (logChan <-chan []*LogFrame, closeFunc func() error) {
 	logBatchChan := make(chan []*LogFrame, max(20, maxFrame)) //nolint:mnd
 
 	go func() {
@@ -91,15 +98,15 @@ func StartLogBatchScanning(ctx context.Context, logsReader io.ReadCloser, period
 
 		scanner := bufio.NewScanner(logsReader)
 		for scanner.Scan() {
-			logFrame := parseLogFrame(scanner.Bytes())
+			logFrame := parseLogFrame(scanner.Bytes(), kind)
 
 			sendImmediately := false
 			mu.Lock()
 			logFrames = append(logFrames, logFrame)
-			if len(logFrames) == maxFrame { // Send data immediately
+			if len(logFrames) >= maxFrame { // Send data immediately
 				sendImmediately = true
 			} else if sendTimer == nil { // Send data in at most `period` duration
-				sendTimer = time.AfterFunc(period, sendFunc)
+				sendTimer = time.AfterFunc(maxSendingPeriod, sendFunc)
 			}
 			mu.Unlock()
 
@@ -117,15 +124,15 @@ func StartLogBatchScanning(ctx context.Context, logsReader io.ReadCloser, period
 		}
 	}()
 
-	return logBatchChan
+	return logBatchChan, func() error { return logsReader.Close() }
 }
 
-func parseLogFrame(logBytes []byte) *LogFrame {
+func parseLogFrame(logBytes []byte, kind LogKind) *LogFrame {
 	var logType LogType
 	// Format structure of the logs data, see:
 	// https://docs.docker.com/reference/api/engine/version/v1.51/#tag/Container/operation/ContainerAttach
 	//nolint:mnd
-	if len(logBytes) > 8 {
+	if kind == LogKindContainer && len(logBytes) > 8 {
 		switch logBytes[0] {
 		case 0:
 			logType = LogTypeStdin

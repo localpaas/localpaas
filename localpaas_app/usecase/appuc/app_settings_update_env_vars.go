@@ -21,7 +21,7 @@ type appEnvVarsData struct {
 
 func (uc *AppUC) loadAppDataForUpdateEnvVars(
 	ctx context.Context,
-	db database.IDB,
+	db database.Tx,
 	req *appdto.UpdateAppSettingsReq,
 	data *updateAppSettingsData,
 ) error {
@@ -44,8 +44,10 @@ func (uc *AppUC) prepareUpdatingAppEnvVars(
 			ObjectID:  app.ID,
 			Type:      base.SettingTypeEnvVar,
 			CreatedAt: timeNow,
+			Version:   entity.CurrentEnvVarsVersion,
 		}
 	}
+	setting.UpdateVer++
 	setting.UpdatedAt = timeNow
 	setting.ExpireAt = time.Time{}
 	setting.Status = base.SettingStatusActive
@@ -62,9 +64,10 @@ func (uc *AppUC) prepareUpdatingAppEnvVars(
 
 func (uc *AppUC) applyAppEnvVars(
 	ctx context.Context,
-	db database.IDB,
+	db database.Tx,
 	_ *appdto.UpdateAppSettingsReq,
 	data *updateAppSettingsData,
+	_ *persistingAppData,
 ) error {
 	app := data.App
 	envs, err := uc.envVarService.BuildAppEnv(ctx, db, app, false)
@@ -95,5 +98,15 @@ func (uc *AppUC) applyAppEnvVars(
 		return apperrors.Wrap(err)
 	}
 
+	return nil
+}
+
+func (uc *AppUC) postTransactionAppEnvVars(
+	_ context.Context,
+	_ database.IDB,
+	_ *appdto.UpdateAppSettingsReq,
+	_ *updateAppSettingsData,
+	_ *persistingAppData,
+) error {
 	return nil
 }

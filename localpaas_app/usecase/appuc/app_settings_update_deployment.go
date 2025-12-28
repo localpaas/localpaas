@@ -12,7 +12,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
-	"github.com/localpaas/localpaas/localpaas_app/service/appservice"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
 )
 
@@ -23,7 +22,7 @@ type appDeploymentData struct {
 
 func (uc *AppUC) loadAppDataForUpdateDeploymentSettings(
 	ctx context.Context,
-	db database.IDB,
+	db database.Tx,
 	req *appdto.UpdateAppSettingsReq,
 	data *updateAppSettingsData,
 ) error {
@@ -51,6 +50,12 @@ func (uc *AppUC) loadAppDataForUpdateDeploymentSettings(
 		deploymentData.RegistryAuth = registryAuth
 	}
 
+	// Cancel all `not-started` and `in-progress` deployments of the app
+	err := uc.appService.CancelAllDeployments(ctx, db, data.App)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
 	return nil
 }
 
@@ -61,57 +66,100 @@ func (uc *AppUC) prepareUpdatingAppDeploymentSettings(
 	persistingData *persistingAppData,
 ) error {
 	app := data.App
-	dbDeploymentSettings := data.DeploymentData.DeploymentSettings
+	settings := data.DeploymentData.DeploymentSettings
 
-	if dbDeploymentSettings == nil {
-		dbDeploymentSettings = &entity.Setting{
+	if settings == nil {
+		settings = &entity.Setting{
 			ID:        gofn.Must(ulid.NewStringULID()),
 			ObjectID:  app.ID,
 			Type:      base.SettingTypeAppDeployment,
 			CreatedAt: timeNow,
+			Version:   entity.CurrentAppDeploymentSettingsVersion,
 		}
-		data.DeploymentData.DeploymentSettings = dbDeploymentSettings
+		data.DeploymentData.DeploymentSettings = settings
 	}
-	dbDeploymentSettings.UpdatedAt = timeNow
-	dbDeploymentSettings.ExpireAt = time.Time{}
-	dbDeploymentSettings.Status = base.SettingStatusActive
+	settings.UpdateVer++
+	settings.UpdatedAt = timeNow
+	settings.ExpireAt = time.Time{}
+	settings.Status = base.SettingStatusActive
 
-	deploymentSettings := &entity.AppDeploymentSettings{
-		ImageSource: &entity.DeploymentImageSource{},
-		CodeSource:  &entity.DeploymentCodeSource{},
+	newDeploymentSettings := &entity.AppDeploymentSettings{
+		ImageSource:   &entity.DeploymentImageSource{},
+		RepoSource:    &entity.DeploymentRepoSource{},
+		TarballSource: &entity.DeploymentTarballSource{},
 	}
 
 	if req.DeploymentSettings.ImageSource != nil {
-		if err := copier.Copy(deploymentSettings.ImageSource, req.DeploymentSettings.ImageSource); err != nil {
+		if err := copier.Copy(newDeploymentSettings.ImageSource, req.DeploymentSettings.ImageSource); err != nil {
 			return apperrors.Wrap(err)
 		}
 	}
-	if req.DeploymentSettings.CodeSource != nil {
-		if err := copier.Copy(deploymentSettings.CodeSource, req.DeploymentSettings.CodeSource); err != nil {
+	if req.DeploymentSettings.RepoSource != nil {
+		if err := copier.Copy(newDeploymentSettings.RepoSource, req.DeploymentSettings.RepoSource); err != nil {
 			return apperrors.Wrap(err)
 		}
 	}
-	dbDeploymentSettings.MustSetData(deploymentSettings)
+	if req.DeploymentSettings.TarballSource != nil {
+		if err := copier.Copy(newDeploymentSettings.TarballSource, req.DeploymentSettings.TarballSource); err != nil {
+			return apperrors.Wrap(err)
+		}
+	}
+	settings.MustSetData(newDeploymentSettings)
+	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, settings)
 
-	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, dbDeploymentSettings)
+	// Create a deployment and a task for it
+	deployment := &entity.Deployment{
+		ID:                 gofn.Must(ulid.NewStringULID()),
+		AppID:              app.ID,
+		DeploymentSettings: newDeploymentSettings,
+		Status:             base.DeploymentStatusNotStarted,
+		Version:            entity.CurrentDeploymentVersion,
+		CreatedAt:          timeNow,
+		UpdatedAt:          timeNow,
+	}
+	persistingData.UpsertingDeployments = append(persistingData.UpsertingDeployments, deployment)
+
+	deploymentTask := &entity.Task{
+		ID:        gofn.Must(ulid.NewStringULID()),
+		Type:      base.TaskTypeAppDeploy,
+		Status:    base.TaskStatusNotStarted,
+		Version:   entity.CurrentTaskVersion,
+		CreatedAt: timeNow,
+		UpdatedAt: timeNow,
+	}
+	err := deploymentTask.SetArgs(&entity.TaskAppDeployArgs{
+		Deployment: entity.ObjectID{ID: deployment.ID},
+	})
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	persistingData.UpsertingTasks = append(persistingData.UpsertingTasks, deploymentTask)
+
 	return nil
 }
 
 func (uc *AppUC) applyAppDeploymentSettings(
 	ctx context.Context,
+	_ database.Tx,
+	_ *appdto.UpdateAppSettingsReq,
+	_ *updateAppSettingsData,
+	_ *persistingAppData,
+) error {
+	return nil
+}
+
+func (uc *AppUC) postTransactionAppDeploymentSettings(
+	ctx context.Context,
 	_ database.IDB,
 	_ *appdto.UpdateAppSettingsReq,
-	data *updateAppSettingsData,
+	_ *updateAppSettingsData,
+	persistingData *persistingAppData,
 ) error {
-	deploymentData := data.DeploymentData
-
-	// Update service of the app in docker
-	_, err := uc.appService.UpdateAppDeployment(ctx, data.App, &appservice.AppDeploymentReq{
-		Deployment:              deploymentData.DeploymentSettings,
-		ImageSourceRegistryAuth: deploymentData.RegistryAuth,
-	})
-	if err != nil {
-		return apperrors.Wrap(err)
+	for _, task := range persistingData.UpsertingTasks {
+		err := uc.taskQueue.ScheduleTask(ctx, task)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
 	return nil
 }

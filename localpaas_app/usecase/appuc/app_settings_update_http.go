@@ -20,7 +20,7 @@ type appHttpSettingsData struct {
 
 func (uc *AppUC) loadAppDataForUpdateHttpSettings(
 	ctx context.Context,
-	db database.IDB,
+	db database.Tx,
 	req *appdto.UpdateAppSettingsReq,
 	data *updateAppSettingsData,
 ) error {
@@ -35,20 +35,22 @@ func (uc *AppUC) prepareUpdatingAppHttpSettings(
 	persistingData *persistingAppData,
 ) error { //nolint
 	app := data.App
-	dbHttpSettings := data.HttpSettingsData.HttpSettings
+	setting := data.HttpSettingsData.HttpSettings
 
-	if dbHttpSettings == nil {
-		dbHttpSettings = &entity.Setting{
+	if setting == nil {
+		setting = &entity.Setting{
 			ID:        gofn.Must(ulid.NewStringULID()),
 			ObjectID:  app.ID,
 			Type:      base.SettingTypeAppHttp,
 			CreatedAt: timeNow,
+			Version:   entity.CurrentAppHttpSettingsVersion,
 		}
-		data.HttpSettingsData.HttpSettings = dbHttpSettings
+		data.HttpSettingsData.HttpSettings = setting
 	}
-	dbHttpSettings.UpdatedAt = timeNow
-	dbHttpSettings.Status = base.SettingStatusActive
-	dbHttpSettings.ExpireAt = time.Time{}
+	setting.UpdateVer++
+	setting.UpdatedAt = timeNow
+	setting.Status = base.SettingStatusActive
+	setting.ExpireAt = time.Time{}
 
 	httpReq := req.HttpSettings
 	newHttpSettings := &entity.AppHttpSettings{
@@ -86,16 +88,17 @@ func (uc *AppUC) prepareUpdatingAppHttpSettings(
 		}),
 	}
 
-	dbHttpSettings.MustSetData(newHttpSettings)
-	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, dbHttpSettings)
+	setting.MustSetData(newHttpSettings)
+	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 	return nil
 }
 
 func (uc *AppUC) applyAppHttpSettings(
 	ctx context.Context,
-	_ database.IDB,
+	_ database.Tx,
 	_ *appdto.UpdateAppSettingsReq,
 	data *updateAppSettingsData,
+	_ *persistingAppData,
 ) error {
 	err := uc.nginxService.ApplyAppConfig(ctx, data.App, data.HttpSettingsData.HttpSettings)
 	if err != nil {
@@ -107,5 +110,15 @@ func (uc *AppUC) applyAppHttpSettings(
 		return apperrors.Wrap(err)
 	}
 
+	return nil
+}
+
+func (uc *AppUC) postTransactionAppHttpSettings(
+	_ context.Context,
+	_ database.IDB,
+	_ *appdto.UpdateAppSettingsReq,
+	_ *updateAppSettingsData,
+	_ *persistingAppData,
+) error {
 	return nil
 }

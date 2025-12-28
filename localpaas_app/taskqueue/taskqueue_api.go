@@ -10,16 +10,34 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
+	"github.com/localpaas/localpaas/localpaas_app/infra/gocronqueue"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/entityutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
 )
 
+type TaskExecutorFunc func(context.Context, database.Tx, *entity.Task) error
+
+func (q *taskQueue) RegisterExecutor(typ base.TaskType, processorFunc TaskExecutorFunc) {
+	if !q.isWorkerMode() {
+		return
+	}
+	if q.taskExecutorMap == nil {
+		q.taskExecutorMap = make(map[base.TaskType]gocronqueue.TaskExecutorFunc, 10) //nolint:mnd
+	}
+	q.taskExecutorMap[typ] = func(taskID string, payload string) (time.Time, error) {
+		return q.runTask(context.Background(), taskID, payload, processorFunc)
+	}
+}
+
 func (q *taskQueue) ScheduleTask(
 	ctx context.Context,
 	task *entity.Task,
 ) error {
+	if task.Status == base.TaskStatusDone || task.Status == base.TaskStatusCanceled {
+		return nil
+	}
 	if q.server != nil {
 		if err := q.server.ScheduleTask(task, task.ShouldRunAt()); err != nil {
 			return apperrors.Wrap(err)

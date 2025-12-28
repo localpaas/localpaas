@@ -30,6 +30,9 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
 	"github.com/localpaas/localpaas/localpaas_app/taskqueue"
+	"github.com/localpaas/localpaas/localpaas_app/taskqueue/initializer"
+	"github.com/localpaas/localpaas/localpaas_app/taskqueue/taskappdeploy"
+	"github.com/localpaas/localpaas/localpaas_app/taskqueue/tasktest"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/imageuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/nodeuc"
@@ -82,6 +85,9 @@ var Provides = []any{
 
 	// Task queue
 	taskqueue.NewTaskQueue,
+	initializer.NewWorkerInitializer,
+	tasktest.NewExecutor,
+	taskappdeploy.NewExecutor,
 
 	// Route handler
 	server.NewHandlerRegistry, // for all handler list
@@ -137,14 +143,17 @@ var Provides = []any{
 
 	// Repo: User
 	repository.NewUserRepo,
+	// Repo: Permission
+	repository.NewACLPermissionRepo,
 	// Repo: Project
 	repository.NewProjectRepo,
 	repository.NewProjectTagRepo,
 	// Repo: App
 	repository.NewAppRepo,
 	repository.NewAppTagRepo,
-	// Repo: Permission
-	repository.NewACLPermissionRepo,
+	// Repo: App deployment
+	repository.NewDeploymentRepo,
+	repository.NewDeploymentLogRepo,
 	// Repo: Setting
 	repository.NewSettingRepo,
 	// Repo: Task
@@ -158,4 +167,5 @@ var Provides = []any{
 	cacherepository.NewUserTokenRepo,
 	cacherepository.NewMFAPasscodeRepo,
 	cacherepository.NewTaskInfoRepo,
+	cacherepository.NewDeploymentInfoRepo,
 }

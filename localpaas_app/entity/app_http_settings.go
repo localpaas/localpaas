@@ -6,7 +6,6 @@ import (
 	crossplane "github.com/nginxinc/nginx-go-crossplane"
 	"github.com/tiendc/gofn"
 
-	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
@@ -57,20 +56,7 @@ func (s *AppHttpSettings) GetDomain(domain string) *AppDomain {
 }
 
 func (s *Setting) AsAppHttpSettings() (*AppHttpSettings, error) {
-	if s.parsedData != nil {
-		res, ok := s.parsedData.(*AppHttpSettings)
-		if !ok {
-			return nil, apperrors.NewTypeInvalid()
-		}
-		return res, nil
-	}
-	res := &AppHttpSettings{}
-	if s.Data != "" && s.Type == base.SettingTypeAppHttp {
-		if err := s.parseData(res); err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-	}
-	return res, nil
+	return parseSettingAs(s, base.SettingTypeAppHttp, func() *AppHttpSettings { return &AppHttpSettings{} })
 }
 
 func (s *Setting) MustAsAppHttpSettings() *AppHttpSettings {

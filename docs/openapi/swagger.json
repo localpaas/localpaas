@@ -9458,9 +9458,9 @@
         "x-enum-varnames" : [ "TaskStatusNotStarted", "TaskStatusInProgress", "TaskStatusCanceled", "TaskStatusDone", "TaskStatusFailed" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.TaskType" : {
-        "enum" : [ "task:test", "task:git-clone" ],
+        "enum" : [ "task:test", "task:app-deploy" ],
         "type" : "string",
-        "x-enum-varnames" : [ "TaskTypeTest", "TaskTypeGitClone" ]
+        "x-enum-varnames" : [ "TaskTypeTest", "TaskTypeAppDeploy" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.UserRole" : {
         "enum" : [ "admin", "member" ],
@@ -9834,37 +9834,19 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentCodeSourceReq" : {
-        "properties" : {
-          "enabled" : {
-            "type" : "boolean"
-          }
-        },
-        "required" : [ "enabled" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentCodeSourceResp" : {
-        "properties" : {
-          "enabled" : {
-            "type" : "boolean"
-          }
-        },
-        "required" : [ "enabled" ],
-        "type" : "object"
-      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentImageSourceReq" : {
         "properties" : {
           "enabled" : {
             "type" : "boolean"
           },
-          "name" : {
+          "image" : {
             "type" : "string"
           },
           "registryAuth" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
           }
         },
-        "required" : [ "enabled", "name", "registryAuth" ],
+        "required" : [ "enabled", "image", "registryAuth" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentImageSourceResp" : {
@@ -9872,44 +9854,86 @@
           "enabled" : {
             "type" : "boolean"
           },
-          "name" : {
+          "image" : {
             "type" : "string"
           },
           "registryAuth" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
           }
         },
-        "required" : [ "enabled", "name", "registryAuth" ],
+        "required" : [ "enabled", "image", "registryAuth" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentRepoSourceReq" : {
+        "properties" : {
+          "enabled" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "enabled" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentRepoSourceResp" : {
+        "properties" : {
+          "enabled" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "enabled" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentSettingsReq" : {
         "properties" : {
-          "codeSource" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentCodeSourceReq"
-          },
           "imageSource" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentImageSourceReq"
+          },
+          "repoSource" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentRepoSourceReq"
+          },
+          "tarballSource" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentTarballSourceReq"
           },
           "updateVer" : {
             "type" : "integer"
           }
         },
-        "required" : [ "codeSource", "imageSource", "updateVer" ],
+        "required" : [ "imageSource", "repoSource", "tarballSource", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentSettingsResp" : {
         "properties" : {
-          "codeSource" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentCodeSourceResp"
-          },
           "imageSource" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentImageSourceResp"
+          },
+          "repoSource" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentRepoSourceResp"
+          },
+          "tarballSource" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentTarballSourceResp"
           },
           "updateVer" : {
             "type" : "integer"
           }
         },
-        "required" : [ "codeSource", "imageSource", "updateVer" ],
+        "required" : [ "imageSource", "repoSource", "tarballSource", "updateVer" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentTarballSourceReq" : {
+        "properties" : {
+          "enabled" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "enabled" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentTarballSourceResp" : {
+        "properties" : {
+          "enabled" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "enabled" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DomainReq" : {

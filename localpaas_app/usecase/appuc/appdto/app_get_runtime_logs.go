@@ -39,5 +39,5 @@ type GetAppRuntimeLogsResp struct {
 type AppRuntimeLogsDataResp struct {
 	Logs          []*docker.LogFrame        `json:"logs"`
 	LogChan       <-chan []*docker.LogFrame `json:"-"`
-	LogChanCloser func()                    `json:"-"`
+	LogChanCloser func() error              `json:"-"`
 }

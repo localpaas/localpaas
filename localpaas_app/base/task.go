@@ -3,12 +3,12 @@ package base
 type TaskType string
 
 const (
-	TaskTypeTest     TaskType = "task:test"
-	TaskTypeGitClone TaskType = "task:git-clone"
+	TaskTypeTest      TaskType = "task:test"
+	TaskTypeAppDeploy TaskType = "task:app-deploy"
 )
 
 var (
-	AllTaskTypes = []TaskType{TaskTypeTest, TaskTypeGitClone}
+	AllTaskTypes = []TaskType{TaskTypeTest, TaskTypeAppDeploy}
 )
 
 type TaskStatus string

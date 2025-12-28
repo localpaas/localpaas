@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/tiendc/gofn"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
@@ -23,16 +25,16 @@ var (
 
 type Task struct {
 	ID             string `bun:",pk"`
-	JobID          string
+	JobID          string `bun:",nullzero"`
 	Type           base.TaskType
 	Status         base.TaskStatus
 	Priority       base.TaskPriority
 	MaxRetry       int
 	Retry          int
 	RetryDelaySecs int
-	Args           string `bun:"type:json,nullzero"`
-	Runs           string `bun:"type:json,nullzero"`
-	Output         string `bun:"type:json,nullzero"`
+	Args           string `bun:",nullzero"`
+	Runs           string `bun:",nullzero"`
+	Output         string `bun:",nullzero"`
 	NextTaskID     string `bun:",nullzero"`
 	Version        int
 	UpdateVer      int
@@ -48,6 +50,10 @@ type Task struct {
 
 	Job      *Setting `bun:"rel:belongs-to,join:job_id=id"`
 	NextTask *Task    `bun:"rel:has-one,join:next_task_id=id"`
+
+	// NOTE: temporary fields
+	parsedArgs   any
+	parsedOutput any
 }
 
 // GetID implements IDEntity interface
@@ -97,4 +103,90 @@ type TaskRun struct {
 	StartedAt time.Time `json:"startedAt"`
 	EndedAt   time.Time `json:"endedAt"`
 	Error     string    `json:"error,omitempty"`
+}
+
+func (t *Task) parseArgs(structPtr any) error {
+	if t == nil || len(t.Args) == 0 {
+		return nil
+	}
+	err := json.Unmarshal(reflectutil.UnsafeStrToBytes(t.Args), structPtr)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	t.parsedArgs = structPtr
+	return nil
+}
+
+func (t *Task) SetArgs(args any) error {
+	b, err := json.Marshal(args)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	t.Args = reflectutil.UnsafeBytesToStr(b)
+	t.parsedArgs = args
+	return nil
+}
+
+func (t *Task) MustSetArgs(args any) {
+	gofn.Must1(t.SetArgs(args))
+}
+
+func parseTaskArgsAs[T any](t *Task, newFn func() T) (res T, error error) {
+	if t.parsedArgs != nil {
+		res, ok := t.parsedArgs.(T)
+		if !ok {
+			return res, apperrors.NewTypeInvalid()
+		}
+		return res, nil
+	}
+	if len(t.Args) > 0 {
+		res = newFn()
+		if err := t.parseArgs(res); err != nil {
+			return res, apperrors.Wrap(err)
+		}
+	}
+	return res, nil
+}
+
+func (t *Task) parseOutput(structPtr any) error {
+	if t == nil || t.Output == "" {
+		return nil
+	}
+	err := json.Unmarshal(reflectutil.UnsafeStrToBytes(t.Output), structPtr)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	t.parsedOutput = structPtr
+	return nil
+}
+
+func (t *Task) SetOutput(output any) error {
+	b, err := json.Marshal(output)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	t.Output = reflectutil.UnsafeBytesToStr(b)
+	t.parsedOutput = output
+	return nil
+}
+
+func (t *Task) MustSetOutput(output any) {
+	gofn.Must1(t.SetOutput(output))
+}
+
+func parseTaskOutputAs[T any](t *Task, newFn func() T) (res T, error error) {
+	if t.parsedOutput != nil {
+		res, ok := t.parsedOutput.(T)
+		if !ok {
+			return res, apperrors.NewTypeInvalid()
+		}
+		return res, nil
+	}
+	if t.Output != "" {
+		res = newFn()
+		if err := t.parseOutput(res); err != nil {
+			return res, apperrors.Wrap(err)
+		}
+	}
+	return res, nil
 }

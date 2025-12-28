@@ -71,7 +71,7 @@ func (uc *ProjectUC) loadProjectData(
 	req *projectdto.CreateProjectReq,
 	data *createProjectData,
 ) error {
-	data.ProjectKey = slugify.SlugifyEx(req.Name, []string{"-", "_"}, projectKeyMaxLen)
+	data.ProjectKey = slugify.SlugifyEx(req.Name, nil, projectKeyMaxLen)
 	if gofn.Contain(unallowedProjectKey, data.ProjectKey) {
 		return apperrors.New(apperrors.ErrNameUnavailable).WithMsgLog("project name is not allowed")
 	}

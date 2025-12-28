@@ -3,6 +3,7 @@ package taskqueue
 import (
 	"context"
 	"errors"
+	"fmt"
 	"math"
 	"math/rand"
 	"time"
@@ -35,13 +36,16 @@ func (q *taskQueue) loadTask(
 		bunex.SelectRelation("Job"),
 	)
 	if err != nil {
-		if errors.Is(err, apperrors.ErrNotFound) { // task not found, it's no error
+		if errors.Is(err, apperrors.ErrNotFound) { // task not found, it's not error
 			return nil, nil
 		}
 		return nil, apperrors.Wrap(err)
 	}
-	if task.Job == nil || !task.Job.IsActive() {
-		return nil, nil
+	if task.JobID != "" {
+		// Task's job is not active
+		if task.Job == nil || !task.Job.IsActive() {
+			return nil, nil
+		}
 	}
 	// Task not allow retrying
 	if task.Status == base.TaskStatusFailed && task.MaxRetry <= task.Retry {
@@ -50,6 +54,7 @@ func (q *taskQueue) loadTask(
 	return task, nil
 }
 
+//nolint:gocognit
 func (q *taskQueue) runTask(
 	ctx context.Context,
 	taskID string,
@@ -90,8 +95,14 @@ func (q *taskQueue) runTask(
 		}
 
 		defer func() {
+			if err == nil {
+				if r := recover(); r != nil { // recover from panic
+					err = apperrors.NewPanic(fmt.Sprintf("%v", r))
+				}
+			}
 			_ = q.cacheTaskInfoRepo.Del(ctx, task.ID)
-			err = q.taskRepo.UpdateMulti(ctx, db, gofn.ToSliceSkippingNil(task, nextTask))
+			err = q.taskRepo.UpsertMulti(ctx, db, gofn.ToSliceSkippingNil(task, nextTask),
+				entity.TaskUpsertingConflictCols, entity.TaskUpsertingUpdateCols)
 		}()
 
 		err = executor(ctx, db, task)
