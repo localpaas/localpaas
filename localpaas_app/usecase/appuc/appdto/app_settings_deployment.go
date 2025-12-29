@@ -4,6 +4,7 @@ import (
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 )
@@ -58,8 +59,14 @@ func (req *DeploymentImageSourceReq) validate(field string) (res []vld.Validator
 }
 
 type DeploymentRepoSourceReq struct {
-	Enabled bool `json:"enabled"`
-	// TODO: add implementation
+	Enabled        bool                `json:"enabled"`
+	BuildTool      base.BuildTool      `json:"buildTool"`
+	RepoURL        string              `json:"repoUrl"`
+	RepoRef        string              `json:"repoRef"` // can be branch name, tag...
+	Credentials    basedto.ObjectIDReq `json:"credentials"`
+	DockerfilePath string              `json:"dockerfilePath"` // for BuildToolDockerfile only
+	ImageTags      []string            `json:"imageTags"`
+	RegistryAuth   basedto.ObjectIDReq `json:"registryAuth"`
 }
 
 // nolint
@@ -101,13 +108,25 @@ type DeploymentSettingsResp struct {
 }
 
 type DeploymentImageSourceResp struct {
-	Enabled      bool                `json:"enabled"`
-	Image        string              `json:"image"`
-	RegistryAuth basedto.ObjectIDReq `json:"registryAuth"`
+	Enabled      bool                     `json:"enabled"`
+	Image        string                   `json:"image"`
+	RegistryAuth *basedto.NamedObjectResp `json:"registryAuth"`
 }
 
 type DeploymentRepoSourceResp struct {
-	Enabled bool `json:"enabled"`
+	Enabled        bool                     `json:"enabled"`
+	BuildTool      base.BuildTool           `json:"buildTool"`
+	RepoURL        string                   `json:"repoUrl"`
+	RepoRef        string                   `json:"repoRef"` // can be branch name, tag...
+	Credentials    *RepoCredentialsResp     `json:"credentials"`
+	DockerfilePath string                   `json:"dockerfilePath"` // for BuildToolDockerfile only
+	ImageTags      []string                 `json:"imageTags"`
+	RegistryAuth   *basedto.NamedObjectResp `json:"registryAuth"`
+}
+
+type RepoCredentialsResp struct {
+	ID   string           `json:"id"`
+	Type base.SettingType `json:"type"`
 }
 
 type DeploymentTarballSourceResp struct {

@@ -23,8 +23,12 @@ func (env *EnvVar) ToString(sep string) string {
 }
 
 //nolint:gocognit
-func (s *envVarService) BuildAppEnv(ctx context.Context, db database.IDB, app *entity.App, buildPhase bool) (
-	res []*EnvVar, err error) {
+func (s *envVarService) BuildAppEnv(
+	ctx context.Context,
+	db database.IDB,
+	app *entity.App,
+	buildPhase bool,
+) (res []*EnvVar, err error) {
 	objectIDs := gofn.ToSliceSkippingZero(app.ID, app.ParentID, app.ProjectID)
 	settings, _, err := s.settingRepo.List(ctx, db, nil,
 		bunex.SelectWhere("setting.type IN (?)",

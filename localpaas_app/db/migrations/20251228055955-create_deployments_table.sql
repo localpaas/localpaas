@@ -1,13 +1,14 @@
 -- +migrate Up
 CREATE TABLE IF NOT EXISTS deployments
 (
-    id                 VARCHAR(100) PRIMARY KEY,
-    app_id             VARCHAR(100) NULL,
-    status             VARCHAR(20) NOT NULL CONSTRAINT chk_status CHECK
-                            (status IN ('not-started','in-progress','canceled','failed','done')) DEFAULT 'not-started',
-    deployment_settings JSON NOT NULL,
-    version             INT2 NOT NULL DEFAULT 1,
-    update_ver          INT4 NOT NULL DEFAULT 1,
+    id               VARCHAR(100) PRIMARY KEY,
+    app_id           VARCHAR(100) NULL,
+    status           VARCHAR(20) NOT NULL CONSTRAINT chk_status CHECK
+                        (status IN ('not-started','in-progress','canceled','failed','done')) DEFAULT 'not-started',
+    settings         JSON NOT NULL,
+    output           JSON NULL,
+    version          INT2 NOT NULL DEFAULT 1,
+    update_ver       INT4 NOT NULL DEFAULT 1,
 
     started_at       TIMESTAMPTZ NULL,
     ended_at         TIMESTAMPTZ NULL,

@@ -50,12 +50,6 @@ func (uc *AppUC) loadAppDataForUpdateDeploymentSettings(
 		deploymentData.RegistryAuth = registryAuth
 	}
 
-	// Cancel all `not-started` and `in-progress` deployments of the app
-	err := uc.appService.CancelAllDeployments(ctx, db, data.App)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
 	return nil
 }
 
@@ -109,13 +103,13 @@ func (uc *AppUC) prepareUpdatingAppDeploymentSettings(
 
 	// Create a deployment and a task for it
 	deployment := &entity.Deployment{
-		ID:                 gofn.Must(ulid.NewStringULID()),
-		AppID:              app.ID,
-		DeploymentSettings: newDeploymentSettings,
-		Status:             base.DeploymentStatusNotStarted,
-		Version:            entity.CurrentDeploymentVersion,
-		CreatedAt:          timeNow,
-		UpdatedAt:          timeNow,
+		ID:        gofn.Must(ulid.NewStringULID()),
+		AppID:     app.ID,
+		Settings:  newDeploymentSettings,
+		Status:    base.DeploymentStatusNotStarted,
+		Version:   entity.CurrentDeploymentVersion,
+		CreatedAt: timeNow,
+		UpdatedAt: timeNow,
 	}
 	persistingData.UpsertingDeployments = append(persistingData.UpsertingDeployments, deployment)
 

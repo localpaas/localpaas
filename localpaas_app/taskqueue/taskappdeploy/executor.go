@@ -18,6 +18,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 	"github.com/localpaas/localpaas/localpaas_app/repository/cacherepository"
+	"github.com/localpaas/localpaas/localpaas_app/service/envvarservice"
 	"github.com/localpaas/localpaas/localpaas_app/taskqueue"
 	"github.com/localpaas/localpaas/services/docker"
 )
@@ -30,8 +31,10 @@ type Executor struct {
 	logger             logging.Logger
 	settingRepo        repository.SettingRepo
 	deploymentRepo     repository.DeploymentRepo
+	taskInfoRepo       cacherepository.TaskInfoRepo
 	deploymentInfoRepo cacherepository.DeploymentInfoRepo
 	dockerManager      *docker.Manager
+	envVarService      envvarservice.EnvVarService
 }
 
 func NewExecutor(
@@ -39,15 +42,19 @@ func NewExecutor(
 	logger logging.Logger,
 	settingRepo repository.SettingRepo,
 	deploymentRepo repository.DeploymentRepo,
+	taskInfoRepo cacherepository.TaskInfoRepo,
 	deploymentInfoRepo cacherepository.DeploymentInfoRepo,
 	dockerManager *docker.Manager,
+	envVarService envvarservice.EnvVarService,
 ) *Executor {
 	p := &Executor{
 		logger:             logger,
 		settingRepo:        settingRepo,
 		deploymentRepo:     deploymentRepo,
+		taskInfoRepo:       taskInfoRepo,
 		deploymentInfoRepo: deploymentInfoRepo,
 		dockerManager:      dockerManager,
+		envVarService:      envVarService,
 	}
 	taskQueue.RegisterExecutor(base.TaskTypeAppDeploy, p.execute)
 	return p
@@ -56,7 +63,13 @@ func NewExecutor(
 type taskData struct {
 	Task               *entity.Task
 	Deployment         *entity.Deployment
+	DeploymentOutput   *entity.AppDeploymentOutput
+	TaskCanceled       bool
 	DeploymentCanceled bool
+}
+
+func (taskData *taskData) isCanceled() bool {
+	return taskData.TaskCanceled || taskData.DeploymentCanceled
 }
 
 func (e *Executor) execute(
@@ -83,7 +96,7 @@ func (e *Executor) execute(
 	}()
 
 	var depErr error
-	depSettings := deployment.DeploymentSettings
+	depSettings := deployment.Settings
 	switch {
 	case depSettings.ImageSource != nil && depSettings.ImageSource.Enabled:
 		depErr = e.deployFromImage(ctx, db, data)
@@ -123,7 +136,6 @@ func (e *Executor) loadDeployment(
 		bunex.SelectWhereIn("deployment.status IN (?)",
 			base.DeploymentStatusNotStarted, base.DeploymentStatusInProgress),
 		bunex.SelectRelation("App",
-			bunex.SelectColumns("id", "service_id"),
 			bunex.SelectWhere("app.status = ?", base.AppStatusActive),
 		),
 		bunex.SelectFor("UPDATE OF deployment"),
@@ -152,6 +164,7 @@ func (e *Executor) loadDeployment(
 	}
 
 	data.Deployment = deployment
+	data.DeploymentOutput = &entity.AppDeploymentOutput{}
 	return deployment, nil
 }
 
@@ -167,13 +180,26 @@ func (e *Executor) updateDeployment(
 	return nil
 }
 
-func (e *Executor) isDeploymentCanceled(
+func (e *Executor) checkDeploymentCanceled(
 	ctx context.Context,
-	deployment *entity.Deployment,
+	taskData *taskData,
 ) (bool, error) {
-	info, err := e.deploymentInfoRepo.Get(ctx, deployment.ID)
-	if err != nil {
+	// Check if deployment is canceled
+	depInfo, err := e.deploymentInfoRepo.Get(ctx, taskData.Deployment.ID)
+	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return false, apperrors.Wrap(err)
 	}
-	return info != nil && info.Cancel, nil
+	taskData.DeploymentCanceled = depInfo != nil && depInfo.Cancel
+	if taskData.DeploymentCanceled {
+		return true, nil
+	}
+
+	// Check if task is canceled
+	taskInfo, err := e.taskInfoRepo.Get(ctx, taskData.Task.ID)
+	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
+		return false, apperrors.Wrap(err)
+	}
+	taskData.TaskCanceled = taskInfo != nil && taskInfo.Cancel
+
+	return taskData.isCanceled(), nil
 }

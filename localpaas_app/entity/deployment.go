@@ -12,17 +12,18 @@ const (
 
 var (
 	DeploymentUpsertingConflictCols = []string{"id"}
-	DeploymentUpsertingUpdateCols   = []string{"app_id", "deployment_settings", "status",
+	DeploymentUpsertingUpdateCols   = []string{"app_id", "status", "settings", "output",
 		"version", "update_ver", "started_at", "ended_at", "updated_at", "deleted_at"}
 )
 
 type Deployment struct {
-	ID                 string `bun:",pk"`
-	AppID              string
-	DeploymentSettings *AppDeploymentSettings
-	Status             base.DeploymentStatus
-	Version            int
-	UpdateVer          int
+	ID        string `bun:",pk"`
+	AppID     string
+	Status    base.DeploymentStatus
+	Settings  *AppDeploymentSettings
+	Output    *AppDeploymentOutput
+	Version   int
+	UpdateVer int
 
 	StartedAt time.Time `bun:",nullzero"`
 	EndedAt   time.Time `bun:",nullzero"`
@@ -31,6 +32,12 @@ type Deployment struct {
 	DeletedAt time.Time `bun:",soft_delete,nullzero"`
 
 	App *App `bun:"rel:belongs-to,join:app_id=id"`
+}
+
+type AppDeploymentOutput struct {
+	CommitHash    string   `json:"commitHash,omitempty"`
+	CommitMessage string   `json:"commitMessage,omitempty"`
+	ImageTags     []string `json:"imageTags,omitempty"`
 }
 
 // GetID implements IDEntity interface

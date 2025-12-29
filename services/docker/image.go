@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 
+	"github.com/docker/docker/api/types/build"
 	"github.com/docker/docker/api/types/image"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -25,7 +26,11 @@ func (m *Manager) ImageList(ctx context.Context, options ...ImageListOption) ([]
 
 type ImageCreateOption func(*image.CreateOptions)
 
-func (m *Manager) ImageCreate(ctx context.Context, name string, options ...ImageCreateOption) (io.ReadCloser, error) {
+func (m *Manager) ImageCreate(
+	ctx context.Context,
+	name string,
+	options ...ImageCreateOption,
+) (io.ReadCloser, error) {
 	opts := image.CreateOptions{}
 	for _, opt := range options {
 		opt(&opts)
@@ -62,7 +67,11 @@ func (m *Manager) ImageInspect(ctx context.Context, imageID string) (*image.Insp
 
 type ImagePullOption func(options *image.PullOptions)
 
-func (m *Manager) ImagePull(ctx context.Context, refStr string, options ...ImagePullOption) (io.ReadCloser, error) {
+func (m *Manager) ImagePull(
+	ctx context.Context,
+	refStr string,
+	options ...ImagePullOption,
+) (io.ReadCloser, error) {
 	opts := image.PullOptions{}
 	for _, opt := range options {
 		opt(&opts)
@@ -72,4 +81,22 @@ func (m *Manager) ImagePull(ctx context.Context, refStr string, options ...Image
 		return nil, apperrors.NewInfra(err)
 	}
 	return resp, nil
+}
+
+type ImageBuildOption func(options *build.ImageBuildOptions)
+
+func (m *Manager) ImageBuild(
+	ctx context.Context,
+	buildContext io.Reader,
+	options ...ImageBuildOption,
+) (*build.ImageBuildResponse, error) {
+	opts := build.ImageBuildOptions{}
+	for _, opt := range options {
+		opt(&opts)
+	}
+	resp, err := m.client.ImageBuild(ctx, buildContext, opts)
+	if err != nil {
+		return nil, apperrors.NewInfra(err)
+	}
+	return &resp, nil
 }

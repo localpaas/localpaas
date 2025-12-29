@@ -3,10 +3,10 @@ package base
 type BuildTool string
 
 const (
-	BuildToolDockerfile BuildTool = "dockerfile"
-	BuildToolNixpacks   BuildTool = "nixpacks"
+	BuildToolDocker   BuildTool = "docker"
+	BuildToolNixpacks BuildTool = "nixpacks"
 )
 
 var (
-	AllBuildTools = []BuildTool{BuildToolDockerfile, BuildToolNixpacks}
+	AllBuildTools = []BuildTool{BuildToolDocker, BuildToolNixpacks}
 )

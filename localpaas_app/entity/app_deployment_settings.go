@@ -23,11 +23,19 @@ type DeploymentImageSource struct {
 }
 
 type DeploymentRepoSource struct {
-	Enabled        bool           `json:"enabled"`
-	BuildTool      base.BuildTool `json:"buildTool"`
-	DockerfilePath string         `json:"dockerfilePath"` // for BuildToolDockerfile only
-	ImageTag       string         `json:"imageTag"`
-	RegistryAuth   ObjectID       `json:"registryAuth,omitzero"`
+	Enabled        bool            `json:"enabled"`
+	BuildTool      base.BuildTool  `json:"buildTool"`
+	RepoURL        string          `json:"repoUrl"`
+	RepoRef        string          `json:"repoRef"`              // can be branch name, tag...
+	Credentials    RepoCredentials `json:"credentials,omitzero"` // contains setting id of github app/git token/ssh key
+	DockerfilePath string          `json:"dockerfilePath"`       // for BuildToolDockerfile only
+	ImageTags      []string        `json:"imageTags"`
+	RegistryAuth   ObjectID        `json:"registryAuth,omitzero"`
+}
+
+type RepoCredentials struct {
+	ID   string           `json:"id"`
+	Type base.SettingType `json:"type"`
 }
 
 type DeploymentTarballSource struct {

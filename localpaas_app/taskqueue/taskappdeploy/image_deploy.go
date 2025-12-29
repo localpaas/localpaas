@@ -9,14 +9,13 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/services/docker"
 )
 
 type imageDeployTaskData struct {
 	*taskData
-	RegistryAuth *entity.RegistryAuth
+	RegistryAuthHeader string
 }
 
 func (e *Executor) deployFromImage(
@@ -25,10 +24,36 @@ func (e *Executor) deployFromImage(
 	taskData *taskData,
 ) error {
 	data := &imageDeployTaskData{taskData: taskData}
-	deployment := data.Deployment
-	imageSource := deployment.DeploymentSettings.ImageSource
+	err := e.deployStepPullImage(ctx, db, data)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
 
-	regAuthHeader, err := e.calcRegistryAuthHeader(ctx, db, imageSource.RegistryAuth.ID)
+	// Check if deployment is canceled by user while we are processing it
+	isCanceled, err := e.checkDeploymentCanceled(ctx, data.taskData)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	if isCanceled {
+		return nil
+	}
+
+	err = e.deployStepUpdateService(ctx, db, data)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	return nil
+}
+
+func (e *Executor) deployStepPullImage(
+	ctx context.Context,
+	db database.Tx,
+	data *imageDeployTaskData,
+) error {
+	imageSource := data.Deployment.Settings.ImageSource
+
+	regAuthHeader, err := e.calcRegistryAuthHeader(ctx, db, data)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -51,13 +76,20 @@ func (e *Executor) deployFromImage(
 		return apperrors.Wrap(err)
 	}
 
-	// Deployment is canceled by user while we are processing it
-	data.DeploymentCanceled, err = e.isDeploymentCanceled(ctx, deployment)
+	return nil
+}
+
+func (e *Executor) deployStepUpdateService(
+	ctx context.Context,
+	db database.Tx,
+	data *imageDeployTaskData,
+) error {
+	deployment := data.Deployment
+	imageSource := deployment.Settings.ImageSource
+
+	regAuthHeader, err := e.calcRegistryAuthHeader(ctx, db, data)
 	if err != nil {
 		return apperrors.Wrap(err)
-	}
-	if data.DeploymentCanceled {
-		return nil
 	}
 
 	service, err := e.dockerManager.ServiceInspect(ctx, deployment.App.ServiceID)
@@ -82,8 +114,12 @@ func (e *Executor) deployFromImage(
 func (e *Executor) calcRegistryAuthHeader(
 	ctx context.Context,
 	db database.Tx,
-	regAuthID string,
+	data *imageDeployTaskData,
 ) (string, error) {
+	if data.RegistryAuthHeader != "" {
+		return data.RegistryAuthHeader, nil
+	}
+	regAuthID := data.Deployment.Settings.ImageSource.RegistryAuth.ID
 	if regAuthID == "" {
 		return "", nil
 	}
@@ -99,5 +135,6 @@ func (e *Executor) calcRegistryAuthHeader(
 	if err != nil {
 		return "", apperrors.Wrap(err)
 	}
+	data.RegistryAuthHeader = regAuthHeader
 	return regAuthHeader, nil
 }
