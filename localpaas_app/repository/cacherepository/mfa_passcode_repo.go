@@ -10,6 +10,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/entity/cacheentity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/rediscache"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/redishelper"
 )
 
 type MFAPasscodeRepo interface {
@@ -28,16 +29,22 @@ func NewMFAPasscodeRepo(client rediscache.Client) MFAPasscodeRepo {
 	return &mfaPasscodeRepo{client: client}
 }
 
-func (repo *mfaPasscodeRepo) Get(ctx context.Context, userID string) (*cacheentity.MFAPasscode, error) {
-	resp, err := rediscache.Get(ctx, repo.client, repo.formatKey(userID),
-		rediscache.NewJSONValue[*cacheentity.MFAPasscode])
+func (repo *mfaPasscodeRepo) Get(
+	ctx context.Context,
+	userID string,
+) (*cacheentity.MFAPasscode, error) {
+	resp, err := redishelper.Get(ctx, repo.client, repo.formatKey(userID),
+		redishelper.NewJSONValue[*cacheentity.MFAPasscode])
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 	return resp, nil
 }
 
-func (repo *mfaPasscodeRepo) TTL(ctx context.Context, userID string) (time.Duration, error) {
+func (repo *mfaPasscodeRepo) TTL(
+	ctx context.Context,
+	userID string,
+) (time.Duration, error) {
 	d, err := repo.client.TTL(ctx, repo.formatKey(userID)).Result()
 	if err != nil {
 		return 0, apperrors.Wrap(err)
@@ -45,20 +52,29 @@ func (repo *mfaPasscodeRepo) TTL(ctx context.Context, userID string) (time.Durat
 	return d, nil
 }
 
-func (repo *mfaPasscodeRepo) Set(ctx context.Context, userID string, passcode *cacheentity.MFAPasscode,
-	exp time.Duration) error {
-	err := rediscache.Set(ctx, repo.client, repo.formatKey(userID), rediscache.NewJSONValue(passcode), exp)
+func (repo *mfaPasscodeRepo) Set(
+	ctx context.Context,
+	userID string,
+	passcode *cacheentity.MFAPasscode,
+	exp time.Duration,
+) error {
+	err := redishelper.Set(ctx, repo.client, repo.formatKey(userID),
+		redishelper.NewJSONValue(passcode), exp)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 	return nil
 }
 
-func (repo *mfaPasscodeRepo) IncrAttempts(ctx context.Context, userID string,
-	passcode *cacheentity.MFAPasscode) error {
+func (repo *mfaPasscodeRepo) IncrAttempts(
+	ctx context.Context,
+	userID string,
+	passcode *cacheentity.MFAPasscode,
+) error {
 	passcode.Attempts++
 	// Only set value, not set expiration to keep the current expiration value
-	err := rediscache.Set(ctx, repo.client, repo.formatKey(userID), rediscache.NewJSONValue(passcode), redis.KeepTTL)
+	err := redishelper.Set(ctx, repo.client, repo.formatKey(userID),
+		redishelper.NewJSONValue(passcode), redis.KeepTTL)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -66,7 +82,7 @@ func (repo *mfaPasscodeRepo) IncrAttempts(ctx context.Context, userID string,
 }
 
 func (repo *mfaPasscodeRepo) Del(ctx context.Context, userID string) error {
-	err := rediscache.Del(ctx, repo.client, repo.formatKey(userID))
+	err := redishelper.Del(ctx, repo.client, repo.formatKey(userID))
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

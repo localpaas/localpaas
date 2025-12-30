@@ -10,6 +10,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/entity/cacheentity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/rediscache"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/redishelper"
 )
 
 type DeploymentInfoRepo interface {
@@ -35,8 +36,8 @@ func (repo *deploymentInfoRepo) Get(
 	ctx context.Context,
 	deploymentID string,
 ) (*cacheentity.DeploymentInfo, error) {
-	resp, err := rediscache.Get(ctx, repo.client, repo.formatKey(deploymentID),
-		rediscache.NewJSONValue[*cacheentity.DeploymentInfo])
+	resp, err := redishelper.Get(ctx, repo.client, repo.formatKey(deploymentID),
+		redishelper.NewJSONValue[*cacheentity.DeploymentInfo])
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -61,7 +62,7 @@ func (repo *deploymentInfoRepo) GetAllOfApp(
 	ctx context.Context,
 	appID string,
 ) (map[string]*cacheentity.DeploymentInfo, error) {
-	keys, err := rediscache.Keys(ctx, repo.client, repo.formatKey("*"))
+	keys, err := redishelper.Keys(ctx, repo.client, repo.formatKey("*"))
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -85,7 +86,7 @@ func (repo *deploymentInfoRepo) GetAllOfApp(
 func (repo *deploymentInfoRepo) GetAll(
 	ctx context.Context,
 ) (map[string]*cacheentity.DeploymentInfo, error) {
-	keys, err := rediscache.Keys(ctx, repo.client, repo.formatKey("*"))
+	keys, err := redishelper.Keys(ctx, repo.client, repo.formatKey("*"))
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -97,7 +98,8 @@ func (repo *deploymentInfoRepo) GetAll(
 
 func (repo *deploymentInfoRepo) mGet(ctx context.Context, keys []string) (
 	map[string]*cacheentity.DeploymentInfo, error) {
-	resp, err := rediscache.MGet(ctx, repo.client, keys, rediscache.NewJSONValue[*cacheentity.DeploymentInfo])
+	resp, err := redishelper.MGet(ctx, repo.client, keys,
+		redishelper.NewJSONValue[*cacheentity.DeploymentInfo])
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -116,8 +118,8 @@ func (repo *deploymentInfoRepo) Set(
 	deploymentInfo *cacheentity.DeploymentInfo,
 	exp time.Duration,
 ) error {
-	err := rediscache.Set(ctx, repo.client, repo.formatKey(deploymentID),
-		rediscache.NewJSONValue(deploymentInfo), exp)
+	err := redishelper.Set(ctx, repo.client, repo.formatKey(deploymentID),
+		redishelper.NewJSONValue(deploymentInfo), exp)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -129,8 +131,8 @@ func (repo *deploymentInfoRepo) Update(
 	deploymentID string,
 	deploymentInfo *cacheentity.DeploymentInfo,
 ) error {
-	err := rediscache.SetXX(ctx, repo.client, repo.formatKey(deploymentID),
-		rediscache.NewJSONValue(deploymentInfo), redis.KeepTTL)
+	err := redishelper.SetXX(ctx, repo.client, repo.formatKey(deploymentID),
+		redishelper.NewJSONValue(deploymentInfo), redis.KeepTTL)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -146,13 +148,13 @@ func (repo *deploymentInfoRepo) CancelAllOfApp(ctx context.Context, appID string
 		return nil
 	}
 	updateKeys := make([]string, 0, len(deployments))
-	updateDeployments := make([]rediscache.Value[*cacheentity.DeploymentInfo], 0, len(deployments))
+	updateDeployments := make([]redishelper.Value[*cacheentity.DeploymentInfo], 0, len(deployments))
 	for _, deployment := range deployments {
 		deployment.Cancel = true
 		updateKeys = append(updateKeys, repo.formatKey(deployment.ID))
-		updateDeployments = append(updateDeployments, rediscache.NewJSONValue(deployment))
+		updateDeployments = append(updateDeployments, redishelper.NewJSONValue(deployment))
 	}
-	err = rediscache.MSet(ctx, repo.client, updateKeys, updateDeployments, redis.KeepTTL)
+	err = redishelper.MSet(ctx, repo.client, updateKeys, updateDeployments, redis.KeepTTL)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -160,7 +162,7 @@ func (repo *deploymentInfoRepo) CancelAllOfApp(ctx context.Context, appID string
 }
 
 func (repo *deploymentInfoRepo) Del(ctx context.Context, deploymentID string) error {
-	err := rediscache.Del(ctx, repo.client, repo.formatKey(deploymentID))
+	err := redishelper.Del(ctx, repo.client, repo.formatKey(deploymentID))
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

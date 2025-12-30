@@ -1,4 +1,4 @@
-package rediscache
+package redishelper
 
 // Value base interface for storing value in redis
 type Value[T any] interface {

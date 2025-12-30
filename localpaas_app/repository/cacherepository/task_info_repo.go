@@ -11,6 +11,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/entity/cacheentity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/rediscache"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/redishelper"
 )
 
 type TaskInfoRepo interface {
@@ -35,8 +36,8 @@ func (repo *taskInfoRepo) Get(
 	ctx context.Context,
 	taskID string,
 ) (*cacheentity.TaskInfo, error) {
-	resp, err := rediscache.Get(ctx, repo.client, repo.formatKey(taskID),
-		rediscache.NewJSONValue[*cacheentity.TaskInfo])
+	resp, err := redishelper.Get(ctx, repo.client, repo.formatKey(taskID),
+		redishelper.NewJSONValue[*cacheentity.TaskInfo])
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -60,7 +61,7 @@ func (repo *taskInfoRepo) MGet(
 func (repo *taskInfoRepo) GetAll(
 	ctx context.Context,
 ) (map[string]*cacheentity.TaskInfo, error) {
-	keys, err := rediscache.Keys(ctx, repo.client, repo.formatKey("*"))
+	keys, err := redishelper.Keys(ctx, repo.client, repo.formatKey("*"))
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -74,8 +75,8 @@ func (repo *taskInfoRepo) mGet(
 	ctx context.Context,
 	keys []string,
 ) (map[string]*cacheentity.TaskInfo, error) {
-	resp, err := rediscache.MGet(ctx, repo.client, keys,
-		rediscache.NewJSONValue[*cacheentity.TaskInfo])
+	resp, err := redishelper.MGet(ctx, repo.client, keys,
+		redishelper.NewJSONValue[*cacheentity.TaskInfo])
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -94,8 +95,8 @@ func (repo *taskInfoRepo) Set(
 	taskInfo *cacheentity.TaskInfo,
 	exp time.Duration,
 ) error {
-	err := rediscache.Set(ctx, repo.client, repo.formatKey(taskID),
-		rediscache.NewJSONValue(taskInfo), exp)
+	err := redishelper.Set(ctx, repo.client, repo.formatKey(taskID),
+		redishelper.NewJSONValue(taskInfo), exp)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -107,8 +108,8 @@ func (repo *taskInfoRepo) Update(
 	taskID string,
 	taskInfo *cacheentity.TaskInfo,
 ) error {
-	err := rediscache.SetXX(ctx, repo.client, repo.formatKey(taskID),
-		rediscache.NewJSONValue(taskInfo), redis.KeepTTL)
+	err := redishelper.SetXX(ctx, repo.client, repo.formatKey(taskID),
+		redishelper.NewJSONValue(taskInfo), redis.KeepTTL)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -132,7 +133,7 @@ func (repo *taskInfoRepo) Cancel(ctx context.Context, taskID string) error {
 }
 
 func (repo *taskInfoRepo) Del(ctx context.Context, taskID string) error {
-	err := rediscache.Del(ctx, repo.client, repo.formatKey(taskID))
+	err := redishelper.Del(ctx, repo.client, repo.formatKey(taskID))
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

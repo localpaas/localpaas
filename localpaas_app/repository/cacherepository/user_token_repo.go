@@ -7,6 +7,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/infra/rediscache"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/redishelper"
 )
 
 type UserTokenRepo interface {
@@ -37,7 +38,8 @@ func (repo *userTokenRepo) Exist(ctx context.Context, userID, uid string) error 
 }
 
 func (repo *userTokenRepo) Set(ctx context.Context, userID, uid string, exp time.Duration) error {
-	err := rediscache.Set(ctx, repo.client, repo.formatKey(userID, uid), rediscache.NewJSONValue(""), exp)
+	err := redishelper.Set(ctx, repo.client, repo.formatKey(userID, uid),
+		redishelper.NewJSONValue(""), exp)
 	if err != nil {
 		return apperrors.New(err)
 	}
@@ -45,7 +47,7 @@ func (repo *userTokenRepo) Set(ctx context.Context, userID, uid string, exp time
 }
 
 func (repo *userTokenRepo) Del(ctx context.Context, userID, uid string) error {
-	err := rediscache.Del(ctx, repo.client, repo.formatKey(userID, uid))
+	err := redishelper.Del(ctx, repo.client, repo.formatKey(userID, uid))
 	if err != nil {
 		return apperrors.New(err)
 	}
@@ -60,7 +62,7 @@ func (repo *userTokenRepo) DelAll(ctx context.Context, userID string) error {
 	if len(keys) == 0 {
 		return nil
 	}
-	err = rediscache.Del(ctx, repo.client, keys...)
+	err = redishelper.Del(ctx, repo.client, keys...)
 	if err != nil {
 		return apperrors.New(err)
 	}

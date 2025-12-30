@@ -10,10 +10,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/config"
 )
 
-type Cmdable interface {
-	redis.Cmdable
-}
-
 type Client interface {
 	redis.UniversalClient
 	Close() error
