@@ -414,6 +414,7 @@ func (s *HTTPServer) registerRoutes() {
 		taskGroup.GET("", s.handlerRegistry.systemHandler.ListTask)
 		taskGroup.GET("/:id", s.handlerRegistry.systemHandler.GetTask)
 		taskGroup.PUT("/:id/meta", s.handlerRegistry.systemHandler.UpdateTaskMeta)
+		taskGroup.POST("/:id/cancel", s.handlerRegistry.systemHandler.CancelTask)
 	}
 
 	{ // error group

@@ -8366,6 +8366,67 @@
         "tags" : [ "system_tasks" ]
       }
     },
+    "/system/tasks/{id}/cancel" : {
+      "post" : {
+        "description" : "Cancels a task",
+        "operationId" : "cancelTask",
+        "parameters" : [ {
+          "description" : "task ID",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_taskuc_taskdto.CancelTaskReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_taskuc_taskdto.CancelTaskResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Cancels a task",
+        "tags" : [ "system_tasks" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
     "/system/tasks/{id}/meta" : {
       "put" : {
         "description" : "Updates task meta",
@@ -14824,6 +14885,18 @@
           }
         },
         "required" : [ "cause", "code", "createdAt", "debugLog", "detail", "id", "requestId", "stackTrace", "status" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_taskuc_taskdto.CancelTaskReq" : {
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_taskuc_taskdto.CancelTaskResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_taskuc_taskdto.GetTaskResp" : {

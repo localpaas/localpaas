@@ -146,3 +146,49 @@ func (h *SystemHandler) UpdateTaskMeta(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, resp)
 }
+
+// CancelTask Cancels a task
+// @Summary Cancels a task
+// @Description Cancels a task
+// @Tags    system_tasks
+// @Produce json
+// @Id      cancelTask
+// @Param   id path string true "task ID"
+// @Param   body body taskdto.CancelTaskReq true "request data"
+// @Success 200 {object} taskdto.CancelTaskResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /system/tasks/{id}/cancel [post]
+func (h *SystemHandler) CancelTask(ctx *gin.Context) {
+	id, err := h.ParseStringParam(ctx, "id")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceModule: base.ResourceModuleSystem,
+		ResourceType:   base.ResourceTypeTask,
+		ResourceID:     id,
+		Action:         base.ActionTypeWrite,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := taskdto.NewCancelTaskReq()
+	req.ID = id
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.taskUC.CancelTask(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
