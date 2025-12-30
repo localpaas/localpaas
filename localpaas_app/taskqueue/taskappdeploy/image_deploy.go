@@ -10,6 +10,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/batchrecvchan"
 	"github.com/localpaas/localpaas/services/docker"
 )
 
@@ -65,11 +66,11 @@ func (e *Executor) deployStepPullImage(
 		return apperrors.Wrap(err)
 	}
 
-	logsChan, _ := docker.StartJSONMsgScanning(ctx, logsReader)
-	for msg := range logsChan {
+	logsChan, _ := docker.StartScanningJSONMsg(ctx, logsReader, batchrecvchan.Options{})
+	for msgs := range logsChan {
 		// print(">>>>>>>>>> ", reflectutil.UnsafeBytesToStr(gofn.Must(json.Marshal(msg))))
-		if msg.Error != nil {
-			err = errors.Join(err, msg.Error)
+		if msgs[0].Error != nil {
+			err = errors.Join(err, msgs[0].Error)
 		}
 	}
 	if err != nil {

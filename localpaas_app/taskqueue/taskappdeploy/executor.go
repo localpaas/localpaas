@@ -184,6 +184,15 @@ func (e *Executor) checkDeploymentCanceled(
 	ctx context.Context,
 	taskData *taskData,
 ) (bool, error) {
+	// If the context is done
+	select {
+	case <-ctx.Done():
+		taskData.TaskCanceled = true
+		return taskData.isCanceled(), nil
+	default:
+		// Do nothing
+	}
+
 	// Check if deployment is canceled
 	depInfo, err := e.deploymentInfoRepo.Get(ctx, taskData.Deployment.ID)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {

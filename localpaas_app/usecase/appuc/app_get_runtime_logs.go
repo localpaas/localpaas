@@ -9,14 +9,15 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/batchrecvchan"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
 	"github.com/localpaas/localpaas/services/docker"
 )
 
 const (
-	defaultLogBatchPeriod    = time.Millisecond * 500
-	defaultLogBatchMaxFrame  = 20
-	defaultLogSessionTimeout = time.Hour
+	defaultLogBatchThresholdPeriod = time.Millisecond * 500
+	defaultLogBatchMaxFrame        = 20
+	defaultLogSessionTimeout       = time.Hour
 )
 
 func (uc *AppUC) GetAppRuntimeLogs(
@@ -73,13 +74,15 @@ func (uc *AppUC) GetAppRuntimeLogs(
 		// NOTE: We may want to send log frames to client by batch to reduce network overhead.
 		// I'm not expert about this, appreciate if anyone can verify this solution.
 		// This solution: only send data to client after a period of time or when we have some frames.
-		resp.LogChan, resp.LogChanCloser = docker.StartLogBatchScanning(ctx, logsReader, docker.LogKindContainer,
-			defaultLogBatchPeriod, defaultLogBatchMaxFrame)
+		resp.LogChan, resp.LogChanCloser = docker.StartScanningLog(ctx, logsReader, batchrecvchan.Options{
+			ThresholdPeriod: defaultLogBatchThresholdPeriod,
+			MaxItem:         defaultLogBatchMaxFrame,
+		})
 	} else {
 		// Scan all data at once
-		logChan, _ := docker.StartLogScanning(ctx, logsReader, docker.LogKindContainer)
-		for frame := range logChan {
-			resp.Logs = append(resp.Logs, frame)
+		logChan, _ := docker.StartScanningLog(ctx, logsReader, batchrecvchan.Options{})
+		for frames := range logChan {
+			resp.Logs = append(resp.Logs, frames...)
 		}
 	}
 

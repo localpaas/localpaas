@@ -30,13 +30,13 @@ func NewExecutor(
 	return p
 }
 
+// nolint
 func (p *Executor) execute(
 	ctx context.Context,
 	db database.Tx,
 	task *entity.Task,
 ) error {
-	// TODO: add implementation
-	print(">>>>>>>>>>>>>>>>>>>>> doTestTask ", time.Now().String(), task.Job.Name, "\n") //nolint
-	time.Sleep(3 * time.Second)                                                          //nolint
+	print(">>>>>>>>>>>>>>>>>>>>> execute task-test ", time.Now().String(), task.Job.Name, "\n")
+	time.Sleep(10 * time.Second)
 	return nil
 }
