@@ -20,12 +20,12 @@ func ValidateID(id *string, required bool, field string) (res []vld.Validator) {
 			vld.SetCustomKey("ERR_VLD_OBJECT_ID_REQUIRED"), // use default error key
 		))
 	}
-	if id != nil && *id != "" {
-		res = append(res, vld.StrIsULID(id).OnError(
-			vld.SetField(field, nil),
-			vld.SetCustomKey("ERR_VLD_OBJECT_ID_INVALID"), // use default error key
-		))
-	}
+	// if id != nil && *id != "" {
+	//	res = append(res, vld.StrIsULID(id).OnError(
+	//		vld.SetField(field, nil),
+	//		vld.SetCustomKey("ERR_VLD_OBJECT_ID_INVALID"), // use default error key
+	//	))
+	// }
 	return res
 }
 
@@ -42,16 +42,16 @@ func ValidateIDSlice(ids []string, unique bool, minLen int, field string) (resul
 			vld.SetCustomKey("ERR_VLD_OBJECT_IDS_REQUIRED"), // use default error key
 		))
 	}
-	result = append(result,
-		vld.Slice(ids).ForEach(func(element string, index int, elemValidator vld.ItemValidator) {
-			elemValidator.Validate(
-				vld.StrIsULID(&element).OnError(
-					vld.SetField(fmt.Sprintf("%s[%d]", field, index), nil),
-					vld.SetCustomKey("ERR_VLD_OBJECT_ID_INVALID"), // use default error key
-				),
-			)
-		}),
-	)
+	// result = append(result,
+	//	vld.Slice(ids).ForEach(func(element string, index int, elemValidator vld.ItemValidator) {
+	//		elemValidator.Validate(
+	//			vld.StrIsULID(&element).OnError(
+	//				vld.SetField(fmt.Sprintf("%s[%d]", field, index), nil),
+	//				vld.SetCustomKey("ERR_VLD_OBJECT_ID_INVALID"), // use default error key
+	//			),
+	//		)
+	//	}),
+	// )
 	return result
 }
 
@@ -66,12 +66,12 @@ func ValidateObjectIDReq(objID *ObjectIDReq, required bool, field string) (res [
 			vld.SetCustomKey("ERR_VLD_OBJECT_ID_REQUIRED"), // use default error key
 		))
 	}
-	if id != nil && *id != "" {
-		res = append(res, vld.StrIsULID(id).OnError(
-			vld.SetField(field, nil),
-			vld.SetCustomKey("ERR_VLD_OBJECT_ID_INVALID"), // use default error key
-		))
-	}
+	// if id != nil && *id != "" {
+	//	res = append(res, vld.StrIsULID(id).OnError(
+	//		vld.SetField(field, nil),
+	//		vld.SetCustomKey("ERR_VLD_OBJECT_ID_INVALID"), // use default error key
+	//	))
+	// }
 	return res
 }
 
@@ -90,16 +90,16 @@ func ValidateObjectIDSliceReq(ids []*ObjectIDReq, unique bool, minLen int, field
 			vld.SetCustomKey("ERR_VLD_OBJECT_IDS_REQUIRED"), // use default error key
 		))
 	}
-	result = append(result,
-		vld.Slice(ids).ForEach(func(element *ObjectIDReq, index int, elemValidator vld.ItemValidator) {
-			elemValidator.Validate(
-				vld.StrIsULID(&element.ID).OnError(
-					vld.SetField(fmt.Sprintf("%s[%d].id", field, index), nil),
-					vld.SetCustomKey("ERR_VLD_OBJECT_ID_INVALID"), // use default error key
-				),
-			)
-		}),
-	)
+	// result = append(result,
+	//	vld.Slice(ids).ForEach(func(element *ObjectIDReq, index int, elemValidator vld.ItemValidator) {
+	//		elemValidator.Validate(
+	//			vld.StrIsULID(&element.ID).OnError(
+	//				vld.SetField(fmt.Sprintf("%s[%d].id", field, index), nil),
+	//				vld.SetCustomKey("ERR_VLD_OBJECT_ID_INVALID"), // use default error key
+	//			),
+	//		)
+	//	}),
+	// )
 	return result
 }
 
@@ -122,12 +122,12 @@ func ValidateObjectAccessReq(access *ObjectAccessReq, required bool, field strin
 			vld.SetCustomKey("ERR_VLD_OBJECT_ID_REQUIRED"), // use default error key
 		))
 	}
-	if id != nil && *id != "" {
-		res = append(res, vld.StrIsULID(id).OnError(
-			vld.SetField(field+".id", nil),
-			vld.SetCustomKey("ERR_VLD_OBJECT_ID_INVALID"), // use default error key
-		))
-	}
+	// if id != nil && *id != "" {
+	//	res = append(res, vld.StrIsULID(id).OnError(
+	//		vld.SetField(field+".id", nil),
+	//		vld.SetCustomKey("ERR_VLD_OBJECT_ID_INVALID"), // use default error key
+	//	))
+	// }
 	return res
 }
 
@@ -147,16 +147,16 @@ func ValidateObjectAccessSliceReq(access ObjectAccessSliceReq, unique bool, minL
 			vld.SetCustomKey("ERR_VLD_OBJECT_IDS_REQUIRED"),
 		))
 	}
-	res = append(res,
-		vld.Slice(access).ForEach(func(item *ObjectAccessReq, index int, itemValidator vld.ItemValidator) {
-			itemValidator.Validate(
-				vld.StrIsULID(&item.ID).OnError(
-					vld.SetField(fmt.Sprintf("%s[%d].id", field, index), nil),
-					vld.SetCustomKey("ERR_VLD_OBJECT_ID_INVALID"),
-				),
-			)
-		}),
-	)
+	// res = append(res,
+	//	vld.Slice(access).ForEach(func(item *ObjectAccessReq, index int, itemValidator vld.ItemValidator) {
+	//		itemValidator.Validate(
+	//			vld.StrIsULID(&item.ID).OnError(
+	//				vld.SetField(fmt.Sprintf("%s[%d].id", field, index), nil),
+	//				vld.SetCustomKey("ERR_VLD_OBJECT_ID_INVALID"),
+	//			),
+	//		)
+	//	}),
+	// )
 	return res
 }
 

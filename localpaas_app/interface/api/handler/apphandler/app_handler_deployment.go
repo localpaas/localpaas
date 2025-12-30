@@ -18,10 +18,130 @@ import (
 // To keep `apperrors` pkg imported and swag gen won't fail
 type _ *apperrors.ErrorInfo
 
+// GetAppDeployment Gets app deployment
+// @Summary Gets app deployment
+// @Description Gets app deployment
+// @Tags    apps_deployments
+// @Produce json
+// @Id      getAppDeployment
+// @Param   projectID path string true "project ID"
+// @Param   appID path string true "app ID"
+// @Param   deploymentID path string true "deployment ID"
+// @Success 200 {object} appdeploymentdto.GetDeploymentResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /projects/{projectID}/apps/{appID}/deployments/{deploymentID} [get]
+func (h *AppHandler) GetAppDeployment(ctx *gin.Context) {
+	projectID, err := h.ParseStringParam(ctx, "projectID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+	appID, err := h.ParseStringParam(ctx, "appID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+	deploymentID, err := h.ParseStringParam(ctx, "deploymentID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceModule:     base.ResourceModuleProject,
+		ParentResourceType: base.ResourceTypeProject,
+		ParentResourceID:   projectID,
+		ResourceType:       base.ResourceTypeApp,
+		ResourceID:         appID,
+		Action:             base.ActionTypeRead,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := appdeploymentdto.NewGetDeploymentReq()
+	req.ProjectID = projectID
+	req.AppID = appID
+	req.DeploymentID = deploymentID
+	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.appDeploymentUC.GetDeployment(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
+// ListAppDeployment Lists app deployments
+// @Summary Lists app deployments
+// @Description Lists app deployments
+// @Tags    apps_deployments
+// @Produce json
+// @Id      listAppDeployment
+// @Param   projectID path string true "project ID"
+// @Param   appID path string true "app ID"
+// @Param   status query string false "`status=<target>`"
+// @Param   search query string false "`search=<target> (support *)`"
+// @Param   pageOffset query int false "`pageOffset=offset`"
+// @Param   pageLimit query int false "`pageLimit=limit`"
+// @Param   sort query string false "`sort=[-]field1|field2...`"
+// @Success 200 {object} appdeploymentdto.ListDeploymentResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /projects/{projectID}/apps/{appID}/deployments [get]
+func (h *AppHandler) ListAppDeployment(ctx *gin.Context) {
+	projectID, err := h.ParseStringParam(ctx, "projectID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+	appID, err := h.ParseStringParam(ctx, "appID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceModule:     base.ResourceModuleProject,
+		ParentResourceType: base.ResourceTypeProject,
+		ParentResourceID:   projectID,
+		ResourceType:       base.ResourceTypeApp,
+		ResourceID:         appID,
+		Action:             base.ActionTypeRead,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := appdeploymentdto.NewListDeploymentReq()
+	req.ProjectID = projectID
+	req.AppID = appID
+	if err := h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.appDeploymentUC.ListDeployment(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
 // GetAppDeploymentLogs Stream app deployment logs via websocket
 // @Summary Stream app deployment logs via websocket
 // @Description Stream deployment app logs via websocket
-// @Tags    app_deployments
+// @Tags    apps_deployments
 // @Produce json
 // @Id      getAppDeploymentLogs
 // @Param   projectID path string true "project ID"
@@ -31,7 +151,7 @@ type _ *apperrors.ErrorInfo
 // @Param   since query string false "`since=YYYY-MM-DDTHH:mm:SSZ`"
 // @Param   duration query int false "`duration=` logs within the period"
 // @Param   tail query int false "`tail=1000` to get last 1000 lines of logs"
-// @Success 200 {object} appdeploymentdto.GetAppDeploymentLogsResp
+// @Success 200 {object} appdeploymentdto.GetDeploymentLogsResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/apps/{appID}/deployments/{deploymentID}/logs [get]
@@ -65,7 +185,7 @@ func (h *AppHandler) GetAppDeploymentLogs(ctx *gin.Context, mel *melody.Melody) 
 		return
 	}
 
-	req := appdeploymentdto.NewGetAppDeploymentLogsReq()
+	req := appdeploymentdto.NewGetDeploymentLogsReq()
 	req.ProjectID = projectID
 	req.AppID = appID
 	req.DeploymentID = deploymentID
@@ -74,7 +194,7 @@ func (h *AppHandler) GetAppDeploymentLogs(ctx *gin.Context, mel *melody.Melody) 
 		return
 	}
 
-	resp, err := h.appDeploymentUC.GetAppDeploymentLogs(h.RequestCtx(ctx), auth, req)
+	resp, err := h.appDeploymentUC.GetDeploymentLogs(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

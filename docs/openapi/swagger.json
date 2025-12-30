@@ -2043,6 +2043,256 @@
         "tags" : [ "apps" ]
       }
     },
+    "/projects/{projectID}/apps/{appID}/deployments" : {
+      "get" : {
+        "description" : "Lists app deployments",
+        "operationId" : "listAppDeployment",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "app ID",
+          "in" : "path",
+          "name" : "appID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`status=<target>`",
+          "in" : "query",
+          "name" : "status",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`search=<target> (support *)`",
+          "in" : "query",
+          "name" : "search",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`pageOffset=offset`",
+          "in" : "query",
+          "name" : "pageOffset",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`pageLimit=limit`",
+          "in" : "query",
+          "name" : "pageLimit",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`sort=[-]field1|field2...`",
+          "in" : "query",
+          "name" : "sort",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.ListDeploymentResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Lists app deployments",
+        "tags" : [ "apps_deployments" ]
+      }
+    },
+    "/projects/{projectID}/apps/{appID}/deployments/{deploymentID}" : {
+      "get" : {
+        "description" : "Gets app deployment",
+        "operationId" : "getAppDeployment",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "app ID",
+          "in" : "path",
+          "name" : "appID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "deployment ID",
+          "in" : "path",
+          "name" : "deploymentID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.GetDeploymentResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Gets app deployment",
+        "tags" : [ "apps_deployments" ]
+      }
+    },
+    "/projects/{projectID}/apps/{appID}/deployments/{deploymentID}/logs" : {
+      "get" : {
+        "description" : "Stream deployment app logs via websocket",
+        "operationId" : "getAppDeploymentLogs",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "app ID",
+          "in" : "path",
+          "name" : "appID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "deployment ID",
+          "in" : "path",
+          "name" : "deploymentID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`follow=true/false`",
+          "in" : "query",
+          "name" : "follow",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`since=YYYY-MM-DDTHH:mm:SSZ`",
+          "in" : "query",
+          "name" : "since",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`duration=` logs within the period",
+          "in" : "query",
+          "name" : "duration",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`tail=1000` to get last 1000 lines of logs",
+          "in" : "query",
+          "name" : "tail",
+          "schema" : {
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.GetDeploymentLogsResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Stream app deployment logs via websocket",
+        "tags" : [ "apps_deployments" ]
+      }
+    },
     "/projects/{projectID}/apps/{appID}/runtime-logs" : {
       "get" : {
         "description" : "Stream app logs via websocket",
@@ -9402,6 +9652,16 @@
         "type" : "string",
         "x-enum-varnames" : [ "AppStatusActive", "AppStatusLocked", "AppStatusDisabled", "AppStatusDeleting" ]
       },
+      "github_com_localpaas_localpaas_localpaas_app_base.BuildTool" : {
+        "enum" : [ "docker", "nixpacks" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "BuildToolDocker", "BuildToolNixpacks" ]
+      },
+      "github_com_localpaas_localpaas_localpaas_app_base.DeploymentStatus" : {
+        "enum" : [ "not-started", "in-progress", "canceled", "done", "failed" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "DeploymentStatusNotStarted", "DeploymentStatusInProgress", "DeploymentStatusCanceled", "DeploymentStatusDone", "DeploymentStatusFailed" ]
+      },
       "github_com_localpaas_localpaas_localpaas_app_base.GitSource" : {
         "enum" : [ "github", "gitlab", "gitlab-custom", "gitea" ],
         "type" : "string",
@@ -9441,6 +9701,11 @@
         "enum" : [ "active", "pending", "disabled", "expired" ],
         "type" : "string",
         "x-enum-varnames" : [ "SettingStatusActive", "SettingStatusPending", "SettingStatusDisabled", "SettingStatusExpired" ]
+      },
+      "github_com_localpaas_localpaas_localpaas_app_base.SettingType" : {
+        "enum" : [ "project", "app", "service-spec", "app-deployment", "app-http", "env-var", "secret", "s3-storage", "oauth", "ssh-key", "api-key", "slack", "discord", "registry-auth", "basic-auth", "ssl", "github-app", "git-token", "cron-job" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "SettingTypeProject", "SettingTypeApp", "SettingTypeServiceSpec", "SettingTypeAppDeployment", "SettingTypeAppHttp", "SettingTypeEnvVar", "SettingTypeSecret", "SettingTypeS3Storage", "SettingTypeOAuth", "SettingTypeSSHKey", "SettingTypeAPIKey", "SettingTypeSlack", "SettingTypeDiscord", "SettingTypeRegistryAuth", "SettingTypeBasicAuth", "SettingTypeSsl", "SettingTypeGithubApp", "SettingTypeGitToken", "SettingTypeCronJob" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.SslProvider" : {
         "enum" : [ "letsencrypt", "custom" ],
@@ -9530,6 +9795,18 @@
         "required" : [ "access", "id" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_basedto.NamedObjectResp" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "id", "name" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_basedto.ObjectAccessReq" : {
         "properties" : {
           "access" : {
@@ -9611,6 +9888,217 @@
         "required" : [ "email", "fullName", "id", "photo", "username" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_entity.AppDeploymentOutput" : {
+        "properties" : {
+          "commitHash" : {
+            "type" : "string"
+          },
+          "commitMessage" : {
+            "type" : "string"
+          },
+          "imageTags" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          }
+        },
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_entity.AppDeploymentSettings" : {
+        "properties" : {
+          "imageSource" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.DeploymentImageSource"
+          },
+          "repoSource" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.DeploymentRepoSource"
+          },
+          "tarballSource" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.DeploymentTarballSource"
+          }
+        },
+        "required" : [ "imageSource", "repoSource", "tarballSource" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_entity.DeploymentImageSource" : {
+        "properties" : {
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "image" : {
+            "type" : "string"
+          },
+          "registryAuth" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "enabled", "image", "registryAuth" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_entity.DeploymentRepoSource" : {
+        "properties" : {
+          "buildTool" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.BuildTool"
+          },
+          "credentials" : {
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.RepoCredentials"
+            } ],
+            "description" : "contains setting id of github app/git token/ssh key",
+            "type" : "object"
+          },
+          "dockerfilePath" : {
+            "description" : "for BuildToolDockerfile only",
+            "type" : "string"
+          },
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "imageTags" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "registryAuth" : {
+            "type" : "string"
+          },
+          "repoRef" : {
+            "description" : "can be branch name, tag...",
+            "type" : "string"
+          },
+          "repoUrl" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "buildTool", "credentials", "dockerfilePath", "enabled", "imageTags", "registryAuth", "repoRef", "repoUrl" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_entity.DeploymentTarballSource" : {
+        "properties" : {
+          "enabled" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "enabled" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_entity.RepoCredentials" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingType"
+          }
+        },
+        "required" : [ "id", "type" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_pkg_realtimelog.LogFrame" : {
+        "properties" : {
+          "data" : {
+            "type" : "string"
+          },
+          "ts" : {
+            "type" : "string"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_realtimelog.LogType"
+          }
+        },
+        "required" : [ "data", "ts", "type" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_pkg_realtimelog.LogType" : {
+        "enum" : [ "in", "out", "err", "warn" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.DeploymentLogsDataResp" : {
+        "properties" : {
+          "logs" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_realtimelog.LogFrame"
+            },
+            "type" : "array"
+          }
+        },
+        "required" : [ "logs" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.DeploymentResp" : {
+        "properties" : {
+          "createdAt" : {
+            "type" : "string"
+          },
+          "endedAt" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "output" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.AppDeploymentOutput"
+          },
+          "settings" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.AppDeploymentSettings"
+          },
+          "startedAt" : {
+            "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.DeploymentStatus"
+          },
+          "updateVer" : {
+            "type" : "integer"
+          },
+          "updatedAt" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "createdAt", "endedAt", "id", "output", "settings", "startedAt", "status", "updateVer", "updatedAt" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.GetDeploymentLogsResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.DeploymentLogsDataResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.GetDeploymentResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.DeploymentResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.ListDeploymentResp" : {
+        "properties" : {
+          "data" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.DeploymentResp"
+            },
+            "type" : "array"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppBaseResp" : {
         "properties" : {
           "id" : {
@@ -9689,7 +10177,7 @@
         "properties" : {
           "logs" : {
             "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_services_docker.LogFrame"
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_realtimelog.LogFrame"
             },
             "type" : "array"
           }
@@ -9858,7 +10346,7 @@
             "type" : "string"
           },
           "registryAuth" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.NamedObjectResp"
           }
         },
         "required" : [ "enabled", "image", "registryAuth" ],
@@ -9866,20 +10354,72 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentRepoSourceReq" : {
         "properties" : {
+          "buildTool" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.BuildTool"
+          },
+          "credentials" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
+          },
+          "dockerfilePath" : {
+            "description" : "for BuildToolDockerfile only",
+            "type" : "string"
+          },
           "enabled" : {
             "type" : "boolean"
+          },
+          "imageTags" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "registryAuth" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
+          },
+          "repoRef" : {
+            "description" : "can be branch name, tag...",
+            "type" : "string"
+          },
+          "repoUrl" : {
+            "type" : "string"
           }
         },
-        "required" : [ "enabled" ],
+        "required" : [ "buildTool", "credentials", "dockerfilePath", "enabled", "imageTags", "registryAuth", "repoRef", "repoUrl" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentRepoSourceResp" : {
         "properties" : {
+          "buildTool" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.BuildTool"
+          },
+          "credentials" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.RepoCredentialsResp"
+          },
+          "dockerfilePath" : {
+            "description" : "for BuildToolDockerfile only",
+            "type" : "string"
+          },
           "enabled" : {
             "type" : "boolean"
+          },
+          "imageTags" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "registryAuth" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.NamedObjectResp"
+          },
+          "repoRef" : {
+            "description" : "can be branch name, tag...",
+            "type" : "string"
+          },
+          "repoUrl" : {
+            "type" : "string"
           }
         },
-        "required" : [ "enabled" ],
+        "required" : [ "buildTool", "credentials", "dockerfilePath", "enabled", "imageTags", "registryAuth", "repoRef", "repoUrl" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentSettingsReq" : {
@@ -10350,6 +10890,18 @@
           }
         },
         "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.RepoCredentialsResp" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingType"
+          }
+        },
+        "required" : [ "id", "type" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.UpdateAppSettingsDataResp" : {
@@ -14981,23 +15533,6 @@
         },
         "required" : [ "accessExpireAt", "createdAt", "email", "fullName", "id", "lastAccess", "photo", "position", "role", "securityOption", "status", "updatedAt", "username" ],
         "type" : "object"
-      },
-      "github_com_localpaas_localpaas_services_docker.LogFrame" : {
-        "properties" : {
-          "data" : {
-            "type" : "string"
-          },
-          "type" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_services_docker.LogType"
-          }
-        },
-        "required" : [ "data", "type" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_services_docker.LogType" : {
-        "enum" : [ "out", "in", "err" ],
-        "type" : "string",
-        "x-enum-varnames" : [ "LogTypeStdout", "LogTypeStdin", "LogTypeStderr" ]
       }
     },
     "securitySchemes" : {

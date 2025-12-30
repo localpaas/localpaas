@@ -23,11 +23,11 @@ const (
 	deploymentLogSessionTimeout       = 10 * time.Minute
 )
 
-func (uc *AppDeploymentUC) GetAppDeploymentLogs(
+func (uc *AppDeploymentUC) GetDeploymentLogs(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *appdeploymentdto.GetAppDeploymentLogsReq,
-) (*appdeploymentdto.GetAppDeploymentLogsResp, error) {
+	req *appdeploymentdto.GetDeploymentLogsReq,
+) (*appdeploymentdto.GetDeploymentLogsResp, error) {
 	deployment, err := uc.deploymentRepo.GetByID(ctx, uc.db, req.AppID, req.DeploymentID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -43,12 +43,12 @@ func (uc *AppDeploymentUC) GetAppDeploymentLogs(
 func (uc *AppDeploymentUC) getRealtimeDeploymentLogs(
 	ctx context.Context,
 	deployment *entity.Deployment,
-	req *appdeploymentdto.GetAppDeploymentLogsReq,
-) (*appdeploymentdto.GetAppDeploymentLogsResp, error) {
+	req *appdeploymentdto.GetDeploymentLogsReq,
+) (*appdeploymentdto.GetDeploymentLogsResp, error) {
 	key := fmt.Sprintf("deployment-log:%s", deployment.ID)
 	consumer := realtimelog.NewConsumer(key, uc.redisClient)
 
-	resp := &appdeploymentdto.AppDeploymentLogsDataResp{}
+	resp := &appdeploymentdto.DeploymentLogsDataResp{}
 	var err error
 	if req.Follow {
 		// NOTE: we don't want to keep the log stream session forever
@@ -69,7 +69,7 @@ func (uc *AppDeploymentUC) getRealtimeDeploymentLogs(
 		resp.Logs = append(resp.Logs, frames...)
 	}
 
-	return &appdeploymentdto.GetAppDeploymentLogsResp{
+	return &appdeploymentdto.GetDeploymentLogsResp{
 		Data: resp,
 	}, nil
 }
@@ -77,8 +77,8 @@ func (uc *AppDeploymentUC) getRealtimeDeploymentLogs(
 func (uc *AppDeploymentUC) getHistoryDeploymentLogs(
 	ctx context.Context,
 	deployment *entity.Deployment,
-	req *appdeploymentdto.GetAppDeploymentLogsReq,
-) (*appdeploymentdto.GetAppDeploymentLogsResp, error) {
+	req *appdeploymentdto.GetDeploymentLogsReq,
+) (*appdeploymentdto.GetDeploymentLogsResp, error) {
 	var listOpts []bunex.SelectQueryOption
 
 	reverseLogs := false
@@ -112,7 +112,7 @@ func (uc *AppDeploymentUC) getHistoryDeploymentLogs(
 	logFrames := appdeploymentdto.TransformDeploymentLogs(logs)
 	logChan := make(chan []*realtimelog.LogFrame, 100) //nolint:mnd
 
-	resp := &appdeploymentdto.AppDeploymentLogsDataResp{
+	resp := &appdeploymentdto.DeploymentLogsDataResp{
 		Logs:          logFrames,
 		LogChan:       logChan,
 		LogChanCloser: func() error { return nil },
@@ -128,7 +128,7 @@ func (uc *AppDeploymentUC) getHistoryDeploymentLogs(
 		close(logChan)
 	}()
 
-	return &appdeploymentdto.GetAppDeploymentLogsResp{
+	return &appdeploymentdto.GetDeploymentLogsResp{
 		Data: resp,
 	}, nil
 }

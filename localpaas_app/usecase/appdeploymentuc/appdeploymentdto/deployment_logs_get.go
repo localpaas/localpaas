@@ -11,7 +11,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/realtimelog"
 )
 
-type GetAppDeploymentLogsReq struct {
+type GetDeploymentLogsReq struct {
 	ProjectID    string        `json:"-"`
 	AppID        string        `json:"-"`
 	DeploymentID string        `json:"-"`
@@ -22,11 +22,11 @@ type GetAppDeploymentLogsReq struct {
 	Timestamps   bool          `json:"-" mapstructure:"timestamps"`
 }
 
-func NewGetAppDeploymentLogsReq() *GetAppDeploymentLogsReq {
-	return &GetAppDeploymentLogsReq{}
+func NewGetDeploymentLogsReq() *GetDeploymentLogsReq {
+	return &GetDeploymentLogsReq{}
 }
 
-func (req *GetAppDeploymentLogsReq) Validate() apperrors.ValidationErrors {
+func (req *GetDeploymentLogsReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, basedto.ValidateID(&req.ProjectID, true, "projectId")...)
 	validators = append(validators, basedto.ValidateID(&req.AppID, true, "appId")...)
@@ -34,12 +34,12 @@ func (req *GetAppDeploymentLogsReq) Validate() apperrors.ValidationErrors {
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type GetAppDeploymentLogsResp struct {
-	Meta *basedto.BaseMeta          `json:"meta"`
-	Data *AppDeploymentLogsDataResp `json:"data"`
+type GetDeploymentLogsResp struct {
+	Meta *basedto.BaseMeta       `json:"meta"`
+	Data *DeploymentLogsDataResp `json:"data"`
 }
 
-type AppDeploymentLogsDataResp struct {
+type DeploymentLogsDataResp struct {
 	Logs          []*realtimelog.LogFrame        `json:"logs"`
 	LogChan       <-chan []*realtimelog.LogFrame `json:"-"`
 	LogChanCloser func() error                   `json:"-"`
