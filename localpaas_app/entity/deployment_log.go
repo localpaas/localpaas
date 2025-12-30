@@ -2,12 +2,14 @@ package entity
 
 import (
 	"time"
+
+	"github.com/localpaas/localpaas/localpaas_app/pkg/realtimelog"
 )
 
 type DeploymentLog struct {
 	ID           int64 `bun:",pk,autoincrement"`
 	DeploymentID string
-	Step         string `bun:",nullzero"`
-	Content      string
-	CreatedAt    time.Time `bun:",default:current_timestamp"`
+	Type         realtimelog.LogType `bun:",nullzero"`
+	Data         string
+	Ts           time.Time `bun:",nullzero"`
 }

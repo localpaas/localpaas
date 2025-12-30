@@ -15,7 +15,7 @@ import (
 )
 
 type DeploymentRepo interface {
-	GetByID(ctx context.Context, db database.IDB, id string,
+	GetByID(ctx context.Context, db database.IDB, appID, id string,
 		opts ...bunex.SelectQueryOption) (*entity.Deployment, error)
 	List(ctx context.Context, db database.IDB, appID string, paging *basedto.Paging,
 		opts ...bunex.SelectQueryOption) ([]*entity.Deployment, *basedto.PagingMeta, error)
@@ -37,10 +37,13 @@ func NewDeploymentRepo() DeploymentRepo {
 	return &deploymentRepo{}
 }
 
-func (repo *deploymentRepo) GetByID(ctx context.Context, db database.IDB, id string,
+func (repo *deploymentRepo) GetByID(ctx context.Context, db database.IDB, appID, id string,
 	opts ...bunex.SelectQueryOption) (*entity.Deployment, error) {
 	deployment := &entity.Deployment{}
 	query := db.NewSelect().Model(deployment).Where("deployment.id = ?", id)
+	if appID != "" {
+		query = query.Where("deployment.app_id = ?", appID)
+	}
 	query = bunex.ApplySelect(query, opts...)
 
 	err := query.Scan(ctx)

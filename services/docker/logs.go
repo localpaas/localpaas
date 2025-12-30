@@ -6,27 +6,15 @@ import (
 	"io"
 
 	"github.com/localpaas/localpaas/localpaas_app/pkg/batchrecvchan"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/realtimelog"
 )
-
-type LogType string
-
-const (
-	LogTypeStdout LogType = "out"
-	LogTypeStdin  LogType = "in"
-	LogTypeStderr LogType = "err"
-)
-
-type LogFrame struct {
-	Data string  `json:"data"`
-	Type LogType `json:"type"`
-}
 
 func StartScanningLog(
 	ctx context.Context,
 	reader io.ReadCloser,
 	options batchrecvchan.Options, // if zero, scan one by one
-) (logChan <-chan []*LogFrame, closeFunc func() error) {
-	batchChan := batchrecvchan.NewChan[*LogFrame](options)
+) (logChan <-chan []*realtimelog.LogFrame, closeFunc func() error) {
+	batchChan := batchrecvchan.NewChan[*realtimelog.LogFrame](options)
 
 	_, hasDeadline := ctx.Deadline()
 	if hasDeadline {
@@ -57,23 +45,23 @@ func StartScanningLog(
 	return batchChan.Receiver(), func() error { return reader.Close() }
 }
 
-func parseLogFrame(logBytes []byte) *LogFrame {
-	var logType LogType
+func parseLogFrame(logBytes []byte) *realtimelog.LogFrame {
+	var logType realtimelog.LogType
 	// Format structure of the logs data, see:
 	// https://docs.docker.com/reference/api/engine/version/v1.51/#tag/Container/operation/ContainerAttach
 	//nolint:mnd
 	if len(logBytes) > 8 {
 		switch logBytes[0] {
 		case 0:
-			logType = LogTypeStdin
+			logType = realtimelog.LogTypeIn
 		case 1:
-			logType = LogTypeStdout
+			logType = realtimelog.LogTypeOut
 		case 2:
-			logType = LogTypeStderr
+			logType = realtimelog.LogTypeErr
 		}
 		logBytes = logBytes[8:]
 	}
-	return &LogFrame{
+	return &realtimelog.LogFrame{
 		Data: string(logBytes),
 		Type: logType,
 	}

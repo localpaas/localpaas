@@ -34,7 +34,7 @@ func (repo *mfaPasscodeRepo) Get(
 	userID string,
 ) (*cacheentity.MFAPasscode, error) {
 	resp, err := redishelper.Get(ctx, repo.client, repo.formatKey(userID),
-		redishelper.NewJSONValue[*cacheentity.MFAPasscode])
+		redishelper.JSONValueCreator[*cacheentity.MFAPasscode])
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

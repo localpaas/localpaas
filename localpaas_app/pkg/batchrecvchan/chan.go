@@ -1,10 +1,13 @@
 package batchrecvchan
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
 	"github.com/tiendc/gofn"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
 const (
@@ -31,14 +34,14 @@ type Chan[T any] struct {
 	stopped      bool
 }
 
-func (ch *Chan[T]) Send(item T) {
+func (ch *Chan[T]) Send(items ...T) {
 	if !ch.batchMode {
-		ch.channel <- []T{item}
+		ch.channel <- items
 		return
 	}
 
 	ch.mu.Lock()
-	ch.currentBatch = append(ch.currentBatch, item)
+	ch.currentBatch = append(ch.currentBatch, items...)
 	sendData := len(ch.currentBatch) >= ch.maxItem
 	ch.mu.Unlock()
 	if sendData {
@@ -59,9 +62,15 @@ func (ch *Chan[T]) Receiver() <-chan []T {
 	return ch.channel
 }
 
-func (ch *Chan[T]) Close() {
+func (ch *Chan[T]) Close() (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = apperrors.NewPanic(fmt.Sprintf("%v", r))
+		}
+	}()
 	ch.stopped = true
 	close(ch.channel)
+	return apperrors.Wrap(err)
 }
 
 func NewChan[T any](options Options) *Chan[T] {
@@ -83,6 +92,9 @@ func NewChan[T any](options Options) *Chan[T] {
 
 	if ch.thresholdPeriod > 0 {
 		go func() {
+			defer func() {
+				_ = recover()
+			}()
 			for range time.Tick(ch.thresholdPeriod) {
 				ch.sendData()
 				if ch.stopped {

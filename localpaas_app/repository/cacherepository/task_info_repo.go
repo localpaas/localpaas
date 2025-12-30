@@ -37,7 +37,7 @@ func (repo *taskInfoRepo) Get(
 	taskID string,
 ) (*cacheentity.TaskInfo, error) {
 	resp, err := redishelper.Get(ctx, repo.client, repo.formatKey(taskID),
-		redishelper.NewJSONValue[*cacheentity.TaskInfo])
+		redishelper.JSONValueCreator[*cacheentity.TaskInfo])
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -76,7 +76,7 @@ func (repo *taskInfoRepo) mGet(
 	keys []string,
 ) (map[string]*cacheentity.TaskInfo, error) {
 	resp, err := redishelper.MGet(ctx, repo.client, keys,
-		redishelper.NewJSONValue[*cacheentity.TaskInfo])
+		redishelper.JSONValueCreator[*cacheentity.TaskInfo])
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

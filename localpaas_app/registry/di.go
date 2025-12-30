@@ -33,6 +33,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/taskqueue/initializer"
 	"github.com/localpaas/localpaas/localpaas_app/taskqueue/taskappdeploy"
 	"github.com/localpaas/localpaas/localpaas_app/taskqueue/tasktest"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/appdeploymentuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/imageuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/nodeuc"
@@ -112,6 +113,7 @@ var Provides = []any{
 	useruc.NewUserUC,
 	projectuc.NewProjectUC,
 	appuc.NewAppUC,
+	appdeploymentuc.NewAppDeploymentUC,
 	s3storageuc.NewS3StorageUC,
 	sshkeyuc.NewSSHKeyUC,
 	apikeyuc.NewAPIKeyUC,

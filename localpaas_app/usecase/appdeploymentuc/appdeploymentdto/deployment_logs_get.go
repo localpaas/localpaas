@@ -1,0 +1,58 @@
+package appdeploymentdto
+
+import (
+	"time"
+
+	vld "github.com/tiendc/go-validator"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/realtimelog"
+)
+
+type GetAppDeploymentLogsReq struct {
+	ProjectID    string        `json:"-"`
+	AppID        string        `json:"-"`
+	DeploymentID string        `json:"-"`
+	Follow       bool          `json:"-" mapstructure:"follow"`
+	Since        time.Time     `json:"-" mapstructure:"since"`
+	Duration     time.Duration `json:"-" mapstructure:"duration"`
+	Tail         int           `json:"-" mapstructure:"tail"`
+	Timestamps   bool          `json:"-" mapstructure:"timestamps"`
+}
+
+func NewGetAppDeploymentLogsReq() *GetAppDeploymentLogsReq {
+	return &GetAppDeploymentLogsReq{}
+}
+
+func (req *GetAppDeploymentLogsReq) Validate() apperrors.ValidationErrors {
+	var validators []vld.Validator
+	validators = append(validators, basedto.ValidateID(&req.ProjectID, true, "projectId")...)
+	validators = append(validators, basedto.ValidateID(&req.AppID, true, "appId")...)
+	validators = append(validators, basedto.ValidateID(&req.DeploymentID, true, "deploymentId")...)
+	return apperrors.NewValidationErrors(vld.Validate(validators...))
+}
+
+type GetAppDeploymentLogsResp struct {
+	Meta *basedto.BaseMeta          `json:"meta"`
+	Data *AppDeploymentLogsDataResp `json:"data"`
+}
+
+type AppDeploymentLogsDataResp struct {
+	Logs          []*realtimelog.LogFrame        `json:"logs"`
+	LogChan       <-chan []*realtimelog.LogFrame `json:"-"`
+	LogChanCloser func() error                   `json:"-"`
+}
+
+func TransformDeploymentLogs(logs []*entity.DeploymentLog) (resp []*realtimelog.LogFrame) {
+	resp = make([]*realtimelog.LogFrame, 0, len(logs))
+	for _, log := range logs {
+		resp = append(resp, &realtimelog.LogFrame{
+			Type: log.Type,
+			Data: log.Data,
+			Ts:   log.Ts,
+		})
+	}
+	return resp
+}

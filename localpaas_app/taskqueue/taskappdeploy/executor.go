@@ -14,7 +14,9 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity/cacheentity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/infra/logging"
+	"github.com/localpaas/localpaas/localpaas_app/infra/rediscache"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/realtimelog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 	"github.com/localpaas/localpaas/localpaas_app/repository/cacherepository"
@@ -29,8 +31,10 @@ const (
 
 type Executor struct {
 	logger             logging.Logger
+	redisClient        rediscache.Client
 	settingRepo        repository.SettingRepo
 	deploymentRepo     repository.DeploymentRepo
+	deploymentLogRepo  repository.DeploymentLogRepo
 	taskInfoRepo       cacherepository.TaskInfoRepo
 	deploymentInfoRepo cacherepository.DeploymentInfoRepo
 	dockerManager      *docker.Manager
@@ -40,8 +44,10 @@ type Executor struct {
 func NewExecutor(
 	taskQueue taskqueue.TaskQueue,
 	logger logging.Logger,
+	redisClient rediscache.Client,
 	settingRepo repository.SettingRepo,
 	deploymentRepo repository.DeploymentRepo,
+	deploymentLogRepo repository.DeploymentLogRepo,
 	taskInfoRepo cacherepository.TaskInfoRepo,
 	deploymentInfoRepo cacherepository.DeploymentInfoRepo,
 	dockerManager *docker.Manager,
@@ -49,8 +55,10 @@ func NewExecutor(
 ) *Executor {
 	p := &Executor{
 		logger:             logger,
+		redisClient:        redisClient,
 		settingRepo:        settingRepo,
 		deploymentRepo:     deploymentRepo,
+		deploymentLogRepo:  deploymentLogRepo,
 		taskInfoRepo:       taskInfoRepo,
 		deploymentInfoRepo: deploymentInfoRepo,
 		dockerManager:      dockerManager,
@@ -66,6 +74,7 @@ type taskData struct {
 	DeploymentOutput   *entity.AppDeploymentOutput
 	TaskCanceled       bool
 	DeploymentCanceled bool
+	LogStore           *realtimelog.Store
 }
 
 func (taskData *taskData) isCanceled() bool {
@@ -93,6 +102,7 @@ func (e *Executor) execute(
 			}
 		}
 		_ = e.deploymentInfoRepo.Del(ctx, deployment.ID)
+		_ = e.saveLogs(ctx, db, data)
 	}()
 
 	var depErr error
@@ -111,6 +121,7 @@ func (e *Executor) execute(
 	} else {
 		deployment.Status = gofn.If(depErr != nil, base.DeploymentStatusFailed, base.DeploymentStatusDone) //nolint
 		deployment.EndedAt = timeutil.NowUTC()
+		deployment.Output = data.DeploymentOutput
 	}
 
 	err = e.updateDeployment(ctx, db, deployment)
@@ -132,7 +143,7 @@ func (e *Executor) loadDeployment(
 		return nil, apperrors.Wrap(err)
 	}
 
-	deployment, err := e.deploymentRepo.GetByID(ctx, db, args.Deployment.ID,
+	deployment, err := e.deploymentRepo.GetByID(ctx, db, "", args.Deployment.ID,
 		bunex.SelectWhereIn("deployment.status IN (?)",
 			base.DeploymentStatusNotStarted, base.DeploymentStatusInProgress),
 		bunex.SelectRelation("App",
@@ -165,6 +176,9 @@ func (e *Executor) loadDeployment(
 
 	data.Deployment = deployment
 	data.DeploymentOutput = &entity.AppDeploymentOutput{}
+	logStoreKey := fmt.Sprintf("deployment-log:%s", deployment.ID)
+	data.LogStore = realtimelog.NewStore(logStoreKey, true, e.redisClient)
+
 	return deployment, nil
 }
 
@@ -183,7 +197,13 @@ func (e *Executor) updateDeployment(
 func (e *Executor) checkDeploymentCanceled(
 	ctx context.Context,
 	taskData *taskData,
-) (bool, error) {
+) (isCanceled bool, err error) {
+	defer func() {
+		if err == nil && taskData.isCanceled() {
+			_ = taskData.LogStore.Add(ctx, realtimelog.NewWarnFrame("Deployment canceled.", nil))
+		}
+	}()
+
 	// If the context is done
 	select {
 	case <-ctx.Done():
@@ -211,4 +231,72 @@ func (e *Executor) checkDeploymentCanceled(
 	taskData.TaskCanceled = taskInfo != nil && taskInfo.Cancel
 
 	return taskData.isCanceled(), nil
+}
+
+func (e *Executor) saveLogs(
+	ctx context.Context,
+	db database.Tx,
+	taskData *taskData,
+) error {
+	deployment := taskData.Deployment
+	logStore := taskData.LogStore
+	if logStore == nil {
+		return nil
+	}
+
+	duration := deployment.EndedAt.Sub(deployment.StartedAt)
+	_ = logStore.Add(ctx, realtimelog.NewOutFrame("Deployment finished in "+duration.String(), nil))
+
+	logFrames, err := logStore.GetData(ctx, 0)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	err = logStore.Close() //nolint
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	// Insert data in to DB by chunk to avoid exceeding DBMS limit
+	for _, chunk := range gofn.Chunk(logFrames, 10000) { //nolint
+		deploymentLogs := make([]*entity.DeploymentLog, 0, len(chunk))
+		for _, logFrame := range chunk {
+			deploymentLogs = append(deploymentLogs, &entity.DeploymentLog{
+				DeploymentID: deployment.ID,
+				Type:         logFrame.Type,
+				Data:         logFrame.Data,
+				Ts:           logFrame.Ts,
+			})
+		}
+		err = e.deploymentLogRepo.InsertMulti(ctx, db, deploymentLogs)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+	}
+
+	return nil
+}
+
+func (e *Executor) addStepStartLogs(
+	ctx context.Context,
+	taskData *taskData,
+	msg string,
+) {
+	_ = taskData.LogStore.Add(ctx,
+		realtimelog.NewOutFrame("---------------------------------", nil),
+		realtimelog.NewOutFrame(msg, nil))
+}
+
+func (e *Executor) addStepEndLogs(
+	ctx context.Context,
+	taskData *taskData,
+	start time.Time,
+	err error,
+) {
+	duration := timeutil.NowUTC().Sub(start)
+	if err != nil {
+		_ = taskData.LogStore.Add(ctx, realtimelog.NewOutFrame("Task finished in "+duration.String()+
+			" with error: "+err.Error(), nil))
+	} else {
+		_ = taskData.LogStore.Add(ctx, realtimelog.NewOutFrame("Task finished in "+duration.String(), nil))
+	}
 }

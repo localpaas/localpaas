@@ -15,9 +15,9 @@ import (
 )
 
 const (
-	defaultLogBatchThresholdPeriod = time.Millisecond * 500
-	defaultLogBatchMaxFrame        = 20
-	defaultLogSessionTimeout       = time.Hour
+	runtimeLogBatchThresholdPeriod = time.Millisecond * 500
+	runtimeLogBatchMaxFrame        = 20
+	runtimeLogSessionTimeout       = time.Hour
 )
 
 func (uc *AppUC) GetAppRuntimeLogs(
@@ -69,14 +69,14 @@ func (uc *AppUC) GetAppRuntimeLogs(
 	resp := &appdto.AppRuntimeLogsDataResp{}
 	if req.Follow {
 		// NOTE: we don't want to keep the log stream session forever
-		ctx, _ = context.WithTimeout(ctx, defaultLogSessionTimeout) //nolint:govet
+		ctx, _ = context.WithTimeout(ctx, runtimeLogSessionTimeout) //nolint:govet
 
 		// NOTE: We may want to send log frames to client by batch to reduce network overhead.
 		// I'm not expert about this, appreciate if anyone can verify this solution.
 		// This solution: only send data to client after a period of time or when we have some frames.
 		resp.LogChan, resp.LogChanCloser = docker.StartScanningLog(ctx, logsReader, batchrecvchan.Options{
-			ThresholdPeriod: defaultLogBatchThresholdPeriod,
-			MaxItem:         defaultLogBatchMaxFrame,
+			ThresholdPeriod: runtimeLogBatchThresholdPeriod,
+			MaxItem:         runtimeLogBatchMaxFrame,
 		})
 	} else {
 		// Scan all data at once

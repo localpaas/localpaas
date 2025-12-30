@@ -236,6 +236,14 @@ func (s *HTTPServer) registerRoutes() {
 		})
 	}
 
+	appDeploymentGroup := appGroup.Group("/:appID/deployments")
+	{ // app deployment group
+		// Logs
+		appDeploymentGroup.GET("/:deploymentID/logs", func(ctx *gin.Context) {
+			s.handlerRegistry.appHandler.GetAppDeploymentLogs(ctx, s.websocket)
+		})
+	}
+
 	providerGroup := apiGroup.Group("/providers")
 
 	{ // oauth group

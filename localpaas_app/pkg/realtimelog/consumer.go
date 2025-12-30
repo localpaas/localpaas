@@ -1,0 +1,107 @@
+package realtimelog
+
+import (
+	"context"
+	"errors"
+
+	"github.com/redis/go-redis/v9"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/batchrecvchan"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/redishelper"
+)
+
+type Consumer struct {
+	redisClient redis.UniversalClient
+	key         string
+}
+
+func NewConsumer(
+	key string,
+	redisClient redis.UniversalClient,
+) *Consumer {
+	return &Consumer{
+		key:         key,
+		redisClient: redisClient,
+	}
+}
+
+func (c *Consumer) Consume(
+	ctx context.Context,
+	options batchrecvchan.Options,
+) (<-chan []*LogFrame, func() error, error) {
+	batchChan := batchrecvchan.NewChan[*LogFrame](options)
+	pubSub := c.redisClient.Subscribe(ctx, c.key)
+	closeAllFunc := func() error {
+		return errors.Join(pubSub.Unsubscribe(ctx), pubSub.Close(), batchChan.Close())
+	}
+
+	go func() {
+		defer func() {
+			_ = recover()
+			_ = closeAllFunc()
+		}()
+
+		frameIndex := int64(0)
+
+		// Query all current logs
+		frames, _ := c.getData(ctx, &frameIndex)
+		batchChan.Send(frames...)
+
+		for msg := range pubSub.Channel() {
+			cmd, _ := parseMessage(msg.Payload)
+			switch cmd {
+			case CommandNewData:
+				frames, err := c.getData(ctx, &frameIndex)
+				if err != nil {
+					batchChan.Send(&LogFrame{
+						Type: LogTypeErr,
+						Data: "failed to get log data: " + err.Error(),
+					})
+					return
+				}
+				batchChan.Send(frames...)
+
+			case CommandClosed:
+				return
+			}
+		}
+	}()
+
+	return batchChan.Receiver(), closeAllFunc, nil
+}
+
+func (c *Consumer) getData(
+	ctx context.Context,
+	frameIndex *int64,
+) (frames []*LogFrame, err error) {
+	// Get data from local store first, if not found, get data from redis
+	localStore := getLocalStore(c.key, 0)
+
+	if localStore != nil {
+		frames, err = localStore.GetData(ctx, *frameIndex)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	} else {
+		frames, err = redishelper.LRange(ctx, c.redisClient, c.key, *frameIndex, -1,
+			redishelper.JSONValueCreator[*LogFrame])
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	}
+
+	*frameIndex += int64(len(frames))
+	return frames, nil
+}
+
+func (c *Consumer) GetAllData(
+	ctx context.Context,
+) ([]*LogFrame, error) {
+	frameIndex := int64(0)
+	frames, err := c.getData(ctx, &frameIndex)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return frames, nil
+}

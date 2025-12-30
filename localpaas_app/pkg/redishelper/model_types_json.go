@@ -33,6 +33,18 @@ func (m JSONValue[T]) GetData() T {
 	return m.val
 }
 
+func JSONValueCreator[T any](val T) Value[T] {
+	return &JSONValue[T]{val: val}
+}
+
 func NewJSONValue[T any](val T) Value[T] {
 	return &JSONValue[T]{val: val}
+}
+
+func NewJSONValues[T any, S ~[]T](vals S) []Value[T] {
+	res := make([]Value[T], 0, len(vals))
+	for _, v := range vals {
+		res = append(res, &JSONValue[T]{val: v})
+	}
+	return res
 }

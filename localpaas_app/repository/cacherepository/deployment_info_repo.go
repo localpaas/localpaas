@@ -37,7 +37,7 @@ func (repo *deploymentInfoRepo) Get(
 	deploymentID string,
 ) (*cacheentity.DeploymentInfo, error) {
 	resp, err := redishelper.Get(ctx, repo.client, repo.formatKey(deploymentID),
-		redishelper.NewJSONValue[*cacheentity.DeploymentInfo])
+		redishelper.JSONValueCreator[*cacheentity.DeploymentInfo])
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -99,7 +99,7 @@ func (repo *deploymentInfoRepo) GetAll(
 func (repo *deploymentInfoRepo) mGet(ctx context.Context, keys []string) (
 	map[string]*cacheentity.DeploymentInfo, error) {
 	resp, err := redishelper.MGet(ctx, repo.client, keys,
-		redishelper.NewJSONValue[*cacheentity.DeploymentInfo])
+		redishelper.JSONValueCreator[*cacheentity.DeploymentInfo])
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

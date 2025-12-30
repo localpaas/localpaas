@@ -15,6 +15,20 @@ type JSONMsg struct {
 	*jsonstream.Message
 }
 
+func (msg *JSONMsg) String() string {
+	if msg.Stream != "" {
+		return msg.Stream
+	}
+	return msg.ErrorStr()
+}
+
+func (msg *JSONMsg) ErrorStr() string {
+	if msg.Error != nil {
+		return msg.Error.Error()
+	}
+	return ""
+}
+
 func StartScanningJSONMsg(
 	ctx context.Context,
 	reader io.ReadCloser,

@@ -11,6 +11,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/batchrecvchan"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/services/docker"
 )
 
@@ -51,8 +52,11 @@ func (e *Executor) deployStepPullImage(
 	ctx context.Context,
 	db database.Tx,
 	data *imageDeployTaskData,
-) error {
+) (err error) {
 	imageSource := data.Deployment.Settings.ImageSource
+
+	e.addStepStartLogs(ctx, data.taskData, "Start pulling image...")
+	defer e.addStepEndLogs(ctx, data.taskData, timeutil.NowUTC(), err)
 
 	regAuthHeader, err := e.calcRegistryAuthHeader(ctx, db, data)
 	if err != nil {
@@ -68,9 +72,11 @@ func (e *Executor) deployStepPullImage(
 
 	logsChan, _ := docker.StartScanningJSONMsg(ctx, logsReader, batchrecvchan.Options{})
 	for msgs := range logsChan {
-		// print(">>>>>>>>>> ", reflectutil.UnsafeBytesToStr(gofn.Must(json.Marshal(msg))))
-		if msgs[0].Error != nil {
-			err = errors.Join(err, msgs[0].Error)
+		for _, msg := range msgs {
+			// print(" >>>>>>>>>>> ", msg.String())
+			if msg.Error != nil {
+				err = errors.Join(err, msg.Error)
+			}
 		}
 	}
 	if err != nil {
@@ -84,9 +90,12 @@ func (e *Executor) deployStepUpdateService(
 	ctx context.Context,
 	db database.Tx,
 	data *imageDeployTaskData,
-) error {
+) (err error) {
 	deployment := data.Deployment
 	imageSource := deployment.Settings.ImageSource
+
+	e.addStepStartLogs(ctx, data.taskData, "Applying changes to service...")
+	defer e.addStepEndLogs(ctx, data.taskData, timeutil.NowUTC(), err)
 
 	regAuthHeader, err := e.calcRegistryAuthHeader(ctx, db, data)
 	if err != nil {
