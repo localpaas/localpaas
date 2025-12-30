@@ -2200,6 +2200,83 @@
         "tags" : [ "apps_deployments" ]
       }
     },
+    "/projects/{projectID}/apps/{appID}/deployments/{deploymentID}/cancel" : {
+      "post" : {
+        "description" : "Cancels app deployment",
+        "operationId" : "cancelAppDeployment",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "app ID",
+          "in" : "path",
+          "name" : "appID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "deployment ID",
+          "in" : "path",
+          "name" : "deploymentID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Cancels app deployment",
+        "tags" : [ "apps_deployments" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
     "/projects/{projectID}/apps/{appID}/deployments/{deploymentID}/logs" : {
       "get" : {
         "description" : "Stream deployment app logs via websocket",
@@ -10014,6 +10091,18 @@
         "enum" : [ "in", "out", "err", "warn" ],
         "type" : "string",
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentReq" : {
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.DeploymentLogsDataResp" : {
         "properties" : {

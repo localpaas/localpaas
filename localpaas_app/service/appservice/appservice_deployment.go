@@ -11,9 +11,9 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
-func (s *appService) CancelAllDeployments(ctx context.Context, db database.Tx, app *entity.App) error {
+func (s *appService) CancelAllDeployments(ctx context.Context, db database.Tx, appID string) error {
 	// Cancel all not-started deployments in the DB
-	deployments, _, err := s.deploymentRepo.List(ctx, db, app.ID, nil,
+	deployments, _, err := s.deploymentRepo.List(ctx, db, appID, nil,
 		bunex.SelectWhere("deployment.status = ?", base.DeploymentStatusNotStarted),
 		bunex.SelectFor("UPDATE OF deployment SKIP LOCKED"),
 	)
@@ -33,7 +33,7 @@ func (s *appService) CancelAllDeployments(ctx context.Context, db database.Tx, a
 	}
 
 	// Cancel all in-progress deployments
-	err = s.deploymentInfoRepo.CancelAllOfApp(ctx, app.ID)
+	err = s.deploymentInfoRepo.CancelAllOfApp(ctx, appID)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

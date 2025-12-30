@@ -238,9 +238,11 @@ func (s *HTTPServer) registerRoutes() {
 
 	appDeploymentGroup := appGroup.Group("/:appID/deployments")
 	{ // app deployment group
-		// Deployment info
+		// Info
 		appDeploymentGroup.GET("/:deploymentID", s.handlerRegistry.appHandler.GetAppDeployment)
 		appDeploymentGroup.GET("", s.handlerRegistry.appHandler.ListAppDeployment)
+		// Cancel
+		appDeploymentGroup.POST("/:deploymentID/cancel", s.handlerRegistry.appHandler.CancelAppDeployment)
 		// Logs
 		appDeploymentGroup.GET("/:deploymentID/logs", func(ctx *gin.Context) {
 			s.handlerRegistry.appHandler.GetAppDeploymentLogs(ctx, s.websocket)

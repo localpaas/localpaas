@@ -225,3 +225,65 @@ func (h *AppHandler) GetAppDeploymentLogs(ctx *gin.Context, mel *melody.Melody) 
 	_ = mel.HandleRequest(ctx.Writer, ctx.Request)
 	_ = resp.Data.LogChanCloser()
 }
+
+// CancelAppDeployment Cancels app deployment
+// @Summary Cancels app deployment
+// @Description Cancels app deployment
+// @Tags    apps_deployments
+// @Produce json
+// @Id      cancelAppDeployment
+// @Param   projectID path string true "project ID"
+// @Param   appID path string true "app ID"
+// @Param   deploymentID path string true "deployment ID"
+// @Param   body body appdeploymentdto.CancelDeploymentReq true "request data"
+// @Success 200 {object} appdeploymentdto.CancelDeploymentResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /projects/{projectID}/apps/{appID}/deployments/{deploymentID}/cancel [post]
+func (h *AppHandler) CancelAppDeployment(ctx *gin.Context) {
+	projectID, err := h.ParseStringParam(ctx, "projectID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+	appID, err := h.ParseStringParam(ctx, "appID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+	deploymentID, err := h.ParseStringParam(ctx, "deploymentID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceModule:     base.ResourceModuleProject,
+		ParentResourceType: base.ResourceTypeProject,
+		ParentResourceID:   projectID,
+		ResourceType:       base.ResourceTypeApp,
+		ResourceID:         appID,
+		Action:             base.ActionTypeWrite,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := appdeploymentdto.NewCancelDeploymentReq()
+	req.ProjectID = projectID
+	req.AppID = appID
+	req.DeploymentID = deploymentID
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.appDeploymentUC.CancelDeployment(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}

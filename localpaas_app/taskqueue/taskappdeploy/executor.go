@@ -116,11 +116,11 @@ func (e *Executor) execute(
 		depErr = e.deployFromTarball(ctx, db, data)
 	}
 
+	deployment.EndedAt = timeutil.NowUTC()
 	if data.DeploymentCanceled {
 		deployment.Status = base.DeploymentStatusCanceled
 	} else {
 		deployment.Status = gofn.If(depErr != nil, base.DeploymentStatusFailed, base.DeploymentStatusDone) //nolint
-		deployment.EndedAt = timeutil.NowUTC()
 		deployment.Output = data.DeploymentOutput
 	}
 
@@ -200,7 +200,7 @@ func (e *Executor) checkDeploymentCanceled(
 ) (isCanceled bool, err error) {
 	defer func() {
 		if err == nil && taskData.isCanceled() {
-			_ = taskData.LogStore.Add(ctx, realtimelog.NewWarnFrame("Deployment canceled.", nil))
+			_ = taskData.LogStore.Add(ctx, realtimelog.NewWarnFrame("Deployment canceled", nil))
 		}
 	}()
 

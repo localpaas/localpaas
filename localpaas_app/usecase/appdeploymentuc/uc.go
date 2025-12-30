@@ -5,6 +5,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/rediscache"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 	"github.com/localpaas/localpaas/localpaas_app/repository/cacherepository"
+	"github.com/localpaas/localpaas/localpaas_app/service/appservice"
 	"github.com/localpaas/localpaas/services/docker"
 )
 
@@ -16,6 +17,7 @@ type AppDeploymentUC struct {
 	deploymentRepo     repository.DeploymentRepo
 	deploymentLogRepo  repository.DeploymentLogRepo
 	deploymentInfoRepo cacherepository.DeploymentInfoRepo
+	appService         appservice.AppService
 	dockerManager      *docker.Manager
 }
 
@@ -27,6 +29,7 @@ func NewAppDeploymentUC(
 	deploymentRepo repository.DeploymentRepo,
 	deploymentLogRepo repository.DeploymentLogRepo,
 	deploymentInfoRepo cacherepository.DeploymentInfoRepo,
+	appService appservice.AppService,
 	dockerManager *docker.Manager,
 ) *AppDeploymentUC {
 	return &AppDeploymentUC{
@@ -37,6 +40,7 @@ func NewAppDeploymentUC(
 		deploymentRepo:     deploymentRepo,
 		deploymentLogRepo:  deploymentLogRepo,
 		deploymentInfoRepo: deploymentInfoRepo,
+		appService:         appService,
 		dockerManager:      dockerManager,
 	}
 }
