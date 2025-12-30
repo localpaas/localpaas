@@ -11,7 +11,10 @@ import (
 
 type VolumeListOption func(*volume.ListOptions)
 
-func (m *Manager) VolumeList(ctx context.Context, options ...VolumeListOption) (*volume.ListResponse, error) {
+func (m *Manager) VolumeList(
+	ctx context.Context,
+	options ...VolumeListOption,
+) (*volume.ListResponse, error) {
 	opts := volume.ListOptions{}
 	for _, opt := range options {
 		opt(&opts)
@@ -23,7 +26,10 @@ func (m *Manager) VolumeList(ctx context.Context, options ...VolumeListOption) (
 	return &resp, nil
 }
 
-func (m *Manager) VolumeCreate(ctx context.Context, options *volume.CreateOptions) (*volume.Volume, error) {
+func (m *Manager) VolumeCreate(
+	ctx context.Context,
+	options *volume.CreateOptions,
+) (*volume.Volume, error) {
 	resp, err := m.client.VolumeCreate(ctx, *options)
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
@@ -31,8 +37,12 @@ func (m *Manager) VolumeCreate(ctx context.Context, options *volume.CreateOption
 	return &resp, nil
 }
 
-func (m *Manager) VolumeUpdate(ctx context.Context, volumeID string, version *swarm.Version,
-	options *volume.UpdateOptions) error {
+func (m *Manager) VolumeUpdate(
+	ctx context.Context,
+	volumeID string,
+	version *swarm.Version,
+	options *volume.UpdateOptions,
+) error {
 	if options == nil {
 		options = &volume.UpdateOptions{}
 	}
@@ -50,7 +60,11 @@ func (m *Manager) VolumeUpdate(ctx context.Context, volumeID string, version *sw
 	return nil
 }
 
-func (m *Manager) VolumeRemove(ctx context.Context, volumeID string, force bool) error {
+func (m *Manager) VolumeRemove(
+	ctx context.Context,
+	volumeID string,
+	force bool,
+) error {
 	err := m.client.VolumeRemove(ctx, volumeID, force)
 	if err != nil {
 		return apperrors.NewInfra(err)
@@ -58,7 +72,10 @@ func (m *Manager) VolumeRemove(ctx context.Context, volumeID string, force bool)
 	return nil
 }
 
-func (m *Manager) VolumeInspect(ctx context.Context, volumeID string) (*volume.Volume, []byte, error) {
+func (m *Manager) VolumeInspect(
+	ctx context.Context,
+	volumeID string,
+) (*volume.Volume, []byte, error) {
 	resp, raw, err := m.client.VolumeInspectWithRaw(ctx, volumeID)
 	if err != nil {
 		return nil, nil, apperrors.NewInfra(err)

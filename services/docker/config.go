@@ -32,8 +32,12 @@ func (m *Manager) ConfigInspect(ctx context.Context, configId string) (*swarm.Co
 
 type ConfigSpecOption func(*swarm.ConfigSpec)
 
-func (m *Manager) ConfigCreate(ctx context.Context, name string, data []byte, options ...ConfigSpecOption) (
-	*swarm.ConfigCreateResponse, error) {
+func (m *Manager) ConfigCreate(
+	ctx context.Context,
+	name string,
+	data []byte,
+	options ...ConfigSpecOption,
+) (*swarm.ConfigCreateResponse, error) {
 	spec := swarm.ConfigSpec{
 		Annotations: swarm.Annotations{
 			Name: name,

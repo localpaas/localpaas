@@ -10,7 +10,10 @@ import (
 
 type NetworkListOption func(*network.ListOptions)
 
-func (m *Manager) NetworkList(ctx context.Context, options ...NetworkListOption) ([]network.Summary, error) {
+func (m *Manager) NetworkList(
+	ctx context.Context,
+	options ...NetworkListOption,
+) ([]network.Summary, error) {
 	opts := network.ListOptions{}
 	for _, opt := range options {
 		opt(&opts)
@@ -24,8 +27,11 @@ func (m *Manager) NetworkList(ctx context.Context, options ...NetworkListOption)
 
 type NetworkCreateOption func(*network.CreateOptions)
 
-func (m *Manager) NetworkCreate(ctx context.Context, name string, options ...NetworkCreateOption) (
-	*network.CreateResponse, error) {
+func (m *Manager) NetworkCreate(
+	ctx context.Context,
+	name string,
+	options ...NetworkCreateOption,
+) (*network.CreateResponse, error) {
 	opts := network.CreateOptions{}
 	for _, opt := range options {
 		opt(&opts)
@@ -47,8 +53,11 @@ func (m *Manager) NetworkRemove(ctx context.Context, idOrName string) error {
 
 type NetworkInspectOption func(*network.InspectOptions)
 
-func (m *Manager) NetworkInspect(ctx context.Context, name string, options ...NetworkInspectOption) (
-	*network.Inspect, error) {
+func (m *Manager) NetworkInspect(
+	ctx context.Context,
+	name string,
+	options ...NetworkInspectOption,
+) (*network.Inspect, error) {
 	opts := network.InspectOptions{}
 	for _, opt := range options {
 		opt(&opts)

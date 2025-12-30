@@ -11,8 +11,10 @@ import (
 
 type ContainerListOption func(*container.ListOptions)
 
-func (m *Manager) ContainerList(ctx context.Context, options ...ContainerListOption) (
-	[]container.Summary, error) {
+func (m *Manager) ContainerList(
+	ctx context.Context,
+	options ...ContainerListOption,
+) ([]container.Summary, error) {
 	opts := container.ListOptions{}
 	for _, opt := range options {
 		opt(&opts)
@@ -24,8 +26,11 @@ func (m *Manager) ContainerList(ctx context.Context, options ...ContainerListOpt
 	return containers, nil
 }
 
-func (m *Manager) ServiceContainerList(ctx context.Context, serviceID string, options ...ContainerListOption) (
-	[]container.Summary, error) {
+func (m *Manager) ServiceContainerList(
+	ctx context.Context,
+	serviceID string,
+	options ...ContainerListOption,
+) ([]container.Summary, error) {
 	options = append(options, func(opts *container.ListOptions) {
 		opts.All = false
 		FilterAdd(&opts.Filters, "label", "com.docker.swarm.service.id="+serviceID)
@@ -33,13 +38,18 @@ func (m *Manager) ServiceContainerList(ctx context.Context, serviceID string, op
 	return m.ContainerList(ctx, options...)
 }
 
-func (m *Manager) ContainerInspect(ctx context.Context, containerID string) (*container.InspectResponse, error) {
+func (m *Manager) ContainerInspect(
+	ctx context.Context,
+	containerID string,
+) (*container.InspectResponse, error) {
 	respMap, errMap := m.ContainerInspectMulti(ctx, []string{containerID})
 	return respMap[containerID], errMap[containerID]
 }
 
-func (m *Manager) ContainerInspectMulti(ctx context.Context, containerIDs []string) (
-	map[string]*container.InspectResponse, map[string]error) {
+func (m *Manager) ContainerInspectMulti(
+	ctx context.Context,
+	containerIDs []string,
+) (map[string]*container.InspectResponse, map[string]error) {
 	if len(containerIDs) == 1 {
 		resp, err := m.client.ContainerInspect(ctx, containerIDs[0])
 		if err != nil {
@@ -72,7 +82,11 @@ func (m *Manager) ContainerInspectMulti(ctx context.Context, containerIDs []stri
 
 type ContainerStopOption func(options *container.StopOptions)
 
-func (m *Manager) ContainerRestart(ctx context.Context, containerID string, options ...ContainerStopOption) error {
+func (m *Manager) ContainerRestart(
+	ctx context.Context,
+	containerID string,
+	options ...ContainerStopOption,
+) error {
 	errMap := m.ContainerRestartMulti(ctx, []string{containerID}, options...)
 	for _, err := range errMap {
 		return err
@@ -80,8 +94,11 @@ func (m *Manager) ContainerRestart(ctx context.Context, containerID string, opti
 	return nil
 }
 
-func (m *Manager) ContainerRestartMulti(ctx context.Context, containerIDs []string,
-	options ...ContainerStopOption) map[string]error {
+func (m *Manager) ContainerRestartMulti(
+	ctx context.Context,
+	containerIDs []string,
+	options ...ContainerStopOption,
+) map[string]error {
 	opts := &container.StopOptions{}
 	for _, opt := range options {
 		opt(opts)
@@ -114,7 +131,11 @@ func (m *Manager) ContainerRestartMulti(ctx context.Context, containerIDs []stri
 	return allErrors
 }
 
-func (m *Manager) ContainerKill(ctx context.Context, containerID string, signal string) error {
+func (m *Manager) ContainerKill(
+	ctx context.Context,
+	containerID string,
+	signal string,
+) error {
 	errMap := m.ContainerKillMulti(ctx, []string{containerID}, signal)
 	for _, err := range errMap {
 		return err
@@ -122,7 +143,11 @@ func (m *Manager) ContainerKill(ctx context.Context, containerID string, signal 
 	return nil
 }
 
-func (m *Manager) ContainerKillMulti(ctx context.Context, containerIDs []string, signal string) map[string]error {
+func (m *Manager) ContainerKillMulti(
+	ctx context.Context,
+	containerIDs []string,
+	signal string,
+) map[string]error {
 	if len(containerIDs) == 1 {
 		err := m.client.ContainerKill(ctx, containerIDs[0], signal)
 		if err != nil {

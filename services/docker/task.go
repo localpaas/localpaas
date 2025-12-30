@@ -10,7 +10,10 @@ import (
 
 type TaskListOption func(*swarm.TaskListOptions)
 
-func (m *Manager) TaskList(ctx context.Context, options ...TaskListOption) ([]swarm.Task, error) {
+func (m *Manager) TaskList(
+	ctx context.Context,
+	options ...TaskListOption,
+) ([]swarm.Task, error) {
 	opts := swarm.TaskListOptions{}
 	for _, opt := range options {
 		opt(&opts)
@@ -22,8 +25,11 @@ func (m *Manager) TaskList(ctx context.Context, options ...TaskListOption) ([]sw
 	return tasks, nil
 }
 
-func (m *Manager) ServiceTaskList(ctx context.Context, serviceID string, options ...TaskListOption) (
-	[]swarm.Task, error) {
+func (m *Manager) ServiceTaskList(
+	ctx context.Context,
+	serviceID string,
+	options ...TaskListOption,
+) ([]swarm.Task, error) {
 	options = append(options, func(opts *swarm.TaskListOptions) {
 		FilterAdd(&opts.Filters, "service", serviceID)
 	})

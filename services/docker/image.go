@@ -12,7 +12,10 @@ import (
 
 type ImageListOption func(*image.ListOptions)
 
-func (m *Manager) ImageList(ctx context.Context, options ...ImageListOption) ([]image.Summary, error) {
+func (m *Manager) ImageList(
+	ctx context.Context,
+	options ...ImageListOption,
+) ([]image.Summary, error) {
 	opts := image.ListOptions{}
 	for _, opt := range options {
 		opt(&opts)
@@ -44,8 +47,11 @@ func (m *Manager) ImageCreate(
 
 type ImageRemoveOption func(options *image.RemoveOptions)
 
-func (m *Manager) ImageRemove(ctx context.Context, imageID string, options ...ImageRemoveOption) (
-	[]image.DeleteResponse, error) {
+func (m *Manager) ImageRemove(
+	ctx context.Context,
+	imageID string,
+	options ...ImageRemoveOption,
+) ([]image.DeleteResponse, error) {
 	opts := image.RemoveOptions{}
 	for _, opt := range options {
 		opt(&opts)
@@ -57,7 +63,10 @@ func (m *Manager) ImageRemove(ctx context.Context, imageID string, options ...Im
 	return resp, nil
 }
 
-func (m *Manager) ImageInspect(ctx context.Context, imageID string) (*image.InspectResponse, error) {
+func (m *Manager) ImageInspect(
+	ctx context.Context,
+	imageID string,
+) (*image.InspectResponse, error) {
 	resp, err := m.client.ImageInspect(ctx, imageID)
 	if err != nil {
 		return nil, apperrors.NewInfra(err)

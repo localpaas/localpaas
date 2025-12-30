@@ -12,7 +12,10 @@ import (
 
 type ServiceListOption func(options *swarm.ServiceListOptions)
 
-func (m *Manager) ServiceList(ctx context.Context, options ...ServiceListOption) ([]swarm.Service, error) {
+func (m *Manager) ServiceList(
+	ctx context.Context,
+	options ...ServiceListOption,
+) ([]swarm.Service, error) {
 	opts := swarm.ServiceListOptions{}
 	for _, opt := range options {
 		opt(&opts)
@@ -24,8 +27,11 @@ func (m *Manager) ServiceList(ctx context.Context, options ...ServiceListOption)
 	return resp, nil
 }
 
-func (m *Manager) ServiceListByStack(ctx context.Context, namespace string, options ...ServiceListOption) (
-	[]swarm.Service, error) {
+func (m *Manager) ServiceListByStack(
+	ctx context.Context,
+	namespace string,
+	options ...ServiceListOption,
+) ([]swarm.Service, error) {
 	options = append(options, func(opts *swarm.ServiceListOptions) {
 		FilterAdd(&opts.Filters, "label", StackLabelNamespace+"="+namespace)
 	})
@@ -36,8 +42,11 @@ func (m *Manager) ServiceListByStack(ctx context.Context, namespace string, opti
 	return resp, nil
 }
 
-func (m *Manager) ServiceGetByName(ctx context.Context, serviceName string, options ...ServiceListOption) (
-	*swarm.Service, error) {
+func (m *Manager) ServiceGetByName(
+	ctx context.Context,
+	serviceName string,
+	options ...ServiceListOption,
+) (*swarm.Service, error) {
 	options = append(options, func(opts *swarm.ServiceListOptions) {
 		FilterAdd(&opts.Filters, "name", serviceName)
 	})
@@ -54,8 +63,11 @@ func (m *Manager) ServiceGetByName(ctx context.Context, serviceName string, opti
 
 type ServiceCreateOption func(options *swarm.ServiceCreateOptions)
 
-func (m *Manager) ServiceCreate(ctx context.Context, service *swarm.ServiceSpec, options ...ServiceCreateOption) (
-	*swarm.ServiceCreateResponse, error) {
+func (m *Manager) ServiceCreate(
+	ctx context.Context,
+	service *swarm.ServiceSpec,
+	options ...ServiceCreateOption,
+) (*swarm.ServiceCreateResponse, error) {
 	if service == nil {
 		return nil, nil
 	}
@@ -72,8 +84,13 @@ func (m *Manager) ServiceCreate(ctx context.Context, service *swarm.ServiceSpec,
 
 type ServiceUpdateOption func(options *swarm.ServiceUpdateOptions)
 
-func (m *Manager) ServiceUpdate(ctx context.Context, serviceID string, version *swarm.Version,
-	service *swarm.ServiceSpec, options ...ServiceUpdateOption) (*swarm.ServiceUpdateResponse, error) {
+func (m *Manager) ServiceUpdate(
+	ctx context.Context,
+	serviceID string,
+	version *swarm.Version,
+	service *swarm.ServiceSpec,
+	options ...ServiceUpdateOption,
+) (*swarm.ServiceUpdateResponse, error) {
 	if serviceID == "" || service == nil {
 		return nil, nil
 	}
@@ -124,8 +141,11 @@ func (m *Manager) ServiceRemove(ctx context.Context, serviceID string) error {
 
 type ServiceInspectOption func(*swarm.ServiceInspectOptions)
 
-func (m *Manager) ServiceInspect(ctx context.Context, serviceID string, options ...ServiceInspectOption) (
-	*swarm.Service, error) {
+func (m *Manager) ServiceInspect(
+	ctx context.Context,
+	serviceID string,
+	options ...ServiceInspectOption,
+) (*swarm.Service, error) {
 	if serviceID == "" {
 		return nil, nil
 	}
@@ -151,8 +171,11 @@ func (m *Manager) ServiceExists(ctx context.Context, serviceID string) bool {
 
 type ContainerLogsOption func(*container.LogsOptions)
 
-func (m *Manager) ServiceLogs(ctx context.Context, serviceID string, options ...ContainerLogsOption) (
-	io.ReadCloser, error) {
+func (m *Manager) ServiceLogs(
+	ctx context.Context,
+	serviceID string,
+	options ...ContainerLogsOption,
+) (io.ReadCloser, error) {
 	if serviceID == "" {
 		return nil, nil
 	}
