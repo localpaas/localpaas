@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/bradleyfalzon/ghinstallation/v2"
-	gogithub "github.com/google/go-github/v75/github"
+	gogithub "github.com/google/go-github/v79/github"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"

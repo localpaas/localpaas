@@ -26,7 +26,7 @@ require (
 	github.com/go-errors/errors v1.5.1
 	github.com/go-git/go-git/v6 v6.0.0-20251224103503-78aff6aa5ea9
 	github.com/golang-jwt/jwt/v5 v5.3.0
-	github.com/google/go-github/v75 v75.0.0
+	github.com/google/go-github/v79 v79.0.0
 	github.com/h2non/filetype v1.1.3
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/jackc/pgx/v5 v5.7.6
@@ -121,6 +121,7 @@ require (
 	github.com/goccy/go-yaml v1.18.0 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.2 // indirect
 	github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8 // indirect
+	github.com/google/go-github/v75 v75.0.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/context v1.1.1 // indirect

@@ -3,7 +3,7 @@ package gitsourcedto
 import (
 	"strconv"
 
-	"github.com/google/go-github/v75/github"
+	"github.com/google/go-github/v79/github"
 	vld "github.com/tiendc/go-validator"
 	gogitlab "gitlab.com/gitlab-org/api/client-go"
 
