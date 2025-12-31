@@ -16,14 +16,14 @@ type CreateCronJobReq struct {
 }
 
 type CronJobBaseReq struct {
-	Name           string            `json:"name"`
-	Kind           base.TaskType     `json:"kind"`
-	Cron           string            `json:"cron"`
-	Priority       base.TaskPriority `json:"priority"`
-	MaxRetry       int               `json:"maxRetry"`
-	RetryDelaySecs int               `json:"retryDelaySecs"`
-	TimeoutSecs    int               `json:"timeoutSecs"`
-	Command        string            `json:"command"`
+	Name         string            `json:"name"`
+	Kind         base.TaskType     `json:"kind"`
+	Cron         string            `json:"cron"`
+	Priority     base.TaskPriority `json:"priority"`
+	MaxRetry     int               `json:"maxRetry"`
+	RetryDelayMs int               `json:"retryDelayMs"`
+	TimeoutMs    int               `json:"timeoutMs"`
+	Command      string            `json:"command"`
 }
 
 func (req *CronJobBaseReq) modifyRequest() error {

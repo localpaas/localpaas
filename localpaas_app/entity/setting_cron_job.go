@@ -19,13 +19,13 @@ var (
 )
 
 type CronJob struct {
-	Cron           string            `json:"cron"`
-	InitialTime    time.Time         `json:"initialTime"`
-	Priority       base.TaskPriority `json:"priority"`
-	MaxRetry       int               `json:"maxRetry"`
-	RetryDelaySecs int               `json:"retryDelaySecs"`
-	TimeoutSecs    int               `json:"timeoutSecs"`
-	Command        string            `json:"command"`
+	Cron         string            `json:"cron"`
+	InitialTime  time.Time         `json:"initialTime"`
+	Priority     base.TaskPriority `json:"priority"`
+	MaxRetry     int               `json:"maxRetry"`
+	RetryDelayMs int               `json:"retryDelayMs"`
+	TimeoutMs    int               `json:"timeoutMs"`
+	Command      string            `json:"command"`
 }
 
 func (j *CronJob) ParseCron() (cron.Schedule, error) {

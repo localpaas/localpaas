@@ -123,8 +123,8 @@ func (uc *AppUC) prepareUpdatingAppDeploymentSettings(
 		Type:   base.TaskTypeAppDeploy,
 		Status: base.TaskStatusNotStarted,
 		Config: entity.TaskConfig{
-			Priority:    base.TaskPriorityDefault,
-			TimeoutSecs: int(defaultDeploymentTimeout.Seconds()),
+			Priority:  base.TaskPriorityDefault,
+			TimeoutMs: int(defaultDeploymentTimeout.Milliseconds()),
 		},
 		Version:   entity.CurrentTaskVersion,
 		CreatedAt: timeNow,

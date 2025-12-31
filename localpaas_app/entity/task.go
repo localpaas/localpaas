@@ -52,11 +52,11 @@ type Task struct {
 }
 
 type TaskConfig struct {
-	Priority       base.TaskPriority `json:"priority"`
-	MaxRetry       int               `json:"maxRetry,omitempty"`
-	Retry          int               `json:"retry,omitempty"`
-	RetryDelaySecs int               `json:"retryDelaySecs,omitempty"`
-	TimeoutSecs    int               `json:"timeout,omitempty"`
+	Priority     base.TaskPriority `json:"priority"`
+	MaxRetry     int               `json:"maxRetry,omitempty"`
+	Retry        int               `json:"retry,omitempty"`
+	RetryDelayMs int               `json:"retryDelayMs,omitempty"`
+	TimeoutMs    int               `json:"timeoutMs,omitempty"`
 }
 
 // GetID implements IDEntity interface
