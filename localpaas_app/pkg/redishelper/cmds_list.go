@@ -3,6 +3,7 @@ package redishelper
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/redis/go-redis/v9"
 
@@ -61,6 +62,45 @@ func LRange[T any](
 			return nil, apperrors.New(err).WithMsgLog("failed to unmarshal value")
 		}
 		values = append(values, model.GetData())
+	}
+
+	return values, nil
+}
+
+func BLPop[T any](
+	ctx context.Context,
+	cmder Cmdable,
+	keys []string,
+	timeout time.Duration,
+	valueCreator ValueCreator[T],
+) (values map[string]T, err error) {
+	strSlice, err := cmder.BLPop(ctx, timeout, keys...).Result()
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			return nil, nil
+		}
+		return nil, apperrors.Wrap(err)
+	}
+
+	values = make(map[string]T)
+	var valDefault T
+	i := 0
+	for i < len(strSlice) {
+		key := strSlice[i]
+		i++
+		val := strSlice[i]
+		i++
+
+		model := valueCreator(valDefault)
+		if len(val) == 0 {
+			values[key] = model.GetData()
+			continue
+		}
+		err = model.RedisUnmarshal(reflectutil.UnsafeStrToBytes(val))
+		if err != nil {
+			return nil, apperrors.New(err).WithMsgLog("failed to unmarshal value")
+		}
+		values[key] = model.GetData()
 	}
 
 	return values, nil

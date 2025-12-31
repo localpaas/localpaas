@@ -45,7 +45,7 @@ func (uc *AppDeploymentUC) getRealtimeDeploymentLogs(
 	deployment *entity.Deployment,
 	req *appdeploymentdto.GetDeploymentLogsReq,
 ) (*appdeploymentdto.GetDeploymentLogsResp, error) {
-	key := fmt.Sprintf("deployment-log:%s", deployment.ID)
+	key := fmt.Sprintf("deployment:%s:log", deployment.ID)
 	consumer := realtimelog.NewConsumer(key, uc.redisClient)
 
 	resp := &appdeploymentdto.DeploymentLogsDataResp{}

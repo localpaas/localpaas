@@ -9,6 +9,5 @@ import (
 type TaskInfo struct {
 	ID        string          `json:"id"`
 	Status    base.TaskStatus `json:"status"`
-	Cancel    bool            `json:"cancel,omitempty"`
 	StartedAt time.Time       `json:"startedAt"`
 }

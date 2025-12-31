@@ -9,7 +9,7 @@ import (
 type DeploymentInfo struct {
 	ID        string                `json:"id"`
 	AppID     string                `json:"appId"`
+	TaskID    string                `json:"taskId"`
 	Status    base.DeploymentStatus `json:"status"`
-	Cancel    bool                  `json:"cancel,omitempty"`
 	StartedAt time.Time             `json:"startedAt"`
 }

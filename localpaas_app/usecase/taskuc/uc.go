@@ -8,22 +8,25 @@ import (
 )
 
 type TaskUC struct {
-	db                *database.DB
-	taskRepo          repository.TaskRepo
-	cacheTaskInfoRepo cacherepository.TaskInfoRepo
-	taskQueue         taskqueue.TaskQueue
+	db              *database.DB
+	taskRepo        repository.TaskRepo
+	taskInfoRepo    cacherepository.TaskInfoRepo
+	taskControlRepo cacherepository.TaskControlRepo
+	taskQueue       taskqueue.TaskQueue
 }
 
 func NewTaskUC(
 	db *database.DB,
 	taskRepo repository.TaskRepo,
-	cacheTaskInfoRepo cacherepository.TaskInfoRepo,
+	taskInfoRepo cacherepository.TaskInfoRepo,
+	taskControlRepo cacherepository.TaskControlRepo,
 	taskQueue taskqueue.TaskQueue,
 ) *TaskUC {
 	return &TaskUC{
-		db:                db,
-		taskRepo:          taskRepo,
-		cacheTaskInfoRepo: cacheTaskInfoRepo,
-		taskQueue:         taskQueue,
+		db:              db,
+		taskRepo:        taskRepo,
+		taskInfoRepo:    taskInfoRepo,
+		taskControlRepo: taskControlRepo,
+		taskQueue:       taskQueue,
 	}
 }

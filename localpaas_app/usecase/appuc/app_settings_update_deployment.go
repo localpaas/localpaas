@@ -15,6 +15,11 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
 )
 
+const (
+	// TODO: make this configurable
+	defaultDeploymentTimeout = 60 * time.Minute
+)
+
 type appDeploymentData struct {
 	DeploymentSettings *entity.Setting
 	RegistryAuth       *entity.Setting
@@ -114,9 +119,13 @@ func (uc *AppUC) prepareUpdatingAppDeploymentSettings(
 	persistingData.UpsertingDeployments = append(persistingData.UpsertingDeployments, deployment)
 
 	deploymentTask := &entity.Task{
-		ID:        gofn.Must(ulid.NewStringULID()),
-		Type:      base.TaskTypeAppDeploy,
-		Status:    base.TaskStatusNotStarted,
+		ID:     gofn.Must(ulid.NewStringULID()),
+		Type:   base.TaskTypeAppDeploy,
+		Status: base.TaskStatusNotStarted,
+		Config: entity.TaskConfig{
+			Priority:    base.TaskPriorityDefault,
+			TimeoutSecs: int(defaultDeploymentTimeout.Seconds()),
+		},
 		Version:   entity.CurrentTaskVersion,
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,

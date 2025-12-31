@@ -18,26 +18,22 @@ const (
 
 var (
 	TaskUpsertingConflictCols = []string{"id"}
-	TaskUpsertingUpdateCols   = []string{"job_id", "type", "status", "priority", "max_retry", "retry", "retry_delay_secs",
-		"args", "runs", "output", "next_task_id", "version", "update_ver", "run_at", "retry_at", "started_at", "ended_at",
-		"updated_at", "deleted_at"}
+	TaskUpsertingUpdateCols   = []string{"job_id", "type", "status", "config",
+		"args", "runs", "output", "version", "update_ver", "run_at", "retry_at",
+		"started_at", "ended_at", "updated_at", "deleted_at"}
 )
 
 type Task struct {
-	ID             string `bun:",pk"`
-	JobID          string `bun:",nullzero"`
-	Type           base.TaskType
-	Status         base.TaskStatus
-	Priority       base.TaskPriority
-	MaxRetry       int
-	Retry          int
-	RetryDelaySecs int
-	Args           string `bun:",nullzero"`
-	Runs           string `bun:",nullzero"`
-	Output         string `bun:",nullzero"`
-	NextTaskID     string `bun:",nullzero"`
-	Version        int
-	UpdateVer      int
+	ID        string `bun:",pk"`
+	JobID     string `bun:",nullzero"`
+	Type      base.TaskType
+	Status    base.TaskStatus
+	Config    TaskConfig `bun:",nullzero"`
+	Args      string     `bun:",nullzero"`
+	Runs      string     `bun:",nullzero"`
+	Output    string     `bun:",nullzero"`
+	Version   int
+	UpdateVer int
 
 	RunAt     time.Time `bun:",nullzero"`
 	RetryAt   time.Time `bun:",nullzero"`
@@ -48,17 +44,47 @@ type Task struct {
 	UpdatedAt time.Time `bun:",default:current_timestamp"`
 	DeletedAt time.Time `bun:",soft_delete,nullzero"`
 
-	Job      *Setting `bun:"rel:belongs-to,join:job_id=id"`
-	NextTask *Task    `bun:"rel:has-one,join:next_task_id=id"`
+	Job *Setting `bun:"rel:belongs-to,join:job_id=id"`
 
 	// NOTE: temporary fields
 	parsedArgs   any
 	parsedOutput any
 }
 
+type TaskConfig struct {
+	Priority       base.TaskPriority `json:"priority"`
+	MaxRetry       int               `json:"maxRetry,omitempty"`
+	Retry          int               `json:"retry,omitempty"`
+	RetryDelaySecs int               `json:"retryDelaySecs,omitempty"`
+	TimeoutSecs    int               `json:"timeout,omitempty"`
+}
+
 // GetID implements IDEntity interface
 func (t *Task) GetID() string {
 	return t.ID
+}
+
+func (t *Task) IsNotStarted() bool {
+	return t.Status == base.TaskStatusNotStarted
+}
+
+func (t *Task) IsDone() bool {
+	return t.Status == base.TaskStatusDone
+}
+
+func (t *Task) IsCanceled() bool {
+	return t.Status == base.TaskStatusCanceled
+}
+
+func (t *Task) CanCancel() bool {
+	if t.IsDone() || t.IsCanceled() || !t.CanRetry() {
+		return false
+	}
+	return true
+}
+
+func (t *Task) CanRetry() bool {
+	return t.Status == base.TaskStatusFailed && t.Config.MaxRetry > t.Config.Retry
 }
 
 func (t *Task) ShouldRunAt() (runAt time.Time) {

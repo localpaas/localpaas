@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/infra/logging"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
@@ -34,9 +33,9 @@ func NewExecutor(
 func (p *Executor) execute(
 	ctx context.Context,
 	db database.Tx,
-	task *entity.Task,
+	taskData *taskqueue.TaskExecData,
 ) error {
-	print(">>>>>>>>>>>>>>>>>>>>> execute task-test ", time.Now().String(), task.Job.Name, "\n")
+	print(">>>>>>>>>>>>>>>>>>>>> execute task-test ", time.Now().String(), taskData.Task.Job.Name, "\n")
 	time.Sleep(10 * time.Second)
 	return nil
 }

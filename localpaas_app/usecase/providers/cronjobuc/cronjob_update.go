@@ -113,6 +113,7 @@ func (uc *CronJobUC) prepareUpdatingCronJob(
 		Priority:       req.Priority,
 		MaxRetry:       req.MaxRetry,
 		RetryDelaySecs: req.RetryDelaySecs,
+		TimeoutSecs:    req.TimeoutSecs,
 		Command:        req.Command,
 	}
 	setting.MustSetData(cronJob)

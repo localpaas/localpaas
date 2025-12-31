@@ -2,7 +2,6 @@ package cacherepository
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
@@ -20,7 +19,6 @@ type TaskInfoRepo interface {
 	GetAll(ctx context.Context) (map[string]*cacheentity.TaskInfo, error)
 	Set(ctx context.Context, taskID string, taskInfo *cacheentity.TaskInfo, exp time.Duration) error
 	Update(ctx context.Context, taskID string, taskInfo *cacheentity.TaskInfo) error
-	Cancel(ctx context.Context, taskID string) error
 	Del(ctx context.Context, taskID string) error
 }
 
@@ -110,22 +108,6 @@ func (repo *taskInfoRepo) Update(
 ) error {
 	err := redishelper.SetXX(ctx, repo.client, repo.formatKey(taskID),
 		redishelper.NewJSONValue(taskInfo), redis.KeepTTL)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	return nil
-}
-
-func (repo *taskInfoRepo) Cancel(ctx context.Context, taskID string) error {
-	taskInfo, err := repo.Get(ctx, taskID)
-	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-		return apperrors.Wrap(err)
-	}
-	if taskInfo == nil {
-		return nil
-	}
-	taskInfo.Cancel = true
-	err = repo.Update(ctx, taskID, taskInfo)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

@@ -47,8 +47,17 @@ var (
 )
 
 func (p TaskPriority) Cmp(priority TaskPriority) int {
+	if priority == "" {
+		priority = TaskPriorityDefault
+	}
 	if p == priority {
 		return 0
 	}
 	return mapPriorityValues[p] - mapPriorityValues[priority]
 }
+
+type TaskCommand string
+
+const (
+	TaskCommandCancel TaskCommand = "cancel"
+)

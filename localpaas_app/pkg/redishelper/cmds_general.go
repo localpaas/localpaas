@@ -182,3 +182,29 @@ func Del(
 	}
 	return nil
 }
+
+func Expire(
+	ctx context.Context,
+	cmder Cmdable,
+	key string,
+	expiration time.Duration,
+) (err error) {
+	_, err = cmder.Expire(ctx, key, expiration).Result()
+	if err != nil {
+		return apperrors.New(err).WithMsgLog("failed to expire key")
+	}
+	return nil
+}
+
+func ExpireXX(
+	ctx context.Context,
+	cmder Cmdable,
+	key string,
+	expiration time.Duration,
+) (err error) {
+	_, err = cmder.ExpireXX(ctx, key, expiration).Result()
+	if err != nil {
+		return apperrors.New(err).WithMsgLog("failed to expire key")
+	}
+	return nil
+}

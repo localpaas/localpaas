@@ -17,7 +17,7 @@ func (uc *TaskUC) ListTask(
 	auth *basedto.Auth,
 	req *taskdto.ListTaskReq,
 ) (*taskdto.ListTaskResp, error) {
-	taskInfoMap, err := uc.cacheTaskInfoRepo.GetAll(ctx)
+	taskInfoMap, err := uc.taskInfoRepo.GetAll(ctx)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

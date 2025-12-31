@@ -17,17 +17,38 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
 )
 
-type TaskExecutorFunc func(context.Context, database.Tx, *entity.Task) error
+type TaskExecData struct {
+	Task         *entity.Task
+	Uncancelable bool
+	Canceled     bool
+	Done         bool
+	onCommand    func(base.TaskCommand, ...any)
+}
 
-func (q *taskQueue) RegisterExecutor(typ base.TaskType, processorFunc TaskExecutorFunc) {
+func (t *TaskExecData) IsCanceled() bool {
+	return t.Canceled
+}
+
+func (t *TaskExecData) IsDone() bool {
+	return t.Done
+}
+
+func (t *TaskExecData) OnCommand(fn func(base.TaskCommand, ...any)) {
+	// NOTE: do we need to use mutex?
+	t.onCommand = fn
+}
+
+type TaskExecFunc func(context.Context, database.Tx, *TaskExecData) error
+
+func (q *taskQueue) RegisterExecutor(typ base.TaskType, execFunc TaskExecFunc) {
 	if !q.isWorkerMode() {
 		return
 	}
 	if q.taskExecutorMap == nil {
-		q.taskExecutorMap = make(map[base.TaskType]gocronqueue.TaskExecutorFunc, 10) //nolint:mnd
+		q.taskExecutorMap = make(map[base.TaskType]gocronqueue.TaskExecFunc, 10) //nolint:mnd
 	}
 	q.taskExecutorMap[typ] = func(taskID string, payload string) (time.Time, error) {
-		return q.runTask(context.Background(), taskID, payload, processorFunc)
+		return q.executeTask(context.Background(), taskID, payload, execFunc)
 	}
 }
 
@@ -161,17 +182,20 @@ func (q *taskQueue) createTasks(ctx context.Context, db database.Tx, jobIDs []st
 			}
 
 			task := &entity.Task{
-				ID:             gofn.Must(ulid.NewStringULID()),
-				JobID:          jobSetting.ID,
-				Type:           base.TaskType(jobSetting.Kind),
-				Status:         base.TaskStatusNotStarted,
-				Priority:       cronJob.Priority,
-				MaxRetry:       cronJob.MaxRetry,
-				RetryDelaySecs: cronJob.RetryDelaySecs,
-				Version:        entity.CurrentTaskVersion,
-				RunAt:          nextRunAt,
-				CreatedAt:      timeNow,
-				UpdatedAt:      timeNow,
+				ID:     gofn.Must(ulid.NewStringULID()),
+				JobID:  jobSetting.ID,
+				Type:   base.TaskType(jobSetting.Kind),
+				Status: base.TaskStatusNotStarted,
+				Config: entity.TaskConfig{
+					Priority:       cronJob.Priority,
+					MaxRetry:       cronJob.MaxRetry,
+					RetryDelaySecs: cronJob.RetryDelaySecs,
+					TimeoutSecs:    cronJob.TimeoutSecs,
+				},
+				Version:   entity.CurrentTaskVersion,
+				RunAt:     nextRunAt,
+				CreatedAt: timeNow,
+				UpdatedAt: timeNow,
 			}
 			allNewTasks = append(allNewTasks, task)
 		}
@@ -221,13 +245,8 @@ func (q *taskQueue) loadCurrentTasksForUnscheduling(
 
 	unschedulingTasks := make([]*entity.Task, 0, len(tasks))
 	for _, task := range tasks {
-		if task.Status == base.TaskStatusFailed && task.MaxRetry > task.Retry {
+		if task.CanCancel() {
 			task.Status = base.TaskStatusCanceled
-			unschedulingTasks = append(unschedulingTasks, task)
-			continue
-		}
-		if task.RunAt.After(timeNow) {
-			task.DeletedAt = timeNow
 			unschedulingTasks = append(unschedulingTasks, task)
 			continue
 		}

@@ -16,13 +16,16 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity/cacheentity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/redishelper"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 )
 
 const (
-	taskInfoCacheExp    = 24 * time.Hour
-	taskRetryMaxBackoff = 24 * time.Hour
+	taskDefaultTimeout      = 3 * time.Hour
+	taskInfoCacheExp        = 24 * time.Hour
+	taskRetryMaxBackoff     = 24 * time.Hour
+	taskControlCheckTimeout = 5 * time.Second
 )
 
 func (q *taskQueue) loadTask(
@@ -48,20 +51,19 @@ func (q *taskQueue) loadTask(
 		}
 	}
 	// Task not allow retrying
-	if task.Status == base.TaskStatusFailed && task.MaxRetry <= task.Retry {
+	if task.Status == base.TaskStatusFailed && !task.CanRetry() {
 		return nil, nil
 	}
 	return task, nil
 }
 
-//nolint:gocognit
-func (q *taskQueue) runTask(
+func (q *taskQueue) executeTask(
 	ctx context.Context,
 	taskID string,
 	_ string,
-	executor func(context.Context, database.Tx, *entity.Task) error,
+	executorFunc func(context.Context, database.Tx, *TaskExecData) error,
 ) (rescheduleAt time.Time, err error) {
-	var task, nextTask *entity.Task
+	var task *entity.Task
 	err = transaction.Execute(ctx, q.db, func(db database.Tx) error {
 		task, err = q.loadTask(ctx, db, taskID)
 		if err != nil {
@@ -70,26 +72,30 @@ func (q *taskQueue) runTask(
 		if task == nil {
 			return nil
 		}
-		if task.NextTaskID != "" {
-			nextTask, err = q.loadTask(ctx, db, task.NextTaskID)
-			if err != nil {
-				return apperrors.Wrap(err)
-			}
+
+		taskData := &TaskExecData{
+			Task: task,
 		}
+		taskTimeout := time.Duration(task.Config.TimeoutSecs) * time.Second
+		ctx, cancel := context.WithTimeout(ctx, gofn.Coalesce(taskTimeout, taskDefaultTimeout))
+		defer cancel()
+
+		// Check for commands from other processes
+		go q.taskControlCheck(ctx, taskData)
 
 		// Put task to in-progress state
 		task.StartedAt = timeutil.NowUTC()
 		if task.Status == base.TaskStatusFailed {
-			task.Retry++
+			task.Config.Retry++
 		}
 
-		// Mark the task as `in-progress` by inserting a new record in to cache
+		// Mark the task as `in-progress` by inserting a new record in to redis
 		taskInfo := &cacheentity.TaskInfo{
 			ID:        task.ID,
 			Status:    base.TaskStatusInProgress,
 			StartedAt: task.StartedAt,
 		}
-		err = q.cacheTaskInfoRepo.Set(ctx, task.ID, taskInfo, taskInfoCacheExp)
+		err = q.taskInfoRepo.Set(ctx, task.ID, taskInfo, taskInfoCacheExp)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -100,17 +106,15 @@ func (q *taskQueue) runTask(
 					err = apperrors.NewPanic(fmt.Sprintf("%v", r))
 				}
 			}
-			_ = q.cacheTaskInfoRepo.Del(ctx, task.ID)
-			err = q.taskRepo.UpsertMulti(ctx, db, gofn.ToSliceSkippingNil(task, nextTask),
-				entity.TaskUpsertingConflictCols, entity.TaskUpsertingUpdateCols)
+			_ = q.taskInfoRepo.Del(ctx, task.ID)
+			err = q.taskRepo.Update(ctx, db, task)
 		}()
 
-		err = executor(ctx, db, task)
+		err = executorFunc(ctx, db, taskData)
 		timeNow := timeutil.NowUTC()
 		if err != nil {
-			nextTask = nil
 			task.Status = base.TaskStatusFailed
-			task.RetryAt = task.EndedAt.Add(calcExpBackoffRetry(task))
+			task.RetryAt = timeNow.Add(calcExpBackoffRetry(task))
 			_ = task.AddRun(&entity.TaskRun{
 				StartedAt: task.StartedAt,
 				EndedAt:   timeNow,
@@ -119,11 +123,8 @@ func (q *taskQueue) runTask(
 			return apperrors.Wrap(err)
 		}
 
-		task.Status = base.TaskStatusDone
 		task.EndedAt = timeNow
-		if nextTask != nil {
-			nextTask.RunAt = timeNow
-		}
+		task.Status = gofn.If(taskData.Canceled, base.TaskStatusCanceled, base.TaskStatusDone) //nolint
 		return nil
 	})
 	if err != nil {
@@ -133,28 +134,54 @@ func (q *taskQueue) runTask(
 		return rescheduleAt, apperrors.Wrap(err)
 	}
 
-	task = nextTask
-	if task != nil {
-		err = q.server.ScheduleNextTask(task, time.Time{})
-		if err != nil {
-			if task != nil && task.Status == base.TaskStatusFailed {
-				rescheduleAt = task.RetryAt
-			}
-			return rescheduleAt, apperrors.Wrap(err)
+	return rescheduleAt, nil
+}
+
+func (q *taskQueue) taskControlCheck(
+	ctx context.Context,
+	taskData *TaskExecData,
+) {
+	key := fmt.Sprintf("task:%s:ctrl", taskData.Task.ID)
+	defer func() {
+		_ = recover()
+		_ = redishelper.Del(ctx, q.redisClient, key)
+	}()
+
+	for {
+		if taskData.Done || taskData.Canceled {
+			return
+		}
+		select {
+		case <-ctx.Done(): // context is done, returns
+			return
+		default:
+		}
+
+		taskControls, err := redishelper.BLPop(ctx, q.redisClient, []string{key}, taskControlCheckTimeout,
+			redishelper.JSONValueCreator[*cacheentity.TaskControl])
+		if err != nil || len(taskControls) == 0 {
+			continue
+		}
+		cmd := taskControls[key].Cmd
+		if taskData.onCommand != nil {
+			taskData.onCommand(cmd)
+		}
+		if taskData.Uncancelable && cmd == base.TaskCommandCancel {
+			taskData.Canceled = true
+			return
 		}
 	}
-
-	return rescheduleAt, nil
 }
 
 func calcExpBackoffRetry(task *entity.Task) time.Duration {
 	randDur := time.Duration(rand.Int31n(1000)) * time.Millisecond //nolint:mnd,gosec
-	if task.RetryDelaySecs == 0 {
+	delay := task.Config.RetryDelaySecs
+	if delay == 0 {
 		return randDur
 	}
 	exp := 1.0
-	if task.Retry > 0 {
-		exp = math.Pow(2, float64(task.Retry)) //nolint:mnd
+	if task.Config.Retry > 0 {
+		exp = math.Pow(2, float64(task.Config.Retry)) //nolint:mnd
 	}
-	return min(time.Duration(exp*float64(task.RetryDelaySecs))*time.Second+randDur, taskRetryMaxBackoff)
+	return min(time.Duration(exp*float64(delay))*time.Second+randDur, taskRetryMaxBackoff)
 }

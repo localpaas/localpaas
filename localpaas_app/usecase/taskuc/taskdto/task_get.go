@@ -33,18 +33,16 @@ type GetTaskResp struct {
 }
 
 type TaskResp struct {
-	ID             string            `json:"id"`
-	Type           base.TaskType     `json:"type"`
-	Status         base.TaskStatus   `json:"status"`
-	Priority       base.TaskPriority `json:"priority"`
-	MaxRetry       int               `json:"maxRetry"`
-	RetryDelaySecs int               `json:"retryDelaySecs"`
-	Command        string            `json:"command"`
-	UpdateVer      int               `json:"updateVer"`
+	ID        string            `json:"id"`
+	Type      base.TaskType     `json:"type"`
+	Status    base.TaskStatus   `json:"status"`
+	Config    entity.TaskConfig `json:"config"`
+	UpdateVer int               `json:"updateVer"`
 
-	RunAt     time.Time `json:"runAt"`
-	StartedAt time.Time `json:"startedAt"`
-	EndedAt   time.Time `json:"endedAt"`
+	RunAt     *time.Time `json:"runAt" copy:",nilonzero"`
+	RetryAt   *time.Time `json:"retryAt" copy:",nilonzero"`
+	StartedAt *time.Time `json:"startedAt" copy:",nilonzero"`
+	EndedAt   *time.Time `json:"endedAt" copy:",nilonzero"`
 
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
@@ -57,7 +55,7 @@ func TransformTask(task *entity.Task, taskInfo *cacheentity.TaskInfo) (resp *Tas
 	if taskInfo != nil {
 		resp.Status = taskInfo.Status
 		if taskInfo.Status == base.TaskStatusInProgress {
-			resp.StartedAt = taskInfo.StartedAt
+			resp.StartedAt = &taskInfo.StartedAt
 		}
 	}
 	return resp, nil

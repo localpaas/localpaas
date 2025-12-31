@@ -15,9 +15,14 @@ import (
 	"github.com/localpaas/localpaas/services/docker"
 )
 
+const (
+	stepImagePull = "image-pull"
+)
+
 type imageDeployTaskData struct {
 	*taskData
 	RegistryAuthHeader string
+	Step               string
 }
 
 func (e *Executor) deployFromImage(
@@ -26,21 +31,16 @@ func (e *Executor) deployFromImage(
 	taskData *taskData,
 ) error {
 	data := &imageDeployTaskData{taskData: taskData}
-	err := e.deployStepPullImage(ctx, db, data)
+	err := e.imageDeployStepImagePull(ctx, db, data)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	// Check if deployment is canceled by user while we are processing it
-	isCanceled, err := e.checkDeploymentCanceled(ctx, data.taskData)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	if isCanceled {
+	if data.IsCanceled() {
 		return nil
 	}
 
-	err = e.deployStepUpdateService(ctx, db, data)
+	err = e.imageDeployStepServiceApply(ctx, db, data)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -48,15 +48,16 @@ func (e *Executor) deployFromImage(
 	return nil
 }
 
-func (e *Executor) deployStepPullImage(
+func (e *Executor) imageDeployStepImagePull(
 	ctx context.Context,
 	db database.Tx,
 	data *imageDeployTaskData,
 ) (err error) {
+	data.Step = stepImagePull
 	imageSource := data.Deployment.Settings.ImageSource
 
-	e.addStepStartLogs(ctx, data.taskData, "Start pulling image...")
-	defer e.addStepEndLogs(ctx, data.taskData, timeutil.NowUTC(), err)
+	e.addStepStartLog(ctx, data.taskData, "Start pulling image...")
+	defer e.addStepEndLog(ctx, data.taskData, timeutil.NowUTC(), err)
 
 	regAuthHeader, err := e.calcRegistryAuthHeader(ctx, db, data)
 	if err != nil {
@@ -86,16 +87,17 @@ func (e *Executor) deployStepPullImage(
 	return nil
 }
 
-func (e *Executor) deployStepUpdateService(
+func (e *Executor) imageDeployStepServiceApply(
 	ctx context.Context,
 	db database.Tx,
 	data *imageDeployTaskData,
 ) (err error) {
+	data.Step = stepServiceApply
 	deployment := data.Deployment
 	imageSource := deployment.Settings.ImageSource
 
-	e.addStepStartLogs(ctx, data.taskData, "Applying changes to service...")
-	defer e.addStepEndLogs(ctx, data.taskData, timeutil.NowUTC(), err)
+	e.addStepStartLog(ctx, data.taskData, "Applying changes to service...")
+	defer e.addStepEndLog(ctx, data.taskData, timeutil.NowUTC(), err)
 
 	regAuthHeader, err := e.calcRegistryAuthHeader(ctx, db, data)
 	if err != nil {

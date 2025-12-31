@@ -17,6 +17,7 @@ type AppDeploymentUC struct {
 	deploymentRepo     repository.DeploymentRepo
 	deploymentLogRepo  repository.DeploymentLogRepo
 	deploymentInfoRepo cacherepository.DeploymentInfoRepo
+	taskControlRepo    cacherepository.TaskControlRepo
 	appService         appservice.AppService
 	dockerManager      *docker.Manager
 }
@@ -29,6 +30,7 @@ func NewAppDeploymentUC(
 	deploymentRepo repository.DeploymentRepo,
 	deploymentLogRepo repository.DeploymentLogRepo,
 	deploymentInfoRepo cacherepository.DeploymentInfoRepo,
+	taskControlRepo cacherepository.TaskControlRepo,
 	appService appservice.AppService,
 	dockerManager *docker.Manager,
 ) *AppDeploymentUC {
@@ -40,6 +42,7 @@ func NewAppDeploymentUC(
 		deploymentRepo:     deploymentRepo,
 		deploymentLogRepo:  deploymentLogRepo,
 		deploymentInfoRepo: deploymentInfoRepo,
+		taskControlRepo:    taskControlRepo,
 		appService:         appService,
 		dockerManager:      dockerManager,
 	}

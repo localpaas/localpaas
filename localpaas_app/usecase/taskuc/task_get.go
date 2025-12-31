@@ -22,7 +22,7 @@ func (uc *TaskUC) GetTask(
 
 	var taskInfo *cacheentity.TaskInfo
 	if task.Status != base.TaskStatusDone && task.Status != base.TaskStatusCanceled {
-		taskInfo, err = uc.cacheTaskInfoRepo.Get(ctx, task.ID)
+		taskInfo, err = uc.taskInfoRepo.Get(ctx, task.ID)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

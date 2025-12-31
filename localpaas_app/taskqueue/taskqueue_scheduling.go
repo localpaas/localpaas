@@ -37,20 +37,21 @@ func (q *taskQueue) doScheduleTasks(
 	ctx context.Context,
 ) ([]*entity.Task, error) {
 	timeNow := timeutil.NowUTC()
+	scanFrom := timeNow.Add(-missedTaskPeriod)
+	scanTo := timeNow.Add(q.config.TaskQueue.TaskCheckInterval)
 	tasks, _, err := q.taskRepo.List(ctx, q.db, "", nil,
 		// Not-started tasks
 		bunex.SelectWhereGroup(
 			bunex.SelectWhere("task.status = ?", base.TaskStatusNotStarted),
 			bunex.SelectWhere("(task.run_at IS NULL OR (task.run_at >= ? AND task.run_at < ?))",
-				timeNow.Add(-missedTaskPeriod), timeNow.Add(q.config.TaskQueue.TaskCheckInterval)),
+				scanFrom, scanTo),
 		),
 		// Failed tasks need retry
 		bunex.SelectWhereOrGroup(
 			bunex.SelectWhere("task.status = ?", base.TaskStatusFailed),
-			bunex.SelectWhere("task.max_retry > task.retry"),
 			bunex.SelectWhere("task.retry_at IS NOT NULL"),
-			bunex.SelectWhere("task.retry_at >= ?", timeNow.Add(-missedTaskPeriod)),
-			bunex.SelectWhere("task.retry_at < ?", timeNow.Add(q.config.TaskQueue.TaskCheckInterval)),
+			bunex.SelectWhere("task.retry_at >= ?", scanFrom),
+			bunex.SelectWhere("task.retry_at < ?", scanTo),
 		),
 	)
 	if err != nil {
@@ -62,8 +63,10 @@ func (q *taskQueue) doScheduleTasks(
 
 	scheduleTasks := make([]*entity.Task, 0, len(tasks))
 	for _, task := range tasks {
-		if task.Status == base.TaskStatusNotStarted && task.RunAt.Before(timeNow) &&
-			!q.shouldRunMissedTask(task, tasks, timeNow) {
+		if task.Status == base.TaskStatusFailed && !task.CanRetry() {
+			continue
+		}
+		if task.IsNotStarted() && task.RunAt.Before(timeNow) && !q.shouldRunMissedTask(task, tasks, timeNow) {
 			continue
 		}
 		scheduleTasks = append(scheduleTasks, task)
@@ -88,7 +91,7 @@ func (q *taskQueue) shouldRunMissedTask(
 		if runAt.IsZero() {
 			runAt = timeNow
 		}
-		if task.Status == base.TaskStatusNotStarted && runAt.Before(timeNow) && runAt.After(missedTask.RunAt) {
+		if task.IsNotStarted() && runAt.Before(timeNow) && runAt.After(missedTask.RunAt) {
 			return false
 		}
 		// The next run is near, so ignore the missed task?

@@ -44,3 +44,12 @@ type AppDeploymentOutput struct {
 func (d *Deployment) GetID() string {
 	return d.ID
 }
+
+func (d *Deployment) CanCancel() bool {
+	if d.Status == base.DeploymentStatusDone ||
+		d.Status == base.DeploymentStatusCanceled ||
+		d.Status == base.DeploymentStatusFailed {
+		return false
+	}
+	return true
+}

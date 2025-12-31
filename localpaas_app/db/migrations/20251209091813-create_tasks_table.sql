@@ -5,15 +5,11 @@ CREATE TABLE IF NOT EXISTS tasks
     job_id           VARCHAR(100) NULL,
     type             VARCHAR(100) NOT NULL,
     status           VARCHAR(20) NOT NULL CONSTRAINT chk_status CHECK
-                        (status IN ('not-started','canceled','failed','done')) DEFAULT 'not-started',
-    priority         VARCHAR(20) NOT NULL DEFAULT 'default',
-    max_retry        INT2 NOT NULL DEFAULT 0,
-    retry            INT2 NOT NULL DEFAULT 0,
-    retry_delay_secs INT4 NOT NULL DEFAULT 0,
+                        (status IN ('not-started','in-progress','canceled','failed','done')),
+    config           JSONB NOT NULL,
     args             JSON NULL,
     runs             JSON NULL,
     output           JSON NULL,
-    next_task_id     VARCHAR(100) NULL,
     version          INT2 NOT NULL DEFAULT 1,
     update_ver       INT4 NOT NULL DEFAULT 1,
 
@@ -29,7 +25,6 @@ CREATE TABLE IF NOT EXISTS tasks
     CONSTRAINT fk_tasks_job_id FOREIGN KEY (job_id) REFERENCES settings (id)
 );
 
-CREATE UNIQUE INDEX idx_uq_tasks_job ON tasks(job_id, run_at) WHERE job_id IS NOT NULL AND run_at IS NOT NULL AND deleted_at IS NULL;
 CREATE INDEX idx_tasks_job_id ON tasks(job_id);
 CREATE INDEX idx_tasks_type ON tasks(type);
 CREATE INDEX idx_tasks_status ON tasks(status);

@@ -22,6 +22,7 @@ type CronJobBaseReq struct {
 	Priority       base.TaskPriority `json:"priority"`
 	MaxRetry       int               `json:"maxRetry"`
 	RetryDelaySecs int               `json:"retryDelaySecs"`
+	TimeoutSecs    int               `json:"timeoutSecs"`
 	Command        string            `json:"command"`
 }
 

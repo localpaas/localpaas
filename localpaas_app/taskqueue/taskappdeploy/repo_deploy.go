@@ -13,6 +13,7 @@ import (
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/batchrecvchan"
@@ -22,11 +23,18 @@ import (
 	"github.com/localpaas/localpaas/services/docker"
 )
 
+const (
+	stepCodeCheckout = "code-checkout"
+	stepImageBuild   = "image-build"
+	stepServiceApply = "service-apply"
+)
+
 type repoDeployTaskData struct {
 	*taskData
 	CredSetting  *entity.Setting
 	CheckoutPath string
 	RepoURLInfo  *vcsurl.VCS
+	Step         string
 }
 
 func (e *Executor) deployFromRepo(
@@ -35,11 +43,16 @@ func (e *Executor) deployFromRepo(
 	taskData *taskData,
 ) error {
 	data := &repoDeployTaskData{taskData: taskData}
+	data.OnCommand(func(cmd base.TaskCommand, args ...any) { e.onRepoDeployCommand(ctx, data, cmd, args...) })
 
 	// 0. Prepare
 	err := e.repoDeployStepPrepare(ctx, db, data)
 	if err != nil {
 		return apperrors.Wrap(err)
+	}
+
+	if data.IsCanceled() {
+		return nil
 	}
 
 	// 1. Repo checkout
@@ -48,32 +61,22 @@ func (e *Executor) deployFromRepo(
 		return apperrors.Wrap(err)
 	}
 
-	// 1.1. Check if deployment is canceled by user while we are processing it
-	isCanceled, err := e.checkDeploymentCanceled(ctx, data.taskData)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	if isCanceled {
+	if data.IsCanceled() {
 		return nil
 	}
 
 	// 2. Build image
-	err = e.repoDeployStepBuildImage(ctx, db, data)
+	err = e.repoDeployStepImageBuild(ctx, db, data)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	// 2.1. Check if deployment is canceled by user while we are processing it
-	isCanceled, err = e.checkDeploymentCanceled(ctx, data.taskData)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	if isCanceled {
+	if data.IsCanceled() {
 		return nil
 	}
 
 	// 3. Apply image to service
-	err = e.repoDeployStepUpdateService(ctx, data)
+	err = e.repoDeployStepServiceApply(ctx, data)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -85,24 +88,19 @@ func (e *Executor) repoDeployStepGitCheckout(
 	ctx context.Context,
 	data *repoDeployTaskData,
 ) (err error) {
+	data.Step = stepCodeCheckout
 	deployment := data.Deployment
 	repoSource := deployment.Settings.RepoSource
 
-	e.addStepStartLogs(ctx, data.taskData, "Start cloning Git repository...")
-	defer e.addStepEndLogs(ctx, data.taskData, timeutil.NowUTC(), err)
-
-	// if args.Timeout > 0 {
-	//	var cancel context.CancelFunc
-	//	ctx, cancel = context.WithTimeout(ctx, args.Timeout)
-	//	defer cancel()
-	// }
+	e.addStepStartLog(ctx, data.taskData, "Start cloning Git repository...")
+	defer e.addStepEndLog(ctx, data.taskData, timeutil.NowUTC(), err)
 
 	authMethod, err := e.calcGitAuthMethod(data)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	repo, err := git.PlainClone(data.CheckoutPath, &git.CloneOptions{
+	repo, err := git.PlainCloneContext(ctx, data.CheckoutPath, &git.CloneOptions{
 		URL:               repoSource.RepoURL,
 		ReferenceName:     e.calcGitRefName(repoSource.RepoRef),
 		Auth:              authMethod,
@@ -135,16 +133,17 @@ func (e *Executor) repoDeployStepGitCheckout(
 	return nil
 }
 
-func (e *Executor) repoDeployStepBuildImage(
+func (e *Executor) repoDeployStepImageBuild(
 	ctx context.Context,
 	db database.Tx,
 	data *repoDeployTaskData,
 ) (err error) {
+	data.Step = stepImageBuild
 	deployment := data.Deployment
 	repoSource := deployment.Settings.RepoSource
 
-	e.addStepStartLogs(ctx, data.taskData, "Start building image...")
-	defer e.addStepEndLogs(ctx, data.taskData, timeutil.NowUTC(), err)
+	e.addStepStartLog(ctx, data.taskData, "Start building image...")
+	defer e.addStepEndLog(ctx, data.taskData, timeutil.NowUTC(), err)
 
 	// TODO: check dockerfile existence
 	dockerfile := gofn.Coalesce(repoSource.DockerfilePath, "Dockerfile")
@@ -171,9 +170,8 @@ func (e *Executor) repoDeployStepBuildImage(
 
 	// Build the image
 	resp, err := e.dockerManager.ImageBuild(ctx, tar, func(opts *build.ImageBuildOptions) {
-		// opts.BuildID = deployment.ID
 		opts.Version = build.BuilderV1
-
+		opts.BuildID = data.Task.ID
 		opts.Dockerfile = dockerfile
 		opts.Tags = imageTags
 		opts.BuildArgs = envVars
@@ -201,14 +199,15 @@ func (e *Executor) repoDeployStepBuildImage(
 	return nil
 }
 
-func (e *Executor) repoDeployStepUpdateService(
+func (e *Executor) repoDeployStepServiceApply(
 	ctx context.Context,
 	data *repoDeployTaskData,
 ) (err error) {
+	data.Step = stepServiceApply
 	deployment := data.Deployment
 
-	e.addStepStartLogs(ctx, data.taskData, "Applying changes to service...")
-	defer e.addStepEndLogs(ctx, data.taskData, timeutil.NowUTC(), err)
+	e.addStepStartLog(ctx, data.taskData, "Applying changes to service...")
+	defer e.addStepEndLog(ctx, data.taskData, timeutil.NowUTC(), err)
 
 	service, err := e.dockerManager.ServiceInspect(ctx, deployment.App.ServiceID)
 	if err != nil {
@@ -258,4 +257,19 @@ func (e *Executor) repoDeployStepPrepare(
 	data.RepoURLInfo = repoURLInfo
 
 	return nil
+}
+
+func (e *Executor) onRepoDeployCommand(
+	ctx context.Context,
+	taskData *repoDeployTaskData,
+	cmd base.TaskCommand,
+	_ ...any,
+) {
+	if cmd == base.TaskCommandCancel && taskData.Step == stepImageBuild {
+		err := e.dockerManager.ImageBuildCancel(ctx, taskData.Task.ID)
+		if err != nil {
+			_ = taskData.LogStore.Add(ctx,
+				realtimelog.NewErrFrame("failed to cancel image build: "+err.Error(), nil))
+		}
+	}
 }

@@ -16,8 +16,6 @@ import (
 type AppService interface {
 	PersistAppData(ctx context.Context, db database.IDB, data *PersistingAppData) error
 	DeleteApp(ctx context.Context, app *entity.App) error
-
-	CancelAllDeployments(ctx context.Context, db database.Tx, appID string) error
 }
 
 func NewAppService(

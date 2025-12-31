@@ -27,7 +27,7 @@ var (
 	ErrTaskProcessorNotFound = errors.New("task processor not found")
 )
 
-type TaskExecutorFunc func(taskID string, payload string) (time.Time, error)
+type TaskExecFunc func(taskID string, payload string) (time.Time, error)
 
 type Server struct {
 	config    *Config
@@ -38,7 +38,7 @@ type Server struct {
 
 type Config struct {
 	Concurrency int
-	TaskMap     map[base.TaskType]TaskExecutorFunc
+	TaskMap     map[base.TaskType]TaskExecFunc
 	RedisClient redis.UniversalClient
 	Logger      logging.Logger
 
@@ -170,7 +170,7 @@ func (s *Server) shouldSchedule(task *entity.Task, runAt time.Time) bool {
 
 func (s *Server) executeTask(task *entity.Task, priorityCheck bool) error {
 	// Skip this task and queue it for running later if there is higher priority task
-	if priorityCheck && task.Priority != base.TaskPriorityCritical {
+	if priorityCheck && task.Config.Priority != base.TaskPriorityCritical {
 		priorityJob := s.findPriorityJob(task, timeutil.NowUTC())
 		if priorityJob != nil {
 			err := s.ScheduleTask(task, priorityJob.RunAt.Add(taskLowPriorityDelay))
@@ -215,7 +215,7 @@ func (s *Server) addJob(task *entity.Task, job gocron.Job, runAt time.Time) {
 	s.jobMap[task.ID] = &jobData{
 		Job:      job,
 		RunAt:    runAt,
-		Priority: task.Priority,
+		Priority: task.Config.Priority,
 	}
 }
 
@@ -237,7 +237,7 @@ func (s *Server) findPriorityJob(currentTask *entity.Task, runAt time.Time) *job
 		if taskID == currentTask.ID {
 			continue
 		}
-		if job.Priority.Cmp(currentTask.Priority) <= 0 {
+		if job.Priority.Cmp(currentTask.Config.Priority) <= 0 {
 			continue
 		}
 		diff := job.RunAt.Sub(runAt)

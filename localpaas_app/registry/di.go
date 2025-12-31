@@ -169,5 +169,6 @@ var Provides = []any{
 	cacherepository.NewUserTokenRepo,
 	cacherepository.NewMFAPasscodeRepo,
 	cacherepository.NewTaskInfoRepo,
+	cacherepository.NewTaskControlRepo,
 	cacherepository.NewDeploymentInfoRepo,
 }

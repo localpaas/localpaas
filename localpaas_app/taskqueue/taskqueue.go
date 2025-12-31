@@ -18,7 +18,7 @@ import (
 type TaskQueue interface {
 	Start() error
 	Shutdown() error
-	RegisterExecutor(typ base.TaskType, processorFunc TaskExecutorFunc)
+	RegisterExecutor(typ base.TaskType, processorFunc TaskExecFunc)
 
 	ScheduleTask(ctx context.Context, task *entity.Task) error
 	UnscheduleTask(ctx context.Context, task *entity.Task) error
@@ -27,17 +27,17 @@ type TaskQueue interface {
 }
 
 type taskQueue struct {
-	db                *database.DB
-	config            *config.Config
-	logger            logging.Logger
-	server            *gocronqueue.Server
-	client            *gocronqueue.Client
-	redisClient       rediscache.Client
-	settingRepo       repository.SettingRepo
-	taskRepo          repository.TaskRepo
-	cacheTaskInfoRepo cacherepository.TaskInfoRepo
+	db           *database.DB
+	config       *config.Config
+	logger       logging.Logger
+	server       *gocronqueue.Server
+	client       *gocronqueue.Client
+	redisClient  rediscache.Client
+	settingRepo  repository.SettingRepo
+	taskRepo     repository.TaskRepo
+	taskInfoRepo cacherepository.TaskInfoRepo
 
-	taskExecutorMap map[base.TaskType]gocronqueue.TaskExecutorFunc
+	taskExecutorMap map[base.TaskType]gocronqueue.TaskExecFunc
 }
 
 func NewTaskQueue(
@@ -50,13 +50,13 @@ func NewTaskQueue(
 	cacheTaskInfoRepo cacherepository.TaskInfoRepo,
 ) TaskQueue {
 	return &taskQueue{
-		db:                db,
-		config:            config,
-		logger:            logger,
-		redisClient:       redisClient,
-		settingRepo:       settingRepo,
-		taskRepo:          taskRepo,
-		cacheTaskInfoRepo: cacheTaskInfoRepo,
+		db:           db,
+		config:       config,
+		logger:       logger,
+		redisClient:  redisClient,
+		settingRepo:  settingRepo,
+		taskRepo:     taskRepo,
+		taskInfoRepo: cacheTaskInfoRepo,
 	}
 }
 

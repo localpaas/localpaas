@@ -107,6 +107,7 @@ func (uc *CronJobUC) preparePersistingCronJob(
 		Priority:       req.Priority,
 		MaxRetry:       req.MaxRetry,
 		RetryDelaySecs: req.RetryDelaySecs,
+		TimeoutSecs:    req.TimeoutSecs,
 		Command:        req.Command,
 	}
 	// Parse the cron expression to make sure it's valid

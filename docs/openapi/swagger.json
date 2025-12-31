@@ -10133,6 +10133,27 @@
         "required" : [ "id", "type" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_entity.TaskConfig" : {
+        "properties" : {
+          "maxRetry" : {
+            "type" : "integer"
+          },
+          "priority" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.TaskPriority"
+          },
+          "retry" : {
+            "type" : "integer"
+          },
+          "retryDelaySecs" : {
+            "type" : "integer"
+          },
+          "timeout" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "priority" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_pkg_realtimelog.LogFrame" : {
         "properties" : {
           "data" : {
@@ -12194,9 +12215,12 @@
           },
           "retryDelaySecs" : {
             "type" : "integer"
+          },
+          "timeoutSecs" : {
+            "type" : "integer"
           }
         },
-        "required" : [ "command", "cron", "kind", "maxRetry", "name", "priority", "retryDelaySecs" ],
+        "required" : [ "command", "cron", "kind", "maxRetry", "name", "priority", "retryDelaySecs", "timeoutSecs" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_cronjobuc_cronjobdto.CreateCronJobResp" : {
@@ -12249,6 +12273,9 @@
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
           },
+          "timeoutSecs" : {
+            "type" : "integer"
+          },
           "updateVer" : {
             "type" : "integer"
           },
@@ -12256,7 +12283,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "command", "createdAt", "cron", "id", "initialTime", "kind", "maxRetry", "name", "priority", "retryDelaySecs", "status", "updateVer", "updatedAt" ],
+        "required" : [ "command", "createdAt", "cron", "id", "initialTime", "kind", "maxRetry", "name", "priority", "retryDelaySecs", "status", "timeoutSecs", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_cronjobuc_cronjobdto.DeleteCronJobResp" : {
@@ -12342,11 +12369,14 @@
           "retryDelaySecs" : {
             "type" : "integer"
           },
+          "timeoutSecs" : {
+            "type" : "integer"
+          },
           "updateVer" : {
             "type" : "integer"
           }
         },
-        "required" : [ "command", "cron", "kind", "maxRetry", "name", "priority", "retryDelaySecs", "updateVer" ],
+        "required" : [ "command", "cron", "kind", "maxRetry", "name", "priority", "retryDelaySecs", "timeoutSecs", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_cronjobuc_cronjobdto.UpdateCronJobResp" : {
@@ -14928,8 +14958,8 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_taskuc_taskdto.TaskResp" : {
         "properties" : {
-          "command" : {
-            "type" : "string"
+          "config" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.TaskConfig"
           },
           "createdAt" : {
             "type" : "string"
@@ -14940,14 +14970,8 @@
           "id" : {
             "type" : "string"
           },
-          "maxRetry" : {
-            "type" : "integer"
-          },
-          "priority" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.TaskPriority"
-          },
-          "retryDelaySecs" : {
-            "type" : "integer"
+          "retryAt" : {
+            "type" : "string"
           },
           "runAt" : {
             "type" : "string"
@@ -14968,7 +14992,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "command", "createdAt", "endedAt", "id", "maxRetry", "priority", "retryDelaySecs", "runAt", "startedAt", "status", "type", "updateVer", "updatedAt" ],
+        "required" : [ "config", "createdAt", "endedAt", "id", "retryAt", "runAt", "startedAt", "status", "type", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_taskuc_taskdto.UpdateTaskMetaReq" : {

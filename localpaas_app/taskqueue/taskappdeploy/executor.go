@@ -26,7 +26,7 @@ import (
 )
 
 const (
-	deploymentInfoCacheExp = 8 * time.Hour
+	deploymentInfoCacheExp = 4 * time.Hour
 )
 
 type Executor struct {
@@ -69,24 +69,18 @@ func NewExecutor(
 }
 
 type taskData struct {
-	Task               *entity.Task
-	Deployment         *entity.Deployment
-	DeploymentOutput   *entity.AppDeploymentOutput
-	TaskCanceled       bool
-	DeploymentCanceled bool
-	LogStore           *realtimelog.Store
-}
-
-func (taskData *taskData) isCanceled() bool {
-	return taskData.TaskCanceled || taskData.DeploymentCanceled
+	*taskqueue.TaskExecData
+	Deployment       *entity.Deployment
+	DeploymentOutput *entity.AppDeploymentOutput
+	LogStore         *realtimelog.Store
 }
 
 func (e *Executor) execute(
 	ctx context.Context,
 	db database.Tx,
-	task *entity.Task,
+	task *taskqueue.TaskExecData,
 ) (err error) {
-	data := &taskData{Task: task}
+	data := &taskData{TaskExecData: task}
 	deployment, err := e.loadDeployment(ctx, db, data)
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -117,7 +111,7 @@ func (e *Executor) execute(
 	}
 
 	deployment.EndedAt = timeutil.NowUTC()
-	if data.DeploymentCanceled {
+	if data.Canceled {
 		deployment.Status = base.DeploymentStatusCanceled
 	} else {
 		deployment.Status = gofn.If(depErr != nil, base.DeploymentStatusFailed, base.DeploymentStatusDone) //nolint
@@ -167,6 +161,7 @@ func (e *Executor) loadDeployment(
 	err = e.deploymentInfoRepo.Set(ctx, deployment.ID, &cacheentity.DeploymentInfo{
 		ID:        deployment.ID,
 		AppID:     deployment.AppID,
+		TaskID:    task.ID,
 		Status:    base.DeploymentStatusInProgress,
 		StartedAt: deployment.StartedAt,
 	}, deploymentInfoCacheExp)
@@ -176,7 +171,7 @@ func (e *Executor) loadDeployment(
 
 	data.Deployment = deployment
 	data.DeploymentOutput = &entity.AppDeploymentOutput{}
-	logStoreKey := fmt.Sprintf("deployment-log:%s", deployment.ID)
+	logStoreKey := fmt.Sprintf("deployment:%s:log", deployment.ID)
 	data.LogStore = realtimelog.NewStore(logStoreKey, true, e.redisClient)
 
 	return deployment, nil
@@ -192,45 +187,6 @@ func (e *Executor) updateDeployment(
 		return apperrors.Wrap(err)
 	}
 	return nil
-}
-
-func (e *Executor) checkDeploymentCanceled(
-	ctx context.Context,
-	taskData *taskData,
-) (isCanceled bool, err error) {
-	defer func() {
-		if err == nil && taskData.isCanceled() {
-			_ = taskData.LogStore.Add(ctx, realtimelog.NewWarnFrame("Deployment canceled", nil))
-		}
-	}()
-
-	// If the context is done
-	select {
-	case <-ctx.Done():
-		taskData.TaskCanceled = true
-		return taskData.isCanceled(), nil
-	default:
-		// Do nothing
-	}
-
-	// Check if deployment is canceled
-	depInfo, err := e.deploymentInfoRepo.Get(ctx, taskData.Deployment.ID)
-	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-		return false, apperrors.Wrap(err)
-	}
-	taskData.DeploymentCanceled = depInfo != nil && depInfo.Cancel
-	if taskData.DeploymentCanceled {
-		return true, nil
-	}
-
-	// Check if task is canceled
-	taskInfo, err := e.taskInfoRepo.Get(ctx, taskData.Task.ID)
-	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-		return false, apperrors.Wrap(err)
-	}
-	taskData.TaskCanceled = taskInfo != nil && taskInfo.Cancel
-
-	return taskData.isCanceled(), nil
 }
 
 func (e *Executor) saveLogs(
@@ -276,7 +232,7 @@ func (e *Executor) saveLogs(
 	return nil
 }
 
-func (e *Executor) addStepStartLogs(
+func (e *Executor) addStepStartLog(
 	ctx context.Context,
 	taskData *taskData,
 	msg string,
@@ -286,7 +242,7 @@ func (e *Executor) addStepStartLogs(
 		realtimelog.NewOutFrame(msg, nil))
 }
 
-func (e *Executor) addStepEndLogs(
+func (e *Executor) addStepEndLog(
 	ctx context.Context,
 	taskData *taskData,
 	start time.Time,
