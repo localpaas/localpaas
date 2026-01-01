@@ -76,7 +76,7 @@ func (q *taskQueue) executeTask(
 		taskData := &TaskExecData{
 			Task: task,
 		}
-		taskTimeout := time.Duration(task.Config.TimeoutMs) * time.Millisecond
+		taskTimeout := task.Config.TimeoutMs.Duration()
 		ctx, cancel := context.WithTimeout(ctx, gofn.Coalesce(taskTimeout, taskDefaultTimeout))
 		defer cancel()
 
@@ -175,7 +175,7 @@ func (q *taskQueue) taskControlCheck(
 
 func calcExpBackoffRetry(task *entity.Task) time.Duration {
 	randDur := time.Duration(rand.Int31n(1000)) * time.Millisecond //nolint:mnd,gosec
-	delay := task.Config.RetryDelayMs
+	delay := task.Config.RetryDelayMs.Duration()
 	if delay == 0 {
 		return randDur
 	}
@@ -183,5 +183,5 @@ func calcExpBackoffRetry(task *entity.Task) time.Duration {
 	if task.Config.Retry > 0 {
 		exp = math.Pow(2, float64(task.Config.Retry)) //nolint:mnd
 	}
-	return min(time.Duration(exp*float64(delay))*time.Millisecond+randDur, taskRetryMaxBackoff)
+	return min(time.Duration(exp*float64(delay))+randDur, taskRetryMaxBackoff)
 }

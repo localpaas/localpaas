@@ -11,6 +11,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
 )
@@ -124,7 +125,7 @@ func (uc *AppUC) prepareUpdatingAppDeploymentSettings(
 		Status: base.TaskStatusNotStarted,
 		Config: entity.TaskConfig{
 			Priority:  base.TaskPriorityDefault,
-			TimeoutMs: int(defaultDeploymentTimeout.Milliseconds()),
+			TimeoutMs: timeutil.NewDurationMs(defaultDeploymentTimeout),
 		},
 		Version:   entity.CurrentTaskVersion,
 		CreatedAt: timeNow,

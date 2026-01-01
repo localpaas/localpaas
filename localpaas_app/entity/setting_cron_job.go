@@ -8,6 +8,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
 const (
@@ -19,13 +20,13 @@ var (
 )
 
 type CronJob struct {
-	Cron         string            `json:"cron"`
-	InitialTime  time.Time         `json:"initialTime"`
-	Priority     base.TaskPriority `json:"priority"`
-	MaxRetry     int               `json:"maxRetry"`
-	RetryDelayMs int               `json:"retryDelayMs"`
-	TimeoutMs    int               `json:"timeoutMs"`
-	Command      string            `json:"command"`
+	Cron         string              `json:"cron"`
+	InitialTime  time.Time           `json:"initialTime"`
+	Priority     base.TaskPriority   `json:"priority"`
+	MaxRetry     int                 `json:"maxRetry"`
+	RetryDelayMs timeutil.DurationMs `json:"retryDelayMs"`
+	TimeoutMs    timeutil.DurationMs `json:"timeoutMs"`
+	Command      string              `json:"command"`
 }
 
 func (j *CronJob) ParseCron() (cron.Schedule, error) {

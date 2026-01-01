@@ -10,6 +10,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
 type GetCronJobReq struct {
@@ -32,18 +33,18 @@ type GetCronJobResp struct {
 }
 
 type CronJobResp struct {
-	ID           string             `json:"id"`
-	Kind         string             `json:"kind"`
-	Name         string             `json:"name"`
-	Status       base.SettingStatus `json:"status"`
-	Cron         string             `json:"cron"`
-	InitialTime  time.Time          `json:"initialTime"`
-	Priority     base.TaskPriority  `json:"priority"`
-	MaxRetry     int                `json:"maxRetry"`
-	RetryDelayMs int                `json:"retryDelayMs"`
-	TimeoutMs    int                `json:"timeoutMs"`
-	Command      string             `json:"command"`
-	UpdateVer    int                `json:"updateVer"`
+	ID           string              `json:"id"`
+	Kind         string              `json:"kind"`
+	Name         string              `json:"name"`
+	Status       base.SettingStatus  `json:"status"`
+	Cron         string              `json:"cron"`
+	InitialTime  time.Time           `json:"initialTime"`
+	Priority     base.TaskPriority   `json:"priority"`
+	MaxRetry     int                 `json:"maxRetry"`
+	RetryDelayMs timeutil.DurationMs `json:"retryDelayMs"`
+	TimeoutMs    timeutil.DurationMs `json:"timeoutMs"`
+	Command      string              `json:"command"`
+	UpdateVer    int                 `json:"updateVer"`
 
 	CreatedAt time.Time  `json:"createdAt"`
 	UpdatedAt time.Time  `json:"updatedAt"`

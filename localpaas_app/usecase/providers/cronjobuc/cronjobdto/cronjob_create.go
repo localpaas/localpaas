@@ -9,6 +9,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
 type CreateCronJobReq struct {
@@ -16,14 +17,14 @@ type CreateCronJobReq struct {
 }
 
 type CronJobBaseReq struct {
-	Name         string            `json:"name"`
-	Kind         base.TaskType     `json:"kind"`
-	Cron         string            `json:"cron"`
-	Priority     base.TaskPriority `json:"priority"`
-	MaxRetry     int               `json:"maxRetry"`
-	RetryDelayMs int               `json:"retryDelayMs"`
-	TimeoutMs    int               `json:"timeoutMs"`
-	Command      string            `json:"command"`
+	Name         string              `json:"name"`
+	Kind         base.TaskType       `json:"kind"`
+	Cron         string              `json:"cron"`
+	Priority     base.TaskPriority   `json:"priority"`
+	MaxRetry     int                 `json:"maxRetry"`
+	RetryDelayMs timeutil.DurationMs `json:"retryDelayMs"`
+	TimeoutMs    timeutil.DurationMs `json:"timeoutMs"`
+	Command      string              `json:"command"`
 }
 
 func (req *CronJobBaseReq) modifyRequest() error {
