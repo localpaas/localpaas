@@ -22,8 +22,9 @@ const (
 )
 
 type appDeploymentData struct {
-	DeploymentSettings *entity.Setting
-	RegistryAuth       *entity.Setting
+	DeploymentSettings     *entity.Setting
+	CurrDeploymentSettings *entity.AppDeploymentSettings
+	RegistryAuth           *entity.Setting
 }
 
 func (uc *AppUC) loadAppDataForUpdateDeploymentSettings(
@@ -38,10 +39,11 @@ func (uc *AppUC) loadAppDataForUpdateDeploymentSettings(
 	deploymentSettings := deploymentData.DeploymentSettings
 	if deploymentSettings != nil {
 		if deploymentSettings.IsActive() && !deploymentSettings.IsExpired() {
-			_, err := deploymentSettings.AsAppDeploymentSettings()
+			settingData, err := deploymentSettings.AsAppDeploymentSettings()
 			if err != nil {
 				return apperrors.New(err).WithMsgLog("failed to parse app deployment settings")
 			}
+			data.DeploymentData.CurrDeploymentSettings = settingData
 		}
 	}
 
@@ -83,27 +85,11 @@ func (uc *AppUC) prepareUpdatingAppDeploymentSettings(
 	settings.ExpireAt = time.Time{}
 	settings.Status = base.SettingStatusActive
 
-	newDeploymentSettings := &entity.AppDeploymentSettings{
-		ImageSource:   &entity.DeploymentImageSource{},
-		RepoSource:    &entity.DeploymentRepoSource{},
-		TarballSource: &entity.DeploymentTarballSource{},
+	newDeploymentSettings, err := uc.buildNewAppDeploymentSettings(req, data)
+	if err != nil {
+		return apperrors.Wrap(err)
 	}
 
-	if req.DeploymentSettings.ImageSource != nil {
-		if err := copier.Copy(newDeploymentSettings.ImageSource, req.DeploymentSettings.ImageSource); err != nil {
-			return apperrors.Wrap(err)
-		}
-	}
-	if req.DeploymentSettings.RepoSource != nil {
-		if err := copier.Copy(newDeploymentSettings.RepoSource, req.DeploymentSettings.RepoSource); err != nil {
-			return apperrors.Wrap(err)
-		}
-	}
-	if req.DeploymentSettings.TarballSource != nil {
-		if err := copier.Copy(newDeploymentSettings.TarballSource, req.DeploymentSettings.TarballSource); err != nil {
-			return apperrors.Wrap(err)
-		}
-	}
 	settings.MustSetData(newDeploymentSettings)
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, settings)
 
@@ -131,7 +117,7 @@ func (uc *AppUC) prepareUpdatingAppDeploymentSettings(
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,
 	}
-	err := deploymentTask.SetArgs(&entity.TaskAppDeployArgs{
+	err = deploymentTask.SetArgs(&entity.TaskAppDeployArgs{
 		Deployment: entity.ObjectID{ID: deployment.ID},
 	})
 	if err != nil {
@@ -140,6 +126,50 @@ func (uc *AppUC) prepareUpdatingAppDeploymentSettings(
 	persistingData.UpsertingTasks = append(persistingData.UpsertingTasks, deploymentTask)
 
 	return nil
+}
+
+func (uc *AppUC) buildNewAppDeploymentSettings(
+	req *appdto.UpdateAppSettingsReq,
+	data *updateAppSettingsData,
+) (*entity.AppDeploymentSettings, error) {
+	newDeploymentSettings := data.DeploymentData.CurrDeploymentSettings
+	if newDeploymentSettings == nil {
+		newDeploymentSettings = &entity.AppDeploymentSettings{}
+	}
+
+	if req.DeploymentSettings.ImageSource != nil {
+		err := copier.Copy(&newDeploymentSettings.ImageSource, req.DeploymentSettings.ImageSource)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	}
+	if req.DeploymentSettings.RepoSource != nil {
+		err := copier.Copy(&newDeploymentSettings.RepoSource, req.DeploymentSettings.RepoSource)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	}
+	if req.DeploymentSettings.TarballSource != nil {
+		err := copier.Copy(&newDeploymentSettings.TarballSource, req.DeploymentSettings.TarballSource)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	}
+
+	if req.DeploymentSettings.PreDeployment != nil {
+		err := copier.Copy(&newDeploymentSettings.PreDeployment, req.DeploymentSettings.PreDeployment)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	}
+	if req.DeploymentSettings.PostDeployment != nil {
+		err := copier.Copy(&newDeploymentSettings.PostDeployment, req.DeploymentSettings.PostDeployment)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	}
+
+	return newDeploymentSettings, nil
 }
 
 func (uc *AppUC) applyAppDeploymentSettings(

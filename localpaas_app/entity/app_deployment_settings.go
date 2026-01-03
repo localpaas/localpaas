@@ -14,6 +14,9 @@ type AppDeploymentSettings struct {
 	ImageSource   *DeploymentImageSource   `json:"imageSource"`
 	RepoSource    *DeploymentRepoSource    `json:"repoSource"`
 	TarballSource *DeploymentTarballSource `json:"tarballSource"`
+
+	PreDeployment  *PreDeployment  `json:"preDeployment"`
+	PostDeployment *PostDeployment `json:"postDeployment"`
 }
 
 type DeploymentImageSource struct {
@@ -40,6 +43,14 @@ type RepoCredentials struct {
 
 type DeploymentTarballSource struct {
 	Enabled bool `json:"enabled"`
+}
+
+type PreDeployment struct {
+	Cmd string `json:"cmd"`
+}
+
+type PostDeployment struct {
+	Cmd string `json:"cmd"`
 }
 
 func (s *Setting) AsAppDeploymentSettings() (*AppDeploymentSettings, error) {

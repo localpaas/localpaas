@@ -21,7 +21,11 @@ type DeploymentSettingsReq struct {
 	ImageSource   *DeploymentImageSourceReq   `json:"imageSource"`
 	RepoSource    *DeploymentRepoSourceReq    `json:"repoSource"`
 	TarballSource *DeploymentTarballSourceReq `json:"tarballSource"`
-	UpdateVer     int                         `json:"updateVer"`
+
+	PreDeployment  *PreDeploymentReq  `json:"preDeployment"`
+	PostDeployment *PostDeploymentReq `json:"postDeployment"`
+
+	UpdateVer int `json:"updateVer"`
 }
 
 func (req *DeploymentSettingsReq) Validate() apperrors.ValidationErrors {
@@ -29,6 +33,8 @@ func (req *DeploymentSettingsReq) Validate() apperrors.ValidationErrors {
 	validators = append(validators, req.ImageSource.validate("imageSource")...)
 	validators = append(validators, req.RepoSource.validate("repoSource")...)
 	validators = append(validators, req.TarballSource.validate("tarballSource")...)
+	validators = append(validators, req.PreDeployment.validate("preDeployment")...)
+	validators = append(validators, req.PostDeployment.validate("postDeployment")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
@@ -96,6 +102,36 @@ func (req *DeploymentTarballSourceReq) validate(field string) (res []vld.Validat
 	return res
 }
 
+type PreDeploymentReq struct {
+	Cmd string `json:"cmd"`
+}
+
+// nolint
+func (req *PreDeploymentReq) validate(field string) (res []vld.Validator) {
+	if req == nil {
+		return
+	}
+	if field != "" {
+		field += "."
+	}
+	return res
+}
+
+type PostDeploymentReq struct {
+	Cmd string `json:"cmd"`
+}
+
+// nolint
+func (req *PostDeploymentReq) validate(field string) (res []vld.Validator) {
+	if req == nil {
+		return
+	}
+	if field != "" {
+		field += "."
+	}
+	return res
+}
+
 //
 // RESPONSE
 //
@@ -104,7 +140,11 @@ type DeploymentSettingsResp struct {
 	ImageSource   *DeploymentImageSourceResp   `json:"imageSource"`
 	RepoSource    *DeploymentRepoSourceResp    `json:"repoSource"`
 	TarballSource *DeploymentTarballSourceResp `json:"tarballSource"`
-	UpdateVer     int                          `json:"updateVer"`
+
+	PreDeployment  *PreDeploymentResp  `json:"preDeployment"`
+	PostDeployment *PostDeploymentResp `json:"postDeployment"`
+
+	UpdateVer int `json:"updateVer"`
 }
 
 type DeploymentImageSourceResp struct {
@@ -131,6 +171,14 @@ type RepoCredentialsResp struct {
 
 type DeploymentTarballSourceResp struct {
 	Enabled bool `json:"enabled"`
+}
+
+type PreDeploymentResp struct {
+	Cmd string `json:"cmd"`
+}
+
+type PostDeploymentResp struct {
+	Cmd string `json:"cmd"`
 }
 
 func TransformDeploymentSettings(input *AppSettingsTransformationInput) (resp *DeploymentSettingsResp, err error) {
