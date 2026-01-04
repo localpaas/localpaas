@@ -34,7 +34,6 @@ type repoDeployTaskData struct {
 	CredSetting  *entity.Setting
 	CheckoutPath string
 	RepoURLInfo  *vcsurl.VCS
-	Step         string
 }
 
 func (e *Executor) deployFromRepo(
@@ -75,8 +74,20 @@ func (e *Executor) deployFromRepo(
 		return nil
 	}
 
-	// 3. Apply image to service
+	// 3. Pre-deployment command execution
+	err = e.deployStepExecCmd(ctx, data.taskData, true)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	// 4. Apply image to service
 	err = e.repoDeployStepServiceApply(ctx, data)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	// 5. Post-deployment command execution
+	err = e.deployStepExecCmd(ctx, data.taskData, false)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

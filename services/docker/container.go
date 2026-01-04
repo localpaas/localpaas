@@ -3,6 +3,7 @@ package docker
 import (
 	"context"
 	"sync"
+	"time"
 
 	"github.com/docker/docker/api/types/container"
 
@@ -36,6 +37,41 @@ func (m *Manager) ServiceContainerList(
 		FilterAdd(&opts.Filters, "label", "com.docker.swarm.service.id="+serviceID)
 	})
 	return m.ContainerList(ctx, options...)
+}
+
+func (m *Manager) ServiceContainerGetActive(
+	ctx context.Context,
+	serviceID string,
+	maxRetry int,
+	retryDelay time.Duration,
+) (active *container.Summary, all []container.Summary, err error) {
+	return m.serviceContainerGetActive(ctx, serviceID, -1, maxRetry, retryDelay)
+}
+
+func (m *Manager) serviceContainerGetActive(
+	ctx context.Context,
+	serviceID string,
+	retry int,
+	maxRetry int,
+	retryDelay time.Duration,
+) (active *container.Summary, all []container.Summary, err error) {
+	if retry >= maxRetry {
+		return nil, nil, nil
+	}
+	summaries, err := m.ServiceContainerList(ctx, serviceID)
+	if err != nil {
+		return nil, nil, apperrors.Wrap(err)
+	}
+
+	for i := range summaries {
+		c := &summaries[i]
+		if c.State == container.StateRunning {
+			return c, summaries, nil
+		}
+	}
+
+	time.Sleep(retryDelay)
+	return m.serviceContainerGetActive(ctx, serviceID, retry+1, maxRetry, retryDelay)
 }
 
 func (m *Manager) ContainerInspect(

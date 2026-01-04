@@ -31,6 +31,8 @@ func (e *Executor) deployFromImage(
 	taskData *taskData,
 ) error {
 	data := &imageDeployTaskData{taskData: taskData}
+
+	// 1. Pull image from the registry
 	err := e.imageDeployStepImagePull(ctx, db, data)
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -40,7 +42,20 @@ func (e *Executor) deployFromImage(
 		return nil
 	}
 
+	// 2. Pre-deployment command execution
+	err = e.deployStepExecCmd(ctx, data.taskData, true)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	// 3. Apply image to service
 	err = e.imageDeployStepServiceApply(ctx, db, data)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	// 4. Post-deployment command execution
+	err = e.deployStepExecCmd(ctx, data.taskData, false)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

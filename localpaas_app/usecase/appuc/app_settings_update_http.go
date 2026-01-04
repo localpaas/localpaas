@@ -15,7 +15,8 @@ import (
 )
 
 type appHttpSettingsData struct {
-	HttpSettings *entity.Setting
+	HttpSettings     *entity.Setting
+	CurrHttpSettings *entity.AppHttpSettings
 }
 
 func (uc *AppUC) loadAppDataForUpdateHttpSettings(
@@ -33,7 +34,7 @@ func (uc *AppUC) prepareUpdatingAppHttpSettings(
 	timeNow time.Time,
 	data *updateAppSettingsData,
 	persistingData *persistingAppData,
-) error { //nolint
+) error {
 	app := data.App
 	setting := data.HttpSettingsData.HttpSettings
 
@@ -52,45 +53,61 @@ func (uc *AppUC) prepareUpdatingAppHttpSettings(
 	setting.Status = base.SettingStatusActive
 	setting.ExpireAt = time.Time{}
 
+	newHttpSettings, err := uc.buildNewAppHttpSettings(req, data)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	setting.MustSetData(newHttpSettings)
+	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
+	return nil
+}
+
+//nolint:unparam
+func (uc *AppUC) buildNewAppHttpSettings(
+	req *appdto.UpdateAppSettingsReq,
+	data *updateAppSettingsData,
+) (*entity.AppHttpSettings, error) {
+	newHttpSettings := data.HttpSettingsData.CurrHttpSettings
+	if newHttpSettings == nil {
+		newHttpSettings = &entity.AppHttpSettings{}
+	}
+
 	httpReq := req.HttpSettings
-	newHttpSettings := &entity.AppHttpSettings{
-		Enabled: httpReq.Enabled,
-		Domains: gofn.MapSlice(httpReq.Domains, func(r *appdto.DomainReq) *entity.AppDomain {
-			return &entity.AppDomain{
-				Enabled:          r.Enabled,
-				Domain:           r.Domain,
-				DomainRedirect:   r.DomainRedirect,
-				SslCert:          entity.ObjectID{ID: r.SslCert.ID},
-				ContainerPort:    r.ContainerPort,
-				ForceHttps:       r.ForceHttps,
-				WebsocketEnabled: r.WebsocketEnabled,
-				BasicAuth:        entity.ObjectID{ID: r.BasicAuth.ID},
-				NginxSettings: &entity.NginxSettings{
-					RootDirectives: gofn.MapSlice(r.NginxSettings.RootDirectives,
+	newHttpSettings.Enabled = httpReq.Enabled
+	newHttpSettings.Domains = gofn.MapSlice(httpReq.Domains, func(r *appdto.DomainReq) *entity.AppDomain {
+		return &entity.AppDomain{
+			Enabled:          r.Enabled,
+			Domain:           r.Domain,
+			DomainRedirect:   r.DomainRedirect,
+			SslCert:          entity.ObjectID{ID: r.SslCert.ID},
+			ContainerPort:    r.ContainerPort,
+			ForceHttps:       r.ForceHttps,
+			WebsocketEnabled: r.WebsocketEnabled,
+			BasicAuth:        entity.ObjectID{ID: r.BasicAuth.ID},
+			NginxSettings: &entity.NginxSettings{
+				RootDirectives: gofn.MapSlice(r.NginxSettings.RootDirectives,
+					func(r *appdto.NginxDirectiveReq) *entity.NginxDirective {
+						return &entity.NginxDirective{
+							Hide:      r.Hide,
+							Directive: r.Directive,
+						}
+					}),
+				ServerBlock: &entity.NginxServerBlock{
+					Hide: r.NginxSettings.ServerBlock.Hide,
+					Directives: gofn.MapSlice(r.NginxSettings.ServerBlock.Directives,
 						func(r *appdto.NginxDirectiveReq) *entity.NginxDirective {
 							return &entity.NginxDirective{
 								Hide:      r.Hide,
 								Directive: r.Directive,
 							}
 						}),
-					ServerBlock: &entity.NginxServerBlock{
-						Hide: r.NginxSettings.ServerBlock.Hide,
-						Directives: gofn.MapSlice(r.NginxSettings.ServerBlock.Directives,
-							func(r *appdto.NginxDirectiveReq) *entity.NginxDirective {
-								return &entity.NginxDirective{
-									Hide:      r.Hide,
-									Directive: r.Directive,
-								}
-							}),
-					},
 				},
-			}
-		}),
-	}
+			},
+		}
+	})
 
-	setting.MustSetData(newHttpSettings)
-	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
-	return nil
+	return newHttpSettings, nil
 }
 
 func (uc *AppUC) applyAppHttpSettings(

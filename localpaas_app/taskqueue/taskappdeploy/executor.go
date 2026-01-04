@@ -72,6 +72,7 @@ type taskData struct {
 	*taskqueue.TaskExecData
 	Deployment       *entity.Deployment
 	DeploymentOutput *entity.AppDeploymentOutput
+	Step             string
 	LogStore         *realtimelog.Store
 }
 
