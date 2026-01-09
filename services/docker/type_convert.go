@@ -36,48 +36,39 @@ func ConvertFromServiceModeSpec(spec *swarm.ServiceSpec) *ServiceModeSpec {
 }
 
 func ApplyServiceModeSpec(spec *swarm.ServiceSpec, req *ServiceModeSpec) {
-	if req == nil || req.Mode == "" {
+	if req == nil {
 		return
 	}
-	replicated := spec.Mode.Replicated
-	spec.Mode.Replicated = nil
-	replicatedJob := spec.Mode.ReplicatedJob
-	spec.Mode.ReplicatedJob = nil
-	global := spec.Mode.Global
-	spec.Mode.Global = nil
-	globalJob := spec.Mode.GlobalJob
-	spec.Mode.GlobalJob = nil
-
+	currMode := &spec.Mode
+	spec.Mode = swarm.ServiceMode{}
 	switch req.Mode {
 	case ServiceModeReplicated:
-		if replicated == nil {
-			replicated = &swarm.ReplicatedService{}
+		item := currMode.Replicated
+		if item == nil {
+			item = &swarm.ReplicatedService{}
 		}
-		if req.ServiceReplicas != nil {
-			replicated.Replicas = req.ServiceReplicas
-		}
-		spec.Mode.Replicated = replicated
+		item.Replicas = req.ServiceReplicas
+		spec.Mode.Replicated = item
 	case ServiceModeReplicatedJob:
-		if replicatedJob == nil {
-			replicatedJob = &swarm.ReplicatedJob{}
+		item := currMode.ReplicatedJob
+		if item == nil {
+			item = &swarm.ReplicatedJob{}
 		}
-		if req.JobMaxConcurrent != nil {
-			replicatedJob.MaxConcurrent = req.JobMaxConcurrent
-		}
-		if req.JobTotalCompletions != nil {
-			replicatedJob.TotalCompletions = req.JobTotalCompletions
-		}
-		spec.Mode.ReplicatedJob = replicatedJob
+		item.MaxConcurrent = req.JobMaxConcurrent
+		item.TotalCompletions = req.JobTotalCompletions
+		spec.Mode.ReplicatedJob = item
 	case ServiceModeGlobal:
-		if global == nil {
-			global = &swarm.GlobalService{}
+		item := currMode.Global
+		if item == nil {
+			item = &swarm.GlobalService{}
 		}
-		spec.Mode.Global = global
+		spec.Mode.Global = item
 	case ServiceModeGlobalJob:
-		if globalJob == nil {
-			globalJob = &swarm.GlobalJob{}
+		item := currMode.GlobalJob
+		if item == nil {
+			item = &swarm.GlobalJob{}
 		}
-		spec.Mode.GlobalJob = globalJob
+		spec.Mode.GlobalJob = item
 	}
 }
 
@@ -87,7 +78,7 @@ func ConvertFromServiceTaskSpec(taskSpec *swarm.TaskSpec) *TaskSpec {
 	}
 	res := &TaskSpec{
 		Networks:      ConvertFromServiceNetworks(taskSpec.Networks),
-		Resources:     ConvertFromServiceResourceRequirements(taskSpec.Resources),
+		Resources:     ConvertFromServiceResources(taskSpec.Resources),
 		Placement:     ConvertFromServicePlacement(taskSpec.Placement),
 		RestartPolicy: ConvertFromServiceRestartPolicy(taskSpec.RestartPolicy),
 	}
@@ -99,7 +90,7 @@ func ApplyServiceTaskSpec(taskSpec *swarm.TaskSpec, req *TaskSpec) {
 		return
 	}
 	ApplyServiceNetworks(taskSpec, req.Networks)
-	ApplyServiceResourceRequirements(taskSpec, req.Resources)
+	ApplyServiceResources(taskSpec, req.Resources)
 	ApplyServicePlacement(taskSpec, req.Placement)
 	ApplyServiceRestartPolicy(taskSpec, req.RestartPolicy)
 }
@@ -110,100 +101,149 @@ func ConvertFromServiceContainerSpec(contSpec *swarm.ContainerSpec) *ContainerSp
 	}
 	res := &ContainerSpec{
 		Labels:           contSpec.Labels,
-		Image:            &contSpec.Image,
-		Command:          gofn.ToPtr(ConvertFromContainerCommand(contSpec.Command, contSpec.Args)),
-		WorkingDir:       &contSpec.Dir,
-		Hostname:         &contSpec.Hostname,
-		User:             &contSpec.User,
+		Image:            contSpec.Image,
+		Command:          ConvertFromServiceCommand(contSpec.Command, contSpec.Args),
+		WorkingDir:       contSpec.Dir,
+		Hostname:         contSpec.Hostname,
+		User:             contSpec.User,
 		Groups:           contSpec.Groups,
-		StopSignal:       &contSpec.StopSignal,
-		TTY:              &contSpec.TTY,
-		OpenStdin:        &contSpec.OpenStdin,
-		ReadOnly:         &contSpec.ReadOnly,
-		HostsFileEntries: ConvertFromContainerHosts(contSpec.Hosts),
+		StopSignal:       contSpec.StopSignal,
+		TTY:              contSpec.TTY,
+		OpenStdin:        contSpec.OpenStdin,
+		ReadOnly:         contSpec.ReadOnly,
+		Privileges:       ConvertFromServicePrivileges(contSpec.Privileges),
+		HostsFileEntries: ConvertFromServiceHosts(contSpec.Hosts),
+		DNSConfig:        ConvertFromServiceDNSConfig(contSpec.DNSConfig),
 		Sysctls:          contSpec.Sysctls,
 		CapabilityAdd:    contSpec.CapabilityAdd,
 		CapabilityDrop:   contSpec.CapabilityDrop,
-		EnableGPU:        gofn.ToPtr(gofn.Contain(contSpec.CapabilityAdd, "[gpu]")),
+		EnableGPU:        gofn.Contain(contSpec.CapabilityAdd, "[gpu]"),
 		Ulimits:          ConvertFromServiceUlimits(contSpec.Ulimits),
 		Healthcheck:      ConvertFromServiceHealthcheck(contSpec.Healthcheck),
+		Mounts:           ConvertFromServiceMounts(contSpec.Mounts),
 	}
 	if contSpec.StopGracePeriod != nil {
 		res.StopGracePeriod = gofn.ToPtr(timeutil.Duration(*contSpec.StopGracePeriod))
 	}
-	res.BindMounts, res.VolumeMounts = ConvertFromServiceMounts(contSpec.Mounts)
 	return res
 }
 
 func ApplyServiceContainerSpec(contSpec *swarm.ContainerSpec, req *ContainerSpec) {
 	contSpec.Labels = req.Labels
-	if req.Image != nil {
-		contSpec.Image = *req.Image
-	}
-	if req.Command != nil {
-		ApplyContainerCommand(contSpec, *req.Command)
-	}
-	if req.WorkingDir != nil {
-		contSpec.Dir = *req.WorkingDir
-	}
-	if req.Hostname != nil {
-		contSpec.Hostname = *req.Hostname
-	}
-	if req.User != nil {
-		contSpec.User = *req.User
-	}
-	if req.Groups != nil {
-		contSpec.Groups = req.Groups
-	}
-	if req.StopSignal != nil {
-		contSpec.StopSignal = *req.StopSignal
-	}
-	if req.TTY != nil {
-		contSpec.TTY = *req.TTY
-	}
-	if req.OpenStdin != nil {
-		contSpec.OpenStdin = *req.OpenStdin
-	}
-	if req.ReadOnly != nil {
-		contSpec.ReadOnly = *req.ReadOnly
-	}
+	contSpec.Image = req.Image
+	ApplyServiceCommand(contSpec, req.Command)
+	contSpec.Dir = req.WorkingDir
+	contSpec.Hostname = req.Hostname
+	contSpec.User = req.User
+	contSpec.Groups = req.Groups
+	contSpec.StopSignal = req.StopSignal
+	contSpec.TTY = req.TTY
+	contSpec.OpenStdin = req.OpenStdin
+	contSpec.ReadOnly = req.ReadOnly
 	if req.StopGracePeriod != nil {
 		contSpec.StopGracePeriod = gofn.ToPtr(time.Duration(*req.StopGracePeriod))
 	}
 
-	ApplyContainerHosts(contSpec, req.HostsFileEntries)
-	ApplyServiceMounts(contSpec, req.BindMounts, req.VolumeMounts)
+	ApplyServicePrivileges(contSpec, req.Privileges)
+	ApplyServiceHosts(contSpec, req.HostsFileEntries)
+	ApplyServiceDNSConfig(contSpec, req.DNSConfig)
+	ApplyServiceMounts(contSpec, req.Mounts)
 
-	if req.Sysctls != nil {
-		contSpec.Sysctls = req.Sysctls
-	}
-	if req.CapabilityAdd != nil {
-		contSpec.CapabilityAdd = req.CapabilityAdd
-	}
-	if req.CapabilityDrop != nil {
-		contSpec.CapabilityDrop = req.CapabilityDrop
-	}
-	if req.EnableGPU != nil {
-		if *req.EnableGPU && !gofn.Contain(contSpec.CapabilityAdd, "[gpu]") {
-			contSpec.CapabilityAdd = append(contSpec.CapabilityAdd, "[gpu]")
-		} else {
-			contSpec.CapabilityAdd = gofn.Drop(contSpec.CapabilityAdd, "[gpu]")
-		}
+	contSpec.Sysctls = req.Sysctls
+	contSpec.CapabilityAdd = req.CapabilityAdd
+	contSpec.CapabilityDrop = req.CapabilityDrop
+	if req.EnableGPU && !gofn.Contain(contSpec.CapabilityAdd, "[gpu]") {
+		contSpec.CapabilityAdd = append(contSpec.CapabilityAdd, "[gpu]")
+	} else if !req.EnableGPU {
+		contSpec.CapabilityAdd = gofn.Drop(contSpec.CapabilityAdd, "[gpu]")
 	}
 
 	ApplyServiceUlimits(contSpec, req.Ulimits)
 	ApplyServiceHealthcheck(contSpec, req.Healthcheck)
 }
 
-func ConvertFromContainerCommand(cmd []string, args []string) string {
+func ConvertFromServiceCommand(cmd []string, args []string) string {
 	return strings.Join(gofn.Concat(cmd, args), " ")
 }
 
-func ApplyContainerCommand(contSpec *swarm.ContainerSpec, cmd string) {
+func ApplyServiceCommand(contSpec *swarm.ContainerSpec, cmd string) {
 	contSpec.Command = gofn.StringSplit(cmd, " ", "\"")
 }
 
-func ConvertFromContainerHosts(hosts []string) (res []*HostsFileEntry) {
+func ConvertFromServicePrivileges(privileges *swarm.Privileges) (res *Privileges) {
+	if privileges == nil {
+		return nil
+	}
+	res = &Privileges{
+		NoNewPrivileges: privileges.NoNewPrivileges,
+	}
+	if privileges.SELinuxContext != nil {
+		res.SELinuxContext = &SELinuxContext{
+			Disable: privileges.SELinuxContext.Disable,
+			User:    privileges.SELinuxContext.User,
+			Role:    privileges.SELinuxContext.Role,
+			Type:    privileges.SELinuxContext.Type,
+			Level:   privileges.SELinuxContext.Level,
+		}
+	}
+	if privileges.Seccomp != nil {
+		res.Seccomp = &SeccompOpts{
+			Mode:    privileges.Seccomp.Mode,
+			Profile: privileges.Seccomp.Profile,
+		}
+	}
+	if privileges.AppArmor != nil {
+		res.AppArmor = &AppArmorOpts{
+			Mode: privileges.AppArmor.Mode,
+		}
+	}
+	return res
+}
+
+func ApplyServicePrivileges(contSpec *swarm.ContainerSpec, privileges *Privileges) {
+	if privileges == nil {
+		return
+	}
+	if contSpec.Privileges == nil {
+		contSpec.Privileges = &swarm.Privileges{}
+	}
+	contSpec.Privileges.NoNewPrivileges = privileges.NoNewPrivileges
+
+	if privileges.SELinuxContext != nil {
+		if contSpec.Privileges.SELinuxContext == nil {
+			contSpec.Privileges.SELinuxContext = &swarm.SELinuxContext{}
+		}
+		contSpec.Privileges.SELinuxContext.Disable = privileges.SELinuxContext.Disable
+		contSpec.Privileges.SELinuxContext.User = privileges.SELinuxContext.User
+		contSpec.Privileges.SELinuxContext.Role = privileges.SELinuxContext.Role
+		contSpec.Privileges.SELinuxContext.Type = privileges.SELinuxContext.Type
+		contSpec.Privileges.SELinuxContext.Level = privileges.SELinuxContext.Level
+	} else {
+		contSpec.Privileges.SELinuxContext = nil
+	}
+
+	if privileges.Seccomp != nil {
+		if contSpec.Privileges.Seccomp == nil {
+			contSpec.Privileges.Seccomp = &swarm.SeccompOpts{}
+		}
+		contSpec.Privileges.Seccomp.Mode = privileges.Seccomp.Mode
+		contSpec.Privileges.Seccomp.Profile = privileges.Seccomp.Profile
+	} else {
+		contSpec.Privileges.Seccomp = nil
+	}
+
+	if privileges.AppArmor != nil {
+		if contSpec.Privileges.AppArmor == nil {
+			contSpec.Privileges.AppArmor = &swarm.AppArmorOpts{}
+		}
+		contSpec.Privileges.AppArmor.Mode = privileges.AppArmor.Mode
+	} else {
+		contSpec.Privileges.AppArmor = nil
+	}
+}
+
+func ConvertFromServiceHosts(hosts []string) (res []*HostsFileEntry) {
+	res = make([]*HostsFileEntry, 0, len(hosts))
 	for _, host := range hosts {
 		parts := gofn.StringSplit(host, " ", "\"")
 		res = append(res, &HostsFileEntry{
@@ -214,7 +254,7 @@ func ConvertFromContainerHosts(hosts []string) (res []*HostsFileEntry) {
 	return res
 }
 
-func ApplyContainerHosts(contSpec *swarm.ContainerSpec, hosts []*HostsFileEntry) {
+func ApplyServiceHosts(contSpec *swarm.ContainerSpec, hosts []*HostsFileEntry) {
 	contSpec.Hosts = make([]string, 0, len(hosts))
 	for _, host := range hosts {
 		s := append([]string{}, host.Address)
@@ -223,71 +263,94 @@ func ApplyContainerHosts(contSpec *swarm.ContainerSpec, hosts []*HostsFileEntry)
 	}
 }
 
+func ConvertFromServiceDNSConfig(config *swarm.DNSConfig) (res *DNSConfig) {
+	if config == nil {
+		return nil
+	}
+	return &DNSConfig{
+		Nameservers: config.Nameservers,
+		Search:      config.Search,
+		Options:     config.Options,
+	}
+}
+
+func ApplyServiceDNSConfig(contSpec *swarm.ContainerSpec, config *DNSConfig) {
+	if config == nil {
+		return
+	}
+	if contSpec.DNSConfig == nil {
+		contSpec.DNSConfig = &swarm.DNSConfig{}
+	}
+	contSpec.DNSConfig.Nameservers = config.Nameservers
+	contSpec.DNSConfig.Search = config.Search
+	contSpec.DNSConfig.Options = config.Options
+}
+
 func ConvertFromServiceUlimits(ulimits []*container.Ulimit) (res []*Ulimit) {
-	for _, limit := range ulimits {
+	res = make([]*Ulimit, 0, len(ulimits))
+	for i, limit := range ulimits {
 		if limit == nil {
 			continue
 		}
 		res = append(res, &Ulimit{
-			Name: limit.Name,
-			Hard: limit.Hard,
-			Soft: limit.Soft,
+			Index: gofn.ToPtr(i),
+			Name:  limit.Name,
+			Hard:  limit.Hard,
+			Soft:  limit.Soft,
 		})
 	}
 	return res
 }
 
 func ApplyServiceUlimits(contSpec *swarm.ContainerSpec, ulimits []*Ulimit) {
+	currUlimits := contSpec.Ulimits
 	contSpec.Ulimits = make([]*container.Ulimit, 0, len(ulimits))
 	for _, limit := range ulimits {
 		if limit == nil {
 			continue
 		}
-		contSpec.Ulimits = append(contSpec.Ulimits, &container.Ulimit{
-			Name: limit.Name,
-			Hard: limit.Hard,
-			Soft: limit.Soft,
-		})
+		var item *container.Ulimit
+		if limit.Index != nil {
+			item = currUlimits[*limit.Index]
+		} else {
+			item = &container.Ulimit{}
+		}
+		item.Name = limit.Name
+		item.Hard = limit.Hard
+		item.Soft = limit.Soft
+		contSpec.Ulimits = append(contSpec.Ulimits, item)
 	}
 }
 
-func ConvertFromServiceMounts(mounts []mount.Mount) (bindMounts []*BindMount, volMounts []*VolumeMount) {
-	for _, mnt := range mounts {
-		switch mnt.Type { //nolint:exhaustive
-		case mount.TypeBind:
-			bindMounts = append(bindMounts, &BindMount{
-				Source:   mnt.Source,
-				Target:   mnt.Target,
-				ReadOnly: mnt.ReadOnly,
-			})
-		case mount.TypeVolume:
-			volMounts = append(volMounts, &VolumeMount{
-				Source:   mnt.Source,
-				Target:   mnt.Target,
-				ReadOnly: mnt.ReadOnly,
-			})
-		}
+func ConvertFromServiceMounts(mounts []mount.Mount) (res []*Mount) {
+	res = make([]*Mount, 0, len(mounts))
+	for i, mnt := range mounts {
+		res = append(res, &Mount{
+			Index:    gofn.ToPtr(i),
+			Type:     mnt.Type,
+			Source:   mnt.Source,
+			Target:   mnt.Target,
+			ReadOnly: mnt.ReadOnly,
+		})
 	}
 	return
 }
 
-func ApplyServiceMounts(contSpec *swarm.ContainerSpec, bindMounts []*BindMount, volMounts []*VolumeMount) {
-	contSpec.Mounts = make([]mount.Mount, 0, len(bindMounts)+len(volMounts))
-	for _, mnt := range bindMounts {
-		contSpec.Mounts = append(contSpec.Mounts, mount.Mount{
-			Type:     mount.TypeBind,
-			Source:   mnt.Source,
-			Target:   mnt.Target,
-			ReadOnly: mnt.ReadOnly,
-		})
-	}
-	for _, mnt := range volMounts {
-		contSpec.Mounts = append(contSpec.Mounts, mount.Mount{
-			Type:     mount.TypeVolume,
-			Source:   mnt.Source,
-			Target:   mnt.Target,
-			ReadOnly: mnt.ReadOnly,
-		})
+func ApplyServiceMounts(contSpec *swarm.ContainerSpec, mounts []*Mount) {
+	currMounts := contSpec.Mounts
+	contSpec.Mounts = make([]mount.Mount, 0, len(mounts))
+	for _, mnt := range mounts {
+		var item mount.Mount
+		if mnt.Index != nil {
+			item = currMounts[*mnt.Index]
+		} else {
+			item = mount.Mount{}
+		}
+		item.Type = mnt.Type
+		item.Source = mnt.Source
+		item.Target = mnt.Target
+		item.ReadOnly = mnt.ReadOnly
+		contSpec.Mounts = append(contSpec.Mounts, item)
 	}
 }
 
@@ -316,23 +379,25 @@ func ConvertFromServiceHealthcheck(config *container.HealthConfig) *Healthcheck 
 
 func ApplyServiceHealthcheck(contSpec *swarm.ContainerSpec, healthcheck *Healthcheck) {
 	if healthcheck == nil {
-		contSpec.Healthcheck = nil
 		return
 	}
-	cmd := gofn.StringSplit(healthcheck.Command, " ", "\"")
-	contSpec.Healthcheck = &container.HealthConfig{
-		Test:          gofn.Concat([]string{string(healthcheck.Mode)}, cmd),
-		Interval:      time.Duration(healthcheck.Interval),
-		Timeout:       time.Duration(healthcheck.Timeout),
-		StartPeriod:   time.Duration(healthcheck.StartPeriod),
-		StartInterval: time.Duration(healthcheck.StartInterval),
-		Retries:       healthcheck.Retries,
+	if contSpec.Healthcheck == nil {
+		contSpec.Healthcheck = &container.HealthConfig{}
 	}
+	cmd := gofn.StringSplit(healthcheck.Command, " ", "\"")
+	contSpec.Healthcheck.Test = gofn.Concat([]string{string(healthcheck.Mode)}, cmd)
+	contSpec.Healthcheck.Interval = time.Duration(healthcheck.Interval)
+	contSpec.Healthcheck.Timeout = time.Duration(healthcheck.Timeout)
+	contSpec.Healthcheck.StartPeriod = time.Duration(healthcheck.StartPeriod)
+	contSpec.Healthcheck.StartInterval = time.Duration(healthcheck.StartInterval)
+	contSpec.Healthcheck.Retries = healthcheck.Retries
 }
 
 func ConvertFromServiceNetworks(networks []swarm.NetworkAttachmentConfig) (res []*NetworkAttachment) {
-	for _, net := range networks {
+	res = make([]*NetworkAttachment, 0, len(networks))
+	for i, net := range networks {
 		res = append(res, &NetworkAttachment{
+			Index:   gofn.ToPtr(i),
 			Target:  net.Target,
 			Aliases: net.Aliases,
 		})
@@ -341,16 +406,22 @@ func ConvertFromServiceNetworks(networks []swarm.NetworkAttachmentConfig) (res [
 }
 
 func ApplyServiceNetworks(taskSpec *swarm.TaskSpec, networks []*NetworkAttachment) {
+	currNetworks := taskSpec.Networks
 	taskSpec.Networks = make([]swarm.NetworkAttachmentConfig, 0, len(networks))
 	for _, net := range networks {
-		taskSpec.Networks = append(taskSpec.Networks, swarm.NetworkAttachmentConfig{
-			Target:  net.Target,
-			Aliases: net.Aliases,
-		})
+		var item swarm.NetworkAttachmentConfig
+		if net.Index != nil {
+			item = currNetworks[*net.Index]
+		} else {
+			item = swarm.NetworkAttachmentConfig{}
+		}
+		item.Target = net.Target
+		item.Aliases = net.Aliases
+		taskSpec.Networks = append(taskSpec.Networks, item)
 	}
 }
 
-func ConvertFromServiceResourceRequirements(req *swarm.ResourceRequirements) *ResourceRequirements {
+func ConvertFromServiceResources(req *swarm.ResourceRequirements) *ResourceRequirements {
 	if req == nil {
 		return nil
 	}
@@ -358,8 +429,9 @@ func ConvertFromServiceResourceRequirements(req *swarm.ResourceRequirements) *Re
 
 	if req.Reservations != nil {
 		res.Reservations = &Resources{
-			CPUs:     float64(req.Reservations.NanoCPUs / UnitCPUNano),
-			MemoryMB: req.Reservations.MemoryBytes / UnitMemMB,
+			CPUs:             float64(req.Reservations.NanoCPUs / UnitCPUNano),
+			MemoryMB:         req.Reservations.MemoryBytes / UnitMemMB,
+			GenericResources: make([]string, 0, len(req.Reservations.GenericResources)),
 		}
 		for _, r := range req.Reservations.GenericResources {
 			if r.NamedResourceSpec != nil {
@@ -383,22 +455,21 @@ func ConvertFromServiceResourceRequirements(req *swarm.ResourceRequirements) *Re
 	return res
 }
 
-func ApplyServiceResourceRequirements(taskSpec *swarm.TaskSpec, req *ResourceRequirements) {
+func ApplyServiceResources(taskSpec *swarm.TaskSpec, req *ResourceRequirements) {
 	if req == nil {
-		taskSpec.Resources = nil
 		return
 	}
 	if taskSpec.Resources == nil {
 		taskSpec.Resources = &swarm.ResourceRequirements{}
 	}
-	taskSpec.Resources.Reservations = nil
-	taskSpec.Resources.Limits = nil
 
 	if req.Reservations != nil {
-		taskSpec.Resources.Reservations = &swarm.Resources{
-			NanoCPUs:    int64(req.Reservations.CPUs * UnitCPUNano),
-			MemoryBytes: req.Reservations.MemoryMB * UnitMemMB,
+		if taskSpec.Resources.Reservations == nil {
+			taskSpec.Resources.Reservations = &swarm.Resources{}
 		}
+		taskSpec.Resources.Reservations.NanoCPUs = int64(req.Reservations.CPUs * UnitCPUNano)
+		taskSpec.Resources.Reservations.MemoryBytes = req.Reservations.MemoryMB * UnitMemMB
+
 		for _, r := range req.Reservations.GenericResources {
 			k, v, _ := strings.Cut(r, "=")
 			k, v = strings.TrimSpace(k), strings.TrimSpace(v)
@@ -421,11 +492,12 @@ func ApplyServiceResourceRequirements(taskSpec *swarm.TaskSpec, req *ResourceReq
 	}
 
 	if req.Limits != nil {
-		taskSpec.Resources.Limits = &swarm.Limit{
-			NanoCPUs:    int64(req.Limits.CPUs * UnitCPUNano),
-			MemoryBytes: req.Limits.MemoryMB * UnitMemMB,
-			Pids:        req.Limits.Pids,
+		if taskSpec.Resources.Limits == nil {
+			taskSpec.Resources.Limits = &swarm.Limit{}
 		}
+		taskSpec.Resources.Limits.NanoCPUs = int64(req.Limits.CPUs * UnitCPUNano)
+		taskSpec.Resources.Limits.MemoryBytes = req.Limits.MemoryMB * UnitMemMB
+		taskSpec.Resources.Limits.Pids = req.Limits.Pids
 	}
 }
 
@@ -435,6 +507,7 @@ func ConvertFromServicePlacement(placement *swarm.Placement) *Placement {
 	}
 	res := &Placement{
 		Constraints: placement.Constraints,
+		Preferences: make([]string, 0, len(placement.Preferences)),
 	}
 	for _, pref := range placement.Preferences {
 		if pref.Spread != nil {
@@ -447,19 +520,17 @@ func ConvertFromServicePlacement(placement *swarm.Placement) *Placement {
 
 func ApplyServicePlacement(taskSpec *swarm.TaskSpec, placement *Placement) {
 	if placement == nil {
-		taskSpec.Placement = nil
 		return
 	}
 	if taskSpec.Placement == nil {
 		taskSpec.Placement = &swarm.Placement{}
 	}
 	taskSpec.Placement.Constraints = placement.Constraints
-	taskSpec.Placement.Preferences = nil
+	taskSpec.Placement.Preferences = make([]swarm.PlacementPreference, 0, len(placement.Preferences))
 
 	for _, pref := range placement.Preferences {
 		k, v, _ := strings.Cut(pref, "=")
 		k, v = strings.TrimSpace(k), strings.TrimSpace(v)
-
 		if k == "spread" {
 			taskSpec.Placement.Preferences = append(taskSpec.Placement.Preferences,
 				swarm.PlacementPreference{
@@ -488,7 +559,6 @@ func ConvertFromServiceRestartPolicy(policy *swarm.RestartPolicy) *RestartPolicy
 
 func ApplyServiceRestartPolicy(taskSpec *swarm.TaskSpec, policy *RestartPolicy) {
 	if policy == nil {
-		taskSpec.RestartPolicy = nil
 		return
 	}
 	if taskSpec.RestartPolicy == nil {
@@ -496,8 +566,6 @@ func ApplyServiceRestartPolicy(taskSpec *swarm.TaskSpec, policy *RestartPolicy) 
 	}
 	taskSpec.RestartPolicy.Condition = policy.Condition
 	taskSpec.RestartPolicy.MaxAttempts = policy.MaxAttempts
-	taskSpec.RestartPolicy.Delay = nil
-	taskSpec.RestartPolicy.Window = nil
 	if policy.Delay != nil {
 		taskSpec.RestartPolicy.Delay = gofn.ToPtr(time.Duration(*policy.Delay))
 	}
@@ -511,10 +579,12 @@ func ConvertFromServiceEndpointSpec(endpointSpec *swarm.EndpointSpec) *EndpointS
 		return nil
 	}
 	res := &EndpointSpec{
-		Mode: endpointSpec.Mode,
+		Mode:  endpointSpec.Mode,
+		Ports: make([]*PortConfig, 0, len(endpointSpec.Ports)),
 	}
-	for _, port := range endpointSpec.Ports {
+	for i, port := range endpointSpec.Ports {
 		res.Ports = append(res.Ports, &PortConfig{
+			Index:       gofn.ToPtr(i),
 			Target:      port.TargetPort,
 			Published:   port.PublishedPort,
 			Protocol:    port.Protocol,
@@ -526,20 +596,26 @@ func ConvertFromServiceEndpointSpec(endpointSpec *swarm.EndpointSpec) *EndpointS
 
 func ApplyServiceEndpointSpec(spec *swarm.ServiceSpec, endpointSpec *EndpointSpec) {
 	if endpointSpec == nil {
-		spec.EndpointSpec = nil
 		return
 	}
 	if spec.EndpointSpec == nil {
 		spec.EndpointSpec = &swarm.EndpointSpec{}
 	}
 	spec.EndpointSpec.Mode = endpointSpec.Mode
+
+	currPorts := spec.EndpointSpec.Ports
 	spec.EndpointSpec.Ports = make([]swarm.PortConfig, 0, len(endpointSpec.Ports))
 	for _, port := range endpointSpec.Ports {
-		spec.EndpointSpec.Ports = append(spec.EndpointSpec.Ports, swarm.PortConfig{
-			TargetPort:    port.Target,
-			PublishedPort: port.Published,
-			Protocol:      port.Protocol,
-			PublishMode:   port.PublishMode,
-		})
+		var item swarm.PortConfig
+		if port.Index != nil {
+			item = currPorts[*port.Index]
+		} else {
+			item = swarm.PortConfig{}
+		}
+		item.TargetPort = port.Target
+		item.PublishedPort = port.Published
+		item.Protocol = port.Protocol
+		item.PublishMode = port.PublishMode
+		spec.EndpointSpec.Ports = append(spec.EndpointSpec.Ports, item)
 	}
 }

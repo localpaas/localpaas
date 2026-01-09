@@ -1,6 +1,7 @@
 package docker
 
 import (
+	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/api/types/swarm"
 
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
@@ -36,29 +37,31 @@ type TaskSpec struct {
 
 type ContainerSpec struct {
 	Labels           map[string]string  `json:"labels,omitempty"`
-	Image            *string            `json:"image,omitempty"`
-	Command          *string            `json:"command,omitempty"`
-	WorkingDir       *string            `json:"workingDir,omitempty"`
-	Hostname         *string            `json:"hostname,omitempty"`
-	User             *string            `json:"user,omitempty"`
+	Image            string             `json:"image,omitempty"`
+	Command          string             `json:"command,omitempty"`
+	WorkingDir       string             `json:"workingDir,omitempty"`
+	Hostname         string             `json:"hostname,omitempty"`
+	User             string             `json:"user,omitempty"`
 	Groups           []string           `json:"groups,omitempty"`
-	StopSignal       *string            `json:"stopSignal,omitempty"`
-	TTY              *bool              `json:"tty,omitempty"`
-	OpenStdin        *bool              `json:"openStdin,omitempty"`
-	ReadOnly         *bool              `json:"readOnly,omitempty"`
+	StopSignal       string             `json:"stopSignal,omitempty"`
+	TTY              bool               `json:"tty,omitempty"`
+	OpenStdin        bool               `json:"openStdin,omitempty"`
+	ReadOnly         bool               `json:"readOnly,omitempty"`
 	StopGracePeriod  *timeutil.Duration `json:"stopGracePeriod,omitempty"` // e.g. 5s, 1m
+	Privileges       *Privileges        `json:"privileges,omitempty"`
 	HostsFileEntries []*HostsFileEntry  `json:"hostsFileEntries,omitempty"`
+	DNSConfig        *DNSConfig         `json:"dnsConfig,omitempty"`
 	Ulimits          []*Ulimit          `json:"ulimits,omitempty"`
 	Sysctls          map[string]string  `json:"sysctls,omitempty"`
 	CapabilityAdd    []string           `json:"capabilityAdd,omitempty"`
 	CapabilityDrop   []string           `json:"capabilityDrop,omitempty"`
-	EnableGPU        *bool              `json:"enableGPU,omitempty"`
+	EnableGPU        bool               `json:"enableGPU,omitempty"`
 	Healthcheck      *Healthcheck       `json:"healthcheck,omitempty"`
-	VolumeMounts     []*VolumeMount     `json:"volumeMounts,omitempty"`
-	BindMounts       []*BindMount       `json:"bindMounts,omitempty"`
+	Mounts           []*Mount           `json:"mounts,omitempty"`
 }
 
 type NetworkAttachment struct {
+	Index   *int     `json:"index,omitempty"`
 	Target  string   `json:"target,omitempty"`
 	Aliases []string `json:"aliases,omitempty"`
 	// DriverOpts map[string]string `json:"driverOpts,omitempty"`
@@ -70,6 +73,7 @@ type EndpointSpec struct {
 }
 
 type PortConfig struct {
+	Index       *int                        `json:"index,omitempty"`
 	Target      uint32                      `json:"target,omitempty"`    // port inside the container
 	Published   uint32                      `json:"published,omitempty"` // port on the swarm hosts
 	Protocol    swarm.PortConfigProtocol    `json:"protocol,omitempty"`
@@ -81,22 +85,25 @@ type HostsFileEntry struct {
 	Hostnames []string `json:"hostnames,omitempty"`
 }
 
-type VolumeMount struct {
-	Source   string `json:"source,omitempty"`
-	Target   string `json:"target,omitempty"`
-	ReadOnly bool   `json:"readOnly,omitempty"`
+type DNSConfig struct {
+	Nameservers []string `json:"nameservers,omitempty"`
+	Search      []string `json:"search,omitempty"`
+	Options     []string `json:"options,omitempty"`
 }
 
-type BindMount struct {
-	Source   string `json:"source,omitempty"`
-	Target   string `json:"target,omitempty"`
-	ReadOnly bool   `json:"readOnly,omitempty"`
+type Mount struct {
+	Index    *int       `json:"index,omitempty"`
+	Type     mount.Type `json:"type,omitempty"`
+	Source   string     `json:"source,omitempty"`
+	Target   string     `json:"target,omitempty"`
+	ReadOnly bool       `json:"readOnly,omitempty"`
 }
 
 type Ulimit struct {
-	Name string `json:"name,omitempty"`
-	Hard int64  `json:"hard,omitempty"`
-	Soft int64  `json:"soft,omitempty"`
+	Index *int   `json:"index,omitempty"`
+	Name  string `json:"name,omitempty"`
+	Hard  int64  `json:"hard,omitempty"`
+	Soft  int64  `json:"soft,omitempty"`
 }
 
 type ResourceRequirements struct {
@@ -160,3 +167,28 @@ const (
 	HealthcheckModeCmd      = HealthcheckMode("CMD")
 	HealthcheckModeCmdShell = HealthcheckMode("CMD-SHELL")
 )
+
+type SELinuxContext struct {
+	Disable bool `json:"disable,omitempty"`
+
+	User  string `json:"user,omitempty"`
+	Role  string `json:"role,omitempty"`
+	Type  string `json:"type,omitempty"`
+	Level string `json:"level,omitempty"`
+}
+
+type SeccompOpts struct {
+	Mode    swarm.SeccompMode `json:"mode,omitempty"`
+	Profile []byte            `json:"profile,omitempty"`
+}
+
+type AppArmorOpts struct {
+	Mode swarm.AppArmorMode `json:"mode,omitempty"`
+}
+
+type Privileges struct {
+	SELinuxContext  *SELinuxContext `json:"seLinuxContext,omitempty"`
+	Seccomp         *SeccompOpts    `json:"seccomp,omitempty"`
+	AppArmor        *AppArmorOpts   `json:"appArmor,omitempty"`
+	NoNewPrivileges bool            `json:"noNewPrivileges,omitempty"`
+}

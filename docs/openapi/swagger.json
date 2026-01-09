@@ -10552,10 +10552,10 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
         "format" : "int64",
         "type" : "integer",
-        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
+        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentReq" : {
         "type" : "object"
@@ -16263,28 +16263,16 @@
         "required" : [ "accessExpireAt", "createdAt", "email", "fullName", "id", "lastAccess", "photo", "position", "role", "securityOption", "status", "updatedAt", "username" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_services_docker.BindMount" : {
+      "github_com_localpaas_localpaas_services_docker.AppArmorOpts" : {
         "properties" : {
-          "readOnly" : {
-            "type" : "boolean"
-          },
-          "source" : {
-            "type" : "string"
-          },
-          "target" : {
-            "type" : "string"
+          "mode" : {
+            "$ref" : "#/components/schemas/swarm.AppArmorMode"
           }
         },
         "type" : "object"
       },
       "github_com_localpaas_localpaas_services_docker.ContainerSpec" : {
         "properties" : {
-          "bindMounts" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_services_docker.BindMount"
-            },
-            "type" : "array"
-          },
           "capabilityAdd" : {
             "items" : {
               "type" : "string"
@@ -16299,6 +16287,9 @@
           },
           "command" : {
             "type" : "string"
+          },
+          "dnsConfig" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_services_docker.DNSConfig"
           },
           "enableGPU" : {
             "type" : "boolean"
@@ -16330,8 +16321,17 @@
             },
             "type" : "object"
           },
+          "mounts" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_services_docker.Mount"
+            },
+            "type" : "array"
+          },
           "openStdin" : {
             "type" : "boolean"
+          },
+          "privileges" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_services_docker.Privileges"
           },
           "readOnly" : {
             "type" : "boolean"
@@ -16364,14 +16364,31 @@
           "user" : {
             "type" : "string"
           },
-          "volumeMounts" : {
+          "workingDir" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_services_docker.DNSConfig" : {
+        "properties" : {
+          "nameservers" : {
             "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_services_docker.VolumeMount"
+              "type" : "string"
             },
             "type" : "array"
           },
-          "workingDir" : {
-            "type" : "string"
+          "options" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "search" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
           }
         },
         "type" : "object"
@@ -16447,6 +16464,26 @@
         },
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_services_docker.Mount" : {
+        "properties" : {
+          "index" : {
+            "type" : "integer"
+          },
+          "readOnly" : {
+            "type" : "boolean"
+          },
+          "source" : {
+            "type" : "string"
+          },
+          "target" : {
+            "type" : "string"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/mount.Type"
+          }
+        },
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_services_docker.NetworkAttachment" : {
         "properties" : {
           "aliases" : {
@@ -16454,6 +16491,9 @@
               "type" : "string"
             },
             "type" : "array"
+          },
+          "index" : {
+            "type" : "integer"
           },
           "target" : {
             "type" : "string"
@@ -16480,6 +16520,9 @@
       },
       "github_com_localpaas_localpaas_services_docker.PortConfig" : {
         "properties" : {
+          "index" : {
+            "type" : "integer"
+          },
           "protocol" : {
             "$ref" : "#/components/schemas/swarm.PortConfigProtocol"
           },
@@ -16493,6 +16536,23 @@
           "target" : {
             "description" : "port inside the container",
             "type" : "integer"
+          }
+        },
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_services_docker.Privileges" : {
+        "properties" : {
+          "appArmor" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_services_docker.AppArmorOpts"
+          },
+          "noNewPrivileges" : {
+            "type" : "boolean"
+          },
+          "seLinuxContext" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_services_docker.SELinuxContext"
+          },
+          "seccomp" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_services_docker.SeccompOpts"
           }
         },
         "type" : "object"
@@ -16556,6 +16616,40 @@
         },
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_services_docker.SELinuxContext" : {
+        "properties" : {
+          "disable" : {
+            "type" : "boolean"
+          },
+          "level" : {
+            "type" : "string"
+          },
+          "role" : {
+            "type" : "string"
+          },
+          "type" : {
+            "type" : "string"
+          },
+          "user" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_services_docker.SeccompOpts" : {
+        "properties" : {
+          "mode" : {
+            "$ref" : "#/components/schemas/swarm.SeccompMode"
+          },
+          "profile" : {
+            "items" : {
+              "type" : "integer"
+            },
+            "type" : "array"
+          }
+        },
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_services_docker.ServiceMode" : {
         "enum" : [ "replicated", "replicated-job", "global", "global-job" ],
         "type" : "string",
@@ -16603,6 +16697,9 @@
           "hard" : {
             "type" : "integer"
           },
+          "index" : {
+            "type" : "integer"
+          },
           "name" : {
             "type" : "string"
           },
@@ -16612,19 +16709,15 @@
         },
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_services_docker.VolumeMount" : {
-        "properties" : {
-          "readOnly" : {
-            "type" : "boolean"
-          },
-          "source" : {
-            "type" : "string"
-          },
-          "target" : {
-            "type" : "string"
-          }
-        },
-        "type" : "object"
+      "mount.Type" : {
+        "enum" : [ "bind", "volume", "tmpfs", "npipe", "cluster", "image" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "TypeBind", "TypeVolume", "TypeTmpfs", "TypeNamedPipe", "TypeCluster", "TypeImage" ]
+      },
+      "swarm.AppArmorMode" : {
+        "enum" : [ "default", "disabled" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "AppArmorModeDefault", "AppArmorModeDisabled" ]
       },
       "swarm.PortConfigProtocol" : {
         "enum" : [ "tcp", "udp", "sctp" ],
@@ -16645,6 +16738,11 @@
         "enum" : [ "none", "on-failure", "any" ],
         "type" : "string",
         "x-enum-varnames" : [ "RestartPolicyConditionNone", "RestartPolicyConditionOnFailure", "RestartPolicyConditionAny" ]
+      },
+      "swarm.SeccompMode" : {
+        "enum" : [ "default", "unconfined", "custom" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "SeccompModeDefault", "SeccompModeUnconfined", "SeccompModeCustom" ]
       }
     },
     "securitySchemes" : {

@@ -233,7 +233,7 @@ func (e *Executor) repoDeployStepServiceApply(
 		contSpec.Dir = *deployment.Settings.WorkingDir
 	}
 	if deployment.Settings.Command != nil {
-		docker.ApplyContainerCommand(contSpec, *deployment.Settings.Command)
+		docker.ApplyServiceCommand(contSpec, *deployment.Settings.Command)
 	}
 
 	_, err = e.dockerManager.ServiceUpdate(ctx, deployment.App.ServiceID, &service.Version, spec)
