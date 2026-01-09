@@ -33,18 +33,18 @@ type GetCronJobResp struct {
 }
 
 type CronJobResp struct {
-	ID           string              `json:"id"`
-	Kind         string              `json:"kind"`
-	Name         string              `json:"name"`
-	Status       base.SettingStatus  `json:"status"`
-	Cron         string              `json:"cron"`
-	InitialTime  time.Time           `json:"initialTime"`
-	Priority     base.TaskPriority   `json:"priority"`
-	MaxRetry     int                 `json:"maxRetry"`
-	RetryDelayMs timeutil.DurationMs `json:"retryDelayMs"`
-	TimeoutMs    timeutil.DurationMs `json:"timeoutMs"`
-	Command      string              `json:"command"`
-	UpdateVer    int                 `json:"updateVer"`
+	ID          string             `json:"id"`
+	Kind        string             `json:"kind"`
+	Name        string             `json:"name"`
+	Status      base.SettingStatus `json:"status"`
+	Cron        string             `json:"cron"`
+	InitialTime time.Time          `json:"initialTime"`
+	Priority    base.TaskPriority  `json:"priority"`
+	MaxRetry    int                `json:"maxRetry"`
+	RetryDelay  timeutil.Duration  `json:"retryDelay"`
+	Timeout     timeutil.Duration  `json:"timeout"`
+	Command     string             `json:"command"`
+	UpdateVer   int                `json:"updateVer"`
 
 	CreatedAt time.Time  `json:"createdAt"`
 	UpdatedAt time.Time  `json:"updatedAt"`

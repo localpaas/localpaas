@@ -129,7 +129,7 @@ func ConvertFromServiceContainerSpec(contSpec *swarm.ContainerSpec) *ContainerSp
 		Healthcheck:      ConvertFromServiceHealthcheck(contSpec.Healthcheck),
 	}
 	if contSpec.StopGracePeriod != nil {
-		res.StopGracePeriod = gofn.ToPtr(timeutil.DurationStr(*contSpec.StopGracePeriod))
+		res.StopGracePeriod = gofn.ToPtr(timeutil.Duration(*contSpec.StopGracePeriod))
 	}
 	res.BindMounts, res.VolumeMounts = ConvertFromServiceMounts(contSpec.Mounts)
 	return res
@@ -305,10 +305,10 @@ func ConvertFromServiceHealthcheck(config *container.HealthConfig) *Healthcheck 
 		Enabled:       mode != HealthcheckModeNone,
 		Mode:          mode,
 		Command:       strings.Join(cmd, " "),
-		Interval:      timeutil.DurationStr(config.Interval),
-		Timeout:       timeutil.DurationStr(config.Timeout),
-		StartPeriod:   timeutil.DurationStr(config.StartPeriod),
-		StartInterval: timeutil.DurationStr(config.StartInterval),
+		Interval:      timeutil.Duration(config.Interval),
+		Timeout:       timeutil.Duration(config.Timeout),
+		StartPeriod:   timeutil.Duration(config.StartPeriod),
+		StartInterval: timeutil.Duration(config.StartInterval),
 		Retries:       config.Retries,
 	}
 	return res
@@ -478,10 +478,10 @@ func ConvertFromServiceRestartPolicy(policy *swarm.RestartPolicy) *RestartPolicy
 		MaxAttempts: policy.MaxAttempts,
 	}
 	if policy.Delay != nil {
-		res.Delay = gofn.ToPtr(timeutil.DurationStr(*policy.Delay))
+		res.Delay = gofn.ToPtr(timeutil.Duration(*policy.Delay))
 	}
 	if policy.Window != nil {
-		res.Window = gofn.ToPtr(timeutil.DurationStr(*policy.Window))
+		res.Window = gofn.ToPtr(timeutil.Duration(*policy.Window))
 	}
 	return res
 }

@@ -35,27 +35,27 @@ type TaskSpec struct {
 }
 
 type ContainerSpec struct {
-	Labels           map[string]string     `json:"labels,omitempty"`
-	Image            *string               `json:"image,omitempty"`
-	Command          *string               `json:"command,omitempty"`
-	WorkingDir       *string               `json:"workingDir,omitempty"`
-	Hostname         *string               `json:"hostname,omitempty"`
-	User             *string               `json:"user,omitempty"`
-	Groups           []string              `json:"groups,omitempty"`
-	StopSignal       *string               `json:"stopSignal,omitempty"`
-	TTY              *bool                 `json:"tty,omitempty"`
-	OpenStdin        *bool                 `json:"openStdin,omitempty"`
-	ReadOnly         *bool                 `json:"readOnly,omitempty"`
-	StopGracePeriod  *timeutil.DurationStr `json:"stopGracePeriod,omitempty"` // e.g. 5s, 1m
-	HostsFileEntries []*HostsFileEntry     `json:"hostsFileEntries,omitempty"`
-	Ulimits          []*Ulimit             `json:"ulimits,omitempty"`
-	Sysctls          map[string]string     `json:"sysctls,omitempty"`
-	CapabilityAdd    []string              `json:"capabilityAdd,omitempty"`
-	CapabilityDrop   []string              `json:"capabilityDrop,omitempty"`
-	EnableGPU        *bool                 `json:"enableGPU,omitempty"`
-	Healthcheck      *Healthcheck          `json:"healthcheck,omitempty"`
-	VolumeMounts     []*VolumeMount        `json:"volumeMounts,omitempty"`
-	BindMounts       []*BindMount          `json:"bindMounts,omitempty"`
+	Labels           map[string]string  `json:"labels,omitempty"`
+	Image            *string            `json:"image,omitempty"`
+	Command          *string            `json:"command,omitempty"`
+	WorkingDir       *string            `json:"workingDir,omitempty"`
+	Hostname         *string            `json:"hostname,omitempty"`
+	User             *string            `json:"user,omitempty"`
+	Groups           []string           `json:"groups,omitempty"`
+	StopSignal       *string            `json:"stopSignal,omitempty"`
+	TTY              *bool              `json:"tty,omitempty"`
+	OpenStdin        *bool              `json:"openStdin,omitempty"`
+	ReadOnly         *bool              `json:"readOnly,omitempty"`
+	StopGracePeriod  *timeutil.Duration `json:"stopGracePeriod,omitempty"` // e.g. 5s, 1m
+	HostsFileEntries []*HostsFileEntry  `json:"hostsFileEntries,omitempty"`
+	Ulimits          []*Ulimit          `json:"ulimits,omitempty"`
+	Sysctls          map[string]string  `json:"sysctls,omitempty"`
+	CapabilityAdd    []string           `json:"capabilityAdd,omitempty"`
+	CapabilityDrop   []string           `json:"capabilityDrop,omitempty"`
+	EnableGPU        *bool              `json:"enableGPU,omitempty"`
+	Healthcheck      *Healthcheck       `json:"healthcheck,omitempty"`
+	VolumeMounts     []*VolumeMount     `json:"volumeMounts,omitempty"`
+	BindMounts       []*BindMount       `json:"bindMounts,omitempty"`
 }
 
 type NetworkAttachment struct {
@@ -123,9 +123,9 @@ type Placement struct {
 
 type RestartPolicy struct {
 	Condition   swarm.RestartPolicyCondition `json:"condition,omitempty"`
-	Delay       *timeutil.DurationStr        `json:"delay,omitempty"`
+	Delay       *timeutil.Duration           `json:"delay,omitempty"`
 	MaxAttempts *uint64                      `json:"maxAttempts,omitempty"`
-	Window      *timeutil.DurationStr        `json:"window,omitempty"`
+	Window      *timeutil.Duration           `json:"window,omitempty"`
 }
 
 type Healthcheck struct {
@@ -142,10 +142,10 @@ type Healthcheck struct {
 	Command string          `json:"command,omitempty"`
 
 	// Zero means to inherit. Durations are expressed as integer nanoseconds.
-	Interval      timeutil.DurationStr `json:"interval,omitempty"`
-	Timeout       timeutil.DurationStr `json:"timeout,omitempty"`
-	StartPeriod   timeutil.DurationStr `json:"startPeriod,omitempty"`
-	StartInterval timeutil.DurationStr `json:"startInterval,omitempty"`
+	Interval      timeutil.Duration `json:"interval,omitempty"`
+	Timeout       timeutil.Duration `json:"timeout,omitempty"`
+	StartPeriod   timeutil.Duration `json:"startPeriod,omitempty"`
+	StartInterval timeutil.Duration `json:"startInterval,omitempty"`
 
 	// Retries is the number of consecutive failures needed to consider a container as unhealthy.
 	// Zero means inherit.

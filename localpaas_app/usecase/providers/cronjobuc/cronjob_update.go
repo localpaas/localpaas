@@ -108,13 +108,13 @@ func (uc *CronJobUC) prepareUpdatingCronJob(
 	setting.Name = gofn.Coalesce(req.Name, setting.Name)
 
 	cronJob := &entity.CronJob{
-		Cron:         req.Cron,
-		InitialTime:  timeNow,
-		Priority:     req.Priority,
-		MaxRetry:     req.MaxRetry,
-		RetryDelayMs: req.RetryDelayMs,
-		TimeoutMs:    req.TimeoutMs,
-		Command:      req.Command,
+		Cron:        req.Cron,
+		InitialTime: timeNow,
+		Priority:    req.Priority,
+		MaxRetry:    req.MaxRetry,
+		RetryDelay:  req.RetryDelay,
+		Timeout:     req.Timeout,
+		Command:     req.Command,
 	}
 	setting.MustSetData(cronJob)
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)

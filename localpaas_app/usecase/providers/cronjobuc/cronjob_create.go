@@ -102,13 +102,13 @@ func (uc *CronJobUC) preparePersistingCronJob(
 	}
 
 	cronJob := &entity.CronJob{
-		Cron:         req.Cron,
-		InitialTime:  timeNow,
-		Priority:     req.Priority,
-		MaxRetry:     req.MaxRetry,
-		RetryDelayMs: req.RetryDelayMs,
-		TimeoutMs:    req.TimeoutMs,
-		Command:      req.Command,
+		Cron:        req.Cron,
+		InitialTime: timeNow,
+		Priority:    req.Priority,
+		MaxRetry:    req.MaxRetry,
+		RetryDelay:  req.RetryDelay,
+		Timeout:     req.Timeout,
+		Command:     req.Command,
 	}
 	// Parse the cron expression to make sure it's valid
 	_, err := cronJob.ParseCron()
