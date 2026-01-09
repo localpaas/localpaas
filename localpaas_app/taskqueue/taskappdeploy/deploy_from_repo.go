@@ -49,6 +49,7 @@ func (e *Executor) deployFromRepo(
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+	defer e.repoDeployStepCleanup(ctx, data) //nolint:errcheck
 
 	if data.IsCanceled() {
 		return nil
@@ -226,7 +227,14 @@ func (e *Executor) repoDeployStepServiceApply(
 	}
 
 	spec := &service.Spec
-	spec.TaskTemplate.ContainerSpec.Image = data.DeploymentOutput.ImageTags[0]
+	contSpec := spec.TaskTemplate.ContainerSpec
+	contSpec.Image = data.DeploymentOutput.ImageTags[0]
+	if deployment.Settings.WorkingDir != nil {
+		contSpec.Dir = *deployment.Settings.WorkingDir
+	}
+	if deployment.Settings.Command != nil {
+		docker.ApplyContainerCommand(contSpec, *deployment.Settings.Command)
+	}
 
 	_, err = e.dockerManager.ServiceUpdate(ctx, deployment.App.ServiceID, &service.Version, spec)
 	if err != nil {
@@ -266,6 +274,18 @@ func (e *Executor) repoDeployStepPrepare(
 		return apperrors.Wrap(err)
 	}
 	data.RepoURLInfo = repoURLInfo
+
+	return nil
+}
+
+//nolint:unparam
+func (e *Executor) repoDeployStepCleanup(
+	_ context.Context,
+	data *repoDeployTaskData,
+) (err error) {
+	if data.CheckoutPath != "" {
+		_ = os.RemoveAll(data.CheckoutPath)
+	}
 
 	return nil
 }

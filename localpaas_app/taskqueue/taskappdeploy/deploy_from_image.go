@@ -125,7 +125,14 @@ func (e *Executor) imageDeployStepServiceApply(
 	}
 
 	spec := &service.Spec
-	spec.TaskTemplate.ContainerSpec.Image = imageSource.Image
+	contSpec := spec.TaskTemplate.ContainerSpec
+	contSpec.Image = imageSource.Image
+	if deployment.Settings.WorkingDir != nil {
+		contSpec.Dir = *deployment.Settings.WorkingDir
+	}
+	if deployment.Settings.Command != nil {
+		docker.ApplyContainerCommand(contSpec, *deployment.Settings.Command)
+	}
 
 	_, err = e.dockerManager.ServiceUpdate(ctx, deployment.App.ServiceID, &service.Version, spec,
 		func(options *swarm.ServiceUpdateOptions) {

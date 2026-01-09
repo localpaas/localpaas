@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/docker/docker/api/types/swarm"
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -47,7 +48,7 @@ func (uc *AppUC) CreateApp(
 		createdApp = persistingData.UpsertingApps[0]
 
 		// Create a service in docker for the app
-		res, err := uc.dockerManager.ServiceCreate(ctx, gofn.Must(appData.ServiceSpec.ToSwarmServiceSpec()))
+		res, err := uc.dockerManager.ServiceCreate(ctx, appData.ServiceSpec)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -71,7 +72,7 @@ func (uc *AppUC) CreateApp(
 type createAppData struct {
 	Project     *entity.Project
 	AppKey      string
-	ServiceSpec *docker.ServiceSpec
+	ServiceSpec *swarm.ServiceSpec
 }
 
 func (uc *AppUC) loadAppData(
@@ -167,31 +168,30 @@ func (uc *AppUC) preparePersistingAppSettingsDefault(
 	data *createAppData,
 	persistingData *persistingAppData,
 ) {
-	dbServiceSpec := &entity.Setting{
-		ID:        gofn.Must(ulid.NewStringULID()),
-		ObjectID:  app.ID,
-		Type:      base.SettingTypeServiceSpec,
-		Status:    base.SettingStatusActive,
-		CreatedAt: timeNow,
-		UpdatedAt: timeNow,
-	}
-
-	serviceSpec := &docker.ServiceSpec{
-		Name: app.Key,
-		Labels: map[string]string{
-			docker.StackLabelNamespace: data.Project.Key,
+	serviceSpec := &swarm.ServiceSpec{
+		Mode: swarm.ServiceMode{
+			Replicated: &swarm.ReplicatedService{
+				Replicas: gofn.ToPtr(uint64(1)),
+			},
 		},
-		Image:       "crccheck/hello-world:latest", // TODO: test image
-		ServiceMode: docker.ServiceModeReplicated,
-		Replicas:    1,
-		Hostname:    app.Key,
-		Networks: []*docker.NetworkAttachment{
-			{
-				Target: data.Project.GetDefaultNetworkName(),
+		Annotations: swarm.Annotations{
+			Name: app.Key,
+			Labels: map[string]string{
+				docker.StackLabelNamespace: data.Project.Key,
+			},
+		},
+		TaskTemplate: swarm.TaskSpec{
+			ContainerSpec: &swarm.ContainerSpec{
+				Image:    "crccheck/hello-world:latest", // TODO: we can use busybox:latest
+				Hostname: app.Key,
+			},
+			Networks: []swarm.NetworkAttachmentConfig{
+				{
+					Target: data.Project.GetDefaultNetworkName(),
+				},
 			},
 		},
 	}
-	dbServiceSpec.MustSetData(serviceSpec)
 	data.ServiceSpec = serviceSpec
 
 	// Init empty http settings

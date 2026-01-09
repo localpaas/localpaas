@@ -222,8 +222,14 @@ func (s *HTTPServer) registerRoutes() {
 		appGroup.POST("/:appID/tags", s.handlerRegistry.appHandler.CreateAppTag)
 		appGroup.POST("/:appID/tags/delete", s.handlerRegistry.appHandler.DeleteAppTags)
 		// Settings
-		appGroup.GET("/:appID/settings", s.handlerRegistry.appHandler.GetAppSettings)
-		appGroup.PUT("/:appID/settings", s.handlerRegistry.appHandler.UpdateAppSettings)
+		appGroup.GET("/:appID/service-spec", s.handlerRegistry.appHandler.GetAppServiceSpec)
+		appGroup.PUT("/:appID/service-spec", s.handlerRegistry.appHandler.UpdateAppServiceSpec)
+		appGroup.GET("/:appID/deployment-settings", s.handlerRegistry.appHandler.GetAppDeploymentSettings)
+		appGroup.PUT("/:appID/deployment-settings", s.handlerRegistry.appHandler.UpdateAppDeploymentSettings)
+		appGroup.GET("/:appID/http-settings", s.handlerRegistry.appHandler.GetAppHttpSettings)
+		appGroup.PUT("/:appID/http-settings", s.handlerRegistry.appHandler.UpdateAppHttpSettings)
+		appGroup.GET("/:appID/env-vars", s.handlerRegistry.appHandler.GetAppEnvVars)
+		appGroup.PUT("/:appID/env-vars", s.handlerRegistry.appHandler.UpdateAppEnvVars)
 		// Secrets
 		appGroup.GET("/:appID/secrets", s.handlerRegistry.appHandler.ListAppSecrets)
 		appGroup.POST("/:appID/secrets", s.handlerRegistry.appHandler.CreateAppSecret)

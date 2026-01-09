@@ -8,10 +8,13 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
 )
@@ -21,54 +24,111 @@ const (
 	defaultDeploymentTimeout = 60 * time.Minute
 )
 
-type appDeploymentData struct {
+func (uc *AppUC) UpdateAppDeploymentSettings(
+	ctx context.Context,
+	auth *basedto.Auth,
+	req *appdto.UpdateAppDeploymentSettingsReq,
+) (*appdto.UpdateAppDeploymentSettingsResp, error) {
+	var data *updateAppDeploymentSettingsData
+	var persistingData *persistingAppData
+	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
+		data = &updateAppDeploymentSettingsData{}
+		err := uc.loadAppDeploymentSettingsForUpdate(ctx, db, req, data)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+
+		persistingData = &persistingAppData{}
+		err = uc.prepareUpdatingAppDeploymentSettings(req, data, persistingData)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+
+		err = uc.persistData(ctx, db, persistingData)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	err = uc.postTransactionAppDeploymentSettings(ctx, persistingData)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	return &appdto.UpdateAppDeploymentSettingsResp{}, nil
+}
+
+type updateAppDeploymentSettingsData struct {
+	App                    *entity.App
 	DeploymentSettings     *entity.Setting
 	CurrDeploymentSettings *entity.AppDeploymentSettings
 	RegistryAuth           *entity.Setting
+	Errors                 []string // stores errors
+	Warnings               []string // stores warnings
 }
 
-func (uc *AppUC) loadAppDataForUpdateDeploymentSettings(
+func (uc *AppUC) loadAppDeploymentSettingsForUpdate(
 	ctx context.Context,
 	db database.Tx,
-	req *appdto.UpdateAppSettingsReq,
-	data *updateAppSettingsData,
+	req *appdto.UpdateAppDeploymentSettingsReq,
+	data *updateAppDeploymentSettingsData,
 ) error {
-	deploymentData := data.DeploymentData
+	app, err := uc.appRepo.GetByID(ctx, db, req.ProjectID, req.AppID,
+		bunex.SelectFor("UPDATE OF app"),
+		bunex.SelectRelation("Settings",
+			bunex.SelectWhere("setting.type = ?", base.SettingTypeAppDeployment),
+		),
+	)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	data.App = app
+
+	if len(app.Settings) > 0 {
+		data.DeploymentSettings = app.Settings[0]
+	}
+	deploymentSettings := data.DeploymentSettings
+	if deploymentSettings != nil && deploymentSettings.UpdateVer != req.UpdateVer {
+		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
+	}
 
 	// Parse the current deployment settings
-	deploymentSettings := deploymentData.DeploymentSettings
 	if deploymentSettings != nil {
 		if deploymentSettings.IsActive() && !deploymentSettings.IsExpired() {
 			settingData, err := deploymentSettings.AsAppDeploymentSettings()
 			if err != nil {
 				return apperrors.New(err).WithMsgLog("failed to parse app deployment settings")
 			}
-			data.DeploymentData.CurrDeploymentSettings = settingData
+			data.CurrDeploymentSettings = settingData
 		}
 	}
 
 	// Loads registry auth if needs to
-	imageSource := req.DeploymentSettings.ImageSource
+	imageSource := req.ImageSource
 	if imageSource != nil && imageSource.RegistryAuth.ID != "" {
 		registryAuth, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeRegistryAuth,
 			imageSource.RegistryAuth.ID, true)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
-		deploymentData.RegistryAuth = registryAuth
+		data.RegistryAuth = registryAuth
 	}
 
 	return nil
 }
 
 func (uc *AppUC) prepareUpdatingAppDeploymentSettings(
-	req *appdto.UpdateAppSettingsReq,
-	timeNow time.Time,
-	data *updateAppSettingsData,
+	req *appdto.UpdateAppDeploymentSettingsReq,
+	data *updateAppDeploymentSettingsData,
 	persistingData *persistingAppData,
 ) error {
 	app := data.App
-	settings := data.DeploymentData.DeploymentSettings
+	settings := data.DeploymentSettings
+	timeNow := timeutil.NowUTC()
 
 	if settings == nil {
 		settings = &entity.Setting{
@@ -78,7 +138,7 @@ func (uc *AppUC) prepareUpdatingAppDeploymentSettings(
 			CreatedAt: timeNow,
 			Version:   entity.CurrentAppDeploymentSettingsVersion,
 		}
-		data.DeploymentData.DeploymentSettings = settings
+		data.DeploymentSettings = settings
 	}
 	settings.UpdateVer++
 	settings.UpdatedAt = timeNow
@@ -129,64 +189,45 @@ func (uc *AppUC) prepareUpdatingAppDeploymentSettings(
 }
 
 func (uc *AppUC) buildNewAppDeploymentSettings(
-	req *appdto.UpdateAppSettingsReq,
-	data *updateAppSettingsData,
+	req *appdto.UpdateAppDeploymentSettingsReq,
+	data *updateAppDeploymentSettingsData,
 ) (*entity.AppDeploymentSettings, error) {
-	newDeploymentSettings := data.DeploymentData.CurrDeploymentSettings
+	newDeploymentSettings := data.CurrDeploymentSettings
 	if newDeploymentSettings == nil {
 		newDeploymentSettings = &entity.AppDeploymentSettings{}
 	}
 
-	if req.DeploymentSettings.ImageSource != nil {
-		err := copier.Copy(&newDeploymentSettings.ImageSource, req.DeploymentSettings.ImageSource)
+	if req.ImageSource != nil {
+		err := copier.Copy(&newDeploymentSettings.ImageSource, req.ImageSource)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}
 	}
-	if req.DeploymentSettings.RepoSource != nil {
-		err := copier.Copy(&newDeploymentSettings.RepoSource, req.DeploymentSettings.RepoSource)
+	if req.RepoSource != nil {
+		err := copier.Copy(&newDeploymentSettings.RepoSource, req.RepoSource)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}
 	}
-	if req.DeploymentSettings.TarballSource != nil {
-		err := copier.Copy(&newDeploymentSettings.TarballSource, req.DeploymentSettings.TarballSource)
+	if req.TarballSource != nil {
+		err := copier.Copy(&newDeploymentSettings.TarballSource, req.TarballSource)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}
 	}
 
-	if req.DeploymentSettings.PreDeployment != nil {
-		err := copier.Copy(&newDeploymentSettings.PreDeployment, req.DeploymentSettings.PreDeployment)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
+	if req.PreDeploymentCommand != nil {
+		newDeploymentSettings.PreDeploymentCommand = req.PreDeploymentCommand
 	}
-	if req.DeploymentSettings.PostDeployment != nil {
-		err := copier.Copy(&newDeploymentSettings.PostDeployment, req.DeploymentSettings.PostDeployment)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
+	if req.PostDeploymentCommand != nil {
+		newDeploymentSettings.PostDeploymentCommand = req.PostDeploymentCommand
 	}
 
 	return newDeploymentSettings, nil
 }
 
-func (uc *AppUC) applyAppDeploymentSettings(
-	ctx context.Context,
-	_ database.Tx,
-	_ *appdto.UpdateAppSettingsReq,
-	_ *updateAppSettingsData,
-	_ *persistingAppData,
-) error {
-	return nil
-}
-
 func (uc *AppUC) postTransactionAppDeploymentSettings(
 	ctx context.Context,
-	_ database.IDB,
-	_ *appdto.UpdateAppSettingsReq,
-	_ *updateAppSettingsData,
 	persistingData *persistingAppData,
 ) error {
 	for _, task := range persistingData.UpsertingTasks {

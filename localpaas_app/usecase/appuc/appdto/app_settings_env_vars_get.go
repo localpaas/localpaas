@@ -3,43 +3,31 @@ package appdto
 import (
 	vld "github.com/tiendc/go-validator"
 
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 )
 
-//
-// REQUEST
-//
-
-type EnvVarsReq struct {
-	EnvVars   []*EnvVarReq `json:"envVars"`
-	UpdateVer int          `json:"updateVer"`
+type GetAppEnvVarsReq struct {
+	ProjectID string `json:"-"`
+	AppID     string `json:"-"`
 }
 
-type EnvVarReq struct {
-	Key        string `json:"key"`
-	Value      string `json:"value"`
-	IsBuildEnv bool   `json:"isBuildEnv"`
+func NewGetAppEnvVarsReq() *GetAppEnvVarsReq {
+	return &GetAppEnvVarsReq{}
 }
 
-func (req *EnvVarReq) ToEntity() *entity.EnvVar {
-	return &entity.EnvVar{
-		Key:        req.Key,
-		Value:      req.Value,
-		IsBuildEnv: req.IsBuildEnv,
-	}
+func (req *GetAppEnvVarsReq) Validate() apperrors.ValidationErrors {
+	var validators []vld.Validator
+	validators = append(validators, basedto.ValidateID(&req.ProjectID, true, "projectId")...)
+	validators = append(validators, basedto.ValidateID(&req.AppID, true, "appId")...)
+	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-func (req *EnvVarsReq) validate(_ string) []vld.Validator { //nolint
-	if req == nil {
-		return nil
-	}
-	// TODO: add validation
-	return nil
+type GetAppEnvVarsResp struct {
+	Meta *basedto.BaseMeta `json:"meta"`
+	Data *EnvVarsResp      `json:"data"`
 }
-
-//
-// RESPONSE
-//
 
 type EnvVarsResp struct {
 	App       []*EnvVarResp `json:"app"`
@@ -54,19 +42,19 @@ type EnvVarResp struct {
 	IsBuildEnv bool   `json:"isBuildEnv,omitempty"`
 }
 
-func TransformEnvVars(input *AppSettingsTransformationInput) (resp *EnvVarsResp, err error) {
-	if len(input.EnvVars) == 0 {
+func TransformEnvVars(app *entity.App, envVars []*entity.Setting) (resp *EnvVarsResp, err error) {
+	if len(envVars) == 0 {
 		return nil, nil
 	}
 
 	var appEnvVars, parentAppEnvVars, projectEnvVars *entity.EnvVars
-	for _, env := range input.EnvVars {
+	for _, env := range envVars {
 		switch env.ObjectID {
-		case input.App.ID:
+		case app.ID:
 			appEnvVars = env.MustAsEnvVars()
-		case input.App.ProjectID:
+		case app.ProjectID:
 			projectEnvVars = env.MustAsEnvVars()
-		case input.App.ParentID:
+		case app.ParentID:
 			parentAppEnvVars = env.MustAsEnvVars()
 		}
 	}

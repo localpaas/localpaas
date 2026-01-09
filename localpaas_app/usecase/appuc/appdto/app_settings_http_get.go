@@ -6,75 +6,32 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/basicauthuc/basicauthdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/ssluc/ssldto"
 )
 
-//
-// REQUEST
-//
-
-type HttpSettingsReq struct {
-	Enabled   bool         `json:"enabled"`
-	Domains   []*DomainReq `json:"domains"`
-	UpdateVer int          `json:"updateVer"`
+type GetAppHttpSettingsReq struct {
+	ProjectID string `json:"-"`
+	AppID     string `json:"-"`
 }
 
-// nolint
-func (req *HttpSettingsReq) validate(field string) (res []vld.Validator) {
-	if req == nil {
-		return
-	}
-	if field != "" {
-		field += "."
-	}
-	// TODO:
-	return res
+func NewGetAppHttpSettingsReq() *GetAppHttpSettingsReq {
+	return &GetAppHttpSettingsReq{}
 }
 
-type DomainReq struct {
-	Enabled          bool                `json:"enabled"`
-	Domain           string              `json:"domain"`
-	DomainRedirect   string              `json:"domainRedirect"`
-	SslCert          basedto.ObjectIDReq `json:"sslCert"`
-	ContainerPort    int                 `json:"containerPort"`
-	ForceHttps       bool                `json:"forceHttps"`
-	WebsocketEnabled bool                `json:"websocketEnabled"`
-	BasicAuth        basedto.ObjectIDReq `json:"basicAuth"`
-	NginxSettings    *NginxSettingsReq   `json:"nginxSettings"`
+func (req *GetAppHttpSettingsReq) Validate() apperrors.ValidationErrors {
+	var validators []vld.Validator
+	validators = append(validators, basedto.ValidateID(&req.ProjectID, true, "projectId")...)
+	validators = append(validators, basedto.ValidateID(&req.AppID, true, "appId")...)
+	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-// nolint
-func (req *DomainReq) validate(field string) (res []vld.Validator) {
-	if req == nil {
-		return
-	}
-	if field != "" {
-		field += "."
-	}
-	// TODO:
-	return res
+type GetAppHttpSettingsResp struct {
+	Meta *basedto.BaseMeta `json:"meta"`
+	Data *HttpSettingsResp `json:"data"`
 }
-
-type NginxSettingsReq struct {
-	RootDirectives []*NginxDirectiveReq `json:"rootDirectives"`
-	ServerBlock    *NginxServerBlockReq `json:"serverBlock"`
-}
-
-type NginxServerBlockReq struct {
-	Hide       bool                 `json:"hide"`
-	Directives []*NginxDirectiveReq `json:"directives"`
-}
-
-type NginxDirectiveReq struct {
-	Hide bool `json:"hide"`
-	*crossplane.Directive
-}
-
-//
-// RESPONSE
-//
 
 type HttpSettingsResp struct {
 	Enabled              bool               `json:"enabled"`
@@ -110,7 +67,15 @@ type NginxDirectiveResp struct {
 	*crossplane.Directive
 }
 
-func TransformHttpSettings(input *AppSettingsTransformationInput) (resp *HttpSettingsResp, err error) {
+type AppHttpSettingsTransformInput struct {
+	App          *entity.App
+	HttpSettings *entity.Setting
+
+	DefaultNginxSettings *entity.NginxSettings
+	ReferenceSettingMap  map[string]*entity.Setting
+}
+
+func TransformHttpSettings(input *AppHttpSettingsTransformInput) (resp *HttpSettingsResp, err error) {
 	if input.HttpSettings == nil {
 		return nil, nil
 	}

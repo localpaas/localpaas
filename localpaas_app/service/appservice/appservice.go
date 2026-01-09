@@ -3,6 +3,8 @@ package appservice
 import (
 	"context"
 
+	"github.com/docker/docker/api/types/swarm"
+
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
@@ -16,6 +18,10 @@ import (
 type AppService interface {
 	PersistAppData(ctx context.Context, db database.IDB, data *PersistingAppData) error
 	DeleteApp(ctx context.Context, app *entity.App) error
+
+	ServiceInspect(ctx context.Context, serviceID string) (*swarm.Service, error)
+	ServiceUpdate(ctx context.Context, serviceID string, version *swarm.Version, service *swarm.ServiceSpec,
+		options ...docker.ServiceUpdateOption) (*swarm.ServiceUpdateResponse, error)
 }
 
 func NewAppService(

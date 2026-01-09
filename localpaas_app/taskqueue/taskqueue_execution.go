@@ -124,7 +124,7 @@ func (q *taskQueue) executeTask(
 		}
 
 		task.EndedAt = timeNow
-		task.Status = gofn.If(taskData.Canceled, base.TaskStatusCanceled, base.TaskStatusDone) //nolint
+		task.Status = gofn.If(taskData.Canceled, base.TaskStatusCanceled, base.TaskStatusDone)
 		return nil
 	})
 	if err != nil {

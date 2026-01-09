@@ -115,7 +115,7 @@ func (e *Executor) execute(
 	if data.Canceled {
 		deployment.Status = base.DeploymentStatusCanceled
 	} else {
-		deployment.Status = gofn.If(depErr != nil, base.DeploymentStatusFailed, base.DeploymentStatusDone) //nolint
+		deployment.Status = gofn.If(depErr != nil, base.DeploymentStatusFailed, base.DeploymentStatusDone)
 		deployment.Output = data.DeploymentOutput
 	}
 

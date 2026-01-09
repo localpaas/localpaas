@@ -33,21 +33,21 @@ func (e *Executor) deployStepExecCmd(
 	preDeployment bool,
 ) (err error) {
 	deployment := data.Deployment
-	if preDeployment && (deployment.Settings.PreDeployment == nil ||
-		deployment.Settings.PreDeployment.Cmd == "") {
+	if preDeployment && (deployment.Settings.PreDeploymentCommand == nil ||
+		*deployment.Settings.PreDeploymentCommand == "") {
 		return nil
 	} else {
 		data.Step = stepPreDeployCmd
 	}
-	if !preDeployment && (deployment.Settings.PostDeployment == nil ||
-		deployment.Settings.PostDeployment.Cmd == "") {
+	if !preDeployment && (deployment.Settings.PostDeploymentCommand == nil ||
+		*deployment.Settings.PostDeploymentCommand == "") {
 		return nil
 	} else {
 		data.Step = stepPostDeployCmd
 	}
 
 	e.addStepStartLog(ctx, data, fmt.Sprintf("Start executing %s-deployment command...",
-		gofn.If(preDeployment, "pre", "post"))) //nolint
+		gofn.If(preDeployment, "pre", "post")))
 	defer e.addStepEndLog(ctx, data, timeutil.NowUTC(), err)
 
 	var maxRetry int
@@ -73,17 +73,21 @@ func (e *Executor) deployStepExecCmd(
 
 	var cmdStr string
 	if preDeployment {
-		cmdStr = deployment.Settings.PreDeployment.Cmd
+		cmdStr = *deployment.Settings.PreDeploymentCommand
 	} else {
-		cmdStr = deployment.Settings.PostDeployment.Cmd
+		cmdStr = *deployment.Settings.PostDeploymentCommand
 	}
-	cmd := gofn.StringSplit(cmdStr, " ", "\"")
 
-	execID, resp, err := e.dockerManager.ContainerExec(ctx, contSum.ID, &container.ExecOptions{
+	execOptions := &container.ExecOptions{
 		AttachStdout: true,
 		AttachStderr: true,
-		Cmd:          cmd,
-	})
+		Cmd:          gofn.StringSplit(cmdStr, " ", "\""),
+	}
+	if deployment.Settings.WorkingDir != nil {
+		execOptions.WorkingDir = *deployment.Settings.WorkingDir
+	}
+
+	execID, resp, err := e.dockerManager.ContainerExec(ctx, contSum.ID, execOptions)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

@@ -81,7 +81,7 @@ func (uc *NodeUC) loadJoinNodeData(
 		return apperrors.Wrap(err)
 	}
 
-	joinToken := gofn.If(req.JoinAsManager, theSwarm.JoinTokens.Manager, theSwarm.JoinTokens.Worker) //nolint
+	joinToken := gofn.If(req.JoinAsManager, theSwarm.JoinTokens.Manager, theSwarm.JoinTokens.Worker)
 	if joinToken == "" {
 		return apperrors.New(apperrors.ErrInfraInternal).
 			WithNTParam("Error", "join token is not found")

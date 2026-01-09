@@ -39,7 +39,7 @@ func (uc *VolumeUC) CreateVolume(
 
 		case base.VolumeTypeNfs:
 			driverOpts["type"] = string(req.Type)
-			o := fmt.Sprintf("addr=%s,%s", req.NfsOpts.Addr, gofn.If(req.NfsOpts.Readonly, "ro", "rw")) //nolint
+			o := fmt.Sprintf("addr=%s,%s", req.NfsOpts.Addr, gofn.If(req.NfsOpts.Readonly, "ro", "rw"))
 			if req.NfsOpts.Version != "" {
 				o += "," + req.NfsOpts.Version
 			}
