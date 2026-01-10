@@ -19,7 +19,7 @@ type AppService interface {
 	PersistAppData(ctx context.Context, db database.IDB, data *PersistingAppData) error
 	DeleteApp(ctx context.Context, app *entity.App) error
 
-	ServiceInspect(ctx context.Context, serviceID string) (*swarm.Service, error)
+	ServiceInspect(ctx context.Context, serviceID string, caching bool) (*swarm.Service, error)
 	ServiceUpdate(ctx context.Context, serviceID string, version *swarm.Version, service *swarm.ServiceSpec,
 		options ...docker.ServiceUpdateOption) (*swarm.ServiceUpdateResponse, error)
 }

@@ -18,7 +18,7 @@ func (uc *AppUC) GetAppServiceSpec(
 		return nil, apperrors.Wrap(err)
 	}
 
-	service, err := uc.appService.ServiceInspect(ctx, app.ServiceID)
+	service, err := uc.appService.ServiceInspect(ctx, app.ServiceID, true)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

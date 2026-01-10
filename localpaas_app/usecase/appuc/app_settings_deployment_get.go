@@ -6,7 +6,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
 )
@@ -37,12 +36,11 @@ func (uc *AppUC) GetAppDeploymentSettings(
 		input.DeploymentSettings = settings[0]
 	}
 
-	if input.DeploymentSettings != nil {
-		err = uc.loadAppDeploymentSettingsReferenceData(ctx, uc.db, input)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
+	service, err := uc.appService.ServiceInspect(ctx, app.ServiceID, true)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
 	}
+	input.ServiceSpec = &service.Spec
 
 	resp, err := appdto.TransformDeploymentSettings(input)
 	if err != nil {
@@ -52,13 +50,4 @@ func (uc *AppUC) GetAppDeploymentSettings(
 	return &appdto.GetAppDeploymentSettingsResp{
 		Data: resp,
 	}, nil
-}
-
-func (uc *AppUC) loadAppDeploymentSettingsReferenceData(
-	_ context.Context,
-	_ database.IDB,
-	_ *appdto.AppDeploymentSettingsTransformInput,
-) (err error) {
-	// TODO: add implementation
-	return nil
 }

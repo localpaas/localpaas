@@ -1,6 +1,7 @@
 package appdto
 
 import (
+	"github.com/docker/docker/api/types/swarm"
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -8,6 +9,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
+	"github.com/localpaas/localpaas/services/docker"
 )
 
 type GetAppDeploymentSettingsReq struct {
@@ -71,17 +73,25 @@ type DeploymentTarballSourceResp struct {
 }
 
 type AppDeploymentSettingsTransformInput struct {
-	App                 *entity.App
-	DeploymentSettings  *entity.Setting
-	ReferenceSettingMap map[string]*entity.Setting
+	App                *entity.App
+	DeploymentSettings *entity.Setting
+	ServiceSpec        *swarm.ServiceSpec
 }
 
 func TransformDeploymentSettings(input *AppDeploymentSettingsTransformInput) (resp *DeploymentSettingsResp, err error) {
-	if input.DeploymentSettings == nil {
-		return nil, nil
+	resp = &DeploymentSettingsResp{}
+
+	if input.ServiceSpec != nil && input.ServiceSpec.TaskTemplate.ContainerSpec != nil {
+		resp.WorkingDir = input.ServiceSpec.TaskTemplate.ContainerSpec.Dir
+		resp.Command = docker.ConvertFromServiceCommand(input.ServiceSpec.TaskTemplate.ContainerSpec.Command,
+			input.ServiceSpec.TaskTemplate.ContainerSpec.Args)
 	}
-	if err = copier.Copy(&resp, input.DeploymentSettings); err != nil {
-		return nil, apperrors.Wrap(err)
+
+	if input.DeploymentSettings != nil {
+		if err = copier.Copy(&resp, input.DeploymentSettings); err != nil {
+			return nil, apperrors.Wrap(err)
+		}
 	}
+
 	return resp, nil
 }

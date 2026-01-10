@@ -12,11 +12,15 @@ import (
 func (s *appService) ServiceInspect(
 	ctx context.Context,
 	serviceID string,
+	caching bool,
 ) (*swarm.Service, error) {
+	// TODO: handle caching flag
+
 	service, err := s.dockerManager.ServiceInspect(ctx, serviceID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+
 	return service, nil
 }
 
