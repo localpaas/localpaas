@@ -92,11 +92,12 @@ type DNSConfig struct {
 }
 
 type Mount struct {
-	Index    *int       `json:"index,omitempty"`
-	Type     mount.Type `json:"type,omitempty"`
-	Source   string     `json:"source,omitempty"`
-	Target   string     `json:"target,omitempty"`
-	ReadOnly bool       `json:"readOnly,omitempty"`
+	Index       *int              `json:"index,omitempty"`
+	Type        mount.Type        `json:"type,omitempty"`
+	Source      string            `json:"source,omitempty"`
+	Target      string            `json:"target,omitempty"`
+	ReadOnly    bool              `json:"readOnly,omitempty"`
+	Consistency mount.Consistency `json:"consistency,omitempty"`
 }
 
 type Ulimit struct {

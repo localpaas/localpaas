@@ -326,11 +326,12 @@ func ConvertFromServiceMounts(mounts []mount.Mount) (res []*Mount) {
 	res = make([]*Mount, 0, len(mounts))
 	for i, mnt := range mounts {
 		res = append(res, &Mount{
-			Index:    gofn.ToPtr(i),
-			Type:     mnt.Type,
-			Source:   mnt.Source,
-			Target:   mnt.Target,
-			ReadOnly: mnt.ReadOnly,
+			Index:       gofn.ToPtr(i),
+			Type:        mnt.Type,
+			Source:      mnt.Source,
+			Target:      mnt.Target,
+			ReadOnly:    mnt.ReadOnly,
+			Consistency: mnt.Consistency,
 		})
 	}
 	return
@@ -350,6 +351,7 @@ func ApplyServiceMounts(contSpec *swarm.ContainerSpec, mounts []*Mount) {
 		item.Source = mnt.Source
 		item.Target = mnt.Target
 		item.ReadOnly = mnt.ReadOnly
+		item.Consistency = mnt.Consistency
 		contSpec.Mounts = append(contSpec.Mounts, item)
 	}
 }
