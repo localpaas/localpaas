@@ -22,7 +22,6 @@ type _ *apperrors.ErrorInfo
 // @Id      listAppSecrets
 // @Param   projectID path string true "project ID"
 // @Param   appID path string true "app ID"
-// @Param   type query string false "`type=<setting type>`"
 // @Success 200 {object} secretdto.ListSecretResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo

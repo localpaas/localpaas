@@ -18,6 +18,7 @@ type EnvVar struct {
 	Key        string `json:"k"`
 	Value      string `json:"v"`
 	IsBuildEnv bool   `json:"isBuildEnv,omitempty"`
+	IsLiteral  bool   `json:"isLiteral,omitempty"`
 }
 
 func (s *Setting) AsEnvVars() (*EnvVars, error) {

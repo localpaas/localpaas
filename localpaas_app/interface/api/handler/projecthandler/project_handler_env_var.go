@@ -14,19 +14,18 @@ import (
 // To keep `apperrors` pkg imported and swag gen won't fail
 type _ *apperrors.ErrorInfo
 
-// GetProjectSettings Gets project settings
-// @Summary Gets project settings
-// @Description Gets project settings
+// GetProjectEnvVars Gets project env vars
+// @Summary Gets project env vars
+// @Description Gets project env vars
 // @Tags    projects
 // @Produce json
-// @Id      getProjectSettings
+// @Id      getProjectEnvVars
 // @Param   projectID path string true "project ID"
-// @Param   type query string false "`type=<setting type>`"
-// @Success 200 {object} projectdto.GetProjectSettingsResp
+// @Success 200 {object} projectdto.GetProjectEnvVarsResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/settings [get]
-func (h *ProjectHandler) GetProjectSettings(ctx *gin.Context) {
+// @Router  /projects/{projectID}/env-vars [get]
+func (h *ProjectHandler) GetProjectEnvVars(ctx *gin.Context) {
 	projectID, err := h.ParseStringParam(ctx, "projectID")
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -44,14 +43,14 @@ func (h *ProjectHandler) GetProjectSettings(ctx *gin.Context) {
 		return
 	}
 
-	req := projectdto.NewGetProjectSettingsReq()
+	req := projectdto.NewGetProjectEnvVarsReq()
 	req.ProjectID = projectID
 	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.projectUC.GetProjectSettings(h.RequestCtx(ctx), auth, req)
+	resp, err := h.projectUC.GetProjectEnvVars(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -60,19 +59,19 @@ func (h *ProjectHandler) GetProjectSettings(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
-// UpdateProjectSettings Updates project settings
-// @Summary Updates project settings
-// @Description Updates project settings
+// UpdateProjectEnvVars Updates project env vars
+// @Summary Updates project env vars
+// @Description Updates project env vars
 // @Tags    projects
 // @Produce json
-// @Id      updateProjectSettings
+// @Id      updateProjectEnvVars
 // @Param   projectID path string true "project ID"
-// @Param   body body projectdto.UpdateProjectSettingsReq true "request data"
-// @Success 200 {object} projectdto.UpdateProjectSettingsResp
+// @Param   body body projectdto.UpdateProjectEnvVarsReq true "request data"
+// @Success 200 {object} projectdto.UpdateProjectEnvVarsResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/settings [put]
-func (h *ProjectHandler) UpdateProjectSettings(ctx *gin.Context) {
+// @Router  /projects/{projectID}/env-vars [put]
+func (h *ProjectHandler) UpdateProjectEnvVars(ctx *gin.Context) {
 	projectID, err := h.ParseStringParam(ctx, "projectID")
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -81,7 +80,7 @@ func (h *ProjectHandler) UpdateProjectSettings(ctx *gin.Context) {
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceModule: base.ResourceModuleProject,
-		ResourceType:   base.ResourceTypeProject,
+		ResourceType:   base.ResourceTypeApp,
 		ResourceID:     projectID,
 		Action:         base.ActionTypeWrite,
 	})
@@ -90,14 +89,14 @@ func (h *ProjectHandler) UpdateProjectSettings(ctx *gin.Context) {
 		return
 	}
 
-	req := projectdto.NewUpdateProjectSettingsReq()
+	req := projectdto.NewUpdateProjectEnvVarsReq()
 	req.ProjectID = projectID
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.projectUC.UpdateProjectSettings(h.RequestCtx(ctx), auth, req)
+	resp, err := h.projectUC.UpdateProjectEnvVars(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

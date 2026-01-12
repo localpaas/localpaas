@@ -1,4 +1,4 @@
-package appdto
+package projectdto
 
 import (
 	"strings"
@@ -9,19 +9,18 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 )
 
-type UpdateAppEnvVarsReq struct {
+type UpdateProjectEnvVarsReq struct {
 	ProjectID        string               `json:"-"`
-	AppID            string               `json:"-"`
 	BuildtimeEnvVars []*basedto.EnvVarReq `json:"buildtimeEnvVars"`
 	RuntimeEnvVars   []*basedto.EnvVarReq `json:"runtimeEnvVars"`
 	UpdateVer        int                  `json:"updateVer"`
 }
 
-func NewUpdateAppEnvVarsReq() *UpdateAppEnvVarsReq {
-	return &UpdateAppEnvVarsReq{}
+func NewUpdateProjectEnvVarsReq() *UpdateProjectEnvVarsReq {
+	return &UpdateProjectEnvVarsReq{}
 }
 
-func (req *UpdateAppEnvVarsReq) ModifyRequest() error {
+func (req *UpdateProjectEnvVarsReq) ModifyRequest() error {
 	for _, env := range req.BuildtimeEnvVars {
 		env.Key = strings.TrimSpace(env.Key)
 		env.Value = strings.TrimSpace(env.Value)
@@ -34,21 +33,20 @@ func (req *UpdateAppEnvVarsReq) ModifyRequest() error {
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *UpdateAppEnvVarsReq) Validate() apperrors.ValidationErrors {
+func (req *UpdateProjectEnvVarsReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, basedto.ValidateID(&req.ProjectID, true, "projectId")...)
-	validators = append(validators, basedto.ValidateID(&req.AppID, true, "appId")...)
 	validators = append(validators, basedto.ValidateEnvVarsReq(req.BuildtimeEnvVars, "buildtimeEnvVars")...)
 	validators = append(validators, basedto.ValidateEnvVarsReq(req.RuntimeEnvVars, "runtimeEnvVars")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type UpdateAppEnvVarsResp struct {
-	Meta *basedto.BaseMeta         `json:"meta"`
-	Data *UpdateAppEnvVarsDataResp `json:"data"`
+type UpdateProjectEnvVarsResp struct {
+	Meta *basedto.BaseMeta             `json:"meta"`
+	Data *UpdateProjectEnvVarsDataResp `json:"data"`
 }
 
-type UpdateAppEnvVarsDataResp struct {
+type UpdateProjectEnvVarsDataResp struct {
 	Errors   []string `json:"errors,omitempty"`
 	Warnings []string `json:"warnings,omitempty"`
 }

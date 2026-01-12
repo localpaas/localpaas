@@ -2496,7 +2496,7 @@
     },
     "/projects/{projectID}/apps/{appID}/env-vars" : {
       "get" : {
-        "description" : "Gets app Env vars",
+        "description" : "Gets app env vars",
         "operationId" : "getAppEnvVars",
         "parameters" : [ {
           "description" : "project ID",
@@ -2547,11 +2547,11 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Gets app Env vars",
+        "summary" : "Gets app env vars",
         "tags" : [ "apps" ]
       },
       "put" : {
-        "description" : "Updates app Env vars",
+        "description" : "Updates app env vars",
         "operationId" : "updateAppEnvVars",
         "parameters" : [ {
           "description" : "project ID",
@@ -2613,7 +2613,7 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Updates app Env vars",
+        "summary" : "Updates app env vars",
         "tags" : [ "apps" ],
         "x-codegen-request-body-name" : "body"
       }
@@ -2844,13 +2844,6 @@
           "in" : "path",
           "name" : "appID",
           "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "`type=<setting type>`",
-          "in" : "query",
-          "name" : "type",
           "schema" : {
             "type" : "string"
           }
@@ -3354,6 +3347,114 @@
         "x-codegen-request-body-name" : "body"
       }
     },
+    "/projects/{projectID}/env-vars" : {
+      "get" : {
+        "description" : "Gets project env vars",
+        "operationId" : "getProjectEnvVars",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.GetProjectEnvVarsResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Gets project env vars",
+        "tags" : [ "projects" ]
+      },
+      "put" : {
+        "description" : "Updates project env vars",
+        "operationId" : "updateProjectEnvVars",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.UpdateProjectEnvVarsReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.UpdateProjectEnvVarsResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates project env vars",
+        "tags" : [ "projects" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
     "/projects/{projectID}/secrets" : {
       "get" : {
         "description" : "Lists project secrets",
@@ -3524,121 +3625,6 @@
         },
         "summary" : "Deletes a project secret",
         "tags" : [ "projects" ]
-      }
-    },
-    "/projects/{projectID}/settings" : {
-      "get" : {
-        "description" : "Gets project settings",
-        "operationId" : "getProjectSettings",
-        "parameters" : [ {
-          "description" : "project ID",
-          "in" : "path",
-          "name" : "projectID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "`type=<setting type>`",
-          "in" : "query",
-          "name" : "type",
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.GetProjectSettingsResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Gets project settings",
-        "tags" : [ "projects" ]
-      },
-      "put" : {
-        "description" : "Updates project settings",
-        "operationId" : "updateProjectSettings",
-        "parameters" : [ {
-          "description" : "project ID",
-          "in" : "path",
-          "name" : "projectID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "*/*" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.UpdateProjectSettingsReq"
-              }
-            }
-          },
-          "description" : "request data",
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.UpdateProjectSettingsResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Updates project settings",
-        "tags" : [ "projects" ],
-        "x-codegen-request-body-name" : "body"
       }
     },
     "/projects/{projectID}/tags" : {
@@ -10271,6 +10257,36 @@
         },
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_basedto.EnvVarReq" : {
+        "properties" : {
+          "isLiteral" : {
+            "type" : "boolean"
+          },
+          "key" : {
+            "type" : "string"
+          },
+          "value" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "isLiteral", "key", "value" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_basedto.EnvVarResp" : {
+        "properties" : {
+          "isLiteral" : {
+            "type" : "boolean"
+          },
+          "key" : {
+            "type" : "string"
+          },
+          "value" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "key", "value" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_basedto.Meta" : {
         "properties" : {
           "code" : {
@@ -10552,10 +10568,10 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
         "format" : "int64",
         "type" : "integer",
-        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
+        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentReq" : {
         "type" : "object"
@@ -11076,53 +11092,29 @@
         "required" : [ "basicAuth", "containerPort", "domain", "domainRedirect", "enabled", "forceHttps", "nginxSettings", "sslCert", "websocketEnabled" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.EnvVarReq" : {
-        "properties" : {
-          "isBuildEnv" : {
-            "type" : "boolean"
-          },
-          "key" : {
-            "type" : "string"
-          },
-          "value" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "isBuildEnv", "key", "value" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.EnvVarResp" : {
-        "properties" : {
-          "isBuildEnv" : {
-            "type" : "boolean"
-          },
-          "key" : {
-            "type" : "string"
-          },
-          "value" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "key", "value" ],
-        "type" : "object"
-      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.EnvVarsResp" : {
         "properties" : {
-          "app" : {
+          "buildtimeEnvVars" : {
             "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.EnvVarResp"
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.EnvVarResp"
             },
             "type" : "array"
           },
-          "parentApp" : {
+          "inheritedBuildtimeEnvVars" : {
             "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.EnvVarResp"
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.EnvVarResp"
             },
             "type" : "array"
           },
-          "project" : {
+          "inheritedRuntimeEnvVars" : {
             "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.EnvVarResp"
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.EnvVarResp"
+            },
+            "type" : "array"
+          },
+          "runtimeEnvVars" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.EnvVarResp"
             },
             "type" : "array"
           },
@@ -11130,7 +11122,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "app", "parentApp", "project", "updateVer" ],
+        "required" : [ "buildtimeEnvVars", "inheritedBuildtimeEnvVars", "inheritedRuntimeEnvVars", "runtimeEnvVars", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.GetAppDeploymentSettingsResp" : {
@@ -11540,9 +11532,15 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.UpdateAppEnvVarsReq" : {
         "properties" : {
-          "envVars" : {
+          "buildtimeEnvVars" : {
             "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.EnvVarReq"
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.EnvVarReq"
+            },
+            "type" : "array"
+          },
+          "runtimeEnvVars" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.EnvVarReq"
             },
             "type" : "array"
           },
@@ -11550,7 +11548,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "envVars", "updateVer" ],
+        "required" : [ "buildtimeEnvVars", "runtimeEnvVars", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.UpdateAppEnvVarsResp" : {
@@ -12304,41 +12302,17 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.EnvVarReq" : {
-        "properties" : {
-          "isBuildEnv" : {
-            "type" : "boolean"
-          },
-          "key" : {
-            "type" : "string"
-          },
-          "value" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "isBuildEnv", "key", "value" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.EnvVarResp" : {
-        "properties" : {
-          "isBuildEnv" : {
-            "type" : "boolean"
-          },
-          "key" : {
-            "type" : "string"
-          },
-          "value" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "key", "value" ],
-        "type" : "object"
-      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.EnvVarsResp" : {
         "properties" : {
-          "project" : {
+          "buildtimeEnvVars" : {
             "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.EnvVarResp"
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.EnvVarResp"
+            },
+            "type" : "array"
+          },
+          "runtimeEnvVars" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.EnvVarResp"
             },
             "type" : "array"
           },
@@ -12346,34 +12320,13 @@
             "type" : "integer"
           }
         },
-        "required" : [ "project", "updateVer" ],
+        "required" : [ "buildtimeEnvVars", "runtimeEnvVars", "updateVer" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.GeneralSettingsReq" : {
-        "properties" : {
-          "test" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "test" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.GeneralSettingsResp" : {
-        "properties" : {
-          "test" : {
-            "type" : "string"
-          },
-          "updateVer" : {
-            "type" : "integer"
-          }
-        },
-        "required" : [ "test", "updateVer" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.GetProjectResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.GetProjectEnvVarsResp" : {
         "properties" : {
           "data" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.ProjectResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.EnvVarsResp"
           },
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
@@ -12382,10 +12335,10 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.GetProjectSettingsResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.GetProjectResp" : {
         "properties" : {
           "data" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.ProjectSettingsResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.ProjectResp"
           },
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
@@ -12509,20 +12462,6 @@
         "required" : [ "apps", "createdAt", "id", "key", "name", "note", "photo", "status", "tags", "updateVer", "updatedAt", "userAccesses" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.ProjectSettingsResp" : {
-        "properties" : {
-          "envVars" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.EnvVarsResp"
-          },
-          "secrets" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.SecretsResp"
-          },
-          "settings" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.GeneralSettingsResp"
-          }
-        },
-        "type" : "object"
-      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.ProjectUserAccessResp" : {
         "properties" : {
           "access" : {
@@ -12547,11 +12486,34 @@
         "required" : [ "access", "email", "fullName", "id", "photo", "username" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.SecretsResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.UpdateProjectEnvVarsDataResp" : {
         "properties" : {
-          "project" : {
+          "errors" : {
             "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_secretuc_secretdto.SecretResp"
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "warnings" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          }
+        },
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.UpdateProjectEnvVarsReq" : {
+        "properties" : {
+          "buildtimeEnvVars" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.EnvVarReq"
+            },
+            "type" : "array"
+          },
+          "runtimeEnvVars" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.EnvVarReq"
             },
             "type" : "array"
           },
@@ -12559,31 +12521,19 @@
             "type" : "integer"
           }
         },
-        "required" : [ "project", "updateVer" ],
+        "required" : [ "buildtimeEnvVars", "runtimeEnvVars", "updateVer" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.UpdateProjectSettingsReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.UpdateProjectEnvVarsResp" : {
         "properties" : {
-          "envVars" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.EnvVarReq"
-            },
-            "type" : "array"
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.UpdateProjectEnvVarsDataResp"
           },
-          "settings" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.GeneralSettingsReq"
-          }
-        },
-        "required" : [ "envVars", "settings" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.UpdateProjectSettingsResp" : {
-        "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
           }
         },
-        "required" : [ "meta" ],
+        "required" : [ "data", "meta" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_basicauthuc_basicauthdto.BasicAuthResp" : {

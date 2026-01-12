@@ -1,12 +1,16 @@
 package basedto
 
 import (
-	"mime/multipart"
-
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
+)
+
+const (
+	PageLimitDefault = 50
+	PageLimitMax     = 10000
+
+	CodeSuccess = "success"
 )
 
 // Paging is used to store pagination request from client side
@@ -100,69 +104,25 @@ type ReqParsingErrorHandler interface {
 	HandleParsingError(err error) error
 }
 
-// ObjectIDReq request input for an object id
-type ObjectIDReq struct {
-	ID string `json:"id"`
+type Response struct {
+	Meta *Meta `json:"meta,omitempty"`
 }
 
-func (req *ObjectIDReq) ToIDString() string {
-	if req == nil {
-		return ""
-	}
-	return req.ID
+// BaseMeta metadata of single entity response
+type BaseMeta struct {
+	Code    string `json:"code,omitempty"`
+	Message string `json:"message,omitempty"`
 }
 
-type ObjectIDSliceReq []*ObjectIDReq
-
-func (req ObjectIDSliceReq) ToIDStringSlice() []string {
-	result := make([]string, 0, len(req))
-	for _, obj := range req {
-		result = append(result, obj.ID)
-	}
-	return result
+// Meta metadata of response
+type Meta struct {
+	BaseMeta
+	Page *PagingMeta `json:"page,omitempty"`
 }
 
-func (req ObjectIDSliceReq) HasID(id string) bool {
-	for _, obj := range req {
-		if obj.ID == id {
-			return true
-		}
-	}
-	return false
-}
-
-func (req *ObjectIDSliceReq) AppendID(id string) {
-	*req = append(*req, &ObjectIDReq{ID: id})
-}
-
-// ObjectAccessReq request input for requesting access to an object
-type ObjectAccessReq struct {
-	ObjectIDReq
-	Access base.AccessActions `json:"access"`
-}
-
-type ObjectAccessSliceReq []*ObjectAccessReq
-
-func (req ObjectAccessSliceReq) ToIDStringSlice() []string {
-	result := make([]string, 0, len(req))
-	for _, obj := range req {
-		result = append(result, obj.ID)
-	}
-	return result
-}
-
-// ModuleAccessReq request input for requesting access to a module
-type ModuleAccessReq struct {
-	ModuleIDReq
-	Access base.AccessActions `json:"access"`
-}
-
-type ModuleIDReq struct {
-	ID string `json:"id"` // could be module name
-}
-
-type ModuleAccessSliceReq []*ModuleAccessReq
-
-type FileReq struct {
-	File *multipart.FileHeader
+// PagingMeta metadata of pagination
+type PagingMeta struct {
+	Offset int `json:"offset"`
+	Limit  int `json:"limit"`
+	Total  int `json:"total"`
 }

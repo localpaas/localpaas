@@ -2,6 +2,7 @@ package appdto
 
 import (
 	vld "github.com/tiendc/go-validator"
+	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -30,16 +31,11 @@ type GetAppEnvVarsResp struct {
 }
 
 type EnvVarsResp struct {
-	App       []*EnvVarResp `json:"app"`
-	ParentApp []*EnvVarResp `json:"parentApp"`
-	Project   []*EnvVarResp `json:"project"`
-	UpdateVer int           `json:"updateVer"`
-}
-
-type EnvVarResp struct {
-	Key        string `json:"key"`
-	Value      string `json:"value"`
-	IsBuildEnv bool   `json:"isBuildEnv,omitempty"`
+	InheritedBuildtimeEnvVars []*basedto.EnvVarResp `json:"inheritedBuildtimeEnvVars"`
+	InheritedRuntimeEnvVars   []*basedto.EnvVarResp `json:"inheritedRuntimeEnvVars"`
+	BuildtimeEnvVars          []*basedto.EnvVarResp `json:"buildtimeEnvVars"`
+	RuntimeEnvVars            []*basedto.EnvVarResp `json:"runtimeEnvVars"`
+	UpdateVer                 int                   `json:"updateVer"`
 }
 
 func TransformEnvVars(app *entity.App, envVars []*entity.Setting) (resp *EnvVarsResp, err error) {
@@ -47,11 +43,19 @@ func TransformEnvVars(app *entity.App, envVars []*entity.Setting) (resp *EnvVars
 		return nil, nil
 	}
 
+	resp = &EnvVarsResp{
+		InheritedBuildtimeEnvVars: make([]*basedto.EnvVarResp, 0, 20), //nolint
+		InheritedRuntimeEnvVars:   make([]*basedto.EnvVarResp, 0, 20), //nolint
+		BuildtimeEnvVars:          make([]*basedto.EnvVarResp, 0, 20), //nolint
+		RuntimeEnvVars:            make([]*basedto.EnvVarResp, 0, 20), //nolint
+	}
+
 	var appEnvVars, parentAppEnvVars, projectEnvVars *entity.EnvVars
 	for _, env := range envVars {
 		switch env.ObjectID {
 		case app.ID:
 			appEnvVars = env.MustAsEnvVars()
+			resp.UpdateVer = env.UpdateVer
 		case app.ProjectID:
 			projectEnvVars = env.MustAsEnvVars()
 		case app.ParentID:
@@ -59,37 +63,56 @@ func TransformEnvVars(app *entity.App, envVars []*entity.Setting) (resp *EnvVars
 		}
 	}
 
-	resp = &EnvVarsResp{
-		App:       []*EnvVarResp{},
-		ParentApp: []*EnvVarResp{},
-		Project:   []*EnvVarResp{},
-	}
-	if appEnvVars != nil {
-		for _, v := range appEnvVars.Data {
-			resp.App = append(resp.App, &EnvVarResp{
-				Key:        v.Key,
-				Value:      v.Value,
-				IsBuildEnv: v.IsBuildEnv,
-			})
+	if projectEnvVars != nil {
+		for _, v := range projectEnvVars.Data {
+			res := basedto.TransformEnvVar(v)
+			if v.IsBuildEnv {
+				resp.InheritedBuildtimeEnvVars = append(resp.InheritedBuildtimeEnvVars, res)
+			} else {
+				resp.InheritedRuntimeEnvVars = append(resp.InheritedRuntimeEnvVars, res)
+			}
 		}
 	}
 	if parentAppEnvVars != nil {
 		for _, v := range parentAppEnvVars.Data {
-			resp.ParentApp = append(resp.ParentApp, &EnvVarResp{
-				Key:        v.Key,
-				Value:      v.Value,
-				IsBuildEnv: v.IsBuildEnv,
-			})
+			res := basedto.TransformEnvVar(v)
+			if v.IsBuildEnv {
+				resp.InheritedBuildtimeEnvVars = append(resp.InheritedBuildtimeEnvVars, res)
+			} else {
+				resp.InheritedRuntimeEnvVars = append(resp.InheritedRuntimeEnvVars, res)
+			}
 		}
 	}
-	if projectEnvVars != nil {
-		for _, v := range projectEnvVars.Data {
-			resp.Project = append(resp.Project, &EnvVarResp{
-				Key:        v.Key,
-				Value:      v.Value,
-				IsBuildEnv: v.IsBuildEnv,
-			})
+	if appEnvVars != nil {
+		for _, v := range appEnvVars.Data {
+			res := basedto.TransformEnvVar(v)
+			if v.IsBuildEnv {
+				resp.BuildtimeEnvVars = append(resp.BuildtimeEnvVars, res)
+			} else {
+				resp.RuntimeEnvVars = append(resp.RuntimeEnvVars, res)
+			}
 		}
 	}
+
+	if projectEnvVars != nil && parentAppEnvVars != nil &&
+		len(projectEnvVars.Data) > 0 && len(parentAppEnvVars.Data) > 0 {
+		resp.InheritedBuildtimeEnvVars = removeDuplicatedEnvVars(resp.InheritedBuildtimeEnvVars)
+		resp.InheritedRuntimeEnvVars = removeDuplicatedEnvVars(resp.InheritedRuntimeEnvVars)
+	}
+
 	return resp, nil
+}
+
+func removeDuplicatedEnvVars(envVars []*basedto.EnvVarResp) (resp []*basedto.EnvVarResp) {
+	resp = make([]*basedto.EnvVarResp, 0, len(envVars))
+	mapSeen := make(map[string]struct{}, len(envVars))
+
+	gofn.ForEachReverse(envVars, func(_ int, e *basedto.EnvVarResp) {
+		if _, exists := mapSeen[e.Key]; !exists {
+			resp = append(resp, e)
+			mapSeen[e.Key] = struct{}{}
+		}
+	})
+
+	return gofn.Reverse(resp)
 }

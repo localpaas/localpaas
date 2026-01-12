@@ -200,9 +200,9 @@ func (s *HTTPServer) registerRoutes() {
 		// Tags
 		projectGroup.POST("/:projectID/tags", s.handlerRegistry.projectHandler.CreateProjectTag)
 		projectGroup.POST("/:projectID/tags/delete", s.handlerRegistry.projectHandler.DeleteProjectTags)
-		// Settings
-		projectGroup.GET("/:projectID/settings", s.handlerRegistry.projectHandler.GetProjectSettings)
-		projectGroup.PUT("/:projectID/settings", s.handlerRegistry.projectHandler.UpdateProjectSettings)
+		// Env vars
+		projectGroup.GET("/:projectID/env-vars", s.handlerRegistry.projectHandler.GetProjectEnvVars)
+		projectGroup.PUT("/:projectID/env-vars", s.handlerRegistry.projectHandler.UpdateProjectEnvVars)
 		// Secrets
 		projectGroup.GET("/:projectID/secrets", s.handlerRegistry.projectHandler.ListProjectSecrets)
 		projectGroup.POST("/:projectID/secrets", s.handlerRegistry.projectHandler.CreateProjectSecret)
@@ -228,6 +228,7 @@ func (s *HTTPServer) registerRoutes() {
 		appGroup.PUT("/:appID/deployment-settings", s.handlerRegistry.appHandler.UpdateAppDeploymentSettings)
 		appGroup.GET("/:appID/http-settings", s.handlerRegistry.appHandler.GetAppHttpSettings)
 		appGroup.PUT("/:appID/http-settings", s.handlerRegistry.appHandler.UpdateAppHttpSettings)
+		// Env vars
 		appGroup.GET("/:appID/env-vars", s.handlerRegistry.appHandler.GetAppEnvVars)
 		appGroup.PUT("/:appID/env-vars", s.handlerRegistry.appHandler.UpdateAppEnvVars)
 		// Secrets

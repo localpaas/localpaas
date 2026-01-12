@@ -1,10 +1,9 @@
-package appuc
+package projectuc
 
 import (
 	"context"
 	"time"
 
-	"github.com/docker/docker/api/types/swarm"
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -16,59 +15,55 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc/projectdto"
 )
 
-func (uc *AppUC) UpdateAppEnvVars(
+func (uc *ProjectUC) UpdateProjectEnvVars(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *appdto.UpdateAppEnvVarsReq,
-) (*appdto.UpdateAppEnvVarsResp, error) {
-	var data *updateAppEnvVarsData
-	var persistingData *persistingAppData
+	req *projectdto.UpdateProjectEnvVarsReq,
+) (*projectdto.UpdateProjectEnvVarsResp, error) {
+	var data *updateProjectEnvVarsData
+	var persistingData *persistingProjectData
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
-		data = &updateAppEnvVarsData{}
-		err := uc.loadAppEnvVarsForUpdate(ctx, db, req, data)
+		data = &updateProjectEnvVarsData{}
+		err := uc.loadProjectEnvVarsForUpdate(ctx, db, req, data)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
 
-		persistingData = &persistingAppData{}
-		uc.prepareUpdatingAppEnvVars(req, data, persistingData)
+		persistingData = &persistingProjectData{}
+		uc.prepareUpdatingProjectEnvVars(req, data, persistingData)
 
 		err = uc.persistData(ctx, db, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
 
-		err = uc.applyAppEnvVars(ctx, db, data)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
 		return nil
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &appdto.UpdateAppEnvVarsResp{}, nil
+	return &projectdto.UpdateProjectEnvVarsResp{}, nil
 }
 
-type updateAppEnvVarsData struct {
-	App      *entity.App
+type updateProjectEnvVarsData struct {
+	Project  *entity.Project
 	EnvVars  *entity.Setting
 	Errors   []string // stores errors
 	Warnings []string // stores warnings
 }
 
-func (uc *AppUC) loadAppEnvVarsForUpdate(
+func (uc *ProjectUC) loadProjectEnvVarsForUpdate(
 	ctx context.Context,
 	db database.Tx,
-	req *appdto.UpdateAppEnvVarsReq,
-	data *updateAppEnvVarsData,
+	req *projectdto.UpdateProjectEnvVarsReq,
+	data *updateProjectEnvVarsData,
 ) error {
-	app, err := uc.appRepo.GetByID(ctx, db, req.ProjectID, req.AppID,
-		bunex.SelectFor("UPDATE OF app"),
+	project, err := uc.projectRepo.GetByID(ctx, db, req.ProjectID,
+		bunex.SelectFor("UPDATE OF project"),
 		bunex.SelectRelation("Settings",
 			bunex.SelectWhere("setting.type = ?", base.SettingTypeEnvVar),
 		),
@@ -76,10 +71,10 @@ func (uc *AppUC) loadAppEnvVarsForUpdate(
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	data.App = app
+	data.Project = project
 
-	if len(app.Settings) > 0 {
-		data.EnvVars = app.Settings[0]
+	if len(project.Settings) > 0 {
+		data.EnvVars = project.Settings[0]
 	}
 	if data.EnvVars != nil && data.EnvVars.UpdateVer != req.UpdateVer {
 		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
@@ -88,19 +83,19 @@ func (uc *AppUC) loadAppEnvVarsForUpdate(
 	return nil
 }
 
-func (uc *AppUC) prepareUpdatingAppEnvVars(
-	req *appdto.UpdateAppEnvVarsReq,
-	data *updateAppEnvVarsData,
-	persistingData *persistingAppData,
+func (uc *ProjectUC) prepareUpdatingProjectEnvVars(
+	req *projectdto.UpdateProjectEnvVarsReq,
+	data *updateProjectEnvVarsData,
+	persistingData *persistingProjectData,
 ) {
-	app := data.App
+	project := data.Project
 	setting := data.EnvVars
 	timeNow := timeutil.NowUTC()
 
 	if setting == nil {
 		setting = &entity.Setting{
 			ID:        gofn.Must(ulid.NewStringULID()),
-			ObjectID:  app.ID,
+			ObjectID:  project.ID,
 			Type:      base.SettingTypeEnvVar,
 			CreatedAt: timeNow,
 			Version:   entity.CurrentEnvVarsVersion,
@@ -123,41 +118,4 @@ func (uc *AppUC) prepareUpdatingAppEnvVars(
 	setting.MustSetData(envVars)
 
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
-}
-
-func (uc *AppUC) applyAppEnvVars(
-	ctx context.Context,
-	db database.Tx,
-	data *updateAppEnvVarsData,
-) error {
-	app := data.App
-	envs, err := uc.envVarService.BuildAppEnv(ctx, db, app, false)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	envVars := make([]string, 0, len(envs))
-	for _, env := range envs {
-		envVars = append(envVars, env.ToString("="))
-		if env.Error != "" {
-			data.Errors = append(data.Errors, env.Error)
-		}
-	}
-
-	service, err := uc.appService.ServiceInspect(ctx, app.ServiceID, false)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	if service.Spec.TaskTemplate.ContainerSpec == nil {
-		service.Spec.TaskTemplate.ContainerSpec = &swarm.ContainerSpec{}
-	}
-	service.Spec.TaskTemplate.ContainerSpec.Env = envVars
-
-	_, err = uc.dockerManager.ServiceUpdate(ctx, app.ServiceID, &service.Version, &service.Spec)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	return nil
 }
