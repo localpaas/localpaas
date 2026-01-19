@@ -4,30 +4,29 @@ import (
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers"
 )
 
 type ListDiscordReq struct {
-	Status []base.SettingStatus `json:"-" mapstructure:"status"`
-	Search string               `json:"-" mapstructure:"search"`
-
-	Paging basedto.Paging `json:"-"`
+	providers.ListSettingReq
 }
 
 func NewListDiscordReq() *ListDiscordReq {
 	return &ListDiscordReq{
-		Paging: basedto.Paging{
-			// Default paging if unset by client
-			Sort: basedto.Orders{{Direction: basedto.DirectionAsc, ColumnName: "name"}},
+		ListSettingReq: providers.ListSettingReq{
+			Paging: basedto.Paging{
+				// Default paging if unset by client
+				Sort: basedto.Orders{{Direction: basedto.DirectionAsc, ColumnName: "name"}},
+			},
 		},
 	}
 }
 
 func (req *ListDiscordReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, basedto.ValidateSlice(req.Status, true, 0, base.AllSettingStatuses, "status")...)
+	validators = append(validators, req.ListSettingReq.Validate()...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 

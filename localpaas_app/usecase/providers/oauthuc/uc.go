@@ -8,22 +8,25 @@ import (
 )
 
 type OAuthUC struct {
-	db                *database.DB
-	settingRepo       repository.SettingRepo
-	permissionManager permission.Manager
-	settingService    settingservice.SettingService
+	db                       *database.DB
+	settingRepo              repository.SettingRepo
+	projectSharedSettingRepo repository.ProjectSharedSettingRepo
+	permissionManager        permission.Manager
+	settingService           settingservice.SettingService
 }
 
 func NewOAuthUC(
 	db *database.DB,
 	settingRepo repository.SettingRepo,
+	projectSharedSettingRepo repository.ProjectSharedSettingRepo,
 	permissionManager permission.Manager,
 	settingService settingservice.SettingService,
 ) *OAuthUC {
 	return &OAuthUC{
-		db:                db,
-		settingRepo:       settingRepo,
-		permissionManager: permissionManager,
-		settingService:    settingService,
+		db:                       db,
+		settingRepo:              settingRepo,
+		projectSharedSettingRepo: projectSharedSettingRepo,
+		permissionManager:        permissionManager,
+		settingService:           settingService,
 	}
 }

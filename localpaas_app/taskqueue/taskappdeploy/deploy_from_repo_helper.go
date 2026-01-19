@@ -133,15 +133,11 @@ func (e *Executor) calcBuildRegistryAuths(
 	data *repoDeployTaskData,
 ) (map[string]registry.AuthConfig, error) {
 	deployment := data.Deployment
+	app := deployment.App
 
-	settings, _, err := e.settingRepo.List(ctx, db, nil,
+	settings, _, err := e.settingRepo.List(ctx, db, app.ProjectID, "", nil,
 		bunex.SelectWhere("setting.type = ?", base.SettingTypeRegistryAuth),
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
-		bunex.SelectJoin("LEFT JOIN project_shared_settings pss ON pss.setting_id = setting.id"),
-		bunex.SelectWhereGroup(
-			bunex.SelectWhere("setting.object_id = ?", deployment.App.ProjectID),
-			bunex.SelectWhereOr("pss.project_id = ?", deployment.App.ProjectID),
-		),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)

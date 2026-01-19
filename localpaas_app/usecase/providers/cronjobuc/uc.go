@@ -8,25 +8,28 @@ import (
 )
 
 type CronJobUC struct {
-	db             *database.DB
-	settingRepo    repository.SettingRepo
-	taskRepo       repository.TaskRepo
-	settingService settingservice.SettingService
-	taskQueue      taskqueue.TaskQueue
+	db                       *database.DB
+	settingRepo              repository.SettingRepo
+	projectSharedSettingRepo repository.ProjectSharedSettingRepo
+	taskRepo                 repository.TaskRepo
+	settingService           settingservice.SettingService
+	taskQueue                taskqueue.TaskQueue
 }
 
 func NewCronJobUC(
 	db *database.DB,
 	settingRepo repository.SettingRepo,
+	projectSharedSettingRepo repository.ProjectSharedSettingRepo,
 	taskRepo repository.TaskRepo,
 	settingService settingservice.SettingService,
 	taskQueue taskqueue.TaskQueue,
 ) *CronJobUC {
 	return &CronJobUC{
-		db:             db,
-		settingRepo:    settingRepo,
-		taskRepo:       taskRepo,
-		settingService: settingService,
-		taskQueue:      taskQueue,
+		db:                       db,
+		settingRepo:              settingRepo,
+		projectSharedSettingRepo: projectSharedSettingRepo,
+		taskRepo:                 taskRepo,
+		settingService:           settingService,
+		taskQueue:                taskQueue,
 	}
 }

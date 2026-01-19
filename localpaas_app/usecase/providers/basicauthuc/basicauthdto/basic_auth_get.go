@@ -10,6 +10,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers"
 )
 
 const (
@@ -17,7 +18,7 @@ const (
 )
 
 type GetBasicAuthReq struct {
-	ID string `json:"-"`
+	providers.GetSettingReq
 }
 
 func NewGetBasicAuthReq() *GetBasicAuthReq {
@@ -26,7 +27,7 @@ func NewGetBasicAuthReq() *GetBasicAuthReq {
 
 func (req *GetBasicAuthReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, basedto.ValidateID(&req.ID, true, "id")...)
+	validators = append(validators, req.GetSettingReq.Validate()...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 

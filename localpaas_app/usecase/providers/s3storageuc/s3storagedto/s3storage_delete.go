@@ -5,10 +5,11 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers"
 )
 
 type DeleteS3StorageReq struct {
-	ID string `json:"-"`
+	providers.DeleteSettingReq
 }
 
 func NewDeleteS3StorageReq() *DeleteS3StorageReq {
@@ -18,7 +19,7 @@ func NewDeleteS3StorageReq() *DeleteS3StorageReq {
 // Validate implements interface basedto.ReqValidator
 func (req *DeleteS3StorageReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, basedto.ValidateID(&req.ID, true, "id")...)
+	validators = append(validators, req.DeleteSettingReq.Validate()...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 

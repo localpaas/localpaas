@@ -10,9 +10,11 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers"
 )
 
 type CreateCronJobReq struct {
+	providers.CreateSettingReq
 	*CronJobBaseReq
 }
 

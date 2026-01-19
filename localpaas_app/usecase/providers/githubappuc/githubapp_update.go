@@ -2,18 +2,14 @@ package githubappuc
 
 import (
 	"context"
-	"strings"
 
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/githubappuc/githubappdto"
 )
 
@@ -22,82 +18,33 @@ func (uc *GithubAppUC) UpdateGithubApp(
 	auth *basedto.Auth,
 	req *githubappdto.UpdateGithubAppReq,
 ) (*githubappdto.UpdateGithubAppResp, error) {
-	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
-		appData := &updateGithubAppData{}
-		err := uc.loadGithubAppDataForUpdate(ctx, db, req, appData)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
-
-		persistingData := &persistingGithubAppData{}
-		uc.prepareUpdatingGithubApp(req.GithubAppBaseReq, appData, persistingData)
-
-		return uc.persistData(ctx, db, persistingData)
+	req.Type = currentSettingType
+	_, err := providers.UpdateSetting(ctx, uc.db, &req.UpdateSettingReq, &providers.UpdateSettingData{
+		SettingRepo:   uc.settingRepo,
+		VerifyingName: req.Name,
+		PrepareUpdate: func(ctx context.Context, db database.Tx, data *providers.UpdateSettingData,
+			pData *providers.PersistingSettingData) error {
+			pData.Setting.Name = gofn.Coalesce(req.Name, pData.Setting.Name)
+			err := pData.Setting.SetData(&entity.GithubApp{
+				ClientID:       req.ClientID,
+				ClientSecret:   entity.NewEncryptedField(req.ClientSecret),
+				Organization:   req.Organization,
+				WebhookURL:     req.WebhookURL,
+				WebhookSecret:  entity.NewEncryptedField(req.WebhookSecret),
+				AppID:          req.GhAppID,
+				InstallationID: req.GhInstallationID,
+				PrivateKey:     entity.NewEncryptedField(req.PrivateKey),
+				SSOEnabled:     req.SSOEnabled,
+			})
+			if err != nil {
+				return apperrors.Wrap(err)
+			}
+			return nil
+		},
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
 	return &githubappdto.UpdateGithubAppResp{}, nil
-}
-
-type updateGithubAppData struct {
-	Setting *entity.Setting
-}
-
-func (uc *GithubAppUC) loadGithubAppDataForUpdate(
-	ctx context.Context,
-	db database.IDB,
-	req *githubappdto.UpdateGithubAppReq,
-	data *updateGithubAppData,
-) error {
-	setting, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeGithubApp, req.ID, false,
-		bunex.SelectFor("UPDATE OF setting"),
-	)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	if req.UpdateVer != setting.UpdateVer {
-		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
-	}
-	data.Setting = setting
-
-	// If name changes, validate the new one
-	name := gofn.Coalesce(req.Name, setting.Name, req.Organization)
-	if name != "" && !strings.EqualFold(setting.Name, name) {
-		conflictSetting, _ := uc.settingRepo.GetByName(ctx, db, base.SettingTypeGithubApp, name, false)
-		if conflictSetting != nil {
-			return apperrors.NewAlreadyExist("GithubApp").
-				WithMsgLog("github app '%s' already exists", conflictSetting.Name)
-		}
-	}
-
-	return nil
-}
-
-func (uc *GithubAppUC) prepareUpdatingGithubApp(
-	req *githubappdto.GithubAppBaseReq,
-	data *updateGithubAppData,
-	persistingData *persistingGithubAppData,
-) {
-	timeNow := timeutil.NowUTC()
-	setting := data.Setting
-	setting.UpdateVer++
-	setting.UpdatedAt = timeNow
-	setting.Name = gofn.Coalesce(req.Name, setting.Name, req.Organization)
-
-	githubApp := &entity.GithubApp{
-		ClientID:       req.ClientID,
-		ClientSecret:   entity.NewEncryptedField(req.ClientSecret),
-		Organization:   req.Organization,
-		WebhookURL:     req.WebhookURL,
-		WebhookSecret:  entity.NewEncryptedField(req.WebhookSecret),
-		AppID:          req.AppID,
-		InstallationID: req.InstallationID,
-		PrivateKey:     entity.NewEncryptedField(req.PrivateKey),
-		SSOEnabled:     req.SSOEnabled,
-	}
-	setting.MustSetData(githubApp)
-
-	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 }

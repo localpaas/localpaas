@@ -4,9 +4,8 @@ import (
 	"context"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/cronjobuc/cronjobdto"
 )
 
@@ -15,40 +14,21 @@ func (uc *CronJobUC) ListCronJob(
 	auth *basedto.Auth,
 	req *cronjobdto.ListCronJobReq,
 ) (*cronjobdto.ListCronJobResp, error) {
-	listOpts := []bunex.SelectQueryOption{
-		bunex.SelectWhere("setting.type = ?", base.SettingTypeCronJob),
-	}
-
-	if len(req.Status) > 0 {
-		listOpts = append(listOpts,
-			bunex.SelectWhere("setting.status IN (?)", bunex.In(req.Status)))
-	}
-	if req.Search != "" {
-		keyword := bunex.MakeLikeOpStr(req.Search, true)
-		listOpts = append(listOpts,
-			bunex.SelectWhereGroup(
-				bunex.SelectWhere("setting.name ILIKE ?", keyword),
-			),
-		)
-	}
-	if len(auth.AllowObjectIDs) > 0 {
-		listOpts = append(listOpts,
-			bunex.SelectWhere("setting.id IN (?)", bunex.In(auth.AllowObjectIDs)),
-		)
-	}
-
-	settings, paging, err := uc.settingRepo.List(ctx, uc.db, &req.Paging, listOpts...)
+	req.Type = currentSettingType
+	resp, err := providers.ListSetting(ctx, uc.db, auth, &req.ListSettingReq, &providers.ListSettingData{
+		SettingRepo: uc.settingRepo,
+	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := cronjobdto.TransformCronJobs(settings)
+	respData, err := cronjobdto.TransformCronJobs(resp.Data)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
 	return &cronjobdto.ListCronJobResp{
-		Meta: &basedto.Meta{Page: paging},
-		Data: resp,
+		Meta: resp.Meta,
+		Data: respData,
 	}, nil
 }

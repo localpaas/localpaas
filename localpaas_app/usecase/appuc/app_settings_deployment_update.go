@@ -87,10 +87,8 @@ func (uc *AppUC) loadAppDeploymentSettingsForUpdate(
 		return apperrors.Wrap(err)
 	}
 	data.App = app
+	data.DeploymentSettings, _ = gofn.First(app.Settings)
 
-	if len(app.Settings) > 0 {
-		data.DeploymentSettings = app.Settings[0]
-	}
 	deploymentSettings := data.DeploymentSettings
 	if deploymentSettings != nil && deploymentSettings.UpdateVer != req.UpdateVer {
 		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)

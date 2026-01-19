@@ -5,11 +5,11 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers"
 )
 
 type UpdateSslReq struct {
-	ID        string `json:"-"`
-	UpdateVer int    `json:"updateVer"`
+	providers.UpdateSettingReq
 	*SslBaseReq
 }
 

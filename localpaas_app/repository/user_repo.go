@@ -123,19 +123,21 @@ func (repo *userRepo) List(ctx context.Context, db database.IDB, paging *basedto
 	query := db.NewSelect().Model(&users)
 	query = bunex.ApplySelect(query, opts...)
 
-	pagingMeta := newPagingMeta(paging)
-
-	// Counts the total first
+	var pagingMeta *basedto.PagingMeta
 	if paging != nil {
+		pagingMeta = newPagingMeta(paging)
+
+		// Counts the total first
 		total, err := query.Count(ctx)
 		if err != nil {
 			return nil, nil, apperrors.Wrap(err)
 		}
 		pagingMeta.Total = total
+
+		// Applies pagination
+		query = bunex.ApplyPagination(query, paging)
 	}
 
-	// Applies pagination
-	query = bunex.ApplyPagination(query, paging)
 	err := query.Scan(ctx)
 	if err != nil {
 		return nil, nil, wrapPaginationError(err, paging)

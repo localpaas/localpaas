@@ -58,19 +58,21 @@ func (repo *sysErrorRepo) List(ctx context.Context, db database.IDB, paging *bas
 	query := db.NewSelect().Model(&sysErrors)
 	query = bunex.ApplySelect(query, opts...)
 
-	pagingMeta := newPagingMeta(paging)
-
-	// Counts the total first
+	var pagingMeta *basedto.PagingMeta
 	if paging != nil {
+		pagingMeta = newPagingMeta(paging)
+
+		// Counts the total first
 		total, err := query.Count(ctx)
 		if err != nil {
 			return nil, nil, apperrors.Wrap(err)
 		}
 		pagingMeta.Total = total
+
+		// Applies pagination
+		query = bunex.ApplyPagination(query, paging)
 	}
 
-	// Apply pagination
-	query = bunex.ApplyPagination(query, paging)
 	err := query.Scan(ctx)
 	if err != nil {
 		return nil, nil, wrapPaginationError(err, paging)

@@ -5,9 +5,11 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers"
 )
 
 type CreateSSHKeyReq struct {
+	providers.CreateSettingReq
 	*SSHKeyBaseReq
 }
 

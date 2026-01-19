@@ -150,6 +150,7 @@ var Provides = []any{
 	// Repo: Project
 	repository.NewProjectRepo,
 	repository.NewProjectTagRepo,
+	repository.NewProjectSharedSettingRepo,
 	// Repo: App
 	repository.NewAppRepo,
 	repository.NewAppTagRepo,

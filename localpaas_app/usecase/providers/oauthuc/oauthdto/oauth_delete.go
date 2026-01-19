@@ -5,10 +5,11 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers"
 )
 
 type DeleteOAuthReq struct {
-	ID string `json:"-"`
+	providers.DeleteSettingReq
 }
 
 func NewDeleteOAuthReq() *DeleteOAuthReq {
@@ -18,7 +19,7 @@ func NewDeleteOAuthReq() *DeleteOAuthReq {
 // Validate implements interface basedto.ReqValidator
 func (req *DeleteOAuthReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, basedto.ValidateID(&req.ID, true, "id")...)
+	validators = append(validators, req.DeleteSettingReq.Validate()...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 

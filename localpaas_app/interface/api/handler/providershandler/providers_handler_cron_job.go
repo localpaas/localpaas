@@ -40,6 +40,7 @@ func (h *ProvidersHandler) ListCronJob(ctx *gin.Context) {
 	}
 
 	req := cronjobdto.NewListCronJobReq()
+	req.GlobalOnly = true
 	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -85,6 +86,7 @@ func (h *ProvidersHandler) GetCronJob(ctx *gin.Context) {
 
 	req := cronjobdto.NewGetCronJobReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -122,6 +124,7 @@ func (h *ProvidersHandler) CreateCronJob(ctx *gin.Context) {
 	}
 
 	req := cronjobdto.NewCreateCronJobReq()
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -168,6 +171,7 @@ func (h *ProvidersHandler) UpdateCronJob(ctx *gin.Context) {
 
 	req := cronjobdto.NewUpdateCronJobReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -214,6 +218,7 @@ func (h *ProvidersHandler) UpdateCronJobMeta(ctx *gin.Context) {
 
 	req := cronjobdto.NewUpdateCronJobMetaReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -259,6 +264,7 @@ func (h *ProvidersHandler) DeleteCronJob(ctx *gin.Context) {
 
 	req := cronjobdto.NewDeleteCronJobReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return

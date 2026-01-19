@@ -80,10 +80,8 @@ func (uc *AppUC) loadAppHttpSettingsForUpdate(
 		return apperrors.Wrap(err)
 	}
 	data.App = app
+	data.HttpSettings, _ = gofn.First(app.Settings)
 
-	if len(app.Settings) > 0 {
-		data.HttpSettings = app.Settings[0]
-	}
 	if data.HttpSettings != nil && data.HttpSettings.UpdateVer != req.UpdateVer {
 		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
 	}

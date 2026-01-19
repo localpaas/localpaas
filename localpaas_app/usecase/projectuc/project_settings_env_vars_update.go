@@ -72,10 +72,8 @@ func (uc *ProjectUC) loadProjectEnvVarsForUpdate(
 		return apperrors.Wrap(err)
 	}
 	data.Project = project
+	data.EnvVars, _ = gofn.First(project.Settings)
 
-	if len(project.Settings) > 0 {
-		data.EnvVars = project.Settings[0]
-	}
 	if data.EnvVars != nil && data.EnvVars.UpdateVer != req.UpdateVer {
 		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
 	}

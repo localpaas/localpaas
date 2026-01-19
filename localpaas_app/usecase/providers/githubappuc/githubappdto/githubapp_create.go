@@ -7,23 +7,25 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers"
 )
 
 type CreateGithubAppReq struct {
+	providers.CreateSettingReq
 	*GithubAppBaseReq
 }
 
 type GithubAppBaseReq struct {
-	Name           string `json:"name"`
-	ClientID       string `json:"clientId"`
-	ClientSecret   string `json:"clientSecret"`
-	Organization   string `json:"organization"`
-	WebhookURL     string `json:"webhookURL"`
-	WebhookSecret  string `json:"webhookSecret"`
-	AppID          int64  `json:"appId"`
-	InstallationID int64  `json:"installationId"`
-	PrivateKey     string `json:"privateKey"`
-	SSOEnabled     bool   `json:"ssoEnabled"`
+	Name             string `json:"name"`
+	ClientID         string `json:"clientId"`
+	ClientSecret     string `json:"clientSecret"`
+	Organization     string `json:"organization"`
+	WebhookURL       string `json:"webhookURL"`
+	WebhookSecret    string `json:"webhookSecret"`
+	GhAppID          int64  `json:"appId"`
+	GhInstallationID int64  `json:"installationId"`
+	PrivateKey       string `json:"privateKey"`
+	SSOEnabled       bool   `json:"ssoEnabled"`
 }
 
 func (req *GithubAppBaseReq) modifyRequest() error {

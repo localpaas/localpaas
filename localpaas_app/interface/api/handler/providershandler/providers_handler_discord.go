@@ -41,6 +41,7 @@ func (h *ProvidersHandler) ListDiscord(ctx *gin.Context) {
 	}
 
 	req := discorddto.NewListDiscordReq()
+	req.GlobalOnly = true
 	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -86,6 +87,7 @@ func (h *ProvidersHandler) GetDiscord(ctx *gin.Context) {
 
 	req := discorddto.NewGetDiscordReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -122,6 +124,7 @@ func (h *ProvidersHandler) CreateDiscord(ctx *gin.Context) {
 	}
 
 	req := discorddto.NewCreateDiscordReq()
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -168,6 +171,7 @@ func (h *ProvidersHandler) UpdateDiscord(ctx *gin.Context) {
 
 	req := discorddto.NewUpdateDiscordReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -214,6 +218,7 @@ func (h *ProvidersHandler) UpdateDiscordMeta(ctx *gin.Context) {
 
 	req := discorddto.NewUpdateDiscordMetaReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -259,6 +264,7 @@ func (h *ProvidersHandler) DeleteDiscord(ctx *gin.Context) {
 
 	req := discorddto.NewDeleteDiscordReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return

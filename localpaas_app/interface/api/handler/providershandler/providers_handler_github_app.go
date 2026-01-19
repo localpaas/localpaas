@@ -41,6 +41,7 @@ func (h *ProvidersHandler) ListGithubApp(ctx *gin.Context) {
 	}
 
 	req := githubappdto.NewListGithubAppReq()
+	req.GlobalOnly = true
 	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -86,6 +87,7 @@ func (h *ProvidersHandler) GetGithubApp(ctx *gin.Context) {
 
 	req := githubappdto.NewGetGithubAppReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -123,6 +125,7 @@ func (h *ProvidersHandler) CreateGithubApp(ctx *gin.Context) {
 	}
 
 	req := githubappdto.NewCreateGithubAppReq()
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -169,6 +172,7 @@ func (h *ProvidersHandler) UpdateGithubApp(ctx *gin.Context) {
 
 	req := githubappdto.NewUpdateGithubAppReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -215,6 +219,7 @@ func (h *ProvidersHandler) UpdateGithubAppMeta(ctx *gin.Context) {
 
 	req := githubappdto.NewUpdateGithubAppMetaReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -260,6 +265,7 @@ func (h *ProvidersHandler) DeleteGithubApp(ctx *gin.Context) {
 
 	req := githubappdto.NewDeleteGithubAppReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return

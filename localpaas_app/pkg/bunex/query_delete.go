@@ -4,6 +4,12 @@ import (
 	"github.com/uptrace/bun"
 )
 
+var (
+	deleteNoneOption = func(query *bun.DeleteQuery) *bun.DeleteQuery {
+		return query
+	}
+)
+
 type DeleteQueryOption func(*bun.DeleteQuery) *bun.DeleteQuery
 
 func DeleteWithDeleted() DeleteQueryOption {
@@ -18,10 +24,24 @@ func DeleteWhere(queryStr string, args ...any) DeleteQueryOption {
 	}
 }
 
+func DeleteWhereIf(cond bool, queryStr string, args ...any) DeleteQueryOption {
+	if !cond {
+		return deleteNoneOption
+	}
+	return DeleteWhere(queryStr, args...)
+}
+
 func DeleteWhereOr(queryStr string, args ...any) DeleteQueryOption {
 	return func(query *bun.DeleteQuery) *bun.DeleteQuery {
 		return query.WhereOr(queryStr, args...)
 	}
+}
+
+func DeleteWhereOrIf(cond bool, queryStr string, args ...any) DeleteQueryOption {
+	if !cond {
+		return deleteNoneOption
+	}
+	return DeleteWhereOr(queryStr, args...)
 }
 
 func DeleteWhereIn[T any](queryStr string, slice ...T) DeleteQueryOption {
@@ -31,6 +51,13 @@ func DeleteWhereIn[T any](queryStr string, slice ...T) DeleteQueryOption {
 	return DeleteWhere(queryStr, In(slice))
 }
 
+func DeleteWhereInIf[T any](cond bool, queryStr string, slice ...T) DeleteQueryOption {
+	if !cond {
+		return deleteNoneOption
+	}
+	return DeleteWhereIn(queryStr, slice...)
+}
+
 func DeleteWhereNotIn[T any](queryStr string, slice ...T) DeleteQueryOption {
 	if len(slice) == 0 {
 		return DeleteWhere("1=1")
@@ -38,10 +65,24 @@ func DeleteWhereNotIn[T any](queryStr string, slice ...T) DeleteQueryOption {
 	return DeleteWhere(queryStr, In(slice))
 }
 
+func DeleteWhereNotInIf[T any](cond bool, queryStr string, slice ...T) DeleteQueryOption {
+	if !cond {
+		return deleteNoneOption
+	}
+	return DeleteWhereNotIn(queryStr, slice...)
+}
+
 func DeleteWithForceDelete() DeleteQueryOption {
 	return func(query *bun.DeleteQuery) *bun.DeleteQuery {
 		return query.ForceDelete()
 	}
+}
+
+func DeleteWithForceDeleteIf(cond bool) DeleteQueryOption {
+	if !cond {
+		return deleteNoneOption
+	}
+	return DeleteWithForceDelete()
 }
 
 // ApplyDelete applies extra delete queries to the bun query

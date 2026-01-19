@@ -9,25 +9,28 @@ import (
 )
 
 type RegistryAuthUC struct {
-	db                *database.DB
-	settingRepo       repository.SettingRepo
-	permissionManager permission.Manager
-	settingService    settingservice.SettingService
-	dockerManager     *docker.Manager
+	db                       *database.DB
+	settingRepo              repository.SettingRepo
+	projectSharedSettingRepo repository.ProjectSharedSettingRepo
+	permissionManager        permission.Manager
+	settingService           settingservice.SettingService
+	dockerManager            *docker.Manager
 }
 
 func NewRegistryAuthUC(
 	db *database.DB,
 	settingRepo repository.SettingRepo,
+	projectSharedSettingRepo repository.ProjectSharedSettingRepo,
 	permissionManager permission.Manager,
 	settingService settingservice.SettingService,
 	dockerManager *docker.Manager,
 ) *RegistryAuthUC {
 	return &RegistryAuthUC{
-		db:                db,
-		settingRepo:       settingRepo,
-		permissionManager: permissionManager,
-		settingService:    settingService,
-		dockerManager:     dockerManager,
+		db:                       db,
+		settingRepo:              settingRepo,
+		projectSharedSettingRepo: projectSharedSettingRepo,
+		permissionManager:        permissionManager,
+		settingService:           settingService,
+		dockerManager:            dockerManager,
 	}
 }

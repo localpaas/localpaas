@@ -5,6 +5,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers"
 )
 
 const (
@@ -13,8 +14,7 @@ const (
 )
 
 type CreateSecretReq struct {
-	ObjectID string `json:"-"`
-
+	providers.CreateSettingReq
 	Key    string `json:"key"`
 	Value  string `json:"value"`
 	Base64 bool   `json:"base64"`

@@ -40,6 +40,7 @@ func (h *ProvidersHandler) ListSsl(ctx *gin.Context) {
 	}
 
 	req := ssldto.NewListSslReq()
+	req.GlobalOnly = true
 	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -85,6 +86,7 @@ func (h *ProvidersHandler) GetSsl(ctx *gin.Context) {
 
 	req := ssldto.NewGetSslReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -121,6 +123,7 @@ func (h *ProvidersHandler) CreateSsl(ctx *gin.Context) {
 	}
 
 	req := ssldto.NewCreateSslReq()
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -167,6 +170,7 @@ func (h *ProvidersHandler) UpdateSsl(ctx *gin.Context) {
 
 	req := ssldto.NewUpdateSslReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -213,6 +217,7 @@ func (h *ProvidersHandler) UpdateSslMeta(ctx *gin.Context) {
 
 	req := ssldto.NewUpdateSslMetaReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -258,6 +263,7 @@ func (h *ProvidersHandler) DeleteSsl(ctx *gin.Context) {
 
 	req := ssldto.NewDeleteSslReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return

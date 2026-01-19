@@ -40,6 +40,7 @@ func (h *ProvidersHandler) ListSSHKey(ctx *gin.Context) {
 	}
 
 	req := sshkeydto.NewListSSHKeyReq()
+	req.GlobalOnly = true
 	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -85,6 +86,7 @@ func (h *ProvidersHandler) GetSSHKey(ctx *gin.Context) {
 
 	req := sshkeydto.NewGetSSHKeyReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -121,6 +123,7 @@ func (h *ProvidersHandler) CreateSSHKey(ctx *gin.Context) {
 	}
 
 	req := sshkeydto.NewCreateSSHKeyReq()
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -167,6 +170,7 @@ func (h *ProvidersHandler) UpdateSSHKey(ctx *gin.Context) {
 
 	req := sshkeydto.NewUpdateSSHKeyReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -213,6 +217,7 @@ func (h *ProvidersHandler) UpdateSSHKeyMeta(ctx *gin.Context) {
 
 	req := sshkeydto.NewUpdateSSHKeyMetaReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -258,6 +263,7 @@ func (h *ProvidersHandler) DeleteSSHKey(ctx *gin.Context) {
 
 	req := sshkeydto.NewDeleteSSHKeyReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return

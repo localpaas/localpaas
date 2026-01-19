@@ -45,7 +45,6 @@ func (h *ProjectHandler) ListProjectSecrets(ctx *gin.Context) {
 	}
 
 	req := secretdto.NewListSecretReq()
-	req.ObjectID = projectID
 	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -91,7 +90,6 @@ func (h *ProjectHandler) CreateProjectSecret(ctx *gin.Context) {
 	}
 
 	req := secretdto.NewCreateSecretReq()
-	req.ObjectID = projectID
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -143,7 +141,6 @@ func (h *ProjectHandler) DeleteProjectSecret(ctx *gin.Context) {
 	}
 
 	req := secretdto.NewDeleteSecretReq()
-	req.ObjectID = projectID
 	req.ID = secretID
 	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)

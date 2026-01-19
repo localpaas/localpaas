@@ -10,32 +10,27 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
-)
-
-const (
-	maskedSecretValue = "****************"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers"
 )
 
 type ListSecretReq struct {
-	ObjectID string               `json:"-"`
-	Status   []base.SettingStatus `json:"-" mapstructure:"status"`
-	Search   string               `json:"-" mapstructure:"search"`
-
-	Paging basedto.Paging `json:"-"`
+	providers.ListSettingReq
 }
 
 func NewListSecretReq() *ListSecretReq {
 	return &ListSecretReq{
-		Paging: basedto.Paging{
-			// Default paging if unset by client
-			Sort: basedto.Orders{{Direction: basedto.DirectionAsc, ColumnName: "name"}},
+		ListSettingReq: providers.ListSettingReq{
+			Paging: basedto.Paging{
+				// Default paging if unset by client
+				Sort: basedto.Orders{{Direction: basedto.DirectionAsc, ColumnName: "name"}},
+			},
 		},
 	}
 }
 
 func (req *ListSecretReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, basedto.ValidateSlice(req.Status, true, 0, base.AllSettingStatuses, "status")...)
+	validators = append(validators, req.ListSettingReq.Validate()...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
@@ -49,18 +44,11 @@ type SecretResp struct {
 	Name      string             `json:"name,omitempty"`
 	Status    base.SettingStatus `json:"status"`
 	Key       string             `json:"key"`
-	Value     string             `json:"value"`
-	Encrypted bool               `json:"encrypted,omitempty"`
 	UpdateVer int                `json:"updateVer"`
 
 	CreatedAt time.Time  `json:"createdAt"`
 	UpdatedAt time.Time  `json:"updatedAt"`
 	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
-}
-
-func (resp *SecretResp) CopySecretKey(field entity.EncryptedField) error {
-	resp.Value = field.String()
-	return nil
 }
 
 func TransformSecret(setting *entity.Setting) (resp *SecretResp, err error) {
@@ -74,10 +62,6 @@ func TransformSecret(setting *entity.Setting) (resp *SecretResp, err error) {
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp.Encrypted = secret.Value.IsEncrypted()
-	if resp.Encrypted {
-		resp.Value = maskedSecretValue
-	}
 	return resp, nil
 }
 

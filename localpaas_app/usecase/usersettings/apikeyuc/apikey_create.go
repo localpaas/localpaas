@@ -2,7 +2,6 @@ package apikeyuc
 
 import (
 	"context"
-	"errors"
 
 	"github.com/tiendc/gofn"
 
@@ -11,10 +10,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
-	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc/apikeydto"
 )
 
@@ -23,22 +19,38 @@ const (
 	secretLen = 32
 )
 
+const (
+	currentSettingType = base.SettingTypeAPIKey
+)
+
 func (uc *APIKeyUC) CreateAPIKey(
 	ctx context.Context,
 	auth *basedto.Auth,
 	req *apikeydto.CreateAPIKeyReq,
 ) (*apikeydto.CreateAPIKeyResp, error) {
-	apiKeyData := &createAPIKeyData{}
-	err := uc.loadAPIKeyData(ctx, uc.db, auth, req, apiKeyData)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
+	actingUser := auth.User.User
+	// Generate key and secret
+	keyID, secretKey := gofn.RandTokenAsHex(keyLen), gofn.RandTokenAsHex(secretLen)
 
-	persistingData := &persistingAPIKeyData{}
-	uc.preparePersistingAPIKey(req, apiKeyData, persistingData)
-
-	err = transaction.Execute(ctx, uc.db, func(db database.Tx) error {
-		return uc.persistData(ctx, db, persistingData)
+	req.Type = currentSettingType
+	resp, err := providers.CreateSetting(ctx, uc.db, &req.CreateSettingReq, &providers.CreateSettingData{
+		SettingRepo:   uc.settingRepo,
+		VerifyingName: req.Name,
+		Version:       entity.CurrentAPIKeyVersion,
+		PrepareCreation: func(ctx context.Context, db database.Tx, data *providers.CreateSettingData,
+			pData *providers.PersistingSettingCreationData) error {
+			pData.Setting.ObjectID = actingUser.ID
+			pData.Setting.ExpireAt = req.ExpireAt
+			err := pData.Setting.SetData(&entity.APIKey{
+				KeyID:        keyID,
+				SecretKey:    entity.NewHashField(secretKey),
+				AccessAction: req.AccessAction,
+			})
+			if err != nil {
+				return apperrors.Wrap(err)
+			}
+			return nil
+		},
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -46,86 +58,9 @@ func (uc *APIKeyUC) CreateAPIKey(
 
 	return &apikeydto.CreateAPIKeyResp{
 		Data: &apikeydto.APIKeyDataResp{
-			ID:        persistingData.UpsertingSettings[0].ID,
-			KeyID:     apiKeyData.KeyID,
-			SecretKey: apiKeyData.SecretKey,
+			ID:        resp.Data.ID,
+			KeyID:     keyID,
+			SecretKey: secretKey,
 		},
 	}, nil
-}
-
-type createAPIKeyData struct {
-	ActingUser *entity.User
-	KeyID      string
-	SecretKey  string
-}
-
-func (uc *APIKeyUC) loadAPIKeyData(
-	ctx context.Context,
-	db database.IDB,
-	auth *basedto.Auth,
-	req *apikeydto.CreateAPIKeyReq,
-	data *createAPIKeyData,
-) error {
-	data.ActingUser = auth.User.User
-
-	// Generate key and secret
-	keyID, secretKey := gofn.RandTokenAsHex(keyLen), gofn.RandTokenAsHex(secretLen)
-	data.KeyID = keyID
-	data.SecretKey = secretKey
-
-	// Make sure there is no duplicated key in the db
-	setting, err := uc.settingRepo.GetByName(ctx, db, base.SettingTypeAPIKey, req.Name, false)
-	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-		return apperrors.Wrap(err)
-	}
-	if setting != nil {
-		return apperrors.NewAlreadyExist("APIKey").
-			WithMsgLog("API key '%s' already exists", req.Name)
-	}
-
-	return nil
-}
-
-type persistingAPIKeyData struct {
-	settingservice.PersistingSettingData
-}
-
-func (uc *APIKeyUC) preparePersistingAPIKey(
-	req *apikeydto.CreateAPIKeyReq,
-	data *createAPIKeyData,
-	persistingData *persistingAPIKeyData,
-) {
-	timeNow := timeutil.NowUTC()
-	setting := &entity.Setting{
-		ID:        gofn.Must(ulid.NewStringULID()),
-		Type:      base.SettingTypeAPIKey,
-		Status:    base.SettingStatusActive,
-		ObjectID:  data.ActingUser.ID,
-		Name:      req.Name,
-		Version:   entity.CurrentAPIKeyVersion,
-		ExpireAt:  req.ExpireAt,
-		CreatedAt: timeNow,
-		UpdatedAt: timeNow,
-	}
-
-	apiKey := &entity.APIKey{
-		KeyID:        data.KeyID,
-		SecretKey:    entity.NewHashField(data.SecretKey),
-		AccessAction: req.AccessAction,
-	}
-	setting.MustSetData(apiKey)
-
-	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
-}
-
-func (uc *APIKeyUC) persistData(
-	ctx context.Context,
-	db database.IDB,
-	persistingData *persistingAPIKeyData,
-) error {
-	err := uc.settingService.PersistSettingData(ctx, db, &persistingData.PersistingSettingData)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	return nil
 }

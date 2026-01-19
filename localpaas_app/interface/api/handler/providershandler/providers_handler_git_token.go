@@ -41,6 +41,7 @@ func (h *ProvidersHandler) ListGitToken(ctx *gin.Context) {
 	}
 
 	req := gittokendto.NewListGitTokenReq()
+	req.GlobalOnly = true
 	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -86,6 +87,7 @@ func (h *ProvidersHandler) GetGitToken(ctx *gin.Context) {
 
 	req := gittokendto.NewGetGitTokenReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -123,6 +125,7 @@ func (h *ProvidersHandler) CreateGitToken(ctx *gin.Context) {
 	}
 
 	req := gittokendto.NewCreateGitTokenReq()
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -169,6 +172,7 @@ func (h *ProvidersHandler) UpdateGitToken(ctx *gin.Context) {
 
 	req := gittokendto.NewUpdateGitTokenReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -215,6 +219,7 @@ func (h *ProvidersHandler) UpdateGitTokenMeta(ctx *gin.Context) {
 
 	req := gittokendto.NewUpdateGitTokenMetaReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -260,6 +265,7 @@ func (h *ProvidersHandler) DeleteGitToken(ctx *gin.Context) {
 
 	req := gittokendto.NewDeleteGitTokenReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return

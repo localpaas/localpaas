@@ -41,6 +41,7 @@ func (h *ProvidersHandler) ListS3Storage(ctx *gin.Context) {
 	}
 
 	req := s3storagedto.NewListS3StorageReq()
+	req.GlobalOnly = true
 	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -86,6 +87,7 @@ func (h *ProvidersHandler) GetS3Storage(ctx *gin.Context) {
 
 	req := s3storagedto.NewGetS3StorageReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -122,6 +124,7 @@ func (h *ProvidersHandler) CreateS3Storage(ctx *gin.Context) {
 	}
 
 	req := s3storagedto.NewCreateS3StorageReq()
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -168,6 +171,7 @@ func (h *ProvidersHandler) UpdateS3Storage(ctx *gin.Context) {
 
 	req := s3storagedto.NewUpdateS3StorageReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -214,6 +218,7 @@ func (h *ProvidersHandler) UpdateS3StorageMeta(ctx *gin.Context) {
 
 	req := s3storagedto.NewUpdateS3StorageMetaReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -259,6 +264,7 @@ func (h *ProvidersHandler) DeleteS3Storage(ctx *gin.Context) {
 
 	req := s3storagedto.NewDeleteS3StorageReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return

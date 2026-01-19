@@ -8,22 +8,25 @@ import (
 )
 
 type GithubAppUC struct {
-	db                *database.DB
-	settingRepo       repository.SettingRepo
-	permissionManager permission.Manager
-	settingService    settingservice.SettingService
+	db                       *database.DB
+	settingRepo              repository.SettingRepo
+	projectSharedSettingRepo repository.ProjectSharedSettingRepo
+	permissionManager        permission.Manager
+	settingService           settingservice.SettingService
 }
 
 func NewGithubAppUC(
 	db *database.DB,
 	settingRepo repository.SettingRepo,
+	projectSharedSettingRepo repository.ProjectSharedSettingRepo,
 	permissionManager permission.Manager,
 	settingService settingservice.SettingService,
 ) *GithubAppUC {
 	return &GithubAppUC{
-		db:                db,
-		settingRepo:       settingRepo,
-		permissionManager: permissionManager,
-		settingService:    settingService,
+		db:                       db,
+		settingRepo:              settingRepo,
+		projectSharedSettingRepo: projectSharedSettingRepo,
+		permissionManager:        permissionManager,
+		settingService:           settingService,
 	}
 }

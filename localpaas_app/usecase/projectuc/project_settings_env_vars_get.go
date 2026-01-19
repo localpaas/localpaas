@@ -3,10 +3,11 @@ package projectuc
 import (
 	"context"
 
+	"github.com/tiendc/gofn"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc/projectdto"
 )
@@ -21,7 +22,7 @@ func (uc *ProjectUC) GetProjectEnvVars(
 		return nil, apperrors.Wrap(err)
 	}
 
-	settings, _, err := uc.settingRepo.List(ctx, uc.db, nil,
+	settings, _, err := uc.settingRepo.List(ctx, uc.db, "", "", nil,
 		bunex.SelectWhere("setting.type = ?", base.SettingTypeEnvVar),
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
 		bunex.SelectWhere("setting.object_id = ?", project.ID),
@@ -30,11 +31,8 @@ func (uc *ProjectUC) GetProjectEnvVars(
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	var setting *entity.Setting
-	if len(settings) > 0 {
-		setting = settings[0]
-	}
 
+	setting, _ := gofn.First(settings)
 	resp, err := projectdto.TransformEnvVars(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)

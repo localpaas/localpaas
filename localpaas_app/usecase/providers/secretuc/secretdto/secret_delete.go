@@ -5,11 +5,11 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers"
 )
 
 type DeleteSecretReq struct {
-	ID       string `json:"-"`
-	ObjectID string `json:"-"`
+	providers.DeleteSettingReq
 }
 
 func NewDeleteSecretReq() *DeleteSecretReq {
@@ -19,7 +19,7 @@ func NewDeleteSecretReq() *DeleteSecretReq {
 // Validate implements interface basedto.ReqValidator
 func (req *DeleteSecretReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, basedto.ValidateID(&req.ID, true, "id")...)
+	validators = append(validators, req.DeleteSettingReq.Validate()...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 

@@ -77,10 +77,8 @@ func (uc *AppUC) loadAppEnvVarsForUpdate(
 		return apperrors.Wrap(err)
 	}
 	data.App = app
+	data.EnvVars, _ = gofn.First(app.Settings)
 
-	if len(app.Settings) > 0 {
-		data.EnvVars = app.Settings[0]
-	}
 	if data.EnvVars != nil && data.EnvVars.UpdateVer != req.UpdateVer {
 		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
 	}

@@ -3347,6 +3347,390 @@
         "x-codegen-request-body-name" : "body"
       }
     },
+    "/projects/{projectID}/basic-auth" : {
+      "get" : {
+        "description" : "Lists basic auth of project",
+        "operationId" : "listProjectBasicAuth",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`search=<target> (support *)`",
+          "in" : "query",
+          "name" : "search",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`pageOffset=offset`",
+          "in" : "query",
+          "name" : "pageOffset",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`pageLimit=limit`",
+          "in" : "query",
+          "name" : "pageLimit",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`sort=[-]field1|field2...`",
+          "in" : "query",
+          "name" : "sort",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_basicauthuc_basicauthdto.ListBasicAuthResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Lists basic auth of project",
+        "tags" : [ "projects" ]
+      },
+      "post" : {
+        "description" : "Creates a new basic auth",
+        "operationId" : "createProjectBasicAuth",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_basicauthuc_basicauthdto.CreateBasicAuthReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_basicauthuc_basicauthdto.CreateBasicAuthResp"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Creates a new basic auth",
+        "tags" : [ "projects" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/projects/{projectID}/basic-auth/{id}" : {
+      "delete" : {
+        "description" : "Deletes basic auth provider",
+        "operationId" : "deleteProjectBasicAuth",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_basicauthuc_basicauthdto.DeleteBasicAuthResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Deletes basic auth provider",
+        "tags" : [ "projects" ]
+      },
+      "get" : {
+        "description" : "Gets basic auth details",
+        "operationId" : "getProjectBasicAuth",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_basicauthuc_basicauthdto.GetBasicAuthResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Gets basic auth details",
+        "tags" : [ "projects" ]
+      },
+      "put" : {
+        "description" : "Updates basic auth",
+        "operationId" : "updateProjectBasicAuth",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_basicauthuc_basicauthdto.UpdateBasicAuthReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_basicauthuc_basicauthdto.UpdateBasicAuthResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates basic auth",
+        "tags" : [ "projects" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/projects/{projectID}/basic-auth/{id}/meta" : {
+      "put" : {
+        "description" : "Updates basic auth meta",
+        "operationId" : "updateProjectBasicAuthMeta",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_basicauthuc_basicauthdto.UpdateBasicAuthMetaReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_basicauthuc_basicauthdto.UpdateBasicAuthMetaResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates basic auth meta",
+        "tags" : [ "projects" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
     "/projects/{projectID}/env-vars" : {
       "get" : {
         "description" : "Gets project env vars",
@@ -10568,10 +10952,10 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
         "format" : "int64",
         "type" : "integer",
-        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
+        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentReq" : {
         "type" : "object"
@@ -14102,21 +14486,6 @@
         "required" : [ "allowed", "id" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_s3storageuc_s3storagedto.S3StorageAppAccessResp" : {
-        "properties" : {
-          "allowed" : {
-            "type" : "boolean"
-          },
-          "id" : {
-            "type" : "string"
-          },
-          "name" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "allowed", "id", "name" ],
-        "type" : "object"
-      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_s3storageuc_s3storagedto.S3StorageProjectAccessReq" : {
         "properties" : {
           "allowed" : {
@@ -14134,27 +14503,6 @@
           }
         },
         "required" : [ "allowed", "appAccesses", "id" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_s3storageuc_s3storagedto.S3StorageProjectAccessResp" : {
-        "properties" : {
-          "allowed" : {
-            "type" : "boolean"
-          },
-          "appAccesses" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_s3storageuc_s3storagedto.S3StorageAppAccessResp"
-            },
-            "type" : "array"
-          },
-          "id" : {
-            "type" : "string"
-          },
-          "name" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "allowed", "appAccesses", "id", "name" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_s3storageuc_s3storagedto.S3StorageResp" : {
@@ -14186,12 +14534,6 @@
           "name" : {
             "type" : "string"
           },
-          "projectAccesses" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_s3storageuc_s3storagedto.S3StorageProjectAccessResp"
-            },
-            "type" : "array"
-          },
           "region" : {
             "type" : "string"
           },
@@ -14208,7 +14550,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "accessKeyId", "bucket", "createdAt", "endpoint", "id", "name", "projectAccesses", "region", "status", "updateVer", "updatedAt" ],
+        "required" : [ "accessKeyId", "bucket", "createdAt", "endpoint", "id", "name", "region", "status", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_s3storageuc_s3storagedto.TestS3StorageConnReq" : {
@@ -14288,12 +14630,6 @@
           "name" : {
             "type" : "string"
           },
-          "projectAccesses" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_s3storageuc_s3storagedto.S3StorageProjectAccessReq"
-            },
-            "type" : "array"
-          },
           "region" : {
             "type" : "string"
           },
@@ -14304,7 +14640,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "accessKeyId", "bucket", "endpoint", "name", "projectAccesses", "region", "secretKey", "updateVer" ],
+        "required" : [ "accessKeyId", "bucket", "endpoint", "name", "region", "secretKey", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_s3storageuc_s3storagedto.UpdateS3StorageResp" : {
@@ -14372,9 +14708,6 @@
           "createdAt" : {
             "type" : "string"
           },
-          "encrypted" : {
-            "type" : "boolean"
-          },
           "expireAt" : {
             "type" : "string"
           },
@@ -14395,12 +14728,9 @@
           },
           "updatedAt" : {
             "type" : "string"
-          },
-          "value" : {
-            "type" : "string"
           }
         },
-        "required" : [ "createdAt", "id", "key", "status", "updateVer", "updatedAt", "value" ],
+        "required" : [ "createdAt", "id", "key", "status", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_secretuc_secretdto.UpdateSecretMetaReq" : {
@@ -14673,21 +15003,6 @@
         "required" : [ "allowed", "id" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_sshkeyuc_sshkeydto.SSHKeyAppAccessResp" : {
-        "properties" : {
-          "allowed" : {
-            "type" : "boolean"
-          },
-          "id" : {
-            "type" : "string"
-          },
-          "name" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "allowed", "id", "name" ],
-        "type" : "object"
-      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_sshkeyuc_sshkeydto.SSHKeyProjectAccessReq" : {
         "properties" : {
           "allowed" : {
@@ -14705,27 +15020,6 @@
           }
         },
         "required" : [ "allowed", "appAccesses", "id" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_sshkeyuc_sshkeydto.SSHKeyProjectAccessResp" : {
-        "properties" : {
-          "allowed" : {
-            "type" : "boolean"
-          },
-          "appAccesses" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_sshkeyuc_sshkeydto.SSHKeyAppAccessResp"
-            },
-            "type" : "array"
-          },
-          "id" : {
-            "type" : "string"
-          },
-          "name" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "allowed", "appAccesses", "id", "name" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_sshkeyuc_sshkeydto.SSHKeyResp" : {
@@ -14751,12 +15045,6 @@
           "privateKey" : {
             "type" : "string"
           },
-          "projectAccesses" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_sshkeyuc_sshkeydto.SSHKeyProjectAccessResp"
-            },
-            "type" : "array"
-          },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
           },
@@ -14767,7 +15055,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "id", "name", "privateKey", "projectAccesses", "status", "updateVer", "updatedAt" ],
+        "required" : [ "createdAt", "id", "name", "privateKey", "status", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_sshkeyuc_sshkeydto.UpdateSSHKeyMetaReq" : {
@@ -14805,17 +15093,11 @@
           "privateKey" : {
             "type" : "string"
           },
-          "projectAccesses" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_sshkeyuc_sshkeydto.SSHKeyProjectAccessReq"
-            },
-            "type" : "array"
-          },
           "updateVer" : {
             "type" : "integer"
           }
         },
-        "required" : [ "name", "passphrase", "privateKey", "projectAccesses", "updateVer" ],
+        "required" : [ "name", "passphrase", "privateKey", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_sshkeyuc_sshkeydto.UpdateSSHKeyResp" : {

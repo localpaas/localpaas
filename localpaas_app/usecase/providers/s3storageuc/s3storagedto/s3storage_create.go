@@ -5,9 +5,11 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers"
 )
 
 type CreateS3StorageReq struct {
+	providers.CreateSettingReq
 	*S3StorageBaseReq
 }
 

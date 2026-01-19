@@ -40,6 +40,7 @@ func (h *ProvidersHandler) ListSecret(ctx *gin.Context) {
 	}
 
 	req := secretdto.NewListSecretReq()
+	req.GlobalOnly = true
 	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -76,6 +77,7 @@ func (h *ProvidersHandler) CreateSecret(ctx *gin.Context) {
 	}
 
 	req := secretdto.NewCreateSecretReq()
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -122,6 +124,7 @@ func (h *ProvidersHandler) UpdateSecretMeta(ctx *gin.Context) {
 
 	req := secretdto.NewUpdateSecretMetaReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -167,6 +170,7 @@ func (h *ProvidersHandler) DeleteSecret(ctx *gin.Context) {
 
 	req := secretdto.NewDeleteSecretReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return

@@ -8,22 +8,25 @@ import (
 )
 
 type S3StorageUC struct {
-	db                *database.DB
-	settingRepo       repository.SettingRepo
-	permissionManager permission.Manager
-	settingService    settingservice.SettingService
+	db                       *database.DB
+	settingRepo              repository.SettingRepo
+	projectSharedSettingRepo repository.ProjectSharedSettingRepo
+	permissionManager        permission.Manager
+	settingService           settingservice.SettingService
 }
 
 func NewS3StorageUC(
 	db *database.DB,
 	settingRepo repository.SettingRepo,
+	projectSharedSettingRepo repository.ProjectSharedSettingRepo,
 	permissionManager permission.Manager,
 	settingService settingservice.SettingService,
 ) *S3StorageUC {
 	return &S3StorageUC{
-		db:                db,
-		settingRepo:       settingRepo,
-		permissionManager: permissionManager,
-		settingService:    settingService,
+		db:                       db,
+		settingRepo:              settingRepo,
+		projectSharedSettingRepo: projectSharedSettingRepo,
+		permissionManager:        permissionManager,
+		settingService:           settingService,
 	}
 }

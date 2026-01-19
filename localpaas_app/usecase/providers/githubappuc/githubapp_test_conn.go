@@ -15,7 +15,7 @@ func (uc *GithubAppUC) TestGithubAppConn(
 	auth *basedto.Auth,
 	req *githubappdto.TestGithubAppConnReq,
 ) (*githubappdto.TestGithubAppConnResp, error) {
-	client, err := github.NewFromApp(req.AppID, req.InstallationID, reflectutil.UnsafeStrToBytes(req.PrivateKey))
+	client, err := github.NewFromApp(req.GhAppID, req.GhInstallationID, reflectutil.UnsafeStrToBytes(req.PrivateKey))
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

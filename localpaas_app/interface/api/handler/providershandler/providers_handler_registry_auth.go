@@ -41,6 +41,7 @@ func (h *ProvidersHandler) ListRegistryAuth(ctx *gin.Context) {
 	}
 
 	req := registryauthdto.NewListRegistryAuthReq()
+	req.GlobalOnly = true
 	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -86,6 +87,7 @@ func (h *ProvidersHandler) GetRegistryAuth(ctx *gin.Context) {
 
 	req := registryauthdto.NewGetRegistryAuthReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -122,6 +124,7 @@ func (h *ProvidersHandler) CreateRegistryAuth(ctx *gin.Context) {
 	}
 
 	req := registryauthdto.NewCreateRegistryAuthReq()
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -168,6 +171,7 @@ func (h *ProvidersHandler) UpdateRegistryAuth(ctx *gin.Context) {
 
 	req := registryauthdto.NewUpdateRegistryAuthReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -214,6 +218,7 @@ func (h *ProvidersHandler) UpdateRegistryAuthMeta(ctx *gin.Context) {
 
 	req := registryauthdto.NewUpdateRegistryAuthMetaReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -259,6 +264,7 @@ func (h *ProvidersHandler) DeleteRegistryAuth(ctx *gin.Context) {
 
 	req := registryauthdto.NewDeleteRegistryAuthReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return

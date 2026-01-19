@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/slackuc/slackdto"
 )
 
@@ -14,7 +14,10 @@ func (uc *SlackUC) GetSlack(
 	auth *basedto.Auth,
 	req *slackdto.GetSlackReq,
 ) (*slackdto.GetSlackResp, error) {
-	setting, err := uc.settingRepo.GetByID(ctx, uc.db, base.SettingTypeSlack, req.ID, false)
+	req.Type = currentSettingType
+	setting, err := providers.GetSetting(ctx, uc.db, auth, &req.GetSettingReq, &providers.GetSettingData{
+		SettingRepo: uc.settingRepo,
+	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

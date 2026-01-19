@@ -5,10 +5,10 @@
       "name": "Main App",
       "type": "go",
       "request": "launch",
-      "mode": "auto",
+      "mode": "debug",
       "cwd": "${workspaceFolder}",
       "program": "${workspaceFolder}/localpaas_app/cmd/app",
-      "envFile": "${workspaceFolder}/.env"
-    }
-  ]
+      "envFile": "${workspaceFolder}/.env",
+    },
+  ],
 }

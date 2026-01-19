@@ -5,22 +5,21 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers"
 )
 
 type UpdateS3StorageReq struct {
-	ID        string `json:"-"`
-	UpdateVer int    `json:"updateVer"`
+	providers.UpdateSettingReq
 	*S3StoragePartialReq
 }
 
 type S3StoragePartialReq struct {
-	Name            *string                      `json:"name"`
-	AccessKeyID     *string                      `json:"accessKeyId"`
-	SecretKey       *string                      `json:"secretKey"`
-	Region          *string                      `json:"region"`
-	Bucket          *string                      `json:"bucket"`
-	Endpoint        *string                      `json:"endpoint"`
-	ProjectAccesses []*S3StorageProjectAccessReq `json:"projectAccesses"`
+	Name        *string `json:"name"`
+	AccessKeyID *string `json:"accessKeyId"`
+	SecretKey   *string `json:"secretKey"`
+	Region      *string `json:"region"`
+	Bucket      *string `json:"bucket"`
+	Endpoint    *string `json:"endpoint"`
 }
 
 func (req *S3StoragePartialReq) validate(field string) (res []vld.Validator) {

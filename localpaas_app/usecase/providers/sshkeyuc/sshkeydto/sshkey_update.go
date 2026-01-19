@@ -5,19 +5,18 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers"
 )
 
 type UpdateSSHKeyReq struct {
-	ID        string `json:"-"`
-	UpdateVer int    `json:"updateVer"`
+	providers.UpdateSettingReq
 	*SSHKeyPartialReq
 }
 
 type SSHKeyPartialReq struct {
-	Name            *string                   `json:"name"`
-	PrivateKey      *string                   `json:"privateKey"`
-	Passphrase      *string                   `json:"passphrase"`
-	ProjectAccesses []*SSHKeyProjectAccessReq `json:"projectAccesses"`
+	Name       *string `json:"name"`
+	PrivateKey *string `json:"privateKey"`
+	Passphrase *string `json:"passphrase"`
 }
 
 func (req *SSHKeyPartialReq) validate(field string) (res []vld.Validator) {

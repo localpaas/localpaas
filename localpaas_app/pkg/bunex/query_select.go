@@ -4,6 +4,12 @@ import (
 	"github.com/uptrace/bun"
 )
 
+var (
+	selectNoneOption = func(query *bun.SelectQuery) *bun.SelectQuery {
+		return query
+	}
+)
+
 type SelectQueryOption func(*bun.SelectQuery) *bun.SelectQuery
 
 func SelectColumns(cols ...string) SelectQueryOption {
@@ -42,10 +48,24 @@ func SelectWhere(queryStr string, args ...any) SelectQueryOption {
 	}
 }
 
+func SelectWhereIf(cond bool, queryStr string, args ...any) SelectQueryOption {
+	if !cond {
+		return selectNoneOption
+	}
+	return SelectWhere(queryStr, args...)
+}
+
 func SelectWhereOr(queryStr string, args ...any) SelectQueryOption {
 	return func(query *bun.SelectQuery) *bun.SelectQuery {
 		return query.WhereOr(queryStr, args...)
 	}
+}
+
+func SelectWhereOrIf(cond bool, queryStr string, args ...any) SelectQueryOption {
+	if !cond {
+		return selectNoneOption
+	}
+	return SelectWhereOr(queryStr, args...)
 }
 
 func SelectWhereGroup(opts ...SelectQueryOption) SelectQueryOption {
@@ -77,6 +97,13 @@ func SelectWhereIn[T any](queryStr string, slice ...T) SelectQueryOption {
 	return SelectWhere(queryStr, In(slice))
 }
 
+func SelectWhereInIf[T any](cond bool, queryStr string, slice ...T) SelectQueryOption {
+	if !cond {
+		return selectNoneOption
+	}
+	return SelectWhereIn(queryStr, slice...)
+}
+
 func SelectWhereNotIn[T any](queryStr string, slice ...T) SelectQueryOption {
 	if len(slice) == 0 {
 		return SelectWhere("1=1")
@@ -84,10 +111,24 @@ func SelectWhereNotIn[T any](queryStr string, slice ...T) SelectQueryOption {
 	return SelectWhere(queryStr, In(slice))
 }
 
+func SelectWhereNotInIf[T any](cond bool, queryStr string, slice ...T) SelectQueryOption {
+	if !cond {
+		return selectNoneOption
+	}
+	return SelectWhereNotIn(queryStr, slice...)
+}
+
 func SelectJoin(join string, args ...any) SelectQueryOption {
 	return func(query *bun.SelectQuery) *bun.SelectQuery {
 		return query.Join(join, args...)
 	}
+}
+
+func SelectJoinIf(cond bool, join string, args ...any) SelectQueryOption {
+	if !cond {
+		return selectNoneOption
+	}
+	return SelectJoin(join, args...)
 }
 
 func SelectRelation(name string, opts ...SelectQueryOption) SelectQueryOption {
@@ -99,6 +140,13 @@ func SelectRelation(name string, opts ...SelectQueryOption) SelectQueryOption {
 			return relQry
 		})
 	}
+}
+
+func SelectRelationIf(cond bool, name string, opts ...SelectQueryOption) SelectQueryOption {
+	if !cond {
+		return selectNoneOption
+	}
+	return SelectRelation(name, opts...)
 }
 
 func SelectOrder(orderBy ...string) SelectQueryOption {

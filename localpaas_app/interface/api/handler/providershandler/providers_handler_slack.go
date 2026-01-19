@@ -41,6 +41,7 @@ func (h *ProvidersHandler) ListSlack(ctx *gin.Context) {
 	}
 
 	req := slackdto.NewListSlackReq()
+	req.GlobalOnly = true
 	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -86,6 +87,7 @@ func (h *ProvidersHandler) GetSlack(ctx *gin.Context) {
 
 	req := slackdto.NewGetSlackReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -122,6 +124,7 @@ func (h *ProvidersHandler) CreateSlack(ctx *gin.Context) {
 	}
 
 	req := slackdto.NewCreateSlackReq()
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -168,6 +171,7 @@ func (h *ProvidersHandler) UpdateSlack(ctx *gin.Context) {
 
 	req := slackdto.NewUpdateSlackReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -214,6 +218,7 @@ func (h *ProvidersHandler) UpdateSlackMeta(ctx *gin.Context) {
 
 	req := slackdto.NewUpdateSlackMetaReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -259,6 +264,7 @@ func (h *ProvidersHandler) DeleteSlack(ctx *gin.Context) {
 
 	req := slackdto.NewDeleteSlackReq()
 	req.ID = id
+	req.GlobalOnly = true
 	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return

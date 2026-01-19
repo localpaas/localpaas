@@ -1,20 +1,16 @@
 package oauthdto
 
 import (
-	"time"
-
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/providers"
 )
 
 type UpdateOAuthMetaReq struct {
-	ID        string              `json:"-"`
-	Status    *base.SettingStatus `json:"status"`
-	ExpireAt  *time.Time          `json:"expireAt"`
-	UpdateVer int                 `json:"updateVer"`
+	providers.UpdateSettingMetaReq
 }
 
 func NewUpdateOAuthMetaReq() *UpdateOAuthMetaReq {

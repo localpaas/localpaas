@@ -144,7 +144,7 @@ func (q *taskQueue) createTasks(ctx context.Context, db database.Tx, jobIDs []st
 		opts = append(opts, bunex.SelectWhereIn("setting.id IN (?)", jobIDs...))
 	}
 
-	jobSettings, _, err := q.settingRepo.List(ctx, db, nil, opts...)
+	jobSettings, _, err := q.settingRepo.List(ctx, db, "", "", nil, opts...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
