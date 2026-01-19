@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	currentSettingType = base.SettingTypeSlack
+	currentSettingType    = base.SettingTypeSlack
+	currentSettingVersion = entity.CurrentSlackVersion
 )
 
 func (uc *SlackUC) CreateSlack(
@@ -25,7 +26,7 @@ func (uc *SlackUC) CreateSlack(
 	resp, err := providers.CreateSetting(ctx, uc.db, &req.CreateSettingReq, &providers.CreateSettingData{
 		SettingRepo:   uc.settingRepo,
 		VerifyingName: req.Name,
-		Version:       entity.CurrentSlackVersion,
+		Version:       currentSettingVersion,
 		PrepareCreation: func(ctx context.Context, db database.Tx, data *providers.CreateSettingData,
 			pData *providers.PersistingSettingCreationData) error {
 			err := pData.Setting.SetData(&entity.Slack{

@@ -20,7 +20,8 @@ const (
 )
 
 const (
-	currentSettingType = base.SettingTypeAPIKey
+	currentSettingType    = base.SettingTypeAPIKey
+	currentSettingVersion = entity.CurrentAPIKeyVersion
 )
 
 func (uc *APIKeyUC) CreateAPIKey(
@@ -36,7 +37,7 @@ func (uc *APIKeyUC) CreateAPIKey(
 	resp, err := providers.CreateSetting(ctx, uc.db, &req.CreateSettingReq, &providers.CreateSettingData{
 		SettingRepo:   uc.settingRepo,
 		VerifyingName: req.Name,
-		Version:       entity.CurrentAPIKeyVersion,
+		Version:       currentSettingVersion,
 		PrepareCreation: func(ctx context.Context, db database.Tx, data *providers.CreateSettingData,
 			pData *providers.PersistingSettingCreationData) error {
 			pData.Setting.ObjectID = actingUser.ID

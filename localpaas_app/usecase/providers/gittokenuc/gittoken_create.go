@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	currentSettingType = base.SettingTypeGitToken
+	currentSettingType    = base.SettingTypeGitToken
+	currentSettingVersion = entity.CurrentGitTokenVersion
 )
 
 func (uc *GitTokenUC) CreateGitToken(
@@ -25,7 +26,7 @@ func (uc *GitTokenUC) CreateGitToken(
 	resp, err := providers.CreateSetting(ctx, uc.db, &req.CreateSettingReq, &providers.CreateSettingData{
 		SettingRepo:   uc.settingRepo,
 		VerifyingName: req.Name,
-		Version:       entity.CurrentGitTokenVersion,
+		Version:       currentSettingVersion,
 		PrepareCreation: func(ctx context.Context, db database.Tx, data *providers.CreateSettingData,
 			pData *providers.PersistingSettingCreationData) error {
 			pData.Setting.Kind = string(req.Kind)

@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	currentSettingType = base.SettingTypeSsl
+	currentSettingType    = base.SettingTypeSSL
+	currentSettingVersion = entity.CurrentSslVersion
 )
 
 func (uc *SslUC) CreateSsl(
@@ -25,7 +26,7 @@ func (uc *SslUC) CreateSsl(
 	resp, err := providers.CreateSetting(ctx, uc.db, &req.CreateSettingReq, &providers.CreateSettingData{
 		SettingRepo:   uc.settingRepo,
 		VerifyingName: req.Name,
-		Version:       entity.CurrentSslVersion,
+		Version:       currentSettingVersion,
 		PrepareCreation: func(ctx context.Context, db database.Tx, data *providers.CreateSettingData,
 			pData *providers.PersistingSettingCreationData) error {
 			pData.Setting.Kind = string(req.Provider)

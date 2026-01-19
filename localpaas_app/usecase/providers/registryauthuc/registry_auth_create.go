@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	currentSettingType = base.SettingTypeRegistryAuth
+	currentSettingType    = base.SettingTypeRegistryAuth
+	currentSettingVersion = entity.CurrentRegistryAuthVersion
 )
 
 func (uc *RegistryAuthUC) CreateRegistryAuth(
@@ -25,7 +26,7 @@ func (uc *RegistryAuthUC) CreateRegistryAuth(
 	resp, err := providers.CreateSetting(ctx, uc.db, &req.CreateSettingReq, &providers.CreateSettingData{
 		SettingRepo:   uc.settingRepo,
 		VerifyingName: req.Name,
-		Version:       entity.CurrentRegistryAuthVersion,
+		Version:       currentSettingVersion,
 		PrepareCreation: func(ctx context.Context, db database.Tx, data *providers.CreateSettingData,
 			pData *providers.PersistingSettingCreationData) error {
 			pData.Setting.Kind = req.Address

@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	currentSettingType = base.SettingTypeS3Storage
+	currentSettingType    = base.SettingTypeS3Storage
+	currentSettingVersion = entity.CurrentS3StorageVersion
 )
 
 func (uc *S3StorageUC) CreateS3Storage(
@@ -25,7 +26,7 @@ func (uc *S3StorageUC) CreateS3Storage(
 	resp, err := providers.CreateSetting(ctx, uc.db, &req.CreateSettingReq, &providers.CreateSettingData{
 		SettingRepo:   uc.settingRepo,
 		VerifyingName: req.Name,
-		Version:       entity.CurrentS3StorageVersion,
+		Version:       currentSettingVersion,
 		PrepareCreation: func(ctx context.Context, db database.Tx, data *providers.CreateSettingData,
 			pData *providers.PersistingSettingCreationData) error {
 			err := pData.Setting.SetData(&entity.S3Storage{

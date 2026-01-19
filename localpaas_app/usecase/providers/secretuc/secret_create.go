@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	currentSettingType = base.SettingTypeSecret
+	currentSettingType    = base.SettingTypeSecret
+	currentSettingVersion = entity.CurrentSecretVersion
 )
 
 func (uc *SecretUC) CreateSecret(
@@ -25,7 +26,7 @@ func (uc *SecretUC) CreateSecret(
 	resp, err := providers.CreateSetting(ctx, uc.db, &req.CreateSettingReq, &providers.CreateSettingData{
 		SettingRepo:   uc.settingRepo,
 		VerifyingName: req.Key,
-		Version:       entity.CurrentSecretVersion,
+		Version:       currentSettingVersion,
 		PrepareCreation: func(ctx context.Context, db database.Tx, data *providers.CreateSettingData,
 			pData *providers.PersistingSettingCreationData) error {
 			err := pData.Setting.SetData(&entity.Secret{

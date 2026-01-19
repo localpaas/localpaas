@@ -14,26 +14,12 @@ type CreateS3StorageReq struct {
 }
 
 type S3StorageBaseReq struct {
-	Name            string                       `json:"name"`
-	AccessKeyID     string                       `json:"accessKeyId"`
-	SecretKey       string                       `json:"secretKey"`
-	Region          string                       `json:"region"`
-	Bucket          string                       `json:"bucket"`
-	Endpoint        string                       `json:"endpoint"`
-	ProjectAccesses []*S3StorageProjectAccessReq `json:"projectAccesses"`
-}
-
-type S3StorageProjectAccessReq struct {
-	ID      string `json:"id"`
-	Allowed bool   `json:"allowed"`
-	// NOTE: this field is used to grant access to a project,
-	// but deny access to specific apps within the project
-	AppAccesses []*S3StorageAppAccessReq `json:"appAccesses"`
-}
-
-type S3StorageAppAccessReq struct {
-	ID      string `json:"id"`
-	Allowed bool   `json:"allowed"`
+	Name        string `json:"name"`
+	AccessKeyID string `json:"accessKeyId"`
+	SecretKey   string `json:"secretKey"`
+	Region      string `json:"region"`
+	Bucket      string `json:"bucket"`
+	Endpoint    string `json:"endpoint"`
 }
 
 func (req *S3StorageBaseReq) validate(field string) (res []vld.Validator) {

@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	currentSettingType = base.SettingTypeDiscord
+	currentSettingType    = base.SettingTypeDiscord
+	currentSettingVersion = entity.CurrentDiscordVersion
 )
 
 func (uc *DiscordUC) CreateDiscord(
@@ -25,7 +26,7 @@ func (uc *DiscordUC) CreateDiscord(
 	resp, err := providers.CreateSetting(ctx, uc.db, &req.CreateSettingReq, &providers.CreateSettingData{
 		SettingRepo:   uc.settingRepo,
 		VerifyingName: req.Name,
-		Version:       entity.CurrentDiscordVersion,
+		Version:       currentSettingVersion,
 		PrepareCreation: func(ctx context.Context, db database.Tx, data *providers.CreateSettingData,
 			pData *providers.PersistingSettingCreationData) error {
 			err := pData.Setting.SetData(&entity.Discord{

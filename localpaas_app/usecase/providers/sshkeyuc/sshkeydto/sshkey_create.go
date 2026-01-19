@@ -14,23 +14,9 @@ type CreateSSHKeyReq struct {
 }
 
 type SSHKeyBaseReq struct {
-	Name            string                    `json:"name"`
-	PrivateKey      string                    `json:"privateKey"`
-	Passphrase      string                    `json:"passphrase"`
-	ProjectAccesses []*SSHKeyProjectAccessReq `json:"projectAccesses"`
-}
-
-type SSHKeyProjectAccessReq struct {
-	ID      string `json:"id"`
-	Allowed bool   `json:"allowed"`
-	// NOTE: this field is used to grant access to a project,
-	// but deny access to specific apps within the project
-	AppAccesses []*SSHKeyAppAccessReq `json:"appAccesses"`
-}
-
-type SSHKeyAppAccessReq struct {
-	ID      string `json:"id"`
-	Allowed bool   `json:"allowed"`
+	Name       string `json:"name"`
+	PrivateKey string `json:"privateKey"`
+	Passphrase string `json:"passphrase"`
 }
 
 func (req *SSHKeyBaseReq) validate(field string) (res []vld.Validator) {

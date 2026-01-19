@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	currentSettingType = base.SettingTypeBasicAuth
+	currentSettingType    = base.SettingTypeBasicAuth
+	currentSettingVersion = entity.CurrentBasicAuthVersion
 )
 
 func (uc *BasicAuthUC) CreateBasicAuth(
@@ -25,7 +26,7 @@ func (uc *BasicAuthUC) CreateBasicAuth(
 	resp, err := providers.CreateSetting(ctx, uc.db, &req.CreateSettingReq, &providers.CreateSettingData{
 		SettingRepo:   uc.settingRepo,
 		VerifyingName: req.Name,
-		Version:       entity.CurrentBasicAuthVersion,
+		Version:       currentSettingVersion,
 		PrepareCreation: func(ctx context.Context, db database.Tx, data *providers.CreateSettingData,
 			pData *providers.PersistingSettingCreationData) error {
 			err := pData.Setting.SetData(&entity.BasicAuth{

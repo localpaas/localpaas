@@ -124,7 +124,7 @@ func (uc *AppUC) preparePersistingDomainSslData(
 	timeNow := timeutil.NowUTC()
 	dbSsl := &entity.Setting{
 		ID:        gofn.Must(ulid.NewStringULID()),
-		Type:      base.SettingTypeSsl,
+		Type:      base.SettingTypeSSL,
 		Status:    base.SettingStatusActive,
 		Name:      req.Domain,
 		Kind:      string(base.SslProviderLetsEncrypt),

@@ -16,7 +16,8 @@ import (
 )
 
 const (
-	currentSettingType = base.SettingTypeOAuth
+	currentSettingType    = base.SettingTypeOAuth
+	currentSettingVersion = entity.CurrentOAuthVersion
 )
 
 func (uc *OAuthUC) CreateOAuth(
@@ -28,7 +29,7 @@ func (uc *OAuthUC) CreateOAuth(
 	resp, err := providers.CreateSetting(ctx, uc.db, &req.CreateSettingReq, &providers.CreateSettingData{
 		SettingRepo:   uc.settingRepo,
 		VerifyingName: gofn.Coalesce(req.Name, req.Organization),
-		Version:       entity.CurrentOAuthVersion,
+		Version:       currentSettingVersion,
 		PrepareCreation: func(ctx context.Context, db database.Tx, data *providers.CreateSettingData,
 			pData *providers.PersistingSettingCreationData) error {
 			pData.Setting.Kind = string(req.Kind)

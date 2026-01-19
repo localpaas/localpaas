@@ -16,7 +16,8 @@ import (
 )
 
 const (
-	currentSettingType = base.SettingTypeGithubApp
+	currentSettingType    = base.SettingTypeGithubApp
+	currentSettingVersion = entity.CurrentGithubAppVersion
 )
 
 func (uc *GithubAppUC) CreateGithubApp(
@@ -28,7 +29,7 @@ func (uc *GithubAppUC) CreateGithubApp(
 	resp, err := providers.CreateSetting(ctx, uc.db, &req.CreateSettingReq, &providers.CreateSettingData{
 		SettingRepo:   uc.settingRepo,
 		VerifyingName: gofn.Coalesce(req.Name, req.Organization),
-		Version:       entity.CurrentGithubAppVersion,
+		Version:       currentSettingVersion,
 		PrepareCreation: func(ctx context.Context, db database.Tx, data *providers.CreateSettingData,
 			pData *providers.PersistingSettingCreationData) error {
 			pData.Setting.Kind = string(base.SettingTypeGithubApp)

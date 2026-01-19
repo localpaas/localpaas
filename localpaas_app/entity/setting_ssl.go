@@ -24,7 +24,7 @@ func (o *Ssl) MustDecrypt() *Ssl {
 }
 
 func (s *Setting) AsSsl() (*Ssl, error) {
-	return parseSettingAs(s, base.SettingTypeSsl, func() *Ssl { return &Ssl{} })
+	return parseSettingAs(s, base.SettingTypeSSL, func() *Ssl { return &Ssl{} })
 }
 
 func (s *Setting) MustAsSsl() *Ssl {

@@ -10578,7 +10578,7 @@
       "github_com_localpaas_localpaas_localpaas_app_base.SettingType" : {
         "enum" : [ "project", "app", "app-deployment", "app-http", "env-var", "secret", "s3-storage", "oauth", "ssh-key", "api-key", "slack", "discord", "registry-auth", "basic-auth", "ssl", "github-app", "git-token", "cron-job" ],
         "type" : "string",
-        "x-enum-varnames" : [ "SettingTypeProject", "SettingTypeApp", "SettingTypeAppDeployment", "SettingTypeAppHttp", "SettingTypeEnvVar", "SettingTypeSecret", "SettingTypeS3Storage", "SettingTypeOAuth", "SettingTypeSSHKey", "SettingTypeAPIKey", "SettingTypeSlack", "SettingTypeDiscord", "SettingTypeRegistryAuth", "SettingTypeBasicAuth", "SettingTypeSsl", "SettingTypeGithubApp", "SettingTypeGitToken", "SettingTypeCronJob" ]
+        "x-enum-varnames" : [ "SettingTypeProject", "SettingTypeApp", "SettingTypeAppDeployment", "SettingTypeAppHttp", "SettingTypeEnvVar", "SettingTypeSecret", "SettingTypeS3Storage", "SettingTypeOAuth", "SettingTypeSSHKey", "SettingTypeAPIKey", "SettingTypeSlack", "SettingTypeDiscord", "SettingTypeRegistryAuth", "SettingTypeBasicAuth", "SettingTypeSSL", "SettingTypeGithubApp", "SettingTypeGitToken", "SettingTypeCronJob" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.SslProvider" : {
         "enum" : [ "letsencrypt", "custom" ],
@@ -10952,10 +10952,10 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
+        "enum" : [ 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
         "format" : "int64",
         "type" : "integer",
-        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
+        "x-enum-varnames" : [ "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentReq" : {
         "type" : "object"
@@ -14410,12 +14410,6 @@
           "name" : {
             "type" : "string"
           },
-          "projectAccesses" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_s3storageuc_s3storagedto.S3StorageProjectAccessReq"
-            },
-            "type" : "array"
-          },
           "region" : {
             "type" : "string"
           },
@@ -14423,7 +14417,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "accessKeyId", "bucket", "endpoint", "name", "projectAccesses", "region", "secretKey" ],
+        "required" : [ "accessKeyId", "bucket", "endpoint", "name", "region", "secretKey" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_s3storageuc_s3storagedto.CreateS3StorageResp" : {
@@ -14472,37 +14466,6 @@
           }
         },
         "required" : [ "data", "meta" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_s3storageuc_s3storagedto.S3StorageAppAccessReq" : {
-        "properties" : {
-          "allowed" : {
-            "type" : "boolean"
-          },
-          "id" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "allowed", "id" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_s3storageuc_s3storagedto.S3StorageProjectAccessReq" : {
-        "properties" : {
-          "allowed" : {
-            "type" : "boolean"
-          },
-          "appAccesses" : {
-            "description" : "NOTE: this field is used to grant access to a project,\nbut deny access to specific apps within the project",
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_s3storageuc_s3storagedto.S3StorageAppAccessReq"
-            },
-            "type" : "array"
-          },
-          "id" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "allowed", "appAccesses", "id" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_s3storageuc_s3storagedto.S3StorageResp" : {
@@ -14567,12 +14530,6 @@
           "name" : {
             "type" : "string"
           },
-          "projectAccesses" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_s3storageuc_s3storagedto.S3StorageProjectAccessReq"
-            },
-            "type" : "array"
-          },
           "region" : {
             "type" : "string"
           },
@@ -14580,7 +14537,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "accessKeyId", "bucket", "endpoint", "name", "projectAccesses", "region", "secretKey" ],
+        "required" : [ "accessKeyId", "bucket", "endpoint", "name", "region", "secretKey" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_s3storageuc_s3storagedto.TestS3StorageConnResp" : {
@@ -14932,15 +14889,9 @@
           },
           "privateKey" : {
             "type" : "string"
-          },
-          "projectAccesses" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_sshkeyuc_sshkeydto.SSHKeyProjectAccessReq"
-            },
-            "type" : "array"
           }
         },
-        "required" : [ "name", "passphrase", "privateKey", "projectAccesses" ],
+        "required" : [ "name", "passphrase", "privateKey" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_sshkeyuc_sshkeydto.CreateSSHKeyResp" : {
@@ -14989,37 +14940,6 @@
           }
         },
         "required" : [ "data", "meta" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_sshkeyuc_sshkeydto.SSHKeyAppAccessReq" : {
-        "properties" : {
-          "allowed" : {
-            "type" : "boolean"
-          },
-          "id" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "allowed", "id" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_providers_sshkeyuc_sshkeydto.SSHKeyProjectAccessReq" : {
-        "properties" : {
-          "allowed" : {
-            "type" : "boolean"
-          },
-          "appAccesses" : {
-            "description" : "NOTE: this field is used to grant access to a project,\nbut deny access to specific apps within the project",
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_sshkeyuc_sshkeydto.SSHKeyAppAccessReq"
-            },
-            "type" : "array"
-          },
-          "id" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "allowed", "appAccesses", "id" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_providers_sshkeyuc_sshkeydto.SSHKeyResp" : {

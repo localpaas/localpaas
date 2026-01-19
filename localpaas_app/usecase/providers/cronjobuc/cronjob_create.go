@@ -14,7 +14,8 @@ import (
 )
 
 const (
-	currentSettingType = base.SettingTypeCronJob
+	currentSettingType    = base.SettingTypeCronJob
+	currentSettingVersion = entity.CurrentCronJobVersion
 )
 
 func (uc *CronJobUC) CreateCronJob(
@@ -26,7 +27,7 @@ func (uc *CronJobUC) CreateCronJob(
 	resp, err := providers.CreateSetting(ctx, uc.db, &req.CreateSettingReq, &providers.CreateSettingData{
 		SettingRepo:   uc.settingRepo,
 		VerifyingName: req.Name,
-		Version:       entity.CurrentCronJobVersion,
+		Version:       currentSettingVersion,
 		PrepareCreation: func(ctx context.Context, db database.Tx, data *providers.CreateSettingData,
 			pData *providers.PersistingSettingCreationData) error {
 			pData.Setting.Kind = string(req.Kind)

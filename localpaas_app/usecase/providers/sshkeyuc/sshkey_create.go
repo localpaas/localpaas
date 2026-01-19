@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	currentSettingType = base.SettingTypeSSHKey
+	currentSettingType    = base.SettingTypeSSHKey
+	currentSettingVersion = entity.CurrentSSHKeyVersion
 )
 
 func (uc *SSHKeyUC) CreateSSHKey(
@@ -25,7 +26,7 @@ func (uc *SSHKeyUC) CreateSSHKey(
 	resp, err := providers.CreateSetting(ctx, uc.db, &req.CreateSettingReq, &providers.CreateSettingData{
 		SettingRepo:   uc.settingRepo,
 		VerifyingName: req.Name,
-		Version:       entity.CurrentSSHKeyVersion,
+		Version:       currentSettingVersion,
 		PrepareCreation: func(ctx context.Context, db database.Tx, data *providers.CreateSettingData,
 			pData *providers.PersistingSettingCreationData) error {
 			err := pData.Setting.SetData(&entity.SSHKey{
