@@ -27,8 +27,12 @@ func (uc *S3StorageUC) CreateS3Storage(
 		SettingRepo:   uc.settingRepo,
 		VerifyingName: req.Name,
 		Version:       currentSettingVersion,
-		PrepareCreation: func(ctx context.Context, db database.Tx, data *providers.CreateSettingData,
-			pData *providers.PersistingSettingCreationData) error {
+		PrepareCreation: func(
+			ctx context.Context,
+			db database.Tx,
+			data *providers.CreateSettingData,
+			pData *providers.PersistingSettingCreationData,
+		) error {
 			err := pData.Setting.SetData(&entity.S3Storage{
 				AccessKeyID: req.AccessKeyID,
 				SecretKey:   entity.NewEncryptedField(req.SecretKey),

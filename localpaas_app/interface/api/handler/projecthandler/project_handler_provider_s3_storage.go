@@ -1,4 +1,4 @@
-package providershandler
+package projecthandler
 
 import (
 	"net/http"
@@ -7,8 +7,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
-	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/s3storageuc/s3storagedto"
 )
 
@@ -18,9 +16,10 @@ type _ *apperrors.ErrorInfo
 // ListS3Storage Lists S3 storage providers
 // @Summary Lists S3 storage providers
 // @Description Lists S3 storage providers
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      listS3StorageProviders
+// @Id      listProjectS3Storages
+// @Param   projectID path string true "project ID"
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
@@ -28,20 +27,16 @@ type _ *apperrors.ErrorInfo
 // @Success 200 {object} s3storagedto.ListS3StorageResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/s3-storages [get]
-func (h *ProvidersHandler) ListS3Storage(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeS3Storage,
-		Action:         base.ActionTypeRead,
-	})
+// @Router  /projects/{projectID}/providers/s3-storages [get]
+func (h *ProjectHandler) ListS3Storage(ctx *gin.Context) {
+	auth, projectID, _, err := h.getProjectProviderAuth(ctx, base.ActionTypeRead, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
 	req := s3storagedto.NewListS3StorageReq()
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -59,27 +54,17 @@ func (h *ProvidersHandler) ListS3Storage(ctx *gin.Context) {
 // GetS3Storage Gets S3 storage provider details
 // @Summary Gets S3 storage provider details
 // @Description Gets S3 storage provider details
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      getS3StorageProvider
+// @Id      getProjectS3Storage
+// @Param   projectID path string true "project ID"
 // @Param   id path string true "provider ID"
 // @Success 200 {object} s3storagedto.GetS3StorageResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/s3-storages/{id} [get]
-func (h *ProvidersHandler) GetS3Storage(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeS3Storage,
-		ResourceID:     id,
-		Action:         base.ActionTypeRead,
-	})
+// @Router  /projects/{projectID}/providers/s3-storages/{id} [get]
+func (h *ProjectHandler) GetS3Storage(ctx *gin.Context) {
+	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeRead, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -87,7 +72,7 @@ func (h *ProvidersHandler) GetS3Storage(ctx *gin.Context) {
 
 	req := s3storagedto.NewGetS3StorageReq()
 	req.ID = id
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -105,26 +90,24 @@ func (h *ProvidersHandler) GetS3Storage(ctx *gin.Context) {
 // CreateS3Storage Creates a new S3 storage provider
 // @Summary Creates a new S3 storage provider
 // @Description Creates a new S3 storage provider
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      createS3StorageProvider
+// @Id      createProjectS3Storage
+// @Param   projectID path string true "project ID"
 // @Param   body body s3storagedto.CreateS3StorageReq true "request data"
 // @Success 201 {object} s3storagedto.CreateS3StorageResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/s3-storages [post]
-func (h *ProvidersHandler) CreateS3Storage(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		Action:         base.ActionTypeWrite,
-	})
+// @Router  /projects/{projectID}/providers/s3-storages [post]
+func (h *ProjectHandler) CreateS3Storage(ctx *gin.Context) {
+	auth, projectID, _, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
 	req := s3storagedto.NewCreateS3StorageReq()
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -142,28 +125,18 @@ func (h *ProvidersHandler) CreateS3Storage(ctx *gin.Context) {
 // UpdateS3Storage Updates S3 storage
 // @Summary Updates S3 storage
 // @Description Updates S3 storage
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      updateS3StorageProvider
+// @Id      updateProjectS3Storage
+// @Param   projectID path string true "project ID"
 // @Param   id path string true "provider ID"
 // @Param   body body s3storagedto.UpdateS3StorageReq true "request data"
 // @Success 200 {object} s3storagedto.UpdateS3StorageResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/s3-storages/{id} [put]
-func (h *ProvidersHandler) UpdateS3Storage(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeS3Storage,
-		ResourceID:     id,
-		Action:         base.ActionTypeWrite,
-	})
+// @Router  /projects/{projectID}/providers/s3-storages/{id} [put]
+func (h *ProjectHandler) UpdateS3Storage(ctx *gin.Context) {
+	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -171,7 +144,7 @@ func (h *ProvidersHandler) UpdateS3Storage(ctx *gin.Context) {
 
 	req := s3storagedto.NewUpdateS3StorageReq()
 	req.ID = id
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -189,28 +162,18 @@ func (h *ProvidersHandler) UpdateS3Storage(ctx *gin.Context) {
 // UpdateS3StorageMeta Updates S3 storage meta
 // @Summary Updates S3 storage meta
 // @Description Updates S3 storage meta
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      updateS3StorageProviderMeta
+// @Id      updateProjectS3StorageMeta
+// @Param   projectID path string true "project ID"
 // @Param   id path string true "provider ID"
 // @Param   body body s3storagedto.UpdateS3StorageMetaReq true "request data"
 // @Success 200 {object} s3storagedto.UpdateS3StorageMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/s3-storages/{id}/meta [put]
-func (h *ProvidersHandler) UpdateS3StorageMeta(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeS3Storage,
-		ResourceID:     id,
-		Action:         base.ActionTypeWrite,
-	})
+// @Router  /projects/{projectID}/providers/s3-storages/{id}/meta [put]
+func (h *ProjectHandler) UpdateS3StorageMeta(ctx *gin.Context) {
+	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -218,7 +181,7 @@ func (h *ProvidersHandler) UpdateS3StorageMeta(ctx *gin.Context) {
 
 	req := s3storagedto.NewUpdateS3StorageMetaReq()
 	req.ID = id
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -236,27 +199,17 @@ func (h *ProvidersHandler) UpdateS3StorageMeta(ctx *gin.Context) {
 // DeleteS3Storage Deletes S3 storage provider
 // @Summary Deletes S3 storage provider
 // @Description Deletes S3 storage provider
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      deleteS3StorageProvider
+// @Id      deleteProjectS3Storage
+// @Param   projectID path string true "project ID"
 // @Param   id path string true "provider ID"
 // @Success 200 {object} s3storagedto.DeleteS3StorageResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/s3-storages/{id} [delete]
-func (h *ProvidersHandler) DeleteS3Storage(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeS3Storage,
-		ResourceID:     id,
-		Action:         base.ActionTypeDelete,
-	})
+// @Router  /projects/{projectID}/providers/s3-storages/{id} [delete]
+func (h *ProjectHandler) DeleteS3Storage(ctx *gin.Context) {
+	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -264,46 +217,13 @@ func (h *ProvidersHandler) DeleteS3Storage(ctx *gin.Context) {
 
 	req := s3storagedto.NewDeleteS3StorageReq()
 	req.ID = id
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
 	resp, err := h.s3StorageUC.DeleteS3Storage(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
-}
-
-// TestS3StorageConn Test S3 storage connection
-// @Summary Test S3 storage connection
-// @Description Test S3 storage connection
-// @Tags    global_providers
-// @Produce json
-// @Id      testS3StorageConn
-// @Param   body body s3storagedto.TestS3StorageConnReq true "request data"
-// @Success 200 {object} s3storagedto.TestS3StorageConnResp
-// @Failure 400 {object} apperrors.ErrorInfo
-// @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/s3-storages/test-conn [post]
-func (h *ProvidersHandler) TestS3StorageConn(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := s3storagedto.NewTestS3StorageConnReq()
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.s3StorageUC.TestS3StorageConn(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

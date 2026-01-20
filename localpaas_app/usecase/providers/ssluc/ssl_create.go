@@ -27,8 +27,12 @@ func (uc *SslUC) CreateSsl(
 		SettingRepo:   uc.settingRepo,
 		VerifyingName: req.Name,
 		Version:       currentSettingVersion,
-		PrepareCreation: func(ctx context.Context, db database.Tx, data *providers.CreateSettingData,
-			pData *providers.PersistingSettingCreationData) error {
+		PrepareCreation: func(
+			ctx context.Context,
+			db database.Tx,
+			data *providers.CreateSettingData,
+			pData *providers.PersistingSettingCreationData,
+		) error {
 			pData.Setting.Kind = string(req.Provider)
 			err := pData.Setting.SetData(&entity.Ssl{
 				Certificate: req.Certificate,

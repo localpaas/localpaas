@@ -1,4 +1,4 @@
-package providershandler
+package projecthandler
 
 import (
 	"net/http"
@@ -7,7 +7,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/ssluc/ssldto"
 )
 
@@ -17,9 +16,10 @@ type _ *apperrors.ErrorInfo
 // ListSsl Lists SSL providers
 // @Summary Lists SSL providers
 // @Description Lists SSL providers
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      listSslProviders
+// @Id      listProjectSSLs
+// @Param   projectID path string true "project ID"
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
@@ -27,20 +27,16 @@ type _ *apperrors.ErrorInfo
 // @Success 200 {object} ssldto.ListSslResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssls [get]
-func (h *ProvidersHandler) ListSsl(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeSsl,
-		Action:         base.ActionTypeRead,
-	})
+// @Router  /projects/{projectID}/providers/ssls [get]
+func (h *ProjectHandler) ListSsl(ctx *gin.Context) {
+	auth, projectID, _, err := h.getProjectProviderAuth(ctx, base.ActionTypeRead, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
 	req := ssldto.NewListSslReq()
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -58,27 +54,17 @@ func (h *ProvidersHandler) ListSsl(ctx *gin.Context) {
 // GetSsl Gets SSL provider details
 // @Summary Gets SSL provider details
 // @Description Gets SSL provider details
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      getSslProvider
+// @Id      getProjectSSL
+// @Param   projectID path string true "project ID"
 // @Param   id path string true "provider ID"
 // @Success 200 {object} ssldto.GetSslResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssls/{id} [get]
-func (h *ProvidersHandler) GetSsl(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeSsl,
-		ResourceID:     id,
-		Action:         base.ActionTypeRead,
-	})
+// @Router  /projects/{projectID}/providers/ssls/{id} [get]
+func (h *ProjectHandler) GetSsl(ctx *gin.Context) {
+	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeRead, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -86,7 +72,7 @@ func (h *ProvidersHandler) GetSsl(ctx *gin.Context) {
 
 	req := ssldto.NewGetSslReq()
 	req.ID = id
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -104,26 +90,24 @@ func (h *ProvidersHandler) GetSsl(ctx *gin.Context) {
 // CreateSsl Creates a new SSL provider
 // @Summary Creates a new SSL provider
 // @Description Creates a new SSL provider
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      createSslProvider
+// @Id      createProjectSSL
+// @Param   projectID path string true "project ID"
 // @Param   body body ssldto.CreateSslReq true "request data"
 // @Success 201 {object} ssldto.CreateSslResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssls [post]
-func (h *ProvidersHandler) CreateSsl(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		Action:         base.ActionTypeWrite,
-	})
+// @Router  /projects/{projectID}/providers/ssls [post]
+func (h *ProjectHandler) CreateSsl(ctx *gin.Context) {
+	auth, projectID, _, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
 	req := ssldto.NewCreateSslReq()
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -141,28 +125,18 @@ func (h *ProvidersHandler) CreateSsl(ctx *gin.Context) {
 // UpdateSsl Updates SSL
 // @Summary Updates SSL
 // @Description Updates SSL
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      updateSslProvider
+// @Id      updateProjectSSL
+// @Param   projectID path string true "project ID"
 // @Param   id path string true "provider ID"
 // @Param   body body ssldto.UpdateSslReq true "request data"
 // @Success 200 {object} ssldto.UpdateSslResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssls/{id} [put]
-func (h *ProvidersHandler) UpdateSsl(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeSsl,
-		ResourceID:     id,
-		Action:         base.ActionTypeWrite,
-	})
+// @Router  /projects/{projectID}/providers/ssls/{id} [put]
+func (h *ProjectHandler) UpdateSsl(ctx *gin.Context) {
+	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -170,7 +144,7 @@ func (h *ProvidersHandler) UpdateSsl(ctx *gin.Context) {
 
 	req := ssldto.NewUpdateSslReq()
 	req.ID = id
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -188,28 +162,18 @@ func (h *ProvidersHandler) UpdateSsl(ctx *gin.Context) {
 // UpdateSslMeta Updates SSL meta
 // @Summary Updates SSL meta
 // @Description Updates SSL meta
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      updateSslProviderMeta
+// @Id      updateProjectSSLMeta
+// @Param   projectID path string true "project ID"
 // @Param   id path string true "provider ID"
 // @Param   body body ssldto.UpdateSslMetaReq true "request data"
 // @Success 200 {object} ssldto.UpdateSslMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssls/{id}/meta [put]
-func (h *ProvidersHandler) UpdateSslMeta(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeSsl,
-		ResourceID:     id,
-		Action:         base.ActionTypeWrite,
-	})
+// @Router  /projects/{projectID}/providers/ssls/{id}/meta [put]
+func (h *ProjectHandler) UpdateSslMeta(ctx *gin.Context) {
+	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -217,7 +181,7 @@ func (h *ProvidersHandler) UpdateSslMeta(ctx *gin.Context) {
 
 	req := ssldto.NewUpdateSslMetaReq()
 	req.ID = id
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -235,27 +199,17 @@ func (h *ProvidersHandler) UpdateSslMeta(ctx *gin.Context) {
 // DeleteSsl Deletes SSL provider
 // @Summary Deletes SSL provider
 // @Description Deletes SSL provider
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      deleteSslProvider
+// @Id      deleteProjectSSL
+// @Param   projectID path string true "project ID"
 // @Param   id path string true "provider ID"
 // @Success 200 {object} ssldto.DeleteSslResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssls/{id} [delete]
-func (h *ProvidersHandler) DeleteSsl(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeSsl,
-		ResourceID:     id,
-		Action:         base.ActionTypeDelete,
-	})
+// @Router  /projects/{projectID}/providers/ssls/{id} [delete]
+func (h *ProjectHandler) DeleteSsl(ctx *gin.Context) {
+	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -263,7 +217,7 @@ func (h *ProvidersHandler) DeleteSsl(ctx *gin.Context) {
 
 	req := ssldto.NewDeleteSslReq()
 	req.ID = id
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return

@@ -1,4 +1,4 @@
-package providershandler
+package projecthandler
 
 import (
 	"net/http"
@@ -7,7 +7,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/cronjobuc/cronjobdto"
 )
 
@@ -17,9 +16,10 @@ type _ *apperrors.ErrorInfo
 // ListCronJob Lists cron-job providers
 // @Summary Lists cron-job providers
 // @Description Lists cron-job providers
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      listCronJobProviders
+// @Id      listProjectCronJobs
+// @Param   projectID path string true "project ID"
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
@@ -27,20 +27,16 @@ type _ *apperrors.ErrorInfo
 // @Success 200 {object} cronjobdto.ListCronJobResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/cron-jobs [get]
-func (h *ProvidersHandler) ListCronJob(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeCronJob,
-		Action:         base.ActionTypeRead,
-	})
+// @Router  /projects/{projectID}/providers/cron-jobs [get]
+func (h *ProjectHandler) ListCronJob(ctx *gin.Context) {
+	auth, projectID, _, err := h.getProjectProviderAuth(ctx, base.ActionTypeRead, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
 	req := cronjobdto.NewListCronJobReq()
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -58,27 +54,17 @@ func (h *ProvidersHandler) ListCronJob(ctx *gin.Context) {
 // GetCronJob Gets cron-job provider details
 // @Summary Gets cron-job provider details
 // @Description Gets cron-job provider details
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      getCronJobProvider
+// @Id      getProjectCronJob
+// @Param   projectID path string true "project ID"
 // @Param   id path string true "provider ID"
 // @Success 200 {object} cronjobdto.GetCronJobResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/cron-jobs/{id} [get]
-func (h *ProvidersHandler) GetCronJob(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeCronJob,
-		ResourceID:     id,
-		Action:         base.ActionTypeRead,
-	})
+// @Router  /projects/{projectID}/providers/cron-jobs/{id} [get]
+func (h *ProjectHandler) GetCronJob(ctx *gin.Context) {
+	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeRead, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -86,7 +72,7 @@ func (h *ProvidersHandler) GetCronJob(ctx *gin.Context) {
 
 	req := cronjobdto.NewGetCronJobReq()
 	req.ID = id
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -104,27 +90,24 @@ func (h *ProvidersHandler) GetCronJob(ctx *gin.Context) {
 // CreateCronJob Creates a new cron-job provider
 // @Summary Creates a new cron-job provider
 // @Description Creates a new cron-job provider
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      createCronJobProvider
+// @Id      createProjectCronJob
+// @Param   projectID path string true "project ID"
 // @Param   body body cronjobdto.CreateCronJobReq true "request data"
 // @Success 201 {object} cronjobdto.CreateCronJobResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/cron-jobs [post]
-func (h *ProvidersHandler) CreateCronJob(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeCronJob,
-		Action:         base.ActionTypeWrite,
-	})
+// @Router  /projects/{projectID}/providers/cron-jobs [post]
+func (h *ProjectHandler) CreateCronJob(ctx *gin.Context) {
+	auth, projectID, _, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
 	req := cronjobdto.NewCreateCronJobReq()
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -142,28 +125,18 @@ func (h *ProvidersHandler) CreateCronJob(ctx *gin.Context) {
 // UpdateCronJob Updates cron-job
 // @Summary Updates cron-job
 // @Description Updates cron-job
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      updateCronJobProvider
+// @Id      updateProjectCronJob
+// @Param   projectID path string true "project ID"
 // @Param   id path string true "provider ID"
 // @Param   body body cronjobdto.UpdateCronJobReq true "request data"
 // @Success 200 {object} cronjobdto.UpdateCronJobResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/cron-jobs/{id} [put]
-func (h *ProvidersHandler) UpdateCronJob(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeCronJob,
-		ResourceID:     id,
-		Action:         base.ActionTypeWrite,
-	})
+// @Router  /projects/{projectID}/providers/cron-jobs/{id} [put]
+func (h *ProjectHandler) UpdateCronJob(ctx *gin.Context) {
+	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -171,7 +144,7 @@ func (h *ProvidersHandler) UpdateCronJob(ctx *gin.Context) {
 
 	req := cronjobdto.NewUpdateCronJobReq()
 	req.ID = id
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -189,28 +162,18 @@ func (h *ProvidersHandler) UpdateCronJob(ctx *gin.Context) {
 // UpdateCronJobMeta Updates cron-job meta
 // @Summary Updates cron-job meta
 // @Description Updates cron-job meta
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      updateCronJobProviderMeta
+// @Id      updateProjectCronJobMeta
+// @Param   projectID path string true "project ID"
 // @Param   id path string true "provider ID"
 // @Param   body body cronjobdto.UpdateCronJobMetaReq true "request data"
 // @Success 200 {object} cronjobdto.UpdateCronJobMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/cron-jobs/{id}/meta [put]
-func (h *ProvidersHandler) UpdateCronJobMeta(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeCronJob,
-		ResourceID:     id,
-		Action:         base.ActionTypeWrite,
-	})
+// @Router  /projects/{projectID}/providers/cron-jobs/{id}/meta [put]
+func (h *ProjectHandler) UpdateCronJobMeta(ctx *gin.Context) {
+	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -218,7 +181,7 @@ func (h *ProvidersHandler) UpdateCronJobMeta(ctx *gin.Context) {
 
 	req := cronjobdto.NewUpdateCronJobMetaReq()
 	req.ID = id
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -236,27 +199,17 @@ func (h *ProvidersHandler) UpdateCronJobMeta(ctx *gin.Context) {
 // DeleteCronJob Deletes cron-job provider
 // @Summary Deletes cron-job provider
 // @Description Deletes cron-job provider
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      deleteCronJobProvider
+// @Id      deleteProjectCronJob
+// @Param   projectID path string true "project ID"
 // @Param   id path string true "provider ID"
 // @Success 200 {object} cronjobdto.DeleteCronJobResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/cron-jobs/{id} [delete]
-func (h *ProvidersHandler) DeleteCronJob(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeCronJob,
-		ResourceID:     id,
-		Action:         base.ActionTypeDelete,
-	})
+// @Router  /projects/{projectID}/providers/cron-jobs/{id} [delete]
+func (h *ProjectHandler) DeleteCronJob(ctx *gin.Context) {
+	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -264,7 +217,7 @@ func (h *ProvidersHandler) DeleteCronJob(ctx *gin.Context) {
 
 	req := cronjobdto.NewDeleteCronJobReq()
 	req.ID = id
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return

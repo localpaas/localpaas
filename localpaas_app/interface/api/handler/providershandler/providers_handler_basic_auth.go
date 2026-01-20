@@ -17,7 +17,7 @@ type _ *apperrors.ErrorInfo
 // ListBasicAuth Lists basic auth providers
 // @Summary Lists basic auth providers
 // @Description Lists basic auth providers
-// @Tags    providers_basic_auth
+// @Tags    global_providers
 // @Produce json
 // @Id      listBasicAuthProviders
 // @Param   search query string false "`search=<target> (support *)`"
@@ -58,7 +58,7 @@ func (h *ProvidersHandler) ListBasicAuth(ctx *gin.Context) {
 // GetBasicAuth Gets basic auth provider details
 // @Summary Gets basic auth provider details
 // @Description Gets basic auth provider details
-// @Tags    providers_basic_auth
+// @Tags    global_providers
 // @Produce json
 // @Id      getBasicAuthProvider
 // @Param   id path string true "provider ID"
@@ -104,7 +104,7 @@ func (h *ProvidersHandler) GetBasicAuth(ctx *gin.Context) {
 // CreateBasicAuth Creates a new basic auth provider
 // @Summary Creates a new basic auth provider
 // @Description Creates a new basic auth provider
-// @Tags    providers_basic_auth
+// @Tags    global_providers
 // @Produce json
 // @Id      createBasicAuthProvider
 // @Param   body body basicauthdto.CreateBasicAuthReq true "request data"
@@ -141,7 +141,7 @@ func (h *ProvidersHandler) CreateBasicAuth(ctx *gin.Context) {
 // UpdateBasicAuth Updates basic auth
 // @Summary Updates basic auth
 // @Description Updates basic auth
-// @Tags    providers_basic_auth
+// @Tags    global_providers
 // @Produce json
 // @Id      updateBasicAuthProvider
 // @Param   id path string true "provider ID"
@@ -188,7 +188,7 @@ func (h *ProvidersHandler) UpdateBasicAuth(ctx *gin.Context) {
 // UpdateBasicAuthMeta Updates basic auth meta
 // @Summary Updates basic auth meta
 // @Description Updates basic auth meta
-// @Tags    providers_basic_auth
+// @Tags    global_providers
 // @Produce json
 // @Id      updateBasicAuthProviderMeta
 // @Param   id path string true "provider ID"
@@ -235,7 +235,7 @@ func (h *ProvidersHandler) UpdateBasicAuthMeta(ctx *gin.Context) {
 // DeleteBasicAuth Deletes basic auth provider
 // @Summary Deletes basic auth provider
 // @Description Deletes basic auth provider
-// @Tags    providers_basic_auth
+// @Tags    global_providers
 // @Produce json
 // @Id      deleteBasicAuthProvider
 // @Param   id path string true "provider ID"

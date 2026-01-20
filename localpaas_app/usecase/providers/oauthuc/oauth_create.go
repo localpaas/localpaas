@@ -30,8 +30,12 @@ func (uc *OAuthUC) CreateOAuth(
 		SettingRepo:   uc.settingRepo,
 		VerifyingName: gofn.Coalesce(req.Name, req.Organization),
 		Version:       currentSettingVersion,
-		PrepareCreation: func(ctx context.Context, db database.Tx, data *providers.CreateSettingData,
-			pData *providers.PersistingSettingCreationData) error {
+		PrepareCreation: func(
+			ctx context.Context,
+			db database.Tx,
+			data *providers.CreateSettingData,
+			pData *providers.PersistingSettingCreationData,
+		) error {
 			pData.Setting.Kind = string(req.Kind)
 			err := pData.Setting.SetData(&entity.OAuth{
 				ClientID:     req.ClientID,

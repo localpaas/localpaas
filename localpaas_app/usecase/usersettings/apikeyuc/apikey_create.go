@@ -38,8 +38,12 @@ func (uc *APIKeyUC) CreateAPIKey(
 		SettingRepo:   uc.settingRepo,
 		VerifyingName: req.Name,
 		Version:       currentSettingVersion,
-		PrepareCreation: func(ctx context.Context, db database.Tx, data *providers.CreateSettingData,
-			pData *providers.PersistingSettingCreationData) error {
+		PrepareCreation: func(
+			ctx context.Context,
+			db database.Tx,
+			data *providers.CreateSettingData,
+			pData *providers.PersistingSettingCreationData,
+		) error {
 			pData.Setting.ObjectID = actingUser.ID
 			pData.Setting.ExpireAt = req.ExpireAt
 			err := pData.Setting.SetData(&entity.APIKey{

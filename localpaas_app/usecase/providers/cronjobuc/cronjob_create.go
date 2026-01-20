@@ -28,8 +28,12 @@ func (uc *CronJobUC) CreateCronJob(
 		SettingRepo:   uc.settingRepo,
 		VerifyingName: req.Name,
 		Version:       currentSettingVersion,
-		PrepareCreation: func(ctx context.Context, db database.Tx, data *providers.CreateSettingData,
-			pData *providers.PersistingSettingCreationData) error {
+		PrepareCreation: func(
+			ctx context.Context,
+			db database.Tx,
+			data *providers.CreateSettingData,
+			pData *providers.PersistingSettingCreationData,
+		) error {
 			pData.Setting.Kind = string(req.Kind)
 			cronJob := &entity.CronJob{
 				Cron:        req.Cron,

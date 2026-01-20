@@ -17,7 +17,7 @@ type _ *apperrors.ErrorInfo
 // ListOAuth Lists oauth providers
 // @Summary Lists oauth providers
 // @Description Lists oauth providers
-// @Tags    providers_oauth
+// @Tags    global_providers
 // @Produce json
 // @Id      listOAuthProviders
 // @Param   search query string false "`search=<target> (support *)`"
@@ -58,7 +58,7 @@ func (h *ProvidersHandler) ListOAuth(ctx *gin.Context) {
 // GetOAuth Gets oauth provider details
 // @Summary Gets oauth provider details
 // @Description Gets oauth provider details
-// @Tags    providers_oauth
+// @Tags    global_providers
 // @Produce json
 // @Id      getOAuthProvider
 // @Param   id path string true "provider ID"
@@ -104,7 +104,7 @@ func (h *ProvidersHandler) GetOAuth(ctx *gin.Context) {
 // CreateOAuth Creates a new oauth provider
 // @Summary Creates a new oauth provider
 // @Description Creates a new oauth provider
-// @Tags    providers_oauth
+// @Tags    global_providers
 // @Produce json
 // @Id      createOAuthProvider
 // @Param   body body oauthdto.CreateOAuthReq true "request data"
@@ -142,7 +142,7 @@ func (h *ProvidersHandler) CreateOAuth(ctx *gin.Context) {
 // UpdateOAuth Updates oauth
 // @Summary Updates oauth
 // @Description Updates oauth
-// @Tags    providers_oauth
+// @Tags    global_providers
 // @Produce json
 // @Id      updateOAuthProvider
 // @Param   id path string true "provider ID"
@@ -189,7 +189,7 @@ func (h *ProvidersHandler) UpdateOAuth(ctx *gin.Context) {
 // UpdateOAuthMeta Updates oauth meta
 // @Summary Updates oauth meta
 // @Description Updates oauth meta
-// @Tags    providers_oauth
+// @Tags    global_providers
 // @Produce json
 // @Id      updateOAuthProviderMeta
 // @Param   id path string true "provider ID"
@@ -236,7 +236,7 @@ func (h *ProvidersHandler) UpdateOAuthMeta(ctx *gin.Context) {
 // DeleteOAuth Deletes oauth provider
 // @Summary Deletes oauth provider
 // @Description Deletes oauth provider
-// @Tags    providers_oauth
+// @Tags    global_providers
 // @Produce json
 // @Id      deleteOAuthProvider
 // @Param   id path string true "provider ID"

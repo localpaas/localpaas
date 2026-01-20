@@ -17,7 +17,7 @@ type _ *apperrors.ErrorInfo
 // ListSecret Lists secrets
 // @Summary Lists secrets
 // @Description Lists secrets
-// @Tags    providers_secrets
+// @Tags    global_providers
 // @Produce json
 // @Id      listSecrets
 // @Param   search query string false "`search=<target> (support *)`"
@@ -58,7 +58,7 @@ func (h *ProvidersHandler) ListSecret(ctx *gin.Context) {
 // CreateSecret Creates a new secret
 // @Summary Creates a new secret
 // @Description Creates a new secret
-// @Tags    providers_secrets
+// @Tags    global_providers
 // @Produce json
 // @Id      createSecret
 // @Param   body body secretdto.CreateSecretReq true "request data"
@@ -95,7 +95,7 @@ func (h *ProvidersHandler) CreateSecret(ctx *gin.Context) {
 // UpdateSecretMeta Updates secret meta
 // @Summary Updates secret meta
 // @Description Updates secret meta
-// @Tags    providers_secrets
+// @Tags    global_providers
 // @Produce json
 // @Id      updateSecretMeta
 // @Param   id path string true "provider ID"
@@ -142,7 +142,7 @@ func (h *ProvidersHandler) UpdateSecretMeta(ctx *gin.Context) {
 // DeleteSecret Deletes a secret
 // @Summary Deletes a secret
 // @Description Deletes a secret
-// @Tags    providers_secrets
+// @Tags    global_providers
 // @Produce json
 // @Id      deleteSecret
 // @Param   id path string true "provider ID"

@@ -27,8 +27,12 @@ func (uc *SecretUC) CreateSecret(
 		SettingRepo:   uc.settingRepo,
 		VerifyingName: req.Key,
 		Version:       currentSettingVersion,
-		PrepareCreation: func(ctx context.Context, db database.Tx, data *providers.CreateSettingData,
-			pData *providers.PersistingSettingCreationData) error {
+		PrepareCreation: func(
+			ctx context.Context,
+			db database.Tx,
+			data *providers.CreateSettingData,
+			pData *providers.PersistingSettingCreationData,
+		) error {
 			err := pData.Setting.SetData(&entity.Secret{
 				Key:    req.Key,
 				Value:  entity.NewEncryptedField(req.Value),

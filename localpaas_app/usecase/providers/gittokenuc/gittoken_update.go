@@ -22,8 +22,12 @@ func (uc *GitTokenUC) UpdateGitToken(
 	_, err := providers.UpdateSetting(ctx, uc.db, &req.UpdateSettingReq, &providers.UpdateSettingData{
 		SettingRepo:   uc.settingRepo,
 		VerifyingName: req.Name,
-		PrepareUpdate: func(ctx context.Context, db database.Tx, data *providers.UpdateSettingData,
-			pData *providers.PersistingSettingData) error {
+		PrepareUpdate: func(
+			ctx context.Context,
+			db database.Tx,
+			data *providers.UpdateSettingData,
+			pData *providers.PersistingSettingData,
+		) error {
 			pData.Setting.Name = gofn.Coalesce(req.Name, pData.Setting.Name)
 			pData.Setting.Kind = gofn.Coalesce(string(req.Kind), pData.Setting.Kind)
 			pData.Setting.ExpireAt = req.ExpireAt

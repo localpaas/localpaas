@@ -18,7 +18,7 @@ type _ *apperrors.ErrorInfo
 // ListGithubApp Lists github-app providers
 // @Summary Lists github-app providers
 // @Description Lists github-app providers
-// @Tags    providers_github_app
+// @Tags    global_providers
 // @Produce json
 // @Id      listGithubAppProviders
 // @Param   search query string false "`search=<target> (support *)`"
@@ -59,7 +59,7 @@ func (h *ProvidersHandler) ListGithubApp(ctx *gin.Context) {
 // GetGithubApp Gets github-app provider details
 // @Summary Gets github-app provider details
 // @Description Gets github-app provider details
-// @Tags    providers_github_app
+// @Tags    global_providers
 // @Produce json
 // @Id      getGithubAppProvider
 // @Param   id path string true "provider ID"
@@ -105,7 +105,7 @@ func (h *ProvidersHandler) GetGithubApp(ctx *gin.Context) {
 // CreateGithubApp Creates a new github-app provider
 // @Summary Creates a new github-app provider
 // @Description Creates a new github-app provider
-// @Tags    providers_github_app
+// @Tags    global_providers
 // @Produce json
 // @Id      createGithubAppProvider
 // @Param   body body githubappdto.CreateGithubAppReq true "request data"
@@ -143,7 +143,7 @@ func (h *ProvidersHandler) CreateGithubApp(ctx *gin.Context) {
 // UpdateGithubApp Updates github-app
 // @Summary Updates github-app
 // @Description Updates github-app
-// @Tags    providers_github_app
+// @Tags    global_providers
 // @Produce json
 // @Id      updateGithubAppProvider
 // @Param   id path string true "provider ID"
@@ -190,7 +190,7 @@ func (h *ProvidersHandler) UpdateGithubApp(ctx *gin.Context) {
 // UpdateGithubAppMeta Updates github-app meta
 // @Summary Updates github-app meta
 // @Description Updates github-app meta
-// @Tags    providers_github_app
+// @Tags    global_providers
 // @Produce json
 // @Id      updateGithubAppProviderMeta
 // @Param   id path string true "provider ID"
@@ -237,7 +237,7 @@ func (h *ProvidersHandler) UpdateGithubAppMeta(ctx *gin.Context) {
 // DeleteGithubApp Deletes github-app provider
 // @Summary Deletes github-app provider
 // @Description Deletes github-app provider
-// @Tags    providers_github_app
+// @Tags    global_providers
 // @Produce json
 // @Id      deleteGithubAppProvider
 // @Param   id path string true "provider ID"
@@ -283,7 +283,7 @@ func (h *ProvidersHandler) DeleteGithubApp(ctx *gin.Context) {
 // TestGithubAppConn Test github app connection
 // @Summary Test github app connection
 // @Description Test github app connection
-// @Tags    providers_github_app
+// @Tags    global_providers
 // @Produce json
 // @Id      testGithubAppConn
 // @Param   body body githubappdto.TestGithubAppConnReq true "request data"
@@ -316,7 +316,7 @@ func (h *ProvidersHandler) TestGithubAppConn(ctx *gin.Context) {
 // ListAppInstallation List github app installation
 // @Summary List github app installation
 // @Description List github app installation
-// @Tags    providers_github_app
+// @Tags    global_providers
 // @Produce json
 // @Id      listAppInstallation
 // @Param   body body githubappdto.ListAppInstallationReq true "request data"

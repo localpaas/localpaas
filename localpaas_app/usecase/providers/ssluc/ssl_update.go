@@ -22,8 +22,12 @@ func (uc *SslUC) UpdateSsl(
 	_, err := providers.UpdateSetting(ctx, uc.db, &req.UpdateSettingReq, &providers.UpdateSettingData{
 		SettingRepo:   uc.settingRepo,
 		VerifyingName: req.Name,
-		PrepareUpdate: func(ctx context.Context, db database.Tx, data *providers.UpdateSettingData,
-			pData *providers.PersistingSettingData) error {
+		PrepareUpdate: func(
+			ctx context.Context,
+			db database.Tx,
+			data *providers.UpdateSettingData,
+			pData *providers.PersistingSettingData,
+		) error {
 			pData.Setting.Name = gofn.Coalesce(req.Name, pData.Setting.Name)
 			err := pData.Setting.SetData(&entity.Ssl{
 				Certificate: req.Certificate,

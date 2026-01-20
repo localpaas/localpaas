@@ -1,4 +1,4 @@
-package providershandler
+package projecthandler
 
 import (
 	"net/http"
@@ -7,8 +7,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
-	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/discorduc/discorddto"
 )
 
@@ -18,9 +16,10 @@ type _ *apperrors.ErrorInfo
 // ListDiscord Lists Discord providers
 // @Summary Lists Discord providers
 // @Description Lists Discord providers
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      listDiscordProviders
+// @Id      listProjectDiscords
+// @Param   projectID path string true "project ID"
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
@@ -28,20 +27,16 @@ type _ *apperrors.ErrorInfo
 // @Success 200 {object} discorddto.ListDiscordResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/discord [get]
-func (h *ProvidersHandler) ListDiscord(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeDiscord,
-		Action:         base.ActionTypeRead,
-	})
+// @Router  /projects/{projectID}/providers/discord [get]
+func (h *ProjectHandler) ListDiscord(ctx *gin.Context) {
+	auth, projectID, _, err := h.getProjectProviderAuth(ctx, base.ActionTypeRead, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
 	req := discorddto.NewListDiscordReq()
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -59,27 +54,17 @@ func (h *ProvidersHandler) ListDiscord(ctx *gin.Context) {
 // GetDiscord Gets Discord provider details
 // @Summary Gets Discord provider details
 // @Description Gets Discord provider details
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      getDiscordProvider
+// @Id      getProjectDiscord
+// @Param   projectID path string true "project ID"
 // @Param   id path string true "provider ID"
 // @Success 200 {object} discorddto.GetDiscordResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/discord/{id} [get]
-func (h *ProvidersHandler) GetDiscord(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeDiscord,
-		ResourceID:     id,
-		Action:         base.ActionTypeRead,
-	})
+// @Router  /projects/{projectID}/providers/discord/{id} [get]
+func (h *ProjectHandler) GetDiscord(ctx *gin.Context) {
+	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeRead, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -87,7 +72,7 @@ func (h *ProvidersHandler) GetDiscord(ctx *gin.Context) {
 
 	req := discorddto.NewGetDiscordReq()
 	req.ID = id
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -105,26 +90,24 @@ func (h *ProvidersHandler) GetDiscord(ctx *gin.Context) {
 // CreateDiscord Creates a new Discord provider
 // @Summary Creates a new Discord provider
 // @Description Creates a new Discord provider
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      createDiscordProvider
+// @Id      createProjectDiscord
+// @Param   projectID path string true "project ID"
 // @Param   body body discorddto.CreateDiscordReq true "request data"
 // @Success 201 {object} discorddto.CreateDiscordResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/discord [post]
-func (h *ProvidersHandler) CreateDiscord(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		Action:         base.ActionTypeWrite,
-	})
+// @Router  /projects/{projectID}/providers/discord [post]
+func (h *ProjectHandler) CreateDiscord(ctx *gin.Context) {
+	auth, projectID, _, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
 	req := discorddto.NewCreateDiscordReq()
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -142,28 +125,18 @@ func (h *ProvidersHandler) CreateDiscord(ctx *gin.Context) {
 // UpdateDiscord Updates Discord provider
 // @Summary Updates Discord provider
 // @Description Updates Discord provider
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      updateDiscordProvider
+// @Id      updateProjectDiscord
+// @Param   projectID path string true "project ID"
 // @Param   id path string true "provider ID"
 // @Param   body body discorddto.UpdateDiscordReq true "request data"
 // @Success 200 {object} discorddto.UpdateDiscordResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/discord/{id} [put]
-func (h *ProvidersHandler) UpdateDiscord(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeDiscord,
-		ResourceID:     id,
-		Action:         base.ActionTypeWrite,
-	})
+// @Router  /projects/{projectID}/providers/discord/{id} [put]
+func (h *ProjectHandler) UpdateDiscord(ctx *gin.Context) {
+	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -171,7 +144,7 @@ func (h *ProvidersHandler) UpdateDiscord(ctx *gin.Context) {
 
 	req := discorddto.NewUpdateDiscordReq()
 	req.ID = id
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -189,28 +162,18 @@ func (h *ProvidersHandler) UpdateDiscord(ctx *gin.Context) {
 // UpdateDiscordMeta Updates Discord meta provider
 // @Summary Updates Discord meta provider
 // @Description Updates Discord meta provider
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      updateDiscordProviderMeta
+// @Id      updateProjectDiscordMeta
+// @Param   projectID path string true "project ID"
 // @Param   id path string true "provider ID"
 // @Param   body body discorddto.UpdateDiscordMetaReq true "request data"
 // @Success 200 {object} discorddto.UpdateDiscordMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/discord/{id}/meta [put]
-func (h *ProvidersHandler) UpdateDiscordMeta(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeDiscord,
-		ResourceID:     id,
-		Action:         base.ActionTypeWrite,
-	})
+// @Router  /projects/{projectID}/providers/discord/{id}/meta [put]
+func (h *ProjectHandler) UpdateDiscordMeta(ctx *gin.Context) {
+	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -218,7 +181,7 @@ func (h *ProvidersHandler) UpdateDiscordMeta(ctx *gin.Context) {
 
 	req := discorddto.NewUpdateDiscordMetaReq()
 	req.ID = id
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -236,27 +199,17 @@ func (h *ProvidersHandler) UpdateDiscordMeta(ctx *gin.Context) {
 // DeleteDiscord Deletes Discord provider
 // @Summary Deletes Discord provider
 // @Description Deletes Discord provider
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      deleteDiscordProvider
+// @Id      deleteProjectDiscord
+// @Param   projectID path string true "project ID"
 // @Param   id path string true "provider ID"
 // @Success 200 {object} discorddto.DeleteDiscordResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/discord/{id} [delete]
-func (h *ProvidersHandler) DeleteDiscord(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeDiscord,
-		ResourceID:     id,
-		Action:         base.ActionTypeDelete,
-	})
+// @Router  /projects/{projectID}/providers/discord/{id} [delete]
+func (h *ProjectHandler) DeleteDiscord(ctx *gin.Context) {
+	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -264,46 +217,13 @@ func (h *ProvidersHandler) DeleteDiscord(ctx *gin.Context) {
 
 	req := discorddto.NewDeleteDiscordReq()
 	req.ID = id
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
 	resp, err := h.discordUC.DeleteDiscord(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
-}
-
-// TestSendDiscordMsg Tests sending a msg
-// @Summary Tests sending a msg
-// @Description Tests sending a msg
-// @Tags    global_providers
-// @Produce json
-// @Id      testSendDiscordMsg
-// @Param   body body discorddto.TestSendDiscordMsgReq true "request data"
-// @Success 200 {object} discorddto.TestSendDiscordMsgResp
-// @Failure 400 {object} apperrors.ErrorInfo
-// @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/discord/test-send-msg [post]
-func (h *ProvidersHandler) TestSendDiscordMsg(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := discorddto.NewTestSendDiscordMsgReq()
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.discordUC.TestSendDiscordMsg(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

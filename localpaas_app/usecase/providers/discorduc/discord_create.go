@@ -27,8 +27,12 @@ func (uc *DiscordUC) CreateDiscord(
 		SettingRepo:   uc.settingRepo,
 		VerifyingName: req.Name,
 		Version:       currentSettingVersion,
-		PrepareCreation: func(ctx context.Context, db database.Tx, data *providers.CreateSettingData,
-			pData *providers.PersistingSettingCreationData) error {
+		PrepareCreation: func(
+			ctx context.Context,
+			db database.Tx,
+			data *providers.CreateSettingData,
+			pData *providers.PersistingSettingCreationData,
+		) error {
 			err := pData.Setting.SetData(&entity.Discord{
 				Webhook: entity.NewEncryptedField(req.Webhook),
 			})

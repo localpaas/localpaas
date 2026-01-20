@@ -27,8 +27,12 @@ func (uc *RegistryAuthUC) CreateRegistryAuth(
 		SettingRepo:   uc.settingRepo,
 		VerifyingName: req.Name,
 		Version:       currentSettingVersion,
-		PrepareCreation: func(ctx context.Context, db database.Tx, data *providers.CreateSettingData,
-			pData *providers.PersistingSettingCreationData) error {
+		PrepareCreation: func(
+			ctx context.Context,
+			db database.Tx,
+			data *providers.CreateSettingData,
+			pData *providers.PersistingSettingCreationData,
+		) error {
 			pData.Setting.Kind = req.Address
 			err := pData.Setting.SetData(&entity.RegistryAuth{
 				Username: req.Username,

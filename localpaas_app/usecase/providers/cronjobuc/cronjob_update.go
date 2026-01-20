@@ -32,8 +32,12 @@ func (uc *CronJobUC) UpdateCronJob(
 			unscheduleCurrentTasks = req.Cron != job.Cron
 			return nil
 		},
-		PrepareUpdate: func(ctx context.Context, db database.Tx, data *providers.UpdateSettingData,
-			pData *providers.PersistingSettingData) error {
+		PrepareUpdate: func(
+			ctx context.Context,
+			db database.Tx,
+			data *providers.UpdateSettingData,
+			pData *providers.PersistingSettingData,
+		) error {
 			pData.Setting.Name = gofn.Coalesce(req.Name, pData.Setting.Name)
 			err := pData.Setting.SetData(&entity.CronJob{
 				Cron:        req.Cron,

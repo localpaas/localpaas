@@ -22,8 +22,12 @@ func (uc *SSHKeyUC) UpdateSSHKey(
 	_, err := providers.UpdateSetting(ctx, uc.db, &req.UpdateSettingReq, &providers.UpdateSettingData{
 		SettingRepo:   uc.settingRepo,
 		VerifyingName: gofn.PtrValueOrEmpty(req.Name),
-		PrepareUpdate: func(ctx context.Context, db database.Tx, data *providers.UpdateSettingData,
-			pData *providers.PersistingSettingData) error {
+		PrepareUpdate: func(
+			ctx context.Context,
+			db database.Tx,
+			data *providers.UpdateSettingData,
+			pData *providers.PersistingSettingData,
+		) error {
 			setting := pData.Setting
 			if req.Name != nil {
 				setting.Name = *req.Name

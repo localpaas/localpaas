@@ -1,4 +1,4 @@
-package providershandler
+package projecthandler
 
 import (
 	"net/http"
@@ -7,7 +7,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/sshkeyuc/sshkeydto"
 )
 
@@ -17,9 +16,10 @@ type _ *apperrors.ErrorInfo
 // ListSSHKey Lists ssh-key providers
 // @Summary Lists ssh-key providers
 // @Description Lists ssh-key providers
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      listSSHKeyProviders
+// @Id      listProjectSSHKeys
+// @Param   projectID path string true "project ID"
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
@@ -27,20 +27,16 @@ type _ *apperrors.ErrorInfo
 // @Success 200 {object} sshkeydto.ListSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssh-keys [get]
-func (h *ProvidersHandler) ListSSHKey(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeSSHKey,
-		Action:         base.ActionTypeRead,
-	})
+// @Router  /projects/{projectID}/providers/ssh-keys [get]
+func (h *ProjectHandler) ListSSHKey(ctx *gin.Context) {
+	auth, projectID, _, err := h.getProjectProviderAuth(ctx, base.ActionTypeRead, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
 	req := sshkeydto.NewListSSHKeyReq()
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -58,27 +54,17 @@ func (h *ProvidersHandler) ListSSHKey(ctx *gin.Context) {
 // GetSSHKey Gets ssh-key provider details
 // @Summary Gets ssh-key provider details
 // @Description Gets ssh-key provider details
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      getSSHKeyProvider
+// @Id      getProjectSSHKey
+// @Param   projectID path string true "project ID"
 // @Param   id path string true "provider ID"
 // @Success 200 {object} sshkeydto.GetSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssh-keys/{id} [get]
-func (h *ProvidersHandler) GetSSHKey(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeSSHKey,
-		ResourceID:     id,
-		Action:         base.ActionTypeRead,
-	})
+// @Router  /projects/{projectID}/providers/ssh-keys/{id} [get]
+func (h *ProjectHandler) GetSSHKey(ctx *gin.Context) {
+	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeRead, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -86,7 +72,7 @@ func (h *ProvidersHandler) GetSSHKey(ctx *gin.Context) {
 
 	req := sshkeydto.NewGetSSHKeyReq()
 	req.ID = id
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -104,26 +90,24 @@ func (h *ProvidersHandler) GetSSHKey(ctx *gin.Context) {
 // CreateSSHKey Creates a new ssh-key provider
 // @Summary Creates a new ssh-key provider
 // @Description Creates a new ssh-key provider
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      createSSHKeyProvider
+// @Id      createProjectSSHKey
+// @Param   projectID path string true "project ID"
 // @Param   body body sshkeydto.CreateSSHKeyReq true "request data"
 // @Success 201 {object} sshkeydto.CreateSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssh-keys [post]
-func (h *ProvidersHandler) CreateSSHKey(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		Action:         base.ActionTypeWrite,
-	})
+// @Router  /projects/{projectID}/providers/ssh-keys [post]
+func (h *ProjectHandler) CreateSSHKey(ctx *gin.Context) {
+	auth, projectID, _, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
 	req := sshkeydto.NewCreateSSHKeyReq()
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -141,28 +125,18 @@ func (h *ProvidersHandler) CreateSSHKey(ctx *gin.Context) {
 // UpdateSSHKey Updates ssh-key
 // @Summary Updates ssh-key
 // @Description Updates ssh-key
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      updateSSHKeyProvider
+// @Id      updateProjectSSHKey
+// @Param   projectID path string true "project ID"
 // @Param   id path string true "provider ID"
 // @Param   body body sshkeydto.UpdateSSHKeyReq true "request data"
 // @Success 200 {object} sshkeydto.UpdateSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssh-keys/{id} [put]
-func (h *ProvidersHandler) UpdateSSHKey(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeSSHKey,
-		ResourceID:     id,
-		Action:         base.ActionTypeWrite,
-	})
+// @Router  /projects/{projectID}/providers/ssh-keys/{id} [put]
+func (h *ProjectHandler) UpdateSSHKey(ctx *gin.Context) {
+	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -170,7 +144,7 @@ func (h *ProvidersHandler) UpdateSSHKey(ctx *gin.Context) {
 
 	req := sshkeydto.NewUpdateSSHKeyReq()
 	req.ID = id
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -188,28 +162,18 @@ func (h *ProvidersHandler) UpdateSSHKey(ctx *gin.Context) {
 // UpdateSSHKeyMeta Updates ssh-key meta
 // @Summary Updates ssh-key meta
 // @Description Updates ssh-key meta
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      updateSSHKeyProviderMeta
+// @Id      updateProjectSSHKeyMeta
+// @Param   projectID path string true "project ID"
 // @Param   id path string true "provider ID"
 // @Param   body body sshkeydto.UpdateSSHKeyMetaReq true "request data"
 // @Success 200 {object} sshkeydto.UpdateSSHKeyMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssh-keys/{id}/meta [put]
-func (h *ProvidersHandler) UpdateSSHKeyMeta(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeSSHKey,
-		ResourceID:     id,
-		Action:         base.ActionTypeWrite,
-	})
+// @Router  /projects/{projectID}/providers/ssh-keys/{id}/meta [put]
+func (h *ProjectHandler) UpdateSSHKeyMeta(ctx *gin.Context) {
+	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -217,7 +181,7 @@ func (h *ProvidersHandler) UpdateSSHKeyMeta(ctx *gin.Context) {
 
 	req := sshkeydto.NewUpdateSSHKeyMetaReq()
 	req.ID = id
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -235,27 +199,17 @@ func (h *ProvidersHandler) UpdateSSHKeyMeta(ctx *gin.Context) {
 // DeleteSSHKey Deletes sshkey provider
 // @Summary Deletes sshkey provider
 // @Description Deletes sshkey provider
-// @Tags    global_providers
+// @Tags    project_providers
 // @Produce json
-// @Id      deleteSSHKeyProvider
+// @Id      deleteProjectSSHKey
+// @Param   projectID path string true "project ID"
 // @Param   id path string true "provider ID"
 // @Success 200 {object} sshkeydto.DeleteSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssh-keys/{id} [delete]
-func (h *ProvidersHandler) DeleteSSHKey(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeSSHKey,
-		ResourceID:     id,
-		Action:         base.ActionTypeDelete,
-	})
+// @Router  /projects/{projectID}/providers/ssh-keys/{id} [delete]
+func (h *ProjectHandler) DeleteSSHKey(ctx *gin.Context) {
+	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -263,7 +217,7 @@ func (h *ProvidersHandler) DeleteSSHKey(ctx *gin.Context) {
 
 	req := sshkeydto.NewDeleteSSHKeyReq()
 	req.ID = id
-	req.GlobalOnly = true
+	req.ProjectID = projectID
 	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return

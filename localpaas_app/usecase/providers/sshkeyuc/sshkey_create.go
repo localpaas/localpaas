@@ -27,8 +27,12 @@ func (uc *SSHKeyUC) CreateSSHKey(
 		SettingRepo:   uc.settingRepo,
 		VerifyingName: req.Name,
 		Version:       currentSettingVersion,
-		PrepareCreation: func(ctx context.Context, db database.Tx, data *providers.CreateSettingData,
-			pData *providers.PersistingSettingCreationData) error {
+		PrepareCreation: func(
+			ctx context.Context,
+			db database.Tx,
+			data *providers.CreateSettingData,
+			pData *providers.PersistingSettingCreationData,
+		) error {
 			err := pData.Setting.SetData(&entity.SSHKey{
 				PrivateKey: entity.NewEncryptedField(req.PrivateKey),
 				Passphrase: entity.NewEncryptedField(req.Passphrase),
