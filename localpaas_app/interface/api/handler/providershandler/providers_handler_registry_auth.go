@@ -8,7 +8,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
-	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/registryauthuc/registryauthdto"
 )
 
@@ -20,7 +19,7 @@ type _ *apperrors.ErrorInfo
 // @Description Lists registry auth providers
 // @Tags    global_providers
 // @Produce json
-// @Id      listRegistryAuthProviders
+// @Id      listProviderRegistryAuth
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
@@ -30,11 +29,7 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/registry-auth [get]
 func (h *ProvidersHandler) ListRegistryAuth(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeRegistryAuth,
-		Action:         base.ActionTypeRead,
-	})
+	auth, _, err := h.getAuth(ctx, base.ResourceTypeRegistryAuth, base.ActionTypeRead, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -61,25 +56,14 @@ func (h *ProvidersHandler) ListRegistryAuth(ctx *gin.Context) {
 // @Description Gets registry auth provider details
 // @Tags    global_providers
 // @Produce json
-// @Id      getRegistryAuthProvider
+// @Id      getProviderRegistryAuth
 // @Param   id path string true "provider ID"
 // @Success 200 {object} registryauthdto.GetRegistryAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/registry-auth/{id} [get]
 func (h *ProvidersHandler) GetRegistryAuth(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeRegistryAuth,
-		ResourceID:     id,
-		Action:         base.ActionTypeRead,
-	})
+	auth, id, err := h.getAuth(ctx, base.ResourceTypeRegistryAuth, base.ActionTypeRead, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -107,17 +91,14 @@ func (h *ProvidersHandler) GetRegistryAuth(ctx *gin.Context) {
 // @Description Creates a new registry auth provider
 // @Tags    global_providers
 // @Produce json
-// @Id      createRegistryAuthProvider
+// @Id      createProviderRegistryAuth
 // @Param   body body registryauthdto.CreateRegistryAuthReq true "request data"
 // @Success 201 {object} registryauthdto.CreateRegistryAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/registry-auth [post]
 func (h *ProvidersHandler) CreateRegistryAuth(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, _, err := h.getAuth(ctx, base.ResourceTypeRegistryAuth, base.ActionTypeWrite, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -144,7 +125,7 @@ func (h *ProvidersHandler) CreateRegistryAuth(ctx *gin.Context) {
 // @Description Updates registry auth
 // @Tags    global_providers
 // @Produce json
-// @Id      updateRegistryAuthProvider
+// @Id      updateProviderRegistryAuth
 // @Param   id path string true "provider ID"
 // @Param   body body registryauthdto.UpdateRegistryAuthReq true "request data"
 // @Success 200 {object} registryauthdto.UpdateRegistryAuthResp
@@ -152,18 +133,7 @@ func (h *ProvidersHandler) CreateRegistryAuth(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/registry-auth/{id} [put]
 func (h *ProvidersHandler) UpdateRegistryAuth(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeRegistryAuth,
-		ResourceID:     id,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, id, err := h.getAuth(ctx, base.ResourceTypeRegistryAuth, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -191,7 +161,7 @@ func (h *ProvidersHandler) UpdateRegistryAuth(ctx *gin.Context) {
 // @Description Updates registry auth meta
 // @Tags    global_providers
 // @Produce json
-// @Id      updateRegistryAuthProviderMeta
+// @Id      updateProviderRegistryAuthMeta
 // @Param   id path string true "provider ID"
 // @Param   body body registryauthdto.UpdateRegistryAuthMetaReq true "request data"
 // @Success 200 {object} registryauthdto.UpdateRegistryAuthMetaResp
@@ -199,18 +169,7 @@ func (h *ProvidersHandler) UpdateRegistryAuth(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/registry-auth/{id}/meta [put]
 func (h *ProvidersHandler) UpdateRegistryAuthMeta(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeRegistryAuth,
-		ResourceID:     id,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, id, err := h.getAuth(ctx, base.ResourceTypeRegistryAuth, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -238,25 +197,14 @@ func (h *ProvidersHandler) UpdateRegistryAuthMeta(ctx *gin.Context) {
 // @Description Deletes registry auth provider
 // @Tags    global_providers
 // @Produce json
-// @Id      deleteRegistryAuthProvider
+// @Id      deleteProviderRegistryAuth
 // @Param   id path string true "provider ID"
 // @Success 200 {object} registryauthdto.DeleteRegistryAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/registry-auth/{id} [delete]
 func (h *ProvidersHandler) DeleteRegistryAuth(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeRegistryAuth,
-		ResourceID:     id,
-		Action:         base.ActionTypeDelete,
-	})
+	auth, id, err := h.getAuth(ctx, base.ResourceTypeRegistryAuth, base.ActionTypeDelete, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

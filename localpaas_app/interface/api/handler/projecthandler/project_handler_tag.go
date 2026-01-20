@@ -7,7 +7,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc/projectdto"
 )
 
@@ -27,18 +26,7 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/tags [post]
 func (h *ProjectHandler) CreateProjectTag(ctx *gin.Context) {
-	projectID, err := h.ParseStringParam(ctx, "projectID")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProject,
-		ResourceType:   base.ResourceTypeProject,
-		ResourceID:     projectID,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeWrite, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -65,7 +53,7 @@ func (h *ProjectHandler) CreateProjectTag(ctx *gin.Context) {
 // @Description Deletes project tags
 // @Tags    projects
 // @Produce json
-// @Id      deleteProjectTags
+// @Id      deleteProjectTag
 // @Param   projectID path string true "project ID"
 // @Param   body body projectdto.DeleteProjectTagsReq true "request data"
 // @Success 200 {object} projectdto.DeleteProjectTagsResp
@@ -73,18 +61,7 @@ func (h *ProjectHandler) CreateProjectTag(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/tags/delete [post]
 func (h *ProjectHandler) DeleteProjectTags(ctx *gin.Context) {
-	projectID, err := h.ParseStringParam(ctx, "projectID")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProject,
-		ResourceType:   base.ResourceTypeProject,
-		ResourceID:     projectID,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeWrite, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

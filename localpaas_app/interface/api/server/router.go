@@ -206,7 +206,14 @@ func (s *HTTPServer) registerRoutes() {
 		// Secrets
 		projectGroup.GET("/:projectID/secrets", s.handlerRegistry.projectHandler.ListProjectSecrets)
 		projectGroup.POST("/:projectID/secrets", s.handlerRegistry.projectHandler.CreateProjectSecret)
-		projectGroup.DELETE("/:projectID/secrets/:secretID", s.handlerRegistry.projectHandler.DeleteProjectSecret)
+		projectGroup.DELETE("/:projectID/secrets/:id", s.handlerRegistry.projectHandler.DeleteProjectSecret)
+		// Cron jobs
+		projectGroup.GET("/:projectID/cron-jobs", s.handlerRegistry.projectHandler.ListCronJob)
+		projectGroup.GET("/:projectID/cron-jobs/:id", s.handlerRegistry.projectHandler.GetCronJob)
+		projectGroup.POST("/:projectID/cron-jobs", s.handlerRegistry.projectHandler.CreateCronJob)
+		projectGroup.PUT("/:projectID/cron-jobs/:id", s.handlerRegistry.projectHandler.UpdateCronJob)
+		projectGroup.PUT("/:projectID/cron-jobs/:id/meta", s.handlerRegistry.projectHandler.UpdateCronJobMeta)
+		projectGroup.DELETE("/:projectID/cron-jobs/:id", s.handlerRegistry.projectHandler.DeleteCronJob)
 	}
 
 	projectProviderGroup := projectGroup.Group("/:projectID/providers")
@@ -317,18 +324,6 @@ func (s *HTTPServer) registerRoutes() {
 		sslGroup.PUT("/:id", s.handlerRegistry.projectHandler.UpdateSsl)
 		sslGroup.PUT("/:id/meta", s.handlerRegistry.projectHandler.UpdateSslMeta)
 		sslGroup.DELETE("/:id", s.handlerRegistry.projectHandler.DeleteSsl)
-	}
-
-	{ // cron-job group
-		cronJobGroup := projectProviderGroup.Group("/cron-jobs")
-		// Info
-		cronJobGroup.GET("/:id", s.handlerRegistry.projectHandler.GetCronJob)
-		cronJobGroup.GET("", s.handlerRegistry.projectHandler.ListCronJob)
-		// Creation & Update
-		cronJobGroup.POST("", s.handlerRegistry.projectHandler.CreateCronJob)
-		cronJobGroup.PUT("/:id", s.handlerRegistry.projectHandler.UpdateCronJob)
-		cronJobGroup.PUT("/:id/meta", s.handlerRegistry.projectHandler.UpdateCronJobMeta)
-		cronJobGroup.DELETE("/:id", s.handlerRegistry.projectHandler.DeleteCronJob)
 	}
 
 	appGroup := projectGroup.Group("/:projectID/apps")

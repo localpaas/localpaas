@@ -63,18 +63,7 @@ func (h *ProjectHandler) CreateProject(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID} [delete]
 func (h *ProjectHandler) DeleteProject(ctx *gin.Context) {
-	projectID, err := h.ParseStringParam(ctx, "projectID")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProject,
-		ResourceType:   base.ResourceTypeProject,
-		ResourceID:     projectID,
-		Action:         base.ActionTypeDelete,
-	})
+	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeDelete, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

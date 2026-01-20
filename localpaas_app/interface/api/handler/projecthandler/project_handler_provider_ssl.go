@@ -18,7 +18,7 @@ type _ *apperrors.ErrorInfo
 // @Description Lists SSL providers
 // @Tags    project_providers
 // @Produce json
-// @Id      listProjectSSLs
+// @Id      listProjectSSL
 // @Param   projectID path string true "project ID"
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
@@ -29,7 +29,7 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/ssls [get]
 func (h *ProjectHandler) ListSsl(ctx *gin.Context) {
-	auth, projectID, _, err := h.getProjectProviderAuth(ctx, base.ActionTypeRead, false)
+	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeRead, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -64,7 +64,7 @@ func (h *ProjectHandler) ListSsl(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/ssls/{id} [get]
 func (h *ProjectHandler) GetSsl(ctx *gin.Context) {
-	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeRead, true)
+	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeRead, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -100,7 +100,7 @@ func (h *ProjectHandler) GetSsl(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/ssls [post]
 func (h *ProjectHandler) CreateSsl(ctx *gin.Context) {
-	auth, projectID, _, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, false)
+	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeWrite, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -136,7 +136,7 @@ func (h *ProjectHandler) CreateSsl(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/ssls/{id} [put]
 func (h *ProjectHandler) UpdateSsl(ctx *gin.Context) {
-	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
+	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -173,7 +173,7 @@ func (h *ProjectHandler) UpdateSsl(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/ssls/{id}/meta [put]
 func (h *ProjectHandler) UpdateSslMeta(ctx *gin.Context) {
-	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
+	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -209,7 +209,7 @@ func (h *ProjectHandler) UpdateSslMeta(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/ssls/{id} [delete]
 func (h *ProjectHandler) DeleteSsl(ctx *gin.Context) {
-	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
+	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

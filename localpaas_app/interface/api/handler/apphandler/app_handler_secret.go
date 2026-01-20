@@ -19,7 +19,7 @@ type _ *apperrors.ErrorInfo
 // @Description Lists app secrets
 // @Tags    apps
 // @Produce json
-// @Id      listAppSecrets
+// @Id      listAppSecret
 // @Param   projectID path string true "project ID"
 // @Param   appID path string true "app ID"
 // @Success 200 {object} secretdto.ListSecretResp

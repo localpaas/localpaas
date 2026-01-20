@@ -18,7 +18,7 @@ type _ *apperrors.ErrorInfo
 // @Description Lists Discord providers
 // @Tags    project_providers
 // @Produce json
-// @Id      listProjectDiscords
+// @Id      listProjectDiscord
 // @Param   projectID path string true "project ID"
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
@@ -29,7 +29,7 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/discord [get]
 func (h *ProjectHandler) ListDiscord(ctx *gin.Context) {
-	auth, projectID, _, err := h.getProjectProviderAuth(ctx, base.ActionTypeRead, false)
+	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeRead, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -64,7 +64,7 @@ func (h *ProjectHandler) ListDiscord(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/discord/{id} [get]
 func (h *ProjectHandler) GetDiscord(ctx *gin.Context) {
-	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeRead, true)
+	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeRead, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -100,7 +100,7 @@ func (h *ProjectHandler) GetDiscord(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/discord [post]
 func (h *ProjectHandler) CreateDiscord(ctx *gin.Context) {
-	auth, projectID, _, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, false)
+	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeWrite, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -136,7 +136,7 @@ func (h *ProjectHandler) CreateDiscord(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/discord/{id} [put]
 func (h *ProjectHandler) UpdateDiscord(ctx *gin.Context) {
-	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
+	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -173,7 +173,7 @@ func (h *ProjectHandler) UpdateDiscord(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/discord/{id}/meta [put]
 func (h *ProjectHandler) UpdateDiscordMeta(ctx *gin.Context) {
-	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
+	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -209,7 +209,7 @@ func (h *ProjectHandler) UpdateDiscordMeta(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/discord/{id} [delete]
 func (h *ProjectHandler) DeleteDiscord(ctx *gin.Context) {
-	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
+	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

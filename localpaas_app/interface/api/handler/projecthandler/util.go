@@ -8,16 +8,16 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 )
 
-func (h *ProjectHandler) getProjectProviderAuth(
+func (h *ProjectHandler) getAuth(
 	ctx *gin.Context,
 	action base.ActionType,
-	getProviderItemId bool,
+	getItemID bool,
 ) (auth *basedto.Auth, projectID string, itemID string, err error) {
 	projectID, err = h.ParseStringParam(ctx, "projectID")
 	if err != nil {
 		return
 	}
-	if getProviderItemId {
+	if getItemID {
 		itemID, err = h.ParseStringParam(ctx, "id")
 		if err != nil {
 			return

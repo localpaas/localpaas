@@ -7,7 +7,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc/projectdto"
 )
 
@@ -26,18 +25,7 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/env-vars [get]
 func (h *ProjectHandler) GetProjectEnvVars(ctx *gin.Context) {
-	projectID, err := h.ParseStringParam(ctx, "projectID")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProject,
-		ResourceType:   base.ResourceTypeProject,
-		ResourceID:     projectID,
-		Action:         base.ActionTypeRead,
-	})
+	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeRead, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -72,18 +60,7 @@ func (h *ProjectHandler) GetProjectEnvVars(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/env-vars [put]
 func (h *ProjectHandler) UpdateProjectEnvVars(ctx *gin.Context) {
-	projectID, err := h.ParseStringParam(ctx, "projectID")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProject,
-		ResourceType:   base.ResourceTypeApp,
-		ResourceID:     projectID,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeWrite, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

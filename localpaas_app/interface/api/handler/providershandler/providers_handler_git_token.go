@@ -8,7 +8,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
-	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/gittokenuc/gittokendto"
 )
 
@@ -20,7 +19,7 @@ type _ *apperrors.ErrorInfo
 // @Description Lists git-token providers
 // @Tags    global_providers
 // @Produce json
-// @Id      listGitTokenProviders
+// @Id      listProviderGitToken
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
@@ -30,11 +29,7 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/git-tokens [get]
 func (h *ProvidersHandler) ListGitToken(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeGitToken,
-		Action:         base.ActionTypeRead,
-	})
+	auth, _, err := h.getAuth(ctx, base.ResourceTypeGitToken, base.ActionTypeRead, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -61,25 +56,14 @@ func (h *ProvidersHandler) ListGitToken(ctx *gin.Context) {
 // @Description Gets git-token provider details
 // @Tags    global_providers
 // @Produce json
-// @Id      getGitTokenProvider
+// @Id      getProviderGitToken
 // @Param   id path string true "provider ID"
 // @Success 200 {object} gittokendto.GetGitTokenResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/git-tokens/{id} [get]
 func (h *ProvidersHandler) GetGitToken(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeGitToken,
-		ResourceID:     id,
-		Action:         base.ActionTypeRead,
-	})
+	auth, id, err := h.getAuth(ctx, base.ResourceTypeGitToken, base.ActionTypeRead, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -107,18 +91,14 @@ func (h *ProvidersHandler) GetGitToken(ctx *gin.Context) {
 // @Description Creates a new git-token provider
 // @Tags    global_providers
 // @Produce json
-// @Id      createGitTokenProvider
+// @Id      createProviderGitToken
 // @Param   body body gittokendto.CreateGitTokenReq true "request data"
 // @Success 201 {object} gittokendto.CreateGitTokenResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/git-tokens [post]
 func (h *ProvidersHandler) CreateGitToken(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeGitToken,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, _, err := h.getAuth(ctx, base.ResourceTypeGitToken, base.ActionTypeWrite, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -145,7 +125,7 @@ func (h *ProvidersHandler) CreateGitToken(ctx *gin.Context) {
 // @Description Updates git-token
 // @Tags    global_providers
 // @Produce json
-// @Id      updateGitTokenProvider
+// @Id      updateProviderGitToken
 // @Param   id path string true "provider ID"
 // @Param   body body gittokendto.UpdateGitTokenReq true "request data"
 // @Success 200 {object} gittokendto.UpdateGitTokenResp
@@ -153,18 +133,7 @@ func (h *ProvidersHandler) CreateGitToken(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/git-tokens/{id} [put]
 func (h *ProvidersHandler) UpdateGitToken(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeGitToken,
-		ResourceID:     id,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, id, err := h.getAuth(ctx, base.ResourceTypeGitToken, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -192,7 +161,7 @@ func (h *ProvidersHandler) UpdateGitToken(ctx *gin.Context) {
 // @Description Updates git-token meta
 // @Tags    global_providers
 // @Produce json
-// @Id      updateGitTokenProviderMeta
+// @Id      updateProviderGitTokenMeta
 // @Param   id path string true "provider ID"
 // @Param   body body gittokendto.UpdateGitTokenMetaReq true "request data"
 // @Success 200 {object} gittokendto.UpdateGitTokenMetaResp
@@ -200,18 +169,7 @@ func (h *ProvidersHandler) UpdateGitToken(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/git-tokens/{id}/meta [put]
 func (h *ProvidersHandler) UpdateGitTokenMeta(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeGitToken,
-		ResourceID:     id,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, id, err := h.getAuth(ctx, base.ResourceTypeGitToken, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -239,25 +197,14 @@ func (h *ProvidersHandler) UpdateGitTokenMeta(ctx *gin.Context) {
 // @Description Deletes git-token provider
 // @Tags    global_providers
 // @Produce json
-// @Id      deleteGitTokenProvider
+// @Id      deleteProviderGitToken
 // @Param   id path string true "provider ID"
 // @Success 200 {object} gittokendto.DeleteGitTokenResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/git-tokens/{id} [delete]
 func (h *ProvidersHandler) DeleteGitToken(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeGitToken,
-		ResourceID:     id,
-		Action:         base.ActionTypeDelete,
-	})
+	auth, id, err := h.getAuth(ctx, base.ResourceTypeGitToken, base.ActionTypeDelete, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

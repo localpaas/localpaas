@@ -108,18 +108,7 @@ func (h *ProjectHandler) ListProject(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID} [get]
 func (h *ProjectHandler) GetProject(ctx *gin.Context) {
-	projectID, err := h.ParseStringParam(ctx, "projectID")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProject,
-		ResourceType:   base.ResourceTypeProject,
-		ResourceID:     projectID,
-		Action:         base.ActionTypeRead,
-	})
+	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeRead, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

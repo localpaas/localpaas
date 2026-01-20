@@ -2830,7 +2830,7 @@
     "/projects/{projectID}/apps/{appID}/secrets" : {
       "get" : {
         "description" : "Lists app secrets",
-        "operationId" : "listAppSecrets",
+        "operationId" : "listAppSecret",
         "parameters" : [ {
           "description" : "project ID",
           "in" : "path",
@@ -3281,7 +3281,7 @@
     "/projects/{projectID}/apps/{appID}/tags/delete" : {
       "post" : {
         "description" : "Deletes app tags",
-        "operationId" : "deleteAppTags",
+        "operationId" : "deleteAppTag",
         "parameters" : [ {
           "description" : "project ID",
           "in" : "path",
@@ -3344,6 +3344,390 @@
         },
         "summary" : "Deletes app tags",
         "tags" : [ "apps" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/projects/{projectID}/cron-jobs" : {
+      "get" : {
+        "description" : "Lists cron-jobs",
+        "operationId" : "listProjectCronJob",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`search=<target> (support *)`",
+          "in" : "query",
+          "name" : "search",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`pageOffset=offset`",
+          "in" : "query",
+          "name" : "pageOffset",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`pageLimit=limit`",
+          "in" : "query",
+          "name" : "pageLimit",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`sort=[-]field1|field2...`",
+          "in" : "query",
+          "name" : "sort",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_cronjobuc_cronjobdto.ListCronJobResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Lists cron-jobs",
+        "tags" : [ "projects" ]
+      },
+      "post" : {
+        "description" : "Creates a new cron-job",
+        "operationId" : "createProjectCronJob",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_cronjobuc_cronjobdto.CreateCronJobReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_cronjobuc_cronjobdto.CreateCronJobResp"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Creates a new cron-job",
+        "tags" : [ "projects" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/projects/{projectID}/cron-jobs/{id}" : {
+      "delete" : {
+        "description" : "Deletes cron-job",
+        "operationId" : "deleteProjectCronJob",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_cronjobuc_cronjobdto.DeleteCronJobResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Deletes cron-job",
+        "tags" : [ "projects" ]
+      },
+      "get" : {
+        "description" : "Gets cron-job details",
+        "operationId" : "getProjectCronJob",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_cronjobuc_cronjobdto.GetCronJobResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Gets cron-job details",
+        "tags" : [ "projects" ]
+      },
+      "put" : {
+        "description" : "Updates cron-job",
+        "operationId" : "updateProjectCronJob",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_cronjobuc_cronjobdto.UpdateCronJobReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_cronjobuc_cronjobdto.UpdateCronJobResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates cron-job",
+        "tags" : [ "projects" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/projects/{projectID}/cron-jobs/{id}/meta" : {
+      "put" : {
+        "description" : "Updates cron-job meta",
+        "operationId" : "updateProjectCronJobMeta",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_cronjobuc_cronjobdto.UpdateCronJobMetaReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_cronjobuc_cronjobdto.UpdateCronJobMetaResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates cron-job meta",
+        "tags" : [ "projects" ],
         "x-codegen-request-body-name" : "body"
       }
     },
@@ -3458,7 +3842,7 @@
     "/projects/{projectID}/providers/basic-auth" : {
       "get" : {
         "description" : "Lists basic auth providers",
-        "operationId" : "listProjectBasicAuths",
+        "operationId" : "listProjectBasicAuth",
         "parameters" : [ {
           "description" : "project ID",
           "in" : "path",
@@ -3839,394 +4223,10 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/providers/cron-jobs" : {
-      "get" : {
-        "description" : "Lists cron-job providers",
-        "operationId" : "listProjectCronJobs",
-        "parameters" : [ {
-          "description" : "project ID",
-          "in" : "path",
-          "name" : "projectID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "`search=<target> (support *)`",
-          "in" : "query",
-          "name" : "search",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "`pageOffset=offset`",
-          "in" : "query",
-          "name" : "pageOffset",
-          "schema" : {
-            "type" : "integer"
-          }
-        }, {
-          "description" : "`pageLimit=limit`",
-          "in" : "query",
-          "name" : "pageLimit",
-          "schema" : {
-            "type" : "integer"
-          }
-        }, {
-          "description" : "`sort=[-]field1|field2...`",
-          "in" : "query",
-          "name" : "sort",
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_cronjobuc_cronjobdto.ListCronJobResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Lists cron-job providers",
-        "tags" : [ "project_providers" ]
-      },
-      "post" : {
-        "description" : "Creates a new cron-job provider",
-        "operationId" : "createProjectCronJob",
-        "parameters" : [ {
-          "description" : "project ID",
-          "in" : "path",
-          "name" : "projectID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "*/*" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_cronjobuc_cronjobdto.CreateCronJobReq"
-              }
-            }
-          },
-          "description" : "request data",
-          "required" : true
-        },
-        "responses" : {
-          "201" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_cronjobuc_cronjobdto.CreateCronJobResp"
-                }
-              }
-            },
-            "description" : "Created"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Creates a new cron-job provider",
-        "tags" : [ "project_providers" ],
-        "x-codegen-request-body-name" : "body"
-      }
-    },
-    "/projects/{projectID}/providers/cron-jobs/{id}" : {
-      "delete" : {
-        "description" : "Deletes cron-job provider",
-        "operationId" : "deleteProjectCronJob",
-        "parameters" : [ {
-          "description" : "project ID",
-          "in" : "path",
-          "name" : "projectID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "provider ID",
-          "in" : "path",
-          "name" : "id",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_cronjobuc_cronjobdto.DeleteCronJobResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Deletes cron-job provider",
-        "tags" : [ "project_providers" ]
-      },
-      "get" : {
-        "description" : "Gets cron-job provider details",
-        "operationId" : "getProjectCronJob",
-        "parameters" : [ {
-          "description" : "project ID",
-          "in" : "path",
-          "name" : "projectID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "provider ID",
-          "in" : "path",
-          "name" : "id",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_cronjobuc_cronjobdto.GetCronJobResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Gets cron-job provider details",
-        "tags" : [ "project_providers" ]
-      },
-      "put" : {
-        "description" : "Updates cron-job",
-        "operationId" : "updateProjectCronJob",
-        "parameters" : [ {
-          "description" : "project ID",
-          "in" : "path",
-          "name" : "projectID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "provider ID",
-          "in" : "path",
-          "name" : "id",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "*/*" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_cronjobuc_cronjobdto.UpdateCronJobReq"
-              }
-            }
-          },
-          "description" : "request data",
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_cronjobuc_cronjobdto.UpdateCronJobResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Updates cron-job",
-        "tags" : [ "project_providers" ],
-        "x-codegen-request-body-name" : "body"
-      }
-    },
-    "/projects/{projectID}/providers/cron-jobs/{id}/meta" : {
-      "put" : {
-        "description" : "Updates cron-job meta",
-        "operationId" : "updateProjectCronJobMeta",
-        "parameters" : [ {
-          "description" : "project ID",
-          "in" : "path",
-          "name" : "projectID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "provider ID",
-          "in" : "path",
-          "name" : "id",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "*/*" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_cronjobuc_cronjobdto.UpdateCronJobMetaReq"
-              }
-            }
-          },
-          "description" : "request data",
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_providers_cronjobuc_cronjobdto.UpdateCronJobMetaResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Updates cron-job meta",
-        "tags" : [ "project_providers" ],
-        "x-codegen-request-body-name" : "body"
-      }
-    },
     "/projects/{projectID}/providers/discord" : {
       "get" : {
         "description" : "Lists Discord providers",
-        "operationId" : "listProjectDiscords",
+        "operationId" : "listProjectDiscord",
         "parameters" : [ {
           "description" : "project ID",
           "in" : "path",
@@ -4610,7 +4610,7 @@
     "/projects/{projectID}/providers/git-tokens" : {
       "get" : {
         "description" : "Lists git-token providers",
-        "operationId" : "listProjectGitTokens",
+        "operationId" : "listProjectGitToken",
         "parameters" : [ {
           "description" : "project ID",
           "in" : "path",
@@ -4994,7 +4994,7 @@
     "/projects/{projectID}/providers/github-apps" : {
       "get" : {
         "description" : "Lists github-app providers",
-        "operationId" : "listProjectGithubApps",
+        "operationId" : "listProjectGithubApp",
         "parameters" : [ {
           "description" : "project ID",
           "in" : "path",
@@ -5378,7 +5378,7 @@
     "/projects/{projectID}/providers/registry-auth" : {
       "get" : {
         "description" : "Lists registry auth providers",
-        "operationId" : "listProjectRegistryAuths",
+        "operationId" : "listProjectRegistryAuth",
         "parameters" : [ {
           "description" : "project ID",
           "in" : "path",
@@ -5762,7 +5762,7 @@
     "/projects/{projectID}/providers/s3-storages" : {
       "get" : {
         "description" : "Lists S3 storage providers",
-        "operationId" : "listProjectS3Storages",
+        "operationId" : "listProjectS3Storage",
         "parameters" : [ {
           "description" : "project ID",
           "in" : "path",
@@ -6146,7 +6146,7 @@
     "/projects/{projectID}/providers/slack" : {
       "get" : {
         "description" : "Lists Slack providers",
-        "operationId" : "listProjectSlacks",
+        "operationId" : "listProjectSlack",
         "parameters" : [ {
           "description" : "project ID",
           "in" : "path",
@@ -6530,7 +6530,7 @@
     "/projects/{projectID}/providers/ssh-keys" : {
       "get" : {
         "description" : "Lists ssh-key providers",
-        "operationId" : "listProjectSSHKeys",
+        "operationId" : "listProjectSSHKey",
         "parameters" : [ {
           "description" : "project ID",
           "in" : "path",
@@ -6914,7 +6914,7 @@
     "/projects/{projectID}/providers/ssls" : {
       "get" : {
         "description" : "Lists SSL providers",
-        "operationId" : "listProjectSSLs",
+        "operationId" : "listProjectSSL",
         "parameters" : [ {
           "description" : "project ID",
           "in" : "path",
@@ -7298,7 +7298,7 @@
     "/projects/{projectID}/secrets" : {
       "get" : {
         "description" : "Lists project secrets",
-        "operationId" : "listProjectSecrets",
+        "operationId" : "listProjectSecret",
         "parameters" : [ {
           "description" : "project ID",
           "in" : "path",
@@ -7410,7 +7410,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/secrets/{secretID}" : {
+    "/projects/{projectID}/secrets/{id}" : {
       "delete" : {
         "description" : "Deletes a project secret",
         "operationId" : "deleteProjectSecret",
@@ -7425,7 +7425,7 @@
         }, {
           "description" : "secret ID",
           "in" : "path",
-          "name" : "secretID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -7531,7 +7531,7 @@
     "/projects/{projectID}/tags/delete" : {
       "post" : {
         "description" : "Deletes project tags",
-        "operationId" : "deleteProjectTags",
+        "operationId" : "deleteProjectTag",
         "parameters" : [ {
           "description" : "project ID",
           "in" : "path",
@@ -7592,7 +7592,7 @@
     "/providers/basic-auth" : {
       "get" : {
         "description" : "Lists basic auth providers",
-        "operationId" : "listBasicAuthProviders",
+        "operationId" : "listProviderBasicAuth",
         "parameters" : [ {
           "description" : "`search=<target> (support *)`",
           "in" : "query",
@@ -7659,7 +7659,7 @@
       },
       "post" : {
         "description" : "Creates a new basic auth provider",
-        "operationId" : "createBasicAuthProvider",
+        "operationId" : "createProviderBasicAuth",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -7711,7 +7711,7 @@
     "/providers/basic-auth/{id}" : {
       "delete" : {
         "description" : "Deletes basic auth provider",
-        "operationId" : "deleteBasicAuthProvider",
+        "operationId" : "deleteProviderBasicAuth",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -7758,7 +7758,7 @@
       },
       "get" : {
         "description" : "Gets basic auth provider details",
-        "operationId" : "getBasicAuthProvider",
+        "operationId" : "getProviderBasicAuth",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -7805,7 +7805,7 @@
       },
       "put" : {
         "description" : "Updates basic auth",
-        "operationId" : "updateBasicAuthProvider",
+        "operationId" : "updateProviderBasicAuth",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -7866,7 +7866,7 @@
     "/providers/basic-auth/{id}/meta" : {
       "put" : {
         "description" : "Updates basic auth meta",
-        "operationId" : "updateBasicAuthProviderMeta",
+        "operationId" : "updateProviderBasicAuthMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -8262,7 +8262,7 @@
     "/providers/discord" : {
       "get" : {
         "description" : "Lists Discord providers",
-        "operationId" : "listDiscordProviders",
+        "operationId" : "listProviderDiscord",
         "parameters" : [ {
           "description" : "`search=<target> (support *)`",
           "in" : "query",
@@ -8329,7 +8329,7 @@
       },
       "post" : {
         "description" : "Creates a new Discord provider",
-        "operationId" : "createDiscordProvider",
+        "operationId" : "createProviderDiscord",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -8433,7 +8433,7 @@
     "/providers/discord/{id}" : {
       "delete" : {
         "description" : "Deletes Discord provider",
-        "operationId" : "deleteDiscordProvider",
+        "operationId" : "deleteProviderDiscord",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -8480,7 +8480,7 @@
       },
       "get" : {
         "description" : "Gets Discord provider details",
-        "operationId" : "getDiscordProvider",
+        "operationId" : "getProviderDiscord",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -8527,7 +8527,7 @@
       },
       "put" : {
         "description" : "Updates Discord provider",
-        "operationId" : "updateDiscordProvider",
+        "operationId" : "updateProviderDiscord",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -8588,7 +8588,7 @@
     "/providers/discord/{id}/meta" : {
       "put" : {
         "description" : "Updates Discord meta provider",
-        "operationId" : "updateDiscordProviderMeta",
+        "operationId" : "updateProviderDiscordMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -8649,7 +8649,7 @@
     "/providers/git-tokens" : {
       "get" : {
         "description" : "Lists git-token providers",
-        "operationId" : "listGitTokenProviders",
+        "operationId" : "listProviderGitToken",
         "parameters" : [ {
           "description" : "`search=<target> (support *)`",
           "in" : "query",
@@ -8716,7 +8716,7 @@
       },
       "post" : {
         "description" : "Creates a new git-token provider",
-        "operationId" : "createGitTokenProvider",
+        "operationId" : "createProviderGitToken",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -8820,7 +8820,7 @@
     "/providers/git-tokens/{id}" : {
       "delete" : {
         "description" : "Deletes git-token provider",
-        "operationId" : "deleteGitTokenProvider",
+        "operationId" : "deleteProviderGitToken",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -8867,7 +8867,7 @@
       },
       "get" : {
         "description" : "Gets git-token provider details",
-        "operationId" : "getGitTokenProvider",
+        "operationId" : "getProviderGitToken",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -8914,7 +8914,7 @@
       },
       "put" : {
         "description" : "Updates git-token",
-        "operationId" : "updateGitTokenProvider",
+        "operationId" : "updateProviderGitToken",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -8975,7 +8975,7 @@
     "/providers/git-tokens/{id}/meta" : {
       "put" : {
         "description" : "Updates git-token meta",
-        "operationId" : "updateGitTokenProviderMeta",
+        "operationId" : "updateProviderGitTokenMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -9036,7 +9036,7 @@
     "/providers/github-apps" : {
       "get" : {
         "description" : "Lists github-app providers",
-        "operationId" : "listGithubAppProviders",
+        "operationId" : "listProviderGithubApp",
         "parameters" : [ {
           "description" : "`search=<target> (support *)`",
           "in" : "query",
@@ -9103,7 +9103,7 @@
       },
       "post" : {
         "description" : "Creates a new github-app provider",
-        "operationId" : "createGithubAppProvider",
+        "operationId" : "createProviderGithubApp",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -9259,7 +9259,7 @@
     "/providers/github-apps/{id}" : {
       "delete" : {
         "description" : "Deletes github-app provider",
-        "operationId" : "deleteGithubAppProvider",
+        "operationId" : "deleteProviderGithubApp",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -9306,7 +9306,7 @@
       },
       "get" : {
         "description" : "Gets github-app provider details",
-        "operationId" : "getGithubAppProvider",
+        "operationId" : "getProviderGithubApp",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -9353,7 +9353,7 @@
       },
       "put" : {
         "description" : "Updates github-app",
-        "operationId" : "updateGithubAppProvider",
+        "operationId" : "updateProviderGithubApp",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -9414,7 +9414,7 @@
     "/providers/github-apps/{id}/meta" : {
       "put" : {
         "description" : "Updates github-app meta",
-        "operationId" : "updateGithubAppProviderMeta",
+        "operationId" : "updateProviderGithubAppMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -9475,7 +9475,7 @@
     "/providers/oauth" : {
       "get" : {
         "description" : "Lists oauth providers",
-        "operationId" : "listOAuthProviders",
+        "operationId" : "listProviderOAuth",
         "parameters" : [ {
           "description" : "`search=<target> (support *)`",
           "in" : "query",
@@ -9542,7 +9542,7 @@
       },
       "post" : {
         "description" : "Creates a new oauth provider",
-        "operationId" : "createOAuthProvider",
+        "operationId" : "createProviderOAuth",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -9594,7 +9594,7 @@
     "/providers/oauth/{id}" : {
       "delete" : {
         "description" : "Deletes oauth provider",
-        "operationId" : "deleteOAuthProvider",
+        "operationId" : "deleteProviderOAuth",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -9641,7 +9641,7 @@
       },
       "get" : {
         "description" : "Gets oauth provider details",
-        "operationId" : "getOAuthProvider",
+        "operationId" : "getProviderOAuth",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -9688,7 +9688,7 @@
       },
       "put" : {
         "description" : "Updates oauth",
-        "operationId" : "updateOAuthProvider",
+        "operationId" : "updateProviderOAuth",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -9749,7 +9749,7 @@
     "/providers/oauth/{id}/meta" : {
       "put" : {
         "description" : "Updates oauth meta",
-        "operationId" : "updateOAuthProviderMeta",
+        "operationId" : "updateProviderOAuthMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -9810,7 +9810,7 @@
     "/providers/registry-auth" : {
       "get" : {
         "description" : "Lists registry auth providers",
-        "operationId" : "listRegistryAuthProviders",
+        "operationId" : "listProviderRegistryAuth",
         "parameters" : [ {
           "description" : "`search=<target> (support *)`",
           "in" : "query",
@@ -9877,7 +9877,7 @@
       },
       "post" : {
         "description" : "Creates a new registry auth provider",
-        "operationId" : "createRegistryAuthProvider",
+        "operationId" : "createProviderRegistryAuth",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -9981,7 +9981,7 @@
     "/providers/registry-auth/{id}" : {
       "delete" : {
         "description" : "Deletes registry auth provider",
-        "operationId" : "deleteRegistryAuthProvider",
+        "operationId" : "deleteProviderRegistryAuth",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -10028,7 +10028,7 @@
       },
       "get" : {
         "description" : "Gets registry auth provider details",
-        "operationId" : "getRegistryAuthProvider",
+        "operationId" : "getProviderRegistryAuth",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -10075,7 +10075,7 @@
       },
       "put" : {
         "description" : "Updates registry auth",
-        "operationId" : "updateRegistryAuthProvider",
+        "operationId" : "updateProviderRegistryAuth",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -10136,7 +10136,7 @@
     "/providers/registry-auth/{id}/meta" : {
       "put" : {
         "description" : "Updates registry auth meta",
-        "operationId" : "updateRegistryAuthProviderMeta",
+        "operationId" : "updateProviderRegistryAuthMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -10197,7 +10197,7 @@
     "/providers/s3-storages" : {
       "get" : {
         "description" : "Lists S3 storage providers",
-        "operationId" : "listS3StorageProviders",
+        "operationId" : "listProviderS3Storage",
         "parameters" : [ {
           "description" : "`search=<target> (support *)`",
           "in" : "query",
@@ -10264,7 +10264,7 @@
       },
       "post" : {
         "description" : "Creates a new S3 storage provider",
-        "operationId" : "createS3StorageProvider",
+        "operationId" : "createProviderS3Storage",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -10368,7 +10368,7 @@
     "/providers/s3-storages/{id}" : {
       "delete" : {
         "description" : "Deletes S3 storage provider",
-        "operationId" : "deleteS3StorageProvider",
+        "operationId" : "deleteProviderS3Storage",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -10415,7 +10415,7 @@
       },
       "get" : {
         "description" : "Gets S3 storage provider details",
-        "operationId" : "getS3StorageProvider",
+        "operationId" : "getProviderS3Storage",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -10462,7 +10462,7 @@
       },
       "put" : {
         "description" : "Updates S3 storage",
-        "operationId" : "updateS3StorageProvider",
+        "operationId" : "updateProviderS3Storage",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -10523,7 +10523,7 @@
     "/providers/s3-storages/{id}/meta" : {
       "put" : {
         "description" : "Updates S3 storage meta",
-        "operationId" : "updateS3StorageProviderMeta",
+        "operationId" : "updateProviderS3StorageMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -10813,7 +10813,7 @@
     "/providers/slack" : {
       "get" : {
         "description" : "Lists Slack providers",
-        "operationId" : "listSlackProviders",
+        "operationId" : "listProviderSlack",
         "parameters" : [ {
           "description" : "`search=<target> (support *)`",
           "in" : "query",
@@ -10880,7 +10880,7 @@
       },
       "post" : {
         "description" : "Creates a new Slack provider",
-        "operationId" : "createSlackProvider",
+        "operationId" : "createProviderSlack",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -10984,7 +10984,7 @@
     "/providers/slack/{id}" : {
       "delete" : {
         "description" : "Deletes Slack provider",
-        "operationId" : "deleteSlackProvider",
+        "operationId" : "deleteProviderSlack",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -11031,7 +11031,7 @@
       },
       "get" : {
         "description" : "Gets Slack provider details",
-        "operationId" : "getSlackProvider",
+        "operationId" : "getProviderSlack",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -11078,7 +11078,7 @@
       },
       "put" : {
         "description" : "Updates Slack provider",
-        "operationId" : "updateSlackProvider",
+        "operationId" : "updateProviderSlack",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -11139,7 +11139,7 @@
     "/providers/slack/{id}/meta" : {
       "put" : {
         "description" : "Updates Slack meta provider",
-        "operationId" : "updateSlackProviderMeta",
+        "operationId" : "updateProviderSlackMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -11200,7 +11200,7 @@
     "/providers/ssh-keys" : {
       "get" : {
         "description" : "Lists ssh-key providers",
-        "operationId" : "listSSHKeyProviders",
+        "operationId" : "listProviderSSHKey",
         "parameters" : [ {
           "description" : "`search=<target> (support *)`",
           "in" : "query",
@@ -11267,7 +11267,7 @@
       },
       "post" : {
         "description" : "Creates a new ssh-key provider",
-        "operationId" : "createSSHKeyProvider",
+        "operationId" : "createProviderSSHKey",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -11319,7 +11319,7 @@
     "/providers/ssh-keys/{id}" : {
       "delete" : {
         "description" : "Deletes sshkey provider",
-        "operationId" : "deleteSSHKeyProvider",
+        "operationId" : "deleteProviderSSHKey",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -11366,7 +11366,7 @@
       },
       "get" : {
         "description" : "Gets ssh-key provider details",
-        "operationId" : "getSSHKeyProvider",
+        "operationId" : "getProviderSSHKey",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -11413,7 +11413,7 @@
       },
       "put" : {
         "description" : "Updates ssh-key",
-        "operationId" : "updateSSHKeyProvider",
+        "operationId" : "updateProviderSSHKey",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -11474,7 +11474,7 @@
     "/providers/ssh-keys/{id}/meta" : {
       "put" : {
         "description" : "Updates ssh-key meta",
-        "operationId" : "updateSSHKeyProviderMeta",
+        "operationId" : "updateProviderSSHKeyMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -11535,7 +11535,7 @@
     "/providers/ssls" : {
       "get" : {
         "description" : "Lists SSL providers",
-        "operationId" : "listSslProviders",
+        "operationId" : "listProviderSSL",
         "parameters" : [ {
           "description" : "`search=<target> (support *)`",
           "in" : "query",
@@ -11602,7 +11602,7 @@
       },
       "post" : {
         "description" : "Creates a new SSL provider",
-        "operationId" : "createSslProvider",
+        "operationId" : "createProviderSSL",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -11654,7 +11654,7 @@
     "/providers/ssls/{id}" : {
       "delete" : {
         "description" : "Deletes SSL provider",
-        "operationId" : "deleteSslProvider",
+        "operationId" : "deleteProviderSSL",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -11701,7 +11701,7 @@
       },
       "get" : {
         "description" : "Gets SSL provider details",
-        "operationId" : "getSslProvider",
+        "operationId" : "getProviderSSL",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -11748,7 +11748,7 @@
       },
       "put" : {
         "description" : "Updates SSL",
-        "operationId" : "updateSslProvider",
+        "operationId" : "updateProviderSSL",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -11809,7 +11809,7 @@
     "/providers/ssls/{id}/meta" : {
       "put" : {
         "description" : "Updates SSL meta",
-        "operationId" : "updateSslProviderMeta",
+        "operationId" : "updateProviderSSLMeta",
         "parameters" : [ {
           "description" : "provider ID",
           "in" : "path",
@@ -14408,10 +14408,10 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
         "format" : "int64",
         "type" : "integer",
-        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
+        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentReq" : {
         "type" : "object"

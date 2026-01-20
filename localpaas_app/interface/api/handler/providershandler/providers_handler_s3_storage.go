@@ -8,7 +8,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
-	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/s3storageuc/s3storagedto"
 )
 
@@ -20,7 +19,7 @@ type _ *apperrors.ErrorInfo
 // @Description Lists S3 storage providers
 // @Tags    global_providers
 // @Produce json
-// @Id      listS3StorageProviders
+// @Id      listProviderS3Storage
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
@@ -30,11 +29,7 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/s3-storages [get]
 func (h *ProvidersHandler) ListS3Storage(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeS3Storage,
-		Action:         base.ActionTypeRead,
-	})
+	auth, _, err := h.getAuth(ctx, base.ResourceTypeS3Storage, base.ActionTypeRead, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -61,25 +56,14 @@ func (h *ProvidersHandler) ListS3Storage(ctx *gin.Context) {
 // @Description Gets S3 storage provider details
 // @Tags    global_providers
 // @Produce json
-// @Id      getS3StorageProvider
+// @Id      getProviderS3Storage
 // @Param   id path string true "provider ID"
 // @Success 200 {object} s3storagedto.GetS3StorageResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/s3-storages/{id} [get]
 func (h *ProvidersHandler) GetS3Storage(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeS3Storage,
-		ResourceID:     id,
-		Action:         base.ActionTypeRead,
-	})
+	auth, id, err := h.getAuth(ctx, base.ResourceTypeS3Storage, base.ActionTypeRead, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -107,17 +91,14 @@ func (h *ProvidersHandler) GetS3Storage(ctx *gin.Context) {
 // @Description Creates a new S3 storage provider
 // @Tags    global_providers
 // @Produce json
-// @Id      createS3StorageProvider
+// @Id      createProviderS3Storage
 // @Param   body body s3storagedto.CreateS3StorageReq true "request data"
 // @Success 201 {object} s3storagedto.CreateS3StorageResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/s3-storages [post]
 func (h *ProvidersHandler) CreateS3Storage(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, _, err := h.getAuth(ctx, base.ResourceTypeS3Storage, base.ActionTypeWrite, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -144,7 +125,7 @@ func (h *ProvidersHandler) CreateS3Storage(ctx *gin.Context) {
 // @Description Updates S3 storage
 // @Tags    global_providers
 // @Produce json
-// @Id      updateS3StorageProvider
+// @Id      updateProviderS3Storage
 // @Param   id path string true "provider ID"
 // @Param   body body s3storagedto.UpdateS3StorageReq true "request data"
 // @Success 200 {object} s3storagedto.UpdateS3StorageResp
@@ -152,18 +133,7 @@ func (h *ProvidersHandler) CreateS3Storage(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/s3-storages/{id} [put]
 func (h *ProvidersHandler) UpdateS3Storage(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeS3Storage,
-		ResourceID:     id,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, id, err := h.getAuth(ctx, base.ResourceTypeS3Storage, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -191,7 +161,7 @@ func (h *ProvidersHandler) UpdateS3Storage(ctx *gin.Context) {
 // @Description Updates S3 storage meta
 // @Tags    global_providers
 // @Produce json
-// @Id      updateS3StorageProviderMeta
+// @Id      updateProviderS3StorageMeta
 // @Param   id path string true "provider ID"
 // @Param   body body s3storagedto.UpdateS3StorageMetaReq true "request data"
 // @Success 200 {object} s3storagedto.UpdateS3StorageMetaResp
@@ -199,18 +169,7 @@ func (h *ProvidersHandler) UpdateS3Storage(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/s3-storages/{id}/meta [put]
 func (h *ProvidersHandler) UpdateS3StorageMeta(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeS3Storage,
-		ResourceID:     id,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, id, err := h.getAuth(ctx, base.ResourceTypeS3Storage, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -238,25 +197,14 @@ func (h *ProvidersHandler) UpdateS3StorageMeta(ctx *gin.Context) {
 // @Description Deletes S3 storage provider
 // @Tags    global_providers
 // @Produce json
-// @Id      deleteS3StorageProvider
+// @Id      deleteProviderS3Storage
 // @Param   id path string true "provider ID"
 // @Success 200 {object} s3storagedto.DeleteS3StorageResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/s3-storages/{id} [delete]
 func (h *ProvidersHandler) DeleteS3Storage(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeS3Storage,
-		ResourceID:     id,
-		Action:         base.ActionTypeDelete,
-	})
+	auth, id, err := h.getAuth(ctx, base.ResourceTypeS3Storage, base.ActionTypeDelete, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

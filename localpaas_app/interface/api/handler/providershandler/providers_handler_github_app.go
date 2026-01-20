@@ -8,7 +8,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
-	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/githubappuc/githubappdto"
 )
 
@@ -20,7 +19,7 @@ type _ *apperrors.ErrorInfo
 // @Description Lists github-app providers
 // @Tags    global_providers
 // @Produce json
-// @Id      listGithubAppProviders
+// @Id      listProviderGithubApp
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
@@ -30,11 +29,7 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/github-apps [get]
 func (h *ProvidersHandler) ListGithubApp(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeGithubApp,
-		Action:         base.ActionTypeRead,
-	})
+	auth, _, err := h.getAuth(ctx, base.ResourceTypeGithubApp, base.ActionTypeRead, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -61,25 +56,14 @@ func (h *ProvidersHandler) ListGithubApp(ctx *gin.Context) {
 // @Description Gets github-app provider details
 // @Tags    global_providers
 // @Produce json
-// @Id      getGithubAppProvider
+// @Id      getProviderGithubApp
 // @Param   id path string true "provider ID"
 // @Success 200 {object} githubappdto.GetGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/github-apps/{id} [get]
 func (h *ProvidersHandler) GetGithubApp(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeGithubApp,
-		ResourceID:     id,
-		Action:         base.ActionTypeRead,
-	})
+	auth, id, err := h.getAuth(ctx, base.ResourceTypeGithubApp, base.ActionTypeRead, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -107,18 +91,14 @@ func (h *ProvidersHandler) GetGithubApp(ctx *gin.Context) {
 // @Description Creates a new github-app provider
 // @Tags    global_providers
 // @Produce json
-// @Id      createGithubAppProvider
+// @Id      createProviderGithubApp
 // @Param   body body githubappdto.CreateGithubAppReq true "request data"
 // @Success 201 {object} githubappdto.CreateGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/github-apps [post]
 func (h *ProvidersHandler) CreateGithubApp(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeGithubApp,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, _, err := h.getAuth(ctx, base.ResourceTypeGithubApp, base.ActionTypeWrite, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -145,7 +125,7 @@ func (h *ProvidersHandler) CreateGithubApp(ctx *gin.Context) {
 // @Description Updates github-app
 // @Tags    global_providers
 // @Produce json
-// @Id      updateGithubAppProvider
+// @Id      updateProviderGithubApp
 // @Param   id path string true "provider ID"
 // @Param   body body githubappdto.UpdateGithubAppReq true "request data"
 // @Success 200 {object} githubappdto.UpdateGithubAppResp
@@ -153,18 +133,7 @@ func (h *ProvidersHandler) CreateGithubApp(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/github-apps/{id} [put]
 func (h *ProvidersHandler) UpdateGithubApp(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeGithubApp,
-		ResourceID:     id,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, id, err := h.getAuth(ctx, base.ResourceTypeGithubApp, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -192,7 +161,7 @@ func (h *ProvidersHandler) UpdateGithubApp(ctx *gin.Context) {
 // @Description Updates github-app meta
 // @Tags    global_providers
 // @Produce json
-// @Id      updateGithubAppProviderMeta
+// @Id      updateProviderGithubAppMeta
 // @Param   id path string true "provider ID"
 // @Param   body body githubappdto.UpdateGithubAppMetaReq true "request data"
 // @Success 200 {object} githubappdto.UpdateGithubAppMetaResp
@@ -200,18 +169,7 @@ func (h *ProvidersHandler) UpdateGithubApp(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/github-apps/{id}/meta [put]
 func (h *ProvidersHandler) UpdateGithubAppMeta(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeGithubApp,
-		ResourceID:     id,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, id, err := h.getAuth(ctx, base.ResourceTypeGithubApp, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -239,25 +197,14 @@ func (h *ProvidersHandler) UpdateGithubAppMeta(ctx *gin.Context) {
 // @Description Deletes github-app provider
 // @Tags    global_providers
 // @Produce json
-// @Id      deleteGithubAppProvider
+// @Id      deleteProviderGithubApp
 // @Param   id path string true "provider ID"
 // @Success 200 {object} githubappdto.DeleteGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/github-apps/{id} [delete]
 func (h *ProvidersHandler) DeleteGithubApp(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeGithubApp,
-		ResourceID:     id,
-		Action:         base.ActionTypeDelete,
-	})
+	auth, id, err := h.getAuth(ctx, base.ResourceTypeGithubApp, base.ActionTypeDelete, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

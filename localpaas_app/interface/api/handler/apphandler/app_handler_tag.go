@@ -74,7 +74,7 @@ func (h *AppHandler) CreateAppTag(ctx *gin.Context) {
 // @Description Deletes app tags
 // @Tags    apps
 // @Produce json
-// @Id      deleteAppTags
+// @Id      deleteAppTag
 // @Param   projectID path string true "project ID"
 // @Param   appID path string true "app ID"
 // @Param   body body appdto.DeleteAppTagsReq true "request data"

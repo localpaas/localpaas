@@ -7,7 +7,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/sshkeyuc/sshkeydto"
 )
 
@@ -19,7 +18,7 @@ type _ *apperrors.ErrorInfo
 // @Description Lists ssh-key providers
 // @Tags    global_providers
 // @Produce json
-// @Id      listSSHKeyProviders
+// @Id      listProviderSSHKey
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
@@ -29,11 +28,7 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/ssh-keys [get]
 func (h *ProvidersHandler) ListSSHKey(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeSSHKey,
-		Action:         base.ActionTypeRead,
-	})
+	auth, _, err := h.getAuth(ctx, base.ResourceTypeSSHKey, base.ActionTypeRead, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -60,25 +55,14 @@ func (h *ProvidersHandler) ListSSHKey(ctx *gin.Context) {
 // @Description Gets ssh-key provider details
 // @Tags    global_providers
 // @Produce json
-// @Id      getSSHKeyProvider
+// @Id      getProviderSSHKey
 // @Param   id path string true "provider ID"
 // @Success 200 {object} sshkeydto.GetSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/ssh-keys/{id} [get]
 func (h *ProvidersHandler) GetSSHKey(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeSSHKey,
-		ResourceID:     id,
-		Action:         base.ActionTypeRead,
-	})
+	auth, id, err := h.getAuth(ctx, base.ResourceTypeSSHKey, base.ActionTypeRead, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -106,17 +90,14 @@ func (h *ProvidersHandler) GetSSHKey(ctx *gin.Context) {
 // @Description Creates a new ssh-key provider
 // @Tags    global_providers
 // @Produce json
-// @Id      createSSHKeyProvider
+// @Id      createProviderSSHKey
 // @Param   body body sshkeydto.CreateSSHKeyReq true "request data"
 // @Success 201 {object} sshkeydto.CreateSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/ssh-keys [post]
 func (h *ProvidersHandler) CreateSSHKey(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, _, err := h.getAuth(ctx, base.ResourceTypeSSHKey, base.ActionTypeWrite, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -143,7 +124,7 @@ func (h *ProvidersHandler) CreateSSHKey(ctx *gin.Context) {
 // @Description Updates ssh-key
 // @Tags    global_providers
 // @Produce json
-// @Id      updateSSHKeyProvider
+// @Id      updateProviderSSHKey
 // @Param   id path string true "provider ID"
 // @Param   body body sshkeydto.UpdateSSHKeyReq true "request data"
 // @Success 200 {object} sshkeydto.UpdateSSHKeyResp
@@ -151,18 +132,7 @@ func (h *ProvidersHandler) CreateSSHKey(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/ssh-keys/{id} [put]
 func (h *ProvidersHandler) UpdateSSHKey(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeSSHKey,
-		ResourceID:     id,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, id, err := h.getAuth(ctx, base.ResourceTypeSSHKey, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -190,7 +160,7 @@ func (h *ProvidersHandler) UpdateSSHKey(ctx *gin.Context) {
 // @Description Updates ssh-key meta
 // @Tags    global_providers
 // @Produce json
-// @Id      updateSSHKeyProviderMeta
+// @Id      updateProviderSSHKeyMeta
 // @Param   id path string true "provider ID"
 // @Param   body body sshkeydto.UpdateSSHKeyMetaReq true "request data"
 // @Success 200 {object} sshkeydto.UpdateSSHKeyMetaResp
@@ -198,18 +168,7 @@ func (h *ProvidersHandler) UpdateSSHKey(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/ssh-keys/{id}/meta [put]
 func (h *ProvidersHandler) UpdateSSHKeyMeta(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeSSHKey,
-		ResourceID:     id,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, id, err := h.getAuth(ctx, base.ResourceTypeSSHKey, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -237,25 +196,14 @@ func (h *ProvidersHandler) UpdateSSHKeyMeta(ctx *gin.Context) {
 // @Description Deletes sshkey provider
 // @Tags    global_providers
 // @Produce json
-// @Id      deleteSSHKeyProvider
+// @Id      deleteProviderSSHKey
 // @Param   id path string true "provider ID"
 // @Success 200 {object} sshkeydto.DeleteSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/ssh-keys/{id} [delete]
 func (h *ProvidersHandler) DeleteSSHKey(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeSSHKey,
-		ResourceID:     id,
-		Action:         base.ActionTypeDelete,
-	})
+	auth, id, err := h.getAuth(ctx, base.ResourceTypeSSHKey, base.ActionTypeDelete, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

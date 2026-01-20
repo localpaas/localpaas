@@ -18,7 +18,7 @@ type _ *apperrors.ErrorInfo
 // @Description Lists github-app providers
 // @Tags    project_providers
 // @Produce json
-// @Id      listProjectGithubApps
+// @Id      listProjectGithubApp
 // @Param   projectID path string true "project ID"
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
@@ -29,7 +29,7 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/github-apps [get]
 func (h *ProjectHandler) ListGithubApp(ctx *gin.Context) {
-	auth, projectID, _, err := h.getProjectProviderAuth(ctx, base.ActionTypeRead, false)
+	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeRead, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -64,7 +64,7 @@ func (h *ProjectHandler) ListGithubApp(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/github-apps/{id} [get]
 func (h *ProjectHandler) GetGithubApp(ctx *gin.Context) {
-	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeRead, true)
+	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeRead, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -100,7 +100,7 @@ func (h *ProjectHandler) GetGithubApp(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/github-apps [post]
 func (h *ProjectHandler) CreateGithubApp(ctx *gin.Context) {
-	auth, projectID, _, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, false)
+	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeWrite, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -136,7 +136,7 @@ func (h *ProjectHandler) CreateGithubApp(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/github-apps/{id} [put]
 func (h *ProjectHandler) UpdateGithubApp(ctx *gin.Context) {
-	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
+	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -173,7 +173,7 @@ func (h *ProjectHandler) UpdateGithubApp(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/github-apps/{id}/meta [put]
 func (h *ProjectHandler) UpdateGithubAppMeta(ctx *gin.Context) {
-	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
+	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -209,7 +209,7 @@ func (h *ProjectHandler) UpdateGithubAppMeta(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/github-apps/{id} [delete]
 func (h *ProjectHandler) DeleteGithubApp(ctx *gin.Context) {
-	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
+	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

@@ -18,7 +18,7 @@ type _ *apperrors.ErrorInfo
 // @Description Lists registry auth providers
 // @Tags    project_providers
 // @Produce json
-// @Id      listProjectRegistryAuths
+// @Id      listProjectRegistryAuth
 // @Param   projectID path string true "project ID"
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
@@ -29,7 +29,7 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/registry-auth [get]
 func (h *ProjectHandler) ListRegistryAuth(ctx *gin.Context) {
-	auth, projectID, _, err := h.getProjectProviderAuth(ctx, base.ActionTypeRead, false)
+	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeRead, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -64,7 +64,7 @@ func (h *ProjectHandler) ListRegistryAuth(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/registry-auth/{id} [get]
 func (h *ProjectHandler) GetRegistryAuth(ctx *gin.Context) {
-	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeRead, true)
+	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeRead, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -100,7 +100,7 @@ func (h *ProjectHandler) GetRegistryAuth(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/registry-auth [post]
 func (h *ProjectHandler) CreateRegistryAuth(ctx *gin.Context) {
-	auth, projectID, _, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, false)
+	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeWrite, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -136,7 +136,7 @@ func (h *ProjectHandler) CreateRegistryAuth(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/registry-auth/{id} [put]
 func (h *ProjectHandler) UpdateRegistryAuth(ctx *gin.Context) {
-	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
+	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -173,7 +173,7 @@ func (h *ProjectHandler) UpdateRegistryAuth(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/registry-auth/{id}/meta [put]
 func (h *ProjectHandler) UpdateRegistryAuthMeta(ctx *gin.Context) {
-	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
+	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -209,7 +209,7 @@ func (h *ProjectHandler) UpdateRegistryAuthMeta(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/registry-auth/{id} [delete]
 func (h *ProjectHandler) DeleteRegistryAuth(ctx *gin.Context) {
-	auth, projectID, id, err := h.getProjectProviderAuth(ctx, base.ActionTypeWrite, true)
+	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

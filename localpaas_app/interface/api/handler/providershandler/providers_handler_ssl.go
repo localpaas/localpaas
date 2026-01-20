@@ -7,7 +7,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/ssluc/ssldto"
 )
 
@@ -19,7 +18,7 @@ type _ *apperrors.ErrorInfo
 // @Description Lists SSL providers
 // @Tags    global_providers
 // @Produce json
-// @Id      listSslProviders
+// @Id      listProviderSSL
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
@@ -29,11 +28,7 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/ssls [get]
 func (h *ProvidersHandler) ListSsl(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeSsl,
-		Action:         base.ActionTypeRead,
-	})
+	auth, _, err := h.getAuth(ctx, base.ResourceTypeSsl, base.ActionTypeRead, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -60,25 +55,14 @@ func (h *ProvidersHandler) ListSsl(ctx *gin.Context) {
 // @Description Gets SSL provider details
 // @Tags    global_providers
 // @Produce json
-// @Id      getSslProvider
+// @Id      getProviderSSL
 // @Param   id path string true "provider ID"
 // @Success 200 {object} ssldto.GetSslResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/ssls/{id} [get]
 func (h *ProvidersHandler) GetSsl(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeSsl,
-		ResourceID:     id,
-		Action:         base.ActionTypeRead,
-	})
+	auth, id, err := h.getAuth(ctx, base.ResourceTypeSsl, base.ActionTypeRead, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -106,17 +90,14 @@ func (h *ProvidersHandler) GetSsl(ctx *gin.Context) {
 // @Description Creates a new SSL provider
 // @Tags    global_providers
 // @Produce json
-// @Id      createSslProvider
+// @Id      createProviderSSL
 // @Param   body body ssldto.CreateSslReq true "request data"
 // @Success 201 {object} ssldto.CreateSslResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/ssls [post]
 func (h *ProvidersHandler) CreateSsl(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, _, err := h.getAuth(ctx, base.ResourceTypeSsl, base.ActionTypeWrite, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -143,7 +124,7 @@ func (h *ProvidersHandler) CreateSsl(ctx *gin.Context) {
 // @Description Updates SSL
 // @Tags    global_providers
 // @Produce json
-// @Id      updateSslProvider
+// @Id      updateProviderSSL
 // @Param   id path string true "provider ID"
 // @Param   body body ssldto.UpdateSslReq true "request data"
 // @Success 200 {object} ssldto.UpdateSslResp
@@ -151,18 +132,7 @@ func (h *ProvidersHandler) CreateSsl(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/ssls/{id} [put]
 func (h *ProvidersHandler) UpdateSsl(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeSsl,
-		ResourceID:     id,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, id, err := h.getAuth(ctx, base.ResourceTypeSsl, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -190,7 +160,7 @@ func (h *ProvidersHandler) UpdateSsl(ctx *gin.Context) {
 // @Description Updates SSL meta
 // @Tags    global_providers
 // @Produce json
-// @Id      updateSslProviderMeta
+// @Id      updateProviderSSLMeta
 // @Param   id path string true "provider ID"
 // @Param   body body ssldto.UpdateSslMetaReq true "request data"
 // @Success 200 {object} ssldto.UpdateSslMetaResp
@@ -198,18 +168,7 @@ func (h *ProvidersHandler) UpdateSsl(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/ssls/{id}/meta [put]
 func (h *ProvidersHandler) UpdateSslMeta(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeSsl,
-		ResourceID:     id,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, id, err := h.getAuth(ctx, base.ResourceTypeSsl, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -237,25 +196,14 @@ func (h *ProvidersHandler) UpdateSslMeta(ctx *gin.Context) {
 // @Description Deletes SSL provider
 // @Tags    global_providers
 // @Produce json
-// @Id      deleteSslProvider
+// @Id      deleteProviderSSL
 // @Param   id path string true "provider ID"
 // @Success 200 {object} ssldto.DeleteSslResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/ssls/{id} [delete]
 func (h *ProvidersHandler) DeleteSsl(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   base.ResourceTypeSsl,
-		ResourceID:     id,
-		Action:         base.ActionTypeDelete,
-	})
+	auth, id, err := h.getAuth(ctx, base.ResourceTypeSsl, base.ActionTypeDelete, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

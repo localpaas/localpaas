@@ -7,7 +7,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/secretuc/secretdto"
 )
 
@@ -19,7 +18,7 @@ type _ *apperrors.ErrorInfo
 // @Description Lists project secrets
 // @Tags    projects
 // @Produce json
-// @Id      listProjectSecrets
+// @Id      listProjectSecret
 // @Param   projectID path string true "project ID"
 // @Param   type query string false "`type=<setting type>`"
 // @Success 200 {object} secretdto.ListSecretResp
@@ -27,24 +26,14 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/secrets [get]
 func (h *ProjectHandler) ListProjectSecrets(ctx *gin.Context) {
-	projectID, err := h.ParseStringParam(ctx, "projectID")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProject,
-		ResourceType:   base.ResourceTypeProject,
-		ResourceID:     projectID,
-		Action:         base.ActionTypeRead,
-	})
+	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeRead, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
 	req := secretdto.NewListSecretReq()
+	req.ProjectID = projectID
 	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -72,24 +61,14 @@ func (h *ProjectHandler) ListProjectSecrets(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/secrets [post]
 func (h *ProjectHandler) CreateProjectSecret(ctx *gin.Context) {
-	projectID, err := h.ParseStringParam(ctx, "projectID")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProject,
-		ResourceType:   base.ResourceTypeProject,
-		ResourceID:     projectID,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeWrite, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
 	req := secretdto.NewCreateSecretReq()
+	req.ProjectID = projectID
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -111,37 +90,21 @@ func (h *ProjectHandler) CreateProjectSecret(ctx *gin.Context) {
 // @Produce json
 // @Id      deleteProjectSecret
 // @Param   projectID path string true "project ID"
-// @Param   secretID path string true "secret ID"
+// @Param   id path string true "secret ID"
 // @Success 200 {object} secretdto.DeleteSecretResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/secrets/{secretID} [delete]
+// @Router  /projects/{projectID}/secrets/{id} [delete]
 func (h *ProjectHandler) DeleteProjectSecret(ctx *gin.Context) {
-	projectID, err := h.ParseStringParam(ctx, "projectID")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	secretID, err := h.ParseStringParam(ctx, "secretID")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProject,
-		ResourceType:   base.ResourceTypeProject,
-		ResourceID:     projectID,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
 	req := secretdto.NewDeleteSecretReq()
-	req.ID = secretID
+	req.ID = id
+	req.ProjectID = projectID
 	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
