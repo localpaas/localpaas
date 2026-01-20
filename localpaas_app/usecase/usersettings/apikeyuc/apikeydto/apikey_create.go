@@ -9,7 +9,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/providers"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
 const (
@@ -18,7 +18,7 @@ const (
 )
 
 type CreateAPIKeyReq struct {
-	providers.CreateSettingReq
+	settings.CreateSettingReq
 	Name         string              `json:"name"`
 	AccessAction *base.AccessActions `json:"accessAction"`
 	ExpireAt     time.Time           `json:"expireAt"`

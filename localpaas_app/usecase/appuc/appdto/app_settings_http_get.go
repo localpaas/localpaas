@@ -8,8 +8,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/basicauthuc/basicauthdto"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/ssluc/ssldto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc/basicauthdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc/ssldto"
 )
 
 type GetAppHttpSettingsReq struct {

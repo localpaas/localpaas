@@ -1,0 +1,82 @@
+package oauthdto
+
+import (
+	"time"
+
+	vld "github.com/tiendc/go-validator"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
+)
+
+const (
+	maskedSecretKey = "****************"
+)
+
+type GetOAuthReq struct {
+	settings.GetSettingReq
+}
+
+func NewGetOAuthReq() *GetOAuthReq {
+	return &GetOAuthReq{}
+}
+
+func (req *GetOAuthReq) Validate() apperrors.ValidationErrors {
+	var validators []vld.Validator
+	validators = append(validators, req.GetSettingReq.Validate()...)
+	return apperrors.NewValidationErrors(vld.Validate(validators...))
+}
+
+type GetOAuthResp struct {
+	Meta *basedto.BaseMeta `json:"meta"`
+	Data *OAuthResp        `json:"data"`
+}
+
+type OAuthResp struct {
+	ID           string             `json:"id"`
+	Kind         base.OAuthKind     `json:"kind"`
+	Name         string             `json:"name"`
+	Status       base.SettingStatus `json:"status"`
+	ClientID     string             `json:"clientId"`
+	ClientSecret string             `json:"clientSecret"`
+	Organization string             `json:"organization"`
+	CallbackURL  string             `json:"callbackURL"`
+	AuthURL      string             `json:"authURL,omitempty"`
+	TokenURL     string             `json:"tokenURL,omitempty"`
+	ProfileURL   string             `json:"profileURL,omitempty"`
+	Scopes       []string           `json:"scopes,omitempty"`
+	Encrypted    bool               `json:"encrypted,omitempty"`
+	UpdateVer    int                `json:"updateVer"`
+
+	CreatedAt time.Time  `json:"createdAt"`
+	UpdatedAt time.Time  `json:"updatedAt"`
+	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
+}
+
+func (resp *OAuthResp) CopyClientSecret(field entity.EncryptedField) error {
+	resp.ClientSecret = field.String()
+	return nil
+}
+
+func TransformOAuth(setting *entity.Setting, baseCallbackURL string) (resp *OAuthResp, err error) {
+	if err = copier.Copy(&resp, &setting); err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	config := setting.MustAsOAuth()
+	if err = copier.Copy(&resp, config); err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	// Recalculate callbackURL for the oauth as it depends on the actual server address
+	resp.CallbackURL = baseCallbackURL + "/" + setting.ID
+	resp.Encrypted = config.ClientSecret.IsEncrypted()
+	if resp.Encrypted {
+		resp.ClientSecret = maskedSecretKey
+	}
+	return resp, nil
+}

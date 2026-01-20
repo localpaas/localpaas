@@ -14,6 +14,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projecthandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/providershandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/settinghandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/systemhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/userhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/usersettingshandler"
@@ -27,6 +28,7 @@ type HandlerRegistry struct {
 	projectHandler      *projecthandler.ProjectHandler
 	appHandler          *apphandler.AppHandler
 	providersHandler    *providershandler.ProvidersHandler
+	settingHandler      *settinghandler.SettingHandler
 	userSettingsHandler *usersettingshandler.UserSettingsHandler
 	systemHandler       *systemhandler.SystemHandler
 	gitSourceHandler    *gitsourcehandler.GitSourceHandler
@@ -40,6 +42,7 @@ func NewHandlerRegistry(
 	projectHandler *projecthandler.ProjectHandler,
 	appHandler *apphandler.AppHandler,
 	providersHandler *providershandler.ProvidersHandler,
+	settingHandler *settinghandler.SettingHandler,
 	userSettingsHandler *usersettingshandler.UserSettingsHandler,
 	systemHandler *systemhandler.SystemHandler,
 	gitSourceHandler *gitsourcehandler.GitSourceHandler,
@@ -52,6 +55,7 @@ func NewHandlerRegistry(
 		projectHandler:      projectHandler,
 		appHandler:          appHandler,
 		providersHandler:    providersHandler,
+		settingHandler:      settingHandler,
 		userSettingsHandler: userSettingsHandler,
 		systemHandler:       systemHandler,
 		gitSourceHandler:    gitSourceHandler,
@@ -443,16 +447,6 @@ func (s *HTTPServer) registerRoutes() {
 		sshKeyGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteSSHKey)
 	}
 
-	{ // secrets group
-		secretGroup := providerGroup.Group("/secrets")
-		// Info
-		secretGroup.GET("", s.handlerRegistry.providersHandler.ListSecret)
-		// Creation & Update
-		secretGroup.POST("", s.handlerRegistry.providersHandler.CreateSecret)
-		secretGroup.PUT("/:id/meta", s.handlerRegistry.providersHandler.UpdateSecretMeta)
-		secretGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteSecret)
-	}
-
 	{ // slack group
 		slackGroup := providerGroup.Group("/slack")
 		// Info
@@ -519,16 +513,28 @@ func (s *HTTPServer) registerRoutes() {
 		sslGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteSsl)
 	}
 
-	{ // cron-job group
-		cronJobGroup := providerGroup.Group("/cron-jobs")
+	settingGroup := apiGroup.Group("/settings")
+
+	{ // secrets group
+		secretGroup := settingGroup.Group("/secrets")
 		// Info
-		cronJobGroup.GET("/:id", s.handlerRegistry.providersHandler.GetCronJob)
-		cronJobGroup.GET("", s.handlerRegistry.providersHandler.ListCronJob)
+		secretGroup.GET("", s.handlerRegistry.settingHandler.ListSecret)
 		// Creation & Update
-		cronJobGroup.POST("", s.handlerRegistry.providersHandler.CreateCronJob)
-		cronJobGroup.PUT("/:id", s.handlerRegistry.providersHandler.UpdateCronJob)
-		cronJobGroup.PUT("/:id/meta", s.handlerRegistry.providersHandler.UpdateCronJobMeta)
-		cronJobGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteCronJob)
+		secretGroup.POST("", s.handlerRegistry.settingHandler.CreateSecret)
+		secretGroup.PUT("/:id/meta", s.handlerRegistry.settingHandler.UpdateSecretMeta)
+		secretGroup.DELETE("/:id", s.handlerRegistry.settingHandler.DeleteSecret)
+	}
+
+	{ // cron-job group
+		cronJobGroup := settingGroup.Group("/cron-jobs")
+		// Info
+		cronJobGroup.GET("/:id", s.handlerRegistry.settingHandler.GetCronJob)
+		cronJobGroup.GET("", s.handlerRegistry.settingHandler.ListCronJob)
+		// Creation & Update
+		cronJobGroup.POST("", s.handlerRegistry.settingHandler.CreateCronJob)
+		cronJobGroup.PUT("/:id", s.handlerRegistry.settingHandler.UpdateCronJob)
+		cronJobGroup.PUT("/:id/meta", s.handlerRegistry.settingHandler.UpdateCronJobMeta)
+		cronJobGroup.DELETE("/:id", s.handlerRegistry.settingHandler.DeleteCronJob)
 	}
 
 	systemGroup := apiGroup.Group("/system")

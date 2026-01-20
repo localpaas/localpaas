@@ -3,18 +3,16 @@ package providershandler
 import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/basicauthuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/cronjobuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/discorduc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/githubappuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/gittokenuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/oauthuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/registryauthuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/s3storageuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/secretuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/slackuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/sshkeyuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/ssluc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/discorduc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/gittokenuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/registryauthuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/s3storageuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/slackuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc"
 )
 
 type ProvidersHandler struct {
@@ -23,7 +21,6 @@ type ProvidersHandler struct {
 	oauthUC        *oauthuc.OAuthUC
 	s3StorageUC    *s3storageuc.S3StorageUC
 	sshKeyUC       *sshkeyuc.SSHKeyUC
-	secretUC       *secretuc.SecretUC
 	slackUC        *slackuc.SlackUC
 	discordUC      *discorduc.DiscordUC
 	registryAuthUC *registryauthuc.RegistryAuthUC
@@ -31,7 +28,6 @@ type ProvidersHandler struct {
 	sslUC          *ssluc.SslUC
 	githubAppUC    *githubappuc.GithubAppUC
 	gitTokenUC     *gittokenuc.GitTokenUC
-	cronJobUC      *cronjobuc.CronJobUC
 }
 
 func NewProvidersHandler(
@@ -40,7 +36,6 @@ func NewProvidersHandler(
 	oauthUC *oauthuc.OAuthUC,
 	s3StorageUC *s3storageuc.S3StorageUC,
 	sshKeyUC *sshkeyuc.SSHKeyUC,
-	secretUC *secretuc.SecretUC,
 	slackUC *slackuc.SlackUC,
 	discordUC *discorduc.DiscordUC,
 	registryAuthUC *registryauthuc.RegistryAuthUC,
@@ -48,7 +43,6 @@ func NewProvidersHandler(
 	sslUC *ssluc.SslUC,
 	githubAppUC *githubappuc.GithubAppUC,
 	gitTokenUC *gittokenuc.GitTokenUC,
-	cronJobUC *cronjobuc.CronJobUC,
 ) *ProvidersHandler {
 	return &ProvidersHandler{
 		BaseHandler:    baseHandler,
@@ -56,7 +50,6 @@ func NewProvidersHandler(
 		oauthUC:        oauthUC,
 		s3StorageUC:    s3StorageUC,
 		sshKeyUC:       sshKeyUC,
-		secretUC:       secretUC,
 		slackUC:        slackUC,
 		discordUC:      discordUC,
 		registryAuthUC: registryAuthUC,
@@ -64,6 +57,5 @@ func NewProvidersHandler(
 		sslUC:          sslUC,
 		githubAppUC:    githubAppUC,
 		gitTokenUC:     gitTokenUC,
-		cronJobUC:      cronJobUC,
 	}
 }

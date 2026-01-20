@@ -7,7 +7,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/providers/gittokenuc/gittokendto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/gittokenuc/gittokendto"
 )
 
 // To keep `apperrors` pkg imported and swag gen won't fail
