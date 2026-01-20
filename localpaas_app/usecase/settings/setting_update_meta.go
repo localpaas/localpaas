@@ -16,14 +16,14 @@ import (
 )
 
 type UpdateSettingMetaReq struct {
-	ID         string              `json:"-"`
-	Type       base.SettingType    `json:"-"`
-	ProjectID  string              `json:"-"`
-	AppID      string              `json:"-"`
-	GlobalOnly bool                `json:"-"`
-	Status     *base.SettingStatus `json:"status"`
-	ExpireAt   *time.Time          `json:"expireAt"`
-	UpdateVer  int                 `json:"updateVer"`
+	ID        string              `json:"-"`
+	Type      base.SettingType    `json:"-"`
+	Scope     base.SettingScope   `json:"-"`
+	ProjectID string              `json:"-"`
+	AppID     string              `json:"-"`
+	Status    *base.SettingStatus `json:"status"`
+	ExpireAt  *time.Time          `json:"expireAt"`
+	UpdateVer int                 `json:"updateVer"`
 }
 
 type UpdateSettingMetaResp struct {
@@ -98,7 +98,7 @@ func loadSettingForUpdateMeta(
 ) (err error) {
 	loadOpts := []bunex.SelectQueryOption{
 		bunex.SelectFor("UPDATE OF setting"),
-		bunex.SelectWhereIf(req.GlobalOnly, "setting.object_id IS NULL"),
+		bunex.SelectWhereIf(req.Scope == base.SettingScopeGlobal, "setting.object_id IS NULL"),
 	}
 	loadOpts = append(loadOpts, data.ExtraLoadOpts...)
 

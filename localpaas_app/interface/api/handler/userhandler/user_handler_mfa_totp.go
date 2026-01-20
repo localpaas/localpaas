@@ -11,9 +11,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc/userdto"
 )
 
-// To keep `apperrors` pkg imported and swag gen won't fail
-type _ *apperrors.ErrorInfo
-
 // BeginMFATotpSetup Begins MFA TOTP authenticator setup
 // @Summary Begins MFA TOTP authenticator setup
 // @Description Begins MFA TOTP authenticator setup

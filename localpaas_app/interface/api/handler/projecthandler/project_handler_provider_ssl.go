@@ -1,17 +1,12 @@
 package projecthandler
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 
-	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc/ssldto"
+	_ "github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc/ssldto"
 )
-
-// To keep `apperrors` pkg imported and swag gen won't fail
-type _ *apperrors.ErrorInfo
 
 // ListSsl Lists SSL providers
 // @Summary Lists SSL providers
@@ -29,26 +24,7 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/ssls [get]
 func (h *ProjectHandler) ListSsl(ctx *gin.Context) {
-	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeRead, false)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := ssldto.NewListSslReq()
-	req.ProjectID = projectID
-	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.sslUC.ListSsl(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.ListSetting(ctx, base.ResourceTypeSSL, base.SettingScopeProject)
 }
 
 // GetSsl Gets SSL provider details
@@ -64,27 +40,7 @@ func (h *ProjectHandler) ListSsl(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/ssls/{id} [get]
 func (h *ProjectHandler) GetSsl(ctx *gin.Context) {
-	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeRead, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := ssldto.NewGetSslReq()
-	req.ID = id
-	req.ProjectID = projectID
-	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.sslUC.GetSsl(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.GetSetting(ctx, base.ResourceTypeSSL, base.SettingScopeProject)
 }
 
 // CreateSsl Creates a new SSL provider
@@ -100,26 +56,7 @@ func (h *ProjectHandler) GetSsl(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/ssls [post]
 func (h *ProjectHandler) CreateSsl(ctx *gin.Context) {
-	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeWrite, false)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := ssldto.NewCreateSslReq()
-	req.ProjectID = projectID
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.sslUC.CreateSsl(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusCreated, resp)
+	h.CreateSetting(ctx, base.ResourceTypeSSL, base.SettingScopeProject)
 }
 
 // UpdateSsl Updates SSL
@@ -136,27 +73,7 @@ func (h *ProjectHandler) CreateSsl(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/ssls/{id} [put]
 func (h *ProjectHandler) UpdateSsl(ctx *gin.Context) {
-	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeWrite, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := ssldto.NewUpdateSslReq()
-	req.ID = id
-	req.ProjectID = projectID
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.sslUC.UpdateSsl(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.UpdateSetting(ctx, base.ResourceTypeSSL, base.SettingScopeProject)
 }
 
 // UpdateSslMeta Updates SSL meta
@@ -173,27 +90,7 @@ func (h *ProjectHandler) UpdateSsl(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/ssls/{id}/meta [put]
 func (h *ProjectHandler) UpdateSslMeta(ctx *gin.Context) {
-	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeWrite, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := ssldto.NewUpdateSslMetaReq()
-	req.ID = id
-	req.ProjectID = projectID
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.sslUC.UpdateSslMeta(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.UpdateSettingMeta(ctx, base.ResourceTypeSSL, base.SettingScopeProject)
 }
 
 // DeleteSsl Deletes SSL provider
@@ -209,25 +106,5 @@ func (h *ProjectHandler) UpdateSslMeta(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/ssls/{id} [delete]
 func (h *ProjectHandler) DeleteSsl(ctx *gin.Context) {
-	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeWrite, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := ssldto.NewDeleteSslReq()
-	req.ID = id
-	req.ProjectID = projectID
-	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.sslUC.DeleteSsl(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.DeleteSetting(ctx, base.ResourceTypeSSL, base.SettingScopeProject)
 }

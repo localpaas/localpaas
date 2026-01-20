@@ -1,4 +1,4 @@
-package settinghandler
+package projecthandler
 
 import (
 	"github.com/gin-gonic/gin"
@@ -8,22 +8,21 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 )
 
-func (h *SettingHandler) getAuth(
+func (h *ProjectHandler) getAuth(
 	ctx *gin.Context,
-	resourceType base.ResourceType,
 	action base.ActionType,
-	getItemID bool,
-) (auth *basedto.Auth, itemID string, err error) {
-	if getItemID {
-		itemID, err = h.ParseStringParam(ctx, "id")
+	getProjectID bool,
+) (auth *basedto.Auth, projectID string, err error) {
+	if getProjectID {
+		projectID, err = h.ParseStringParam(ctx, "projectID")
 		if err != nil {
 			return
 		}
 	}
 	auth, err = h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleProvider,
-		ResourceType:   resourceType,
-		ResourceID:     itemID,
+		ResourceModule: base.ResourceModuleProject,
+		ResourceType:   base.ResourceTypeProject,
+		ResourceID:     projectID,
 		Action:         action,
 	})
 	if err != nil {

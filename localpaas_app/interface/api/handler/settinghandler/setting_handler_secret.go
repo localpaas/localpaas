@@ -1,17 +1,12 @@
 package settinghandler
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 
-	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc/secretdto"
+	_ "github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc/secretdto"
 )
-
-// To keep `apperrors` pkg imported and swag gen won't fail
-type _ *apperrors.ErrorInfo
 
 // ListSecret Lists secrets
 // @Summary Lists secrets
@@ -28,26 +23,7 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /settings/secrets [get]
 func (h *SettingHandler) ListSecret(ctx *gin.Context) {
-	auth, _, err := h.getAuth(ctx, base.ResourceTypeSecret, base.ActionTypeRead, false)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := secretdto.NewListSecretReq()
-	req.GlobalOnly = true
-	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.secretUC.ListSecret(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.ListSetting(ctx, base.ResourceTypeSecret, base.SettingScopeGlobal)
 }
 
 // CreateSecret Creates a new secret
@@ -62,26 +38,7 @@ func (h *SettingHandler) ListSecret(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /settings/secrets [post]
 func (h *SettingHandler) CreateSecret(ctx *gin.Context) {
-	auth, _, err := h.getAuth(ctx, base.ResourceTypeSecret, base.ActionTypeWrite, false)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := secretdto.NewCreateSecretReq()
-	req.GlobalOnly = true
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.secretUC.CreateSecret(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusCreated, resp)
+	h.CreateSetting(ctx, base.ResourceTypeSecret, base.SettingScopeGlobal)
 }
 
 // UpdateSecretMeta Updates secret meta
@@ -97,27 +54,7 @@ func (h *SettingHandler) CreateSecret(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /settings/secrets/{id}/meta [put]
 func (h *SettingHandler) UpdateSecretMeta(ctx *gin.Context) {
-	auth, id, err := h.getAuth(ctx, base.ResourceTypeSecret, base.ActionTypeWrite, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := secretdto.NewUpdateSecretMetaReq()
-	req.ID = id
-	req.GlobalOnly = true
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.secretUC.UpdateSecretMeta(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.UpdateSettingMeta(ctx, base.ResourceTypeSecret, base.SettingScopeGlobal)
 }
 
 // DeleteSecret Deletes a secret
@@ -132,25 +69,5 @@ func (h *SettingHandler) UpdateSecretMeta(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /settings/secrets/{id} [delete]
 func (h *SettingHandler) DeleteSecret(ctx *gin.Context) {
-	auth, id, err := h.getAuth(ctx, base.ResourceTypeSecret, base.ActionTypeDelete, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := secretdto.NewDeleteSecretReq()
-	req.ID = id
-	req.GlobalOnly = true
-	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.secretUC.DeleteSecret(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.DeleteSetting(ctx, base.ResourceTypeSecret, base.SettingScopeGlobal)
 }

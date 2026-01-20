@@ -1,17 +1,12 @@
 package providershandler
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 
-	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc/oauthdto"
+	_ "github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc/oauthdto"
 )
-
-// To keep `apperrors` pkg imported and swag gen won't fail
-type _ *apperrors.ErrorInfo
 
 // ListOAuth Lists oauth providers
 // @Summary Lists oauth providers
@@ -28,26 +23,7 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/oauth [get]
 func (h *ProvidersHandler) ListOAuth(ctx *gin.Context) {
-	auth, _, err := h.getAuth(ctx, base.ResourceTypeOAuth, base.ActionTypeRead, false)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := oauthdto.NewListOAuthReq()
-	req.GlobalOnly = true
-	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.oauthUC.ListOAuth(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.ListSetting(ctx, base.ResourceTypeOAuth, base.SettingScopeGlobal)
 }
 
 // GetOAuth Gets oauth provider details
@@ -62,27 +38,7 @@ func (h *ProvidersHandler) ListOAuth(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/oauth/{id} [get]
 func (h *ProvidersHandler) GetOAuth(ctx *gin.Context) {
-	auth, id, err := h.getAuth(ctx, base.ResourceTypeOAuth, base.ActionTypeRead, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := oauthdto.NewGetOAuthReq()
-	req.ID = id
-	req.GlobalOnly = true
-	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.oauthUC.GetOAuth(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.GetSetting(ctx, base.ResourceTypeOAuth, base.SettingScopeGlobal)
 }
 
 // CreateOAuth Creates a new oauth provider
@@ -97,26 +53,7 @@ func (h *ProvidersHandler) GetOAuth(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/oauth [post]
 func (h *ProvidersHandler) CreateOAuth(ctx *gin.Context) {
-	auth, _, err := h.getAuth(ctx, base.ResourceTypeOAuth, base.ActionTypeWrite, false)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := oauthdto.NewCreateOAuthReq()
-	req.GlobalOnly = true
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.oauthUC.CreateOAuth(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusCreated, resp)
+	h.CreateSetting(ctx, base.ResourceTypeOAuth, base.SettingScopeGlobal)
 }
 
 // UpdateOAuth Updates oauth
@@ -132,27 +69,7 @@ func (h *ProvidersHandler) CreateOAuth(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/oauth/{id} [put]
 func (h *ProvidersHandler) UpdateOAuth(ctx *gin.Context) {
-	auth, id, err := h.getAuth(ctx, base.ResourceTypeOAuth, base.ActionTypeWrite, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := oauthdto.NewUpdateOAuthReq()
-	req.ID = id
-	req.GlobalOnly = true
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.oauthUC.UpdateOAuth(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.UpdateSetting(ctx, base.ResourceTypeOAuth, base.SettingScopeGlobal)
 }
 
 // UpdateOAuthMeta Updates oauth meta
@@ -168,27 +85,7 @@ func (h *ProvidersHandler) UpdateOAuth(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/oauth/{id}/meta [put]
 func (h *ProvidersHandler) UpdateOAuthMeta(ctx *gin.Context) {
-	auth, id, err := h.getAuth(ctx, base.ResourceTypeOAuth, base.ActionTypeWrite, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := oauthdto.NewUpdateOAuthMetaReq()
-	req.ID = id
-	req.GlobalOnly = true
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.oauthUC.UpdateOAuthMeta(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.UpdateSettingMeta(ctx, base.ResourceTypeOAuth, base.SettingScopeGlobal)
 }
 
 // DeleteOAuth Deletes oauth provider
@@ -203,25 +100,5 @@ func (h *ProvidersHandler) UpdateOAuthMeta(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/oauth/{id} [delete]
 func (h *ProvidersHandler) DeleteOAuth(ctx *gin.Context) {
-	auth, id, err := h.getAuth(ctx, base.ResourceTypeOAuth, base.ActionTypeDelete, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := oauthdto.NewDeleteOAuthReq()
-	req.ID = id
-	req.GlobalOnly = true
-	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.oauthUC.DeleteOAuth(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.DeleteSetting(ctx, base.ResourceTypeOAuth, base.SettingScopeGlobal)
 }

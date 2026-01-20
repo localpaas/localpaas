@@ -5,14 +5,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc/githubappdto"
 )
-
-// To keep `apperrors` pkg imported and swag gen won't fail
-type _ *apperrors.ErrorInfo
 
 // ListGithubApp Lists github-app providers
 // @Summary Lists github-app providers
@@ -29,26 +26,7 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/github-apps [get]
 func (h *ProvidersHandler) ListGithubApp(ctx *gin.Context) {
-	auth, _, err := h.getAuth(ctx, base.ResourceTypeGithubApp, base.ActionTypeRead, false)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := githubappdto.NewListGithubAppReq()
-	req.GlobalOnly = true
-	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.githubAppUC.ListGithubApp(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.ListSetting(ctx, base.ResourceTypeGithubApp, base.SettingScopeGlobal)
 }
 
 // GetGithubApp Gets github-app provider details
@@ -63,27 +41,7 @@ func (h *ProvidersHandler) ListGithubApp(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/github-apps/{id} [get]
 func (h *ProvidersHandler) GetGithubApp(ctx *gin.Context) {
-	auth, id, err := h.getAuth(ctx, base.ResourceTypeGithubApp, base.ActionTypeRead, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := githubappdto.NewGetGithubAppReq()
-	req.ID = id
-	req.GlobalOnly = true
-	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.githubAppUC.GetGithubApp(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.GetSetting(ctx, base.ResourceTypeGithubApp, base.SettingScopeGlobal)
 }
 
 // CreateGithubApp Creates a new github-app provider
@@ -98,26 +56,7 @@ func (h *ProvidersHandler) GetGithubApp(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/github-apps [post]
 func (h *ProvidersHandler) CreateGithubApp(ctx *gin.Context) {
-	auth, _, err := h.getAuth(ctx, base.ResourceTypeGithubApp, base.ActionTypeWrite, false)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := githubappdto.NewCreateGithubAppReq()
-	req.GlobalOnly = true
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.githubAppUC.CreateGithubApp(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusCreated, resp)
+	h.CreateSetting(ctx, base.ResourceTypeGithubApp, base.SettingScopeGlobal)
 }
 
 // UpdateGithubApp Updates github-app
@@ -133,27 +72,7 @@ func (h *ProvidersHandler) CreateGithubApp(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/github-apps/{id} [put]
 func (h *ProvidersHandler) UpdateGithubApp(ctx *gin.Context) {
-	auth, id, err := h.getAuth(ctx, base.ResourceTypeGithubApp, base.ActionTypeWrite, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := githubappdto.NewUpdateGithubAppReq()
-	req.ID = id
-	req.GlobalOnly = true
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.githubAppUC.UpdateGithubApp(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.UpdateSetting(ctx, base.ResourceTypeGithubApp, base.SettingScopeGlobal)
 }
 
 // UpdateGithubAppMeta Updates github-app meta
@@ -169,27 +88,7 @@ func (h *ProvidersHandler) UpdateGithubApp(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/github-apps/{id}/meta [put]
 func (h *ProvidersHandler) UpdateGithubAppMeta(ctx *gin.Context) {
-	auth, id, err := h.getAuth(ctx, base.ResourceTypeGithubApp, base.ActionTypeWrite, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := githubappdto.NewUpdateGithubAppMetaReq()
-	req.ID = id
-	req.GlobalOnly = true
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.githubAppUC.UpdateGithubAppMeta(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.UpdateSettingMeta(ctx, base.ResourceTypeGithubApp, base.SettingScopeGlobal)
 }
 
 // DeleteGithubApp Deletes github-app provider
@@ -204,27 +103,7 @@ func (h *ProvidersHandler) UpdateGithubAppMeta(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/github-apps/{id} [delete]
 func (h *ProvidersHandler) DeleteGithubApp(ctx *gin.Context) {
-	auth, id, err := h.getAuth(ctx, base.ResourceTypeGithubApp, base.ActionTypeDelete, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := githubappdto.NewDeleteGithubAppReq()
-	req.ID = id
-	req.GlobalOnly = true
-	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.githubAppUC.DeleteGithubApp(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.DeleteSetting(ctx, base.ResourceTypeGithubApp, base.SettingScopeGlobal)
 }
 
 // TestGithubAppConn Test github app connection
@@ -251,7 +130,7 @@ func (h *ProvidersHandler) TestGithubAppConn(ctx *gin.Context) {
 		return
 	}
 
-	resp, err := h.githubAppUC.TestGithubAppConn(h.RequestCtx(ctx), auth, req)
+	resp, err := h.GithubAppUC.TestGithubAppConn(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -288,7 +167,7 @@ func (h *ProvidersHandler) ListAppInstallation(ctx *gin.Context) {
 		return
 	}
 
-	resp, err := h.githubAppUC.ListAppInstallation(h.RequestCtx(ctx), auth, req)
+	resp, err := h.GithubAppUC.ListAppInstallation(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

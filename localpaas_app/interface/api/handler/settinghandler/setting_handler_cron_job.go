@@ -1,17 +1,12 @@
 package settinghandler
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 
-	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc/cronjobdto"
+	_ "github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc/cronjobdto"
 )
-
-// To keep `apperrors` pkg imported and swag gen won't fail
-type _ *apperrors.ErrorInfo
 
 // ListCronJob Lists cron-jobs
 // @Summary Lists cron-jobs
@@ -28,26 +23,7 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /settings/cron-jobs [get]
 func (h *SettingHandler) ListCronJob(ctx *gin.Context) {
-	auth, _, err := h.getAuth(ctx, base.ResourceTypeCronJob, base.ActionTypeRead, false)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := cronjobdto.NewListCronJobReq()
-	req.GlobalOnly = true
-	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.cronJobUC.ListCronJob(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.ListSetting(ctx, base.ResourceTypeCronJob, base.SettingScopeGlobal)
 }
 
 // GetCronJob Gets cron-job details
@@ -62,27 +38,7 @@ func (h *SettingHandler) ListCronJob(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /settings/cron-jobs/{id} [get]
 func (h *SettingHandler) GetCronJob(ctx *gin.Context) {
-	auth, id, err := h.getAuth(ctx, base.ResourceTypeCronJob, base.ActionTypeRead, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := cronjobdto.NewGetCronJobReq()
-	req.ID = id
-	req.GlobalOnly = true
-	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.cronJobUC.GetCronJob(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.GetSetting(ctx, base.ResourceTypeCronJob, base.SettingScopeGlobal)
 }
 
 // CreateCronJob Creates a new cron-job
@@ -97,26 +53,7 @@ func (h *SettingHandler) GetCronJob(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /settings/cron-jobs [post]
 func (h *SettingHandler) CreateCronJob(ctx *gin.Context) {
-	auth, _, err := h.getAuth(ctx, base.ResourceTypeCronJob, base.ActionTypeWrite, false)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := cronjobdto.NewCreateCronJobReq()
-	req.GlobalOnly = true
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.cronJobUC.CreateCronJob(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusCreated, resp)
+	h.CreateSetting(ctx, base.ResourceTypeCronJob, base.SettingScopeGlobal)
 }
 
 // UpdateCronJob Updates cron-job
@@ -132,27 +69,7 @@ func (h *SettingHandler) CreateCronJob(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /settings/cron-jobs/{id} [put]
 func (h *SettingHandler) UpdateCronJob(ctx *gin.Context) {
-	auth, id, err := h.getAuth(ctx, base.ResourceTypeCronJob, base.ActionTypeWrite, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := cronjobdto.NewUpdateCronJobReq()
-	req.ID = id
-	req.GlobalOnly = true
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.cronJobUC.UpdateCronJob(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.UpdateSetting(ctx, base.ResourceTypeCronJob, base.SettingScopeGlobal)
 }
 
 // UpdateCronJobMeta Updates cron-job meta
@@ -168,27 +85,7 @@ func (h *SettingHandler) UpdateCronJob(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /settings/cron-jobs/{id}/meta [put]
 func (h *SettingHandler) UpdateCronJobMeta(ctx *gin.Context) {
-	auth, id, err := h.getAuth(ctx, base.ResourceTypeCronJob, base.ActionTypeWrite, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := cronjobdto.NewUpdateCronJobMetaReq()
-	req.ID = id
-	req.GlobalOnly = true
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.cronJobUC.UpdateCronJobMeta(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.UpdateSettingMeta(ctx, base.ResourceTypeCronJob, base.SettingScopeGlobal)
 }
 
 // DeleteCronJob Deletes cron-job
@@ -203,25 +100,5 @@ func (h *SettingHandler) UpdateCronJobMeta(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /settings/cron-jobs/{id} [delete]
 func (h *SettingHandler) DeleteCronJob(ctx *gin.Context) {
-	auth, id, err := h.getAuth(ctx, base.ResourceTypeCronJob, base.ActionTypeDelete, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := cronjobdto.NewDeleteCronJobReq()
-	req.ID = id
-	req.GlobalOnly = true
-	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.cronJobUC.DeleteCronJob(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.DeleteSetting(ctx, base.ResourceTypeCronJob, base.SettingScopeGlobal)
 }

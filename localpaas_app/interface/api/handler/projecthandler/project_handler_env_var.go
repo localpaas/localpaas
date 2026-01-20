@@ -5,13 +5,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc/projectdto"
 )
-
-// To keep `apperrors` pkg imported and swag gen won't fail
-type _ *apperrors.ErrorInfo
 
 // GetProjectEnvVars Gets project env vars
 // @Summary Gets project env vars
@@ -25,7 +22,7 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/env-vars [get]
 func (h *ProjectHandler) GetProjectEnvVars(ctx *gin.Context) {
-	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeRead, false)
+	auth, projectID, err := h.getAuth(ctx, base.ActionTypeRead, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -60,7 +57,7 @@ func (h *ProjectHandler) GetProjectEnvVars(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/env-vars [put]
 func (h *ProjectHandler) UpdateProjectEnvVars(ctx *gin.Context) {
-	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeWrite, false)
+	auth, projectID, err := h.getAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

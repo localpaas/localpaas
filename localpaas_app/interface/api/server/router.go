@@ -355,7 +355,7 @@ func (s *HTTPServer) registerRoutes() {
 		// Secrets
 		appGroup.GET("/:appID/secrets", s.handlerRegistry.appHandler.ListAppSecrets)
 		appGroup.POST("/:appID/secrets", s.handlerRegistry.appHandler.CreateAppSecret)
-		appGroup.DELETE("/:appID/secrets/:secretID", s.handlerRegistry.appHandler.DeleteAppSecret)
+		appGroup.DELETE("/:appID/secrets/:id", s.handlerRegistry.appHandler.DeleteAppSecret)
 		// Domain SSL
 		appGroup.POST("/:appID/ssl/obtain", s.handlerRegistry.appHandler.ObtainDomainSsl)
 		// Logs
@@ -367,12 +367,12 @@ func (s *HTTPServer) registerRoutes() {
 	appDeploymentGroup := appGroup.Group("/:appID/deployments")
 	{ // app deployment group
 		// Info
-		appDeploymentGroup.GET("/:deploymentID", s.handlerRegistry.appHandler.GetAppDeployment)
+		appDeploymentGroup.GET("/:id", s.handlerRegistry.appHandler.GetAppDeployment)
 		appDeploymentGroup.GET("", s.handlerRegistry.appHandler.ListAppDeployment)
 		// Cancel
-		appDeploymentGroup.POST("/:deploymentID/cancel", s.handlerRegistry.appHandler.CancelAppDeployment)
+		appDeploymentGroup.POST("/:id/cancel", s.handlerRegistry.appHandler.CancelAppDeployment)
 		// Logs
-		appDeploymentGroup.GET("/:deploymentID/logs", func(ctx *gin.Context) {
+		appDeploymentGroup.GET("/:id/logs", func(ctx *gin.Context) {
 			s.handlerRegistry.appHandler.GetAppDeploymentLogs(ctx, s.websocket)
 		})
 	}

@@ -8,6 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/apphandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/basesettinghandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/clusterhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/gitsourcehandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projecthandler"
@@ -94,6 +95,7 @@ var Provides = []any{
 	// Route handler
 	server.NewHandlerRegistry, // for all handler list
 	handler.NewBaseHandler,
+	basesettinghandler.NewBaseSettingHandler,
 	authhandler.NewAuthHandler,
 	clusterhandler.NewClusterHandler,
 	sessionhandler.NewSessionHandler,

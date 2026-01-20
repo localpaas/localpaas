@@ -1,17 +1,12 @@
 package projecthandler
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 
-	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/gittokenuc/gittokendto"
+	_ "github.com/localpaas/localpaas/localpaas_app/usecase/settings/gittokenuc/gittokendto"
 )
-
-// To keep `apperrors` pkg imported and swag gen won't fail
-type _ *apperrors.ErrorInfo
 
 // ListGitToken Lists git-token providers
 // @Summary Lists git-token providers
@@ -29,26 +24,7 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/git-tokens [get]
 func (h *ProjectHandler) ListGitToken(ctx *gin.Context) {
-	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeRead, false)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := gittokendto.NewListGitTokenReq()
-	req.ProjectID = projectID
-	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.gitTokenUC.ListGitToken(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.ListSetting(ctx, base.ResourceTypeGitToken, base.SettingScopeProject)
 }
 
 // GetGitToken Gets git-token provider details
@@ -64,27 +40,7 @@ func (h *ProjectHandler) ListGitToken(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/git-tokens/{id} [get]
 func (h *ProjectHandler) GetGitToken(ctx *gin.Context) {
-	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeRead, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := gittokendto.NewGetGitTokenReq()
-	req.ID = id
-	req.ProjectID = projectID
-	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.gitTokenUC.GetGitToken(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.GetSetting(ctx, base.ResourceTypeGitToken, base.SettingScopeProject)
 }
 
 // CreateGitToken Creates a new git-token provider
@@ -100,26 +56,7 @@ func (h *ProjectHandler) GetGitToken(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/git-tokens [post]
 func (h *ProjectHandler) CreateGitToken(ctx *gin.Context) {
-	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeWrite, false)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := gittokendto.NewCreateGitTokenReq()
-	req.ProjectID = projectID
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.gitTokenUC.CreateGitToken(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusCreated, resp)
+	h.CreateSetting(ctx, base.ResourceTypeGitToken, base.SettingScopeProject)
 }
 
 // UpdateGitToken Updates git-token
@@ -136,27 +73,7 @@ func (h *ProjectHandler) CreateGitToken(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/git-tokens/{id} [put]
 func (h *ProjectHandler) UpdateGitToken(ctx *gin.Context) {
-	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeWrite, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := gittokendto.NewUpdateGitTokenReq()
-	req.ID = id
-	req.ProjectID = projectID
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.gitTokenUC.UpdateGitToken(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.UpdateSetting(ctx, base.ResourceTypeGitToken, base.SettingScopeProject)
 }
 
 // UpdateGitTokenMeta Updates git-token meta
@@ -173,27 +90,7 @@ func (h *ProjectHandler) UpdateGitToken(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/git-tokens/{id}/meta [put]
 func (h *ProjectHandler) UpdateGitTokenMeta(ctx *gin.Context) {
-	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeWrite, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := gittokendto.NewUpdateGitTokenMetaReq()
-	req.ID = id
-	req.ProjectID = projectID
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.gitTokenUC.UpdateGitTokenMeta(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.UpdateSettingMeta(ctx, base.ResourceTypeGitToken, base.SettingScopeProject)
 }
 
 // DeleteGitToken Deletes git-token provider
@@ -209,25 +106,5 @@ func (h *ProjectHandler) UpdateGitTokenMeta(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/git-tokens/{id} [delete]
 func (h *ProjectHandler) DeleteGitToken(ctx *gin.Context) {
-	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeWrite, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := gittokendto.NewDeleteGitTokenReq()
-	req.ID = id
-	req.ProjectID = projectID
-	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.gitTokenUC.DeleteGitToken(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.DeleteSetting(ctx, base.ResourceTypeGitToken, base.SettingScopeProject)
 }

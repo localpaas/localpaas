@@ -5,14 +5,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/discorduc/discorddto"
 )
-
-// To keep `apperrors` pkg imported and swag gen won't fail
-type _ *apperrors.ErrorInfo
 
 // ListDiscord Lists Discord providers
 // @Summary Lists Discord providers
@@ -29,26 +26,7 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/discord [get]
 func (h *ProvidersHandler) ListDiscord(ctx *gin.Context) {
-	auth, _, err := h.getAuth(ctx, base.ResourceTypeDiscord, base.ActionTypeRead, false)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := discorddto.NewListDiscordReq()
-	req.GlobalOnly = true
-	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.discordUC.ListDiscord(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.ListSetting(ctx, base.ResourceTypeDiscord, base.SettingScopeGlobal)
 }
 
 // GetDiscord Gets Discord provider details
@@ -63,27 +41,7 @@ func (h *ProvidersHandler) ListDiscord(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/discord/{id} [get]
 func (h *ProvidersHandler) GetDiscord(ctx *gin.Context) {
-	auth, id, err := h.getAuth(ctx, base.ResourceTypeDiscord, base.ActionTypeRead, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := discorddto.NewGetDiscordReq()
-	req.ID = id
-	req.GlobalOnly = true
-	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.discordUC.GetDiscord(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.GetSetting(ctx, base.ResourceTypeDiscord, base.SettingScopeGlobal)
 }
 
 // CreateDiscord Creates a new Discord provider
@@ -98,26 +56,7 @@ func (h *ProvidersHandler) GetDiscord(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/discord [post]
 func (h *ProvidersHandler) CreateDiscord(ctx *gin.Context) {
-	auth, _, err := h.getAuth(ctx, base.ResourceTypeDiscord, base.ActionTypeWrite, false)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := discorddto.NewCreateDiscordReq()
-	req.GlobalOnly = true
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.discordUC.CreateDiscord(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusCreated, resp)
+	h.CreateSetting(ctx, base.ResourceTypeDiscord, base.SettingScopeGlobal)
 }
 
 // UpdateDiscord Updates Discord provider
@@ -133,27 +72,7 @@ func (h *ProvidersHandler) CreateDiscord(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/discord/{id} [put]
 func (h *ProvidersHandler) UpdateDiscord(ctx *gin.Context) {
-	auth, id, err := h.getAuth(ctx, base.ResourceTypeDiscord, base.ActionTypeWrite, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := discorddto.NewUpdateDiscordReq()
-	req.ID = id
-	req.GlobalOnly = true
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.discordUC.UpdateDiscord(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.UpdateSetting(ctx, base.ResourceTypeDiscord, base.SettingScopeGlobal)
 }
 
 // UpdateDiscordMeta Updates Discord meta provider
@@ -169,27 +88,7 @@ func (h *ProvidersHandler) UpdateDiscord(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/discord/{id}/meta [put]
 func (h *ProvidersHandler) UpdateDiscordMeta(ctx *gin.Context) {
-	auth, id, err := h.getAuth(ctx, base.ResourceTypeDiscord, base.ActionTypeWrite, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := discorddto.NewUpdateDiscordMetaReq()
-	req.ID = id
-	req.GlobalOnly = true
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.discordUC.UpdateDiscordMeta(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.UpdateSettingMeta(ctx, base.ResourceTypeDiscord, base.SettingScopeGlobal)
 }
 
 // DeleteDiscord Deletes Discord provider
@@ -204,27 +103,7 @@ func (h *ProvidersHandler) UpdateDiscordMeta(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/discord/{id} [delete]
 func (h *ProvidersHandler) DeleteDiscord(ctx *gin.Context) {
-	auth, id, err := h.getAuth(ctx, base.ResourceTypeDiscord, base.ActionTypeDelete, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := discorddto.NewDeleteDiscordReq()
-	req.ID = id
-	req.GlobalOnly = true
-	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.discordUC.DeleteDiscord(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.DeleteSetting(ctx, base.ResourceTypeDiscord, base.SettingScopeGlobal)
 }
 
 // TestSendDiscordMsg Tests sending a msg
@@ -251,7 +130,7 @@ func (h *ProvidersHandler) TestSendDiscordMsg(ctx *gin.Context) {
 		return
 	}
 
-	resp, err := h.discordUC.TestSendDiscordMsg(h.RequestCtx(ctx), auth, req)
+	resp, err := h.DiscordUC.TestSendDiscordMsg(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

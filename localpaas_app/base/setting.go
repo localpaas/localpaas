@@ -46,3 +46,12 @@ var (
 		SettingStatusExpired}
 	AllSettingSettableStatuses = gofn.Drop(AllSettingStatuses, SettingStatusExpired)
 )
+
+type SettingScope int
+
+const (
+	SettingScopeGlobal SettingScope = iota
+	SettingScopeUser
+	SettingScopeProject
+	SettingScopeApp
+)

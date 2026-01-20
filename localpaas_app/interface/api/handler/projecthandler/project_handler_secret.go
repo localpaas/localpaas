@@ -1,17 +1,12 @@
 package projecthandler
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 
-	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc/secretdto"
+	_ "github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc/secretdto"
 )
-
-// To keep `apperrors` pkg imported and swag gen won't fail
-type _ *apperrors.ErrorInfo
 
 // ListProjectSecrets Lists project secrets
 // @Summary Lists project secrets
@@ -26,26 +21,7 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/secrets [get]
 func (h *ProjectHandler) ListProjectSecrets(ctx *gin.Context) {
-	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeRead, false)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := secretdto.NewListSecretReq()
-	req.ProjectID = projectID
-	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.secretUC.ListSecret(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.ListSetting(ctx, base.ResourceTypeSecret, base.SettingScopeProject)
 }
 
 // CreateProjectSecret Creates a project secret
@@ -61,26 +37,7 @@ func (h *ProjectHandler) ListProjectSecrets(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/secrets [post]
 func (h *ProjectHandler) CreateProjectSecret(ctx *gin.Context) {
-	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeWrite, false)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := secretdto.NewCreateSecretReq()
-	req.ProjectID = projectID
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.secretUC.CreateSecret(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusCreated, resp)
+	h.CreateSetting(ctx, base.ResourceTypeSecret, base.SettingScopeProject)
 }
 
 // DeleteProjectSecret Deletes a project secret
@@ -96,25 +53,5 @@ func (h *ProjectHandler) CreateProjectSecret(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/secrets/{id} [delete]
 func (h *ProjectHandler) DeleteProjectSecret(ctx *gin.Context) {
-	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeWrite, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := secretdto.NewDeleteSecretReq()
-	req.ID = id
-	req.ProjectID = projectID
-	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.secretUC.DeleteSecret(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.DeleteSetting(ctx, base.ResourceTypeSecret, base.SettingScopeProject)
 }

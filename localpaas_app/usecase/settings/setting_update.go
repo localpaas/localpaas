@@ -17,12 +17,12 @@ import (
 )
 
 type UpdateSettingReq struct {
-	ID         string           `json:"-"`
-	Type       base.SettingType `json:"-"`
-	ProjectID  string           `json:"-"`
-	AppID      string           `json:"-"`
-	GlobalOnly bool             `json:"-"`
-	UpdateVer  int              `json:"updateVer"`
+	ID        string            `json:"-"`
+	Type      base.SettingType  `json:"-"`
+	Scope     base.SettingScope `json:"-"`
+	ProjectID string            `json:"-"`
+	AppID     string            `json:"-"`
+	UpdateVer int               `json:"updateVer"`
 }
 
 type UpdateSettingResp struct {
@@ -106,7 +106,7 @@ func loadSettingForUpdate(
 ) (err error) {
 	loadOpts := []bunex.SelectQueryOption{
 		bunex.SelectFor("UPDATE OF setting"),
-		bunex.SelectWhereIf(req.GlobalOnly, "setting.object_id IS NULL"),
+		bunex.SelectWhereIf(req.Scope == base.SettingScopeGlobal, "setting.object_id IS NULL"),
 	}
 	loadOpts = append(loadOpts, data.ExtraLoadOpts...)
 
@@ -124,7 +124,7 @@ func loadSettingForUpdate(
 	if data.VerifyingName != "" && !strings.EqualFold(setting.Name, data.VerifyingName) {
 		conflictSetting, _ := data.SettingRepo.GetByNameEx(ctx, db, req.Type,
 			req.ProjectID, req.AppID, data.VerifyingName, false,
-			bunex.SelectWhereIf(req.GlobalOnly, "setting.object_id IS NULL"),
+			bunex.SelectWhereIf(req.Scope == base.SettingScopeGlobal, "setting.object_id IS NULL"),
 		)
 		if conflictSetting != nil {
 			return apperrors.NewAlreadyExist(strutil.ToPascalCase(string(req.Type))).

@@ -1,17 +1,12 @@
 package providershandler
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 
-	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc/basicauthdto"
+	_ "github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc/basicauthdto"
 )
-
-// To keep `apperrors` pkg imported and swag gen won't fail
-type _ *apperrors.ErrorInfo
 
 // ListBasicAuth Lists basic auth providers
 // @Summary Lists basic auth providers
@@ -28,26 +23,7 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/basic-auth [get]
 func (h *ProvidersHandler) ListBasicAuth(ctx *gin.Context) {
-	auth, _, err := h.getAuth(ctx, base.ResourceTypeBasicAuth, base.ActionTypeRead, false)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := basicauthdto.NewListBasicAuthReq()
-	req.GlobalOnly = true
-	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.basicAuthUC.ListBasicAuth(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.ListSetting(ctx, base.ResourceTypeBasicAuth, base.SettingScopeGlobal)
 }
 
 // GetBasicAuth Gets basic auth provider details
@@ -62,27 +38,7 @@ func (h *ProvidersHandler) ListBasicAuth(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/basic-auth/{id} [get]
 func (h *ProvidersHandler) GetBasicAuth(ctx *gin.Context) {
-	auth, id, err := h.getAuth(ctx, base.ResourceTypeBasicAuth, base.ActionTypeRead, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := basicauthdto.NewGetBasicAuthReq()
-	req.ID = id
-	req.GlobalOnly = true
-	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.basicAuthUC.GetBasicAuth(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.GetSetting(ctx, base.ResourceTypeBasicAuth, base.SettingScopeGlobal)
 }
 
 // CreateBasicAuth Creates a new basic auth provider
@@ -97,26 +53,7 @@ func (h *ProvidersHandler) GetBasicAuth(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/basic-auth [post]
 func (h *ProvidersHandler) CreateBasicAuth(ctx *gin.Context) {
-	auth, _, err := h.getAuth(ctx, base.ResourceTypeBasicAuth, base.ActionTypeWrite, false)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := basicauthdto.NewCreateBasicAuthReq()
-	req.GlobalOnly = true
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.basicAuthUC.CreateBasicAuth(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusCreated, resp)
+	h.CreateSetting(ctx, base.ResourceTypeBasicAuth, base.SettingScopeGlobal)
 }
 
 // UpdateBasicAuth Updates basic auth
@@ -132,27 +69,7 @@ func (h *ProvidersHandler) CreateBasicAuth(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/basic-auth/{id} [put]
 func (h *ProvidersHandler) UpdateBasicAuth(ctx *gin.Context) {
-	auth, id, err := h.getAuth(ctx, base.ResourceTypeBasicAuth, base.ActionTypeWrite, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := basicauthdto.NewUpdateBasicAuthReq()
-	req.ID = id
-	req.GlobalOnly = true
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.basicAuthUC.UpdateBasicAuth(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.UpdateSetting(ctx, base.ResourceTypeBasicAuth, base.SettingScopeGlobal)
 }
 
 // UpdateBasicAuthMeta Updates basic auth meta
@@ -168,27 +85,7 @@ func (h *ProvidersHandler) UpdateBasicAuth(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/basic-auth/{id}/meta [put]
 func (h *ProvidersHandler) UpdateBasicAuthMeta(ctx *gin.Context) {
-	auth, id, err := h.getAuth(ctx, base.ResourceTypeBasicAuth, base.ActionTypeWrite, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := basicauthdto.NewUpdateBasicAuthMetaReq()
-	req.ID = id
-	req.GlobalOnly = true
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.basicAuthUC.UpdateBasicAuthMeta(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.UpdateSettingMeta(ctx, base.ResourceTypeBasicAuth, base.SettingScopeGlobal)
 }
 
 // DeleteBasicAuth Deletes basic auth provider
@@ -203,25 +100,5 @@ func (h *ProvidersHandler) UpdateBasicAuthMeta(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/basic-auth/{id} [delete]
 func (h *ProvidersHandler) DeleteBasicAuth(ctx *gin.Context) {
-	auth, id, err := h.getAuth(ctx, base.ResourceTypeBasicAuth, base.ActionTypeDelete, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := basicauthdto.NewDeleteBasicAuthReq()
-	req.ID = id
-	req.GlobalOnly = true
-	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.basicAuthUC.DeleteBasicAuth(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.DeleteSetting(ctx, base.ResourceTypeBasicAuth, base.SettingScopeGlobal)
 }

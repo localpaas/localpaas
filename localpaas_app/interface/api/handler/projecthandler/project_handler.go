@@ -1,8 +1,8 @@
 package projecthandler
 
 import (
-	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/basesettinghandler"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc"
@@ -18,7 +18,7 @@ import (
 )
 
 type ProjectHandler struct {
-	*handler.BaseHandler
+	*basesettinghandler.BaseSettingHandler
 	authHandler    *authhandler.AuthHandler
 	projectUC      *projectuc.ProjectUC
 	s3StorageUC    *s3storageuc.S3StorageUC
@@ -35,7 +35,7 @@ type ProjectHandler struct {
 }
 
 func NewProjectHandler(
-	baseHandler *handler.BaseHandler,
+	baseSettingHandler *basesettinghandler.BaseSettingHandler,
 	authHandler *authhandler.AuthHandler,
 	projectUC *projectuc.ProjectUC,
 	s3StorageUC *s3storageuc.S3StorageUC,
@@ -51,19 +51,19 @@ func NewProjectHandler(
 	cronJobUC *cronjobuc.CronJobUC,
 ) *ProjectHandler {
 	return &ProjectHandler{
-		BaseHandler:    baseHandler,
-		authHandler:    authHandler,
-		projectUC:      projectUC,
-		s3StorageUC:    s3StorageUC,
-		sshKeyUC:       sshKeyUC,
-		secretUC:       secretUC,
-		slackUC:        slackUC,
-		discordUC:      discordUC,
-		registryAuthUC: registryAuthUC,
-		basicAuthUC:    basicAuthUC,
-		sslUC:          sslUC,
-		githubAppUC:    githubAppUC,
-		gitTokenUC:     gitTokenUC,
-		cronJobUC:      cronJobUC,
+		BaseSettingHandler: baseSettingHandler,
+		authHandler:        authHandler,
+		projectUC:          projectUC,
+		s3StorageUC:        s3StorageUC,
+		sshKeyUC:           sshKeyUC,
+		secretUC:           secretUC,
+		slackUC:            slackUC,
+		discordUC:          discordUC,
+		registryAuthUC:     registryAuthUC,
+		basicAuthUC:        basicAuthUC,
+		sslUC:              sslUC,
+		githubAppUC:        githubAppUC,
+		gitTokenUC:         gitTokenUC,
+		cronJobUC:          cronJobUC,
 	}
 }

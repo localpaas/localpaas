@@ -1,17 +1,12 @@
 package projecthandler
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 
-	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/slackuc/slackdto"
+	_ "github.com/localpaas/localpaas/localpaas_app/usecase/settings/slackuc/slackdto"
 )
-
-// To keep `apperrors` pkg imported and swag gen won't fail
-type _ *apperrors.ErrorInfo
 
 // ListSlack Lists Slack providers
 // @Summary Lists Slack providers
@@ -29,26 +24,7 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/slack [get]
 func (h *ProjectHandler) ListSlack(ctx *gin.Context) {
-	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeRead, false)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := slackdto.NewListSlackReq()
-	req.ProjectID = projectID
-	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.slackUC.ListSlack(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.ListSetting(ctx, base.ResourceTypeSlack, base.SettingScopeProject)
 }
 
 // GetSlack Gets Slack provider details
@@ -64,27 +40,7 @@ func (h *ProjectHandler) ListSlack(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/slack/{id} [get]
 func (h *ProjectHandler) GetSlack(ctx *gin.Context) {
-	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeRead, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := slackdto.NewGetSlackReq()
-	req.ID = id
-	req.ProjectID = projectID
-	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.slackUC.GetSlack(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.GetSetting(ctx, base.ResourceTypeSlack, base.SettingScopeProject)
 }
 
 // CreateSlack Creates a new Slack provider
@@ -100,26 +56,7 @@ func (h *ProjectHandler) GetSlack(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/slack [post]
 func (h *ProjectHandler) CreateSlack(ctx *gin.Context) {
-	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeWrite, false)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := slackdto.NewCreateSlackReq()
-	req.ProjectID = projectID
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.slackUC.CreateSlack(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusCreated, resp)
+	h.CreateSetting(ctx, base.ResourceTypeSlack, base.SettingScopeProject)
 }
 
 // UpdateSlack Updates Slack provider
@@ -136,27 +73,7 @@ func (h *ProjectHandler) CreateSlack(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/slack/{id} [put]
 func (h *ProjectHandler) UpdateSlack(ctx *gin.Context) {
-	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeWrite, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := slackdto.NewUpdateSlackReq()
-	req.ID = id
-	req.ProjectID = projectID
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.slackUC.UpdateSlack(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.UpdateSetting(ctx, base.ResourceTypeSlack, base.SettingScopeProject)
 }
 
 // UpdateSlackMeta Updates Slack meta provider
@@ -173,27 +90,7 @@ func (h *ProjectHandler) UpdateSlack(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/slack/{id}/meta [put]
 func (h *ProjectHandler) UpdateSlackMeta(ctx *gin.Context) {
-	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeWrite, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := slackdto.NewUpdateSlackMetaReq()
-	req.ID = id
-	req.ProjectID = projectID
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.slackUC.UpdateSlackMeta(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.UpdateSettingMeta(ctx, base.ResourceTypeSlack, base.SettingScopeProject)
 }
 
 // DeleteSlack Deletes Slack provider
@@ -209,25 +106,5 @@ func (h *ProjectHandler) UpdateSlackMeta(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/providers/slack/{id} [delete]
 func (h *ProjectHandler) DeleteSlack(ctx *gin.Context) {
-	auth, projectID, id, err := h.getAuth(ctx, base.ActionTypeWrite, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := slackdto.NewDeleteSlackReq()
-	req.ID = id
-	req.ProjectID = projectID
-	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.slackUC.DeleteSlack(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.DeleteSetting(ctx, base.ResourceTypeSlack, base.SettingScopeProject)
 }

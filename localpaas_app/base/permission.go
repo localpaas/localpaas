@@ -34,7 +34,7 @@ const (
 	ResourceTypeDiscord      ResourceType = "discord"
 	ResourceTypeRegistryAuth ResourceType = "registry-auth"
 	ResourceTypeBasicAuth    ResourceType = "basic-auth"
-	ResourceTypeSsl          ResourceType = "ssl"
+	ResourceTypeSSL          ResourceType = "ssl"
 	ResourceTypeGithubApp    ResourceType = "github-app"
 	ResourceTypeGitToken     ResourceType = "git-token"
 	ResourceTypeCronJob      ResourceType = "cron-job"
@@ -46,7 +46,6 @@ type ResourceModule string
 
 const (
 	ResourceModuleSettings ResourceModule = "mod::settings"
-	ResourceModuleProvider ResourceModule = "mod::provider"
 	ResourceModuleCluster  ResourceModule = "mod::cluster"
 	ResourceModuleUser     ResourceModule = "mod::user"
 	ResourceModuleProject  ResourceModule = "mod::project"
@@ -54,7 +53,7 @@ const (
 )
 
 var (
-	AllResourceModules = []ResourceModule{ResourceModuleSettings, ResourceModuleProvider, ResourceModuleUser,
+	AllResourceModules = []ResourceModule{ResourceModuleSettings, ResourceModuleUser,
 		ResourceModuleCluster, ResourceModuleProject, ResourceModuleSystem}
 )
 

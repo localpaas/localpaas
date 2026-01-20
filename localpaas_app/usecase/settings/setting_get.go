@@ -15,11 +15,11 @@ import (
 )
 
 type GetSettingReq struct {
-	ID         string           `json:"-"`
-	Type       base.SettingType `json:"-"`
-	ProjectID  string           `json:"-"`
-	AppID      string           `json:"-"`
-	GlobalOnly bool             `json:"-"`
+	ID        string            `json:"-" mapstructure:"-"`
+	Type      base.SettingType  `json:"-" mapstructure:"-"`
+	Scope     base.SettingScope `json:"-" mapstructure:"-"`
+	ProjectID string            `json:"-" mapstructure:"-"`
+	AppID     string            `json:"-" mapstructure:"-"`
 }
 
 func (req *GetSettingReq) Validate() (validators []vld.Validator) {
@@ -40,7 +40,7 @@ func GetSetting(
 ) (*entity.Setting, error) {
 	loadOpts := []bunex.SelectQueryOption{
 		bunex.SelectWhere("setting.type = ?", req.Type),
-		bunex.SelectWhereIf(req.GlobalOnly, "setting.object_id IS NULL"),
+		bunex.SelectWhereIf(req.Scope == base.SettingScopeGlobal, "setting.object_id IS NULL"),
 	}
 	loadOpts = append(loadOpts, data.ExtraLoadOpts...)
 

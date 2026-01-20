@@ -17,11 +17,11 @@ import (
 )
 
 type DeleteSettingReq struct {
-	ID         string           `json:"-"`
-	Type       base.SettingType `json:"-"`
-	ProjectID  string           `json:"-"`
-	AppID      string           `json:"-"`
-	GlobalOnly bool             `json:"-"`
+	ID        string            `json:"-" mapstructure:"-"`
+	Type      base.SettingType  `json:"-" mapstructure:"-"`
+	Scope     base.SettingScope `json:"-" mapstructure:"-"`
+	ProjectID string            `json:"-" mapstructure:"-"`
+	AppID     string            `json:"-" mapstructure:"-"`
 }
 
 func (req *DeleteSettingReq) Validate() (validators []vld.Validator) {
@@ -104,7 +104,7 @@ func loadSettingForDeletion(
 ) (err error) {
 	loadOpts := []bunex.SelectQueryOption{
 		bunex.SelectFor("UPDATE OF setting"),
-		bunex.SelectWhereIf(req.GlobalOnly, "setting.object_id IS NULL"),
+		bunex.SelectWhereIf(req.Scope == base.SettingScopeGlobal, "setting.object_id IS NULL"),
 	}
 	loadOpts = append(loadOpts, data.ExtraLoadOpts...)
 

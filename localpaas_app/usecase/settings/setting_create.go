@@ -19,10 +19,10 @@ import (
 )
 
 type CreateSettingReq struct {
-	Type       base.SettingType `json:"-"`
-	ProjectID  string           `json:"-"`
-	AppID      string           `json:"-"`
-	GlobalOnly bool             `json:"-"`
+	Type      base.SettingType  `json:"-"`
+	Scope     base.SettingScope `json:"-"`
+	ProjectID string            `json:"-"`
+	AppID     string            `json:"-"`
 }
 
 type CreateSettingResp struct {
@@ -110,7 +110,7 @@ func loadSettingForCreation(
 	if data.VerifyingName != "" {
 		conflictSetting, _ := data.SettingRepo.GetByNameEx(ctx, db, req.Type,
 			req.ProjectID, req.AppID, data.VerifyingName, false,
-			bunex.SelectWhereIf(req.GlobalOnly, "setting.object_id IS NULL"),
+			bunex.SelectWhereIf(req.Scope == base.SettingScopeGlobal, "setting.object_id IS NULL"),
 		)
 		if conflictSetting != nil {
 			return apperrors.NewAlreadyExist(strutil.ToPascalCase(string(req.Type))).

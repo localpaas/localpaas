@@ -15,12 +15,12 @@ import (
 )
 
 type ListSettingReq struct {
-	Type       base.SettingType     `json:"-" mapstructure:"-"`
-	ProjectID  string               `json:"-" mapstructure:"-"`
-	AppID      string               `json:"-" mapstructure:"-"`
-	GlobalOnly bool                 `json:"-" mapstructure:"-"`
-	Status     []base.SettingStatus `json:"-" mapstructure:"status"`
-	Search     string               `json:"-" mapstructure:"search"`
+	Type      base.SettingType     `json:"-" mapstructure:"-"`
+	Scope     base.SettingScope    `json:"-" mapstructure:"-"`
+	ProjectID string               `json:"-" mapstructure:"-"`
+	AppID     string               `json:"-" mapstructure:"-"`
+	Status    []base.SettingStatus `json:"-" mapstructure:"status"`
+	Search    string               `json:"-" mapstructure:"search"`
 
 	Paging basedto.Paging `json:"-"`
 }
@@ -49,7 +49,7 @@ func ListSetting(
 ) (*ListSettingResp, error) {
 	listOpts := []bunex.SelectQueryOption{
 		bunex.SelectWhere("setting.type = ?", req.Type),
-		bunex.SelectWhereIf(req.GlobalOnly, "setting.object_id IS NULL"),
+		bunex.SelectWhereIf(req.Scope == base.SettingScopeGlobal, "setting.object_id IS NULL"),
 	}
 	if len(req.Status) > 0 {
 		listOpts = append(listOpts, bunex.SelectWhere("setting.status IN (?)", bunex.In(req.Status)))

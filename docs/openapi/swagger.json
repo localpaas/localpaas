@@ -2259,7 +2259,7 @@
         "tags" : [ "apps_deployments" ]
       }
     },
-    "/projects/{projectID}/apps/{appID}/deployments/{deploymentID}" : {
+    "/projects/{projectID}/apps/{appID}/deployments/{id}" : {
       "get" : {
         "description" : "Gets app deployment",
         "operationId" : "getAppDeployment",
@@ -2282,7 +2282,7 @@
         }, {
           "description" : "deployment ID",
           "in" : "path",
-          "name" : "deploymentID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -2324,7 +2324,7 @@
         "tags" : [ "apps_deployments" ]
       }
     },
-    "/projects/{projectID}/apps/{appID}/deployments/{deploymentID}/cancel" : {
+    "/projects/{projectID}/apps/{appID}/deployments/{id}/cancel" : {
       "post" : {
         "description" : "Cancels app deployment",
         "operationId" : "cancelAppDeployment",
@@ -2347,7 +2347,7 @@
         }, {
           "description" : "deployment ID",
           "in" : "path",
-          "name" : "deploymentID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -2401,7 +2401,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/apps/{appID}/deployments/{deploymentID}/logs" : {
+    "/projects/{projectID}/apps/{appID}/deployments/{id}/logs" : {
       "get" : {
         "description" : "Stream deployment app logs via websocket",
         "operationId" : "getAppDeploymentLogs",
@@ -2424,7 +2424,7 @@
         }, {
           "description" : "deployment ID",
           "in" : "path",
-          "name" : "deploymentID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -2951,7 +2951,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/apps/{appID}/secrets/{secretID}" : {
+    "/projects/{projectID}/apps/{appID}/secrets/{id}" : {
       "delete" : {
         "description" : "Deletes an app secret",
         "operationId" : "deleteAppSecret",
@@ -2974,7 +2974,7 @@
         }, {
           "description" : "secret ID",
           "in" : "path",
-          "name" : "secretID",
+          "name" : "id",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -13143,7 +13143,7 @@
     "/users/current/settings/api-keys" : {
       "get" : {
         "description" : "Lists API key",
-        "operationId" : "listAPIKeySettings",
+        "operationId" : "listUserAPIKey",
         "parameters" : [ {
           "description" : "`search=<target> (support *)`",
           "in" : "query",
@@ -13206,11 +13206,11 @@
           }
         },
         "summary" : "Lists API key",
-        "tags" : [ "user_settings_api_keys" ]
+        "tags" : [ "user_settings" ]
       },
       "post" : {
         "description" : "Creates a new API key",
-        "operationId" : "createAPIKeySetting",
+        "operationId" : "createUserAPIKey",
         "requestBody" : {
           "content" : {
             "*/*" : {
@@ -13255,14 +13255,14 @@
           }
         },
         "summary" : "Creates a new API key",
-        "tags" : [ "user_settings_api_keys" ],
+        "tags" : [ "user_settings" ],
         "x-codegen-request-body-name" : "body"
       }
     },
     "/users/current/settings/api-keys/{id}" : {
       "delete" : {
         "description" : "Deletes an API key",
-        "operationId" : "deleteAPIKeySetting",
+        "operationId" : "deleteUserAPIKey",
         "parameters" : [ {
           "description" : "API key ID",
           "in" : "path",
@@ -13305,11 +13305,11 @@
           }
         },
         "summary" : "Deletes an API key",
-        "tags" : [ "user_settings_api_keys" ]
+        "tags" : [ "user_settings" ]
       },
       "get" : {
         "description" : "Gets API key details",
-        "operationId" : "getAPIKeySetting",
+        "operationId" : "getUserAPIKey",
         "parameters" : [ {
           "description" : "s3 storage ID",
           "in" : "path",
@@ -13352,13 +13352,13 @@
           }
         },
         "summary" : "Gets API key details",
-        "tags" : [ "user_settings_api_keys" ]
+        "tags" : [ "user_settings" ]
       }
     },
     "/users/current/settings/api-keys/{id}/meta" : {
       "put" : {
         "description" : "Updates API key meta",
-        "operationId" : "updateAPIKeySettingMeta",
+        "operationId" : "updateUserAPIKeyMeta",
         "parameters" : [ {
           "description" : "API key ID",
           "in" : "path",
@@ -13412,7 +13412,7 @@
           }
         },
         "summary" : "Updates API key meta",
-        "tags" : [ "user_settings_api_keys" ],
+        "tags" : [ "user_settings" ],
         "x-codegen-request-body-name" : "body"
       }
     },
@@ -14408,10 +14408,10 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
         "format" : "int64",
         "type" : "integer",
-        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
+        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentReq" : {
         "type" : "object"

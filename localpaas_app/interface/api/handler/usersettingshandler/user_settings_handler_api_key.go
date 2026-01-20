@@ -10,15 +10,12 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc/apikeydto"
 )
 
-// To keep `apperrors` pkg imported and swag gen won't fail
-type _ *apperrors.ErrorInfo
-
 // ListAPIKey Lists API key
 // @Summary Lists API key
 // @Description Lists API key
-// @Tags    user_settings_api_keys
+// @Tags    user_settings
 // @Produce json
-// @Id      listAPIKeySettings
+// @Id      listUserAPIKey
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
@@ -40,7 +37,7 @@ func (h *UserSettingsHandler) ListAPIKey(ctx *gin.Context) {
 		return
 	}
 
-	resp, err := h.apiKeyUC.ListAPIKey(h.RequestCtx(ctx), auth, req)
+	resp, err := h.APIKeyUC.ListAPIKey(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -52,9 +49,9 @@ func (h *UserSettingsHandler) ListAPIKey(ctx *gin.Context) {
 // GetAPIKey Gets API key details
 // @Summary Gets API key details
 // @Description Gets API key details
-// @Tags    user_settings_api_keys
+// @Tags    user_settings
 // @Produce json
-// @Id      getAPIKeySetting
+// @Id      getUserAPIKey
 // @Param   id path string true "s3 storage ID"
 // @Success 200 {object} apikeydto.GetAPIKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
@@ -80,7 +77,7 @@ func (h *UserSettingsHandler) GetAPIKey(ctx *gin.Context) {
 		return
 	}
 
-	resp, err := h.apiKeyUC.GetAPIKey(h.RequestCtx(ctx), auth, req)
+	resp, err := h.APIKeyUC.GetAPIKey(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -92,9 +89,9 @@ func (h *UserSettingsHandler) GetAPIKey(ctx *gin.Context) {
 // CreateAPIKey Creates a new API key
 // @Summary Creates a new API key
 // @Description Creates a new API key
-// @Tags    user_settings_api_keys
+// @Tags    user_settings
 // @Produce json
-// @Id      createAPIKeySetting
+// @Id      createUserAPIKey
 // @Param   body body apikeydto.CreateAPIKeyReq true "request data"
 // @Success 201 {object} apikeydto.CreateAPIKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
@@ -120,7 +117,7 @@ func (h *UserSettingsHandler) CreateAPIKey(ctx *gin.Context) {
 		return
 	}
 
-	resp, err := h.apiKeyUC.CreateAPIKey(h.RequestCtx(ctx), auth, req)
+	resp, err := h.APIKeyUC.CreateAPIKey(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -132,9 +129,9 @@ func (h *UserSettingsHandler) CreateAPIKey(ctx *gin.Context) {
 // UpdateAPIKeyMeta Updates API key meta
 // @Summary Updates API key meta
 // @Description Updates API key meta
-// @Tags    user_settings_api_keys
+// @Tags    user_settings
 // @Produce json
-// @Id      updateAPIKeySettingMeta
+// @Id      updateUserAPIKeyMeta
 // @Param   id path string true "API key ID"
 // @Param   body body apikeydto.UpdateAPIKeyMetaReq true "request data"
 // @Success 200 {object} apikeydto.UpdateAPIKeyMetaResp
@@ -168,7 +165,7 @@ func (h *UserSettingsHandler) UpdateAPIKeyMeta(ctx *gin.Context) {
 		return
 	}
 
-	resp, err := h.apiKeyUC.UpdateAPIKeyMeta(h.RequestCtx(ctx), auth, req)
+	resp, err := h.APIKeyUC.UpdateAPIKeyMeta(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -180,9 +177,9 @@ func (h *UserSettingsHandler) UpdateAPIKeyMeta(ctx *gin.Context) {
 // DeleteAPIKey Deletes an API key
 // @Summary Deletes an API key
 // @Description Deletes an API key
-// @Tags    user_settings_api_keys
+// @Tags    user_settings
 // @Produce json
-// @Id      deleteAPIKeySetting
+// @Id      deleteUserAPIKey
 // @Param   id path string true "API key ID"
 // @Success 200 {object} apikeydto.DeleteAPIKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
@@ -215,7 +212,7 @@ func (h *UserSettingsHandler) DeleteAPIKey(ctx *gin.Context) {
 		return
 	}
 
-	resp, err := h.apiKeyUC.DeleteAPIKey(h.RequestCtx(ctx), auth, req)
+	resp, err := h.APIKeyUC.DeleteAPIKey(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

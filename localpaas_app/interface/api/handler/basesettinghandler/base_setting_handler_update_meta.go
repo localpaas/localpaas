@@ -1,0 +1,128 @@
+package basesettinghandler
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+
+	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc/basicauthdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc/cronjobdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/discorduc/discorddto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc/githubappdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/gittokenuc/gittokendto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc/oauthdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/registryauthuc/registryauthdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/s3storageuc/s3storagedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc/secretdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/slackuc/slackdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc/sshkeydto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc/ssldto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc/apikeydto"
+)
+
+func (h *BaseSettingHandler) UpdateSettingMeta(ctx *gin.Context, resType base.ResourceType, scope base.SettingScope) {
+	var auth *basedto.Auth
+	var projectID, appID, itemID string
+	var err error
+
+	switch scope {
+	case base.SettingScopeGlobal:
+		auth, itemID, err = h.GetAuthGlobalSettings(ctx, resType, base.ActionTypeWrite, true)
+	case base.SettingScopeUser:
+		auth, itemID, err = h.GetAuthUserSettings(ctx, base.ActionTypeWrite, true)
+	case base.SettingScopeProject:
+		auth, projectID, itemID, err = h.GetAuthProjectSettings(ctx, base.ActionTypeWrite, true)
+	case base.SettingScopeApp:
+		auth, projectID, appID, itemID, err = h.GetAuthAppSettings(ctx, base.ActionTypeWrite, true)
+	}
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	var req any
+	var ucFunc func() (any, error)
+	reqCtx := h.RequestCtx(ctx)
+
+	switch resType { //nolint:exhaustive
+	case base.ResourceTypeBasicAuth:
+		r := basicauthdto.NewUpdateBasicAuthMetaReq()
+		r.ID, r.Scope, r.ProjectID, r.AppID = itemID, scope, projectID, appID
+		req, ucFunc = r, func() (any, error) { return h.BasicAuthUC.UpdateBasicAuthMeta(reqCtx, auth, r) }
+
+	case base.ResourceTypeGithubApp:
+		r := githubappdto.NewUpdateGithubAppMetaReq()
+		r.ID, r.Scope, r.ProjectID, r.AppID = itemID, scope, projectID, appID
+		req, ucFunc = r, func() (any, error) { return h.GithubAppUC.UpdateGithubAppMeta(reqCtx, auth, r) }
+
+	case base.ResourceTypeGitToken:
+		r := gittokendto.NewUpdateGitTokenMetaReq()
+		r.ID, r.Scope, r.ProjectID, r.AppID = itemID, scope, projectID, appID
+		req, ucFunc = r, func() (any, error) { return h.GitTokenUC.UpdateGitTokenMeta(reqCtx, auth, r) }
+
+	case base.ResourceTypeOAuth:
+		r := oauthdto.NewUpdateOAuthMetaReq()
+		r.ID, r.Scope, r.ProjectID, r.AppID = itemID, scope, projectID, appID
+		req, ucFunc = r, func() (any, error) { return h.OAuthUC.UpdateOAuthMeta(reqCtx, auth, r) }
+
+	case base.ResourceTypeRegistryAuth:
+		r := registryauthdto.NewUpdateRegistryAuthMetaReq()
+		r.ID, r.Scope, r.ProjectID, r.AppID = itemID, scope, projectID, appID
+		req, ucFunc = r, func() (any, error) { return h.RegistryAuthUC.UpdateRegistryAuthMeta(reqCtx, auth, r) }
+
+	case base.ResourceTypeS3Storage:
+		r := s3storagedto.NewUpdateS3StorageMetaReq()
+		r.ID, r.Scope, r.ProjectID, r.AppID = itemID, scope, projectID, appID
+		req, ucFunc = r, func() (any, error) { return h.S3StorageUC.UpdateS3StorageMeta(reqCtx, auth, r) }
+
+	case base.ResourceTypeSSHKey:
+		r := sshkeydto.NewUpdateSSHKeyMetaReq()
+		r.ID, r.Scope, r.ProjectID, r.AppID = itemID, scope, projectID, appID
+		req, ucFunc = r, func() (any, error) { return h.SSHKeyUC.UpdateSSHKeyMeta(reqCtx, auth, r) }
+
+	case base.ResourceTypeSSL:
+		r := ssldto.NewUpdateSslMetaReq()
+		r.ID, r.Scope, r.ProjectID, r.AppID = itemID, scope, projectID, appID
+		req, ucFunc = r, func() (any, error) { return h.SSLUC.UpdateSslMeta(reqCtx, auth, r) }
+
+	case base.ResourceTypeCronJob:
+		r := cronjobdto.NewUpdateCronJobMetaReq()
+		r.ID, r.Scope, r.ProjectID, r.AppID = itemID, scope, projectID, appID
+		req, ucFunc = r, func() (any, error) { return h.CronJobUC.UpdateCronJobMeta(reqCtx, auth, r) }
+
+	case base.ResourceTypeSecret:
+		r := secretdto.NewUpdateSecretMetaReq()
+		r.ID, r.Scope, r.ProjectID, r.AppID = itemID, scope, projectID, appID
+		req, ucFunc = r, func() (any, error) { return h.SecretUC.UpdateSecretMeta(reqCtx, auth, r) }
+
+	case base.ResourceTypeAPIKey:
+		r := apikeydto.NewUpdateAPIKeyMetaReq()
+		r.ID, r.Scope, r.ProjectID, r.AppID = itemID, scope, projectID, appID
+		req, ucFunc = r, func() (any, error) { return h.APIKeyUC.UpdateAPIKeyMeta(reqCtx, auth, r) }
+
+	case base.ResourceTypeSlack:
+		r := slackdto.NewUpdateSlackMetaReq()
+		r.ID, r.Scope, r.ProjectID, r.AppID = itemID, scope, projectID, appID
+		req, ucFunc = r, func() (any, error) { return h.SlackUC.UpdateSlackMeta(reqCtx, auth, r) }
+
+	case base.ResourceTypeDiscord:
+		r := discorddto.NewUpdateDiscordMetaReq()
+		r.ID, r.Scope, r.ProjectID, r.AppID = itemID, scope, projectID, appID
+		req, ucFunc = r, func() (any, error) { return h.DiscordUC.UpdateDiscordMeta(reqCtx, auth, r) }
+	}
+
+	if err = h.ParseAndValidateJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := ucFunc()
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}

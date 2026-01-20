@@ -5,14 +5,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
 )
-
-// To keep `apperrors` pkg imported and swag gen won't fail
-type _ *apperrors.ErrorInfo
 
 // CreateApp Creates a new app
 // @Summary Creates a new app
@@ -27,19 +23,7 @@ type _ *apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/apps [post]
 func (h *AppHandler) CreateApp(ctx *gin.Context) {
-	projectID, err := h.ParseStringParam(ctx, "projectID")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	// User needs write access on the project to create an app in it
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule:     base.ResourceModuleProject,
-		ParentResourceType: base.ResourceTypeProject,
-		ParentResourceID:   projectID,
-		Action:             base.ActionTypeWrite,
-	})
+	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeWrite, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -75,25 +59,7 @@ func (h *AppHandler) CreateApp(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/apps/{appID} [delete]
 func (h *AppHandler) DeleteApp(ctx *gin.Context) {
-	projectID, err := h.ParseStringParam(ctx, "projectID")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-	appID, err := h.ParseStringParam(ctx, "appID")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule:     base.ResourceModuleProject,
-		ParentResourceType: base.ResourceTypeProject,
-		ParentResourceID:   projectID,
-		ResourceType:       base.ResourceTypeApp,
-		ResourceID:         appID,
-		Action:             base.ActionTypeDelete,
-	})
+	auth, projectID, appID, err := h.getAuth(ctx, base.ActionTypeDelete, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
