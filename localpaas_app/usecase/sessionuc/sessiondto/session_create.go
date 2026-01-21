@@ -16,6 +16,6 @@ type BaseCreateSessionReq struct {
 type BaseCreateSessionResp struct {
 	AccessToken     string    `json:"accessToken"`
 	AccessTokenExp  time.Time `json:"accessTokenExp"`
-	RefreshToken    string    `json:"-"`
-	RefreshTokenExp time.Time `json:"-"`
+	RefreshToken    string    `json:"refreshToken"`
+	RefreshTokenExp time.Time `json:"refreshTokenExp"`
 }

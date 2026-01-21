@@ -14,6 +14,9 @@ func (uc *SessionUC) VerifyAuth(ctx context.Context, auth *basedto.Auth, accessC
 		return apperrors.New(apperrors.ErrForbidden).
 			WithMsgLog("refresh token is not allowed")
 	}
+	if accessCheck == nil {
+		return nil
+	}
 
 	// Requested action is higher than the one limited within the session settings
 	limitAccess := auth.User.AuthClaims.AccessAction
@@ -22,9 +25,6 @@ func (uc *SessionUC) VerifyAuth(ctx context.Context, auth *basedto.Auth, accessC
 			WithMsgLog("requested action is not allowed by session settings")
 	}
 	if auth.User.Role == base.UserRoleAdmin {
-		return nil
-	}
-	if accessCheck == nil {
 		return nil
 	}
 

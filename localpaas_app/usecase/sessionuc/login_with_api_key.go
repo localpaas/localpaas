@@ -12,7 +12,7 @@ func (uc *SessionUC) LoginWithAPIKey(
 	ctx context.Context,
 	req *sessiondto.LoginWithAPIKeyReq,
 ) (resp *sessiondto.LoginWithAPIKeyResp, err error) {
-	apiKeySetting, err := uc.settingRepo.GetByName(ctx, uc.db, base.SettingTypeAPIKey, req.KeyID, false)
+	apiKeySetting, err := uc.settingRepo.GetByKind(ctx, uc.db, base.SettingTypeAPIKey, req.KeyID, false)
 	if err != nil {
 		return nil, uc.wrapSensitiveError(err)
 	}
@@ -46,10 +46,7 @@ func (uc *SessionUC) LoginWithAPIKey(
 
 	return &sessiondto.LoginWithAPIKeyResp{
 		Data: &sessiondto.LoginWithAPIKeyDataResp{
-			AccessToken:     sessionData.AccessToken,
-			AccessTokenExp:  sessionData.AccessTokenExp,
-			RefreshToken:    sessionData.RefreshToken,
-			RefreshTokenExp: sessionData.RefreshTokenExp,
+			Session: sessionData,
 		},
 	}, nil
 }

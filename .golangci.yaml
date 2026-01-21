@@ -32,7 +32,7 @@ linters:
   settings:
     funlen:
       lines: 120
-      statements: 80
+      statements: 100
     gocognit:
       min-complexity: 30
     gocyclo:

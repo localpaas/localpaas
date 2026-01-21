@@ -21,14 +21,32 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc/ssldto"
 )
 
+type UpdateSettingOptions struct {
+	PreRequestHandler func(auth *basedto.Auth, req any) error
+}
+
+type UpdateSettingOption func(*UpdateSettingOptions)
+
+func UpdateSettingPreRequestHandler(fn func(auth *basedto.Auth, req any) error) UpdateSettingOption {
+	return func(opts *UpdateSettingOptions) {
+		opts.PreRequestHandler = fn
+	}
+}
+
 func (h *BaseSettingHandler) UpdateSetting(
 	ctx *gin.Context,
 	resType base.ResourceType,
 	scope base.SettingScope,
+	opts ...UpdateSettingOption,
 ) {
 	var auth *basedto.Auth
 	var projectID, appID, itemID string
 	var err error
+
+	options := &UpdateSettingOptions{}
+	for _, o := range opts {
+		o(options)
+	}
 
 	switch scope {
 	case base.SettingScopeGlobal:
@@ -121,6 +139,13 @@ func (h *BaseSettingHandler) UpdateSetting(
 	if err = h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
+	}
+
+	if options.PreRequestHandler != nil {
+		if err = options.PreRequestHandler(auth, req); err != nil {
+			h.RenderError(ctx, err)
+			return
+		}
 	}
 
 	resp, err := ucFunc()

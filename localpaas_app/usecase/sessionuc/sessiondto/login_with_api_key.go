@@ -1,8 +1,6 @@
 package sessiondto
 
 import (
-	"time"
-
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -36,8 +34,5 @@ type LoginWithAPIKeyResp struct {
 }
 
 type LoginWithAPIKeyDataResp struct {
-	AccessToken     string    `json:"accessToken"`
-	AccessTokenExp  time.Time `json:"accessTokenExp"`
-	RefreshToken    string    `json:"refreshToken"`
-	RefreshTokenExp time.Time `json:"refreshTokenExp"`
+	Session *BaseCreateSessionResp `json:"session"`
 }

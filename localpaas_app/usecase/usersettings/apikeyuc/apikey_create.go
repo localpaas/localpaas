@@ -45,6 +45,7 @@ func (uc *APIKeyUC) CreateAPIKey(
 			pData *settings.PersistingSettingCreationData,
 		) error {
 			pData.Setting.ObjectID = actingUser.ID
+			pData.Setting.Kind = keyID
 			pData.Setting.ExpireAt = req.ExpireAt
 			err := pData.Setting.SetData(&entity.APIKey{
 				KeyID:        keyID,

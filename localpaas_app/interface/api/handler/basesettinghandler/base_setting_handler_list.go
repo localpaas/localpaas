@@ -22,14 +22,32 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc/apikeydto"
 )
 
+type ListSettingOptions struct {
+	PreRequestHandler func(auth *basedto.Auth, req any) error
+}
+
+type ListSettingOption func(*ListSettingOptions)
+
+func ListSettingPreRequestHandler(fn func(auth *basedto.Auth, req any) error) ListSettingOption {
+	return func(opts *ListSettingOptions) {
+		opts.PreRequestHandler = fn
+	}
+}
+
 func (h *BaseSettingHandler) ListSetting(
 	ctx *gin.Context,
 	resType base.ResourceType,
 	scope base.SettingScope,
+	opts ...ListSettingOption,
 ) {
 	var auth *basedto.Auth
 	var projectID, appID string
 	var err error
+
+	options := &ListSettingOptions{}
+	for _, o := range opts {
+		o(options)
+	}
 
 	switch scope {
 	case base.SettingScopeGlobal:
@@ -121,6 +139,13 @@ func (h *BaseSettingHandler) ListSetting(
 	if err = h.ParseAndValidateRequest(ctx, req, paging); err != nil {
 		h.RenderError(ctx, err)
 		return
+	}
+
+	if options.PreRequestHandler != nil {
+		if err = options.PreRequestHandler(auth, req); err != nil {
+			h.RenderError(ctx, err)
+			return
+		}
 	}
 
 	resp, err := ucFunc()

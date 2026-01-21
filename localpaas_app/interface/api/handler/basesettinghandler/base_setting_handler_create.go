@@ -22,14 +22,32 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc/apikeydto"
 )
 
+type CreateSettingOptions struct {
+	PreRequestHandler func(auth *basedto.Auth, req any) error
+}
+
+type CreateSettingOption func(*CreateSettingOptions)
+
+func CreateSettingPreRequestHandler(fn func(auth *basedto.Auth, req any) error) CreateSettingOption {
+	return func(opts *CreateSettingOptions) {
+		opts.PreRequestHandler = fn
+	}
+}
+
 func (h *BaseSettingHandler) CreateSetting(
 	ctx *gin.Context,
 	resType base.ResourceType,
 	scope base.SettingScope,
+	opts ...CreateSettingOption,
 ) {
 	var auth *basedto.Auth
 	var projectID, appID string
 	var err error
+
+	options := &CreateSettingOptions{}
+	for _, o := range opts {
+		o(options)
+	}
 
 	switch scope {
 	case base.SettingScopeGlobal:
@@ -120,6 +138,13 @@ func (h *BaseSettingHandler) CreateSetting(
 	if err = h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
+	}
+
+	if options.PreRequestHandler != nil {
+		if err = options.PreRequestHandler(auth, req); err != nil {
+			h.RenderError(ctx, err)
+			return
+		}
 	}
 
 	resp, err := ucFunc()

@@ -26,10 +26,16 @@ func (h *BaseSettingHandler) UpdateSettingMeta(
 	ctx *gin.Context,
 	resType base.ResourceType,
 	scope base.SettingScope,
+	opts ...UpdateSettingOption,
 ) {
 	var auth *basedto.Auth
 	var projectID, appID, itemID string
 	var err error
+
+	options := &UpdateSettingOptions{}
+	for _, o := range opts {
+		o(options)
+	}
 
 	switch scope {
 	case base.SettingScopeGlobal:
@@ -120,6 +126,13 @@ func (h *BaseSettingHandler) UpdateSettingMeta(
 	if err = h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
+	}
+
+	if options.PreRequestHandler != nil {
+		if err = options.PreRequestHandler(auth, req); err != nil {
+			h.RenderError(ctx, err)
+			return
+		}
 	}
 
 	resp, err := ucFunc()

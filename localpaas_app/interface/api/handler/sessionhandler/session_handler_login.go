@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tiendc/gofn"
@@ -166,10 +165,6 @@ func (h *SessionHandler) writeSessionDataToCookies(ctx *gin.Context, sessionResp
 	refreshAge := int(sessionResp.RefreshTokenExp.Sub(timeNow).Seconds())
 	ctx.SetCookie(cookieRefreshToken, sessionResp.RefreshToken, refreshAge, refreshPath, "",
 		secure, cookieRefreshHTTPOnly)
-
-	// Unsets refresh token fields from the data (maybe unnecessary, but better do it)
-	sessionResp.RefreshToken = ""
-	sessionResp.RefreshTokenExp = time.Time{}
 }
 
 func (h *SessionHandler) clearSessionDataFromCookies(ctx *gin.Context) {

@@ -93,7 +93,7 @@ func (s *HashField) hash() (string, error) {
 		return "", apperrors.Wrap(err)
 	}
 	s.hashedSecret = cryptoutil.PackSecret(hashedSecret, salt)
-	return hashedSecret, nil
+	return s.hashedSecret, nil
 }
 
 func NewHashField(value string) HashField {

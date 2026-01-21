@@ -22,14 +22,32 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc/apikeydto"
 )
 
+type DeleteSettingOptions struct {
+	PreRequestHandler func(auth *basedto.Auth, req any) error
+}
+
+type DeleteSettingOption func(*DeleteSettingOptions)
+
+func DeleteSettingPreRequestHandler(fn func(auth *basedto.Auth, req any) error) DeleteSettingOption {
+	return func(opts *DeleteSettingOptions) {
+		opts.PreRequestHandler = fn
+	}
+}
+
 func (h *BaseSettingHandler) DeleteSetting(
 	ctx *gin.Context,
 	resType base.ResourceType,
 	scope base.SettingScope,
+	opts ...DeleteSettingOption,
 ) {
 	var auth *basedto.Auth
 	var projectID, appID, itemID string
 	var err error
+
+	options := &DeleteSettingOptions{}
+	for _, o := range opts {
+		o(options)
+	}
 
 	switch scope {
 	case base.SettingScopeGlobal:
@@ -120,6 +138,13 @@ func (h *BaseSettingHandler) DeleteSetting(
 	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
+	}
+
+	if options.PreRequestHandler != nil {
+		if err = options.PreRequestHandler(auth, req); err != nil {
+			h.RenderError(ctx, err)
+			return
+		}
 	}
 
 	resp, err := ucFunc()

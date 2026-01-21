@@ -1,13 +1,13 @@
 package usersettingshandler
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc/apikeydto"
+	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/basesettinghandler"
+	_ "github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc/apikeydto"
 )
 
 // ListAPIKey Lists API key
@@ -25,25 +25,7 @@ import (
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /users/current/settings/api-keys [get]
 func (h *UserSettingsHandler) ListAPIKey(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := apikeydto.NewListAPIKeyReq()
-	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.APIKeyUC.ListAPIKey(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.ListSetting(ctx, base.ResourceTypeAPIKey, base.SettingScopeUser)
 }
 
 // GetAPIKey Gets API key details
@@ -58,32 +40,7 @@ func (h *UserSettingsHandler) ListAPIKey(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /users/current/settings/api-keys/{id} [get]
 func (h *UserSettingsHandler) GetAPIKey(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := apikeydto.NewGetAPIKeyReq()
-	req.ID = id
-	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.APIKeyUC.GetAPIKey(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.GetSetting(ctx, base.ResourceTypeAPIKey, base.SettingScopeUser)
 }
 
 // CreateAPIKey Creates a new API key
@@ -98,32 +55,15 @@ func (h *UserSettingsHandler) GetAPIKey(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /users/current/settings/api-keys [post]
 func (h *UserSettingsHandler) CreateAPIKey(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	// Not allow to use API key to create API key
-	if auth.User.AuthClaims.IsAPIKey {
-		h.RenderError(ctx, apperrors.New(apperrors.ErrForbidden).
-			WithMsgLog("not allow to create API key by using API key session"))
-		return
-	}
-
-	req := apikeydto.NewCreateAPIKeyReq()
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.APIKeyUC.CreateAPIKey(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusCreated, resp)
+	h.CreateSetting(ctx, base.ResourceTypeAPIKey, base.SettingScopeUser,
+		basesettinghandler.CreateSettingPreRequestHandler(func(auth *basedto.Auth, req any) error {
+			// Not allow to use API key to create API key (TODO: improve this behavior?)
+			if auth.User.AuthClaims.IsAPIKey {
+				return apperrors.New(apperrors.ErrForbidden).
+					WithMsgLog("not allow to create API key by using API key session")
+			}
+			return nil
+		}))
 }
 
 // UpdateAPIKeyMeta Updates API key meta
@@ -139,39 +79,15 @@ func (h *UserSettingsHandler) CreateAPIKey(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /users/current/settings/api-keys/{id}/meta [put]
 func (h *UserSettingsHandler) UpdateAPIKeyMeta(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	// Not allow to use API key to update API key
-	if auth.User.AuthClaims.IsAPIKey {
-		h.RenderError(ctx, apperrors.New(apperrors.ErrForbidden).
-			WithMsgLog("not allow to update API key by using API key session"))
-		return
-	}
-
-	req := apikeydto.NewUpdateAPIKeyMetaReq()
-	req.ID = id
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.APIKeyUC.UpdateAPIKeyMeta(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.UpdateSettingMeta(ctx, base.ResourceTypeAPIKey, base.SettingScopeUser,
+		basesettinghandler.UpdateSettingPreRequestHandler(func(auth *basedto.Auth, req any) error {
+			// Not allow to use API key to update API key (TODO: improve this behavior?)
+			if auth.User.AuthClaims.IsAPIKey {
+				return apperrors.New(apperrors.ErrForbidden).
+					WithMsgLog("not allow to update API key by using API key session")
+			}
+			return nil
+		}))
 }
 
 // DeleteAPIKey Deletes an API key
@@ -186,37 +102,13 @@ func (h *UserSettingsHandler) UpdateAPIKeyMeta(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /users/current/settings/api-keys/{id} [delete]
 func (h *UserSettingsHandler) DeleteAPIKey(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	// Not allow to use API key to delete API key
-	if auth.User.AuthClaims.IsAPIKey {
-		h.RenderError(ctx, apperrors.New(apperrors.ErrForbidden).
-			WithMsgLog("not allow to delete API key by using API key session"))
-		return
-	}
-
-	req := apikeydto.NewDeleteAPIKeyReq()
-	req.ID = id
-	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.APIKeyUC.DeleteAPIKey(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.DeleteSetting(ctx, base.ResourceTypeAPIKey, base.SettingScopeUser,
+		basesettinghandler.DeleteSettingPreRequestHandler(func(auth *basedto.Auth, req any) error {
+			// Not allow to use API key to delete API key (TODO: improve this behavior?)
+			if auth.User.AuthClaims.IsAPIKey {
+				return apperrors.New(apperrors.ErrForbidden).
+					WithMsgLog("not allow to delete API key by using API key session")
+			}
+			return nil
+		}))
 }
