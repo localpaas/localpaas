@@ -48,10 +48,11 @@ func (h *AppHandler) getAuth(
 	return
 }
 
-//nolint:nakedret
+//nolint:nakedret,unparam
 func (h *AppHandler) getAuthForItem(
 	ctx *gin.Context,
 	action base.ActionType,
+	paramName string,
 ) (auth *basedto.Auth, projectID, appID, itemID string, err error) {
 	projectID, err = h.ParseStringParam(ctx, "projectID")
 	if err != nil {
@@ -61,9 +62,11 @@ func (h *AppHandler) getAuthForItem(
 	if err != nil {
 		return
 	}
-	itemID, err = h.ParseStringParam(ctx, "id")
-	if err != nil {
-		return
+	if paramName != "" {
+		itemID, err = h.ParseStringParam(ctx, paramName)
+		if err != nil {
+			return
+		}
 	}
 	auth, err = h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceModule:     base.ResourceModuleProject,

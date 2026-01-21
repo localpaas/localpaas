@@ -13,10 +13,10 @@ func (h *BaseSettingHandler) GetAuthGlobalSettings(
 	ctx *gin.Context,
 	resourceType base.ResourceType,
 	action base.ActionType,
-	getItemID bool,
+	paramName string,
 ) (auth *basedto.Auth, itemID string, err error) {
-	if getItemID {
-		itemID, err = h.ParseStringParam(ctx, "id")
+	if paramName != "" {
+		itemID, err = h.ParseStringParam(ctx, paramName)
 		if err != nil {
 			return
 		}
@@ -36,14 +36,14 @@ func (h *BaseSettingHandler) GetAuthGlobalSettings(
 func (h *BaseSettingHandler) GetAuthUserSettings(
 	ctx *gin.Context,
 	_ base.ActionType,
-	getItemID bool,
+	paramName string,
 ) (auth *basedto.Auth, itemID string, err error) {
 	auth, err = h.AuthHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
 	if err != nil {
 		return
 	}
-	if getItemID {
-		itemID, err = h.ParseStringParam(ctx, "id")
+	if paramName != "" {
+		itemID, err = h.ParseStringParam(ctx, paramName)
 		if err != nil {
 			return
 		}
@@ -54,14 +54,14 @@ func (h *BaseSettingHandler) GetAuthUserSettings(
 func (h *BaseSettingHandler) GetAuthProjectSettings(
 	ctx *gin.Context,
 	action base.ActionType,
-	getItemID bool,
+	paramName string,
 ) (auth *basedto.Auth, projectID, itemID string, err error) {
 	projectID, err = h.ParseStringParam(ctx, "projectID")
 	if err != nil {
 		return
 	}
-	if getItemID {
-		itemID, err = h.ParseStringParam(ctx, "id")
+	if paramName != "" {
+		itemID, err = h.ParseStringParam(ctx, paramName)
 		if err != nil {
 			return
 		}
@@ -82,7 +82,7 @@ func (h *BaseSettingHandler) GetAuthProjectSettings(
 func (h *BaseSettingHandler) GetAuthAppSettings(
 	ctx *gin.Context,
 	action base.ActionType,
-	getItemID bool,
+	paramName string,
 ) (auth *basedto.Auth, projectID, appID, itemID string, err error) {
 	projectID, err = h.ParseStringParam(ctx, "projectID")
 	if err != nil {
@@ -92,8 +92,8 @@ func (h *BaseSettingHandler) GetAuthAppSettings(
 	if err != nil {
 		return
 	}
-	if getItemID {
-		itemID, err = h.ParseStringParam(ctx, "id")
+	if paramName != "" {
+		itemID, err = h.ParseStringParam(ctx, paramName)
 		if err != nil {
 			return
 		}

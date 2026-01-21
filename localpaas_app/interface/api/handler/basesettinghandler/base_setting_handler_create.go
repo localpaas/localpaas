@@ -51,13 +51,13 @@ func (h *BaseSettingHandler) CreateSetting(
 
 	switch scope {
 	case base.SettingScopeGlobal:
-		auth, _, err = h.GetAuthGlobalSettings(ctx, resType, base.ActionTypeWrite, false)
+		auth, _, err = h.GetAuthGlobalSettings(ctx, resType, base.ActionTypeWrite, "")
 	case base.SettingScopeProject:
-		auth, projectID, _, err = h.GetAuthProjectSettings(ctx, base.ActionTypeWrite, false)
+		auth, projectID, _, err = h.GetAuthProjectSettings(ctx, base.ActionTypeWrite, "")
 	case base.SettingScopeApp:
-		auth, projectID, appID, _, err = h.GetAuthAppSettings(ctx, base.ActionTypeWrite, false)
+		auth, projectID, appID, _, err = h.GetAuthAppSettings(ctx, base.ActionTypeWrite, "")
 	case base.SettingScopeUser:
-		auth, _, err = h.GetAuthUserSettings(ctx, base.ActionTypeWrite, false)
+		auth, _, err = h.GetAuthUserSettings(ctx, base.ActionTypeWrite, "")
 	}
 	if err != nil {
 		h.RenderError(ctx, err)

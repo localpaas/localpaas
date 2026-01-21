@@ -7,7 +7,6 @@ import (
 
 	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc/userdto"
 )
 
@@ -24,18 +23,7 @@ import (
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /users/{userID} [put]
 func (h *UserHandler) UpdateUser(ctx *gin.Context) {
-	userID, err := h.ParseStringParam(ctx, "userID")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleUser,
-		ResourceType:   base.ResourceTypeUser,
-		ResourceID:     userID,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, userID, err := h.getAuth(ctx, base.ResourceTypeUser, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -69,18 +57,7 @@ func (h *UserHandler) UpdateUser(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /users/{userID} [delete]
 func (h *UserHandler) DeleteUser(ctx *gin.Context) {
-	userID, err := h.ParseStringParam(ctx, "userID")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleUser,
-		ResourceType:   base.ResourceTypeUser,
-		ResourceID:     userID,
-		Action:         base.ActionTypeDelete,
-	})
+	auth, userID, err := h.getAuth(ctx, base.ResourceTypeUser, base.ActionTypeDelete, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

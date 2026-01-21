@@ -8,7 +8,6 @@ import (
 	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
-	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc/userdto"
 )
 
@@ -58,16 +57,7 @@ func (h *UserHandler) UpdateUserPassword(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /users/{userID}/password/request-reset [post]
 func (h *UserHandler) RequestResetPassword(ctx *gin.Context) {
-	userID, err := h.ParseStringParam(ctx, "userID")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleUser,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, userID, err := h.getAuth(ctx, "", base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

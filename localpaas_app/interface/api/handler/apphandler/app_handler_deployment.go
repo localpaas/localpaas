@@ -28,7 +28,7 @@ import (
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/apps/{appID}/deployments/{id} [get]
 func (h *AppHandler) GetAppDeployment(ctx *gin.Context) {
-	auth, projectID, appID, itemID, err := h.getAuthForItem(ctx, base.ActionTypeRead)
+	auth, projectID, appID, itemID, err := h.getAuthForItem(ctx, base.ActionTypeRead, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -111,7 +111,7 @@ func (h *AppHandler) ListAppDeployment(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/apps/{appID}/deployments/{id}/logs [get]
 func (h *AppHandler) GetAppDeploymentLogs(ctx *gin.Context, mel *melody.Melody) {
-	auth, projectID, appID, itemID, err := h.getAuthForItem(ctx, base.ActionTypeRead)
+	auth, projectID, appID, itemID, err := h.getAuthForItem(ctx, base.ActionTypeRead, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -173,7 +173,7 @@ func (h *AppHandler) GetAppDeploymentLogs(ctx *gin.Context, mel *melody.Melody) 
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/apps/{appID}/deployments/{id}/cancel [post]
 func (h *AppHandler) CancelAppDeployment(ctx *gin.Context) {
-	auth, projectID, appID, itemID, err := h.getAuthForItem(ctx, base.ActionTypeWrite)
+	auth, projectID, appID, itemID, err := h.getAuthForItem(ctx, base.ActionTypeWrite, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

@@ -7,7 +7,6 @@ import (
 
 	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/volumeuc/volumedto"
 )
 
@@ -27,11 +26,7 @@ import (
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /cluster/volumes [get]
 func (h *ClusterHandler) ListVolume(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleCluster,
-		ResourceType:   base.ResourceTypeVolume,
-		Action:         base.ActionTypeRead,
-	})
+	auth, _, err := h.getAuth(ctx, base.ResourceTypeVolume, base.ActionTypeRead, "")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -64,18 +59,7 @@ func (h *ClusterHandler) ListVolume(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /cluster/volumes/{volumeID} [get]
 func (h *ClusterHandler) GetVolume(ctx *gin.Context) {
-	volumeID, err := h.ParseStringParam(ctx, "volumeID")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleCluster,
-		ResourceType:   base.ResourceTypeVolume,
-		ResourceID:     volumeID,
-		Action:         base.ActionTypeRead,
-	})
+	auth, volumeID, err := h.getAuth(ctx, base.ResourceTypeVolume, base.ActionTypeRead, "volumeID")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -109,18 +93,7 @@ func (h *ClusterHandler) GetVolume(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /cluster/volumes/{volumeID}/inspect [get]
 func (h *ClusterHandler) GetVolumeInspection(ctx *gin.Context) {
-	volumeID, err := h.ParseStringParam(ctx, "volumeID")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleCluster,
-		ResourceType:   base.ResourceTypeVolume,
-		ResourceID:     volumeID,
-		Action:         base.ActionTypeRead,
-	})
+	auth, volumeID, err := h.getAuth(ctx, base.ResourceTypeVolume, base.ActionTypeRead, "volumeID")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -154,11 +127,7 @@ func (h *ClusterHandler) GetVolumeInspection(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /cluster/volumes [post]
 func (h *ClusterHandler) CreateVolume(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleCluster,
-		ResourceType:   base.ResourceTypeVolume,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, _, err := h.getAuth(ctx, base.ResourceTypeVolume, base.ActionTypeWrite, "")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -192,18 +161,7 @@ func (h *ClusterHandler) CreateVolume(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /cluster/volumes/{volumeID} [delete]
 func (h *ClusterHandler) DeleteVolume(ctx *gin.Context) {
-	volumeID, err := h.ParseStringParam(ctx, "volumeID")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleCluster,
-		ResourceType:   base.ResourceTypeVolume,
-		ResourceID:     volumeID,
-		Action:         base.ActionTypeDelete,
-	})
+	auth, volumeID, err := h.getAuth(ctx, base.ResourceTypeVolume, base.ActionTypeDelete, "volumeID")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

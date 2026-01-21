@@ -51,13 +51,13 @@ func (h *BaseSettingHandler) GetSetting(
 
 	switch scope {
 	case base.SettingScopeGlobal:
-		auth, itemID, err = h.GetAuthGlobalSettings(ctx, resType, base.ActionTypeRead, true)
+		auth, itemID, err = h.GetAuthGlobalSettings(ctx, resType, base.ActionTypeRead, "id")
 	case base.SettingScopeProject:
-		auth, projectID, itemID, err = h.GetAuthProjectSettings(ctx, base.ActionTypeRead, true)
+		auth, projectID, itemID, err = h.GetAuthProjectSettings(ctx, base.ActionTypeRead, "id")
 	case base.SettingScopeApp:
-		auth, projectID, appID, itemID, err = h.GetAuthAppSettings(ctx, base.ActionTypeRead, true)
+		auth, projectID, appID, itemID, err = h.GetAuthAppSettings(ctx, base.ActionTypeRead, "id")
 	case base.SettingScopeUser:
-		auth, itemID, err = h.GetAuthUserSettings(ctx, base.ActionTypeRead, true)
+		auth, itemID, err = h.GetAuthUserSettings(ctx, base.ActionTypeRead, "id")
 	}
 	if err != nil {
 		h.RenderError(ctx, err)

@@ -7,7 +7,6 @@ import (
 
 	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc/userdto"
 )
 
@@ -27,11 +26,7 @@ import (
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /users/base [get]
 func (h *UserHandler) ListUserBase(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleUser,
-		ResourceType:   base.ResourceTypeUser,
-		Action:         base.ActionTypeRead,
-	})
+	auth, _, err := h.getAuth(ctx, base.ResourceTypeUser, base.ActionTypeRead, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -65,18 +60,7 @@ func (h *UserHandler) ListUserBase(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /users/{userID} [get]
 func (h *UserHandler) GetUser(ctx *gin.Context) {
-	userID, err := h.ParseStringParam(ctx, "userID")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleUser,
-		ResourceType:   base.ResourceTypeUser,
-		ResourceID:     userID,
-		Action:         base.ActionTypeRead,
-	})
+	auth, userID, err := h.getAuth(ctx, base.ResourceTypeUser, base.ActionTypeRead, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -114,11 +98,7 @@ func (h *UserHandler) GetUser(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /users [get]
 func (h *UserHandler) ListUser(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleUser,
-		ResourceType:   base.ResourceTypeUser,
-		Action:         base.ActionTypeRead,
-	})
+	auth, _, err := h.getAuth(ctx, base.ResourceTypeUser, base.ActionTypeRead, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

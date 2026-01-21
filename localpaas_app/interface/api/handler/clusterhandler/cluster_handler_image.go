@@ -7,7 +7,6 @@ import (
 
 	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/imageuc/imagedto"
 )
 
@@ -27,11 +26,7 @@ import (
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /cluster/images [get]
 func (h *ClusterHandler) ListImage(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleCluster,
-		ResourceType:   base.ResourceTypeImage,
-		Action:         base.ActionTypeRead,
-	})
+	auth, _, err := h.getAuth(ctx, base.ResourceTypeImage, base.ActionTypeRead, "")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -64,18 +59,7 @@ func (h *ClusterHandler) ListImage(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /cluster/images/{imageID} [get]
 func (h *ClusterHandler) GetImage(ctx *gin.Context) {
-	imageID, err := h.ParseStringParam(ctx, "imageID")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleCluster,
-		ResourceType:   base.ResourceTypeImage,
-		ResourceID:     imageID,
-		Action:         base.ActionTypeRead,
-	})
+	auth, imageID, err := h.getAuth(ctx, base.ResourceTypeImage, base.ActionTypeRead, "imageID")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -109,18 +93,7 @@ func (h *ClusterHandler) GetImage(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /cluster/images/{imageID}/inspect [get]
 func (h *ClusterHandler) GetImageInspection(ctx *gin.Context) {
-	imageID, err := h.ParseStringParam(ctx, "imageID")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleCluster,
-		ResourceType:   base.ResourceTypeImage,
-		ResourceID:     imageID,
-		Action:         base.ActionTypeRead,
-	})
+	auth, imageID, err := h.getAuth(ctx, base.ResourceTypeImage, base.ActionTypeRead, "imageID")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -154,11 +127,7 @@ func (h *ClusterHandler) GetImageInspection(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /cluster/images [post]
 func (h *ClusterHandler) CreateImage(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleCluster,
-		ResourceType:   base.ResourceTypeImage,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, _, err := h.getAuth(ctx, base.ResourceTypeImage, base.ActionTypeWrite, "")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -191,18 +160,7 @@ func (h *ClusterHandler) CreateImage(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /cluster/images/{imageID} [delete]
 func (h *ClusterHandler) DeleteImage(ctx *gin.Context) {
-	imageID, err := h.ParseStringParam(ctx, "imageID")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleCluster,
-		ResourceType:   base.ResourceTypeImage,
-		ResourceID:     imageID,
-		Action:         base.ActionTypeDelete,
-	})
+	auth, imageID, err := h.getAuth(ctx, base.ResourceTypeImage, base.ActionTypeDelete, "imageID")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

@@ -97,7 +97,7 @@ func (h *AppHandler) CreateAppSecret(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/apps/{appID}/secrets/{id} [delete]
 func (h *AppHandler) DeleteAppSecret(ctx *gin.Context) {
-	auth, projectID, appID, itemID, err := h.getAuthForItem(ctx, base.ActionTypeWrite)
+	auth, projectID, appID, itemID, err := h.getAuthForItem(ctx, base.ActionTypeWrite, "id")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

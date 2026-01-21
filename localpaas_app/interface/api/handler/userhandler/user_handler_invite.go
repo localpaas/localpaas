@@ -7,7 +7,6 @@ import (
 
 	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc/userdto"
 )
 
@@ -23,10 +22,7 @@ import (
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /users/invite [post]
 func (h *UserHandler) InviteUser(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
-		ResourceModule: base.ResourceModuleUser,
-		Action:         base.ActionTypeWrite,
-	})
+	auth, _, err := h.getAuth(ctx, "", base.ActionTypeWrite, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
