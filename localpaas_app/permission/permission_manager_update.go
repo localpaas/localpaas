@@ -9,7 +9,11 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 )
 
-func (p *manager) UpdateACLPermissions(ctx context.Context, db database.IDB, perms []*entity.ACLPermission) error {
+func (p *manager) UpdateACLPermissions(
+	ctx context.Context,
+	db database.IDB,
+	perms []*entity.ACLPermission,
+) error {
 	err := p.aclPermissionRepo.UpsertMulti(ctx, db, perms,
 		entity.ACLPermissionUpsertingConflictCols, entity.ACLPermissionUpsertingUpdateCols)
 	if err != nil {
@@ -18,7 +22,11 @@ func (p *manager) UpdateACLPermissions(ctx context.Context, db database.IDB, per
 	return nil
 }
 
-func (p *manager) RemoveACLPermissions(ctx context.Context, db database.IDB, perms []*base.PermissionResource) error {
+func (p *manager) RemoveACLPermissions(
+	ctx context.Context,
+	db database.IDB,
+	perms []*base.PermissionResource,
+) error {
 	err := p.aclPermissionRepo.DeleteByResources(ctx, db, perms)
 	if err != nil {
 		return apperrors.Wrap(err)

@@ -25,8 +25,12 @@ type AccessCheck struct {
 }
 
 //nolint:gocognit
-func (p *manager) CheckAccess(ctx context.Context, db database.IDB, auth *basedto.Auth,
-	check *AccessCheck) (hasPerm bool, err error) {
+func (p *manager) CheckAccess(
+	ctx context.Context,
+	db database.IDB,
+	auth *basedto.Auth,
+	check *AccessCheck,
+) (hasPerm bool, err error) {
 	modPerms, parentPerms, objPerms, err := p.loadPermissions(ctx, db, check)
 	if err != nil {
 		return false, apperrors.Wrap(err)
@@ -79,8 +83,12 @@ func (p *manager) CheckAccess(ctx context.Context, db database.IDB, auth *basedt
 	return hasPerm, nil
 }
 
-func (p *manager) loadPermissions(ctx context.Context, db database.IDB, check *AccessCheck,
-	opts ...bunex.SelectQueryOption) (modPerms, parentPerms, objPerms []*entity.ACLPermission, err error) {
+func (p *manager) loadPermissions(
+	ctx context.Context,
+	db database.IDB,
+	check *AccessCheck,
+	opts ...bunex.SelectQueryOption,
+) (modPerms, parentPerms, objPerms []*entity.ACLPermission, err error) {
 	var resources []*base.PermissionResource
 	if check.ResourceModule != "" {
 		resources = append(resources, &base.PermissionResource{
@@ -139,8 +147,13 @@ func (p *manager) hasPermission(perm *entity.ACLPermission, action base.ActionTy
 	return false
 }
 
-func (p *manager) LoadObjectAccesses(ctx context.Context, db database.IDB, check *AccessCheck, sort bool,
-	extraLoadOpts ...bunex.SelectQueryOption) ([]*entity.ACLPermission, error) {
+func (p *manager) LoadObjectAccesses(
+	ctx context.Context,
+	db database.IDB,
+	check *AccessCheck,
+	sort bool,
+	extraLoadOpts ...bunex.SelectQueryOption,
+) ([]*entity.ACLPermission, error) {
 	if check.ResourceID == "" {
 		return nil, nil
 	}

@@ -9,7 +9,11 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 )
 
-func (uc *SessionUC) VerifyAuth(ctx context.Context, auth *basedto.Auth, accessCheck *permission.AccessCheck) error {
+func (uc *SessionUC) VerifyAuth(
+	ctx context.Context,
+	auth *basedto.Auth,
+	accessCheck *permission.AccessCheck,
+) error {
 	if auth.User.AuthClaims.IsRefresh {
 		return apperrors.New(apperrors.ErrForbidden).
 			WithMsgLog("refresh token is not allowed")
