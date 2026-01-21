@@ -51,6 +51,9 @@ ERR_PASSWORD_RESET_TOKEN_INVALID = "Password reset token is invalid or expired"
 ERR_EMAIL_UNAVAILABLE = "Email address is not available"
 ERR_EMAIL_CHANGE_UNALLOWED = "Email changing is not allowed"
 
+# Settings errors
+ERR_GLOBAL_SETTING_REQUIRED = "Global setting is required"
+
 # Infra errors
 ERR_INFRA = "{{.Error}}"
 ERR_INFRA_ACTION_FAILED = "{{.Error}}"

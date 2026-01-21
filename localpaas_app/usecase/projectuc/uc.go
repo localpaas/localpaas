@@ -11,15 +11,16 @@ import (
 )
 
 type ProjectUC struct {
-	db                *database.DB
-	userRepo          repository.UserRepo
-	projectRepo       repository.ProjectRepo
-	settingRepo       repository.SettingRepo
-	permissionManager permission.Manager
-	userService       userservice.UserService
-	projectService    projectservice.ProjectService
-	networkService    networkservice.NetworkService
-	dockerManager     *docker.Manager
+	db                       *database.DB
+	userRepo                 repository.UserRepo
+	projectRepo              repository.ProjectRepo
+	settingRepo              repository.SettingRepo
+	projectSharedSettingRepo repository.ProjectSharedSettingRepo
+	permissionManager        permission.Manager
+	userService              userservice.UserService
+	projectService           projectservice.ProjectService
+	networkService           networkservice.NetworkService
+	dockerManager            *docker.Manager
 }
 
 func NewProjectUC(
@@ -27,6 +28,7 @@ func NewProjectUC(
 	userRepo repository.UserRepo,
 	projectRepo repository.ProjectRepo,
 	settingRepo repository.SettingRepo,
+	projectSharedSettingRepo repository.ProjectSharedSettingRepo,
 	permissionManager permission.Manager,
 	userService userservice.UserService,
 	projectService projectservice.ProjectService,
@@ -34,14 +36,15 @@ func NewProjectUC(
 	dockerManager *docker.Manager,
 ) *ProjectUC {
 	return &ProjectUC{
-		db:                db,
-		userRepo:          userRepo,
-		projectRepo:       projectRepo,
-		settingRepo:       settingRepo,
-		permissionManager: permissionManager,
-		userService:       userService,
-		projectService:    projectService,
-		networkService:    networkService,
-		dockerManager:     dockerManager,
+		db:                       db,
+		userRepo:                 userRepo,
+		projectRepo:              projectRepo,
+		settingRepo:              settingRepo,
+		projectSharedSettingRepo: projectSharedSettingRepo,
+		permissionManager:        permissionManager,
+		userService:              userService,
+		projectService:           projectService,
+		networkService:           networkService,
+		dockerManager:            dockerManager,
 	}
 }

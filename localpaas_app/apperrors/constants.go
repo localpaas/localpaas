@@ -65,6 +65,11 @@ var (
 	ErrEmailChangeUnallowed        = errors.New("ERR_EMAIL_CHANGE_UNALLOWED")
 )
 
+// Errors for settings
+var (
+	ErrGlobalSettingRequired = errors.New("ERR_GLOBAL_SETTING_REQUIRED")
+)
+
 // nolint Errors from infrastructure
 var (
 	ErrInfra                   = errors.New("ERR_INFRA")
@@ -144,6 +149,9 @@ var errorStatusMap = map[error]int{
 	ErrPasswordResetTokenInvalid:   http.StatusNotAcceptable,
 	ErrEmailUnavailable:            http.StatusUnprocessableEntity,
 	ErrEmailChangeUnallowed:        http.StatusUnprocessableEntity,
+
+	// Settings errors
+	ErrGlobalSettingRequired: http.StatusUnprocessableEntity,
 
 	// Errors from infrastructure
 	ErrInfra:                   http.StatusInternalServerError,

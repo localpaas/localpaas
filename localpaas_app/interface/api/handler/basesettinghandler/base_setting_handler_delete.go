@@ -22,7 +22,11 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc/apikeydto"
 )
 
-func (h *BaseSettingHandler) DeleteSetting(ctx *gin.Context, resType base.ResourceType, scope base.SettingScope) {
+func (h *BaseSettingHandler) DeleteSetting(
+	ctx *gin.Context,
+	resType base.ResourceType,
+	scope base.SettingScope,
+) {
 	var auth *basedto.Auth
 	var projectID, appID, itemID string
 	var err error
@@ -30,12 +34,12 @@ func (h *BaseSettingHandler) DeleteSetting(ctx *gin.Context, resType base.Resour
 	switch scope {
 	case base.SettingScopeGlobal:
 		auth, itemID, err = h.GetAuthGlobalSettings(ctx, resType, base.ActionTypeDelete, true)
-	case base.SettingScopeUser:
-		auth, itemID, err = h.GetAuthUserSettings(ctx, base.ActionTypeWrite, true)
 	case base.SettingScopeProject:
 		auth, projectID, itemID, err = h.GetAuthProjectSettings(ctx, base.ActionTypeWrite, true)
 	case base.SettingScopeApp:
 		auth, projectID, appID, itemID, err = h.GetAuthAppSettings(ctx, base.ActionTypeWrite, true)
+	case base.SettingScopeUser:
+		auth, itemID, err = h.GetAuthUserSettings(ctx, base.ActionTypeWrite, true)
 	}
 	if err != nil {
 		h.RenderError(ctx, err)

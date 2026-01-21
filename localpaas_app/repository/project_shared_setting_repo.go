@@ -22,6 +22,9 @@ type ProjectSharedSettingRepo interface {
 		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
 	Update(ctx context.Context, db database.IDB, projectSharedSetting *entity.ProjectSharedSetting,
 		opts ...bunex.UpdateQueryOption) error
+
+	DeleteAllBySetting(ctx context.Context, db database.IDB, settingID string,
+		opts ...bunex.DeleteQueryOption) error
 }
 
 type projectSharedSettingRepo struct {
@@ -99,6 +102,19 @@ func (repo *projectSharedSettingRepo) Update(ctx context.Context, db database.ID
 	projectSharedSetting *entity.ProjectSharedSetting, opts ...bunex.UpdateQueryOption) error {
 	query := db.NewUpdate().Model(projectSharedSetting).WherePK()
 	query = bunex.ApplyUpdate(query, opts...)
+
+	_, err := query.Exec(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (repo *projectSharedSettingRepo) DeleteAllBySetting(ctx context.Context, db database.IDB,
+	settingID string, opts ...bunex.DeleteQueryOption) error {
+	query := db.NewDelete().Model((*entity.ProjectSharedSetting)(nil)).
+		Where("project_shared_setting.setting_id = ?", settingID)
+	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)
 	if err != nil {

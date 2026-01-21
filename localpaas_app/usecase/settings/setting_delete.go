@@ -151,13 +151,25 @@ func persistSettingDeletion(
 		err = data.ProjectSharedSettingRepo.Update(ctx, db, persistingData.ProjectSharedSetting,
 			bunex.UpdateColumns("deleted_at"),
 		)
-	} else {
-		err = data.SettingRepo.Update(ctx, db, persistingData.Setting,
-			bunex.UpdateColumns("deleted_at"),
-		)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+		return nil
 	}
+
+	err = data.SettingRepo.Update(ctx, db, persistingData.Setting,
+		bunex.UpdateColumns("deleted_at"),
+	)
 	if err != nil {
 		return apperrors.Wrap(err)
+	}
+
+	// If deleted item is global, delete all references from projects
+	if persistingData.Setting.ObjectID == "" {
+		err = data.ProjectSharedSettingRepo.DeleteAllBySetting(ctx, db, persistingData.Setting.ID)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
 	return nil
 }

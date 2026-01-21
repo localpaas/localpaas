@@ -22,7 +22,11 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc/apikeydto"
 )
 
-func (h *BaseSettingHandler) CreateSetting(ctx *gin.Context, resType base.ResourceType, scope base.SettingScope) {
+func (h *BaseSettingHandler) CreateSetting(
+	ctx *gin.Context,
+	resType base.ResourceType,
+	scope base.SettingScope,
+) {
 	var auth *basedto.Auth
 	var projectID, appID string
 	var err error
@@ -30,12 +34,12 @@ func (h *BaseSettingHandler) CreateSetting(ctx *gin.Context, resType base.Resour
 	switch scope {
 	case base.SettingScopeGlobal:
 		auth, _, err = h.GetAuthGlobalSettings(ctx, resType, base.ActionTypeWrite, false)
-	case base.SettingScopeUser:
-		auth, _, err = h.GetAuthUserSettings(ctx, base.ActionTypeWrite, false)
 	case base.SettingScopeProject:
 		auth, projectID, _, err = h.GetAuthProjectSettings(ctx, base.ActionTypeWrite, false)
 	case base.SettingScopeApp:
 		auth, projectID, appID, _, err = h.GetAuthAppSettings(ctx, base.ActionTypeWrite, false)
+	case base.SettingScopeUser:
+		auth, _, err = h.GetAuthUserSettings(ctx, base.ActionTypeWrite, false)
 	}
 	if err != nil {
 		h.RenderError(ctx, err)
