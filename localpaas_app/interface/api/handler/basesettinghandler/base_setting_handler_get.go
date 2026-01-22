@@ -120,7 +120,7 @@ func (h *BaseSettingHandler) GetSetting(
 
 	case base.ResourceTypeAPIKey:
 		r := apikeydto.NewGetAPIKeyReq()
-		r.ID = itemID
+		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.APIKeyUC.GetAPIKey(reqCtx, auth, r) }
 
 	case base.ResourceTypeSlack:
