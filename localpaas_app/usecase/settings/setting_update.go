@@ -4,6 +4,8 @@ import (
 	"context"
 	"strings"
 
+	"github.com/tiendc/gofn"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -17,8 +19,9 @@ import (
 
 type UpdateSettingReq struct {
 	BaseSettingReq
-	ID        string `json:"-"`
-	UpdateVer int    `json:"updateVer"`
+	ID              string `json:"-"`
+	AvailInProjects bool   `json:"availableInProjects"`
+	UpdateVer       int    `json:"updateVer"`
 }
 
 type UpdateSettingResp struct {
@@ -132,12 +135,13 @@ func loadSettingForUpdate(
 }
 
 func prepareSettingUpdate(
-	_ *UpdateSettingReq,
+	req *UpdateSettingReq,
 	data *UpdateSettingData,
 	persistingData *PersistingSettingData,
 ) {
 	timeNow := timeutil.NowUTC()
 	setting := data.Setting
+	setting.AvailInProjects = gofn.If(req.Scope != base.SettingScopeGlobal, false, req.AvailInProjects)
 	setting.UpdateVer++
 	setting.UpdatedAt = timeNow
 

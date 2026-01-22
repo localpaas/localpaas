@@ -18,6 +18,7 @@ import (
 
 type CreateSettingReq struct {
 	BaseSettingReq
+	AvailInProjects bool `json:"availableInProjects"`
 }
 
 type CreateSettingResp struct {
@@ -116,14 +117,15 @@ func prepareSettingCreation(
 ) {
 	timeNow := timeutil.NowUTC()
 	setting := &entity.Setting{
-		ID:        gofn.Must(ulid.NewStringULID()),
-		Type:      req.Type,
-		Status:    base.SettingStatusActive,
-		Name:      data.VerifyingName,
-		ObjectID:  req.ObjectID,
-		Version:   data.Version,
-		CreatedAt: timeNow,
-		UpdatedAt: timeNow,
+		ID:              gofn.Must(ulid.NewStringULID()),
+		Type:            req.Type,
+		Status:          base.SettingStatusActive,
+		Name:            data.VerifyingName,
+		ObjectID:        req.ObjectID,
+		AvailInProjects: gofn.If(req.Scope != base.SettingScopeGlobal, false, req.AvailInProjects),
+		Version:         data.Version,
+		CreatedAt:       timeNow,
+		UpdatedAt:       timeNow,
 	}
 	persistingData.Setting = setting
 }

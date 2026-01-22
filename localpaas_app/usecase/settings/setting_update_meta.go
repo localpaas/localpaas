@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/tiendc/gofn"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -17,10 +19,11 @@ import (
 
 type UpdateSettingMetaReq struct {
 	BaseSettingReq
-	ID        string              `json:"-"`
-	Status    *base.SettingStatus `json:"status"`
-	ExpireAt  *time.Time          `json:"expireAt"`
-	UpdateVer int                 `json:"updateVer"`
+	ID                  string              `json:"-"`
+	Status              *base.SettingStatus `json:"status"`
+	ExpireAt            *time.Time          `json:"expireAt"`
+	AvailableInProjects *bool               `json:"availableInProjects"`
+	UpdateVer           int                 `json:"updateVer"`
 }
 
 type UpdateSettingMetaResp struct {
@@ -132,6 +135,9 @@ func prepareSettingMetaUpdate(
 	if req.ExpireAt != nil {
 		setting.ExpireAt = *req.ExpireAt
 	}
+	if req.AvailableInProjects != nil {
+		setting.AvailInProjects = gofn.If(req.Scope != base.SettingScopeGlobal, false, *req.AvailableInProjects)
+	}
 
 	persistingData.Setting = setting
 }
@@ -143,7 +149,7 @@ func persistSettingMetaUpdate(
 	persistingData *PersistingSettingMetaData,
 ) error {
 	err := data.SettingRepo.Update(ctx, db, persistingData.Setting,
-		bunex.UpdateColumns("update_ver", "updated_at", "status", "expire_at"),
+		bunex.UpdateColumns("update_ver", "updated_at", "status", "expire_at", "avail_in_projects"),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)

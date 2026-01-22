@@ -14469,10 +14469,10 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
         "format" : "int64",
         "type" : "integer",
-        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
+        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentReq" : {
         "type" : "object"
@@ -16725,6 +16725,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_basicauthuc_basicauthdto.BasicAuthResp" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "createdAt" : {
             "type" : "string"
           },
@@ -16765,11 +16768,14 @@
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "id", "inherited", "name", "password", "status", "type", "updateVer", "updatedAt", "username" ],
+        "required" : [ "createdAt", "id", "name", "password", "status", "type", "updateVer", "updatedAt", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_basicauthuc_basicauthdto.CreateBasicAuthReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "name" : {
             "type" : "string"
           },
@@ -16780,7 +16786,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "name", "password", "username" ],
+        "required" : [ "availableInProjects", "name", "password", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_basicauthuc_basicauthdto.CreateBasicAuthResp" : {
@@ -16833,6 +16839,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_basicauthuc_basicauthdto.UpdateBasicAuthMetaReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "expireAt" : {
             "type" : "string"
           },
@@ -16843,7 +16852,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "expireAt", "status", "updateVer" ],
+        "required" : [ "availableInProjects", "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_basicauthuc_basicauthdto.UpdateBasicAuthMetaResp" : {
@@ -16857,6 +16866,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_basicauthuc_basicauthdto.UpdateBasicAuthReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "name" : {
             "type" : "string"
           },
@@ -16870,7 +16882,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "name", "password", "updateVer", "username" ],
+        "required" : [ "availableInProjects", "name", "password", "updateVer", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_basicauthuc_basicauthdto.UpdateBasicAuthResp" : {
@@ -16884,6 +16896,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CreateCronJobReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "command" : {
             "type" : "string"
           },
@@ -16909,7 +16924,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
           }
         },
-        "required" : [ "command", "cron", "kind", "maxRetry", "name", "priority", "retryDelay", "timeout" ],
+        "required" : [ "availableInProjects", "command", "cron", "kind", "maxRetry", "name", "priority", "retryDelay", "timeout" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CreateCronJobResp" : {
@@ -16926,6 +16941,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobResp" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "command" : {
             "type" : "string"
           },
@@ -16978,7 +16996,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "command", "createdAt", "cron", "id", "inherited", "initialTime", "maxRetry", "name", "priority", "retryDelay", "status", "timeout", "type", "updateVer", "updatedAt" ],
+        "required" : [ "command", "createdAt", "cron", "id", "initialTime", "maxRetry", "name", "priority", "retryDelay", "status", "timeout", "type", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.DeleteCronJobResp" : {
@@ -17019,6 +17037,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.UpdateCronJobMetaReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "expireAt" : {
             "type" : "string"
           },
@@ -17029,7 +17050,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "expireAt", "status", "updateVer" ],
+        "required" : [ "availableInProjects", "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.UpdateCronJobMetaResp" : {
@@ -17043,6 +17064,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.UpdateCronJobReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "command" : {
             "type" : "string"
           },
@@ -17071,7 +17095,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "command", "cron", "kind", "maxRetry", "name", "priority", "retryDelay", "timeout", "updateVer" ],
+        "required" : [ "availableInProjects", "command", "cron", "kind", "maxRetry", "name", "priority", "retryDelay", "timeout", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.UpdateCronJobResp" : {
@@ -17085,6 +17109,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_discorduc_discorddto.CreateDiscordReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "name" : {
             "type" : "string"
           },
@@ -17092,7 +17119,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "name", "webhook" ],
+        "required" : [ "availableInProjects", "name", "webhook" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_discorduc_discorddto.CreateDiscordResp" : {
@@ -17118,6 +17145,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_discorduc_discorddto.DiscordResp" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "createdAt" : {
             "type" : "string"
           },
@@ -17155,7 +17185,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "id", "inherited", "name", "status", "type", "updateVer", "updatedAt", "webhook" ],
+        "required" : [ "createdAt", "id", "name", "status", "type", "updateVer", "updatedAt", "webhook" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_discorduc_discorddto.GetDiscordResp" : {
@@ -17211,6 +17241,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_discorduc_discorddto.UpdateDiscordMetaReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "expireAt" : {
             "type" : "string"
           },
@@ -17221,7 +17254,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "expireAt", "status", "updateVer" ],
+        "required" : [ "availableInProjects", "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_discorduc_discorddto.UpdateDiscordMetaResp" : {
@@ -17235,6 +17268,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_discorduc_discorddto.UpdateDiscordReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "name" : {
             "type" : "string"
           },
@@ -17245,7 +17281,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "name", "updateVer", "webhook" ],
+        "required" : [ "availableInProjects", "name", "updateVer", "webhook" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_discorduc_discorddto.UpdateDiscordResp" : {
@@ -17280,6 +17316,9 @@
           "appId" : {
             "type" : "integer"
           },
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "clientId" : {
             "type" : "string"
           },
@@ -17308,7 +17347,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "appId", "clientId", "clientSecret", "installationId", "name", "organization", "privateKey", "ssoEnabled", "webhookSecret", "webhookURL" ],
+        "required" : [ "appId", "availableInProjects", "clientId", "clientSecret", "installationId", "name", "organization", "privateKey", "ssoEnabled", "webhookSecret", "webhookURL" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.CreateGithubAppResp" : {
@@ -17360,6 +17399,9 @@
         "properties" : {
           "appId" : {
             "type" : "integer"
+          },
+          "availableInProjects" : {
+            "type" : "boolean"
           },
           "callbackURL" : {
             "type" : "string"
@@ -17422,7 +17464,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "appId", "callbackURL", "clientId", "clientSecret", "createdAt", "id", "inherited", "installationId", "name", "organization", "privateKey", "ssoEnabled", "status", "type", "updateVer", "updatedAt", "webhookSecret", "webhookURL" ],
+        "required" : [ "appId", "callbackURL", "clientId", "clientSecret", "createdAt", "id", "installationId", "name", "organization", "privateKey", "ssoEnabled", "status", "type", "updateVer", "updatedAt", "webhookSecret", "webhookURL" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.ListAppInstallationReq" : {
@@ -17538,6 +17580,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.UpdateGithubAppMetaReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "expireAt" : {
             "type" : "string"
           },
@@ -17548,7 +17593,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "expireAt", "status", "updateVer" ],
+        "required" : [ "availableInProjects", "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.UpdateGithubAppMetaResp" : {
@@ -17564,6 +17609,9 @@
         "properties" : {
           "appId" : {
             "type" : "integer"
+          },
+          "availableInProjects" : {
+            "type" : "boolean"
           },
           "clientId" : {
             "type" : "string"
@@ -17596,7 +17644,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "appId", "clientId", "clientSecret", "installationId", "name", "organization", "privateKey", "ssoEnabled", "updateVer", "webhookSecret", "webhookURL" ],
+        "required" : [ "appId", "availableInProjects", "clientId", "clientSecret", "installationId", "name", "organization", "privateKey", "ssoEnabled", "updateVer", "webhookSecret", "webhookURL" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.UpdateGithubAppResp" : {
@@ -17610,6 +17658,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_gittokenuc_gittokendto.CreateGitTokenReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "baseURL" : {
             "type" : "string"
           },
@@ -17629,7 +17680,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "baseURL", "expireAt", "kind", "name", "token", "user" ],
+        "required" : [ "availableInProjects", "baseURL", "expireAt", "kind", "name", "token", "user" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_gittokenuc_gittokendto.CreateGitTokenResp" : {
@@ -17667,6 +17718,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_gittokenuc_gittokendto.GitTokenResp" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "baseURL" : {
             "type" : "string"
           },
@@ -17710,7 +17764,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "baseURL", "createdAt", "id", "inherited", "name", "status", "token", "type", "updateVer", "updatedAt", "user" ],
+        "required" : [ "baseURL", "createdAt", "id", "name", "status", "token", "type", "updateVer", "updatedAt", "user" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_gittokenuc_gittokendto.ListGitTokenResp" : {
@@ -17763,6 +17817,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_gittokenuc_gittokendto.UpdateGitTokenMetaReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "expireAt" : {
             "type" : "string"
           },
@@ -17773,7 +17830,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "expireAt", "status", "updateVer" ],
+        "required" : [ "availableInProjects", "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_gittokenuc_gittokendto.UpdateGitTokenMetaResp" : {
@@ -17787,6 +17844,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_gittokenuc_gittokendto.UpdateGitTokenReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "baseURL" : {
             "type" : "string"
           },
@@ -17809,7 +17869,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "baseURL", "expireAt", "kind", "name", "token", "updateVer", "user" ],
+        "required" : [ "availableInProjects", "baseURL", "expireAt", "kind", "name", "token", "updateVer", "user" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_gittokenuc_gittokendto.UpdateGitTokenResp" : {
@@ -17825,6 +17885,9 @@
         "properties" : {
           "authURL" : {
             "type" : "string"
+          },
+          "availableInProjects" : {
+            "type" : "boolean"
           },
           "clientId" : {
             "type" : "string"
@@ -17854,7 +17917,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "authURL", "clientId", "clientSecret", "kind", "name", "organization", "profileURL", "scopes", "tokenURL" ],
+        "required" : [ "authURL", "availableInProjects", "clientId", "clientSecret", "kind", "name", "organization", "profileURL", "scopes", "tokenURL" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.CreateOAuthResp" : {
@@ -17922,6 +17985,9 @@
           "authURL" : {
             "type" : "string"
           },
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "callbackURL" : {
             "type" : "string"
           },
@@ -17980,11 +18046,14 @@
             "type" : "string"
           }
         },
-        "required" : [ "callbackURL", "clientId", "clientSecret", "createdAt", "id", "inherited", "name", "organization", "status", "type", "updateVer", "updatedAt" ],
+        "required" : [ "callbackURL", "clientId", "clientSecret", "createdAt", "id", "name", "organization", "status", "type", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.UpdateOAuthMetaReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "expireAt" : {
             "type" : "string"
           },
@@ -17995,7 +18064,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "expireAt", "status", "updateVer" ],
+        "required" : [ "availableInProjects", "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.UpdateOAuthMetaResp" : {
@@ -18011,6 +18080,9 @@
         "properties" : {
           "authURL" : {
             "type" : "string"
+          },
+          "availableInProjects" : {
+            "type" : "boolean"
           },
           "clientId" : {
             "type" : "string"
@@ -18043,7 +18115,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "authURL", "clientId", "clientSecret", "kind", "name", "organization", "profileURL", "scopes", "tokenURL", "updateVer" ],
+        "required" : [ "authURL", "availableInProjects", "clientId", "clientSecret", "kind", "name", "organization", "profileURL", "scopes", "tokenURL", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.UpdateOAuthResp" : {
@@ -18060,6 +18132,9 @@
           "address" : {
             "type" : "string"
           },
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "name" : {
             "type" : "string"
           },
@@ -18070,7 +18145,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "address", "name", "password", "username" ],
+        "required" : [ "address", "availableInProjects", "name", "password", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.CreateRegistryAuthResp" : {
@@ -18126,6 +18201,9 @@
           "address" : {
             "type" : "string"
           },
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "createdAt" : {
             "type" : "string"
           },
@@ -18166,7 +18244,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "address", "createdAt", "id", "inherited", "name", "password", "status", "type", "updateVer", "updatedAt", "username" ],
+        "required" : [ "address", "createdAt", "id", "name", "password", "status", "type", "updateVer", "updatedAt", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.TestRegistryAuthConnReq" : {
@@ -18198,6 +18276,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.UpdateRegistryAuthMetaReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "expireAt" : {
             "type" : "string"
           },
@@ -18208,7 +18289,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "expireAt", "status", "updateVer" ],
+        "required" : [ "availableInProjects", "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.UpdateRegistryAuthMetaResp" : {
@@ -18225,6 +18306,9 @@
           "address" : {
             "type" : "string"
           },
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "name" : {
             "type" : "string"
           },
@@ -18238,7 +18322,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "address", "name", "password", "updateVer", "username" ],
+        "required" : [ "address", "availableInProjects", "name", "password", "updateVer", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.UpdateRegistryAuthResp" : {
@@ -18254,6 +18338,9 @@
         "properties" : {
           "accessKeyId" : {
             "type" : "string"
+          },
+          "availableInProjects" : {
+            "type" : "boolean"
           },
           "bucket" : {
             "type" : "string"
@@ -18271,7 +18358,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "accessKeyId", "bucket", "endpoint", "name", "region", "secretKey" ],
+        "required" : [ "accessKeyId", "availableInProjects", "bucket", "endpoint", "name", "region", "secretKey" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.CreateS3StorageResp" : {
@@ -18327,6 +18414,9 @@
           "accessKeyId" : {
             "type" : "string"
           },
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "bucket" : {
             "type" : "string"
           },
@@ -18373,7 +18463,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "accessKeyId", "bucket", "createdAt", "endpoint", "id", "inherited", "name", "region", "status", "type", "updateVer", "updatedAt" ],
+        "required" : [ "accessKeyId", "bucket", "createdAt", "endpoint", "id", "name", "region", "status", "type", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.TestS3StorageConnReq" : {
@@ -18411,6 +18501,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.UpdateS3StorageMetaReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "expireAt" : {
             "type" : "string"
           },
@@ -18421,7 +18514,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "expireAt", "status", "updateVer" ],
+        "required" : [ "availableInProjects", "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.UpdateS3StorageMetaResp" : {
@@ -18437,6 +18530,9 @@
         "properties" : {
           "accessKeyId" : {
             "type" : "string"
+          },
+          "availableInProjects" : {
+            "type" : "boolean"
           },
           "bucket" : {
             "type" : "string"
@@ -18457,7 +18553,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "accessKeyId", "bucket", "endpoint", "name", "region", "secretKey", "updateVer" ],
+        "required" : [ "accessKeyId", "availableInProjects", "bucket", "endpoint", "name", "region", "secretKey", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.UpdateS3StorageResp" : {
@@ -18471,6 +18567,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_secretuc_secretdto.CreateSecretReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "base64" : {
             "type" : "boolean"
           },
@@ -18481,7 +18580,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "base64", "key", "value" ],
+        "required" : [ "availableInProjects", "base64", "key", "value" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_secretuc_secretdto.CreateSecretResp" : {
@@ -18522,6 +18621,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_secretuc_secretdto.SecretResp" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "createdAt" : {
             "type" : "string"
           },
@@ -18556,11 +18658,14 @@
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "id", "inherited", "key", "name", "status", "type", "updateVer", "updatedAt" ],
+        "required" : [ "createdAt", "id", "key", "name", "status", "type", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_secretuc_secretdto.UpdateSecretMetaReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "expireAt" : {
             "type" : "string"
           },
@@ -18571,7 +18676,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "expireAt", "status", "updateVer" ],
+        "required" : [ "availableInProjects", "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_secretuc_secretdto.UpdateSecretMetaResp" : {
@@ -18585,6 +18690,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.CreateSlackReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "name" : {
             "type" : "string"
           },
@@ -18592,7 +18700,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "name", "webhook" ],
+        "required" : [ "availableInProjects", "name", "webhook" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.CreateSlackResp" : {
@@ -18645,6 +18753,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.SlackResp" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "createdAt" : {
             "type" : "string"
           },
@@ -18682,7 +18793,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "id", "inherited", "name", "status", "type", "updateVer", "updatedAt", "webhook" ],
+        "required" : [ "createdAt", "id", "name", "status", "type", "updateVer", "updatedAt", "webhook" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.TestSendSlackMsgReq" : {
@@ -18711,6 +18822,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.UpdateSlackMetaReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "expireAt" : {
             "type" : "string"
           },
@@ -18721,7 +18835,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "expireAt", "status", "updateVer" ],
+        "required" : [ "availableInProjects", "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.UpdateSlackMetaResp" : {
@@ -18735,6 +18849,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.UpdateSlackReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "name" : {
             "type" : "string"
           },
@@ -18745,7 +18862,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "name", "updateVer", "webhook" ],
+        "required" : [ "availableInProjects", "name", "updateVer", "webhook" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.UpdateSlackResp" : {
@@ -18759,6 +18876,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.CreateSSHKeyReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "name" : {
             "type" : "string"
           },
@@ -18769,7 +18889,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "name", "passphrase", "privateKey" ],
+        "required" : [ "availableInProjects", "name", "passphrase", "privateKey" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.CreateSSHKeyResp" : {
@@ -18822,6 +18942,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.SSHKeyResp" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "createdAt" : {
             "type" : "string"
           },
@@ -18862,11 +18985,14 @@
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "id", "inherited", "name", "privateKey", "status", "type", "updateVer", "updatedAt" ],
+        "required" : [ "createdAt", "id", "name", "privateKey", "status", "type", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.UpdateSSHKeyMetaReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "expireAt" : {
             "type" : "string"
           },
@@ -18877,7 +19003,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "expireAt", "status", "updateVer" ],
+        "required" : [ "availableInProjects", "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.UpdateSSHKeyMetaResp" : {
@@ -18891,6 +19017,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.UpdateSSHKeyReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "name" : {
             "type" : "string"
           },
@@ -18904,7 +19033,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "name", "passphrase", "privateKey", "updateVer" ],
+        "required" : [ "availableInProjects", "name", "passphrase", "privateKey", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.UpdateSSHKeyResp" : {
@@ -18918,6 +19047,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.CreateSslReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "certificate" : {
             "type" : "string"
           },
@@ -18940,7 +19072,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SslProvider"
           }
         },
-        "required" : [ "certificate", "email", "expireAt", "keySize", "name", "privateKey", "provider" ],
+        "required" : [ "availableInProjects", "certificate", "email", "expireAt", "keySize", "name", "privateKey", "provider" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.CreateSslResp" : {
@@ -18993,6 +19125,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.SslResp" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "certificate" : {
             "type" : "string"
           },
@@ -19042,11 +19177,14 @@
             "type" : "string"
           }
         },
-        "required" : [ "certificate", "createdAt", "email", "id", "inherited", "keySize", "name", "privateKey", "provider", "status", "type", "updateVer", "updatedAt" ],
+        "required" : [ "certificate", "createdAt", "email", "id", "keySize", "name", "privateKey", "provider", "status", "type", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSslMetaReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "expireAt" : {
             "type" : "string"
           },
@@ -19057,7 +19195,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "expireAt", "status", "updateVer" ],
+        "required" : [ "availableInProjects", "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSslMetaResp" : {
@@ -19071,6 +19209,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSslReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "certificate" : {
             "type" : "string"
           },
@@ -19096,7 +19237,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "certificate", "email", "expireAt", "keySize", "name", "privateKey", "provider", "updateVer" ],
+        "required" : [ "availableInProjects", "certificate", "email", "expireAt", "keySize", "name", "privateKey", "provider", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSslResp" : {
@@ -19368,6 +19509,9 @@
           "accessAction" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.AccessActions"
           },
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "createdAt" : {
             "type" : "string"
           },
@@ -19402,13 +19546,16 @@
             "type" : "string"
           }
         },
-        "required" : [ "accessAction", "createdAt", "id", "inherited", "keyId", "name", "status", "type", "updateVer", "updatedAt" ],
+        "required" : [ "accessAction", "createdAt", "id", "keyId", "name", "status", "type", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_usersettings_apikeyuc_apikeydto.CreateAPIKeyReq" : {
         "properties" : {
           "accessAction" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.AccessActions"
+          },
+          "availableInProjects" : {
+            "type" : "boolean"
           },
           "expireAt" : {
             "type" : "string"
@@ -19417,7 +19564,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "accessAction", "expireAt", "name" ],
+        "required" : [ "accessAction", "availableInProjects", "expireAt", "name" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_usersettings_apikeyuc_apikeydto.CreateAPIKeyResp" : {
@@ -19470,6 +19617,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_usersettings_apikeyuc_apikeydto.UpdateAPIKeyMetaReq" : {
         "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
           "expireAt" : {
             "type" : "string"
           },
@@ -19480,7 +19630,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "expireAt", "status", "updateVer" ],
+        "required" : [ "availableInProjects", "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_usersettings_apikeyuc_apikeydto.UpdateAPIKeyMetaResp" : {

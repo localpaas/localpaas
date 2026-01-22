@@ -23,13 +23,14 @@ type BaseSettingReq struct {
 }
 
 type BaseSettingResp struct {
-	ID        string             `json:"id"`
-	Type      base.SettingType   `json:"type"`
-	Name      string             `json:"name"`
-	Kind      string             `json:"kind,omitempty"`
-	Status    base.SettingStatus `json:"status"`
-	Inherited bool               `json:"inherited"`
-	UpdateVer int                `json:"updateVer"`
+	ID              string             `json:"id"`
+	Type            base.SettingType   `json:"type"`
+	Name            string             `json:"name"`
+	Kind            string             `json:"kind,omitempty"`
+	Status          base.SettingStatus `json:"status"`
+	Inherited       bool               `json:"inherited,omitempty"`
+	AvailInProjects bool               `json:"availableInProjects,omitempty"`
+	UpdateVer       int                `json:"updateVer"`
 
 	CreatedAt time.Time  `json:"createdAt"`
 	UpdatedAt time.Time  `json:"updatedAt"`
