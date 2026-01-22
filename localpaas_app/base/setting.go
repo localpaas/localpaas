@@ -47,7 +47,7 @@ var (
 	AllSettingSettableStatuses = gofn.Drop(AllSettingStatuses, SettingStatusExpired)
 )
 
-type SettingScope int
+type SettingScope int8
 
 const (
 	SettingScopeGlobal SettingScope = iota

@@ -25,7 +25,7 @@ func (uc *AppUC) GetAppEnvVars(
 	// When get ENV vars for an app, also need all ENV vars of the parent app and project
 	objectIDs := gofn.ToSliceSkippingZero(app.ID, app.ParentID, app.ProjectID)
 
-	settings, _, err := uc.settingRepo.List(ctx, uc.db, "", "", nil,
+	settings, _, err := uc.settingRepo.List(ctx, uc.db, nil,
 		bunex.SelectWhere("setting.type = ?", base.SettingTypeEnvVar),
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
 		bunex.SelectWhere("setting.object_id IN (?)", bunex.In(objectIDs)),

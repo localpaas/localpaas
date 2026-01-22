@@ -1,12 +1,9 @@
 package basicauthdto
 
 import (
-	"time"
-
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
@@ -37,17 +34,10 @@ type GetBasicAuthResp struct {
 }
 
 type BasicAuthResp struct {
-	ID        string             `json:"id"`
-	Name      string             `json:"name"`
-	Status    base.SettingStatus `json:"status"`
-	Username  string             `json:"username"`
-	Password  string             `json:"password"`
-	Encrypted bool               `json:"encrypted,omitempty"`
-	UpdateVer int                `json:"updateVer"`
-
-	CreatedAt time.Time  `json:"createdAt"`
-	UpdatedAt time.Time  `json:"updatedAt"`
-	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
+	*settings.BaseSettingResp
+	Username  string `json:"username"`
+	Password  string `json:"password"`
+	Encrypted bool   `json:"encrypted,omitempty"`
 }
 
 func (resp *BasicAuthResp) CopyPassword(field entity.EncryptedField) error {
@@ -55,19 +45,19 @@ func (resp *BasicAuthResp) CopyPassword(field entity.EncryptedField) error {
 	return nil
 }
 
-func TransformBasicAuth(setting *entity.Setting) (resp *BasicAuthResp, err error) {
-	if err = copier.Copy(&resp, &setting); err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-
+func TransformBasicAuth(setting *entity.Setting, objectID string) (resp *BasicAuthResp, err error) {
 	config := setting.MustAsBasicAuth()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-
 	resp.Encrypted = config.Password.IsEncrypted()
 	if resp.Encrypted {
 		resp.Password = maskedPassword
+	}
+
+	resp.BaseSettingResp, err = settings.TransformSettingBase(setting, objectID)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
 	}
 	return resp, nil
 }

@@ -1,12 +1,9 @@
 package secretdto
 
 import (
-	"time"
-
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
@@ -40,35 +37,28 @@ type ListSecretResp struct {
 }
 
 type SecretResp struct {
-	ID        string             `json:"id"`
-	Name      string             `json:"name,omitempty"`
-	Status    base.SettingStatus `json:"status"`
-	Key       string             `json:"key"`
-	UpdateVer int                `json:"updateVer"`
-
-	CreatedAt time.Time  `json:"createdAt"`
-	UpdatedAt time.Time  `json:"updatedAt"`
-	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
+	*settings.BaseSettingResp
+	Key string `json:"key"`
 }
 
-func TransformSecret(setting *entity.Setting) (resp *SecretResp, err error) {
-	if err = copier.Copy(&resp, &setting); err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-	resp.Key = setting.Name
-
+func TransformSecret(setting *entity.Setting, objectID string) (resp *SecretResp, err error) {
 	secret := setting.MustAsSecret()
 	if err = copier.Copy(&resp, &secret); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+	resp.Key = setting.Name
 
+	resp.BaseSettingResp, err = settings.TransformSettingBase(setting, objectID)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
 	return resp, nil
 }
 
-func TransformSecrets(settings []*entity.Setting) (resp []*SecretResp, err error) {
+func TransformSecrets(settings []*entity.Setting, objectID string) (resp []*SecretResp, err error) {
 	resp = make([]*SecretResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformSecret(setting)
+		item, err := TransformSecret(setting, objectID)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

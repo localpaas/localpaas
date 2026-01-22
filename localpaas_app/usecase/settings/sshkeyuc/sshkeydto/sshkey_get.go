@@ -1,12 +1,9 @@
 package sshkeydto
 
 import (
-	"time"
-
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
@@ -37,17 +34,10 @@ type GetSSHKeyResp struct {
 }
 
 type SSHKeyResp struct {
-	ID         string             `json:"id"`
-	Name       string             `json:"name"`
-	Status     base.SettingStatus `json:"status"`
-	PrivateKey string             `json:"privateKey"`
-	Passphrase string             `json:"passphrase,omitempty"`
-	Encrypted  bool               `json:"encrypted,omitempty"`
-	UpdateVer  int                `json:"updateVer"`
-
-	CreatedAt time.Time  `json:"createdAt"`
-	UpdatedAt time.Time  `json:"updatedAt"`
-	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
+	*settings.BaseSettingResp
+	PrivateKey string `json:"privateKey"`
+	Passphrase string `json:"passphrase,omitempty"`
+	Encrypted  bool   `json:"encrypted,omitempty"`
 }
 
 func (resp *SSHKeyResp) CopyPrivateKey(field entity.EncryptedField) error {
@@ -60,11 +50,7 @@ func (resp *SSHKeyResp) CopyPassphrase(field entity.EncryptedField) error {
 	return nil
 }
 
-func TransformSSHKey(setting *entity.Setting) (resp *SSHKeyResp, err error) {
-	if err = copier.Copy(&resp, &setting); err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-
+func TransformSSHKey(setting *entity.Setting, objectID string) (resp *SSHKeyResp, err error) {
 	sshKey := setting.MustAsSSHKey()
 	if err = copier.Copy(&resp, &sshKey); err != nil {
 		return nil, apperrors.Wrap(err)
@@ -76,6 +62,11 @@ func TransformSSHKey(setting *entity.Setting) (resp *SSHKeyResp, err error) {
 		if resp.Passphrase != "" {
 			resp.Passphrase = maskedSecretKey
 		}
+	}
+
+	resp.BaseSettingResp, err = settings.TransformSettingBase(setting, objectID)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
 	}
 	return resp, nil
 }

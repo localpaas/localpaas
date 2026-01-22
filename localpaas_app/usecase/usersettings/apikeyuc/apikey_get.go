@@ -23,7 +23,7 @@ func (uc *APIKeyUC) GetAPIKey(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := apikeydto.TransformAPIKey(setting)
+	resp, err := apikeydto.TransformAPIKey(setting, auth.User.ID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

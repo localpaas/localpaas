@@ -1,12 +1,9 @@
 package gittokendto
 
 import (
-	"time"
-
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
@@ -37,19 +34,11 @@ type GetGitTokenResp struct {
 }
 
 type GitTokenResp struct {
-	ID        string             `json:"id"`
-	Kind      base.GitSource     `json:"kind"`
-	Name      string             `json:"name"`
-	Status    base.SettingStatus `json:"status"`
-	User      string             `json:"user"`
-	Token     string             `json:"token"`
-	BaseURL   string             `json:"baseURL"`
-	Encrypted bool               `json:"encrypted,omitempty"`
-	UpdateVer int                `json:"updateVer"`
-
-	CreatedAt time.Time  `json:"createdAt"`
-	UpdatedAt time.Time  `json:"updatedAt"`
-	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
+	*settings.BaseSettingResp
+	User      string `json:"user"`
+	Token     string `json:"token"`
+	BaseURL   string `json:"baseURL"`
+	Encrypted bool   `json:"encrypted,omitempty"`
 }
 
 func (resp *GitTokenResp) CopyToken(field entity.EncryptedField) error {
@@ -57,11 +46,7 @@ func (resp *GitTokenResp) CopyToken(field entity.EncryptedField) error {
 	return nil
 }
 
-func TransformGitToken(setting *entity.Setting) (resp *GitTokenResp, err error) {
-	if err = copier.Copy(&resp, &setting); err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-
+func TransformGitToken(setting *entity.Setting, objectID string) (resp *GitTokenResp, err error) {
 	config := setting.MustAsGitToken()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
@@ -70,6 +55,11 @@ func TransformGitToken(setting *entity.Setting) (resp *GitTokenResp, err error) 
 	resp.Encrypted = config.Token.IsEncrypted()
 	if resp.Encrypted {
 		resp.Token = maskedSecret
+	}
+
+	resp.BaseSettingResp, err = settings.TransformSettingBase(setting, objectID)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
 	}
 	return resp, nil
 }

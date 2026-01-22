@@ -1,12 +1,9 @@
 package ssldto
 
 import (
-	"time"
-
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
@@ -37,20 +34,13 @@ type GetSslResp struct {
 }
 
 type SslResp struct {
-	ID          string             `json:"id"`
-	Name        string             `json:"name"`
-	Status      base.SettingStatus `json:"status"`
-	Certificate string             `json:"certificate"`
-	PrivateKey  string             `json:"privateKey"`
-	KeySize     int                `json:"keySize"`
-	Provider    string             `json:"provider"`
-	Email       string             `json:"email"`
-	Encrypted   bool               `json:"encrypted,omitempty"`
-	UpdateVer   int                `json:"updateVer"`
-
-	CreatedAt time.Time  `json:"createdAt"`
-	UpdatedAt time.Time  `json:"updatedAt"`
-	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
+	*settings.BaseSettingResp
+	Certificate string `json:"certificate"`
+	PrivateKey  string `json:"privateKey"`
+	KeySize     int    `json:"keySize"`
+	Provider    string `json:"provider"`
+	Email       string `json:"email"`
+	Encrypted   bool   `json:"encrypted,omitempty"`
 }
 
 func (resp *SslResp) CopyPrivateKey(field entity.EncryptedField) error {
@@ -58,11 +48,7 @@ func (resp *SslResp) CopyPrivateKey(field entity.EncryptedField) error {
 	return nil
 }
 
-func TransformSsl(setting *entity.Setting) (resp *SslResp, err error) {
-	if err = copier.Copy(&resp, &setting); err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-
+func TransformSsl(setting *entity.Setting, objectID string) (resp *SslResp, err error) {
 	config := setting.MustAsSsl()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
@@ -71,6 +57,11 @@ func TransformSsl(setting *entity.Setting) (resp *SslResp, err error) {
 	resp.Encrypted = config.PrivateKey.IsEncrypted()
 	if resp.Encrypted {
 		resp.PrivateKey = maskedKey
+	}
+
+	resp.BaseSettingResp, err = settings.TransformSettingBase(setting, objectID)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
 	}
 	return resp, nil
 }

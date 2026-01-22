@@ -34,33 +34,25 @@ type GetCronJobResp struct {
 }
 
 type CronJobResp struct {
-	ID          string             `json:"id"`
-	Kind        string             `json:"kind"`
-	Name        string             `json:"name"`
-	Status      base.SettingStatus `json:"status"`
-	Cron        string             `json:"cron"`
-	InitialTime time.Time          `json:"initialTime"`
-	Priority    base.TaskPriority  `json:"priority"`
-	MaxRetry    int                `json:"maxRetry"`
-	RetryDelay  timeutil.Duration  `json:"retryDelay"`
-	Timeout     timeutil.Duration  `json:"timeout"`
-	Command     string             `json:"command"`
-	UpdateVer   int                `json:"updateVer"`
-
-	CreatedAt time.Time  `json:"createdAt"`
-	UpdatedAt time.Time  `json:"updatedAt"`
-	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
+	*settings.BaseSettingResp
+	Cron        string            `json:"cron"`
+	InitialTime time.Time         `json:"initialTime"`
+	Priority    base.TaskPriority `json:"priority"`
+	MaxRetry    int               `json:"maxRetry"`
+	RetryDelay  timeutil.Duration `json:"retryDelay"`
+	Timeout     timeutil.Duration `json:"timeout"`
+	Command     string            `json:"command"`
 }
 
-func TransformCronJob(setting *entity.Setting) (resp *CronJobResp, err error) {
-	if err = copier.Copy(&resp, &setting); err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-
+func TransformCronJob(setting *entity.Setting, objectID string) (resp *CronJobResp, err error) {
 	config := setting.MustAsCronJob()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
+	resp.BaseSettingResp, err = settings.TransformSettingBase(setting, objectID)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
 	return resp, nil
 }

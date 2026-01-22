@@ -24,7 +24,7 @@ func (uc *GithubAppUC) GetGithubApp(
 	}
 
 	setting.MustAsGithubApp().MustDecrypt()
-	resp, err := githubappdto.TransformGithubApp(setting, config.Current.SsoBaseCallbackURL())
+	resp, err := githubappdto.TransformGithubApp(setting, config.Current.SsoBaseCallbackURL(), req.ObjectID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

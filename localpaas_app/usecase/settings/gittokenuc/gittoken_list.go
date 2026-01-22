@@ -22,7 +22,7 @@ func (uc *GitTokenUC) ListGitToken(
 		return nil, apperrors.Wrap(err)
 	}
 
-	respData, err := gittokendto.TransformGitTokens(resp.Data)
+	respData, err := gittokendto.TransformGitTokens(resp.Data, req.ObjectID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

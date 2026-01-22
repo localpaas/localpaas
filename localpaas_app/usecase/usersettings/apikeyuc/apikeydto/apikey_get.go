@@ -1,8 +1,6 @@
 package apikeydto
 
 import (
-	"time"
-
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -10,6 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
 type GetAPIKeyReq struct {
@@ -32,27 +31,20 @@ type GetAPIKeyResp struct {
 }
 
 type APIKeyResp struct {
-	ID           string             `json:"id"`
-	Name         string             `json:"name"`
-	Status       base.SettingStatus `json:"status"`
+	*settings.BaseSettingResp
 	KeyID        string             `json:"keyId"`
 	AccessAction base.AccessActions `json:"accessAction"`
-	UpdateVer    int                `json:"updateVer"`
-
-	CreatedAt time.Time  `json:"createdAt"`
-	UpdatedAt time.Time  `json:"updatedAt"`
-	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
 }
 
-func TransformAPIKey(setting *entity.Setting) (resp *APIKeyResp, err error) {
-	if err = copier.Copy(&resp, &setting); err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-
+func TransformAPIKey(setting *entity.Setting, objectID string) (resp *APIKeyResp, err error) {
 	apiKey := setting.MustAsAPIKey()
 	if err = copier.Copy(&resp, apiKey); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
+	resp.BaseSettingResp, err = settings.TransformSettingBase(setting, objectID)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
 	return resp, nil
 }

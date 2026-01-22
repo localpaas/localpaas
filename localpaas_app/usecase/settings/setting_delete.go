@@ -17,11 +17,8 @@ import (
 )
 
 type DeleteSettingReq struct {
-	ID        string            `json:"-" mapstructure:"-"`
-	Type      base.SettingType  `json:"-" mapstructure:"-"`
-	Scope     base.SettingScope `json:"-" mapstructure:"-"`
-	ProjectID string            `json:"-" mapstructure:"-"`
-	AppID     string            `json:"-" mapstructure:"-"`
+	BaseSettingReq
+	ID string `json:"-" mapstructure:"-"`
 }
 
 func (req *DeleteSettingReq) Validate() (validators []vld.Validator) {
@@ -104,19 +101,17 @@ func loadSettingForDeletion(
 ) (err error) {
 	loadOpts := []bunex.SelectQueryOption{
 		bunex.SelectFor("UPDATE OF setting"),
-		bunex.SelectWhereIf(req.Scope == base.SettingScopeGlobal, "setting.object_id IS NULL"),
 	}
 	loadOpts = append(loadOpts, data.ExtraLoadOpts...)
 
-	setting, err := data.SettingRepo.GetByIDEx(ctx, db, req.Type, req.ProjectID, req.AppID, req.ID,
-		false, loadOpts...)
+	setting, err := loadSettingByID(ctx, db, data.SettingRepo, &req.BaseSettingReq, req.ID, false, loadOpts...)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 	data.Setting = setting
 
-	if setting.ObjectID == "" && req.ProjectID != "" {
-		data.ProjectSharedSetting, err = data.ProjectSharedSettingRepo.Get(ctx, db, req.ProjectID, req.ID)
+	if setting.ObjectID == "" && req.Scope == base.SettingScopeProject {
+		data.ProjectSharedSetting, err = data.ProjectSharedSettingRepo.Get(ctx, db, req.ObjectID, req.ID)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}

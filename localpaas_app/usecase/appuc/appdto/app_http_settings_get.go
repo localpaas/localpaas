@@ -84,9 +84,10 @@ func TransformHttpSettings(input *AppHttpSettingsTransformInput) (resp *HttpSett
 		return nil, apperrors.Wrap(err)
 	}
 
+	objectID := input.App.ID
 	for _, domain := range resp.Domains {
 		if domain.SslCert != nil && domain.SslCert.ID != "" {
-			sslResp, _ := ssldto.TransformSsl(input.ReferenceSettingMap[domain.SslCert.ID])
+			sslResp, _ := ssldto.TransformSsl(input.ReferenceSettingMap[domain.SslCert.ID], objectID)
 			if sslResp != nil {
 				domain.SslCert = sslResp
 			}
@@ -95,7 +96,7 @@ func TransformHttpSettings(input *AppHttpSettingsTransformInput) (resp *HttpSett
 		}
 
 		if domain.BasicAuth != nil && domain.BasicAuth.ID != "" {
-			basicAuthResp, _ := basicauthdto.TransformBasicAuth(input.ReferenceSettingMap[domain.BasicAuth.ID])
+			basicAuthResp, _ := basicauthdto.TransformBasicAuth(input.ReferenceSettingMap[domain.BasicAuth.ID], objectID)
 			if basicAuthResp != nil {
 				domain.BasicAuth = basicAuthResp
 			}

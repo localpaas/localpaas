@@ -22,7 +22,7 @@ func (uc *S3StorageUC) ListS3Storage(
 		return nil, apperrors.Wrap(err)
 	}
 
-	respData, err := s3storagedto.TransformS3Storages(resp.Data)
+	respData, err := s3storagedto.TransformS3Storages(resp.Data, req.ObjectID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

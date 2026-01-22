@@ -41,7 +41,7 @@ func (h *BaseSettingHandler) CreateSetting(
 	opts ...CreateSettingOption,
 ) {
 	var auth *basedto.Auth
-	var projectID, appID string
+	var objectID, parentObjectID string
 	var err error
 
 	options := &CreateSettingOptions{}
@@ -53,11 +53,11 @@ func (h *BaseSettingHandler) CreateSetting(
 	case base.SettingScopeGlobal:
 		auth, _, err = h.GetAuthGlobalSettings(ctx, resType, base.ActionTypeWrite, "")
 	case base.SettingScopeProject:
-		auth, projectID, _, err = h.GetAuthProjectSettings(ctx, base.ActionTypeWrite, "")
+		auth, objectID, _, err = h.GetAuthProjectSettings(ctx, base.ActionTypeWrite, "")
 	case base.SettingScopeApp:
-		auth, projectID, appID, _, err = h.GetAuthAppSettings(ctx, base.ActionTypeWrite, "")
+		auth, parentObjectID, objectID, _, err = h.GetAuthAppSettings(ctx, base.ActionTypeWrite, "")
 	case base.SettingScopeUser:
-		auth, _, err = h.GetAuthUserSettings(ctx, base.ActionTypeWrite, "")
+		auth, objectID, _, err = h.GetAuthUserSettings(ctx, base.ActionTypeWrite, "")
 	}
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -71,67 +71,67 @@ func (h *BaseSettingHandler) CreateSetting(
 	switch resType { //nolint:exhaustive
 	case base.ResourceTypeBasicAuth:
 		r := basicauthdto.NewCreateBasicAuthReq()
-		r.Scope, r.ProjectID, r.AppID = scope, projectID, appID
+		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.BasicAuthUC.CreateBasicAuth(reqCtx, auth, r) }
 
 	case base.ResourceTypeGithubApp:
 		r := githubappdto.NewCreateGithubAppReq()
-		r.Scope, r.ProjectID, r.AppID = scope, projectID, appID
+		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.GithubAppUC.CreateGithubApp(reqCtx, auth, r) }
 
 	case base.ResourceTypeGitToken:
 		r := gittokendto.NewCreateGitTokenReq()
-		r.Scope, r.ProjectID, r.AppID = scope, projectID, appID
+		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.GitTokenUC.CreateGitToken(reqCtx, auth, r) }
 
 	case base.ResourceTypeOAuth:
 		r := oauthdto.NewCreateOAuthReq()
-		r.Scope, r.ProjectID, r.AppID = scope, projectID, appID
+		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.OAuthUC.CreateOAuth(reqCtx, auth, r) }
 
 	case base.ResourceTypeRegistryAuth:
 		r := registryauthdto.NewCreateRegistryAuthReq()
-		r.Scope, r.ProjectID, r.AppID = scope, projectID, appID
+		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.RegistryAuthUC.CreateRegistryAuth(reqCtx, auth, r) }
 
 	case base.ResourceTypeS3Storage:
 		r := s3storagedto.NewCreateS3StorageReq()
-		r.Scope, r.ProjectID, r.AppID = scope, projectID, appID
+		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.S3StorageUC.CreateS3Storage(reqCtx, auth, r) }
 
 	case base.ResourceTypeSSHKey:
 		r := sshkeydto.NewCreateSSHKeyReq()
-		r.Scope, r.ProjectID, r.AppID = scope, projectID, appID
+		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.SSHKeyUC.CreateSSHKey(reqCtx, auth, r) }
 
 	case base.ResourceTypeSSL:
 		r := ssldto.NewCreateSslReq()
-		r.Scope, r.ProjectID, r.AppID = scope, projectID, appID
+		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.SSLUC.CreateSsl(reqCtx, auth, r) }
 
 	case base.ResourceTypeCronJob:
 		r := cronjobdto.NewCreateCronJobReq()
-		r.Scope, r.ProjectID, r.AppID = scope, projectID, appID
+		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.CronJobUC.CreateCronJob(reqCtx, auth, r) }
 
 	case base.ResourceTypeSecret:
 		r := secretdto.NewCreateSecretReq()
-		r.Scope, r.ProjectID, r.AppID = scope, projectID, appID
+		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.SecretUC.CreateSecret(reqCtx, auth, r) }
 
 	case base.ResourceTypeAPIKey:
 		r := apikeydto.NewCreateAPIKeyReq()
-		r.Scope, r.ProjectID, r.AppID = scope, projectID, appID
+		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.APIKeyUC.CreateAPIKey(reqCtx, auth, r) }
 
 	case base.ResourceTypeSlack:
 		r := slackdto.NewCreateSlackReq()
-		r.Scope, r.ProjectID, r.AppID = scope, projectID, appID
+		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.SlackUC.CreateSlack(reqCtx, auth, r) }
 
 	case base.ResourceTypeDiscord:
 		r := discorddto.NewCreateDiscordReq()
-		r.Scope, r.ProjectID, r.AppID = scope, projectID, appID
+		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.DiscordUC.CreateDiscord(reqCtx, auth, r) }
 	}
 

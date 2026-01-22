@@ -14469,10 +14469,10 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
         "format" : "int64",
         "type" : "integer",
-        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
+        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentReq" : {
         "type" : "object"
@@ -16737,6 +16737,12 @@
           "id" : {
             "type" : "string"
           },
+          "inherited" : {
+            "type" : "boolean"
+          },
+          "kind" : {
+            "type" : "string"
+          },
           "name" : {
             "type" : "string"
           },
@@ -16745,6 +16751,9 @@
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingType"
           },
           "updateVer" : {
             "type" : "integer"
@@ -16756,7 +16765,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "id", "name", "password", "status", "updateVer", "updatedAt", "username" ],
+        "required" : [ "createdAt", "id", "inherited", "name", "password", "status", "type", "updateVer", "updatedAt", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_basicauthuc_basicauthdto.CreateBasicAuthReq" : {
@@ -16932,6 +16941,9 @@
           "id" : {
             "type" : "string"
           },
+          "inherited" : {
+            "type" : "boolean"
+          },
           "initialTime" : {
             "type" : "string"
           },
@@ -16956,6 +16968,9 @@
           "timeout" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
           },
+          "type" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingType"
+          },
           "updateVer" : {
             "type" : "integer"
           },
@@ -16963,7 +16978,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "command", "createdAt", "cron", "id", "initialTime", "kind", "maxRetry", "name", "priority", "retryDelay", "status", "timeout", "updateVer", "updatedAt" ],
+        "required" : [ "command", "createdAt", "cron", "id", "inherited", "initialTime", "maxRetry", "name", "priority", "retryDelay", "status", "timeout", "type", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.DeleteCronJobResp" : {
@@ -17115,11 +17130,20 @@
           "id" : {
             "type" : "string"
           },
+          "inherited" : {
+            "type" : "boolean"
+          },
+          "kind" : {
+            "type" : "string"
+          },
           "name" : {
             "type" : "string"
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingType"
           },
           "updateVer" : {
             "type" : "integer"
@@ -17131,7 +17155,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "id", "name", "status", "updateVer", "updatedAt", "webhook" ],
+        "required" : [ "createdAt", "id", "inherited", "name", "status", "type", "updateVer", "updatedAt", "webhook" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_discorduc_discorddto.GetDiscordResp" : {
@@ -17358,6 +17382,9 @@
           "id" : {
             "type" : "string"
           },
+          "inherited" : {
+            "type" : "boolean"
+          },
           "installationId" : {
             "type" : "integer"
           },
@@ -17379,6 +17406,9 @@
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
           },
+          "type" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingType"
+          },
           "updateVer" : {
             "type" : "integer"
           },
@@ -17392,7 +17422,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "appId", "callbackURL", "clientId", "clientSecret", "createdAt", "id", "installationId", "kind", "name", "organization", "privateKey", "ssoEnabled", "status", "updateVer", "updatedAt", "webhookSecret", "webhookURL" ],
+        "required" : [ "appId", "callbackURL", "clientId", "clientSecret", "createdAt", "id", "inherited", "installationId", "name", "organization", "privateKey", "ssoEnabled", "status", "type", "updateVer", "updatedAt", "webhookSecret", "webhookURL" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.ListAppInstallationReq" : {
@@ -17652,8 +17682,11 @@
           "id" : {
             "type" : "string"
           },
+          "inherited" : {
+            "type" : "boolean"
+          },
           "kind" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.GitSource"
+            "type" : "string"
           },
           "name" : {
             "type" : "string"
@@ -17663,6 +17696,9 @@
           },
           "token" : {
             "type" : "string"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingType"
           },
           "updateVer" : {
             "type" : "integer"
@@ -17674,7 +17710,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "baseURL", "createdAt", "id", "kind", "name", "status", "token", "updateVer", "updatedAt", "user" ],
+        "required" : [ "baseURL", "createdAt", "id", "inherited", "name", "status", "token", "type", "updateVer", "updatedAt", "user" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_gittokenuc_gittokendto.ListGitTokenResp" : {
@@ -17907,8 +17943,11 @@
           "id" : {
             "type" : "string"
           },
+          "inherited" : {
+            "type" : "boolean"
+          },
           "kind" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.OAuthKind"
+            "type" : "string"
           },
           "name" : {
             "type" : "string"
@@ -17931,6 +17970,9 @@
           "tokenURL" : {
             "type" : "string"
           },
+          "type" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingType"
+          },
           "updateVer" : {
             "type" : "integer"
           },
@@ -17938,7 +17980,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "callbackURL", "clientId", "clientSecret", "createdAt", "id", "kind", "name", "organization", "status", "updateVer", "updatedAt" ],
+        "required" : [ "callbackURL", "clientId", "clientSecret", "createdAt", "id", "inherited", "name", "organization", "status", "type", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.UpdateOAuthMetaReq" : {
@@ -18096,6 +18138,12 @@
           "id" : {
             "type" : "string"
           },
+          "inherited" : {
+            "type" : "boolean"
+          },
+          "kind" : {
+            "type" : "string"
+          },
           "name" : {
             "type" : "string"
           },
@@ -18104,6 +18152,9 @@
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingType"
           },
           "updateVer" : {
             "type" : "integer"
@@ -18115,7 +18166,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "address", "createdAt", "id", "name", "password", "status", "updateVer", "updatedAt", "username" ],
+        "required" : [ "address", "createdAt", "id", "inherited", "name", "password", "status", "type", "updateVer", "updatedAt", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.TestRegistryAuthConnReq" : {
@@ -18294,6 +18345,9 @@
           "id" : {
             "type" : "string"
           },
+          "inherited" : {
+            "type" : "boolean"
+          },
           "kind" : {
             "type" : "string"
           },
@@ -18309,6 +18363,9 @@
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
           },
+          "type" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingType"
+          },
           "updateVer" : {
             "type" : "integer"
           },
@@ -18316,7 +18373,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "accessKeyId", "bucket", "createdAt", "endpoint", "id", "name", "region", "status", "updateVer", "updatedAt" ],
+        "required" : [ "accessKeyId", "bucket", "createdAt", "endpoint", "id", "inherited", "name", "region", "status", "type", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.TestS3StorageConnReq" : {
@@ -18474,7 +18531,13 @@
           "id" : {
             "type" : "string"
           },
+          "inherited" : {
+            "type" : "boolean"
+          },
           "key" : {
+            "type" : "string"
+          },
+          "kind" : {
             "type" : "string"
           },
           "name" : {
@@ -18483,6 +18546,9 @@
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
           },
+          "type" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingType"
+          },
           "updateVer" : {
             "type" : "integer"
           },
@@ -18490,7 +18556,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "id", "key", "status", "updateVer", "updatedAt" ],
+        "required" : [ "createdAt", "id", "inherited", "key", "name", "status", "type", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_secretuc_secretdto.UpdateSecretMetaReq" : {
@@ -18591,11 +18657,20 @@
           "id" : {
             "type" : "string"
           },
+          "inherited" : {
+            "type" : "boolean"
+          },
+          "kind" : {
+            "type" : "string"
+          },
           "name" : {
             "type" : "string"
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingType"
           },
           "updateVer" : {
             "type" : "integer"
@@ -18607,7 +18682,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "id", "name", "status", "updateVer", "updatedAt", "webhook" ],
+        "required" : [ "createdAt", "id", "inherited", "name", "status", "type", "updateVer", "updatedAt", "webhook" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.TestSendSlackMsgReq" : {
@@ -18759,6 +18834,12 @@
           "id" : {
             "type" : "string"
           },
+          "inherited" : {
+            "type" : "boolean"
+          },
+          "kind" : {
+            "type" : "string"
+          },
           "name" : {
             "type" : "string"
           },
@@ -18771,6 +18852,9 @@
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
           },
+          "type" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingType"
+          },
           "updateVer" : {
             "type" : "integer"
           },
@@ -18778,7 +18862,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "id", "name", "privateKey", "status", "updateVer", "updatedAt" ],
+        "required" : [ "createdAt", "id", "inherited", "name", "privateKey", "status", "type", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.UpdateSSHKeyMetaReq" : {
@@ -18927,8 +19011,14 @@
           "id" : {
             "type" : "string"
           },
+          "inherited" : {
+            "type" : "boolean"
+          },
           "keySize" : {
             "type" : "integer"
+          },
+          "kind" : {
+            "type" : "string"
           },
           "name" : {
             "type" : "string"
@@ -18942,6 +19032,9 @@
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
           },
+          "type" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingType"
+          },
           "updateVer" : {
             "type" : "integer"
           },
@@ -18949,7 +19042,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "certificate", "createdAt", "email", "id", "keySize", "name", "privateKey", "provider", "status", "updateVer", "updatedAt" ],
+        "required" : [ "certificate", "createdAt", "email", "id", "inherited", "keySize", "name", "privateKey", "provider", "status", "type", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSslMetaReq" : {
@@ -19284,7 +19377,13 @@
           "id" : {
             "type" : "string"
           },
+          "inherited" : {
+            "type" : "boolean"
+          },
           "keyId" : {
+            "type" : "string"
+          },
+          "kind" : {
             "type" : "string"
           },
           "name" : {
@@ -19293,6 +19392,9 @@
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
           },
+          "type" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingType"
+          },
           "updateVer" : {
             "type" : "integer"
           },
@@ -19300,7 +19402,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "accessAction", "createdAt", "id", "keyId", "name", "status", "updateVer", "updatedAt" ],
+        "required" : [ "accessAction", "createdAt", "id", "inherited", "keyId", "name", "status", "type", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_usersettings_apikeyuc_apikeydto.CreateAPIKeyReq" : {

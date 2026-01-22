@@ -16,11 +16,8 @@ import (
 )
 
 type UpdateSettingMetaReq struct {
+	BaseSettingReq
 	ID        string              `json:"-"`
-	Type      base.SettingType    `json:"-"`
-	Scope     base.SettingScope   `json:"-"`
-	ProjectID string              `json:"-"`
-	AppID     string              `json:"-"`
 	Status    *base.SettingStatus `json:"status"`
 	ExpireAt  *time.Time          `json:"expireAt"`
 	UpdateVer int                 `json:"updateVer"`
@@ -98,11 +95,10 @@ func loadSettingForUpdateMeta(
 ) (err error) {
 	loadOpts := []bunex.SelectQueryOption{
 		bunex.SelectFor("UPDATE OF setting"),
-		bunex.SelectWhereIf(req.Scope == base.SettingScopeGlobal, "setting.object_id IS NULL"),
 	}
 	loadOpts = append(loadOpts, data.ExtraLoadOpts...)
 
-	setting, err := data.SettingRepo.GetByIDEx(ctx, db, req.Type, req.ProjectID, req.AppID, req.ID,
+	setting, err := loadSettingByID(ctx, db, data.SettingRepo, &req.BaseSettingReq, req.ID,
 		false, loadOpts...)
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -111,6 +107,11 @@ func loadSettingForUpdateMeta(
 		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
 	}
 	data.Setting = setting
+
+	if req.Scope != base.SettingScopeGlobal && setting.ObjectID != req.ObjectID {
+		return apperrors.New(apperrors.ErrOwnSettingRequired).
+			WithMsgLog("imported or inherited setting is not allowed to update")
+	}
 
 	return nil
 }

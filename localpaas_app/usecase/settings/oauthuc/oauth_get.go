@@ -24,7 +24,7 @@ func (uc *OAuthUC) GetOAuth(
 	}
 
 	setting.MustAsOAuth().MustDecrypt()
-	resp, err := oauthdto.TransformOAuth(setting, config.Current.SsoBaseCallbackURL())
+	resp, err := oauthdto.TransformOAuth(setting, config.Current.SsoBaseCallbackURL(), req.ObjectID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

@@ -10,19 +10,15 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/strutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 )
 
 type UpdateSettingReq struct {
-	ID        string            `json:"-"`
-	Type      base.SettingType  `json:"-"`
-	Scope     base.SettingScope `json:"-"`
-	ProjectID string            `json:"-"`
-	AppID     string            `json:"-"`
-	UpdateVer int               `json:"updateVer"`
+	BaseSettingReq
+	ID        string `json:"-"`
+	UpdateVer int    `json:"updateVer"`
 }
 
 type UpdateSettingResp struct {
@@ -106,11 +102,10 @@ func loadSettingForUpdate(
 ) (err error) {
 	loadOpts := []bunex.SelectQueryOption{
 		bunex.SelectFor("UPDATE OF setting"),
-		bunex.SelectWhereIf(req.Scope == base.SettingScopeGlobal, "setting.object_id IS NULL"),
 	}
 	loadOpts = append(loadOpts, data.ExtraLoadOpts...)
 
-	setting, err := data.SettingRepo.GetByIDEx(ctx, db, req.Type, req.ProjectID, req.AppID, req.ID,
+	setting, err := loadSettingByID(ctx, db, data.SettingRepo, &req.BaseSettingReq, req.ID,
 		false, loadOpts...)
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -120,15 +115,16 @@ func loadSettingForUpdate(
 	}
 	data.Setting = setting
 
+	if req.Scope != base.SettingScopeGlobal && setting.ObjectID != req.ObjectID {
+		return apperrors.New(apperrors.ErrOwnSettingRequired).
+			WithMsgLog("imported or inherited setting is not allowed to update")
+	}
+
 	// If name changes, validate the new one
 	if data.VerifyingName != "" && !strings.EqualFold(setting.Name, data.VerifyingName) {
-		conflictSetting, _ := data.SettingRepo.GetByNameEx(ctx, db, req.Type,
-			req.ProjectID, req.AppID, data.VerifyingName, false,
-			bunex.SelectWhereIf(req.Scope == base.SettingScopeGlobal, "setting.object_id IS NULL"),
-		)
-		if conflictSetting != nil {
-			return apperrors.NewAlreadyExist(strutil.ToPascalCase(string(req.Type))).
-				WithMsgLog("%s '%s' already exists", req.Type, conflictSetting.Name)
+		err = checkNameConflict(ctx, db, data.SettingRepo, &req.BaseSettingReq, data.VerifyingName)
+		if err != nil {
+			return apperrors.Wrap(err)
 		}
 	}
 

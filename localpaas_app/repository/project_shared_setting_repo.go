@@ -13,7 +13,7 @@ import (
 )
 
 type ProjectSharedSettingRepo interface {
-	Get(ctx context.Context, db database.IDB, projectID, id string,
+	Get(ctx context.Context, db database.IDB, projectID, settingID string,
 		opts ...bunex.SelectQueryOption) (*entity.ProjectSharedSetting, error)
 	List(ctx context.Context, db database.IDB, paging *basedto.Paging,
 		opts ...bunex.SelectQueryOption) ([]*entity.ProjectSharedSetting, *basedto.PagingMeta, error)
@@ -34,12 +34,12 @@ func NewProjectSharedSettingRepo() ProjectSharedSettingRepo {
 	return &projectSharedSettingRepo{}
 }
 
-func (repo *projectSharedSettingRepo) Get(ctx context.Context, db database.IDB, projectID, id string,
+func (repo *projectSharedSettingRepo) Get(ctx context.Context, db database.IDB, projectID, settingID string,
 	opts ...bunex.SelectQueryOption) (*entity.ProjectSharedSetting, error) {
 	projectSharedSetting := &entity.ProjectSharedSetting{}
 	query := db.NewSelect().Model(projectSharedSetting).
 		Where("project_shared_setting.project_id = ?", projectID).
-		Where("project_shared_setting.setting_id = ?", id)
+		Where("project_shared_setting.setting_id = ?", settingID)
 	query = bunex.ApplySelect(query, opts...)
 
 	err := query.Scan(ctx)

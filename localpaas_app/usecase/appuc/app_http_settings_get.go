@@ -21,7 +21,7 @@ func (uc *AppUC) GetAppHttpSettings(
 		return nil, apperrors.Wrap(err)
 	}
 
-	settings, _, err := uc.settingRepo.List(ctx, uc.db, "", "", nil,
+	settings, _, err := uc.settingRepo.List(ctx, uc.db, nil,
 		bunex.SelectWhere("setting.type = ?", base.SettingTypeAppHttp),
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
 		bunex.SelectWhere("setting.object_id = ?", app.ID),

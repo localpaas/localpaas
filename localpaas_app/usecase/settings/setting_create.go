@@ -10,8 +10,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/strutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
@@ -19,10 +17,7 @@ import (
 )
 
 type CreateSettingReq struct {
-	Type      base.SettingType  `json:"-"`
-	Scope     base.SettingScope `json:"-"`
-	ProjectID string            `json:"-"`
-	AppID     string            `json:"-"`
+	BaseSettingReq
 }
 
 type CreateSettingResp struct {
@@ -105,19 +100,12 @@ func loadSettingForCreation(
 	db database.IDB,
 	req *CreateSettingReq,
 	data *CreateSettingData,
-) (err error) {
+) error {
 	// Verify that the name is available to use
-	if data.VerifyingName != "" {
-		conflictSetting, _ := data.SettingRepo.GetByNameEx(ctx, db, req.Type,
-			req.ProjectID, req.AppID, data.VerifyingName, false,
-			bunex.SelectWhereIf(req.Scope == base.SettingScopeGlobal, "setting.object_id IS NULL"),
-		)
-		if conflictSetting != nil {
-			return apperrors.NewAlreadyExist(strutil.ToPascalCase(string(req.Type))).
-				WithMsgLog("%s '%s' already exists", req.Type, conflictSetting.Name)
-		}
+	err := checkNameConflict(ctx, db, data.SettingRepo, &req.BaseSettingReq, data.VerifyingName)
+	if err != nil {
+		return apperrors.Wrap(err)
 	}
-
 	return nil
 }
 
@@ -132,7 +120,7 @@ func prepareSettingCreation(
 		Type:      req.Type,
 		Status:    base.SettingStatusActive,
 		Name:      data.VerifyingName,
-		ObjectID:  gofn.Coalesce(req.ProjectID, req.AppID),
+		ObjectID:  req.ObjectID,
 		Version:   data.Version,
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,

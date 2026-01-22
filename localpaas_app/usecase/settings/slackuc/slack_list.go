@@ -22,7 +22,7 @@ func (uc *SlackUC) ListSlack(
 		return nil, apperrors.Wrap(err)
 	}
 
-	respData, err := slackdto.TransformSlacks(resp.Data)
+	respData, err := slackdto.TransformSlacks(resp.Data, req.ObjectID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

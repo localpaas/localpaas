@@ -1,12 +1,9 @@
 package discorddto
 
 import (
-	"time"
-
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
@@ -37,16 +34,9 @@ type GetDiscordResp struct {
 }
 
 type DiscordResp struct {
-	ID        string             `json:"id"`
-	Name      string             `json:"name"`
-	Status    base.SettingStatus `json:"status"`
-	Webhook   string             `json:"webhook"`
-	Encrypted bool               `json:"encrypted,omitempty"`
-	UpdateVer int                `json:"updateVer"`
-
-	CreatedAt time.Time  `json:"createdAt"`
-	UpdatedAt time.Time  `json:"updatedAt"`
-	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
+	*settings.BaseSettingResp
+	Webhook   string `json:"webhook"`
+	Encrypted bool   `json:"encrypted,omitempty"`
 }
 
 func (resp *DiscordResp) CopyWebhook(field entity.EncryptedField) error {
@@ -54,11 +44,7 @@ func (resp *DiscordResp) CopyWebhook(field entity.EncryptedField) error {
 	return nil
 }
 
-func TransformDiscord(setting *entity.Setting) (resp *DiscordResp, err error) {
-	if err = copier.Copy(&resp, &setting); err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-
+func TransformDiscord(setting *entity.Setting, objectID string) (resp *DiscordResp, err error) {
 	config := setting.MustAsDiscord()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
@@ -67,6 +53,11 @@ func TransformDiscord(setting *entity.Setting) (resp *DiscordResp, err error) {
 	resp.Encrypted = config.Webhook.IsEncrypted()
 	if resp.Encrypted {
 		resp.Webhook = maskedWebhook
+	}
+
+	resp.BaseSettingResp, err = settings.TransformSettingBase(setting, objectID)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
 	}
 	return resp, nil
 }

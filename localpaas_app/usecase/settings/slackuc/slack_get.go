@@ -23,7 +23,7 @@ func (uc *SlackUC) GetSlack(
 	}
 
 	setting.MustAsSlack().MustDecrypt()
-	resp, err := slackdto.TransformSlack(setting)
+	resp, err := slackdto.TransformSlack(setting, req.ObjectID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

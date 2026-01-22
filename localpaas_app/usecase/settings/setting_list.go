@@ -15,12 +15,9 @@ import (
 )
 
 type ListSettingReq struct {
-	Type      base.SettingType     `json:"-" mapstructure:"-"`
-	Scope     base.SettingScope    `json:"-" mapstructure:"-"`
-	ProjectID string               `json:"-" mapstructure:"-"`
-	AppID     string               `json:"-" mapstructure:"-"`
-	Status    []base.SettingStatus `json:"-" mapstructure:"status"`
-	Search    string               `json:"-" mapstructure:"search"`
+	BaseSettingReq
+	Status []base.SettingStatus `json:"-" mapstructure:"status"`
+	Search string               `json:"-" mapstructure:"search"`
 
 	Paging basedto.Paging `json:"-"`
 }
@@ -46,10 +43,9 @@ func ListSetting(
 	auth *basedto.Auth,
 	req *ListSettingReq,
 	data *ListSettingData,
-) (*ListSettingResp, error) {
+) (_ *ListSettingResp, err error) {
 	listOpts := []bunex.SelectQueryOption{
 		bunex.SelectWhere("setting.type = ?", req.Type),
-		bunex.SelectWhereIf(req.Scope == base.SettingScopeGlobal, "setting.object_id IS NULL"),
 	}
 	if len(req.Status) > 0 {
 		listOpts = append(listOpts, bunex.SelectWhere("setting.status IN (?)", bunex.In(req.Status)))
@@ -69,7 +65,23 @@ func ListSetting(
 	}
 	listOpts = append(listOpts, data.ExtraLoadOpts...)
 
-	settings, paging, err := data.SettingRepo.List(ctx, db, req.ProjectID, req.AppID, &req.Paging, listOpts...)
+	var settings []*entity.Setting
+	var paging *basedto.PagingMeta
+
+	switch req.Scope {
+	case base.SettingScopeGlobal:
+		listOpts = append(listOpts, bunex.SelectWhere("setting.object_id IS NULL"))
+		settings, paging, err = data.SettingRepo.List(ctx, db, &req.Paging, listOpts...)
+	case base.SettingScopeProject:
+		settings, paging, err = data.SettingRepo.ListByProject(ctx, db, req.ObjectID,
+			&req.Paging, listOpts...)
+	case base.SettingScopeApp:
+		settings, paging, err = data.SettingRepo.ListByApp(ctx, db, req.ParentObjectID, req.ObjectID,
+			&req.Paging, listOpts...)
+	case base.SettingScopeUser:
+		settings, paging, err = data.SettingRepo.ListByUser(ctx, db, req.ObjectID,
+			&req.Paging, listOpts...)
+	}
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

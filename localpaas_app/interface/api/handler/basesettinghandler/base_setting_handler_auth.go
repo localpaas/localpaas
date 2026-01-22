@@ -37,11 +37,12 @@ func (h *BaseSettingHandler) GetAuthUserSettings(
 	ctx *gin.Context,
 	_ base.ActionType,
 	paramName string,
-) (auth *basedto.Auth, itemID string, err error) {
+) (auth *basedto.Auth, userID, itemID string, err error) {
 	auth, err = h.AuthHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
 	if err != nil {
 		return
 	}
+	userID = auth.User.ID
 	if paramName != "" {
 		itemID, err = h.ParseStringParam(ctx, paramName)
 		if err != nil {

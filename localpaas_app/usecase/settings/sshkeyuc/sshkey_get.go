@@ -23,7 +23,7 @@ func (uc *SSHKeyUC) GetSSHKey(
 	}
 
 	setting.MustAsSSHKey().MustDecrypt()
-	resp, err := sshkeydto.TransformSSHKey(setting)
+	resp, err := sshkeydto.TransformSSHKey(setting, req.ObjectID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

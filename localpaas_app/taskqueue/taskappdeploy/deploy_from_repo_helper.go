@@ -135,7 +135,7 @@ func (e *Executor) calcBuildRegistryAuths(
 	deployment := data.Deployment
 	app := deployment.App
 
-	settings, _, err := e.settingRepo.List(ctx, db, app.ProjectID, "", nil,
+	settings, _, err := e.settingRepo.ListByProject(ctx, db, app.ProjectID, nil,
 		bunex.SelectWhere("setting.type = ?", base.SettingTypeRegistryAuth),
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
 	)

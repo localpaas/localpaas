@@ -35,10 +35,11 @@ type ListGithubAppResp struct {
 	Data []*GithubAppResp `json:"data"`
 }
 
-func TransformGithubApps(settings []*entity.Setting, baseCallbackURL string) (resp []*GithubAppResp, err error) {
+func TransformGithubApps(settings []*entity.Setting, baseCallbackURL string, objectID string) (
+	resp []*GithubAppResp, err error) {
 	resp = make([]*GithubAppResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformGithubApp(setting, baseCallbackURL)
+		item, err := TransformGithubApp(setting, baseCallbackURL, objectID)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

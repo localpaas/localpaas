@@ -23,7 +23,7 @@ func (uc *DiscordUC) GetDiscord(
 	}
 
 	setting.MustAsDiscord().MustDecrypt()
-	resp, err := discorddto.TransformDiscord(setting)
+	resp, err := discorddto.TransformDiscord(setting, req.ObjectID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

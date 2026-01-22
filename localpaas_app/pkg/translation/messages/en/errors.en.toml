@@ -53,6 +53,7 @@ ERR_EMAIL_CHANGE_UNALLOWED = "Email changing is not allowed"
 
 # Settings errors
 ERR_GLOBAL_SETTING_REQUIRED = "Global setting is required"
+ERR_OWN_SETTING_REQUIRED = "Own setting is required"
 
 # Infra errors
 ERR_INFRA = "{{.Error}}"

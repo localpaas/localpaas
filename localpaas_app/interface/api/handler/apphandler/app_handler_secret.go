@@ -30,8 +30,8 @@ func (h *AppHandler) ListAppSecrets(ctx *gin.Context) {
 	}
 
 	req := secretdto.NewListSecretReq()
-	req.ProjectID = projectID
-	req.AppID = appID
+	req.ParentObjectID = projectID
+	req.ObjectID = appID
 	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -67,8 +67,8 @@ func (h *AppHandler) CreateAppSecret(ctx *gin.Context) {
 	}
 
 	req := secretdto.NewCreateSecretReq()
-	req.ProjectID = projectID
-	req.AppID = appID
+	req.ParentObjectID = projectID
+	req.ObjectID = appID
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -105,8 +105,8 @@ func (h *AppHandler) DeleteAppSecret(ctx *gin.Context) {
 
 	req := secretdto.NewDeleteSecretReq()
 	req.ID = itemID
-	req.ProjectID = projectID
-	req.AppID = appID
+	req.ParentObjectID = projectID
+	req.ObjectID = appID
 	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return

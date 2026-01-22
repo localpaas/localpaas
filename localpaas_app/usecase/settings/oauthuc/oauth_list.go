@@ -23,7 +23,7 @@ func (uc *OAuthUC) ListOAuth(
 		return nil, apperrors.Wrap(err)
 	}
 
-	respData, err := oauthdto.TransformOAuths(resp.Data, config.Current.SsoBaseCallbackURL())
+	respData, err := oauthdto.TransformOAuths(resp.Data, config.Current.SsoBaseCallbackURL(), req.ObjectID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

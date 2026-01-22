@@ -68,6 +68,7 @@ var (
 // Errors for settings
 var (
 	ErrGlobalSettingRequired = errors.New("ERR_GLOBAL_SETTING_REQUIRED")
+	ErrOwnSettingRequired    = errors.New("ERR_OWN_SETTING_REQUIRED")
 )
 
 // nolint Errors from infrastructure
@@ -152,6 +153,7 @@ var errorStatusMap = map[error]int{
 
 	// Settings errors
 	ErrGlobalSettingRequired: http.StatusUnprocessableEntity,
+	ErrOwnSettingRequired:    http.StatusUnprocessableEntity,
 
 	// Errors from infrastructure
 	ErrInfra:                   http.StatusInternalServerError,

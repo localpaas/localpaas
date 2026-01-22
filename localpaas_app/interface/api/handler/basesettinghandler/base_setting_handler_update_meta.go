@@ -29,7 +29,7 @@ func (h *BaseSettingHandler) UpdateSettingMeta(
 	opts ...UpdateSettingOption,
 ) {
 	var auth *basedto.Auth
-	var projectID, appID, itemID string
+	var objectID, parentObjectID, itemID string
 	var err error
 
 	options := &UpdateSettingOptions{}
@@ -41,11 +41,11 @@ func (h *BaseSettingHandler) UpdateSettingMeta(
 	case base.SettingScopeGlobal:
 		auth, itemID, err = h.GetAuthGlobalSettings(ctx, resType, base.ActionTypeWrite, "id")
 	case base.SettingScopeProject:
-		auth, projectID, itemID, err = h.GetAuthProjectSettings(ctx, base.ActionTypeWrite, "id")
+		auth, objectID, itemID, err = h.GetAuthProjectSettings(ctx, base.ActionTypeWrite, "id")
 	case base.SettingScopeApp:
-		auth, projectID, appID, itemID, err = h.GetAuthAppSettings(ctx, base.ActionTypeWrite, "id")
+		auth, parentObjectID, objectID, itemID, err = h.GetAuthAppSettings(ctx, base.ActionTypeWrite, "id")
 	case base.SettingScopeUser:
-		auth, itemID, err = h.GetAuthUserSettings(ctx, base.ActionTypeWrite, "id")
+		auth, objectID, itemID, err = h.GetAuthUserSettings(ctx, base.ActionTypeWrite, "id")
 	}
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -59,67 +59,67 @@ func (h *BaseSettingHandler) UpdateSettingMeta(
 	switch resType { //nolint:exhaustive
 	case base.ResourceTypeBasicAuth:
 		r := basicauthdto.NewUpdateBasicAuthMetaReq()
-		r.ID, r.Scope, r.ProjectID, r.AppID = itemID, scope, projectID, appID
+		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.BasicAuthUC.UpdateBasicAuthMeta(reqCtx, auth, r) }
 
 	case base.ResourceTypeGithubApp:
 		r := githubappdto.NewUpdateGithubAppMetaReq()
-		r.ID, r.Scope, r.ProjectID, r.AppID = itemID, scope, projectID, appID
+		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.GithubAppUC.UpdateGithubAppMeta(reqCtx, auth, r) }
 
 	case base.ResourceTypeGitToken:
 		r := gittokendto.NewUpdateGitTokenMetaReq()
-		r.ID, r.Scope, r.ProjectID, r.AppID = itemID, scope, projectID, appID
+		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.GitTokenUC.UpdateGitTokenMeta(reqCtx, auth, r) }
 
 	case base.ResourceTypeOAuth:
 		r := oauthdto.NewUpdateOAuthMetaReq()
-		r.ID, r.Scope, r.ProjectID, r.AppID = itemID, scope, projectID, appID
+		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.OAuthUC.UpdateOAuthMeta(reqCtx, auth, r) }
 
 	case base.ResourceTypeRegistryAuth:
 		r := registryauthdto.NewUpdateRegistryAuthMetaReq()
-		r.ID, r.Scope, r.ProjectID, r.AppID = itemID, scope, projectID, appID
+		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.RegistryAuthUC.UpdateRegistryAuthMeta(reqCtx, auth, r) }
 
 	case base.ResourceTypeS3Storage:
 		r := s3storagedto.NewUpdateS3StorageMetaReq()
-		r.ID, r.Scope, r.ProjectID, r.AppID = itemID, scope, projectID, appID
+		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.S3StorageUC.UpdateS3StorageMeta(reqCtx, auth, r) }
 
 	case base.ResourceTypeSSHKey:
 		r := sshkeydto.NewUpdateSSHKeyMetaReq()
-		r.ID, r.Scope, r.ProjectID, r.AppID = itemID, scope, projectID, appID
+		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.SSHKeyUC.UpdateSSHKeyMeta(reqCtx, auth, r) }
 
 	case base.ResourceTypeSSL:
 		r := ssldto.NewUpdateSslMetaReq()
-		r.ID, r.Scope, r.ProjectID, r.AppID = itemID, scope, projectID, appID
+		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.SSLUC.UpdateSslMeta(reqCtx, auth, r) }
 
 	case base.ResourceTypeCronJob:
 		r := cronjobdto.NewUpdateCronJobMetaReq()
-		r.ID, r.Scope, r.ProjectID, r.AppID = itemID, scope, projectID, appID
+		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.CronJobUC.UpdateCronJobMeta(reqCtx, auth, r) }
 
 	case base.ResourceTypeSecret:
 		r := secretdto.NewUpdateSecretMetaReq()
-		r.ID, r.Scope, r.ProjectID, r.AppID = itemID, scope, projectID, appID
+		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.SecretUC.UpdateSecretMeta(reqCtx, auth, r) }
 
 	case base.ResourceTypeAPIKey:
 		r := apikeydto.NewUpdateAPIKeyMetaReq()
-		r.ID, r.Scope, r.ProjectID, r.AppID = itemID, scope, projectID, appID
+		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.APIKeyUC.UpdateAPIKeyMeta(reqCtx, auth, r) }
 
 	case base.ResourceTypeSlack:
 		r := slackdto.NewUpdateSlackMetaReq()
-		r.ID, r.Scope, r.ProjectID, r.AppID = itemID, scope, projectID, appID
+		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.SlackUC.UpdateSlackMeta(reqCtx, auth, r) }
 
 	case base.ResourceTypeDiscord:
 		r := discorddto.NewUpdateDiscordMetaReq()
-		r.ID, r.Scope, r.ProjectID, r.AppID = itemID, scope, projectID, appID
+		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.DiscordUC.UpdateDiscordMeta(reqCtx, auth, r) }
 	}
 

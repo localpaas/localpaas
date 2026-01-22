@@ -22,7 +22,7 @@ func (uc *CronJobUC) ListCronJob(
 		return nil, apperrors.Wrap(err)
 	}
 
-	respData, err := cronjobdto.TransformCronJobs(resp.Data)
+	respData, err := cronjobdto.TransformCronJobs(resp.Data, req.ObjectID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
