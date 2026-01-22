@@ -49,7 +49,7 @@ func (resp *S3StorageResp) CopySecretKey(field entity.EncryptedField) error {
 	return nil
 }
 
-func TransformS3Storage(setting *entity.Setting, objectID string) (resp *S3StorageResp, err error) {
+func TransformS3Storage(setting *entity.Setting) (resp *S3StorageResp, err error) {
 	s3Config := setting.MustAsS3Storage()
 	if err = copier.Copy(&resp, &s3Config); err != nil {
 		return nil, apperrors.Wrap(err)
@@ -60,7 +60,7 @@ func TransformS3Storage(setting *entity.Setting, objectID string) (resp *S3Stora
 		resp.SecretKey = maskedSecretKey
 	}
 
-	resp.BaseSettingResp, err = settings.TransformSettingBase(setting, objectID)
+	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

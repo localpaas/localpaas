@@ -48,7 +48,7 @@ func (resp *SslResp) CopyPrivateKey(field entity.EncryptedField) error {
 	return nil
 }
 
-func TransformSsl(setting *entity.Setting, objectID string) (resp *SslResp, err error) {
+func TransformSsl(setting *entity.Setting) (resp *SslResp, err error) {
 	config := setting.MustAsSsl()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
@@ -59,7 +59,7 @@ func TransformSsl(setting *entity.Setting, objectID string) (resp *SslResp, err 
 		resp.PrivateKey = maskedKey
 	}
 
-	resp.BaseSettingResp, err = settings.TransformSettingBase(setting, objectID)
+	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

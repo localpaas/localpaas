@@ -73,6 +73,9 @@ func (uc *AppUC) loadAppHttpSettingsReferenceData(
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+	for _, setting := range input.ReferenceSettingMap {
+		setting.CurrentObjectID = input.App.ID
+	}
 
 	input.DefaultNginxSettings, err = uc.nginxService.GetDefaultNginxConfig()
 	if err != nil {

@@ -44,7 +44,7 @@ func (resp *DiscordResp) CopyWebhook(field entity.EncryptedField) error {
 	return nil
 }
 
-func TransformDiscord(setting *entity.Setting, objectID string) (resp *DiscordResp, err error) {
+func TransformDiscord(setting *entity.Setting) (resp *DiscordResp, err error) {
 	config := setting.MustAsDiscord()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
@@ -55,7 +55,7 @@ func TransformDiscord(setting *entity.Setting, objectID string) (resp *DiscordRe
 		resp.Webhook = maskedWebhook
 	}
 
-	resp.BaseSettingResp, err = settings.TransformSettingBase(setting, objectID)
+	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

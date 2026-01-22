@@ -105,14 +105,14 @@ func checkNameConflict(
 	return nil
 }
 
-func TransformSettingBase(setting *entity.Setting, objectID string) (resp *BaseSettingResp, err error) {
+func TransformSettingBase(setting *entity.Setting) (resp *BaseSettingResp, err error) {
 	if setting == nil {
 		return nil, nil
 	}
 	if err = copier.Copy(&resp, setting); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	if setting.ObjectID != objectID {
+	if setting.ObjectID != setting.CurrentObjectID {
 		resp.Inherited = true
 	}
 	return resp, nil

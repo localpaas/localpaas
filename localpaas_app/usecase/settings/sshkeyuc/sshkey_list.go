@@ -22,7 +22,7 @@ func (uc *SSHKeyUC) ListSSHKey(
 		return nil, apperrors.Wrap(err)
 	}
 
-	respData, err := sshkeydto.TransformSSHKeys(resp.Data, req.ObjectID)
+	respData, err := sshkeydto.TransformSSHKeys(resp.Data)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

@@ -22,7 +22,7 @@ func (uc *SslUC) ListSsl(
 		return nil, apperrors.Wrap(err)
 	}
 
-	respData, err := ssldto.TransformSsls(resp.Data, req.ObjectID)
+	respData, err := ssldto.TransformSsls(resp.Data)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

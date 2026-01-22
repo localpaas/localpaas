@@ -46,7 +46,7 @@ func (resp *GitTokenResp) CopyToken(field entity.EncryptedField) error {
 	return nil
 }
 
-func TransformGitToken(setting *entity.Setting, objectID string) (resp *GitTokenResp, err error) {
+func TransformGitToken(setting *entity.Setting) (resp *GitTokenResp, err error) {
 	config := setting.MustAsGitToken()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
@@ -57,7 +57,7 @@ func TransformGitToken(setting *entity.Setting, objectID string) (resp *GitToken
 		resp.Token = maskedSecret
 	}
 
-	resp.BaseSettingResp, err = settings.TransformSettingBase(setting, objectID)
+	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

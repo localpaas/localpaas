@@ -46,7 +46,7 @@ func (resp *RegistryAuthResp) CopyPassword(field entity.EncryptedField) error {
 	return nil
 }
 
-func TransformRegistryAuth(setting *entity.Setting, objectID string) (resp *RegistryAuthResp, err error) {
+func TransformRegistryAuth(setting *entity.Setting) (resp *RegistryAuthResp, err error) {
 	config := setting.MustAsRegistryAuth()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
@@ -57,7 +57,7 @@ func TransformRegistryAuth(setting *entity.Setting, objectID string) (resp *Regi
 		resp.Password = maskedPassword
 	}
 
-	resp.BaseSettingResp, err = settings.TransformSettingBase(setting, objectID)
+	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

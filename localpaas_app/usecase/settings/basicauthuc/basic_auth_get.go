@@ -23,7 +23,7 @@ func (uc *BasicAuthUC) GetBasicAuth(
 	}
 
 	setting.MustAsBasicAuth().MustDecrypt()
-	resp, err := basicauthdto.TransformBasicAuth(setting, req.ObjectID)
+	resp, err := basicauthdto.TransformBasicAuth(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

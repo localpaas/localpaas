@@ -22,7 +22,7 @@ func (uc *DiscordUC) ListDiscord(
 		return nil, apperrors.Wrap(err)
 	}
 
-	respData, err := discorddto.TransformDiscords(resp.Data, req.ObjectID)
+	respData, err := discorddto.TransformDiscords(resp.Data)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

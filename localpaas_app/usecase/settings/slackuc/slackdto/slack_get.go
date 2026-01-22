@@ -44,7 +44,7 @@ func (resp *SlackResp) CopyWebhook(field entity.EncryptedField) error {
 	return nil
 }
 
-func TransformSlack(setting *entity.Setting, objectID string) (resp *SlackResp, err error) {
+func TransformSlack(setting *entity.Setting) (resp *SlackResp, err error) {
 	config := setting.MustAsSlack()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
@@ -55,7 +55,7 @@ func TransformSlack(setting *entity.Setting, objectID string) (resp *SlackResp, 
 		resp.Webhook = maskedWebhook
 	}
 
-	resp.BaseSettingResp, err = settings.TransformSettingBase(setting, objectID)
+	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

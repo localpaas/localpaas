@@ -35,10 +35,10 @@ type ListCronJobResp struct {
 	Data []*CronJobResp `json:"data"`
 }
 
-func TransformCronJobs(settings []*entity.Setting, objectID string) (resp []*CronJobResp, err error) {
+func TransformCronJobs(settings []*entity.Setting) (resp []*CronJobResp, err error) {
 	resp = make([]*CronJobResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformCronJob(setting, objectID)
+		item, err := TransformCronJob(setting)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

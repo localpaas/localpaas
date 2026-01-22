@@ -22,7 +22,7 @@ func (uc *CronJobUC) GetCronJob(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := cronjobdto.TransformCronJob(setting, req.ObjectID)
+	resp, err := cronjobdto.TransformCronJob(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

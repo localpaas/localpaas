@@ -23,7 +23,7 @@ func (uc *S3StorageUC) GetS3Storage(
 	}
 
 	setting.MustAsS3Storage().MustDecrypt()
-	resp, err := s3storagedto.TransformS3Storage(setting, req.ObjectID)
+	resp, err := s3storagedto.TransformS3Storage(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

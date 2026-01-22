@@ -23,7 +23,7 @@ func (uc *GitTokenUC) GetGitToken(
 	}
 
 	setting.MustAsGitToken().MustDecrypt()
-	resp, err := gittokendto.TransformGitToken(setting, req.ObjectID)
+	resp, err := gittokendto.TransformGitToken(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

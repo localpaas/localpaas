@@ -22,7 +22,7 @@ func (uc *SecretUC) ListSecret(
 		return nil, apperrors.Wrap(err)
 	}
 
-	respData, err := secretdto.TransformSecrets(resp.Data, req.ObjectID)
+	respData, err := secretdto.TransformSecrets(resp.Data)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

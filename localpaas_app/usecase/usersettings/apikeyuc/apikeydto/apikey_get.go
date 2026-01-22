@@ -12,7 +12,7 @@ import (
 )
 
 type GetAPIKeyReq struct {
-	ID string `json:"-"`
+	settings.GetSettingReq
 }
 
 func NewGetAPIKeyReq() *GetAPIKeyReq {
@@ -21,7 +21,7 @@ func NewGetAPIKeyReq() *GetAPIKeyReq {
 
 func (req *GetAPIKeyReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, basedto.ValidateID(&req.ID, true, "id")...)
+	validators = append(validators, req.GetSettingReq.Validate()...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
@@ -36,13 +36,13 @@ type APIKeyResp struct {
 	AccessAction base.AccessActions `json:"accessAction"`
 }
 
-func TransformAPIKey(setting *entity.Setting, objectID string) (resp *APIKeyResp, err error) {
+func TransformAPIKey(setting *entity.Setting) (resp *APIKeyResp, err error) {
 	apiKey := setting.MustAsAPIKey()
 	if err = copier.Copy(&resp, apiKey); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp.BaseSettingResp, err = settings.TransformSettingBase(setting, objectID)
+	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

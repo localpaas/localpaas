@@ -40,8 +40,9 @@ type Setting struct {
 	ObjectApp      *App             `bun:"rel:belongs-to,join:object_id=id"`
 	Tasks          []*Task          `bun:"rel:has-many,join:id=job_id"`
 
-	// NOTE: temporary field
-	parsedData any
+	// NOTE: temporary fields
+	parsedData      any
+	CurrentObjectID string `bun:"-"`
 }
 
 // GetID implements IDEntity interface

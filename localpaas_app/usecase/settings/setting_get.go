@@ -39,5 +39,8 @@ func GetSetting(
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+	if setting != nil {
+		setting.CurrentObjectID = req.ObjectID
+	}
 	return setting, nil
 }

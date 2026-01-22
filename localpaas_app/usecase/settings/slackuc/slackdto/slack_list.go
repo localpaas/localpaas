@@ -35,10 +35,10 @@ type ListSlackResp struct {
 	Data []*SlackResp  `json:"data"`
 }
 
-func TransformSlacks(settings []*entity.Setting, objectID string) (resp []*SlackResp, err error) {
+func TransformSlacks(settings []*entity.Setting) (resp []*SlackResp, err error) {
 	resp = make([]*SlackResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformSlack(setting, objectID)
+		item, err := TransformSlack(setting)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

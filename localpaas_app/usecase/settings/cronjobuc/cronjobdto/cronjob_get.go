@@ -44,13 +44,13 @@ type CronJobResp struct {
 	Command     string            `json:"command"`
 }
 
-func TransformCronJob(setting *entity.Setting, objectID string) (resp *CronJobResp, err error) {
+func TransformCronJob(setting *entity.Setting) (resp *CronJobResp, err error) {
 	config := setting.MustAsCronJob()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp.BaseSettingResp, err = settings.TransformSettingBase(setting, objectID)
+	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

@@ -64,7 +64,7 @@ func TransformOAuth(setting *entity.Setting, baseCallbackURL string, objectID st
 		resp.ClientSecret = maskedSecretKey
 	}
 
-	resp.BaseSettingResp, err = settings.TransformSettingBase(setting, objectID)
+	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

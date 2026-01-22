@@ -35,10 +35,10 @@ type ListAPIKeyResp struct {
 	Data []*APIKeyResp `json:"data"`
 }
 
-func TransformAPIKeys(settings []*entity.Setting, objectID string) (resp []*APIKeyResp, err error) {
+func TransformAPIKeys(settings []*entity.Setting) (resp []*APIKeyResp, err error) {
 	resp = make([]*APIKeyResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformAPIKey(setting, objectID)
+		item, err := TransformAPIKey(setting)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

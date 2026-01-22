@@ -79,7 +79,7 @@ func TransformGithubApp(setting *entity.Setting, baseCallbackURL string, objectI
 		resp.PrivateKey = maskedSecretKey
 	}
 
-	resp.BaseSettingResp, err = settings.TransformSettingBase(setting, objectID)
+	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

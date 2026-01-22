@@ -23,7 +23,7 @@ func (uc *SslUC) GetSsl(
 	}
 
 	setting.MustAsSsl().MustDecrypt()
-	resp, err := ssldto.TransformSsl(setting, req.ObjectID)
+	resp, err := ssldto.TransformSsl(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

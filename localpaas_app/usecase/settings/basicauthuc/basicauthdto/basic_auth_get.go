@@ -45,7 +45,7 @@ func (resp *BasicAuthResp) CopyPassword(field entity.EncryptedField) error {
 	return nil
 }
 
-func TransformBasicAuth(setting *entity.Setting, objectID string) (resp *BasicAuthResp, err error) {
+func TransformBasicAuth(setting *entity.Setting) (resp *BasicAuthResp, err error) {
 	config := setting.MustAsBasicAuth()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
@@ -55,7 +55,7 @@ func TransformBasicAuth(setting *entity.Setting, objectID string) (resp *BasicAu
 		resp.Password = maskedPassword
 	}
 
-	resp.BaseSettingResp, err = settings.TransformSettingBase(setting, objectID)
+	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

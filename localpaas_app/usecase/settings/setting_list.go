@@ -86,6 +86,10 @@ func ListSetting(
 		return nil, apperrors.Wrap(err)
 	}
 
+	for _, setting := range settings {
+		setting.CurrentObjectID = req.ObjectID
+	}
+
 	return &ListSettingResp{
 		Meta: &basedto.Meta{Page: paging},
 		Data: settings,

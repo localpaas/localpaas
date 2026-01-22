@@ -23,7 +23,7 @@ func (uc *RegistryAuthUC) GetRegistryAuth(
 	}
 
 	setting.MustAsRegistryAuth().MustDecrypt()
-	resp, err := registryauthdto.TransformRegistryAuth(setting, req.ObjectID)
+	resp, err := registryauthdto.TransformRegistryAuth(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

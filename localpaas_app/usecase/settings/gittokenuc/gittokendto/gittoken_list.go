@@ -35,10 +35,10 @@ type ListGitTokenResp struct {
 	Data []*GitTokenResp `json:"data"`
 }
 
-func TransformGitTokens(settings []*entity.Setting, objectID string) (resp []*GitTokenResp, err error) {
+func TransformGitTokens(settings []*entity.Setting) (resp []*GitTokenResp, err error) {
 	resp = make([]*GitTokenResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformGitToken(setting, objectID)
+		item, err := TransformGitToken(setting)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

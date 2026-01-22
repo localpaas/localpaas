@@ -20,7 +20,6 @@ func (uc *APIKeyUC) ListAPIKey(
 		SettingRepo: uc.settingRepo,
 		ExtraLoadOpts: []bunex.SelectQueryOption{
 			bunex.SelectWhere("setting.deleted_at IS NULL"),
-			bunex.SelectWhere("setting.object_id = ?", req.ObjectID),
 			bunex.SelectRelation("ObjectUser", bunex.SelectWithDeleted()),
 		},
 	})
@@ -28,7 +27,7 @@ func (uc *APIKeyUC) ListAPIKey(
 		return nil, apperrors.Wrap(err)
 	}
 
-	respData, err := apikeydto.TransformAPIKeys(resp.Data, req.ObjectID)
+	respData, err := apikeydto.TransformAPIKeys(resp.Data)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
