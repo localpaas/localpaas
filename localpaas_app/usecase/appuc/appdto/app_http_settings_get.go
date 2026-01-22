@@ -1,7 +1,6 @@
 package appdto
 
 import (
-	crossplane "github.com/nginxinc/nginx-go-crossplane"
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -10,6 +9,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc/basicauthdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc/ssldto"
+	"github.com/localpaas/localpaas/services/nginx"
 )
 
 type GetAppHttpSettingsReq struct {
@@ -64,7 +64,7 @@ type NginxServerBlockResp struct {
 
 type NginxDirectiveResp struct {
 	Hide bool `json:"hide,omitempty"`
-	*crossplane.Directive
+	*nginx.Directive
 }
 
 type AppHttpSettingsTransformInput struct {

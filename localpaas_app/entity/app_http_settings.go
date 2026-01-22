@@ -3,10 +3,10 @@ package entity
 import (
 	"strings"
 
-	crossplane "github.com/nginxinc/nginx-go-crossplane"
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/services/nginx"
 )
 
 const (
@@ -42,7 +42,7 @@ type NginxServerBlock struct {
 
 type NginxDirective struct {
 	Hide bool `json:"hide,omitempty"`
-	*crossplane.Directive
+	*nginx.Directive
 }
 
 func (s *AppHttpSettings) GetDomain(domain string) *AppDomain {

@@ -4,20 +4,24 @@ import (
 	"io"
 	"strings"
 
-	crossplane "github.com/nginxinc/nginx-go-crossplane"
+	crossplane "github.com/localpaas/nginx-go-crossplane"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
-type ParseOption func(*crossplane.ParseOptions)
+type ParseOptions struct {
+	crossplane.ParseOptions
+}
+
+type ParseOption func(*ParseOptions)
 
 func ParseFile(filepath string, options ...ParseOption) (*Config, error) {
-	opts := &crossplane.ParseOptions{}
+	opts := &ParseOptions{}
 	for _, opt := range options {
 		opt(opts)
 	}
 
-	payload, err := crossplane.Parse(filepath, opts)
+	payload, err := crossplane.Parse(filepath, &opts.ParseOptions)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -30,17 +34,19 @@ func ParseFile(filepath string, options ...ParseOption) (*Config, error) {
 }
 
 func ParseString(data string, options ...ParseOption) (*Config, error) {
-	opts := &crossplane.ParseOptions{
-		SingleFile: true,
-		Open: func(path string) (io.ReadCloser, error) {
-			return io.NopCloser(strings.NewReader(data)), nil
+	opts := &ParseOptions{
+		ParseOptions: crossplane.ParseOptions{
+			SingleFile: true,
+			Open: func(path string) (io.ReadCloser, error) {
+				return io.NopCloser(strings.NewReader(data)), nil
+			},
 		},
 	}
 	for _, opt := range options {
 		opt(opts)
 	}
 
-	payload, err := crossplane.Parse("nginx.conf", opts)
+	payload, err := crossplane.Parse("nginx.conf", &opts.ParseOptions)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

@@ -1,11 +1,11 @@
 package appdto
 
 import (
-	crossplane "github.com/nginxinc/nginx-go-crossplane"
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/services/nginx"
 )
 
 type UpdateAppHttpSettingsReq struct {
@@ -52,7 +52,7 @@ type NginxServerBlockReq struct {
 
 type NginxDirectiveReq struct {
 	Hide bool `json:"hide"`
-	*crossplane.Directive
+	*nginx.Directive
 }
 
 func NewUpdateAppHttpSettingsReq() *UpdateAppHttpSettingsReq {

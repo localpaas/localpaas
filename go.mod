@@ -30,12 +30,12 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/jackc/pgx/v5 v5.8.0
 	github.com/jinzhu/configor v1.2.2
+	github.com/localpaas/nginx-go-crossplane v0.4.87-0.20260122180215-91f983fe3fc0
 	github.com/markbates/goth v1.82.0
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/moby/go-archive v0.2.0
 	github.com/moby/moby/api v1.52.0
 	github.com/mozillazg/go-slugify v0.2.0
-	github.com/nginxinc/nginx-go-crossplane v0.4.86
 	github.com/nicksnyder/go-i18n/v2 v2.6.1
 	github.com/oklog/ulid/v2 v2.1.1
 	github.com/olahol/melody v1.4.0
@@ -159,6 +159,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/morikuni/aec v1.0.0 // indirect
 	github.com/mozillazg/go-unidecode v0.2.0 // indirect
+	github.com/nginxinc/nginx-go-crossplane v0.4.86 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect

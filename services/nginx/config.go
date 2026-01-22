@@ -1,15 +1,16 @@
 package nginx
 
 import (
-	crossplane "github.com/nginxinc/nginx-go-crossplane"
-	"github.com/tiendc/gofn"
+	crossplane "github.com/localpaas/nginx-go-crossplane"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
 type Config struct {
 	inner *crossplane.Config
 }
 
-func NewConfig(directives ...*crossplane.Directive) *Config {
+func NewConfig(directives ...*Directive) *Config {
 	cfg := &Config{
 		inner: &crossplane.Config{},
 	}
@@ -22,178 +23,56 @@ func (c *Config) Blocks() []*Block {
 }
 
 func (c *Config) BlocksByName(name string, n int) []*Block {
-	return blocksByName(c.inner.Parsed, name, n)
+	return blocksByName(c.allCrossplaneDirectives(), name, n)
 }
 
-func (c *Config) IterBlocksByName(name string, fn func(block *Block, i int) bool) {
-	for i, block := range c.BlocksByName(name, -1) {
-		if !fn(block, i) {
-			return
-		}
-	}
+func (c *Config) IterBlocksByName(name string, fn func(*Block, int) (bool, error)) error {
+	return iterBlocksByName(c.allCrossplaneDirectives(), name, fn)
 }
 
 func (c *Config) AddBlock(block *Block) {
-	c.inner.Parsed = append(c.inner.Parsed, block.inner)
+	c.inner.Parsed = append(c.inner.Parsed, block.Directive)
 }
 
-func (c *Config) AllDirectives() crossplane.Directives {
+func (c *Config) allCrossplaneDirectives() crossplane.Directives {
 	return c.inner.Parsed
 }
 
-func (c *Config) IterAllDirectives(fn func(block *crossplane.Directive, i int) bool) {
-	for i, directive := range c.AllDirectives() {
-		if !fn(directive, i) {
-			return
+func (c *Config) AllDirectives() []*Directive {
+	return convertDirectives(c.allCrossplaneDirectives())
+}
+
+func (c *Config) IterAllDirectives(fn func(*Directive, int) (bool, error)) error {
+	for i, dir := range c.allCrossplaneDirectives() {
+		shouldContinue, err := fn(&Directive{Directive: dir}, i)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+		if !shouldContinue {
+			break
 		}
 	}
+	return nil
 }
 
-func (c *Config) Directives() crossplane.Directives {
-	return directivesByName(c.inner.Parsed, "", -1)
+func (c *Config) Directives() []*Directive {
+	return directivesByName(c.allCrossplaneDirectives(), "", -1)
 }
 
-func (c *Config) IterDirectives(fn func(block *crossplane.Directive, i int) bool) {
-	for i, directive := range c.Directives() {
-		if !fn(directive, i) {
-			return
-		}
-	}
+func (c *Config) IterDirectives(fn func(*Directive, int) (bool, error)) error {
+	return iterDirectivesByName(c.allCrossplaneDirectives(), "", fn)
 }
 
-func (c *Config) DirectivesByName(name string, n int) crossplane.Directives {
+func (c *Config) DirectivesByName(name string, n int) []*Directive {
 	return directivesByName(c.inner.Parsed, name, n)
 }
 
-func (c *Config) IterDirectivesByName(name string, fn func(block *crossplane.Directive, i int) bool) {
-	for i, directive := range c.DirectivesByName(name, -1) {
-		if !fn(directive, i) {
-			return
-		}
-	}
+func (c *Config) IterDirectivesByName(name string, fn func(*Directive, int) (bool, error)) error {
+	return iterDirectivesByName(c.allCrossplaneDirectives(), name, fn)
 }
 
-func (c *Config) AddDirectives(directives ...*crossplane.Directive) {
-	c.inner.Parsed = append(c.inner.Parsed, directives...)
-}
-
-type Block struct {
-	inner *crossplane.Directive
-}
-
-func NewBlock(name string, args []string, directives ...*crossplane.Directive) *Block {
-	block := &Block{
-		inner: &crossplane.Directive{
-			Directive: name,
-			Args:      args,
-		},
-	}
-	block.AddDirectives(directives...)
-	return block
-}
-
-func NewServerBlock(directives ...*crossplane.Directive) *Block {
-	return NewBlock("server", nil, directives...)
-}
-
-func (c *Block) Blocks() []*Block {
-	return blocksByName(c.inner.Block, "", 0)
-}
-
-func (c *Block) BlocksByName(name string, n int) []*Block {
-	return blocksByName(c.inner.Block, name, n)
-}
-
-func (c *Block) IterBlocksByName(name string, fn func(block *Block, i int) bool) {
-	for i, block := range c.BlocksByName(name, -1) {
-		if !fn(block, i) {
-			return
-		}
-	}
-}
-
-func (c *Block) AddBlock(block *Block) {
-	c.inner.Block = append(c.inner.Block, block.inner)
-}
-
-func (c *Block) RemoveBlock(block *Block) {
-	gofn.Remove(&c.inner.Block, block.inner)
-}
-
-func (c *Block) AllDirectives() crossplane.Directives {
-	return c.inner.Block
-}
-
-func (c *Block) IterAllDirectives(fn func(block *crossplane.Directive, i int) bool) {
-	for i, directive := range c.AllDirectives() {
-		if !fn(directive, i) {
-			return
-		}
-	}
-}
-
-func (c *Block) Directives() crossplane.Directives {
-	return directivesByName(c.inner.Block, "", -1)
-}
-
-func (c *Block) IterDirectives(fn func(block *crossplane.Directive, i int) bool) {
-	for i, directive := range c.Directives() {
-		if !fn(directive, i) {
-			return
-		}
-	}
-}
-
-func (c *Block) DirectivesByName(name string, n int) crossplane.Directives {
-	return directivesByName(c.inner.Block, name, n)
-}
-
-func (c *Block) IterDirectivesByName(name string, fn func(block *crossplane.Directive, i int) bool) {
-	for i, directive := range c.DirectivesByName(name, -1) {
-		if !fn(directive, i) {
-			return
-		}
-	}
-}
-
-func (c *Block) AddDirectives(directives ...*crossplane.Directive) {
-	c.inner.Block = append(c.inner.Block, directives...)
-}
-
-func (c *Block) SetDirectiveArgs(name string, args []string, n int) {
-	for _, directive := range c.DirectivesByName(name, n) {
-		directive.Args = args
-	}
-}
-
-func blocksByName(directives crossplane.Directives, name string, n int) (blocks []*Block) {
+func (c *Config) AddDirectives(directives ...*Directive) {
 	for _, dir := range directives {
-		if !dir.IsBlock() {
-			continue
-		}
-		if name != "" && dir.Directive != name {
-			continue
-		}
-		if n > 0 && len(blocks) >= n {
-			break
-		}
-		blocks = append(blocks, &Block{inner: dir})
+		c.inner.Parsed = append(c.inner.Parsed, dir.Directive)
 	}
-	return
-}
-
-func directivesByName(directives crossplane.Directives, name string, n int) (res crossplane.Directives) {
-	for _, dir := range directives {
-		if dir.IsBlock() {
-			continue
-		}
-		if name != "" && dir.Directive != name {
-			continue
-		}
-		if n > 0 && len(res) >= n {
-			break
-		}
-		res = append(res, dir)
-	}
-	return
 }
