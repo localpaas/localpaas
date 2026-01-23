@@ -9,8 +9,11 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 )
 
-func (s *networkService) UpdateAppGlobalRoutingNetwork(ctx context.Context, app *entity.App,
-	dbHttpSettings *entity.Setting) error {
+func (s *networkService) UpdateAppGlobalRoutingNetwork(
+	ctx context.Context,
+	app *entity.App,
+	dbHttpSettings *entity.Setting,
+) error {
 	httpSettings := dbHttpSettings.MustAsAppHttpSettings()
 	globalNetworkID, err := s.FindGlobalRoutingNetworkID(ctx)
 	if err != nil {

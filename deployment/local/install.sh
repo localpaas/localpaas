@@ -28,6 +28,10 @@ mkdir -p $NGINX_SHARE/domains
 mkdir -p $NGINX_SHARE/html
 mkdir -p $NGINX_CERTS/fake
 
+# Remove all app config files from nginx
+echo "Remove all app config files from nginx..."
+rm -rf $NGINX_ETC/conf.d/*.conf
+
 # Download nginx conf files
 echo "Copy nginx config files..."
 cp deployment/local/nginx/nginx.conf $NGINX_ETC/nginx.conf

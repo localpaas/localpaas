@@ -2,7 +2,6 @@ package appuc
 
 import (
 	"context"
-	"path/filepath"
 
 	"github.com/go-acme/lego/v4/certificate"
 	"github.com/tiendc/gofn"
@@ -14,10 +13,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/fileutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
+	"github.com/localpaas/localpaas/localpaas_app/service/nginxservice"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
 	"github.com/localpaas/localpaas/services/letsencrypt"
 )
@@ -56,7 +55,7 @@ func (uc *AppUC) ObtainDomainSsl(
 			return apperrors.Wrap(err)
 		}
 
-		err = uc.applyDomainSsl(ctx, appData)
+		err = uc.applyDomainSsl(ctx, db, appData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -164,16 +163,35 @@ func (uc *AppUC) preparePersistingDomainSslData(
 
 func (uc *AppUC) applyDomainSsl(
 	ctx context.Context,
+	db database.IDB,
 	data *obtainSslData,
 ) error {
-	saveDir := filepath.Join(config.Current.DataPathCerts(), data.SslCert.ID)
-	err := fileutil.WriteCerts(data.ObtainedCerts.Certificate, data.ObtainedCerts.PrivateKey, saveDir,
-		"certificate.crt", "private.key")
+	appHttpSettings, err := data.HttpSettings.AsAppHttpSettings()
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	err = uc.nginxService.ApplyAppConfig(ctx, data.App, data.HttpSettings)
+	refSettingMap, err := uc.appService.LoadReferenceSettings(ctx, db, data.App, data.HttpSettings)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	allSslIDs := appHttpSettings.GetAllSslCertIDs()
+	err = uc.appService.EnsureSslConfigFiles(allSslIDs, false, refSettingMap)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	allBasicAuthIDs := appHttpSettings.GetAllBasicAuthIDs()
+	err = uc.appService.EnsureBasicAuthConfigFiles(allBasicAuthIDs, false, refSettingMap)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	err = uc.nginxService.ApplyAppConfig(ctx, data.App, &nginxservice.AppConfigData{
+		HttpSettings:  appHttpSettings,
+		RefSettingMap: refSettingMap,
+	})
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

@@ -55,6 +55,9 @@ func (cfg *Config) DataPathNginxShare() string {
 func (cfg *Config) DataPathNginxShareDomains() string {
 	return filepath.Join(cfg.DataPathNginxShare(), "domains")
 }
+func (cfg *Config) DataPathNginxShareBasicAuth() string {
+	return filepath.Join(cfg.DataPathNginxShare(), "basic-auth")
+}
 
 /// LETS ENCRYPT
 

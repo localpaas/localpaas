@@ -121,6 +121,15 @@ func (b *Block) AddDirectives(directives ...*Directive) {
 	}
 }
 
+func (b *Block) AddDirectiveNamesIfNotExist(names ...string) {
+	for _, name := range names {
+		if b.ContainPartialMatchedDirective(name, nil) {
+			continue
+		}
+		b.AddDirectives(NewDirective(name, nil))
+	}
+}
+
 func (b *Block) AddDirectivesIfNotExist(directives ...*Directive) {
 	for _, directive := range directives {
 		if b.ContainDirective(directive) {
@@ -155,6 +164,10 @@ func (b *Block) GetDirectiveIndex(name string, args []string) int {
 		}
 	}
 	return -1
+}
+
+func (b *Block) ContainPartialMatchedDirective(name string, args []string) bool {
+	return b.GetPartialMatchedDirectiveIndex(name, args) != -1
 }
 
 func (b *Block) GetPartialMatchedDirective(name string, args []string) *Directive {
@@ -193,6 +206,15 @@ func (b *Block) RemoveDirectives(directives ...*Directive) {
 func (b *Block) RemovePartialMatchedDirectives(directives ...*Directive) {
 	for _, dir := range directives {
 		idx := b.GetPartialMatchedDirectiveIndex(dir.Directive.Directive, dir.Args)
+		if idx >= 0 {
+			gofn.RemoveAt(&b.Block, idx)
+		}
+	}
+}
+
+func (b *Block) RemoveDirectiveNames(names ...string) {
+	for _, name := range names {
+		idx := b.GetPartialMatchedDirectiveIndex(name, nil)
 		if idx >= 0 {
 			gofn.RemoveAt(&b.Block, idx)
 		}

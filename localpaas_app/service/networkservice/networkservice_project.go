@@ -15,8 +15,10 @@ const (
 	networkLabelProjectKey = "localpaas.project.key"
 )
 
-func (s *networkService) CreateProjectNetwork(ctx context.Context, project *entity.Project) (
-	*network.CreateResponse, error) {
+func (s *networkService) CreateProjectNetwork(
+	ctx context.Context,
+	project *entity.Project,
+) (*network.CreateResponse, error) {
 	// Create a default network for the project apps
 	net, err := s.dockerManager.NetworkCreate(ctx, project.GetDefaultNetworkName(), func(opts *network.CreateOptions) {
 		opts.Driver = swarmNetworkDriver
@@ -33,8 +35,10 @@ func (s *networkService) CreateProjectNetwork(ctx context.Context, project *enti
 	return net, nil
 }
 
-func (s *networkService) ListProjectNetworks(ctx context.Context, project *entity.Project) (
-	[]network.Summary, error) {
+func (s *networkService) ListProjectNetworks(
+	ctx context.Context,
+	project *entity.Project,
+) ([]network.Summary, error) {
 	res, err := s.dockerManager.NetworkList(ctx, func(opts *network.ListOptions) {
 		opts.Filters = filters.NewArgs(
 			filters.Arg("label", networkLabelProjectKey+"="+project.Key),
@@ -46,7 +50,10 @@ func (s *networkService) ListProjectNetworks(ctx context.Context, project *entit
 	return res, nil
 }
 
-func (s *networkService) RemoveProjectNetwork(ctx context.Context, project *entity.Project) error {
+func (s *networkService) RemoveProjectNetwork(
+	ctx context.Context,
+	project *entity.Project,
+) error {
 	err := s.dockerManager.NetworkRemove(ctx, project.GetDefaultNetworkName())
 	if err != nil {
 		return apperrors.Wrap(err)

@@ -4,49 +4,50 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/tiendc/gofn"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
 const (
 	certDirFileMode = 0o755
+	certFileMode    = 0o644
 )
 
-func WriteCerts(cert, privateKey []byte, saveDir, certFilePath, privateKeyFilePath string) (err error) {
+func WriteCerts(cert, privateKey []byte, saveDir, certFile, keyFile string, overwrite bool) (err error) {
 	err = os.MkdirAll(saveDir, certDirFileMode)
 	if err != nil {
 		return apperrors.New(err).WithMsgLog("failed to create directory to save ssl certificate")
 	}
 
-	savePrivateKeyPath := filepath.Join(saveDir, privateKeyFilePath)
-	saveCertPath := filepath.Join(saveDir, certFilePath)
+	certPath := filepath.Join(saveDir, certFile)
+	keyPath := filepath.Join(saveDir, keyFile)
+
 	defer func() {
 		if err == nil {
 			return
 		}
 		// Try to remove all created files
-		_ = os.Remove(savePrivateKeyPath)
-		_ = os.Remove(saveCertPath)
+		_ = os.Remove(keyPath)
+		_ = os.Remove(certPath)
 	}()
 
-	if savePrivateKeyPath != "" {
-		privKeyFile, err := os.Create(savePrivateKeyPath)
-		if err != nil {
-			return apperrors.New(err).WithMsgLog("failed to create private key file")
-		}
-		_, err = privKeyFile.Write(privateKey)
-		if err != nil {
-			return apperrors.New(err).WithMsgLog("failed to write data to private key file")
+	if certPath != "" {
+		if overwrite || !gofn.Head(FileExists(certPath, true)) {
+			err = os.WriteFile(certPath, cert, certFileMode)
+			if err != nil {
+				return apperrors.New(err).WithMsgLog("failed to write cert file to %s", certPath)
+			}
 		}
 	}
-	if saveCertPath != "" {
-		certFile, err := os.Create(saveCertPath)
-		if err != nil {
-			return apperrors.New(err).WithMsgLog("failed to create certificate file")
-		}
-		_, err = certFile.Write(cert)
-		if err != nil {
-			return apperrors.New(err).WithMsgLog("failed to write data to certificate file")
+	if keyPath != "" {
+		if overwrite || !gofn.Head(FileExists(keyPath, true)) {
+			err = os.WriteFile(keyPath, privateKey, certFileMode)
+			if err != nil {
+				return apperrors.New(err).WithMsgLog("failed to write key file to %s", keyPath)
+			}
 		}
 	}
+
 	return nil
 }

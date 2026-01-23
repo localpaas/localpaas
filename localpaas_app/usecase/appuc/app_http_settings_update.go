@@ -15,6 +15,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
+	"github.com/localpaas/localpaas/localpaas_app/service/nginxservice"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
 )
 
@@ -43,7 +44,7 @@ func (uc *AppUC) UpdateAppHttpSettings(
 			return apperrors.Wrap(err)
 		}
 
-		err = uc.applyAppHttpSettings(ctx, data)
+		err = uc.applyAppHttpSettings(ctx, db, data)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -171,9 +172,35 @@ func (uc *AppUC) buildNewAppHttpSettings(
 
 func (uc *AppUC) applyAppHttpSettings(
 	ctx context.Context,
+	db database.IDB,
 	data *updateAppHttpSettingsData,
 ) error {
-	err := uc.nginxService.ApplyAppConfig(ctx, data.App, data.HttpSettings)
+	appHttpSettings, err := data.HttpSettings.AsAppHttpSettings()
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	refSettingMap, err := uc.appService.LoadReferenceSettings(ctx, db, data.App, data.HttpSettings)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	allSslIDs := appHttpSettings.GetAllSslCertIDs()
+	err = uc.appService.EnsureSslConfigFiles(allSslIDs, false, refSettingMap)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	allBasicAuthIDs := appHttpSettings.GetAllBasicAuthIDs()
+	err = uc.appService.EnsureBasicAuthConfigFiles(allBasicAuthIDs, false, refSettingMap)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	err = uc.nginxService.ApplyAppConfig(ctx, data.App, &nginxservice.AppConfigData{
+		HttpSettings:  appHttpSettings,
+		RefSettingMap: refSettingMap,
+	})
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

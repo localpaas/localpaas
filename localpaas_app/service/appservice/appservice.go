@@ -22,6 +22,14 @@ type AppService interface {
 	ServiceInspect(ctx context.Context, serviceID string, caching bool) (*swarm.Service, error)
 	ServiceUpdate(ctx context.Context, serviceID string, version *swarm.Version, service *swarm.ServiceSpec,
 		options ...docker.ServiceUpdateOption) (*swarm.ServiceUpdateResponse, error)
+
+	LoadReferenceSettings(ctx context.Context, db database.IDB, app *entity.App,
+		appSettings ...*entity.Setting) (map[string]*entity.Setting, error)
+
+	EnsureSslConfigFiles(sslIDs []string, forceRecreate bool,
+		refSettingMap map[string]*entity.Setting) error
+	EnsureBasicAuthConfigFiles(basicAuthIDs []string, forceRecreate bool,
+		refSettingMap map[string]*entity.Setting) error
 }
 
 func NewAppService(
