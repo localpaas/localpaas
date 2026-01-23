@@ -14,6 +14,7 @@ type AppDeploymentSettings struct {
 	ImageSource   *DeploymentImageSource   `json:"imageSource"`
 	RepoSource    *DeploymentRepoSource    `json:"repoSource"`
 	TarballSource *DeploymentTarballSource `json:"tarballSource"`
+	ActiveSource  base.DeploymentSource    `json:"activeSource"`
 
 	Command               *string `json:"command,omitempty"`
 	WorkingDir            *string `json:"workingDir,omitempty"`
@@ -22,13 +23,11 @@ type AppDeploymentSettings struct {
 }
 
 type DeploymentImageSource struct {
-	Enabled      bool     `json:"enabled"`
 	Image        string   `json:"image"`
 	RegistryAuth ObjectID `json:"registryAuth,omitzero"`
 }
 
 type DeploymentRepoSource struct {
-	Enabled        bool            `json:"enabled"`
 	BuildTool      base.BuildTool  `json:"buildTool"`
 	RepoURL        string          `json:"repoUrl"`
 	RepoRef        string          `json:"repoRef"`              // can be branch name, tag...
@@ -44,7 +43,30 @@ type RepoCredentials struct {
 }
 
 type DeploymentTarballSource struct {
-	Enabled bool `json:"enabled"`
+}
+
+func (s *AppDeploymentSettings) GetInUseRegistryAuthIDs() (res []string) {
+	if s.ImageSource != nil && s.ImageSource.RegistryAuth.ID != "" {
+		res = append(res, s.ImageSource.RegistryAuth.ID)
+	}
+	if s.RepoSource != nil && s.RepoSource.RegistryAuth.ID != "" {
+		res = append(res, s.RepoSource.RegistryAuth.ID)
+	}
+	return
+}
+
+func (s *AppDeploymentSettings) GetInUseGitCredentialIDs() (res []string) {
+	if s.RepoSource != nil && s.RepoSource.Credentials.ID != "" {
+		res = append(res, s.RepoSource.Credentials.ID)
+	}
+	return
+}
+
+func (s *AppDeploymentSettings) GetAllInUseSettingIDs() (res []string) {
+	res = make([]string, 0, 5) //nolint
+	res = append(res, s.GetInUseRegistryAuthIDs()...)
+	res = append(res, s.GetInUseGitCredentialIDs()...)
+	return res
 }
 
 func (s *Setting) AsAppDeploymentSettings() (*AppDeploymentSettings, error) {

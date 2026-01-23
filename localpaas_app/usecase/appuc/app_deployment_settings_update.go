@@ -108,8 +108,8 @@ func (uc *AppUC) loadAppDeploymentSettingsForUpdate(
 	// Loads registry auth if needs to
 	imageSource := req.ImageSource
 	if imageSource != nil && imageSource.RegistryAuth.ID != "" {
-		registryAuth, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeRegistryAuth,
-			imageSource.RegistryAuth.ID, true)
+		registryAuth, err := uc.settingRepo.GetByIDAndApp(ctx, db, base.SettingTypeRegistryAuth,
+			imageSource.RegistryAuth.ID, app.ProjectID, app.ID, true)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -195,6 +195,7 @@ func (uc *AppUC) buildNewAppDeploymentSettings(
 		newDeploymentSettings = &entity.AppDeploymentSettings{}
 	}
 
+	newDeploymentSettings.ActiveSource = req.ActiveSource
 	if req.ImageSource != nil {
 		err := copier.Copy(&newDeploymentSettings.ImageSource, req.ImageSource)
 		if err != nil {

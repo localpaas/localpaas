@@ -185,13 +185,13 @@ func (uc *AppUC) applyAppHttpSettings(
 		return apperrors.Wrap(err)
 	}
 
-	allSslIDs := appHttpSettings.GetAllSslCertIDs()
+	allSslIDs := appHttpSettings.GetInUseSslCertIDs()
 	err = uc.appService.EnsureSslConfigFiles(allSslIDs, false, refSettingMap)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	allBasicAuthIDs := appHttpSettings.GetAllBasicAuthIDs()
+	allBasicAuthIDs := appHttpSettings.GetInUseBasicAuthIDs()
 	err = uc.appService.EnsureBasicAuthConfigFiles(allBasicAuthIDs, false, refSettingMap)
 	if err != nil {
 		return apperrors.Wrap(err)

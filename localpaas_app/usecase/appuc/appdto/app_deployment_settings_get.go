@@ -9,6 +9,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 	"github.com/localpaas/localpaas/services/docker"
 )
 
@@ -37,6 +38,7 @@ type DeploymentSettingsResp struct {
 	ImageSource   *DeploymentImageSourceResp   `json:"imageSource,omitempty"`
 	RepoSource    *DeploymentRepoSourceResp    `json:"repoSource,omitempty"`
 	TarballSource *DeploymentTarballSourceResp `json:"tarballSource,omitempty"`
+	ActiveSource  base.DeploymentSource        `json:"activeSource"`
 
 	Command               string `json:"command,omitempty"`
 	WorkingDir            string `json:"workingDir,omitempty"`
@@ -47,35 +49,29 @@ type DeploymentSettingsResp struct {
 }
 
 type DeploymentImageSourceResp struct {
-	Enabled      bool                     `json:"enabled"`
-	Image        string                   `json:"image"`
-	RegistryAuth *basedto.NamedObjectResp `json:"registryAuth"`
+	Image        string                    `json:"image"`
+	RegistryAuth *settings.BaseSettingResp `json:"registryAuth"`
 }
 
 type DeploymentRepoSourceResp struct {
-	Enabled        bool                     `json:"enabled"`
-	BuildTool      base.BuildTool           `json:"buildTool"`
-	RepoURL        string                   `json:"repoUrl"`
-	RepoRef        string                   `json:"repoRef"` // can be branch name, tag...
-	Credentials    *RepoCredentialsResp     `json:"credentials"`
-	DockerfilePath string                   `json:"dockerfilePath"` // for BuildToolDockerfile only
-	ImageTags      []string                 `json:"imageTags"`
-	RegistryAuth   *basedto.NamedObjectResp `json:"registryAuth"`
-}
-
-type RepoCredentialsResp struct {
-	ID   string           `json:"id"`
-	Type base.SettingType `json:"type"`
+	BuildTool      base.BuildTool            `json:"buildTool"`
+	RepoURL        string                    `json:"repoUrl"`
+	RepoRef        string                    `json:"repoRef"` // can be branch name, tag...
+	Credentials    *settings.BaseSettingResp `json:"credentials"`
+	DockerfilePath string                    `json:"dockerfilePath"` // for BuildToolDockerfile only
+	ImageTags      []string                  `json:"imageTags"`
+	RegistryAuth   *settings.BaseSettingResp `json:"registryAuth"`
 }
 
 type DeploymentTarballSourceResp struct {
-	Enabled bool `json:"enabled"`
+	// TODO: implement this
 }
 
 type AppDeploymentSettingsTransformInput struct {
 	App                *entity.App
 	DeploymentSettings *entity.Setting
 	ServiceSpec        *swarm.ServiceSpec
+	RefSettingMap      map[string]*entity.Setting
 }
 
 func TransformDeploymentSettings(input *AppDeploymentSettingsTransformInput) (resp *DeploymentSettingsResp, err error) {
@@ -90,6 +86,39 @@ func TransformDeploymentSettings(input *AppDeploymentSettingsTransformInput) (re
 	if input.DeploymentSettings != nil {
 		if err = copier.Copy(&resp, input.DeploymentSettings); err != nil {
 			return nil, apperrors.Wrap(err)
+		}
+		appDeploymentSettings := input.DeploymentSettings.MustAsAppDeploymentSettings()
+		if err = copier.Copy(&resp, appDeploymentSettings); err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	}
+
+	if resp.ImageSource != nil { //nolint:nestif
+		if resp.ImageSource.RegistryAuth != nil && resp.ImageSource.RegistryAuth.ID != "" {
+			settingResp, _ := settings.TransformSettingBase(input.RefSettingMap[resp.ImageSource.RegistryAuth.ID])
+			if settingResp != nil {
+				resp.ImageSource.RegistryAuth = settingResp
+			} else {
+				resp.ImageSource.RegistryAuth = nil
+			}
+		}
+	}
+	if resp.RepoSource != nil { //nolint:nestif
+		if resp.RepoSource.Credentials != nil && resp.RepoSource.Credentials.ID != "" {
+			settingResp, _ := settings.TransformSettingBase(input.RefSettingMap[resp.RepoSource.Credentials.ID])
+			if settingResp != nil {
+				resp.RepoSource.Credentials = settingResp
+			} else {
+				resp.RepoSource.Credentials = nil
+			}
+		}
+		if resp.RepoSource.RegistryAuth != nil && resp.RepoSource.RegistryAuth.ID != "" {
+			settingResp, _ := settings.TransformSettingBase(input.RefSettingMap[resp.RepoSource.RegistryAuth.ID])
+			if settingResp != nil {
+				resp.RepoSource.RegistryAuth = settingResp
+			} else {
+				resp.RepoSource.RegistryAuth = nil
+			}
 		}
 	}
 

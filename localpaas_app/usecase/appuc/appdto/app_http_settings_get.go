@@ -7,8 +7,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc/basicauthdto"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc/ssldto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 	"github.com/localpaas/localpaas/services/nginx"
 )
 
@@ -41,15 +40,15 @@ type HttpSettingsResp struct {
 }
 
 type DomainResp struct {
-	Enabled          bool                        `json:"enabled"`
-	Domain           string                      `json:"domain"`
-	DomainRedirect   string                      `json:"domainRedirect"`
-	SslCert          *ssldto.SslResp             `json:"sslCert"`
-	ContainerPort    int                         `json:"containerPort"`
-	ForceHttps       bool                        `json:"forceHttps"`
-	WebsocketEnabled bool                        `json:"websocketEnabled"`
-	BasicAuth        *basicauthdto.BasicAuthResp `json:"basicAuth"`
-	NginxSettings    *NginxSettingsResp          `json:"nginxSettings"`
+	Enabled          bool                      `json:"enabled"`
+	Domain           string                    `json:"domain"`
+	DomainRedirect   string                    `json:"domainRedirect"`
+	SslCert          *settings.BaseSettingResp `json:"sslCert"`
+	ContainerPort    int                       `json:"containerPort"`
+	ForceHttps       bool                      `json:"forceHttps"`
+	WebsocketEnabled bool                      `json:"websocketEnabled"`
+	BasicAuth        *settings.BaseSettingResp `json:"basicAuth"`
+	NginxSettings    *NginxSettingsResp        `json:"nginxSettings"`
 }
 
 type NginxSettingsResp struct {
@@ -72,7 +71,7 @@ type AppHttpSettingsTransformInput struct {
 	HttpSettings *entity.Setting
 
 	DefaultNginxSettings *entity.NginxSettings
-	ReferenceSettingMap  map[string]*entity.Setting
+	RefSettingMap        map[string]*entity.Setting
 }
 
 func TransformHttpSettings(input *AppHttpSettingsTransformInput) (resp *HttpSettingsResp, err error) {
@@ -83,24 +82,28 @@ func TransformHttpSettings(input *AppHttpSettingsTransformInput) (resp *HttpSett
 	if err = copier.Copy(&resp, input.HttpSettings); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+	appHttpSettings := input.HttpSettings.MustAsAppHttpSettings()
+	if err = copier.Copy(&resp, appHttpSettings); err != nil {
+		return nil, apperrors.Wrap(err)
+	}
 
 	for _, domain := range resp.Domains {
 		if domain.SslCert != nil && domain.SslCert.ID != "" {
-			sslResp, _ := ssldto.TransformSsl(input.ReferenceSettingMap[domain.SslCert.ID])
-			if sslResp != nil {
-				domain.SslCert = sslResp
+			settingResp, _ := settings.TransformSettingBase(input.RefSettingMap[domain.SslCert.ID])
+			if settingResp != nil {
+				domain.SslCert = settingResp
+			} else {
+				domain.SslCert = nil
 			}
-		} else {
-			domain.SslCert = nil
 		}
 
 		if domain.BasicAuth != nil && domain.BasicAuth.ID != "" {
-			basicAuthResp, _ := basicauthdto.TransformBasicAuth(input.ReferenceSettingMap[domain.BasicAuth.ID])
-			if basicAuthResp != nil {
-				domain.BasicAuth = basicAuthResp
+			settingResp, _ := settings.TransformSettingBase(input.RefSettingMap[domain.BasicAuth.ID])
+			if settingResp != nil {
+				domain.BasicAuth = settingResp
+			} else {
+				domain.BasicAuth = nil
 			}
-		} else {
-			domain.BasicAuth = nil
 		}
 	}
 

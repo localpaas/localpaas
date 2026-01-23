@@ -55,7 +55,7 @@ func (s *AppHttpSettings) GetDomain(domain string) *AppDomain {
 	return nil
 }
 
-func (s *AppHttpSettings) GetAllSslCertIDs() (res []string) {
+func (s *AppHttpSettings) GetInUseSslCertIDs() (res []string) {
 	for _, domain := range s.Domains {
 		if !domain.Enabled {
 			continue
@@ -67,7 +67,7 @@ func (s *AppHttpSettings) GetAllSslCertIDs() (res []string) {
 	return
 }
 
-func (s *AppHttpSettings) GetAllBasicAuthIDs() (res []string) {
+func (s *AppHttpSettings) GetInUseBasicAuthIDs() (res []string) {
 	for _, domain := range s.Domains {
 		if !domain.Enabled {
 			continue
@@ -77,6 +77,13 @@ func (s *AppHttpSettings) GetAllBasicAuthIDs() (res []string) {
 		}
 	}
 	return
+}
+
+func (s *AppHttpSettings) GetAllInUseSettingIDs() (res []string) {
+	res = make([]string, 0, 5) //nolint
+	res = append(res, s.GetInUseSslCertIDs()...)
+	res = append(res, s.GetInUseBasicAuthIDs()...)
+	return res
 }
 
 func (s *Setting) AsAppHttpSettings() (*AppHttpSettings, error) {

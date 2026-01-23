@@ -3,11 +3,14 @@ package appuc
 import (
 	"context"
 
+	"github.com/tiendc/gofn"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/entityutil"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
 )
 
@@ -31,17 +34,13 @@ func (uc *AppUC) GetAppHttpSettings(
 	}
 
 	input := &appdto.AppHttpSettingsTransformInput{
-		App: app,
-	}
-	if len(settings) > 0 {
-		input.HttpSettings = settings[0]
+		App:          app,
+		HttpSettings: gofn.FirstOr(settings, nil),
 	}
 
-	if input.HttpSettings != nil && input.HttpSettings.MustAsAppHttpSettings() != nil {
-		err = uc.loadAppHttpSettingsReferenceData(ctx, uc.db, input)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
+	err = uc.loadAppHttpSettingsRefData(ctx, uc.db, input)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
 	}
 
 	resp, err := appdto.TransformHttpSettings(input)
@@ -54,33 +53,37 @@ func (uc *AppUC) GetAppHttpSettings(
 	}, nil
 }
 
-func (uc *AppUC) loadAppHttpSettingsReferenceData(
+func (uc *AppUC) loadAppHttpSettingsRefData(
 	ctx context.Context,
 	db database.IDB,
 	input *appdto.AppHttpSettingsTransformInput,
 ) (err error) {
-	var settingIDs []string
-	for _, domain := range input.HttpSettings.MustAsAppHttpSettings().Domains {
-		if domain.SslCert.ID != "" {
-			settingIDs = append(settingIDs, domain.SslCert.ID)
-		}
-		if domain.BasicAuth.ID != "" {
-			settingIDs = append(settingIDs, domain.BasicAuth.ID)
-		}
-	}
-
-	input.ReferenceSettingMap, err = uc.settingRepo.ListByIDsAsMap(ctx, db, settingIDs, true)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	for _, setting := range input.ReferenceSettingMap {
-		setting.CurrentObjectID = input.App.ID
-	}
-
 	input.DefaultNginxSettings, err = uc.nginxService.GetDefaultNginxConfig()
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+
+	if input.HttpSettings == nil {
+		return nil
+	}
+
+	app := input.App
+	appHttpSettings, err := input.HttpSettings.AsAppHttpSettings()
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	settingIDs := appHttpSettings.GetAllInUseSettingIDs()
+
+	settings, _, err := uc.settingRepo.ListByApp(ctx, db, app.ProjectID, app.ID, nil,
+		bunex.SelectWhere("setting.id IN (?)", bunex.In(settingIDs)),
+	)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	for _, setting := range settings {
+		setting.CurrentObjectID = app.ID
+	}
+	input.RefSettingMap = entityutil.SliceToIDMap(settings)
 
 	return nil
 }
