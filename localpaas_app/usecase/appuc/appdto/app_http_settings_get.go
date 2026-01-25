@@ -8,7 +8,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
-	"github.com/localpaas/localpaas/services/nginx"
 )
 
 type GetAppHttpSettingsReq struct {
@@ -33,45 +32,44 @@ type GetAppHttpSettingsResp struct {
 }
 
 type HttpSettingsResp struct {
-	Enabled              bool               `json:"enabled"`
-	Domains              []*DomainResp      `json:"domains"`
-	DefaultNginxSettings *NginxSettingsResp `json:"defaultNginxSettings"`
-	UpdateVer            int                `json:"updateVer"`
+	Enabled   bool          `json:"enabled"`
+	Domains   []*DomainResp `json:"domains"`
+	UpdateVer int           `json:"updateVer"`
 }
 
 type DomainResp struct {
-	Enabled          bool                      `json:"enabled"`
-	Domain           string                    `json:"domain"`
-	DomainRedirect   string                    `json:"domainRedirect"`
-	SslCert          *settings.BaseSettingResp `json:"sslCert"`
-	ContainerPort    int                       `json:"containerPort"`
-	ForceHttps       bool                      `json:"forceHttps"`
-	WebsocketEnabled bool                      `json:"websocketEnabled"`
-	BasicAuth        *settings.BaseSettingResp `json:"basicAuth"`
-	NginxSettings    *NginxSettingsResp        `json:"nginxSettings"`
+	Enabled         bool                      `json:"enabled"`
+	Domain          string                    `json:"domain"`
+	DomainRedirect  string                    `json:"domainRedirect"`
+	SslCert         *settings.BaseSettingResp `json:"sslCert"`
+	ContainerPort   int                       `json:"containerPort"`
+	ForceHttps      bool                      `json:"forceHttps"`
+	WebsocketConfig string                    `json:"websocketConfig"`
+	BasicAuth       *settings.BaseSettingResp `json:"basicAuth"`
+	NginxSettings   *NginxSettingsResp        `json:"nginxSettings"`
 }
 
 type NginxSettingsResp struct {
-	RootDirectives []*NginxDirectiveResp `json:"rootDirectives,omitempty"`
-	ServerBlock    *NginxServerBlockResp `json:"serverBlock"`
+	ClientConfig    string                    `json:"clientConfig"`
+	GzipConfig      string                    `json:"gzipConfig"` // on/off/default/custom
+	LimitZoneConfig string                    `json:"limitZoneConfig"`
+	CustomConfig    string                    `json:"customConfig"`
+	Locations       []*NginxLocationBlockResp `json:"locations"`
 }
 
-type NginxServerBlockResp struct {
-	Hide       bool                  `json:"hide,omitempty"`
-	Directives []*NginxDirectiveResp `json:"directives"`
-}
-
-type NginxDirectiveResp struct {
-	Hide bool `json:"hide,omitempty"`
-	*nginx.Directive
+type NginxLocationBlockResp struct {
+	Location          string                    `json:"location"`
+	ProxyHeaderConfig string                    `json:"proxyHeaderConfig"`
+	WebsocketConfig   string                    `json:"websocketConfig"`
+	BasicAuth         *settings.BaseSettingResp `json:"basicAuth,omitzero"`
+	LimitReqConfig    string                    `json:"limitReqConfig"`
+	CustomConfig      string                    `json:"customConfig"`
 }
 
 type AppHttpSettingsTransformInput struct {
-	App          *entity.App
-	HttpSettings *entity.Setting
-
-	DefaultNginxSettings *entity.NginxSettings
-	RefSettingMap        map[string]*entity.Setting
+	App           *entity.App
+	HttpSettings  *entity.Setting
+	RefSettingMap map[string]*entity.Setting
 }
 
 func TransformHttpSettings(input *AppHttpSettingsTransformInput) (resp *HttpSettingsResp, err error) {
@@ -89,26 +87,29 @@ func TransformHttpSettings(input *AppHttpSettingsTransformInput) (resp *HttpSett
 
 	for _, domain := range resp.Domains {
 		if domain.SslCert != nil && domain.SslCert.ID != "" {
-			settingResp, _ := settings.TransformSettingBase(input.RefSettingMap[domain.SslCert.ID])
-			if settingResp != nil {
-				domain.SslCert = settingResp
-			} else {
-				domain.SslCert = nil
-			}
+			setting := input.RefSettingMap[domain.SslCert.ID]
+			domain.SslCert, _ = settings.TransformSettingBase(setting)
+		} else {
+			domain.SslCert = nil
 		}
-
 		if domain.BasicAuth != nil && domain.BasicAuth.ID != "" {
-			settingResp, _ := settings.TransformSettingBase(input.RefSettingMap[domain.BasicAuth.ID])
-			if settingResp != nil {
-				domain.BasicAuth = settingResp
+			setting := input.RefSettingMap[domain.BasicAuth.ID]
+			domain.BasicAuth, _ = settings.TransformSettingBase(setting)
+		} else {
+			domain.BasicAuth = nil
+		}
+
+		if domain.NginxSettings == nil {
+			continue
+		}
+		for _, locationBlock := range domain.NginxSettings.Locations {
+			setting := input.RefSettingMap[locationBlock.BasicAuth.ID]
+			if locationBlock.BasicAuth != nil && locationBlock.BasicAuth.ID != "" {
+				locationBlock.BasicAuth, _ = settings.TransformSettingBase(setting)
 			} else {
-				domain.BasicAuth = nil
+				locationBlock.BasicAuth = nil
 			}
 		}
-	}
-
-	if err = copier.Copy(&resp.DefaultNginxSettings, input.DefaultNginxSettings); err != nil {
-		return nil, apperrors.Wrap(err)
 	}
 
 	return resp, nil

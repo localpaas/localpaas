@@ -58,11 +58,6 @@ func (uc *AppUC) loadAppHttpSettingsRefData(
 	db database.IDB,
 	input *appdto.AppHttpSettingsTransformInput,
 ) (err error) {
-	input.DefaultNginxSettings, err = uc.nginxService.GetDefaultNginxConfig()
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
 	if input.HttpSettings == nil {
 		return nil
 	}

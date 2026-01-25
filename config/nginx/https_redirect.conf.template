@@ -1,6 +1,8 @@
 server {
+    # @lp_server https_redirection server_name
+
     listen       80;
-    server_name  ((server_name));
+    server_name  server_name;
 
     location / {
         return 302 https://$http_host$request_uri;

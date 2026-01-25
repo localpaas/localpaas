@@ -2,10 +2,11 @@ package appdto
 
 import (
 	vld "github.com/tiendc/go-validator"
+	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/services/nginx"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 )
 
 type UpdateAppHttpSettingsReq struct {
@@ -17,15 +18,29 @@ type UpdateAppHttpSettingsReq struct {
 }
 
 type DomainReq struct {
-	Enabled          bool                `json:"enabled"`
-	Domain           string              `json:"domain"`
-	DomainRedirect   string              `json:"domainRedirect"`
-	SslCert          basedto.ObjectIDReq `json:"sslCert"`
-	ContainerPort    int                 `json:"containerPort"`
-	ForceHttps       bool                `json:"forceHttps"`
-	WebsocketEnabled bool                `json:"websocketEnabled"`
-	BasicAuth        basedto.ObjectIDReq `json:"basicAuth"`
-	NginxSettings    *NginxSettingsReq   `json:"nginxSettings"`
+	Enabled         bool                `json:"enabled"`
+	Domain          string              `json:"domain"`
+	DomainRedirect  string              `json:"domainRedirect"`
+	SslCert         basedto.ObjectIDReq `json:"sslCert"`
+	ContainerPort   int                 `json:"containerPort"`
+	ForceHttps      bool                `json:"forceHttps"`
+	WebsocketConfig string              `json:"websocketConfig"`
+	BasicAuth       basedto.ObjectIDReq `json:"basicAuth"`
+	NginxSettings   *NginxSettingsReq   `json:"nginxSettings"`
+}
+
+func (req *DomainReq) ToEntity() *entity.AppDomain {
+	return &entity.AppDomain{
+		Enabled:         req.Enabled,
+		Domain:          req.Domain,
+		DomainRedirect:  req.DomainRedirect,
+		SslCert:         entity.ObjectID{ID: req.SslCert.ID},
+		ContainerPort:   req.ContainerPort,
+		ForceHttps:      req.ForceHttps,
+		WebsocketConfig: req.WebsocketConfig,
+		BasicAuth:       entity.ObjectID{ID: req.BasicAuth.ID},
+		NginxSettings:   req.NginxSettings.ToEntity(),
+	}
 }
 
 // nolint
@@ -41,18 +56,49 @@ func (req *DomainReq) validate(field string) (res []vld.Validator) {
 }
 
 type NginxSettingsReq struct {
-	RootDirectives []*NginxDirectiveReq `json:"rootDirectives"`
-	ServerBlock    *NginxServerBlockReq `json:"serverBlock"`
+	ClientConfig    string                   `json:"clientConfig"`
+	GzipConfig      string                   `json:"gzipConfig"` // on/off/default/custom
+	LimitZoneConfig string                   `json:"limitZoneConfig"`
+	CustomConfig    string                   `json:"customConfig"`
+	Locations       []*NginxLocationBlockReq `json:"locations"`
 }
 
-type NginxServerBlockReq struct {
-	Hide       bool                 `json:"hide"`
-	Directives []*NginxDirectiveReq `json:"directives"`
+func (r *NginxSettingsReq) ToEntity() *entity.NginxSettings {
+	if r == nil {
+		return nil
+	}
+	return &entity.NginxSettings{
+		ClientConfig:    r.ClientConfig,
+		GzipConfig:      r.GzipConfig,
+		LimitZoneConfig: r.LimitZoneConfig,
+		CustomConfig:    r.CustomConfig,
+		Locations: gofn.MapSlice(r.Locations, func(item *NginxLocationBlockReq) *entity.NginxLocationBlock {
+			return item.ToEntity()
+		}),
+	}
 }
 
-type NginxDirectiveReq struct {
-	Hide bool `json:"hide"`
-	*nginx.Directive
+type NginxLocationBlockReq struct {
+	Location          string              `json:"location"`
+	ProxyHeaderConfig string              `json:"proxyHeaderConfig"`
+	WebsocketConfig   string              `json:"websocketConfig"`
+	BasicAuth         basedto.ObjectIDReq `json:"basicAuth"`
+	LimitReqConfig    string              `json:"limitReqConfig"`
+	CustomConfig      string              `json:"customConfig"`
+}
+
+func (r *NginxLocationBlockReq) ToEntity() *entity.NginxLocationBlock {
+	if r == nil {
+		return nil
+	}
+	return &entity.NginxLocationBlock{
+		Location:          r.Location,
+		ProxyHeaderConfig: r.ProxyHeaderConfig,
+		WebsocketConfig:   r.WebsocketConfig,
+		BasicAuth:         entity.ObjectID{ID: r.BasicAuth.ID},
+		LimitReqConfig:    r.LimitReqConfig,
+		CustomConfig:      r.CustomConfig,
+	}
 }
 
 func NewUpdateAppHttpSettingsReq() *UpdateAppHttpSettingsReq {

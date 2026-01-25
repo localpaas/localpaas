@@ -136,35 +136,7 @@ func (uc *AppUC) buildNewAppHttpSettings(
 
 	newHttpSettings.Enabled = req.Enabled
 	newHttpSettings.Domains = gofn.MapSlice(req.Domains, func(r *appdto.DomainReq) *entity.AppDomain {
-		return &entity.AppDomain{
-			Enabled:          r.Enabled,
-			Domain:           r.Domain,
-			DomainRedirect:   r.DomainRedirect,
-			SslCert:          entity.ObjectID{ID: r.SslCert.ID},
-			ContainerPort:    r.ContainerPort,
-			ForceHttps:       r.ForceHttps,
-			WebsocketEnabled: r.WebsocketEnabled,
-			BasicAuth:        entity.ObjectID{ID: r.BasicAuth.ID},
-			NginxSettings: &entity.NginxSettings{
-				RootDirectives: gofn.MapSlice(r.NginxSettings.RootDirectives,
-					func(r *appdto.NginxDirectiveReq) *entity.NginxDirective {
-						return &entity.NginxDirective{
-							Hide:      r.Hide,
-							Directive: r.Directive,
-						}
-					}),
-				ServerBlock: &entity.NginxServerBlock{
-					Hide: r.NginxSettings.ServerBlock.Hide,
-					Directives: gofn.MapSlice(r.NginxSettings.ServerBlock.Directives,
-						func(r *appdto.NginxDirectiveReq) *entity.NginxDirective {
-							return &entity.NginxDirective{
-								Hide:      r.Hide,
-								Directive: r.Directive,
-							}
-						}),
-				},
-			},
-		}
+		return r.ToEntity()
 	})
 
 	return newHttpSettings, nil

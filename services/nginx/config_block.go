@@ -1,6 +1,8 @@
 package nginx
 
 import (
+	"strings"
+
 	crossplane "github.com/localpaas/nginx-go-crossplane"
 	"github.com/tiendc/gofn"
 
@@ -26,6 +28,33 @@ func NewServerBlock(directives ...*Directive) *Block {
 	return NewBlock("server", nil, directives...)
 }
 
+func NewLocationBlock(args []string, directives ...*Directive) *Block {
+	return NewBlock("location", args, directives...)
+}
+
+func (b *Block) AsConfig() *Config {
+	return NewConfig(b.AsDirective())
+}
+
+func (b *Block) AsDirective() *Directive {
+	return &Directive{Directive: b.Directive}
+}
+
+func (b *Block) getDirectiveIndex(isBlock bool, name string, args []string, partialMatch bool) int {
+	for i, dir := range b.Block {
+		if dir.IsBlock() != isBlock || dir.Directive != name {
+			continue
+		}
+		if gofn.Equal(dir.Args, args) { // fully match
+			return i
+		}
+		if partialMatch && len(dir.Args) > len(args) && gofn.Equal(dir.Args[:len(args)], args) { // partially match
+			return i
+		}
+	}
+	return -1
+}
+
 func (b *Block) Blocks() []*Block {
 	return blocksByName(b.Block, "", 0)
 }
@@ -42,41 +71,24 @@ func (b *Block) AddBlock(block *Block) {
 	b.Block = append(b.Block, block.Directive)
 }
 
-// AddLocationBlock adds `location` block to a `server` block.
-// If the block is not a `server` one, an error will be returned.
-func (b *Block) AddLocationBlock(location string, args []string) (*Block, error) {
-	if b.Directive == nil || b.Directive.Directive != "server" {
-		return nil, apperrors.Wrap(ErrServerBlockRequired)
-	}
-	for _, block := range b.BlocksByName("location", -1) {
-		if block.Args[0] == location {
-			return block, nil
-		}
-	}
-	block := NewBlock("location", append([]string{location}, args...))
-	b.AddBlock(block)
-	return block, nil
+func (b *Block) AddBlockAt(block *Block, i int) {
+	b.Block = gofn.Splice(b.Block, i, 0, block.Directive)
 }
 
-func (b *Block) GetBlock(name string, args []string) *Block {
-	idx := b.GetBlockIndex(name, args)
+func (b *Block) GetBlock(name string, args []string, partialMatch bool) *Block {
+	idx := b.getDirectiveIndex(true, name, args, partialMatch)
 	if idx >= 0 {
 		return &Block{Directive: b.Block[idx]}
 	}
 	return nil
 }
 
-func (b *Block) GetBlockIndex(name string, args []string) int {
-	for i, directive := range b.Block {
-		if directive.IsBlock() && directive.Directive == name && gofn.Equal(directive.Args, args) {
-			return i
-		}
-	}
-	return -1
+func (b *Block) GetBlockIndex(name string, args []string, partialMatch bool) int {
+	return b.getDirectiveIndex(true, name, args, partialMatch)
 }
 
-func (b *Block) RemoveBlock(name string, args []string) {
-	idx := b.GetBlockIndex(name, args)
+func (b *Block) RemoveBlock(name string, args []string, partialMatch bool) {
+	idx := b.GetBlockIndex(name, args, partialMatch)
 	if idx >= 0 {
 		gofn.RemoveAt(&b.Block, idx)
 	}
@@ -121,9 +133,42 @@ func (b *Block) AddDirectives(directives ...*Directive) {
 	}
 }
 
+// AddDirectivesInSection inserts directives into the position between 2 comments:
+// `# @lp_section section` and `# @lp_section_end section`
+func (b *Block) AddDirectivesInSection(section string, directives ...*Directive) {
+	idx := b.GetCommentIndex(section, true)
+	if idx == -1 {
+		return
+	}
+	if strings.HasPrefix(section, "@lp_section ") {
+		idx++
+	}
+	items := make([]*crossplane.Directive, 0, len(directives))
+	for _, dir := range directives {
+		items = append(items, dir.Directive)
+	}
+	b.Block = gofn.Splice(b.Block, idx, 0, items...)
+}
+
+func (b *Block) RemoveSectionComments(section string) {
+	idx := b.GetCommentIndex(section, true)
+	if idx == -1 {
+		return
+	}
+	count := 1
+	if idx+1 < len(b.Block) {
+		next := b.Block[idx+1]
+		if next.Directive == "#" && next.Comment != nil &&
+			strings.HasPrefix(strings.TrimSpace(*next.Comment), "@lp_section_end ") {
+			count++
+		}
+	}
+	b.Block = gofn.Splice(b.Block, idx, count)
+}
+
 func (b *Block) AddDirectiveNamesIfNotExist(names ...string) {
 	for _, name := range names {
-		if b.ContainPartialMatchedDirective(name, nil) {
+		if b.GetDirectiveIndex(name, nil, true) >= 0 {
 			continue
 		}
 		b.AddDirectives(NewDirective(name, nil))
@@ -131,11 +176,11 @@ func (b *Block) AddDirectiveNamesIfNotExist(names ...string) {
 }
 
 func (b *Block) AddDirectivesIfNotExist(directives ...*Directive) {
-	for _, directive := range directives {
-		if b.ContainDirective(directive) {
+	for _, dir := range directives {
+		if b.GetDirectiveIndex(dir.Directive.Directive, dir.Args, false) >= 0 {
 			continue
 		}
-		b.AddDirectives(directive)
+		b.AddDirectives(dir)
 	}
 }
 
@@ -145,80 +190,75 @@ func (b *Block) SetDirectiveArgs(name string, args []string, n int) {
 	}
 }
 
-func (b *Block) ContainDirective(dir *Directive) bool {
-	return b.GetDirectiveIndex(dir.Directive.Directive, dir.Args) != -1
+func (b *Block) SetVariable(name string, value string) *Directive {
+	dir := b.GetDirective("set", []string{name}, true)
+	if dir != nil {
+		dir.Args = []string{name, value}
+	} else {
+		dir = NewDirective("set", []string{name, value})
+		b.AddDirectives(dir)
+	}
+	return dir
 }
 
-func (b *Block) GetDirective(name string, args []string) *Directive {
-	idx := b.GetDirectiveIndex(name, args)
+func (b *Block) GetDirective(name string, args []string, partialMatch bool) *Directive {
+	idx := b.GetDirectiveIndex(name, args, partialMatch)
 	if idx >= 0 {
 		return &Directive{Directive: b.Block[idx]}
 	}
 	return nil
 }
 
-func (b *Block) GetDirectiveIndex(name string, args []string) int {
-	for i, directive := range b.Block {
-		if !directive.IsBlock() && directive.Directive == name && gofn.Equal(directive.Args, args) {
-			return i
-		}
-	}
-	return -1
-}
-
-func (b *Block) ContainPartialMatchedDirective(name string, args []string) bool {
-	return b.GetPartialMatchedDirectiveIndex(name, args) != -1
-}
-
-func (b *Block) GetPartialMatchedDirective(name string, args []string) *Directive {
-	idx := b.GetPartialMatchedDirectiveIndex(name, args)
-	if idx >= 0 {
-		return &Directive{Directive: b.Block[idx]}
-	}
-	return nil
-}
-
-func (b *Block) GetPartialMatchedDirectiveIndex(name string, args []string) int {
-	partialMatchIdx := -1
-	for i, dir := range b.Block {
-		if dir.IsBlock() || dir.Directive != name {
-			continue
-		}
-		if gofn.Equal(dir.Args, args) { // Full matching
-			return i
-		}
-		if partialMatchIdx == -1 && len(dir.Args) > len(args) && gofn.Equal(dir.Args[:len(args)], args) {
-			partialMatchIdx = i
-		}
-	}
-	return partialMatchIdx
+func (b *Block) GetDirectiveIndex(name string, args []string, partialMatch bool) int {
+	return b.getDirectiveIndex(false, name, args, partialMatch)
 }
 
 func (b *Block) RemoveDirectives(directives ...*Directive) {
 	for _, dir := range directives {
-		idx := b.GetDirectiveIndex(dir.Directive.Directive, dir.Args)
+		idx := b.GetDirectiveIndex(dir.Directive.Directive, dir.Args, false)
 		if idx >= 0 {
 			gofn.RemoveAt(&b.Block, idx)
 		}
 	}
 }
 
-func (b *Block) RemovePartialMatchedDirectives(directives ...*Directive) {
-	for _, dir := range directives {
-		idx := b.GetPartialMatchedDirectiveIndex(dir.Directive.Directive, dir.Args)
-		if idx >= 0 {
-			gofn.RemoveAt(&b.Block, idx)
-		}
+func (b *Block) RemoveDirective(name string, args []string, partialMatch bool) {
+	idx := b.GetDirectiveIndex(name, args, partialMatch)
+	if idx >= 0 {
+		gofn.RemoveAt(&b.Block, idx)
 	}
 }
 
-func (b *Block) RemoveDirectiveNames(names ...string) {
-	for _, name := range names {
-		idx := b.GetPartialMatchedDirectiveIndex(name, nil)
-		if idx >= 0 {
-			gofn.RemoveAt(&b.Block, idx)
-		}
+func (b *Block) SetDirective(name string, args []string, partialMatch bool) {
+	idx := b.GetDirectiveIndex(name, args, partialMatch)
+	if idx >= 0 {
+		gofn.RemoveAt(&b.Block, idx)
 	}
+}
+
+func (b *Block) GetCommentIndex(comment string, partialMatch bool) int {
+	for i, dir := range b.Block {
+		if dir.Directive != "#" || dir.Comment == nil {
+			continue
+		}
+		dirComment := strings.TrimSpace(*dir.Comment)
+		if !strings.HasPrefix(dirComment, comment) {
+			continue
+		}
+		if !partialMatch && len(dirComment) != len(comment) {
+			continue
+		}
+		return i
+	}
+	return -1
+}
+
+func (b *Block) GetComment(comment string, partialMatch bool) *Directive {
+	idx := b.GetCommentIndex(comment, partialMatch)
+	if idx >= 0 {
+		return &Directive{Directive: b.Block[idx]}
+	}
+	return nil
 }
 
 func blocksByName(directives crossplane.Directives, name string, n int) (blocks []*Block) {

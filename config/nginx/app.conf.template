@@ -1,47 +1,45 @@
+# @lp_section limit_zone
+# @lp_section_end limit_zone
+
 server {
-    listen              443 ssl;
-    server_name         ((server_name));
-    set                 $upstream ((upstream));
-    ssl_certificate     /usr/share/nginx/certs/fake/local.crt;
-    ssl_certificate_key /usr/share/nginx/certs/fake/local.key;
+    # @lp_server main server_name
 
-    # internal DNS resolver provided by Docker Swarm
-    # https://docs.docker.com/engine/userguide/networking/configure-dns/
-    resolver 127.0.0.11 valid=10s;
+    listen        443 ssl;
+    server_name   server_name;
+    set           $upstream upstream;
 
-    client_max_body_size 300m;
+    # @lp_section ssl
+    # @lp_section_end ssl
 
-    gzip on;
-    gzip_disable "MSIE [1-6]\.";
-    gzip_vary on;
-    gzip_proxied any;
-    gzip_comp_level 6;
-    gzip_min_length 10240;
-    gzip_buffers 16 8k;
-    gzip_types
-        text/css
-        text/plain
-        text/javascript
-        application/javascript
-        application/json
-        application/x-javascript
-        application/xml
-        application/xml+rss
-        application/xhtml+xml
-        application/x-font-ttf
-        application/x-font-opentype
-        application/vnd.ms-fontobject
-        image/svg+xml
-        image/x-icon
-        application/rss+xml
-        application/atom_xml;
+    # @lp_section client
+    # @lp_section_end client
+
+    # @lp_section gzip
+    # @lp_section_end gzip
+
+    # @lp_section auth_basic
+    # @lp_section_end auth_basic
+
+    # @lp_section custom
+    # @lp_section_end custom
 
     location / {
         proxy_pass $upstream;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # @lp_section proxy_header
+        # @lp_section_end proxy_header
+
+        # @lp_section websocket
+        # @lp_section_end websocket
+
+        # @lp_section limit_req
+        # @lp_section_end limit_req
+
+        # @lp_section auth_basic
+        # @lp_section_end auth_basic
+
+        # @lp_section custom
+        # @lp_section_end custom
     }
 
     # Used by Lets Encrypt

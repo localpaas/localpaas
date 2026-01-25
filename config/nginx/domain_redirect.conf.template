@@ -1,0 +1,18 @@
+server {
+    # @lp_server domain_redirection server_name
+
+    server_name  server_name;
+    set          $lp_redirect_to target;
+
+    # @lp_section ssl
+    # @lp_section_end ssl
+
+    location / {
+        return 302 $scheme://$lp_redirect_to$request_uri;
+    }
+
+    # Used by Let's Encrypt
+    location /.well-known/acme-challenge/ {
+        root /usr/share/nginx/domains;
+    }
+}

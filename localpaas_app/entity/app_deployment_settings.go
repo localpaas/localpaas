@@ -52,6 +52,7 @@ func (s *AppDeploymentSettings) GetInUseRegistryAuthIDs() (res []string) {
 	if s.RepoSource != nil && s.RepoSource.RegistryAuth.ID != "" {
 		res = append(res, s.RepoSource.RegistryAuth.ID)
 	}
+	res = gofn.ToSet(res)
 	return
 }
 
@@ -59,6 +60,7 @@ func (s *AppDeploymentSettings) GetInUseGitCredentialIDs() (res []string) {
 	if s.RepoSource != nil && s.RepoSource.Credentials.ID != "" {
 		res = append(res, s.RepoSource.Credentials.ID)
 	}
+	res = gofn.ToSet(res)
 	return
 }
 

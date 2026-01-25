@@ -6,7 +6,6 @@ import (
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/services/nginx"
 )
 
 const (
@@ -16,33 +15,36 @@ const (
 type AppHttpSettings struct {
 	Enabled bool         `json:"enabled"`
 	Domains []*AppDomain `json:"domains,omitempty"`
+	Reset   bool         `json:"reset,omitempty"`
 }
 
 type AppDomain struct {
-	Enabled          bool           `json:"enabled"`
-	Domain           string         `json:"domain"`
-	DomainRedirect   string         `json:"domainRedirect,omitempty"`
-	SslCert          ObjectID       `json:"sslCert,omitzero"`
-	ContainerPort    int            `json:"containerPort,omitempty"`
-	ForceHttps       bool           `json:"forceHttps,omitempty"`
-	WebsocketEnabled bool           `json:"websocketEnabled,omitempty"`
-	BasicAuth        ObjectID       `json:"basicAuth,omitzero"`
-	NginxSettings    *NginxSettings `json:"nginxSettings,omitempty"`
+	Enabled         bool           `json:"enabled"`
+	Domain          string         `json:"domain"`
+	DomainRedirect  string         `json:"domainRedirect,omitempty"`
+	SslCert         ObjectID       `json:"sslCert,omitzero"`
+	ContainerPort   int            `json:"containerPort,omitempty"`
+	ForceHttps      bool           `json:"forceHttps,omitempty"`
+	WebsocketConfig string         `json:"websocketConfig,omitempty"`
+	BasicAuth       ObjectID       `json:"basicAuth,omitzero"`
+	NginxSettings   *NginxSettings `json:"nginxSettings,omitempty"`
 }
 
 type NginxSettings struct {
-	RootDirectives []*NginxDirective `json:"rootDirectives,omitempty"`
-	ServerBlock    *NginxServerBlock `json:"serverBlock"`
+	ClientConfig    string                `json:"clientConfig,omitempty"`
+	GzipConfig      string                `json:"gzipConfig,omitempty"` // on/off/default/custom
+	LimitZoneConfig string                `json:"limitZoneConfig,omitempty"`
+	CustomConfig    string                `json:"customConfig,omitempty"`
+	Locations       []*NginxLocationBlock `json:"locations"`
 }
 
-type NginxServerBlock struct {
-	Hide       bool              `json:"hide,omitempty"`
-	Directives []*NginxDirective `json:"directives"`
-}
-
-type NginxDirective struct {
-	Hide bool `json:"hide,omitempty"`
-	*nginx.Directive
+type NginxLocationBlock struct {
+	Location          string   `json:"location"`
+	ProxyHeaderConfig string   `json:"proxyHeaderConfig,omitempty"`
+	WebsocketConfig   string   `json:"websocketConfig,omitempty"`
+	BasicAuth         ObjectID `json:"basicAuth,omitzero"`
+	LimitReqConfig    string   `json:"limitReqConfig,omitempty"`
+	CustomConfig      string   `json:"customConfig,omitempty"`
 }
 
 func (s *AppHttpSettings) GetDomain(domain string) *AppDomain {
@@ -64,6 +66,7 @@ func (s *AppHttpSettings) GetInUseSslCertIDs() (res []string) {
 			res = append(res, domain.SslCert.ID)
 		}
 	}
+	res = gofn.ToSet(res)
 	return
 }
 
@@ -75,7 +78,16 @@ func (s *AppHttpSettings) GetInUseBasicAuthIDs() (res []string) {
 		if domain.BasicAuth.ID != "" {
 			res = append(res, domain.BasicAuth.ID)
 		}
+		if domain.NginxSettings == nil {
+			continue
+		}
+		for _, locationBlock := range domain.NginxSettings.Locations {
+			if locationBlock.BasicAuth.ID != "" {
+				res = append(res, locationBlock.BasicAuth.ID)
+			}
+		}
 	}
+	res = gofn.ToSet(res)
 	return
 }
 

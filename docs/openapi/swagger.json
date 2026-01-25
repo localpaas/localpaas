@@ -13920,46 +13920,6 @@
   },
   "components" : {
     "schemas" : {
-      "crossplane.Directive" : {
-        "properties" : {
-          "args" : {
-            "items" : {
-              "type" : "string"
-            },
-            "type" : "array"
-          },
-          "block" : {
-            "items" : {
-              "$ref" : "#/components/schemas/crossplane.Directive"
-            },
-            "type" : "array"
-          },
-          "comment" : {
-            "type" : "string"
-          },
-          "directive" : {
-            "type" : "string"
-          },
-          "file" : {
-            "type" : "string"
-          },
-          "includes" : {
-            "items" : {
-              "type" : "integer"
-            },
-            "type" : "array"
-          },
-          "line" : {
-            "type" : "integer"
-          },
-          "mapBlockParameter" : {
-            "description" : "IsMapBlockParameter is true if the directive represents a parameter in the body of a \"map-like\" directive.",
-            "type" : "boolean"
-          }
-        },
-        "required" : [ "args", "directive", "line" ],
-        "type" : "object"
-      },
       "github_com_localpaas_localpaas_localpaas_app_apperrors.DisplayLevel" : {
         "enum" : [ "high", "medium", "low" ],
         "type" : "string",
@@ -14453,10 +14413,10 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
         "format" : "int64",
         "type" : "integer",
-        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
+        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentReq" : {
         "type" : "object"
@@ -14928,11 +14888,11 @@
           "sslCert" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
           },
-          "websocketEnabled" : {
-            "type" : "boolean"
+          "websocketConfig" : {
+            "type" : "string"
           }
         },
-        "required" : [ "basicAuth", "containerPort", "domain", "domainRedirect", "enabled", "forceHttps", "nginxSettings", "sslCert", "websocketEnabled" ],
+        "required" : [ "basicAuth", "containerPort", "domain", "domainRedirect", "enabled", "forceHttps", "nginxSettings", "sslCert", "websocketConfig" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DomainResp" : {
@@ -14961,11 +14921,11 @@
           "sslCert" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
           },
-          "websocketEnabled" : {
-            "type" : "boolean"
+          "websocketConfig" : {
+            "type" : "string"
           }
         },
-        "required" : [ "basicAuth", "containerPort", "domain", "domainRedirect", "enabled", "forceHttps", "nginxSettings", "sslCert", "websocketEnabled" ],
+        "required" : [ "basicAuth", "containerPort", "domain", "domainRedirect", "enabled", "forceHttps", "nginxSettings", "sslCert", "websocketConfig" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.EnvVarsResp" : {
@@ -15075,9 +15035,6 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HttpSettingsResp" : {
         "properties" : {
-          "defaultNginxSettings" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxSettingsResp"
-          },
           "domains" : {
             "items" : {
               "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DomainResp"
@@ -15091,7 +15048,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "defaultNginxSettings", "domains", "enabled", "updateVer" ],
+        "required" : [ "domains", "enabled", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.ListAppBaseResp" : {
@@ -15124,150 +15081,102 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxDirectiveReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxLocationBlockReq" : {
         "properties" : {
-          "args" : {
-            "items" : {
-              "type" : "string"
-            },
-            "type" : "array"
+          "basicAuth" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
           },
-          "block" : {
-            "items" : {
-              "$ref" : "#/components/schemas/crossplane.Directive"
-            },
-            "type" : "array"
-          },
-          "comment" : {
+          "customConfig" : {
             "type" : "string"
           },
-          "directive" : {
+          "limitReqConfig" : {
             "type" : "string"
           },
-          "file" : {
+          "location" : {
             "type" : "string"
           },
-          "hide" : {
-            "type" : "boolean"
+          "proxyHeaderConfig" : {
+            "type" : "string"
           },
-          "includes" : {
-            "items" : {
-              "type" : "integer"
-            },
-            "type" : "array"
-          },
-          "line" : {
-            "type" : "integer"
-          },
-          "mapBlockParameter" : {
-            "description" : "IsMapBlockParameter is true if the directive represents a parameter in the body of a \"map-like\" directive.",
-            "type" : "boolean"
+          "websocketConfig" : {
+            "type" : "string"
           }
         },
-        "required" : [ "args", "directive", "hide", "line" ],
+        "required" : [ "basicAuth", "customConfig", "limitReqConfig", "location", "proxyHeaderConfig", "websocketConfig" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxDirectiveResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxLocationBlockResp" : {
         "properties" : {
-          "args" : {
-            "items" : {
-              "type" : "string"
-            },
-            "type" : "array"
+          "basicAuth" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
           },
-          "block" : {
-            "items" : {
-              "$ref" : "#/components/schemas/crossplane.Directive"
-            },
-            "type" : "array"
-          },
-          "comment" : {
+          "customConfig" : {
             "type" : "string"
           },
-          "directive" : {
+          "limitReqConfig" : {
             "type" : "string"
           },
-          "file" : {
+          "location" : {
             "type" : "string"
           },
-          "hide" : {
-            "type" : "boolean"
+          "proxyHeaderConfig" : {
+            "type" : "string"
           },
-          "includes" : {
-            "items" : {
-              "type" : "integer"
-            },
-            "type" : "array"
-          },
-          "line" : {
-            "type" : "integer"
-          },
-          "mapBlockParameter" : {
-            "description" : "IsMapBlockParameter is true if the directive represents a parameter in the body of a \"map-like\" directive.",
-            "type" : "boolean"
+          "websocketConfig" : {
+            "type" : "string"
           }
         },
-        "required" : [ "args", "directive", "line" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxServerBlockReq" : {
-        "properties" : {
-          "directives" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxDirectiveReq"
-            },
-            "type" : "array"
-          },
-          "hide" : {
-            "type" : "boolean"
-          }
-        },
-        "required" : [ "directives", "hide" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxServerBlockResp" : {
-        "properties" : {
-          "directives" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxDirectiveResp"
-            },
-            "type" : "array"
-          },
-          "hide" : {
-            "type" : "boolean"
-          }
-        },
-        "required" : [ "directives" ],
+        "required" : [ "basicAuth", "customConfig", "limitReqConfig", "location", "proxyHeaderConfig", "websocketConfig" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxSettingsReq" : {
         "properties" : {
-          "rootDirectives" : {
+          "clientConfig" : {
+            "type" : "string"
+          },
+          "customConfig" : {
+            "type" : "string"
+          },
+          "gzipConfig" : {
+            "description" : "on/off/default/custom",
+            "type" : "string"
+          },
+          "limitZoneConfig" : {
+            "type" : "string"
+          },
+          "locations" : {
             "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxDirectiveReq"
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxLocationBlockReq"
             },
             "type" : "array"
-          },
-          "serverBlock" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxServerBlockReq"
           }
         },
-        "required" : [ "rootDirectives", "serverBlock" ],
+        "required" : [ "clientConfig", "customConfig", "gzipConfig", "limitZoneConfig", "locations" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxSettingsResp" : {
         "properties" : {
-          "rootDirectives" : {
+          "clientConfig" : {
+            "type" : "string"
+          },
+          "customConfig" : {
+            "type" : "string"
+          },
+          "gzipConfig" : {
+            "description" : "on/off/default/custom",
+            "type" : "string"
+          },
+          "limitZoneConfig" : {
+            "type" : "string"
+          },
+          "locations" : {
             "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxDirectiveResp"
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxLocationBlockResp"
             },
             "type" : "array"
-          },
-          "serverBlock" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxServerBlockResp"
           }
         },
-        "required" : [ "serverBlock" ],
+        "required" : [ "clientConfig", "customConfig", "gzipConfig", "limitZoneConfig", "locations" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.ObtainDomainSslReq" : {
