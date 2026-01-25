@@ -13,6 +13,7 @@ func (s *HTTPServer) registerSettingRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		secretGroup.GET("", s.handlerRegistry.settingHandler.ListSecret)
 		// Creation & Update
 		secretGroup.POST("", s.handlerRegistry.settingHandler.CreateSecret)
+		secretGroup.PUT("/:id", s.handlerRegistry.settingHandler.UpdateSecret)
 		secretGroup.PUT("/:id/meta", s.handlerRegistry.settingHandler.UpdateSecretMeta)
 		secretGroup.DELETE("/:id", s.handlerRegistry.settingHandler.DeleteSecret)
 	}

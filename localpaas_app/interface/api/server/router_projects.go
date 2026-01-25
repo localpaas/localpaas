@@ -26,6 +26,7 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 	// Secrets
 	projectGroup.GET("/:projectID/secrets", s.handlerRegistry.projectHandler.ListProjectSecrets)
 	projectGroup.POST("/:projectID/secrets", s.handlerRegistry.projectHandler.CreateProjectSecret)
+	projectGroup.PUT("/:projectID/secrets/:id", s.handlerRegistry.projectHandler.UpdateProjectSecret)
 	projectGroup.DELETE("/:projectID/secrets/:id", s.handlerRegistry.projectHandler.DeleteProjectSecret)
 
 	// Cron jobs

@@ -16,6 +16,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc/oauthdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/registryauthuc/registryauthdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/s3storageuc/s3storagedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc/secretdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/slackuc/slackdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc/sshkeydto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc/ssldto"
@@ -114,8 +115,9 @@ func (h *BaseSettingHandler) UpdateSetting(
 		req, ucFunc = r, func() (any, error) { return h.CronJobUC.UpdateCronJob(reqCtx, auth, r) }
 
 	case base.ResourceTypeSecret:
-		// NOTE: not implemented
-		err = apperrors.NewNotImplementedNT()
+		r := secretdto.NewUpdateSecretReq()
+		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
+		req, ucFunc = r, func() (any, error) { return h.SecretUC.UpdateSecret(reqCtx, auth, r) }
 
 	case base.ResourceTypeAPIKey:
 		// NOTE: not implemented

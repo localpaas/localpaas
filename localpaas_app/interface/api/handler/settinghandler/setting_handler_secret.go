@@ -41,6 +41,22 @@ func (h *SettingHandler) CreateSecret(ctx *gin.Context) {
 	h.CreateSetting(ctx, base.ResourceTypeSecret, base.SettingScopeGlobal)
 }
 
+// UpdateSecret Updates secret
+// @Summary Updates secret
+// @Description Updates secret
+// @Tags    settings
+// @Produce json
+// @Id      updateSettingSecret
+// @Param   id path string true "setting ID"
+// @Param   body body secretdto.UpdateSecretReq true "request data"
+// @Success 201 {object} secretdto.UpdateSecretResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /settings/secrets/{id} [put]
+func (h *SettingHandler) UpdateSecret(ctx *gin.Context) {
+	h.UpdateSetting(ctx, base.ResourceTypeSecret, base.SettingScopeGlobal)
+}
+
 // UpdateSecretMeta Updates secret meta
 // @Summary Updates secret meta
 // @Description Updates secret meta

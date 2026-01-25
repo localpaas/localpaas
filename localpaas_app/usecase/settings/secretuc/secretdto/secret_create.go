@@ -15,9 +15,22 @@ const (
 
 type CreateSecretReq struct {
 	settings.CreateSettingReq
+	*SecretBaseReq
+}
+
+type SecretBaseReq struct {
 	Key    string `json:"key"`
 	Value  string `json:"value"`
 	Base64 bool   `json:"base64"`
+}
+
+func (req *SecretBaseReq) validate(field string) (res []vld.Validator) {
+	if field != "" {
+		field += "."
+	}
+	res = append(res, basedto.ValidateStr(&req.Key, true, 1, secretKeyMaxLen, field+"key")...)
+	res = append(res, basedto.ValidateStr(&req.Value, true, 1, secretValueMaxLen, field+"value")...)
+	return res
 }
 
 func NewCreateSecretReq() *CreateSecretReq {
@@ -27,8 +40,7 @@ func NewCreateSecretReq() *CreateSecretReq {
 // Validate implements interface basedto.ReqValidator
 func (req *CreateSecretReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, basedto.ValidateStr(&req.Key, true, 1, secretKeyMaxLen, "key")...)
-	validators = append(validators, basedto.ValidateStr(&req.Value, true, 1, secretValueMaxLen, "value")...)
+	validators = append(validators, req.validate("")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 

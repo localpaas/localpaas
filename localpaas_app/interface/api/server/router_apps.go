@@ -28,8 +28,9 @@ func (s *HTTPServer) registerAppRoutes(projectGroup *gin.RouterGroup) *gin.Route
 	appGroup.GET("/:appID/env-vars", s.handlerRegistry.appHandler.GetAppEnvVars)
 	appGroup.PUT("/:appID/env-vars", s.handlerRegistry.appHandler.UpdateAppEnvVars)
 	// Secrets
-	appGroup.GET("/:appID/secrets", s.handlerRegistry.appHandler.ListAppSecrets)
+	appGroup.GET("/:appID/secrets", s.handlerRegistry.appHandler.ListAppSecret)
 	appGroup.POST("/:appID/secrets", s.handlerRegistry.appHandler.CreateAppSecret)
+	appGroup.PUT("/:appID/secrets/:id", s.handlerRegistry.appHandler.UpdateAppSecret)
 	appGroup.DELETE("/:appID/secrets/:id", s.handlerRegistry.appHandler.DeleteAppSecret)
 	// Domain SSL
 	appGroup.POST("/:appID/ssl/obtain", s.handlerRegistry.appHandler.ObtainDomainSsl)

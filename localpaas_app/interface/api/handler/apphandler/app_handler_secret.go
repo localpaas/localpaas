@@ -1,16 +1,14 @@
 package apphandler
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 
 	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc/secretdto"
+	_ "github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc/secretdto"
 )
 
-// ListAppSecrets Lists app secrets
+// ListAppSecret Lists app secrets
 // @Summary Lists app secrets
 // @Description Lists app secrets
 // @Tags    apps
@@ -22,28 +20,8 @@ import (
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/apps/{appID}/secrets [get]
-func (h *AppHandler) ListAppSecrets(ctx *gin.Context) {
-	auth, projectID, appID, err := h.getAuth(ctx, base.ActionTypeRead, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := secretdto.NewListSecretReq()
-	req.ParentObjectID = projectID
-	req.ObjectID = appID
-	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.secretUC.ListSecret(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+func (h *AppHandler) ListAppSecret(ctx *gin.Context) {
+	h.ListSetting(ctx, base.ResourceTypeSecret, base.SettingScopeApp)
 }
 
 // CreateAppSecret Creates an app secret
@@ -60,27 +38,25 @@ func (h *AppHandler) ListAppSecrets(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/apps/{appID}/secrets [post]
 func (h *AppHandler) CreateAppSecret(ctx *gin.Context) {
-	auth, projectID, appID, err := h.getAuth(ctx, base.ActionTypeWrite, true)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
+	h.CreateSetting(ctx, base.ResourceTypeSecret, base.SettingScopeApp)
+}
 
-	req := secretdto.NewCreateSecretReq()
-	req.ParentObjectID = projectID
-	req.ObjectID = appID
-	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.secretUC.CreateSecret(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusCreated, resp)
+// UpdateAppSecret Updates an app secret
+// @Summary Updates an app secret
+// @Description Updates an app secret
+// @Tags    apps
+// @Produce json
+// @Id      updateAppSecret
+// @Param   projectID path string true "project ID"
+// @Param   appID path string true "app ID"
+// @Param   id path string true "setting ID"
+// @Param   body body secretdto.UpdateSecretReq true "request data"
+// @Success 200 {object} secretdto.UpdateSecretResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /projects/{projectID}/apps/{appID}/secrets/{id} [put]
+func (h *AppHandler) UpdateAppSecret(ctx *gin.Context) {
+	h.UpdateSetting(ctx, base.ResourceTypeSecret, base.SettingScopeApp)
 }
 
 // DeleteAppSecret Deletes an app secret
@@ -97,26 +73,5 @@ func (h *AppHandler) CreateAppSecret(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/apps/{appID}/secrets/{id} [delete]
 func (h *AppHandler) DeleteAppSecret(ctx *gin.Context) {
-	auth, projectID, appID, itemID, err := h.getAuthForItem(ctx, base.ActionTypeWrite, "id")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := secretdto.NewDeleteSecretReq()
-	req.ID = itemID
-	req.ParentObjectID = projectID
-	req.ObjectID = appID
-	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.secretUC.DeleteSecret(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.DeleteSetting(ctx, base.ResourceTypeSecret, base.SettingScopeApp)
 }

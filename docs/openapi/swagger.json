@@ -3014,6 +3014,81 @@
         },
         "summary" : "Deletes an app secret",
         "tags" : [ "apps" ]
+      },
+      "put" : {
+        "description" : "Updates an app secret",
+        "operationId" : "updateAppSecret",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "app ID",
+          "in" : "path",
+          "name" : "appID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_secretuc_secretdto.UpdateSecretReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_secretuc_secretdto.UpdateSecretResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates an app secret",
+        "tags" : [ "apps" ],
+        "x-codegen-request-body-name" : "body"
       }
     },
     "/projects/{projectID}/apps/{appID}/service-spec" : {
@@ -7465,6 +7540,73 @@
         },
         "summary" : "Deletes a project secret",
         "tags" : [ "projects" ]
+      },
+      "put" : {
+        "description" : "Updates a project secret",
+        "operationId" : "updateProjectSecret",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_secretuc_secretdto.UpdateSecretReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_secretuc_secretdto.UpdateSecretResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates a project secret",
+        "tags" : [ "projects" ],
+        "x-codegen-request-body-name" : "body"
       }
     },
     "/projects/{projectID}/settings-import" : {
@@ -12033,6 +12175,65 @@
         },
         "summary" : "Deletes a secret",
         "tags" : [ "settings" ]
+      },
+      "put" : {
+        "description" : "Updates secret",
+        "operationId" : "updateSettingSecret",
+        "parameters" : [ {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_secretuc_secretdto.UpdateSecretReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_secretuc_secretdto.UpdateSecretResp"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates secret",
+        "tags" : [ "settings" ],
+        "x-codegen-request-body-name" : "body"
       }
     },
     "/settings/secrets/{id}/meta" : {
@@ -18594,6 +18795,36 @@
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_secretuc_secretdto.UpdateSecretMetaResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_secretuc_secretdto.UpdateSecretReq" : {
+        "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
+          "base64" : {
+            "type" : "boolean"
+          },
+          "key" : {
+            "type" : "string"
+          },
+          "updateVer" : {
+            "type" : "integer"
+          },
+          "value" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "availableInProjects", "base64", "key", "updateVer", "value" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_secretuc_secretdto.UpdateSecretResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
