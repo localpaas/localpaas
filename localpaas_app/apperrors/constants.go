@@ -67,8 +67,19 @@ var (
 
 // Errors for settings
 var (
+	ErrSettingInactive       = errors.New("ERR_SETTING_INACTIVE")
 	ErrGlobalSettingRequired = errors.New("ERR_GLOBAL_SETTING_REQUIRED")
 	ErrOwnSettingRequired    = errors.New("ERR_OWN_SETTING_REQUIRED")
+)
+
+// Errors for projects
+var (
+	ErrProjectInactive = errors.New("ERR_PROJECT_INACTIVE")
+)
+
+// Errors for apps
+var (
+	ErrAppInactive = errors.New("ERR_APP_INACTIVE")
 )
 
 // nolint Errors from infrastructure
@@ -152,8 +163,15 @@ var errorStatusMap = map[error]int{
 	ErrEmailChangeUnallowed:        http.StatusUnprocessableEntity,
 
 	// Settings errors
+	ErrSettingInactive:       http.StatusNotAcceptable,
 	ErrGlobalSettingRequired: http.StatusUnprocessableEntity,
 	ErrOwnSettingRequired:    http.StatusUnprocessableEntity,
+
+	// Project errors
+	ErrProjectInactive: http.StatusNotAcceptable,
+
+	// App errors
+	ErrAppInactive: http.StatusNotAcceptable,
 
 	// Errors from infrastructure
 	ErrInfra:                   http.StatusInternalServerError,

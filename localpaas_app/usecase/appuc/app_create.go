@@ -61,6 +61,10 @@ func (uc *AppUC) CreateApp(
 		return uc.persistData(ctx, db, persistingData)
 	})
 	if err != nil {
+		// Transaction fails, but service is created in docker, need to delete it
+		if createdApp != nil && createdApp.ServiceID != "" {
+			_ = uc.dockerManager.ServiceRemove(ctx, createdApp.ServiceID)
+		}
 		return nil, apperrors.Wrap(err)
 	}
 
@@ -88,7 +92,7 @@ func (uc *AppUC) loadAppData(
 		return apperrors.Wrap(err)
 	}
 	if project.Status != base.ProjectStatusActive {
-		return apperrors.Wrap(apperrors.ErrResourceInactive)
+		return apperrors.New(apperrors.ErrProjectInactive).WithNTParam("Name", project.Name)
 	}
 	data.Project = project
 

@@ -37,15 +37,13 @@ type GetAppResp struct {
 }
 
 type AppResp struct {
-	ID           string               `json:"id"`
-	Name         string               `json:"name"`
-	Key          string               `json:"key"`
-	Status       base.AppStatus       `json:"status"`
-	Photo        string               `json:"photo"`
-	Note         string               `json:"note"`
-	Tags         []string             `json:"tags" copy:"-"` // manual copy AppTag -> string
-	UserAccesses []*AppUserAccessResp `json:"userAccesses"`
-	UpdateVer    int                  `json:"updateVer"`
+	ID        string         `json:"id"`
+	Name      string         `json:"name"`
+	Key       string         `json:"key"`
+	Status    base.AppStatus `json:"status"`
+	Note      string         `json:"note"`
+	Tags      []string       `json:"tags" copy:"-"` // manual copy AppTag -> string
+	UpdateVer int            `json:"updateVer"`
 
 	// Stats of app, only returns when req.getStats=true
 	Stats *AppStatsResp `json:"stats"`
@@ -69,7 +67,6 @@ type AppBaseResp struct {
 	ID     string         `json:"id"`
 	Name   string         `json:"name"`
 	Key    string         `json:"key"`
-	Photo  string         `json:"photo"`
 	Status base.AppStatus `json:"status"`
 }
 
@@ -82,20 +79,8 @@ func TransformApp(app *entity.App, input *AppTransformationInput) (resp *AppResp
 		return nil, apperrors.Wrap(err)
 	}
 	resp.Tags = gofn.MapSlice(app.Tags, func(t *entity.AppTag) string { return t.Tag })
-	resp.UserAccesses = TransformUserAccesses(app.Accesses)
 	resp.Stats = TransformAppStats(app, input)
 	return resp, nil
-}
-
-func TransformUserAccesses(accesses []*entity.ACLPermission) []*AppUserAccessResp {
-	return gofn.MapSlice(accesses, TransformUserAccess)
-}
-
-func TransformUserAccess(access *entity.ACLPermission) *AppUserAccessResp {
-	return &AppUserAccessResp{
-		UserBaseResp: basedto.TransformUserBase(access.SubjectUser),
-		Access:       access.Actions,
-	}
 }
 
 func TransformAppStats(app *entity.App, input *AppTransformationInput) *AppStatsResp {
@@ -120,7 +105,6 @@ func TransformAppsBase(apps []*entity.App) []*AppBaseResp {
 			ID:     app.ID,
 			Name:   app.Name,
 			Key:    app.Key,
-			Photo:  app.Photo,
 			Status: app.Status,
 		}
 	})

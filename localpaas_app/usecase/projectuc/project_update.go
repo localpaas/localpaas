@@ -93,5 +93,6 @@ func (uc *ProjectUC) preparePersistingProjectUpdate(
 	timeNow := timeutil.NowUTC()
 
 	uc.preparePersistingProjectBase(project, req.ProjectBaseReq, timeNow, persistingData)
+	persistingData.ProjectsToDeleteTags = append(persistingData.ProjectsToDeleteTags, project.ID)
 	uc.preparePersistingProjectTags(project, req.Tags, 0, persistingData)
 }

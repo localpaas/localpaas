@@ -13,6 +13,7 @@ func (s *HTTPServer) registerAppRoutes(projectGroup *gin.RouterGroup) *gin.Route
 	appGroup.GET("", s.handlerRegistry.appHandler.ListApp)
 	// Creation & Update
 	appGroup.POST("", s.handlerRegistry.appHandler.CreateApp)
+	appGroup.PUT("/:appID", s.handlerRegistry.appHandler.UpdateApp)
 	appGroup.DELETE("/:appID", s.handlerRegistry.appHandler.DeleteApp)
 	// Tags
 	appGroup.POST("/:appID/tags", s.handlerRegistry.appHandler.CreateAppTag)

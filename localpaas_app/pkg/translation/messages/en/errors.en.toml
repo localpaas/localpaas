@@ -52,8 +52,15 @@ ERR_EMAIL_UNAVAILABLE = "Email address is not available"
 ERR_EMAIL_CHANGE_UNALLOWED = "Email changing is not allowed"
 
 # Settings errors
+ERR_SETTING_INACTIVE = "Setting '{{.Name}}' is inactive"
 ERR_GLOBAL_SETTING_REQUIRED = "Global setting is required"
 ERR_OWN_SETTING_REQUIRED = "Own setting is required"
+
+# Project errors
+ERR_PROJECT_INACTIVE = "Project '{{.Name}}' is inactive"
+
+# App errors
+ERR_APP_INACTIVE = "App '{{.Name}}' is inactive"
 
 # Infra errors
 ERR_INFRA = "{{.Error}}"
