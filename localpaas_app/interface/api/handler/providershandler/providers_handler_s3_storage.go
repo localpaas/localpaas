@@ -118,7 +118,7 @@ func (h *ProvidersHandler) DeleteS3Storage(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/s3-storages/test-conn [post]
 func (h *ProvidersHandler) TestS3StorageConn(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
+	auth, err := h.AuthHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

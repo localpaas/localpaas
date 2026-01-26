@@ -118,7 +118,7 @@ func (h *ProvidersHandler) DeleteGitToken(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/git-tokens/test-conn [post]
 func (h *ProvidersHandler) TestGitTokenConn(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
+	auth, err := h.AuthHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

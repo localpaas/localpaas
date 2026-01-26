@@ -118,7 +118,7 @@ func (h *ProvidersHandler) DeleteGithubApp(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/github-apps/test-conn [post]
 func (h *ProvidersHandler) TestGithubAppConn(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
+	auth, err := h.AuthHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -151,7 +151,7 @@ func (h *ProvidersHandler) TestGithubAppConn(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/github-apps/installations/list [post]
 func (h *ProvidersHandler) ListAppInstallation(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
+	auth, err := h.AuthHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

@@ -118,7 +118,7 @@ func (h *ProvidersHandler) DeleteRegistryAuth(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/registry-auth/test-conn [post]
 func (h *ProvidersHandler) TestRegistryAuthConn(ctx *gin.Context) {
-	auth, err := h.authHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
+	auth, err := h.AuthHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
