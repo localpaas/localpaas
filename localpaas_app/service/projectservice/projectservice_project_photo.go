@@ -1,4 +1,4 @@
-package userservice
+package projectservice
 
 import (
 	"context"
@@ -17,30 +17,30 @@ const (
 	photoDirFileMode = 0o755
 )
 
-func (s *userService) SaveUserPhoto(
+func (s *projectService) SaveProjectPhoto(
 	_ context.Context,
-	user *entity.User,
+	project *entity.Project,
 	data []byte,
 	fileExt string,
 ) error {
-	dirPath := filepath.Join(config.Current.DataPathPhoto(), "user")
+	dirPath := filepath.Join(config.Current.DataPathPhoto(), "project")
 	err := os.MkdirAll(dirPath, photoDirFileMode)
 	if err != nil {
-		return fmt.Errorf("error creating user photo directory: %w", err)
+		return fmt.Errorf("error creating project photo directory: %w", err)
 	}
 
 	if !strings.HasPrefix(fileExt, ".") {
 		fileExt += "."
 	}
-	fileName := user.ID + fileExt
+	fileName := project.ID + fileExt
 	fullPath := filepath.Join(dirPath, fileName)
 
 	err = os.WriteFile(fullPath, data, photoDirFileMode)
 	if err != nil {
-		return fmt.Errorf("error writing user photo: %w", err)
+		return fmt.Errorf("error writing project photo: %w", err)
 	}
 
 	// Save the photo path
-	user.Photo = filepath.Join(config.Current.HttpPathPhoto(), "user", fileName)
+	project.Photo = filepath.Join(config.Current.HttpPathPhoto(), "project", fileName)
 	return nil
 }

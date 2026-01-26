@@ -74,7 +74,7 @@ func (s *HTTPServer) registerRoutes() {
 	}
 
 	// STATIC FILES
-	s.engine.Use(StaticServe(s.config.HttpPathUserPhoto(), localFile(s.config.DataPathUserPhoto(), false)))
+	s.engine.Use(StaticServe(s.config.HttpPathPhoto(), localFile(s.config.DataPathPhoto(), false)))
 	// Serve the static files from the "dist-dashboard" directory at the root URL "/"
 	s.engine.Use(StaticServe("/", localFile("./dist-dashboard", true)))
 	// Final redirection to redirect any path to `/next=<path>` in case no matching static file found

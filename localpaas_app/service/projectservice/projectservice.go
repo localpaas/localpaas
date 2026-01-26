@@ -16,6 +16,8 @@ import (
 type ProjectService interface {
 	PersistProjectData(ctx context.Context, db database.IDB, data *PersistingProjectData) error
 	DeleteProject(ctx context.Context, project *entity.Project) error
+
+	SaveProjectPhoto(ctx context.Context, project *entity.Project, data []byte, fileExt string) error
 }
 
 func NewProjectService(

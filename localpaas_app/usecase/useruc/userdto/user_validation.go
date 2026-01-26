@@ -5,11 +5,8 @@ import (
 	vld "github.com/tiendc/go-validator"
 	"github.com/tiendc/gofn"
 
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-)
-
-var (
-	acceptedPhotoFileExts = []string{".png", ".jpg", ".jpeg", ".webp"}
 )
 
 const (
@@ -41,7 +38,7 @@ func validateUserPhoto(photo *UserPhotoReq, field string) []vld.Validator {
 		return nil
 	}
 	return []vld.Validator{
-		vld.Must(gofn.Contain(acceptedPhotoFileExts, photo.FileExt)).OnError(
+		vld.Must(gofn.Contain(base.AllPhotoFileExts, photo.FileExt)).OnError(
 			vld.SetField(field+".fileName", nil),
 			vld.SetCustomKey("ERR_VLD_USER_PHOTO_FILE_EXT_UNSUPPORTED"),
 		),

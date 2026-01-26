@@ -14,6 +14,7 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 	projectGroup.GET("", s.handlerRegistry.projectHandler.ListProject)
 	projectGroup.POST("", s.handlerRegistry.projectHandler.CreateProject)
 	projectGroup.PUT("/:projectID", s.handlerRegistry.projectHandler.UpdateProject)
+	projectGroup.PUT("/:projectID/photo", s.handlerRegistry.projectHandler.UpdateProjectPhoto)
 	projectGroup.DELETE("/:projectID", s.handlerRegistry.projectHandler.DeleteProject)
 
 	// Tags

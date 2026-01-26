@@ -23,13 +23,13 @@ func (cfg *Config) SsoBaseCallbackURL() string {
 	return gofn.Must(url.JoinPath(cfg.BaseAPIURL(), "auth/sso/callback"))
 }
 
-/// USER PHOTO
+/// OBJECT PHOTOS
 
-func (cfg *Config) DataPathUserPhoto() string {
-	return filepath.Join(cfg.AppPath, "user", "photo")
+func (cfg *Config) DataPathPhoto() string {
+	return filepath.Join(cfg.AppPath, "files", "photo")
 }
-func (cfg *Config) HttpPathUserPhoto() string {
-	return "/files/user/photo/"
+func (cfg *Config) HttpPathPhoto() string {
+	return "/files/photo/"
 }
 
 /// SSL CERTS

@@ -33,6 +33,8 @@ type ProjectRepo interface {
 		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
 	UpsertMulti(ctx context.Context, db database.IDB, projects []*entity.Project,
 		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
+	Update(ctx context.Context, db database.IDB, project *entity.Project,
+		opts ...bunex.UpdateQueryOption) error
 }
 
 type projectRepo struct {
@@ -166,6 +168,18 @@ func (repo *projectRepo) UpsertMulti(ctx context.Context, db database.IDB, proje
 	query := db.NewInsert().Model(&projects)
 	query = bunex.ApplyInsert(query, opts...)
 	query = bunex.ApplyUpsert(query, conflictCols, updateCols)
+
+	_, err := query.Exec(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (repo *projectRepo) Update(ctx context.Context, db database.IDB, project *entity.Project,
+	opts ...bunex.UpdateQueryOption) error {
+	query := db.NewUpdate().Model(project).WherePK()
+	query = bunex.ApplyUpdate(query, opts...)
 
 	_, err := query.Exec(ctx)
 	if err != nil {
