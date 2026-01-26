@@ -39,7 +39,7 @@ func (uc *ProjectUC) CreateProject(
 	}
 
 	persistingData := &persistingProjectData{}
-	uc.preparePersistingProject(req, timeutil.NowUTC(), projectData, persistingData)
+	uc.preparePersistingProject(auth, req, timeutil.NowUTC(), projectData, persistingData)
 
 	err = transaction.Execute(ctx, uc.db, func(db database.Tx) error {
 		return uc.persistData(ctx, db, persistingData)
@@ -93,6 +93,7 @@ type persistingProjectData struct {
 }
 
 func (uc *ProjectUC) preparePersistingProject(
+	auth *basedto.Auth,
 	req *projectdto.CreateProjectReq,
 	timeNow time.Time,
 	data *createProjectData,
@@ -105,11 +106,12 @@ func (uc *ProjectUC) preparePersistingProject(
 		CreatedAt: timeNow,
 	}
 
-	uc.preparePersistingProjectBase(project, req.ProjectBaseReq, timeNow, persistingData)
+	uc.preparePersistingProjectBase(auth, project, req.ProjectBaseReq, timeNow, persistingData)
 	uc.preparePersistingProjectTags(project, req.Tags, 0, persistingData)
 }
 
 func (uc *ProjectUC) preparePersistingProjectBase(
+	auth *basedto.Auth,
 	project *entity.Project,
 	req *projectdto.ProjectBaseReq,
 	timeNow time.Time,
@@ -118,6 +120,7 @@ func (uc *ProjectUC) preparePersistingProjectBase(
 	project.Name = req.Name
 	project.Status = req.Status
 	project.Note = req.Note
+	project.OwnerID = gofn.Coalesce(req.Owner.ID, auth.User.ID)
 	project.UpdatedAt = timeNow
 
 	persistingData.UpsertingProjects = append(persistingData.UpsertingProjects, project)

@@ -18,6 +18,8 @@ import (
 type ProjectRepo interface {
 	GetByID(ctx context.Context, db database.IDB, id string,
 		opts ...bunex.SelectQueryOption) (*entity.Project, error)
+	GetByIDAndOwner(ctx context.Context, db database.IDB, projectID, ownerID string,
+		opts ...bunex.SelectQueryOption) (*entity.Project, error)
 	GetByName(ctx context.Context, db database.IDB, name string,
 		opts ...bunex.SelectQueryOption) (*entity.Project, error)
 	GetByKey(ctx context.Context, db database.IDB, key string,
@@ -44,6 +46,24 @@ func (repo *projectRepo) GetByID(ctx context.Context, db database.IDB, id string
 	opts ...bunex.SelectQueryOption) (*entity.Project, error) {
 	project := &entity.Project{}
 	query := db.NewSelect().Model(project).Where("project.id = ?", id)
+	query = bunex.ApplySelect(query, opts...)
+
+	err := query.Scan(ctx)
+	if project == nil || errors.Is(err, sql.ErrNoRows) {
+		return nil, apperrors.NewNotFound("Project").WithCause(err)
+	}
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return project, nil
+}
+
+func (repo *projectRepo) GetByIDAndOwner(ctx context.Context, db database.IDB, projectID, ownerID string,
+	opts ...bunex.SelectQueryOption) (*entity.Project, error) {
+	project := &entity.Project{}
+	query := db.NewSelect().Model(project).
+		Where("project.id = ?", projectID).
+		Where("project.owner_id = ?", ownerID)
 	query = bunex.ApplySelect(query, opts...)
 
 	err := query.Scan(ctx)

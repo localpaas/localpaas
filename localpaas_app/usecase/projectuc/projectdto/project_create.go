@@ -13,10 +13,11 @@ type CreateProjectReq struct {
 }
 
 type ProjectBaseReq struct {
-	Name   string             `json:"name"`
-	Status base.ProjectStatus `json:"status"`
-	Tags   []string           `json:"tags"`
-	Note   string             `json:"note"`
+	Name   string              `json:"name"`
+	Status base.ProjectStatus  `json:"status"`
+	Tags   []string            `json:"tags"`
+	Note   string              `json:"note"`
+	Owner  basedto.ObjectIDReq `json:"owner"`
 }
 
 func (req *ProjectBaseReq) validate(field string) (res []vld.Validator) {
@@ -27,6 +28,7 @@ func (req *ProjectBaseReq) validate(field string) (res []vld.Validator) {
 	res = append(res, basedto.ValidateStrIn(&req.Status, true, base.AllProjectStatuses, field+"status")...)
 	res = append(res, validateProjectNote(&req.Note, field+"note")...)
 	res = append(res, validateProjectTags(req.Tags, field+"tags")...)
+	res = append(res, validateProjectOwner(&req.Owner, field+"owner")...)
 	return res
 }
 

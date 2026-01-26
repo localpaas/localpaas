@@ -2,6 +2,7 @@ package permission
 
 import (
 	"context"
+	"errors"
 	"slices"
 	"strings"
 
@@ -31,6 +32,15 @@ func (p *manager) CheckAccess(
 	auth *basedto.Auth,
 	check *AccessCheck,
 ) (hasPerm bool, err error) {
+	// Special project/app access check
+	hasPerm, err = p.checkProjectAccess(ctx, db, check)
+	if err != nil {
+		return false, apperrors.Wrap(err)
+	}
+	if hasPerm {
+		return true, nil
+	}
+
 	modPerms, parentPerms, objPerms, err := p.loadPermissions(ctx, db, check)
 	if err != nil {
 		return false, apperrors.Wrap(err)
@@ -81,6 +91,34 @@ func (p *manager) CheckAccess(
 	}
 
 	return hasPerm, nil
+}
+
+// checkProjectAccess owners of a project have all permissions on the project and the belonged apps
+func (p *manager) checkProjectAccess(
+	ctx context.Context,
+	db database.IDB,
+	check *AccessCheck,
+) (hasPerm bool, err error) {
+	if check.SubjectType != base.SubjectTypeUser || check.SubjectID == "" || check.ResourceID == "" {
+		return false, nil
+	}
+
+	var projectID string
+	switch check.ResourceType { //nolint:exhaustive
+	case base.ResourceTypeProject:
+		projectID = check.ResourceID
+	case base.ResourceTypeApp:
+		projectID = check.ParentResourceID
+	}
+	if projectID == "" {
+		return false, nil
+	}
+
+	project, err := p.projectRepo.GetByIDAndOwner(ctx, db, projectID, check.SubjectID)
+	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
+		return false, apperrors.Wrap(err)
+	}
+	return project != nil, nil
 }
 
 func (p *manager) loadPermissions(

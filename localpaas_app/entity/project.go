@@ -8,7 +8,7 @@ import (
 
 var (
 	ProjectUpsertingConflictCols = []string{"id"}
-	ProjectUpsertingUpdateCols   = []string{"name", "key", "photo", "status", "note",
+	ProjectUpsertingUpdateCols   = []string{"name", "key", "photo", "status", "note", "owner_id",
 		"update_ver", "updated_at", "deleted_at"}
 )
 
@@ -19,12 +19,14 @@ type Project struct {
 	Photo     string `bun:",nullzero"`
 	Status    base.ProjectStatus
 	Note      string `bun:",nullzero"`
+	OwnerID   string
 	UpdateVer int
 
 	CreatedAt time.Time `bun:",default:current_timestamp"`
 	UpdatedAt time.Time `bun:",default:current_timestamp"`
 	DeletedAt time.Time `bun:",soft_delete,nullzero"`
 
+	Owner    *User            `bun:"rel:has-one,join:owner_id=id"`
 	Settings []*Setting       `bun:"rel:has-many,join:id=object_id"`
 	Apps     []*App           `bun:"rel:has-many,join:id=project_id"`
 	Tags     []*ProjectTag    `bun:"rel:has-many,join:id=project_id"`

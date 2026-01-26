@@ -7,11 +7,14 @@ CREATE TABLE IF NOT EXISTS projects
     photo        VARCHAR(255) NULL,
     status       VARCHAR(100) NOT NULL,
     note         VARCHAR(10000) NULL,
+    owner_id     VARCHAR(100) NOT NULL,
     update_ver   INT4 NOT NULL DEFAULT 1,
 
     created_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted_at   TIMESTAMPTZ NULL
+    deleted_at   TIMESTAMPTZ NULL,
+
+    CONSTRAINT fk_project_owner_id FOREIGN KEY (owner_id) REFERENCES users (id)
 );
 
 CREATE UNIQUE INDEX idx_uq_projects_name ON projects(LOWER(name)) WHERE deleted_at IS NULL;

@@ -29,3 +29,7 @@ func validateProjectTags(tags []string, field string) []vld.Validator {
 func validateProjectNote(note *string, field string) []vld.Validator {
 	return basedto.ValidateStr(note, false, minProjectNoteLen, maxProjectNoteLen, field)
 }
+
+func validateProjectOwner(id *basedto.ObjectIDReq, field string) []vld.Validator {
+	return basedto.ValidateObjectIDReq(id, false, field)
+}

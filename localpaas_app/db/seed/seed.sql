@@ -23,12 +23,12 @@ VALUES ('01JAB9XED0GTXBSQDFVYAJ8WA1', 'tiendc', 'tiendc@gmail.com', 'admin', 'ac
         '2025-10-01 00:00:00', '2025-10-01 00:00:00')
 ON CONFLICT DO NOTHING;
 
-INSERT INTO projects (id, name, key, status, created_at, updated_at)
-VALUES ('01JAB9XED0GTXBSQDFVYAJ8WB1', 'Project A', 'project_a', 'active',
+INSERT INTO projects (id, name, key, status, owner_id, created_at, updated_at)
+VALUES ('01JAB9XED0GTXBSQDFVYAJ8WB1', 'Project A', 'project_a', 'active', '01JAB9XED0GTXBSQDFVYAJ8WA1',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
-       ('01JAB9XED0GTXBSQDFVYAJ8WB2', 'Project B', 'project_b', 'active',
+       ('01JAB9XED0GTXBSQDFVYAJ8WB2', 'Project B', 'project_b', 'active', '01JAB9XED0GTXBSQDFVYAJ8WA1',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
-       ('01JAB9XED0GTXBSQDFVYAJ8WB3', 'Project C', 'project_c', 'locked',
+       ('01JAB9XED0GTXBSQDFVYAJ8WB3', 'Project C', 'project_c', 'locked', '01JAB9XED0GTXBSQDFVYAJ8WA1',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00')
 ON CONFLICT DO NOTHING;
 

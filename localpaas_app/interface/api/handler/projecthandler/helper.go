@@ -19,7 +19,7 @@ func (h *ProjectHandler) getAuth(
 			return
 		}
 	}
-	auth, err = h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+	auth, err = h.AuthHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceModule: base.ResourceModuleProject,
 		ResourceType:   base.ResourceTypeProject,
 		ResourceID:     projectID,

@@ -25,14 +25,17 @@ type Manager interface {
 type manager struct {
 	aclPermissionRepo repository.ACLPermissionRepo
 	userRepo          repository.UserRepo
+	projectRepo       repository.ProjectRepo
 }
 
 func NewManager(
 	aclPermissionRepo repository.ACLPermissionRepo,
 	userRepo repository.UserRepo,
+	projectRepo repository.ProjectRepo,
 ) Manager {
 	return &manager{
 		aclPermissionRepo: aclPermissionRepo,
 		userRepo:          userRepo,
+		projectRepo:       projectRepo,
 	}
 }

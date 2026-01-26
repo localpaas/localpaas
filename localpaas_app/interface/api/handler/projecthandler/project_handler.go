@@ -1,7 +1,6 @@
 package projecthandler
 
 import (
-	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/basesettinghandler"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc"
@@ -19,7 +18,6 @@ import (
 
 type ProjectHandler struct {
 	*basesettinghandler.BaseSettingHandler
-	authHandler    *authhandler.AuthHandler
 	projectUC      *projectuc.ProjectUC
 	s3StorageUC    *s3storageuc.S3StorageUC
 	sshKeyUC       *sshkeyuc.SSHKeyUC
@@ -36,7 +34,6 @@ type ProjectHandler struct {
 
 func NewProjectHandler(
 	baseSettingHandler *basesettinghandler.BaseSettingHandler,
-	authHandler *authhandler.AuthHandler,
 	projectUC *projectuc.ProjectUC,
 	s3StorageUC *s3storageuc.S3StorageUC,
 	sshKeyUC *sshkeyuc.SSHKeyUC,
@@ -52,7 +49,6 @@ func NewProjectHandler(
 ) *ProjectHandler {
 	return &ProjectHandler{
 		BaseSettingHandler: baseSettingHandler,
-		authHandler:        authHandler,
 		projectUC:          projectUC,
 		s3StorageUC:        s3StorageUC,
 		sshKeyUC:           sshKeyUC,

@@ -19,6 +19,7 @@ func (uc *ProjectUC) GetProject(
 	project, err := uc.projectRepo.GetByID(ctx, uc.db, req.ID,
 		bunex.SelectRelation("Tags", bunex.SelectOrder("display_order")),
 		bunex.SelectRelation("Apps", bunex.SelectOrder("name")),
+		bunex.SelectRelation("Owner"),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)

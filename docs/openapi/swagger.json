@@ -14614,10 +14614,10 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
         "format" : "int64",
         "type" : "integer",
-        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
+        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentReq" : {
         "type" : "object"
@@ -16206,6 +16206,9 @@
           "note" : {
             "type" : "string"
           },
+          "owner" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
+          },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.ProjectStatus"
           },
@@ -16216,7 +16219,7 @@
             "type" : "array"
           }
         },
-        "required" : [ "name", "note", "status", "tags" ],
+        "required" : [ "name", "note", "owner", "status", "tags" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.CreateProjectResp" : {
@@ -16434,6 +16437,9 @@
           "note" : {
             "type" : "string"
           },
+          "owner" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.UserBaseResp"
+          },
           "photo" : {
             "type" : "string"
           },
@@ -16460,7 +16466,7 @@
             "type" : "array"
           }
         },
-        "required" : [ "apps", "createdAt", "id", "key", "name", "note", "photo", "status", "tags", "updateVer", "updatedAt", "userAccesses" ],
+        "required" : [ "apps", "createdAt", "id", "key", "name", "note", "owner", "photo", "status", "tags", "updateVer", "updatedAt", "userAccesses" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.ProjectUserAccessResp" : {

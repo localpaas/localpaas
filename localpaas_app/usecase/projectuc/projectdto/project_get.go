@@ -42,6 +42,7 @@ type ProjectResp struct {
 	Tags         []string                 `json:"tags" copy:"-"` // manual copy ProjectTag -> string
 	Apps         []*ProjectAppResp        `json:"apps"`
 	UserAccesses []*ProjectUserAccessResp `json:"userAccesses"`
+	Owner        *basedto.UserBaseResp    `json:"owner"`
 	UpdateVer    int                      `json:"updateVer"`
 
 	CreatedAt time.Time `json:"createdAt"`
@@ -72,6 +73,7 @@ func TransformProject(project *entity.Project) (resp *ProjectResp, err error) {
 	}
 	resp.Tags = gofn.MapSlice(project.Tags, func(t *entity.ProjectTag) string { return t.Tag })
 	resp.UserAccesses = TransformUserAccesses(project.Accesses)
+	resp.Owner = basedto.TransformUserBase(project.Owner)
 	return resp, nil
 }
 
