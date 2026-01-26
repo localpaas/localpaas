@@ -99,7 +99,7 @@ func (p *manager) checkProjectAccess(
 	db database.IDB,
 	check *AccessCheck,
 ) (hasPerm bool, err error) {
-	if check.SubjectType != base.SubjectTypeUser || check.SubjectID == "" || check.ResourceID == "" {
+	if check.SubjectType != base.SubjectTypeUser || check.SubjectID == "" {
 		return false, nil
 	}
 

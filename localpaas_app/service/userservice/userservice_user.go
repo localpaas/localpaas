@@ -12,16 +12,26 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/entityutil"
 )
 
-func (s *userService) LoadUser(ctx context.Context, db database.IDB, userID string) (*entity.User, error) {
+func (s *userService) LoadUser(
+	ctx context.Context,
+	db database.IDB,
+	userID string,
+) (*entity.User, error) {
 	userMap, err := s.LoadUsers(ctx, db, []string{userID})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+	if len(userMap) == 0 {
+		return nil, apperrors.NewNotFound("User")
+	}
 	return userMap[userID], nil
 }
 
-func (s *userService) LoadUsers(ctx context.Context, db database.IDB, userIDs []string) (
-	userMap map[string]*entity.User, err error) {
+func (s *userService) LoadUsers(
+	ctx context.Context,
+	db database.IDB,
+	userIDs []string,
+) (userMap map[string]*entity.User, err error) {
 	if len(userIDs) == 0 {
 		return nil, nil
 	}
@@ -55,16 +65,26 @@ func (s *userService) LoadUsers(ctx context.Context, db database.IDB, userIDs []
 	return userMap, nil
 }
 
-func (s *userService) LoadUserByEmail(ctx context.Context, db database.IDB, email string) (*entity.User, error) {
+func (s *userService) LoadUserByEmail(
+	ctx context.Context,
+	db database.IDB,
+	email string,
+) (*entity.User, error) {
 	userMap, err := s.LoadUsersByEmails(ctx, db, []string{email})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+	if len(userMap) == 0 {
+		return nil, apperrors.NewNotFound("User")
+	}
 	return userMap[email], nil
 }
 
-func (s *userService) LoadUsersByEmails(ctx context.Context, db database.IDB,
-	emails []string) (userMap map[string]*entity.User, err error) {
+func (s *userService) LoadUsersByEmails(
+	ctx context.Context,
+	db database.IDB,
+	emails []string,
+) (userMap map[string]*entity.User, err error) {
 	if len(emails) == 0 {
 		return nil, nil
 	}
