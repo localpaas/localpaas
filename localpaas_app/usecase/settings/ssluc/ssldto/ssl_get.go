@@ -29,8 +29,8 @@ func (req *GetSslReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetSslResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
-	Data *SslResp          `json:"data"`
+	Meta *basedto.Meta `json:"meta"`
+	Data *SslResp      `json:"data"`
 }
 
 type SslResp struct {

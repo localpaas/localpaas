@@ -34,8 +34,8 @@ func (req *ListUserReq) Validate() apperrors.ValidationErrors {
 }
 
 type ListUserResp struct {
-	Meta *basedto.Meta `json:"meta"`
-	Data []*UserResp   `json:"data"`
+	Meta *basedto.ListMeta `json:"meta"`
+	Data []*UserResp       `json:"data"`
 }
 
 func TransformUser(user *entity.User) (resp *UserResp, err error) {

@@ -18,5 +18,5 @@ func (req *ReloadLpAppConfigReq) Validate() apperrors.ValidationErrors {
 }
 
 type ReloadLpAppConfigResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

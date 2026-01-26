@@ -30,5 +30,5 @@ func (req *CreateProjectTagReq) Validate() apperrors.ValidationErrors {
 }
 
 type CreateProjectTagResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

@@ -34,8 +34,8 @@ func (req *GetNodeReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetNodeResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
-	Data *NodeResp         `json:"data"`
+	Meta *basedto.Meta `json:"meta"`
+	Data *NodeResp     `json:"data"`
 }
 
 type NodeResp struct {

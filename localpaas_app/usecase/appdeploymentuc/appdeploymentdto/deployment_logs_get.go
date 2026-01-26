@@ -35,7 +35,7 @@ func (req *GetDeploymentLogsReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetDeploymentLogsResp struct {
-	Meta *basedto.BaseMeta       `json:"meta"`
+	Meta *basedto.Meta           `json:"meta"`
 	Data *DeploymentLogsDataResp `json:"data"`
 }
 

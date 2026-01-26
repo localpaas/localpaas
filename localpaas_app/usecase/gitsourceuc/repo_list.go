@@ -72,7 +72,7 @@ func (uc *GitSourceUC) listGithubRepo(
 	}
 
 	return &gitsourcedto.ListRepoResp{
-		Meta: &basedto.Meta{Page: pagingMeta},
+		Meta: &basedto.ListMeta{Page: pagingMeta},
 		Data: resp,
 	}, nil
 }
@@ -98,7 +98,7 @@ func (uc *GitSourceUC) listGitlabRepo(
 	}
 
 	return &gitsourcedto.ListRepoResp{
-		Meta: &basedto.Meta{Page: pagingMeta},
+		Meta: &basedto.ListMeta{Page: pagingMeta},
 		Data: resp,
 	}, nil
 }

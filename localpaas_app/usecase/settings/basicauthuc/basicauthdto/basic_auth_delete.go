@@ -24,5 +24,5 @@ func (req *DeleteBasicAuthReq) Validate() apperrors.ValidationErrors {
 }
 
 type DeleteBasicAuthResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

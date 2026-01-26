@@ -35,6 +35,6 @@ func (req *CreateDiscordReq) Validate() apperrors.ValidationErrors {
 }
 
 type CreateDiscordResp struct {
-	Meta *basedto.BaseMeta     `json:"meta"`
+	Meta *basedto.Meta         `json:"meta"`
 	Data *basedto.ObjectIDResp `json:"data"`
 }

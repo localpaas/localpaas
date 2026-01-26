@@ -32,8 +32,8 @@ func (req *GetAppReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetAppResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
-	Data *AppResp          `json:"data"`
+	Meta *basedto.Meta `json:"meta"`
+	Data *AppResp      `json:"data"`
 }
 
 type AppResp struct {

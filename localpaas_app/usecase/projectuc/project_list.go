@@ -47,7 +47,7 @@ func (uc *ProjectUC) ListProject(
 	}
 
 	return &projectdto.ListProjectResp{
-		Meta: &basedto.Meta{Page: paging},
+		Meta: &basedto.ListMeta{Page: paging},
 		Data: resp,
 	}, nil
 }

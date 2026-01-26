@@ -28,7 +28,7 @@ func (req *ListSettingReq) Validate() (validators []vld.Validator) {
 }
 
 type ListSettingResp struct {
-	Meta *basedto.Meta     `json:"meta"`
+	Meta *basedto.ListMeta `json:"meta"`
 	Data []*entity.Setting `json:"data"`
 }
 
@@ -91,7 +91,7 @@ func ListSetting(
 	}
 
 	return &ListSettingResp{
-		Meta: &basedto.Meta{Page: paging},
+		Meta: &basedto.ListMeta{Page: paging},
 		Data: settings,
 	}, nil
 }

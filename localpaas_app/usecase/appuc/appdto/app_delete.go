@@ -25,5 +25,5 @@ func (req *DeleteAppReq) Validate() apperrors.ValidationErrors {
 }
 
 type DeleteAppResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

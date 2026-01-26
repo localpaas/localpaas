@@ -31,7 +31,7 @@ func (uc *GithubAppUC) ListAppInstallation(
 	}
 
 	return &githubappdto.ListAppInstallationResp{
-		Meta: &basedto.Meta{Page: pagingMeta},
+		Meta: &basedto.ListMeta{Page: pagingMeta},
 		Data: resp,
 	}, nil
 }

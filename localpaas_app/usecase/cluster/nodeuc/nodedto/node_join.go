@@ -30,7 +30,7 @@ func (req *JoinNodeReq) Validate() apperrors.ValidationErrors {
 }
 
 type JoinNodeResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta     `json:"meta"`
 	Data *JoinNodeDataResp `json:"data"`
 }
 

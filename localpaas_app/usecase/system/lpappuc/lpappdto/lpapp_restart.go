@@ -21,5 +21,5 @@ func (req *RestartLpAppReq) Validate() apperrors.ValidationErrors {
 }
 
 type RestartLpAppResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

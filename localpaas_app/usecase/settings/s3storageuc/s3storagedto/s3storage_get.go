@@ -29,8 +29,8 @@ func (req *GetS3StorageReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetS3StorageResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
-	Data *S3StorageResp    `json:"data"`
+	Meta *basedto.Meta  `json:"meta"`
+	Data *S3StorageResp `json:"data"`
 }
 
 type S3StorageResp struct {

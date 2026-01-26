@@ -44,7 +44,7 @@ func (uc *SysErrorUC) ListSysError(
 	}
 
 	return &syserrordto.ListSysErrorResp{
-		Meta: &basedto.Meta{Page: paging},
+		Meta: &basedto.ListMeta{Page: paging},
 		Data: resp,
 	}, nil
 }

@@ -31,8 +31,8 @@ func (req *ListSslReq) Validate() apperrors.ValidationErrors {
 }
 
 type ListSslResp struct {
-	Meta *basedto.Meta `json:"meta"`
-	Data []*SslResp    `json:"data"`
+	Meta *basedto.ListMeta `json:"meta"`
+	Data []*SslResp        `json:"data"`
 }
 
 func TransformSsls(settings []*entity.Setting) (resp []*SslResp, err error) {

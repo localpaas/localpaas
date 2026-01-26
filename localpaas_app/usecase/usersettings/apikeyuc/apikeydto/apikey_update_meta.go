@@ -26,5 +26,5 @@ func (req *UpdateAPIKeyMetaReq) Validate() apperrors.ValidationErrors {
 }
 
 type UpdateAPIKeyMetaResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

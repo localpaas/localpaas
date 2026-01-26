@@ -27,5 +27,5 @@ func (req *DeleteAppTagsReq) Validate() apperrors.ValidationErrors {
 }
 
 type DeleteAppTagsResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

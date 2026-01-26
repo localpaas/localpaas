@@ -30,8 +30,8 @@ func (req *ListImageReq) Validate() apperrors.ValidationErrors {
 }
 
 type ListImageResp struct {
-	Meta *basedto.Meta `json:"meta"`
-	Data []*ImageResp  `json:"data"`
+	Meta *basedto.ListMeta `json:"meta"`
+	Data []*ImageResp      `json:"data"`
 }
 
 func TransformImages(images []image.Summary, detailed bool) []*ImageResp {

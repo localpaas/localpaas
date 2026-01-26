@@ -26,5 +26,5 @@ func (req *UpdateSslMetaReq) Validate() apperrors.ValidationErrors {
 }
 
 type UpdateSslMetaResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

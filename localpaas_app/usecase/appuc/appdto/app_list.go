@@ -36,8 +36,8 @@ func (req *ListAppReq) Validate() apperrors.ValidationErrors {
 }
 
 type ListAppResp struct {
-	Meta *basedto.Meta `json:"meta"`
-	Data []*AppResp    `json:"data"`
+	Meta *basedto.ListMeta `json:"meta"`
+	Data []*AppResp        `json:"data"`
 }
 
 func TransformApps(apps []*entity.App, input *AppTransformationInput) ([]*AppResp, error) {

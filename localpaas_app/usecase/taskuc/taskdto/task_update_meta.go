@@ -27,5 +27,5 @@ func (req *UpdateTaskMetaReq) Validate() apperrors.ValidationErrors {
 }
 
 type UpdateTaskMetaResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

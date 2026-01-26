@@ -37,8 +37,8 @@ func (req *ListNodeReq) Validate() apperrors.ValidationErrors {
 }
 
 type ListNodeResp struct {
-	Meta *basedto.Meta `json:"meta"`
-	Data []*NodeResp   `json:"data"`
+	Meta *basedto.ListMeta `json:"meta"`
+	Data []*NodeResp       `json:"data"`
 }
 
 func TransformNodes(nodes []swarm.Node, detailed bool) []*NodeResp {

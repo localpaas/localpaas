@@ -46,6 +46,6 @@ func (req *ObtainDomainSslReq) Validate() apperrors.ValidationErrors {
 }
 
 type ObtainDomainSslResp struct {
-	Meta *basedto.BaseMeta     `json:"meta"`
+	Meta *basedto.Meta         `json:"meta"`
 	Data *basedto.ObjectIDResp `json:"data"`
 }

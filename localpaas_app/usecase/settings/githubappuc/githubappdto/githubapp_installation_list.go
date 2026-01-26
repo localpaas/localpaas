@@ -26,7 +26,7 @@ func (req *ListAppInstallationReq) Validate() apperrors.ValidationErrors {
 }
 
 type ListAppInstallationResp struct {
-	Meta *basedto.Meta          `json:"meta"`
+	Meta *basedto.ListMeta      `json:"meta"`
 	Data []*AppInstallationResp `json:"data"`
 }
 

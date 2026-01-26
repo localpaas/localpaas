@@ -26,7 +26,7 @@ func (req *BeginUserSignupReq) Validate() apperrors.ValidationErrors {
 }
 
 type BeginUserSignupResp struct {
-	Meta *basedto.BaseMeta        `json:"meta"`
+	Meta *basedto.Meta            `json:"meta"`
 	Data *BeginUserSignupDataResp `json:"data"`
 }
 

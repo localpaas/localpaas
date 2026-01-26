@@ -24,5 +24,5 @@ func (req *DeleteImageReq) Validate() apperrors.ValidationErrors {
 }
 
 type DeleteImageResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

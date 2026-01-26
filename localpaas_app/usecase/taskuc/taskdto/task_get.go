@@ -28,8 +28,8 @@ func (req *GetTaskReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetTaskResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
-	Data *TaskResp         `json:"data"`
+	Meta *basedto.Meta `json:"meta"`
+	Data *TaskResp     `json:"data"`
 }
 
 type TaskResp struct {

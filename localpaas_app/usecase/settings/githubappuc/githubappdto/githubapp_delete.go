@@ -24,5 +24,5 @@ func (req *DeleteGithubAppReq) Validate() apperrors.ValidationErrors {
 }
 
 type DeleteGithubAppResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

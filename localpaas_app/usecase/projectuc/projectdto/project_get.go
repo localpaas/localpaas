@@ -28,8 +28,8 @@ func (req *GetProjectReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetProjectResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
-	Data *ProjectResp      `json:"data"`
+	Meta *basedto.Meta `json:"meta"`
+	Data *ProjectResp  `json:"data"`
 }
 
 type ProjectResp struct {

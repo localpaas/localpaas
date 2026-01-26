@@ -24,5 +24,5 @@ func (req *DeleteOAuthReq) Validate() apperrors.ValidationErrors {
 }
 
 type DeleteOAuthResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

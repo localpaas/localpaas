@@ -35,8 +35,8 @@ func (req *ListTaskReq) Validate() apperrors.ValidationErrors {
 }
 
 type ListTaskResp struct {
-	Meta *basedto.Meta `json:"meta"`
-	Data []*TaskResp   `json:"data"`
+	Meta *basedto.ListMeta `json:"meta"`
+	Data []*TaskResp       `json:"data"`
 }
 
 func TransformTasks(tasks []*entity.Task, taskInfoMap map[string]*cacheentity.TaskInfo) (resp []*TaskResp, err error) {

@@ -23,6 +23,6 @@ func (req *GetVolumeInspectionReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetVolumeInspectionResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
-	Data string            `json:"data"`
+	Meta *basedto.Meta `json:"meta"`
+	Data string        `json:"data"`
 }

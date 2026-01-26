@@ -40,8 +40,8 @@ func (req *CreateAPIKeyReq) Validate() apperrors.ValidationErrors {
 }
 
 type CreateAPIKeyResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
-	Data *APIKeyDataResp   `json:"data"`
+	Meta *basedto.Meta   `json:"meta"`
+	Data *APIKeyDataResp `json:"data"`
 }
 
 type APIKeyDataResp struct {

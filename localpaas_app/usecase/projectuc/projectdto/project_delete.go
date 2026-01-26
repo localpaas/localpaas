@@ -23,5 +23,5 @@ func (req *DeleteProjectReq) Validate() apperrors.ValidationErrors {
 }
 
 type DeleteProjectResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

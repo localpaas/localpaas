@@ -70,7 +70,7 @@ func (uc *AppDeploymentUC) ListDeployment(
 	}
 
 	return &appdeploymentdto.ListDeploymentResp{
-		Meta: &basedto.Meta{Page: paging},
+		Meta: &basedto.ListMeta{Page: paging},
 		Data: resp,
 	}, nil
 }

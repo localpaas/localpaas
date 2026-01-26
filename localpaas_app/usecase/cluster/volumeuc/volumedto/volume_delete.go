@@ -24,5 +24,5 @@ func (req *DeleteVolumeReq) Validate() apperrors.ValidationErrors {
 }
 
 type DeleteVolumeResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

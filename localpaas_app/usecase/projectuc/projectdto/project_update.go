@@ -25,5 +25,5 @@ func (req *UpdateProjectReq) Validate() apperrors.ValidationErrors {
 }
 
 type UpdateProjectResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

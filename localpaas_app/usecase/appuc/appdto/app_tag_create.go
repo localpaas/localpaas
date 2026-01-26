@@ -32,5 +32,5 @@ func (req *CreateAppTagReq) Validate() apperrors.ValidationErrors {
 }
 
 type CreateAppTagResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

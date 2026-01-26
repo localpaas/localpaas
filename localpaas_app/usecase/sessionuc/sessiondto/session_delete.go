@@ -18,5 +18,5 @@ func (req *DeleteSessionReq) Validate() apperrors.ValidationErrors {
 }
 
 type DeleteSessionResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

@@ -29,8 +29,8 @@ func (req *GetCronJobReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetCronJobResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
-	Data *CronJobResp      `json:"data"`
+	Meta *basedto.Meta `json:"meta"`
+	Data *CronJobResp  `json:"data"`
 }
 
 type CronJobResp struct {

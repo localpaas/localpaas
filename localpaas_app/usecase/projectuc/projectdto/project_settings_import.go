@@ -26,5 +26,5 @@ func (req *ImportSettingsToProjectReq) Validate() apperrors.ValidationErrors {
 }
 
 type ImportSettingsToProjectResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

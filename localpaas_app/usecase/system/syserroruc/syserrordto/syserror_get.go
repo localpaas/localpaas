@@ -26,8 +26,8 @@ func (req *GetSysErrorReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetSysErrorResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
-	Data *SysErrorResp     `json:"data"`
+	Meta *basedto.Meta `json:"meta"`
+	Data *SysErrorResp `json:"data"`
 }
 
 type SysErrorResp struct {

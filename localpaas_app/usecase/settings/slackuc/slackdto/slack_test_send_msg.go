@@ -29,5 +29,5 @@ func (req *TestSendSlackMsgReq) Validate() apperrors.ValidationErrors {
 }
 
 type TestSendSlackMsgResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

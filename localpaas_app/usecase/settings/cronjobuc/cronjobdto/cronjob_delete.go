@@ -24,5 +24,5 @@ func (req *DeleteCronJobReq) Validate() apperrors.ValidationErrors {
 }
 
 type DeleteCronJobResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

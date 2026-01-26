@@ -24,5 +24,5 @@ func (req *DeleteSlackReq) Validate() apperrors.ValidationErrors {
 }
 
 type DeleteSlackResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

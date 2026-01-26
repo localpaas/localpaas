@@ -29,8 +29,8 @@ func (req *GetSlackReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetSlackResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
-	Data *SlackResp        `json:"data"`
+	Meta *basedto.Meta `json:"meta"`
+	Data *SlackResp    `json:"data"`
 }
 
 type SlackResp struct {

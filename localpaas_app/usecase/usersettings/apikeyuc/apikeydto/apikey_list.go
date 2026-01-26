@@ -31,8 +31,8 @@ func (req *ListAPIKeyReq) Validate() apperrors.ValidationErrors {
 }
 
 type ListAPIKeyResp struct {
-	Meta *basedto.Meta `json:"meta"`
-	Data []*APIKeyResp `json:"data"`
+	Meta *basedto.ListMeta `json:"meta"`
+	Data []*APIKeyResp     `json:"data"`
 }
 
 func TransformAPIKeys(settings []*entity.Setting) (resp []*APIKeyResp, err error) {

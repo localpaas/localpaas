@@ -25,5 +25,5 @@ func (req *UpdateDiscordReq) Validate() apperrors.ValidationErrors {
 }
 
 type UpdateDiscordResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

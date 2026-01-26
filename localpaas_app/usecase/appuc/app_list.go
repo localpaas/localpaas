@@ -63,7 +63,7 @@ func (uc *AppUC) ListApp(
 	}
 
 	return &appdto.ListAppResp{
-		Meta: &basedto.Meta{Page: paging},
+		Meta: &basedto.ListMeta{Page: paging},
 		Data: resp,
 	}, nil
 }

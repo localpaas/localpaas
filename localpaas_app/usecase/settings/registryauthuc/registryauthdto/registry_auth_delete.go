@@ -24,5 +24,5 @@ func (req *DeleteRegistryAuthReq) Validate() apperrors.ValidationErrors {
 }
 
 type DeleteRegistryAuthResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

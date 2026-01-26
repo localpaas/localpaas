@@ -15,7 +15,7 @@ func NewDevModeLoginReq() *DevModeLoginReq {
 }
 
 type DevModeLoginResp struct {
-	Meta *basedto.BaseMeta     `json:"meta"`
+	Meta *basedto.Meta         `json:"meta"`
 	Data *DevModeLoginDataResp `json:"data"`
 }
 

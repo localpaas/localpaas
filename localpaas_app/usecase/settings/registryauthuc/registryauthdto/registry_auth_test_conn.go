@@ -31,5 +31,5 @@ func (req *TestRegistryAuthConnReq) Validate() apperrors.ValidationErrors {
 }
 
 type TestRegistryAuthConnResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

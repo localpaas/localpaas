@@ -57,5 +57,5 @@ func (req *UpdateProfileReq) Validate() apperrors.ValidationErrors {
 }
 
 type UpdateProfileResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

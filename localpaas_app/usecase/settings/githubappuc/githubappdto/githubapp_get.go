@@ -29,8 +29,8 @@ func (req *GetGithubAppReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetGithubAppResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
-	Data *GithubAppResp    `json:"data"`
+	Meta *basedto.Meta  `json:"meta"`
+	Data *GithubAppResp `json:"data"`
 }
 
 type GithubAppResp struct {

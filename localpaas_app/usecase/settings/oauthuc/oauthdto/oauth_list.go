@@ -34,8 +34,8 @@ func (req *ListOAuthReq) Validate() apperrors.ValidationErrors {
 }
 
 type ListOAuthResp struct {
-	Meta *basedto.Meta `json:"meta"`
-	Data []*OAuthResp  `json:"data"`
+	Meta *basedto.ListMeta `json:"meta"`
+	Data []*OAuthResp      `json:"data"`
 }
 
 func TransformOAuths(settings []*entity.Setting, baseCallbackURL string, objectID string) ([]*OAuthResp, error) {

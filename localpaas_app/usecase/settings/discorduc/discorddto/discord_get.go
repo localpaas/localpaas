@@ -29,8 +29,8 @@ func (req *GetDiscordReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetDiscordResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
-	Data *DiscordResp      `json:"data"`
+	Meta *basedto.Meta `json:"meta"`
+	Data *DiscordResp  `json:"data"`
 }
 
 type DiscordResp struct {

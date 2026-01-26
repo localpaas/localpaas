@@ -31,7 +31,7 @@ func (req *LoginWithPasscodeReq) Validate() apperrors.ValidationErrors {
 }
 
 type LoginWithPasscodeResp struct {
-	Meta *basedto.BaseMeta          `json:"meta"`
+	Meta *basedto.Meta              `json:"meta"`
 	Data *LoginWithPasscodeDataResp `json:"data"`
 }
 

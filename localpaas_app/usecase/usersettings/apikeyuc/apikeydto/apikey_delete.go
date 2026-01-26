@@ -24,5 +24,5 @@ func (req *DeleteAPIKeyReq) Validate() apperrors.ValidationErrors {
 }
 
 type DeleteAPIKeyResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

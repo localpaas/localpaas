@@ -31,5 +31,5 @@ func (req *UpdatePasswordReq) Validate() apperrors.ValidationErrors {
 }
 
 type UpdatePasswordResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

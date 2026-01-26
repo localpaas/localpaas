@@ -27,8 +27,8 @@ func (req *GetVolumeReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetVolumeResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
-	Data *VolumeResp       `json:"data"`
+	Meta *basedto.Meta `json:"meta"`
+	Data *VolumeResp   `json:"data"`
 }
 
 type VolumeResp struct {

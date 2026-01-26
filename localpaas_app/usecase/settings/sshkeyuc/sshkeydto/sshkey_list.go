@@ -31,8 +31,8 @@ func (req *ListSSHKeyReq) Validate() apperrors.ValidationErrors {
 }
 
 type ListSSHKeyResp struct {
-	Meta *basedto.Meta `json:"meta"`
-	Data []*SSHKeyResp `json:"data"`
+	Meta *basedto.ListMeta `json:"meta"`
+	Data []*SSHKeyResp     `json:"data"`
 }
 
 func TransformSSHKeys(settings []*entity.Setting) (resp []*SSHKeyResp, err error) {

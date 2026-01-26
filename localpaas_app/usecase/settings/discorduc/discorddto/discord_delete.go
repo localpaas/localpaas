@@ -24,5 +24,5 @@ func (req *DeleteDiscordReq) Validate() apperrors.ValidationErrors {
 }
 
 type DeleteDiscordResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

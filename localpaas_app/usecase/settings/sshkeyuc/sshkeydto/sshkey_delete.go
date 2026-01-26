@@ -24,5 +24,5 @@ func (req *DeleteSSHKeyReq) Validate() apperrors.ValidationErrors {
 }
 
 type DeleteSSHKeyResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

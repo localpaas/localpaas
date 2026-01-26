@@ -26,8 +26,8 @@ func (req *GetAppServiceSpecReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetAppServiceSpecResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
-	Data *ServiceSpecResp  `json:"data"`
+	Meta *basedto.Meta    `json:"meta"`
+	Data *ServiceSpecResp `json:"data"`
 }
 
 type ServiceSpecResp struct {

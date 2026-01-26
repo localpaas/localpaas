@@ -31,8 +31,8 @@ func (req *ListGithubAppReq) Validate() apperrors.ValidationErrors {
 }
 
 type ListGithubAppResp struct {
-	Meta *basedto.Meta    `json:"meta"`
-	Data []*GithubAppResp `json:"data"`
+	Meta *basedto.ListMeta `json:"meta"`
+	Data []*GithubAppResp  `json:"data"`
 }
 
 func TransformGithubApps(settings []*entity.Setting, baseCallbackURL string, objectID string) (

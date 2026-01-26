@@ -23,5 +23,5 @@ func (req *DeleteUserReq) Validate() apperrors.ValidationErrors {
 }
 
 type DeleteUserResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

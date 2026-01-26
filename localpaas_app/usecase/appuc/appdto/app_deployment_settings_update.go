@@ -102,7 +102,7 @@ func (req *UpdateAppDeploymentSettingsReq) Validate() apperrors.ValidationErrors
 }
 
 type UpdateAppDeploymentSettingsResp struct {
-	Meta *basedto.BaseMeta                    `json:"meta"`
+	Meta *basedto.Meta                        `json:"meta"`
 	Data *UpdateAppDeploymentSettingsDataResp `json:"data"`
 }
 

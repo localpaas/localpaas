@@ -31,8 +31,8 @@ func (req *ListDiscordReq) Validate() apperrors.ValidationErrors {
 }
 
 type ListDiscordResp struct {
-	Meta *basedto.Meta  `json:"meta"`
-	Data []*DiscordResp `json:"data"`
+	Meta *basedto.ListMeta `json:"meta"`
+	Data []*DiscordResp    `json:"data"`
 }
 
 func TransformDiscords(settings []*entity.Setting) (resp []*DiscordResp, err error) {

@@ -36,6 +36,6 @@ func (req *ListAppBaseReq) Validate() apperrors.ValidationErrors {
 }
 
 type ListAppBaseResp struct {
-	Meta *basedto.Meta  `json:"meta"`
-	Data []*AppBaseResp `json:"data"`
+	Meta *basedto.ListMeta `json:"meta"`
+	Data []*AppBaseResp    `json:"data"`
 }

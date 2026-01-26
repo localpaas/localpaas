@@ -31,8 +31,8 @@ func (req *ListBasicAuthReq) Validate() apperrors.ValidationErrors {
 }
 
 type ListBasicAuthResp struct {
-	Meta *basedto.Meta    `json:"meta"`
-	Data []*BasicAuthResp `json:"data"`
+	Meta *basedto.ListMeta `json:"meta"`
+	Data []*BasicAuthResp  `json:"data"`
 }
 
 func TransformBasicAuths(settings []*entity.Setting) (resp []*BasicAuthResp, err error) {

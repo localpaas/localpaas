@@ -23,6 +23,6 @@ func (req *GetNodeInspectionReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetNodeInspectionResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
-	Data string            `json:"data"`
+	Meta *basedto.Meta `json:"meta"`
+	Data string        `json:"data"`
 }

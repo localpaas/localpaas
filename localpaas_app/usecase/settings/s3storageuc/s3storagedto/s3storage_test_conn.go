@@ -27,5 +27,5 @@ func (req *TestS3StorageConnReq) Validate() apperrors.ValidationErrors {
 }
 
 type TestS3StorageConnResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

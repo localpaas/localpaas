@@ -31,8 +31,8 @@ func (req *ListCronJobReq) Validate() apperrors.ValidationErrors {
 }
 
 type ListCronJobResp struct {
-	Meta *basedto.Meta  `json:"meta"`
-	Data []*CronJobResp `json:"data"`
+	Meta *basedto.ListMeta `json:"meta"`
+	Data []*CronJobResp    `json:"data"`
 }
 
 func TransformCronJobs(settings []*entity.Setting) (resp []*CronJobResp, err error) {

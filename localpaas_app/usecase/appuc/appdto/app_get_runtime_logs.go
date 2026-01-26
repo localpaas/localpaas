@@ -32,7 +32,7 @@ func (req *GetAppRuntimeLogsReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetAppRuntimeLogsResp struct {
-	Meta *basedto.BaseMeta       `json:"meta"`
+	Meta *basedto.Meta           `json:"meta"`
 	Data *AppRuntimeLogsDataResp `json:"data"`
 }
 

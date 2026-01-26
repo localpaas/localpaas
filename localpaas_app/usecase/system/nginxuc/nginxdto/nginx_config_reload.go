@@ -18,5 +18,5 @@ func (req *ReloadNginxConfigReq) Validate() apperrors.ValidationErrors {
 }
 
 type ReloadNginxConfigResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

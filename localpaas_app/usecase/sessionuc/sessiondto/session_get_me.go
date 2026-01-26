@@ -16,8 +16,8 @@ func NewGetMeReq() *GetMeReq {
 }
 
 type GetMeResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
-	Data *GetMeDataResp    `json:"data"`
+	Meta *basedto.Meta  `json:"meta"`
+	Data *GetMeDataResp `json:"data"`
 }
 
 type GetMeDataResp struct {

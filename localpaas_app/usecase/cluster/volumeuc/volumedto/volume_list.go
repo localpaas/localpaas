@@ -31,8 +31,8 @@ func (req *ListVolumeReq) Validate() apperrors.ValidationErrors {
 }
 
 type ListVolumeResp struct {
-	Meta *basedto.Meta `json:"meta"`
-	Data []*VolumeResp `json:"data"`
+	Meta *basedto.ListMeta `json:"meta"`
+	Data []*VolumeResp     `json:"data"`
 }
 
 func TransformVolumes(volumes []*volume.Volume, detailed bool) []*VolumeResp {

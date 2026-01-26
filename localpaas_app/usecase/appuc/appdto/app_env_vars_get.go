@@ -26,8 +26,8 @@ func (req *GetAppEnvVarsReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetAppEnvVarsResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
-	Data *EnvVarsResp      `json:"data"`
+	Meta *basedto.Meta `json:"meta"`
+	Data *EnvVarsResp  `json:"data"`
 }
 
 type EnvVarsResp struct {

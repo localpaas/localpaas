@@ -24,5 +24,5 @@ func (req *DeleteNodeReq) Validate() apperrors.ValidationErrors {
 }
 
 type DeleteNodeResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

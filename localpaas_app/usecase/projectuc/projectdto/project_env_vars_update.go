@@ -42,7 +42,7 @@ func (req *UpdateProjectEnvVarsReq) Validate() apperrors.ValidationErrors {
 }
 
 type UpdateProjectEnvVarsResp struct {
-	Meta *basedto.BaseMeta             `json:"meta"`
+	Meta *basedto.Meta                 `json:"meta"`
 	Data *UpdateProjectEnvVarsDataResp `json:"data"`
 }
 

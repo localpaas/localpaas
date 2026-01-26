@@ -25,5 +25,5 @@ func (req *ResetPasswordReq) Validate() apperrors.ValidationErrors {
 }
 
 type ResetPasswordResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

@@ -26,5 +26,5 @@ func (req *UpdateSlackMetaReq) Validate() apperrors.ValidationErrors {
 }
 
 type UpdateSlackMetaResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

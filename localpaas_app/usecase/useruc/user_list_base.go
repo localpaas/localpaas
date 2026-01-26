@@ -40,7 +40,7 @@ func (uc *UserUC) ListUserBase(
 	}
 
 	return &userdto.ListUserBaseResp{
-		Meta: &basedto.Meta{Page: pagingMeta},
+		Meta: &basedto.ListMeta{Page: pagingMeta},
 		Data: basedto.TransformUsersBase(users),
 	}, nil
 }

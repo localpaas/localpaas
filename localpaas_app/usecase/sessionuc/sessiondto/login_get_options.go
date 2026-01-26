@@ -18,7 +18,7 @@ func (req *GetLoginOptionsReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetLoginOptionsResp struct {
-	Meta *basedto.BaseMeta  `json:"meta"`
+	Meta *basedto.Meta      `json:"meta"`
 	Data []*LoginOptionResp `json:"data"`
 }
 

@@ -31,8 +31,8 @@ func (req *ListSlackReq) Validate() apperrors.ValidationErrors {
 }
 
 type ListSlackResp struct {
-	Meta *basedto.Meta `json:"meta"`
-	Data []*SlackResp  `json:"data"`
+	Meta *basedto.ListMeta `json:"meta"`
+	Data []*SlackResp      `json:"data"`
 }
 
 func TransformSlacks(settings []*entity.Setting) (resp []*SlackResp, err error) {

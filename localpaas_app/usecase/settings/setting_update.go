@@ -25,7 +25,7 @@ type UpdateSettingReq struct {
 }
 
 type UpdateSettingResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }
 
 type UpdateSettingData struct {

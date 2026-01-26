@@ -26,5 +26,5 @@ func (req *UpdateBasicAuthMetaReq) Validate() apperrors.ValidationErrors {
 }
 
 type UpdateBasicAuthMetaResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

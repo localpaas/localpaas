@@ -29,8 +29,8 @@ func (req *GetOAuthReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetOAuthResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
-	Data *OAuthResp        `json:"data"`
+	Meta *basedto.Meta `json:"meta"`
+	Data *OAuthResp    `json:"data"`
 }
 
 type OAuthResp struct {

@@ -52,7 +52,7 @@ func (uc *VolumeUC) ListVolume(
 	}
 
 	return &volumedto.ListVolumeResp{
-		Meta: &basedto.Meta{Page: &basedto.PagingMeta{
+		Meta: &basedto.ListMeta{Page: &basedto.PagingMeta{
 			Offset: 0,
 			Limit:  req.Paging.Limit,
 			Total:  len(volumes.Volumes),

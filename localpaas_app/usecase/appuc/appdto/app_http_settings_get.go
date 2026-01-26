@@ -27,7 +27,7 @@ func (req *GetAppHttpSettingsReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetAppHttpSettingsResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta     `json:"meta"`
 	Data *HttpSettingsResp `json:"data"`
 }
 

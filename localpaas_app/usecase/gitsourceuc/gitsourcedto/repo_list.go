@@ -27,8 +27,8 @@ func (req *ListRepoReq) Validate() apperrors.ValidationErrors {
 }
 
 type ListRepoResp struct {
-	Meta *basedto.Meta `json:"meta"`
-	Data []*RepoResp   `json:"data"`
+	Meta *basedto.ListMeta `json:"meta"`
+	Data []*RepoResp       `json:"data"`
 }
 
 type RepoResp struct {

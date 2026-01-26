@@ -31,7 +31,7 @@ func (req *ListRegistryAuthReq) Validate() apperrors.ValidationErrors {
 }
 
 type ListRegistryAuthResp struct {
-	Meta *basedto.Meta       `json:"meta"`
+	Meta *basedto.ListMeta   `json:"meta"`
 	Data []*RegistryAuthResp `json:"data"`
 }
 

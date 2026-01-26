@@ -29,8 +29,8 @@ func (req *GetSSHKeyReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetSSHKeyResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
-	Data *SSHKeyResp       `json:"data"`
+	Meta *basedto.Meta `json:"meta"`
+	Data *SSHKeyResp   `json:"data"`
 }
 
 type SSHKeyResp struct {

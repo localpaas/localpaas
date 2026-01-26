@@ -31,8 +31,8 @@ func (req *ListGitTokenReq) Validate() apperrors.ValidationErrors {
 }
 
 type ListGitTokenResp struct {
-	Meta *basedto.Meta   `json:"meta"`
-	Data []*GitTokenResp `json:"data"`
+	Meta *basedto.ListMeta `json:"meta"`
+	Data []*GitTokenResp   `json:"data"`
 }
 
 func TransformGitTokens(settings []*entity.Setting) (resp []*GitTokenResp, err error) {

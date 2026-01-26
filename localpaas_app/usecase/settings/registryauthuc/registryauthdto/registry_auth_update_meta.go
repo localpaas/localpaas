@@ -26,5 +26,5 @@ func (req *UpdateRegistryAuthMetaReq) Validate() apperrors.ValidationErrors {
 }
 
 type UpdateRegistryAuthMetaResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

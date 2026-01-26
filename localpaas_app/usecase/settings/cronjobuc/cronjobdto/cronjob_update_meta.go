@@ -26,5 +26,5 @@ func (req *UpdateCronJobMetaReq) Validate() apperrors.ValidationErrors {
 }
 
 type UpdateCronJobMetaResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

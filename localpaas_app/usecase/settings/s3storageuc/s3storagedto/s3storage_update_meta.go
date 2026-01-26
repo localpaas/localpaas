@@ -26,5 +26,5 @@ func (req *UpdateS3StorageMetaReq) Validate() apperrors.ValidationErrors {
 }
 
 type UpdateS3StorageMetaResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

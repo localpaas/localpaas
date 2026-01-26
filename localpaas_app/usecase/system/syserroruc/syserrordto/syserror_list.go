@@ -28,8 +28,8 @@ func (req *ListSysErrorReq) Validate() apperrors.ValidationErrors {
 }
 
 type ListSysErrorResp struct {
-	Meta *basedto.Meta   `json:"meta"`
-	Data []*SysErrorResp `json:"data"`
+	Meta *basedto.ListMeta `json:"meta"`
+	Data []*SysErrorResp   `json:"data"`
 }
 
 func TransformSysErrors(appErrors []*entity.SysError) (resp []*SysErrorResp, err error) {

@@ -67,5 +67,5 @@ func (req *CompleteUserSignupReq) Validate() apperrors.ValidationErrors {
 }
 
 type CompleteUserSignupResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

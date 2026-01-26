@@ -44,7 +44,7 @@ func (uc *AppUC) ListAppBase(
 	}
 
 	return &appdto.ListAppBaseResp{
-		Meta: &basedto.Meta{Page: pagingMeta},
+		Meta: &basedto.ListMeta{Page: pagingMeta},
 		Data: appdto.TransformAppsBase(apps),
 	}, nil
 }

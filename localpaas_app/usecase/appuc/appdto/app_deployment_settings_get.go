@@ -30,7 +30,7 @@ func (req *GetAppDeploymentSettingsReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetAppDeploymentSettingsResp struct {
-	Meta *basedto.BaseMeta       `json:"meta"`
+	Meta *basedto.Meta           `json:"meta"`
 	Data *DeploymentSettingsResp `json:"data"`
 }
 

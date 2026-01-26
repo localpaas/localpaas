@@ -33,8 +33,8 @@ func (req *ListProjectReq) Validate() apperrors.ValidationErrors {
 }
 
 type ListProjectResp struct {
-	Meta *basedto.Meta  `json:"meta"`
-	Data []*ProjectResp `json:"data"`
+	Meta *basedto.ListMeta `json:"meta"`
+	Data []*ProjectResp    `json:"data"`
 }
 
 func TransformProjects(projects []*entity.Project) ([]*ProjectResp, error) {

@@ -14500,17 +14500,6 @@
         "type" : "string",
         "x-enum-varnames" : [ "VolumeTypeVolume", "VolumeTypeNfs" ]
       },
-      "github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta" : {
-        "properties" : {
-          "code" : {
-            "type" : "string"
-          },
-          "message" : {
-            "type" : "string"
-          }
-        },
-        "type" : "object"
-      },
       "github_com_localpaas_localpaas_localpaas_app_basedto.EnvVarReq" : {
         "properties" : {
           "isLiteral" : {
@@ -14541,7 +14530,7 @@
         "required" : [ "key", "value" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_basedto.Meta" : {
+      "github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta" : {
         "properties" : {
           "code" : {
             "type" : "string"
@@ -14551,6 +14540,18 @@
           },
           "page" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.PagingMeta"
+          }
+        },
+        "required" : [ "page" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_basedto.Meta" : {
+        "properties" : {
+          "code" : {
+            "type" : "string"
+          },
+          "message" : {
+            "type" : "string"
           }
         },
         "type" : "object"
@@ -14801,10 +14802,10 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
         "format" : "int64",
         "type" : "integer",
-        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
+        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentReq" : {
         "type" : "object"
@@ -14812,7 +14813,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -14869,7 +14870,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.DeploymentLogsDataResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -14881,7 +14882,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.DeploymentResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -14896,7 +14897,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -15018,7 +15019,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -15036,7 +15037,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.CreateAppTagResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -15048,7 +15049,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeleteAppResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -15069,7 +15070,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeleteAppTagsResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -15319,7 +15320,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentSettingsResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -15331,7 +15332,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.EnvVarsResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -15343,7 +15344,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HttpSettingsResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -15355,7 +15356,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -15367,7 +15368,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppRuntimeLogsDataResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -15379,7 +15380,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.ServiceSpecResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -15412,7 +15413,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -15427,7 +15428,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -15552,7 +15553,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -15635,7 +15636,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.UpdateAppDeploymentSettingsDataResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -15685,7 +15686,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.UpdateAppEnvVarsDataResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -15732,7 +15733,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.UpdateAppHttpSettingsDataResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -15765,7 +15766,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.UpdateAppResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -15815,7 +15816,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.UpdateAppServiceSpecDataResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -15839,7 +15840,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -15848,7 +15849,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_imageuc_imagedto.DeleteImageResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -15860,7 +15861,7 @@
             "type" : "string"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -15872,7 +15873,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_imageuc_imagedto.ImageResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -15917,7 +15918,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -15926,7 +15927,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.DeleteNodeResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -15938,7 +15939,7 @@
             "type" : "string"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -15959,7 +15960,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.GetNodeJoinCommandDataResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -15971,7 +15972,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.NodeResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -16013,7 +16014,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.JoinNodeDataResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -16028,7 +16029,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -16172,7 +16173,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.UpdateNodeResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -16220,7 +16221,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -16229,7 +16230,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_volumeuc_volumedto.DeleteVolumeResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -16241,7 +16242,7 @@
             "type" : "string"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -16253,7 +16254,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_volumeuc_volumedto.VolumeResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -16268,7 +16269,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -16352,7 +16353,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -16412,7 +16413,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -16430,7 +16431,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.CreateProjectTagResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -16439,7 +16440,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.DeleteProjectResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -16460,7 +16461,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.DeleteProjectTagsResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -16493,7 +16494,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.EnvVarsResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -16505,7 +16506,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.ProjectResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -16529,7 +16530,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.ImportSettingsToProjectResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -16544,7 +16545,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -16559,7 +16560,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -16721,7 +16722,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.UpdateProjectEnvVarsDataResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -16748,7 +16749,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.UpdateProjectPhotoResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -16784,7 +16785,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.UpdateProjectResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -16811,7 +16812,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.DeleteAllSessionsResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -16820,7 +16821,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.DeleteSessionResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -16850,7 +16851,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.DevModeLoginDataResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -16865,7 +16866,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -16889,7 +16890,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.GetMeDataResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -16940,7 +16941,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.LoginWithAPIKeyDataResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -16972,7 +16973,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.LoginWithPasscodeDataResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -17016,7 +17017,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.LoginWithPasswordDataResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -17046,7 +17047,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.RefreshSessionDataResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -17163,7 +17164,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -17172,7 +17173,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_basicauthuc_basicauthdto.DeleteBasicAuthResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -17184,7 +17185,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_basicauthuc_basicauthdto.BasicAuthResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -17199,7 +17200,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -17226,7 +17227,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_basicauthuc_basicauthdto.UpdateBasicAuthMetaResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -17256,7 +17257,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_basicauthuc_basicauthdto.UpdateBasicAuthResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -17301,7 +17302,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -17370,7 +17371,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.DeleteCronJobResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -17382,7 +17383,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -17397,7 +17398,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -17424,7 +17425,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.UpdateCronJobMetaResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -17469,7 +17470,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.UpdateCronJobResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -17496,7 +17497,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -17505,7 +17506,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_discorduc_discorddto.DeleteDiscordResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -17562,7 +17563,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_discorduc_discorddto.DiscordResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -17577,7 +17578,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -17601,7 +17602,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_discorduc_discorddto.TestSendDiscordMsgResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -17628,7 +17629,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_discorduc_discorddto.UpdateDiscordMetaResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -17655,7 +17656,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_discorduc_discorddto.UpdateDiscordResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -17724,7 +17725,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.GithubAppCreationResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -17733,7 +17734,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.DeleteGithubAppResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -17745,7 +17746,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.GithubAppResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -17880,7 +17881,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -17895,7 +17896,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -17940,7 +17941,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.TestGithubAppConnResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -17967,7 +17968,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.UpdateGithubAppMetaResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -18018,7 +18019,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.UpdateGithubAppResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -18057,7 +18058,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -18066,7 +18067,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_gittokenuc_gittokendto.DeleteGitTokenResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -18078,7 +18079,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_gittokenuc_gittokendto.GitTokenResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -18144,7 +18145,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -18177,7 +18178,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_gittokenuc_gittokendto.TestGitTokenConnResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -18204,7 +18205,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_gittokenuc_gittokendto.UpdateGitTokenMetaResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -18243,7 +18244,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_gittokenuc_gittokendto.UpdateGitTokenResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -18294,7 +18295,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.OAuthCreationResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -18303,7 +18304,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.DeleteOAuthResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -18315,7 +18316,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.OAuthResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -18330,7 +18331,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -18438,7 +18439,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.UpdateOAuthMetaResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -18489,7 +18490,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.UpdateOAuthResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -18522,7 +18523,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -18531,7 +18532,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.DeleteRegistryAuthResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -18543,7 +18544,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.RegistryAuthResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -18558,7 +18559,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -18636,7 +18637,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.TestRegistryAuthConnResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -18663,7 +18664,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.UpdateRegistryAuthMetaResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -18696,7 +18697,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.UpdateRegistryAuthResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -18735,7 +18736,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -18744,7 +18745,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.DeleteS3StorageResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -18756,7 +18757,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.S3StorageResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -18771,7 +18772,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -18861,7 +18862,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.TestS3StorageConnResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -18888,7 +18889,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.UpdateS3StorageMetaResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -18927,7 +18928,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_s3storageuc_s3storagedto.UpdateS3StorageResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -18957,7 +18958,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -18966,7 +18967,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_secretuc_secretdto.DeleteSecretResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -18981,7 +18982,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -19050,7 +19051,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_secretuc_secretdto.UpdateSecretMetaResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -19080,7 +19081,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_secretuc_secretdto.UpdateSecretResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -19107,7 +19108,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -19116,7 +19117,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.DeleteSlackResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -19128,7 +19129,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.SlackResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -19143,7 +19144,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -19212,7 +19213,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.TestSendSlackMsgResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -19239,7 +19240,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.UpdateSlackMetaResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -19266,7 +19267,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_slackuc_slackdto.UpdateSlackResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -19296,7 +19297,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -19305,7 +19306,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.DeleteSSHKeyResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -19317,7 +19318,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.SSHKeyResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -19332,7 +19333,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -19407,7 +19408,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.UpdateSSHKeyMetaResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -19437,7 +19438,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.UpdateSSHKeyResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -19479,7 +19480,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -19488,7 +19489,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.DeleteSslResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -19500,7 +19501,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.SslResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -19515,7 +19516,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -19599,7 +19600,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSslMetaResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -19641,7 +19642,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSslResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -19653,7 +19654,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_system_lpappuc_lpappdto.ReloadLpAppConfigResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -19677,7 +19678,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_system_lpappuc_lpappdto.RestartLpAppResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -19689,7 +19690,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_system_nginxuc_nginxdto.ReloadNginxConfigResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -19701,7 +19702,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_system_nginxuc_nginxdto.ResetNginxConfigResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -19713,7 +19714,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_system_nginxuc_nginxdto.RestartNginxResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -19722,7 +19723,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_system_syserroruc_syserrordto.DeleteSysErrorResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -19734,7 +19735,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_system_syserroruc_syserrordto.SysErrorResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -19749,7 +19750,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -19794,7 +19795,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_taskuc_taskdto.CancelTaskResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -19806,7 +19807,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_taskuc_taskdto.TaskResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -19821,7 +19822,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -19881,7 +19882,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_taskuc_taskdto.UpdateTaskMetaResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -19971,7 +19972,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_usersettings_apikeyuc_apikeydto.APIKeyDataResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -19980,7 +19981,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_usersettings_apikeyuc_apikeydto.DeleteAPIKeyResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -19992,7 +19993,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_usersettings_apikeyuc_apikeydto.APIKeyResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -20007,7 +20008,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -20034,7 +20035,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_usersettings_apikeyuc_apikeydto.UpdateAPIKeyMetaResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -20055,7 +20056,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.MFATotpSetupDataResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -20103,7 +20104,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.BeginUserSignupDataResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -20124,7 +20125,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.CompleteMFATotpSetupResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -20162,7 +20163,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.CompleteUserSignupResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -20171,7 +20172,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.DeleteUserResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -20183,7 +20184,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UserDetailsResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -20237,7 +20238,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.InviteUserDataResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -20252,7 +20253,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -20267,7 +20268,7 @@
             "type" : "array"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -20315,7 +20316,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.RemoveMFATotpResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -20345,7 +20346,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.RequestResetPasswordDataResp"
           },
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "data", "meta" ],
@@ -20366,7 +20367,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.ResetPasswordResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -20387,7 +20388,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UpdatePasswordResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -20420,7 +20421,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UpdateProfileResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],
@@ -20474,7 +20475,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_useruc_userdto.UpdateUserResp" : {
         "properties" : {
           "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseMeta"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
         "required" : [ "meta" ],

@@ -29,7 +29,7 @@ func (req *GetRegistryAuthReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetRegistryAuthResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta     `json:"meta"`
 	Data *RegistryAuthResp `json:"data"`
 }
 

@@ -19,7 +19,7 @@ func (req *GetNodeJoinCommandReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetNodeJoinCommandResp struct {
-	Meta *basedto.BaseMeta           `json:"meta"`
+	Meta *basedto.Meta               `json:"meta"`
 	Data *GetNodeJoinCommandDataResp `json:"data"`
 }
 

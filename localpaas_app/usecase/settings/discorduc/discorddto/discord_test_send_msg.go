@@ -29,5 +29,5 @@ func (req *TestSendDiscordMsgReq) Validate() apperrors.ValidationErrors {
 }
 
 type TestSendDiscordMsgResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

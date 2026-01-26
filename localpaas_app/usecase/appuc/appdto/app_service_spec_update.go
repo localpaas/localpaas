@@ -34,7 +34,7 @@ func (req *UpdateAppServiceSpecReq) Validate() apperrors.ValidationErrors {
 }
 
 type UpdateAppServiceSpecResp struct {
-	Meta *basedto.BaseMeta             `json:"meta"`
+	Meta *basedto.Meta                 `json:"meta"`
 	Data *UpdateAppServiceSpecDataResp `json:"data"`
 }
 

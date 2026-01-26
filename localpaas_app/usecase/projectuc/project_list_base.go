@@ -44,7 +44,7 @@ func (uc *ProjectUC) ListProjectBase(
 	}
 
 	return &projectdto.ListProjectBaseResp{
-		Meta: &basedto.Meta{Page: pagingMeta},
+		Meta: &basedto.ListMeta{Page: pagingMeta},
 		Data: projectdto.TransformProjectsBase(projects),
 	}, nil
 }

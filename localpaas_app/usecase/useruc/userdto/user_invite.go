@@ -44,7 +44,7 @@ func (req *InviteUserReq) Validate() apperrors.ValidationErrors {
 }
 
 type InviteUserResp struct {
-	Meta *basedto.BaseMeta   `json:"meta"`
+	Meta *basedto.Meta       `json:"meta"`
 	Data *InviteUserDataResp `json:"data"`
 }
 

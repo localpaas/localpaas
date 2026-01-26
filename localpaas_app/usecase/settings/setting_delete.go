@@ -27,7 +27,7 @@ func (req *DeleteSettingReq) Validate() (validators []vld.Validator) {
 }
 
 type DeleteSettingResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }
 
 type DeleteSettingData struct {

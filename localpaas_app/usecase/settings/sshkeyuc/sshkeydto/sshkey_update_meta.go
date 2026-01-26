@@ -26,5 +26,5 @@ func (req *UpdateSSHKeyMetaReq) Validate() apperrors.ValidationErrors {
 }
 
 type UpdateSSHKeyMetaResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

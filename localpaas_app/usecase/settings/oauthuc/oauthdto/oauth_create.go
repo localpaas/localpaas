@@ -43,7 +43,7 @@ func (req *CreateOAuthReq) Validate() apperrors.ValidationErrors {
 }
 
 type CreateOAuthResp struct {
-	Meta *basedto.BaseMeta  `json:"meta"`
+	Meta *basedto.Meta      `json:"meta"`
 	Data *OAuthCreationResp `json:"data"`
 }
 

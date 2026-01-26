@@ -34,5 +34,5 @@ func (req *UpdateNodeReq) Validate() apperrors.ValidationErrors {
 }
 
 type UpdateNodeResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

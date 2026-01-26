@@ -26,8 +26,8 @@ func (req *GetImageReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetImageResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
-	Data *ImageResp        `json:"data"`
+	Meta *basedto.Meta `json:"meta"`
+	Data *ImageResp    `json:"data"`
 }
 
 type ImageResp struct {

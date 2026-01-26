@@ -23,5 +23,5 @@ func (req *RemoveMFATotpReq) Validate() apperrors.ValidationErrors {
 }
 
 type RemoveMFATotpResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

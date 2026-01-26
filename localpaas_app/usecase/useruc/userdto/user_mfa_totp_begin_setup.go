@@ -23,7 +23,7 @@ func (req *BeginMFATotpSetupReq) Validate() apperrors.ValidationErrors {
 }
 
 type BeginMFATotpSetupResp struct {
-	Meta *basedto.BaseMeta     `json:"meta"`
+	Meta *basedto.Meta         `json:"meta"`
 	Data *MFATotpSetupDataResp `json:"data"`
 }
 

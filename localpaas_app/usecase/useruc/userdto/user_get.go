@@ -27,8 +27,8 @@ func (req *GetUserReq) Validate() apperrors.ValidationErrors {
 }
 
 type GetUserResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
-	Data *UserDetailsResp  `json:"data"`
+	Meta *basedto.Meta    `json:"meta"`
+	Data *UserDetailsResp `json:"data"`
 }
 
 type UserDetailsResp struct {

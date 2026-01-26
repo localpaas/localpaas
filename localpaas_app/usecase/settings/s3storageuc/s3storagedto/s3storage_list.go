@@ -31,8 +31,8 @@ func (req *ListS3StorageReq) Validate() apperrors.ValidationErrors {
 }
 
 type ListS3StorageResp struct {
-	Meta *basedto.Meta    `json:"meta"`
-	Data []*S3StorageResp `json:"data"`
+	Meta *basedto.ListMeta `json:"meta"`
+	Data []*S3StorageResp  `json:"data"`
 }
 
 func TransformS3Storages(settings []*entity.Setting) (resp []*S3StorageResp, err error) {

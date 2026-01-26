@@ -23,7 +23,7 @@ func (req *RequestResetPasswordReq) Validate() apperrors.ValidationErrors {
 }
 
 type RequestResetPasswordResp struct {
-	Meta *basedto.BaseMeta             `json:"meta"`
+	Meta *basedto.Meta                 `json:"meta"`
 	Data *RequestResetPasswordDataResp `json:"data"`
 }
 

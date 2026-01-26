@@ -78,7 +78,7 @@ func (uc *TaskUC) ListTask(
 	}
 
 	return &taskdto.ListTaskResp{
-		Meta: &basedto.Meta{Page: paging},
+		Meta: &basedto.ListMeta{Page: paging},
 		Data: resp,
 	}, nil
 }

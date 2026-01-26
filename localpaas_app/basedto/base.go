@@ -9,8 +9,6 @@ import (
 const (
 	PageLimitDefault = 50
 	PageLimitMax     = 10000
-
-	CodeSuccess = "success"
 )
 
 // Paging is used to store pagination request from client side
@@ -104,20 +102,16 @@ type ReqParsingErrorHandler interface {
 	HandleParsingError(err error) error
 }
 
-type Response struct {
-	Meta *Meta `json:"meta,omitempty"`
-}
-
-// BaseMeta metadata of single entity response
-type BaseMeta struct {
+// Meta metadata of single entity response
+type Meta struct {
 	Code    string `json:"code,omitempty"`
 	Message string `json:"message,omitempty"`
 }
 
-// Meta metadata of response
-type Meta struct {
-	BaseMeta
-	Page *PagingMeta `json:"page,omitempty"`
+// ListMeta metadata of list api
+type ListMeta struct {
+	Meta
+	Page *PagingMeta `json:"page"`
 }
 
 // PagingMeta metadata of pagination

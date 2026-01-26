@@ -32,8 +32,8 @@ func (req *ListSecretReq) Validate() apperrors.ValidationErrors {
 }
 
 type ListSecretResp struct {
-	Meta *basedto.Meta `json:"meta"`
-	Data []*SecretResp `json:"data"`
+	Meta *basedto.ListMeta `json:"meta"`
+	Data []*SecretResp     `json:"data"`
 }
 
 type SecretResp struct {

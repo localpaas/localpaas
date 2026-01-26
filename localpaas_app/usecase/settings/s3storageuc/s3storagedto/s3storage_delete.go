@@ -24,5 +24,5 @@ func (req *DeleteS3StorageReq) Validate() apperrors.ValidationErrors {
 }
 
 type DeleteS3StorageResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

@@ -26,5 +26,5 @@ func (req *UpdateGithubAppMetaReq) Validate() apperrors.ValidationErrors {
 }
 
 type UpdateGithubAppMetaResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

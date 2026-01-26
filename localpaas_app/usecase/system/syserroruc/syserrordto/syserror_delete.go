@@ -23,5 +23,5 @@ func (req *DeleteSysErrorReq) Validate() apperrors.ValidationErrors {
 }
 
 type DeleteSysErrorResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }

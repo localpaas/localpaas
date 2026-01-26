@@ -26,5 +26,5 @@ func (req *CancelDeploymentReq) Validate() apperrors.ValidationErrors {
 }
 
 type CancelDeploymentResp struct {
-	Meta *basedto.BaseMeta `json:"meta"`
+	Meta *basedto.Meta `json:"meta"`
 }
