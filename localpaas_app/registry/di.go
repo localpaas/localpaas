@@ -46,6 +46,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/discorduc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/gittokenuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc"
@@ -135,6 +136,7 @@ var Provides = []any{
 	gitsourceuc.NewGitSourceUC,
 	cronjobuc.NewCronJobUC,
 	taskuc.NewTaskUC,
+	emailuc.NewEmailUC,
 
 	// Service
 	clusterservice.NewClusterService,

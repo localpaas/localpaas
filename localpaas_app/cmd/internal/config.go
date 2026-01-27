@@ -25,6 +25,7 @@ func InitConfig(lc fx.Lifecycle, cfg *config.Config, logger logging.Logger) {
 			if err := validateConfig(cfg, logger); err != nil {
 				return apperrors.Wrap(err)
 			}
+			exportEnvVars(cfg, logger)
 
 			// Register the channel to receive SIGHUP signal
 			sigs := make(chan os.Signal, 1)
@@ -68,4 +69,27 @@ func validateConfig(cfg *config.Config, logger logging.Logger) error {
 	}
 
 	return nil
+}
+
+func exportEnvVars(cfg *config.Config, logger logging.Logger) {
+	logger.Info("exporting env variables...")
+
+	if cfg.Proxy.HttpProxy != "" {
+		_ = os.Setenv("HTTP_PROXY", cfg.Proxy.HttpProxy)
+		_ = os.Setenv("http_proxy", cfg.Proxy.HttpProxy)
+	}
+	if cfg.Proxy.HttpsProxy != "" {
+		_ = os.Setenv("HTTPS_PROXY", cfg.Proxy.HttpsProxy)
+		_ = os.Setenv("https_proxy", cfg.Proxy.HttpsProxy)
+	}
+	if cfg.Proxy.NoProxy != "" {
+		_ = os.Setenv("NO_PROXY", cfg.Proxy.NoProxy)
+		_ = os.Setenv("no_proxy", cfg.Proxy.NoProxy)
+	}
+	if cfg.Proxy.Socks5Proxy != "" {
+		_ = os.Setenv("SOCKS5_PROXY", cfg.Proxy.Socks5Proxy)
+		_ = os.Setenv("socks5_proxy", cfg.Proxy.Socks5Proxy)
+	}
+
+	// TODO: More to export?
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/discorduc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/gittokenuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc"
@@ -33,6 +34,7 @@ type BaseSettingHandler struct {
 	GitTokenUC     *gittokenuc.GitTokenUC
 	CronJobUC      *cronjobuc.CronJobUC
 	SecretUC       *secretuc.SecretUC
+	EmailUC        *emailuc.EmailUC
 	APIKeyUC       *apikeyuc.APIKeyUC
 }
 
@@ -51,6 +53,7 @@ func NewBaseSettingHandler(
 	gitTokenUC *gittokenuc.GitTokenUC,
 	cronJobUC *cronjobuc.CronJobUC,
 	secretUC *secretuc.SecretUC,
+	emailUC *emailuc.EmailUC,
 	apiKeyUC *apikeyuc.APIKeyUC,
 ) *BaseSettingHandler {
 	return &BaseSettingHandler{
@@ -68,6 +71,7 @@ func NewBaseSettingHandler(
 		GitTokenUC:     gitTokenUC,
 		CronJobUC:      cronJobUC,
 		SecretUC:       secretUC,
+		EmailUC:        emailUC,
 		APIKeyUC:       apiKeyUC,
 	}
 }

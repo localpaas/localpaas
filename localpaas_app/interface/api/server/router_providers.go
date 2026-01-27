@@ -141,5 +141,19 @@ func (s *HTTPServer) registerProviderRoutes(apiGroup *gin.RouterGroup) *gin.Rout
 		sslGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteSsl)
 	}
 
+	{ // email group
+		emailGroup := providerGroup.Group("/emails")
+		// Info
+		emailGroup.GET("/:id", s.handlerRegistry.providersHandler.GetEmail)
+		emailGroup.GET("", s.handlerRegistry.providersHandler.ListEmail)
+		// Creation & Update
+		emailGroup.POST("", s.handlerRegistry.providersHandler.CreateEmail)
+		emailGroup.PUT("/:id", s.handlerRegistry.providersHandler.UpdateEmail)
+		emailGroup.PUT("/:id/meta", s.handlerRegistry.providersHandler.UpdateEmailMeta)
+		emailGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteEmail)
+		// Test connection
+		emailGroup.POST("/test-send-mail", s.handlerRegistry.providersHandler.TestSendEmail)
+	}
+
 	return providerGroup
 }

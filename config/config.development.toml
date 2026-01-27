@@ -36,3 +36,9 @@ app_path = "/var/lib/localpaas"
 
 [ssl]
     le_user_email = "tiendc.lp@gmail.com"
+
+[proxy]
+    http_proxy = ""
+    https_proxy = ""
+    no_proxy = ""
+    socks5_proxy = ""

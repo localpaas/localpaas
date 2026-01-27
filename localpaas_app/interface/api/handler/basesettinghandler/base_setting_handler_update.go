@@ -11,6 +11,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc/basicauthdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc/cronjobdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/discorduc/discorddto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc/emaildto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc/githubappdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/gittokenuc/gittokendto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc/oauthdto"
@@ -34,6 +35,7 @@ func UpdateSettingPreRequestHandler(fn func(auth *basedto.Auth, req any) error) 
 	}
 }
 
+//nolint:funlen
 func (h *BaseSettingHandler) UpdateSetting(
 	ctx *gin.Context,
 	resType base.ResourceType,
@@ -132,6 +134,11 @@ func (h *BaseSettingHandler) UpdateSetting(
 		r := discorddto.NewUpdateDiscordReq()
 		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.DiscordUC.UpdateDiscord(reqCtx, auth, r) }
+
+	case base.ResourceTypeEmail:
+		r := emaildto.NewUpdateEmailReq()
+		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
+		req, ucFunc = r, func() (any, error) { return h.EmailUC.UpdateEmail(reqCtx, auth, r) }
 	}
 	if err != nil {
 		h.RenderError(ctx, err)

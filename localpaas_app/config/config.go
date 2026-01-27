@@ -59,6 +59,7 @@ type Config struct {
 	Session    Session    `toml:"session"`
 	TaskQueue  TaskQueue  `toml:"task_queue"`
 	SSL        SSL        `toml:"ssl"`
+	Proxy      Proxy      `toml:"proxy"`
 }
 
 func (cfg *Config) IsDevEnv() bool  { return cfg.Env == EnvDev }

@@ -1,4 +1,4 @@
-package slackdto
+package emaildto
 
 import (
 	vld "github.com/tiendc/go-validator"
@@ -8,29 +8,32 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 )
 
-type TestSendSlackMsgReq struct {
-	*SlackBaseReq
-	TestMsg string `json:"testMsg"`
+type TestSendEmailReq struct {
+	*EmailBaseReq
+	TestRecipient string `json:"testRecipient"`
+	TestSubject   string `json:"testSubject"`
+	TestContent   string `json:"testContent"`
 }
 
-func NewTestSendSlackMsgReq() *TestSendSlackMsgReq {
-	return &TestSendSlackMsgReq{}
+func NewTestSendEmailReq() *TestSendEmailReq {
+	return &TestSendEmailReq{}
 }
 
-func (req *TestSendSlackMsgReq) ModifyRequest() error {
+func (req *TestSendEmailReq) ModifyRequest() error {
 	// NOTE: make sure req.Name is not empty to not fail the validation
 	req.Name = gofn.Coalesce(req.Name, "x")
-	req.TestMsg = gofn.Coalesce(req.TestMsg, "test message")
+	req.TestSubject = gofn.Coalesce(req.TestSubject, "test subject")
+	req.TestContent = gofn.Coalesce(req.TestContent, "test content")
 	return nil
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *TestSendSlackMsgReq) Validate() apperrors.ValidationErrors {
+func (req *TestSendEmailReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.validate("")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type TestSendSlackMsgResp struct {
+type TestSendEmailResp struct {
 	Meta *basedto.Meta `json:"meta"`
 }

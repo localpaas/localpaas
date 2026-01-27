@@ -17,12 +17,15 @@ func NewTestSendDiscordMsgReq() *TestSendDiscordMsgReq {
 	return &TestSendDiscordMsgReq{}
 }
 
-// Validate implements interface basedto.ReqValidator
-func (req *TestSendDiscordMsgReq) Validate() apperrors.ValidationErrors {
+func (req *TestSendDiscordMsgReq) ModifyRequest() error {
 	// NOTE: make sure req.Name is not empty to not fail the validation
 	req.Name = gofn.Coalesce(req.Name, "x")
 	req.TestMsg = gofn.Coalesce(req.TestMsg, "test message")
+	return nil
+}
 
+// Validate implements interface basedto.ReqValidator
+func (req *TestSendDiscordMsgReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.validate("")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))

@@ -38,6 +38,7 @@ const (
 	ResourceTypeGithubApp    ResourceType = "github-app"
 	ResourceTypeGitToken     ResourceType = "git-token"
 	ResourceTypeCronJob      ResourceType = "cron-job"
+	ResourceTypeEmail        ResourceType = "email"
 	ResourceTypeSysError     ResourceType = "sys-error"
 	ResourceTypeTask         ResourceType = "task"
 )

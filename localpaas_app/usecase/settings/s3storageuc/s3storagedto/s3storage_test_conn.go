@@ -16,11 +16,14 @@ func NewTestS3StorageConnReq() *TestS3StorageConnReq {
 	return &TestS3StorageConnReq{}
 }
 
-// Validate implements interface basedto.ReqValidator
-func (req *TestS3StorageConnReq) Validate() apperrors.ValidationErrors {
+func (req *TestS3StorageConnReq) ModifyRequest() error {
 	// NOTE: make sure req.Name is not empty to not fail the validation
 	req.Name = gofn.Coalesce(req.Name, "x")
+	return nil
+}
 
+// Validate implements interface basedto.ReqValidator
+func (req *TestS3StorageConnReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.validate("")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))

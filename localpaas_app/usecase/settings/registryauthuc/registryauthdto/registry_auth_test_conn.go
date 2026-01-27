@@ -17,14 +17,17 @@ func NewTestRegistryAuthConnReq() *TestRegistryAuthConnReq {
 }
 
 func (req *TestRegistryAuthConnReq) ModifyRequest() error {
-	return req.modifyRequest()
+	err := req.modifyRequest()
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	// NOTE: make sure req.Name is not empty to not fail the validation
+	req.Name = gofn.Coalesce(req.Name, "x")
+	return nil
 }
 
 // Validate implements interface basedto.ReqValidator
 func (req *TestRegistryAuthConnReq) Validate() apperrors.ValidationErrors {
-	// NOTE: make sure req.Name is not empty to not fail the validation
-	req.Name = gofn.Coalesce(req.Name, "x")
-
 	var validators []vld.Validator
 	validators = append(validators, req.validate("")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))

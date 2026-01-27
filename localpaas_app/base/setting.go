@@ -23,6 +23,7 @@ const (
 	SettingTypeGithubApp     SettingType = "github-app"
 	SettingTypeGitToken      SettingType = "git-token"
 	SettingTypeCronJob       SettingType = "cron-job"
+	SettingTypeEmail         SettingType = "email"
 )
 
 var (
