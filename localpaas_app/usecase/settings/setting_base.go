@@ -30,6 +30,7 @@ type BaseSettingResp struct {
 	Status          base.SettingStatus `json:"status"`
 	Inherited       bool               `json:"inherited,omitempty"`
 	AvailInProjects bool               `json:"availableInProjects,omitempty"`
+	Default         bool               `json:"default,omitempty"`
 	UpdateVer       int                `json:"updateVer"`
 
 	CreatedAt time.Time  `json:"createdAt"`
@@ -101,6 +102,34 @@ func checkNameConflict(
 	if setting != nil {
 		return apperrors.NewAlreadyExist(strutil.ToPascalCase(string(req.Type))).
 			WithMsgLog("%s '%s' already exists", req.Type, setting.Name)
+	}
+	return nil
+}
+
+func ensureSettingDefaultUniqueness(
+	ctx context.Context,
+	db database.IDB,
+	settingRepo repository.SettingRepo,
+	req *BaseSettingReq,
+	setting *entity.Setting,
+) error {
+	opts := []bunex.UpdateQueryOption{
+		bunex.UpdateWithDeleted(),
+	}
+	switch req.Scope {
+	case base.SettingScopeGlobal:
+		opts = append(opts, bunex.UpdateWhere("setting.object_id IS NULL"))
+	case base.SettingScopeProject:
+		opts = append(opts, bunex.UpdateWhere("setting.object_id = ?", req.ObjectID))
+	case base.SettingScopeApp:
+		opts = append(opts, bunex.UpdateWhere("setting.object_id = ?", req.ObjectID))
+	case base.SettingScopeUser:
+		opts = append(opts, bunex.UpdateWhere("setting.object_id = ?", req.ObjectID))
+	}
+
+	err := settingRepo.UpdateClearDefaultFlag(ctx, db, req.Type, setting.ID, opts...)
+	if err != nil {
+		return apperrors.Wrap(err)
 	}
 	return nil
 }

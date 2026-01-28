@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS settings
                     (status IN ('active','pending','disabled','expired')) DEFAULT 'active',
     data         JSONB NULL,
     avail_in_projects BOOL NOT NULL DEFAULT FALSE,
+    is_default   BOOL NOT NULL DEFAULT FALSE,
     update_ver   INT4 NOT NULL DEFAULT 1,
 
     created_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,

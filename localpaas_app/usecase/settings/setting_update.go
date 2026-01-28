@@ -21,6 +21,7 @@ type UpdateSettingReq struct {
 	BaseSettingReq
 	ID              string `json:"-"`
 	AvailInProjects bool   `json:"availableInProjects"`
+	Default         bool   `json:"default"`
 	UpdateVer       int    `json:"updateVer"`
 }
 
@@ -31,14 +32,17 @@ type UpdateSettingResp struct {
 type UpdateSettingData struct {
 	Setting *entity.Setting
 
-	SettingRepo   repository.SettingRepo
-	VerifyingName string
-	ExtraLoadOpts []bunex.SelectQueryOption
+	SettingRepo       repository.SettingRepo
+	VerifyingName     string
+	DefaultMustUnique bool
+	ExtraLoadOpts     []bunex.SelectQueryOption
 
 	AfterLoading     func(context.Context, database.Tx, *UpdateSettingData) error
 	PrepareUpdate    func(context.Context, database.Tx, *UpdateSettingData, *PersistingSettingData) error
 	BeforePersisting func(context.Context, database.Tx, *UpdateSettingData, *PersistingSettingData) error
 	AfterPersisting  func(context.Context, database.Tx, *UpdateSettingData, *PersistingSettingData) error
+
+	oldDefaultFlag bool
 }
 
 type PersistingSettingData struct {
@@ -78,7 +82,7 @@ func UpdateSetting(
 			}
 		}
 
-		err = persistSettingUpdate(ctx, db, data, persistingData)
+		err = persistSettingUpdate(ctx, db, req, data, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -131,6 +135,7 @@ func loadSettingForUpdate(
 		}
 	}
 
+	data.oldDefaultFlag = setting.Default
 	return nil
 }
 
@@ -142,6 +147,7 @@ func prepareSettingUpdate(
 	timeNow := timeutil.NowUTC()
 	setting := data.Setting
 	setting.AvailInProjects = gofn.If(req.Scope != base.SettingScopeGlobal, false, req.AvailInProjects)
+	setting.Default = req.Default
 	setting.UpdateVer++
 	setting.UpdatedAt = timeNow
 
@@ -151,6 +157,7 @@ func prepareSettingUpdate(
 func persistSettingUpdate(
 	ctx context.Context,
 	db database.IDB,
+	req *UpdateSettingReq,
 	data *UpdateSettingData,
 	persistingData *PersistingSettingData,
 ) error {
@@ -158,5 +165,15 @@ func persistSettingUpdate(
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+
+	if data.DefaultMustUnique && !data.oldDefaultFlag && persistingData.Setting.Default {
+		if data.DefaultMustUnique && persistingData.Setting.Default {
+			err = ensureSettingDefaultUniqueness(ctx, db, data.SettingRepo, &req.BaseSettingReq, persistingData.Setting)
+			if err != nil {
+				return apperrors.Wrap(err)
+			}
+		}
+	}
+
 	return nil
 }

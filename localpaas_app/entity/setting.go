@@ -14,7 +14,7 @@ import (
 var (
 	SettingUpsertingConflictCols = []string{"id"}
 	SettingUpsertingUpdateCols   = []string{"object_id", "type", "kind", "status", "name", "data",
-		"avail_in_projects", "version", "update_ver", "updated_at", "expire_at", "deleted_at"}
+		"avail_in_projects", "is_default", "version", "update_ver", "updated_at", "expire_at", "deleted_at"}
 )
 
 type Setting struct {
@@ -26,6 +26,7 @@ type Setting struct {
 	Name            string `bun:",nullzero"`
 	Data            string `bun:",nullzero"`
 	AvailInProjects bool
+	Default         bool `bun:"is_default"`
 	Version         int
 	UpdateVer       int
 

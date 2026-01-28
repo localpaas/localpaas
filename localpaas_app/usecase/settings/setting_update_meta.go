@@ -23,6 +23,7 @@ type UpdateSettingMetaReq struct {
 	Status              *base.SettingStatus `json:"status"`
 	ExpireAt            *time.Time          `json:"expireAt"`
 	AvailableInProjects *bool               `json:"availableInProjects"`
+	Default             *bool               `json:"default"`
 	UpdateVer           int                 `json:"updateVer"`
 }
 
@@ -33,12 +34,15 @@ type UpdateSettingMetaResp struct {
 type UpdateSettingMetaData struct {
 	Setting *entity.Setting
 
-	SettingRepo   repository.SettingRepo
-	ExtraLoadOpts []bunex.SelectQueryOption
+	SettingRepo       repository.SettingRepo
+	DefaultMustUnique bool
+	ExtraLoadOpts     []bunex.SelectQueryOption
 
 	AfterLoading     func(context.Context, database.Tx, *UpdateSettingMetaData) error
 	BeforePersisting func(context.Context, database.Tx, *UpdateSettingMetaData, *PersistingSettingMetaData) error
 	AfterPersisting  func(context.Context, database.Tx, *UpdateSettingMetaData, *PersistingSettingMetaData) error
+
+	oldDefaultFlag bool
 }
 
 type PersistingSettingMetaData struct {
@@ -71,7 +75,7 @@ func UpdateSettingMeta(
 			}
 		}
 
-		err = persistSettingMetaUpdate(ctx, db, data, persistingData)
+		err = persistSettingMetaUpdate(ctx, db, req, data, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -116,6 +120,7 @@ func loadSettingForUpdateMeta(
 			WithMsgLog("imported or inherited setting is not allowed to update")
 	}
 
+	data.oldDefaultFlag = setting.Default
 	return nil
 }
 
@@ -138,6 +143,9 @@ func prepareSettingMetaUpdate(
 	if req.AvailableInProjects != nil {
 		setting.AvailInProjects = gofn.If(req.Scope != base.SettingScopeGlobal, false, *req.AvailableInProjects)
 	}
+	if req.Default != nil {
+		setting.Default = *req.Default
+	}
 
 	persistingData.Setting = setting
 }
@@ -145,14 +153,25 @@ func prepareSettingMetaUpdate(
 func persistSettingMetaUpdate(
 	ctx context.Context,
 	db database.IDB,
+	req *UpdateSettingMetaReq,
 	data *UpdateSettingMetaData,
 	persistingData *PersistingSettingMetaData,
 ) error {
 	err := data.SettingRepo.Update(ctx, db, persistingData.Setting,
-		bunex.UpdateColumns("update_ver", "updated_at", "status", "expire_at", "avail_in_projects"),
+		bunex.UpdateColumns("update_ver", "updated_at", "status", "expire_at", "avail_in_projects", "is_default"),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+
+	if data.DefaultMustUnique && !data.oldDefaultFlag && persistingData.Setting.Default {
+		if data.DefaultMustUnique && persistingData.Setting.Default {
+			err = ensureSettingDefaultUniqueness(ctx, db, data.SettingRepo, &req.BaseSettingReq, persistingData.Setting)
+			if err != nil {
+				return apperrors.Wrap(err)
+			}
+		}
+	}
+
 	return nil
 }

@@ -19,6 +19,7 @@ import (
 type CreateSettingReq struct {
 	BaseSettingReq
 	AvailInProjects bool `json:"availableInProjects"`
+	Default         bool `json:"default"`
 }
 
 type CreateSettingResp struct {
@@ -27,9 +28,10 @@ type CreateSettingResp struct {
 }
 
 type CreateSettingData struct {
-	SettingRepo   repository.SettingRepo
-	VerifyingName string
-	Version       int
+	SettingRepo       repository.SettingRepo
+	VerifyingName     string
+	DefaultMustUnique bool
+	Version           int
 
 	AfterLoading     func(context.Context, database.Tx, *CreateSettingData) error
 	PrepareCreation  func(context.Context, database.Tx, *CreateSettingData, *PersistingSettingCreationData) error
@@ -75,7 +77,7 @@ func CreateSetting(
 			}
 		}
 
-		err = persistSettingCreation(ctx, db, data, persistingData)
+		err = persistSettingCreation(ctx, db, req, data, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -123,6 +125,7 @@ func prepareSettingCreation(
 		Name:            data.VerifyingName,
 		ObjectID:        req.ObjectID,
 		AvailInProjects: gofn.If(req.Scope != base.SettingScopeGlobal, false, req.AvailInProjects),
+		Default:         req.Default,
 		Version:         data.Version,
 		CreatedAt:       timeNow,
 		UpdatedAt:       timeNow,
@@ -133,6 +136,7 @@ func prepareSettingCreation(
 func persistSettingCreation(
 	ctx context.Context,
 	db database.IDB,
+	req *CreateSettingReq,
 	data *CreateSettingData,
 	persistingData *PersistingSettingCreationData,
 ) error {
@@ -141,5 +145,13 @@ func persistSettingCreation(
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+
+	if data.DefaultMustUnique && persistingData.Setting.Default {
+		err = ensureSettingDefaultUniqueness(ctx, db, data.SettingRepo, &req.BaseSettingReq, persistingData.Setting)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+	}
+
 	return nil
 }

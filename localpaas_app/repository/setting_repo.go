@@ -57,6 +57,8 @@ type SettingRepo interface {
 		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
 	Update(ctx context.Context, db database.IDB, setting *entity.Setting,
 		opts ...bunex.UpdateQueryOption) error
+	UpdateClearDefaultFlag(ctx context.Context, db database.IDB, typ base.SettingType, exceptID string,
+		opts ...bunex.UpdateQueryOption) error
 }
 
 type settingRepo struct {
@@ -475,6 +477,24 @@ func (repo *settingRepo) UpsertMulti(ctx context.Context, db database.IDB, setti
 func (repo *settingRepo) Update(ctx context.Context, db database.IDB, setting *entity.Setting,
 	opts ...bunex.UpdateQueryOption) error {
 	query := db.NewUpdate().Model(setting).WherePK()
+	query = bunex.ApplyUpdate(query, opts...)
+
+	_, err := query.Exec(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (repo *settingRepo) UpdateClearDefaultFlag(ctx context.Context, db database.IDB, typ base.SettingType,
+	exceptID string, opts ...bunex.UpdateQueryOption) error {
+	query := db.NewUpdate().Model((*entity.Setting)(nil)).
+		Where("setting.type = ?", typ).
+		Where("setting.is_default = true").
+		Set("is_default = false")
+	if exceptID != "" {
+		query = query.Where("setting.id != ?", exceptID)
+	}
 	query = bunex.ApplyUpdate(query, opts...)
 
 	_, err := query.Exec(ctx)

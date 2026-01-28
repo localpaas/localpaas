@@ -24,9 +24,10 @@ func (uc *EmailUC) CreateEmail(
 ) (*emaildto.CreateEmailResp, error) {
 	req.Type = currentSettingType
 	resp, err := settings.CreateSetting(ctx, uc.db, &req.CreateSettingReq, &settings.CreateSettingData{
-		SettingRepo:   uc.settingRepo,
-		VerifyingName: req.Name,
-		Version:       currentSettingVersion,
+		SettingRepo:       uc.settingRepo,
+		VerifyingName:     req.Name,
+		DefaultMustUnique: true,
+		Version:           currentSettingVersion,
 		PrepareCreation: func(
 			ctx context.Context,
 			db database.Tx,
