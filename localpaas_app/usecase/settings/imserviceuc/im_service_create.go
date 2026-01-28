@@ -1,4 +1,4 @@
-package slackuc
+package imserviceuc
 
 import (
 	"context"
@@ -9,19 +9,19 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/slackuc/slackdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc/imservicedto"
 )
 
 const (
-	currentSettingType    = base.SettingTypeSlack
-	currentSettingVersion = entity.CurrentSlackVersion
+	currentSettingType    = base.SettingTypeIMService
+	currentSettingVersion = entity.CurrentIMServiceVersion
 )
 
-func (uc *SlackUC) CreateSlack(
+func (uc *IMServiceUC) CreateIMService(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *slackdto.CreateSlackReq,
-) (*slackdto.CreateSlackResp, error) {
+	req *imservicedto.CreateIMServiceReq,
+) (*imservicedto.CreateIMServiceResp, error) {
 	req.Type = currentSettingType
 	resp, err := settings.CreateSetting(ctx, uc.db, &req.CreateSettingReq, &settings.CreateSettingData{
 		SettingRepo:   uc.settingRepo,
@@ -33,9 +33,22 @@ func (uc *SlackUC) CreateSlack(
 			data *settings.CreateSettingData,
 			pData *settings.PersistingSettingCreationData,
 		) error {
-			err := pData.Setting.SetData(&entity.Slack{
-				Webhook: entity.NewEncryptedField(req.Webhook),
-			})
+			imService := &entity.IMService{}
+			switch {
+			case req.Slack != nil:
+				pData.Setting.Kind = string(base.IMServiceKindSlack)
+				imService.Slack = &entity.Slack{
+					Webhook: entity.NewEncryptedField(req.Slack.Webhook),
+				}
+
+			case req.Discord != nil:
+				pData.Setting.Kind = string(base.IMServiceKindDiscord)
+				imService.Discord = &entity.Discord{
+					Webhook: entity.NewEncryptedField(req.Discord.Webhook),
+				}
+			}
+
+			err := pData.Setting.SetData(imService)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}
@@ -46,7 +59,7 @@ func (uc *SlackUC) CreateSlack(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &slackdto.CreateSlackResp{
+	return &imservicedto.CreateIMServiceResp{
 		Data: resp.Data,
 	}, nil
 }

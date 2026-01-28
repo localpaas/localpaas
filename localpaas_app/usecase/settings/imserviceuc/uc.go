@@ -1,4 +1,4 @@
-package discorduc
+package imserviceuc
 
 import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
@@ -7,7 +7,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
 )
 
-type DiscordUC struct {
+type IMServiceUC struct {
 	db                       *database.DB
 	settingRepo              repository.SettingRepo
 	projectSharedSettingRepo repository.ProjectSharedSettingRepo
@@ -15,14 +15,14 @@ type DiscordUC struct {
 	settingService           settingservice.SettingService
 }
 
-func NewDiscordUC(
+func NewIMServiceUC(
 	db *database.DB,
 	settingRepo repository.SettingRepo,
 	projectSharedSettingRepo repository.ProjectSharedSettingRepo,
 	permissionManager permission.Manager,
 	settingService settingservice.SettingService,
-) *DiscordUC {
-	return &DiscordUC{
+) *IMServiceUC {
+	return &IMServiceUC{
 		db:                       db,
 		settingRepo:              settingRepo,
 		projectSharedSettingRepo: projectSharedSettingRepo,

@@ -9,15 +9,14 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc/basicauthdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc/cronjobdto"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/discorduc/discorddto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc/emaildto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc/githubappdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/gittokenuc/gittokendto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc/imservicedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc/oauthdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/registryauthuc/registryauthdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/s3storageuc/s3storagedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc/secretdto"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/slackuc/slackdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc/sshkeydto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc/ssldto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc/apikeydto"
@@ -126,15 +125,10 @@ func (h *BaseSettingHandler) CreateSetting(
 		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.APIKeyUC.CreateAPIKey(reqCtx, auth, r) }
 
-	case base.ResourceTypeSlack:
-		r := slackdto.NewCreateSlackReq()
+	case base.ResourceTypeIMService:
+		r := imservicedto.NewCreateIMServiceReq()
 		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
-		req, ucFunc = r, func() (any, error) { return h.SlackUC.CreateSlack(reqCtx, auth, r) }
-
-	case base.ResourceTypeDiscord:
-		r := discorddto.NewCreateDiscordReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
-		req, ucFunc = r, func() (any, error) { return h.DiscordUC.CreateDiscord(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.IMServiceUC.CreateIMService(reqCtx, auth, r) }
 
 	case base.ResourceTypeEmail:
 		r := emaildto.NewCreateEmailReq()

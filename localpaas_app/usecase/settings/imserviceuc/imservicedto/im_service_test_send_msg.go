@@ -1,4 +1,4 @@
-package slackdto
+package imservicedto
 
 import (
 	vld "github.com/tiendc/go-validator"
@@ -8,16 +8,16 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 )
 
-type TestSendSlackMsgReq struct {
-	*SlackBaseReq
+type TestSendInstantMsgReq struct {
+	*IMServiceBaseReq
 	TestMsg string `json:"testMsg"`
 }
 
-func NewTestSendSlackMsgReq() *TestSendSlackMsgReq {
-	return &TestSendSlackMsgReq{}
+func NewTestSendInstantMsgReq() *TestSendInstantMsgReq {
+	return &TestSendInstantMsgReq{}
 }
 
-func (req *TestSendSlackMsgReq) ModifyRequest() error {
+func (req *TestSendInstantMsgReq) ModifyRequest() error {
 	// NOTE: make sure req.Name is not empty to not fail the validation
 	req.Name = gofn.Coalesce(req.Name, "x")
 	req.TestMsg = gofn.Coalesce(req.TestMsg, "test message")
@@ -25,12 +25,12 @@ func (req *TestSendSlackMsgReq) ModifyRequest() error {
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *TestSendSlackMsgReq) Validate() apperrors.ValidationErrors {
+func (req *TestSendInstantMsgReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.validate("")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type TestSendSlackMsgResp struct {
+type TestSendInstantMsgResp struct {
 	Meta *basedto.Meta `json:"meta"`
 }

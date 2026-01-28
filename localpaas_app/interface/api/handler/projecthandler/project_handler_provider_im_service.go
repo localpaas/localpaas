@@ -1,0 +1,110 @@
+package projecthandler
+
+import (
+	"github.com/gin-gonic/gin"
+
+	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
+	_ "github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc/imservicedto"
+)
+
+// ListIMService Lists IM services
+// @Summary Lists IM services
+// @Description Lists IM services
+// @Tags    project_providers
+// @Produce json
+// @Id      listProjectIMService
+// @Param   projectID path string true "project ID"
+// @Param   search query string false "`search=<target> (support *)`"
+// @Param   pageOffset query int false "`pageOffset=offset`"
+// @Param   pageLimit query int false "`pageLimit=limit`"
+// @Param   sort query string false "`sort=[-]field1|field2...`"
+// @Success 200 {object} imservicedto.ListIMServiceResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /projects/{projectID}/providers/im-services [get]
+func (h *ProjectHandler) ListIMService(ctx *gin.Context) {
+	h.ListSetting(ctx, base.ResourceTypeIMService, base.SettingScopeProject)
+}
+
+// GetIMService Gets IM service details
+// @Summary Gets IM service details
+// @Description Gets IM service details
+// @Tags    project_providers
+// @Produce json
+// @Id      getProjectIMService
+// @Param   projectID path string true "project ID"
+// @Param   id path string true "provider ID"
+// @Success 200 {object} imservicedto.GetIMServiceResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /projects/{projectID}/providers/im-services/{id} [get]
+func (h *ProjectHandler) GetIMService(ctx *gin.Context) {
+	h.GetSetting(ctx, base.ResourceTypeIMService, base.SettingScopeProject)
+}
+
+// CreateIMService Creates a new IM service
+// @Summary Creates a new IM service
+// @Description Creates a new IM service
+// @Tags    project_providers
+// @Produce json
+// @Id      createProjectIMService
+// @Param   projectID path string true "project ID"
+// @Param   body body imservicedto.CreateIMServiceReq true "request data"
+// @Success 201 {object} imservicedto.CreateIMServiceResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /projects/{projectID}/providers/im-services [post]
+func (h *ProjectHandler) CreateIMService(ctx *gin.Context) {
+	h.CreateSetting(ctx, base.ResourceTypeIMService, base.SettingScopeProject)
+}
+
+// UpdateIMService Updates IM service
+// @Summary Updates IM service
+// @Description Updates IM service
+// @Tags    project_providers
+// @Produce json
+// @Id      updateProjectIMService
+// @Param   projectID path string true "project ID"
+// @Param   id path string true "provider ID"
+// @Param   body body imservicedto.UpdateIMServiceReq true "request data"
+// @Success 200 {object} imservicedto.UpdateIMServiceResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /projects/{projectID}/providers/im-services/{id} [put]
+func (h *ProjectHandler) UpdateIMService(ctx *gin.Context) {
+	h.UpdateSetting(ctx, base.ResourceTypeIMService, base.SettingScopeProject)
+}
+
+// UpdateIMServiceMeta Updates IM service meta
+// @Summary Updates IM service meta
+// @Description Updates IM service meta
+// @Tags    project_providers
+// @Produce json
+// @Id      updateProjectIMServiceMeta
+// @Param   projectID path string true "project ID"
+// @Param   id path string true "provider ID"
+// @Param   body body imservicedto.UpdateIMServiceMetaReq true "request data"
+// @Success 200 {object} imservicedto.UpdateIMServiceMetaResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /projects/{projectID}/providers/im-services/{id}/meta [put]
+func (h *ProjectHandler) UpdateIMServiceMeta(ctx *gin.Context) {
+	h.UpdateSettingMeta(ctx, base.ResourceTypeIMService, base.SettingScopeProject)
+}
+
+// DeleteIMService Deletes IM service
+// @Summary Deletes IM service
+// @Description Deletes IM service
+// @Tags    project_providers
+// @Produce json
+// @Id      deleteProjectIMService
+// @Param   projectID path string true "project ID"
+// @Param   id path string true "provider ID"
+// @Success 200 {object} imservicedto.DeleteIMServiceResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /projects/{projectID}/providers/im-services/{id} [delete]
+func (h *ProjectHandler) DeleteIMService(ctx *gin.Context) {
+	h.DeleteSetting(ctx, base.ResourceTypeIMService, base.SettingScopeProject)
+}

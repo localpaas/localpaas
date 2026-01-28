@@ -1,4 +1,4 @@
-package slackuc
+package imserviceuc
 
 import (
 	"context"
@@ -6,14 +6,14 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/slackuc/slackdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc/imservicedto"
 )
 
-func (uc *SlackUC) ListSlack(
+func (uc *IMServiceUC) ListIMService(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *slackdto.ListSlackReq,
-) (*slackdto.ListSlackResp, error) {
+	req *imservicedto.ListIMServiceReq,
+) (*imservicedto.ListIMServiceResp, error) {
 	req.Type = currentSettingType
 	resp, err := settings.ListSetting(ctx, uc.db, auth, &req.ListSettingReq, &settings.ListSettingData{
 		SettingRepo: uc.settingRepo,
@@ -22,12 +22,12 @@ func (uc *SlackUC) ListSlack(
 		return nil, apperrors.Wrap(err)
 	}
 
-	respData, err := slackdto.TransformSlacks(resp.Data)
+	respData, err := imservicedto.TransformIMServices(resp.Data)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &slackdto.ListSlackResp{
+	return &imservicedto.ListIMServiceResp{
 		Meta: resp.Meta,
 		Data: respData,
 	}, nil

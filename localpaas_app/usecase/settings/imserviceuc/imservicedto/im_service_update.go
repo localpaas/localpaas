@@ -1,4 +1,4 @@
-package slackdto
+package imservicedto
 
 import (
 	vld "github.com/tiendc/go-validator"
@@ -8,21 +8,22 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
-type DeleteSlackReq struct {
-	settings.DeleteSettingReq
+type UpdateIMServiceReq struct {
+	settings.UpdateSettingReq
+	*IMServiceBaseReq
 }
 
-func NewDeleteSlackReq() *DeleteSlackReq {
-	return &DeleteSlackReq{}
+func NewUpdateIMServiceReq() *UpdateIMServiceReq {
+	return &UpdateIMServiceReq{}
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *DeleteSlackReq) Validate() apperrors.ValidationErrors {
+func (req *UpdateIMServiceReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, req.DeleteSettingReq.Validate()...)
+	validators = append(validators, req.validate("")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type DeleteSlackResp struct {
+type UpdateIMServiceResp struct {
 	Meta *basedto.Meta `json:"meta"`
 }

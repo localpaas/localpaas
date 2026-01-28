@@ -35,7 +35,8 @@ func (uc *EmailUC) CreateEmail(
 			pData *settings.PersistingSettingCreationData,
 		) error {
 			email := &entity.Email{}
-			if req.SMTP != nil {
+			switch {
+			case req.SMTP != nil:
 				pData.Setting.Kind = string(base.EmailKindSMTP)
 				email.SMTP = &entity.SMTPConf{
 					Host:        req.SMTP.Host,
@@ -45,8 +46,8 @@ func (uc *EmailUC) CreateEmail(
 					Password:    entity.NewEncryptedField(req.SMTP.Password),
 					SSL:         req.SMTP.SSL,
 				}
-			}
-			if req.HTTP != nil {
+
+			case req.HTTP != nil:
 				pData.Setting.Kind = string(base.EmailKindHTTP)
 				email.HTTP = &entity.HTTPMailConf{
 					Endpoint:     req.HTTP.Endpoint,
@@ -59,6 +60,7 @@ func (uc *EmailUC) CreateEmail(
 					Password:     entity.NewEncryptedField(req.HTTP.Password),
 				}
 			}
+
 			err := pData.Setting.SetData(email)
 			if err != nil {
 				return apperrors.Wrap(err)

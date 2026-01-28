@@ -1,4 +1,4 @@
-package discorduc
+package imserviceuc
 
 import (
 	"context"
@@ -6,14 +6,14 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/discorduc/discorddto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc/imservicedto"
 )
 
-func (uc *DiscordUC) UpdateDiscordMeta(
+func (uc *IMServiceUC) UpdateIMServiceMeta(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *discorddto.UpdateDiscordMetaReq,
-) (*discorddto.UpdateDiscordMetaResp, error) {
+	req *imservicedto.UpdateIMServiceMetaReq,
+) (*imservicedto.UpdateIMServiceMetaResp, error) {
 	req.Type = currentSettingType
 	_, err := settings.UpdateSettingMeta(ctx, uc.db, &req.UpdateSettingMetaReq, &settings.UpdateSettingMetaData{
 		SettingRepo: uc.settingRepo,
@@ -22,5 +22,5 @@ func (uc *DiscordUC) UpdateDiscordMeta(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &discorddto.UpdateDiscordMetaResp{}, nil
+	return &imservicedto.UpdateIMServiceMetaResp{}, nil
 }

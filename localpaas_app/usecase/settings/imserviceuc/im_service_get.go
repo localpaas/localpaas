@@ -1,4 +1,4 @@
-package discorduc
+package imserviceuc
 
 import (
 	"context"
@@ -6,14 +6,14 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/discorduc/discorddto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc/imservicedto"
 )
 
-func (uc *DiscordUC) GetDiscord(
+func (uc *IMServiceUC) GetIMService(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *discorddto.GetDiscordReq,
-) (*discorddto.GetDiscordResp, error) {
+	req *imservicedto.GetIMServiceReq,
+) (*imservicedto.GetIMServiceResp, error) {
 	req.Type = currentSettingType
 	setting, err := settings.GetSetting(ctx, uc.db, auth, &req.GetSettingReq, &settings.GetSettingData{
 		SettingRepo: uc.settingRepo,
@@ -22,13 +22,13 @@ func (uc *DiscordUC) GetDiscord(
 		return nil, apperrors.Wrap(err)
 	}
 
-	setting.MustAsDiscord().MustDecrypt()
-	resp, err := discorddto.TransformDiscord(setting)
+	setting.MustAsIMService().MustDecrypt()
+	resp, err := imservicedto.TransformIMService(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &discorddto.GetDiscordResp{
+	return &imservicedto.GetIMServiceResp{
 		Data: resp,
 	}, nil
 }

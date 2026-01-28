@@ -46,15 +46,14 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/discorduc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/gittokenuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/registryauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/s3storageuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/slackuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/lpappuc"
@@ -125,8 +124,7 @@ var Provides = []any{
 	apikeyuc.NewAPIKeyUC,
 	oauthuc.NewOAuthUC,
 	secretuc.NewSecretUC,
-	slackuc.NewSlackUC,
-	discorduc.NewDiscordUC,
+	imserviceuc.NewIMServiceUC,
 	registryauthuc.NewRegistryAuthUC,
 	basicauthuc.NewBasicAuthUC,
 	ssluc.NewSslUC,

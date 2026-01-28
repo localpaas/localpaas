@@ -1,4 +1,4 @@
-package slackuc
+package imserviceuc
 
 import (
 	"context"
@@ -6,14 +6,14 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/slackuc/slackdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc/imservicedto"
 )
 
-func (uc *SlackUC) DeleteSlack(
+func (uc *IMServiceUC) DeleteIMService(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *slackdto.DeleteSlackReq,
-) (*slackdto.DeleteSlackResp, error) {
+	req *imservicedto.DeleteIMServiceReq,
+) (*imservicedto.DeleteIMServiceResp, error) {
 	req.Type = currentSettingType
 	_, err := settings.DeleteSetting(ctx, uc.db, &req.DeleteSettingReq, &settings.DeleteSettingData{
 		SettingRepo:              uc.settingRepo,
@@ -23,5 +23,5 @@ func (uc *SlackUC) DeleteSlack(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &slackdto.DeleteSlackResp{}, nil
+	return &imservicedto.DeleteIMServiceResp{}, nil
 }

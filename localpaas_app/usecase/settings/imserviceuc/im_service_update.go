@@ -1,4 +1,4 @@
-package slackuc
+package imserviceuc
 
 import (
 	"context"
@@ -6,18 +6,19 @@ import (
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/slackuc/slackdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc/imservicedto"
 )
 
-func (uc *SlackUC) UpdateSlack(
+func (uc *IMServiceUC) UpdateIMService(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *slackdto.UpdateSlackReq,
-) (*slackdto.UpdateSlackResp, error) {
+	req *imservicedto.UpdateIMServiceReq,
+) (*imservicedto.UpdateIMServiceResp, error) {
 	req.Type = currentSettingType
 	_, err := settings.UpdateSetting(ctx, uc.db, &req.UpdateSettingReq, &settings.UpdateSettingData{
 		SettingRepo:   uc.settingRepo,
@@ -29,9 +30,23 @@ func (uc *SlackUC) UpdateSlack(
 			pData *settings.PersistingSettingData,
 		) error {
 			pData.Setting.Name = gofn.Coalesce(req.Name, pData.Setting.Name)
-			err := pData.Setting.SetData(&entity.Slack{
-				Webhook: entity.NewEncryptedField(req.Webhook),
-			})
+
+			imService := &entity.IMService{}
+			switch {
+			case req.Slack != nil:
+				pData.Setting.Kind = string(base.IMServiceKindSlack)
+				imService.Slack = &entity.Slack{
+					Webhook: entity.NewEncryptedField(req.Slack.Webhook),
+				}
+
+			case req.Discord != nil:
+				pData.Setting.Kind = string(base.IMServiceKindDiscord)
+				imService.Discord = &entity.Discord{
+					Webhook: entity.NewEncryptedField(req.Discord.Webhook),
+				}
+			}
+
+			err := pData.Setting.SetData(imService)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}
@@ -42,5 +57,5 @@ func (uc *SlackUC) UpdateSlack(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &slackdto.UpdateSlackResp{}, nil
+	return &imservicedto.UpdateIMServiceResp{}, nil
 }

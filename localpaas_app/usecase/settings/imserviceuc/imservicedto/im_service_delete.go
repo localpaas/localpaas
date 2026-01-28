@@ -1,4 +1,4 @@
-package discorddto
+package imservicedto
 
 import (
 	vld "github.com/tiendc/go-validator"
@@ -8,22 +8,21 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
-type UpdateDiscordReq struct {
-	settings.UpdateSettingReq
-	*DiscordBaseReq
+type DeleteIMServiceReq struct {
+	settings.DeleteSettingReq
 }
 
-func NewUpdateDiscordReq() *UpdateDiscordReq {
-	return &UpdateDiscordReq{}
+func NewDeleteIMServiceReq() *DeleteIMServiceReq {
+	return &DeleteIMServiceReq{}
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *UpdateDiscordReq) Validate() apperrors.ValidationErrors {
+func (req *DeleteIMServiceReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, req.validate("")...)
+	validators = append(validators, req.DeleteSettingReq.Validate()...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type UpdateDiscordResp struct {
+type DeleteIMServiceResp struct {
 	Meta *basedto.Meta `json:"meta"`
 }

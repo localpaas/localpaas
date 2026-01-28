@@ -75,32 +75,18 @@ func (s *HTTPServer) registerProviderRoutes(apiGroup *gin.RouterGroup) *gin.Rout
 		sshKeyGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteSSHKey)
 	}
 
-	{ // slack group
-		slackGroup := providerGroup.Group("/slack")
+	{ // IM service group
+		imServiceGroup := providerGroup.Group("/im-services")
 		// Info
-		slackGroup.GET("/:id", s.handlerRegistry.providersHandler.GetSlack)
-		slackGroup.GET("", s.handlerRegistry.providersHandler.ListSlack)
+		imServiceGroup.GET("/:id", s.handlerRegistry.providersHandler.GetIMService)
+		imServiceGroup.GET("", s.handlerRegistry.providersHandler.ListIMService)
 		// Creation & Update
-		slackGroup.POST("", s.handlerRegistry.providersHandler.CreateSlack)
-		slackGroup.PUT("/:id", s.handlerRegistry.providersHandler.UpdateSlack)
-		slackGroup.PUT("/:id/meta", s.handlerRegistry.providersHandler.UpdateSlackMeta)
-		slackGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteSlack)
+		imServiceGroup.POST("", s.handlerRegistry.providersHandler.CreateIMService)
+		imServiceGroup.PUT("/:id", s.handlerRegistry.providersHandler.UpdateIMService)
+		imServiceGroup.PUT("/:id/meta", s.handlerRegistry.providersHandler.UpdateIMServiceMeta)
+		imServiceGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteIMService)
 		// Test connection
-		slackGroup.POST("/test-send-msg", s.handlerRegistry.providersHandler.TestSendSlackMsg)
-	}
-
-	{ // discord group
-		discordGroup := providerGroup.Group("/discord")
-		// Info
-		discordGroup.GET("/:id", s.handlerRegistry.providersHandler.GetDiscord)
-		discordGroup.GET("", s.handlerRegistry.providersHandler.ListDiscord)
-		// Creation & Update
-		discordGroup.POST("", s.handlerRegistry.providersHandler.CreateDiscord)
-		discordGroup.PUT("/:id", s.handlerRegistry.providersHandler.UpdateDiscord)
-		discordGroup.PUT("/:id/meta", s.handlerRegistry.providersHandler.UpdateDiscordMeta)
-		discordGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteDiscord)
-		// Test connection
-		discordGroup.POST("/test-send-msg", s.handlerRegistry.providersHandler.TestSendDiscordMsg)
+		imServiceGroup.POST("/test-send-msg", s.handlerRegistry.providersHandler.TestSendInstantMsg)
 	}
 
 	{ // registry auth group

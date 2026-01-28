@@ -93,28 +93,16 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		sshKeyGroup.DELETE("/:id", s.handlerRegistry.projectHandler.DeleteSSHKey)
 	}
 
-	{ // slack group
-		slackGroup := projectProviderGroup.Group("/slack")
+	{ // IM service group
+		imServiceGroup := projectProviderGroup.Group("/im-services")
 		// Info
-		slackGroup.GET("/:id", s.handlerRegistry.projectHandler.GetSlack)
-		slackGroup.GET("", s.handlerRegistry.projectHandler.ListSlack)
+		imServiceGroup.GET("/:id", s.handlerRegistry.projectHandler.GetIMService)
+		imServiceGroup.GET("", s.handlerRegistry.projectHandler.ListIMService)
 		// Creation & Update
-		slackGroup.POST("", s.handlerRegistry.projectHandler.CreateSlack)
-		slackGroup.PUT("/:id", s.handlerRegistry.projectHandler.UpdateSlack)
-		slackGroup.PUT("/:id/meta", s.handlerRegistry.projectHandler.UpdateSlackMeta)
-		slackGroup.DELETE("/:id", s.handlerRegistry.projectHandler.DeleteSlack)
-	}
-
-	{ // discord group
-		discordGroup := projectProviderGroup.Group("/discord")
-		// Info
-		discordGroup.GET("/:id", s.handlerRegistry.projectHandler.GetDiscord)
-		discordGroup.GET("", s.handlerRegistry.projectHandler.ListDiscord)
-		// Creation & Update
-		discordGroup.POST("", s.handlerRegistry.projectHandler.CreateDiscord)
-		discordGroup.PUT("/:id", s.handlerRegistry.projectHandler.UpdateDiscord)
-		discordGroup.PUT("/:id/meta", s.handlerRegistry.projectHandler.UpdateDiscordMeta)
-		discordGroup.DELETE("/:id", s.handlerRegistry.projectHandler.DeleteDiscord)
+		imServiceGroup.POST("", s.handlerRegistry.projectHandler.CreateIMService)
+		imServiceGroup.PUT("/:id", s.handlerRegistry.projectHandler.UpdateIMService)
+		imServiceGroup.PUT("/:id/meta", s.handlerRegistry.projectHandler.UpdateIMServiceMeta)
+		imServiceGroup.DELETE("/:id", s.handlerRegistry.projectHandler.DeleteIMService)
 	}
 
 	{ // registry auth group

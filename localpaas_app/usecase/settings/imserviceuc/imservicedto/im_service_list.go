@@ -1,4 +1,4 @@
-package discorddto
+package imservicedto
 
 import (
 	vld "github.com/tiendc/go-validator"
@@ -9,12 +9,12 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
-type ListDiscordReq struct {
+type ListIMServiceReq struct {
 	settings.ListSettingReq
 }
 
-func NewListDiscordReq() *ListDiscordReq {
-	return &ListDiscordReq{
+func NewListIMServiceReq() *ListIMServiceReq {
+	return &ListIMServiceReq{
 		ListSettingReq: settings.ListSettingReq{
 			Paging: basedto.Paging{
 				// Default paging if unset by client
@@ -24,21 +24,21 @@ func NewListDiscordReq() *ListDiscordReq {
 	}
 }
 
-func (req *ListDiscordReq) Validate() apperrors.ValidationErrors {
+func (req *ListIMServiceReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.ListSettingReq.Validate()...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type ListDiscordResp struct {
+type ListIMServiceResp struct {
 	Meta *basedto.ListMeta `json:"meta"`
-	Data []*DiscordResp    `json:"data"`
+	Data []*IMServiceResp  `json:"data"`
 }
 
-func TransformDiscords(settings []*entity.Setting) (resp []*DiscordResp, err error) {
-	resp = make([]*DiscordResp, 0, len(settings))
+func TransformIMServices(settings []*entity.Setting) (resp []*IMServiceResp, err error) {
+	resp = make([]*IMServiceResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformDiscord(setting)
+		item, err := TransformIMService(setting)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}
