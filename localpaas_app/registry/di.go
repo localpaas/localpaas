@@ -24,6 +24,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/repository/cacherepository"
 	"github.com/localpaas/localpaas/localpaas_app/service/appservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/clusterservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/emailservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/envvarservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/lpappservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/networkservice"
@@ -148,6 +149,7 @@ var Provides = []any{
 	envvarservice.NewEnvVarService,
 	nginxservice.NewNginxService,
 	lpappservice.NewLpAppService,
+	emailservice.NewEmailService,
 
 	// Repo: User
 	repository.NewUserRepo,

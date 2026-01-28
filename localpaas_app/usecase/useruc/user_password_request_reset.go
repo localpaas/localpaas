@@ -8,6 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/config"
+	"github.com/localpaas/localpaas/localpaas_app/service/emailservice"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc/userdto"
 )
 
@@ -21,7 +22,12 @@ func (uc *UserUC) RequestResetPassword(
 	auth *basedto.Auth,
 	req *userdto.RequestResetPasswordReq,
 ) (*userdto.RequestResetPasswordResp, error) {
-	user, err := uc.userRepo.GetByID(ctx, uc.db, auth.User.ID)
+	// Current user request, only supports sending the link via email
+	if req.ID == auth.User.ID {
+		req.SendResettingEmail = true
+	}
+
+	user, err := uc.userRepo.GetByID(ctx, uc.db, req.ID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -39,7 +45,29 @@ func (uc *UserUC) RequestResetPassword(
 	resetLink := fmt.Sprintf("%s/%s?userId=%s&token=%s", config.Current.BaseURL,
 		passwordResetFEPath, user.ID, token)
 
-	// TODO: handle req.SendEmail when email account is setup
+	if req.SendResettingEmail {
+		emailSetting, err := uc.emailService.GetDefaultSystemEmail(ctx, uc.db)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+
+		email, err := emailSetting.AsEmail()
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+
+		err = uc.emailService.SendMailPasswordReset(ctx, uc.db, &emailservice.EmailDataPasswordReset{
+			Email:             email,
+			Recipients:        []string{user.Email},
+			ResetPasswordLink: resetLink,
+		})
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+
+		// When send the link via email, we don't return it via the response
+		resetLink = ""
+	}
 
 	return &userdto.RequestResetPasswordResp{
 		Data: &userdto.RequestResetPasswordDataResp{
