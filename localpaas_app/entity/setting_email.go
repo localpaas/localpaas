@@ -25,11 +25,24 @@ type SMTPConf struct {
 }
 
 type HTTPMailConf struct {
-	Endpoint    string            `json:"endpoint"`
-	Method      string            `json:"method"`
-	ContentType string            `json:"contentType"`
-	Headers     map[string]string `json:"headers"`
-	BodyMapping map[string]string `json:"bodyMapping"`
+	Endpoint     string                `json:"endpoint"`
+	Method       string                `json:"method"`
+	ContentType  string                `json:"contentType"`
+	Headers      map[string]string     `json:"headers"`
+	FieldMapping *HTTPMailFieldMapping `json:"fieldMapping"`
+	Username     string                `json:"username"`
+	DisplayName  string                `json:"displayName"`
+	Password     EncryptedField        `json:"password"`
+}
+
+type HTTPMailFieldMapping struct {
+	FromAddress string `json:"fromAddress"`
+	FromName    string `json:"fromName"`
+	ToAddress   string `json:"toAddress"`
+	ToAddresses string `json:"toAddresses"`
+	Subject     string `json:"subject"`
+	Content     string `json:"content"`
+	Password    string `json:"password"`
 }
 
 func (s *Email) MustDecrypt() *Email {

@@ -5,6 +5,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
@@ -29,11 +30,14 @@ type SMTPConf struct {
 }
 
 type HTTPMailConf struct {
-	Endpoint    string            `json:"endpoint"`
-	Method      string            `json:"method"`
-	ContentType string            `json:"contentType"`
-	Headers     map[string]string `json:"headers"`
-	BodyMapping map[string]string `json:"bodyMapping"`
+	Endpoint     string                       `json:"endpoint"`
+	Method       string                       `json:"method"`
+	ContentType  string                       `json:"contentType"`
+	Headers      map[string]string            `json:"headers"`
+	FieldMapping *entity.HTTPMailFieldMapping `json:"fieldMapping"` // NOTE: use entity.HTTPMailFieldMapping directly
+	Username     string                       `json:"username"`
+	DisplayName  string                       `json:"displayName"`
+	Password     string                       `json:"password"`
 }
 
 func (req *EmailBaseReq) validate(_ string) []vld.Validator {

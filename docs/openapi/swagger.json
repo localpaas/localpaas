@@ -15524,6 +15524,33 @@
       "github_com_localpaas_localpaas_localpaas_app_entity.DeploymentTarballSource" : {
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_entity.HTTPMailFieldMapping" : {
+        "properties" : {
+          "content" : {
+            "type" : "string"
+          },
+          "fromAddress" : {
+            "type" : "string"
+          },
+          "fromName" : {
+            "type" : "string"
+          },
+          "password" : {
+            "type" : "string"
+          },
+          "subject" : {
+            "type" : "string"
+          },
+          "toAddress" : {
+            "type" : "string"
+          },
+          "toAddresses" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "content", "fromAddress", "fromName", "password", "subject", "toAddress", "toAddresses" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_entity.RepoCredentials" : {
         "properties" : {
           "id" : {
@@ -18584,17 +18611,21 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_emailuc_emaildto.HTTPMailConf" : {
         "properties" : {
-          "bodyMapping" : {
-            "additionalProperties" : {
-              "type" : "string"
-            },
-            "type" : "object"
-          },
           "contentType" : {
+            "type" : "string"
+          },
+          "displayName" : {
             "type" : "string"
           },
           "endpoint" : {
             "type" : "string"
+          },
+          "fieldMapping" : {
+            "allOf" : [ {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.HTTPMailFieldMapping"
+            } ],
+            "description" : "NOTE: use entity.HTTPMailFieldMapping directly",
+            "type" : "object"
           },
           "headers" : {
             "additionalProperties" : {
@@ -18604,24 +18635,30 @@
           },
           "method" : {
             "type" : "string"
+          },
+          "password" : {
+            "type" : "string"
+          },
+          "username" : {
+            "type" : "string"
           }
         },
-        "required" : [ "bodyMapping", "contentType", "endpoint", "headers", "method" ],
+        "required" : [ "contentType", "displayName", "endpoint", "fieldMapping", "headers", "method", "password", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_emailuc_emaildto.HTTPMailConfResp" : {
         "properties" : {
-          "bodyMapping" : {
-            "additionalProperties" : {
-              "type" : "string"
-            },
-            "type" : "object"
-          },
           "contentType" : {
+            "type" : "string"
+          },
+          "displayName" : {
             "type" : "string"
           },
           "endpoint" : {
             "type" : "string"
+          },
+          "fieldMapping" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.HTTPMailFieldMapping"
           },
           "headers" : {
             "additionalProperties" : {
@@ -18631,9 +18668,15 @@
           },
           "method" : {
             "type" : "string"
+          },
+          "password" : {
+            "type" : "string"
+          },
+          "username" : {
+            "type" : "string"
           }
         },
-        "required" : [ "bodyMapping", "contentType", "endpoint", "headers", "method" ],
+        "required" : [ "contentType", "displayName", "endpoint", "fieldMapping", "headers", "method", "password", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_emailuc_emaildto.ListEmailResp" : {

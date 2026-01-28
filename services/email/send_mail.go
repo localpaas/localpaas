@@ -5,6 +5,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/services/email/http"
 	"github.com/localpaas/localpaas/services/email/smtp"
 )
 
@@ -18,6 +19,8 @@ func SendMail(
 	switch { //nolint
 	case email.SMTP != nil:
 		err = smtp.SendMail(ctx, email.SMTP, recipients, subject, content)
+	case email.HTTP != nil:
+		err = http.SendMail(ctx, email.HTTP, recipients, subject, content)
 	}
 	if err != nil {
 		return apperrors.Wrap(err)

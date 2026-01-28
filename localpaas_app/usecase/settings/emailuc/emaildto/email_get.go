@@ -57,11 +57,19 @@ func (resp *SMTPConfResp) CopyPassword(field entity.EncryptedField) error {
 }
 
 type HTTPMailConfResp struct {
-	Endpoint    string            `json:"endpoint"`
-	Method      string            `json:"method"`
-	ContentType string            `json:"contentType"`
-	Headers     map[string]string `json:"headers"`
-	BodyMapping map[string]string `json:"bodyMapping"`
+	Endpoint     string                       `json:"endpoint"`
+	Method       string                       `json:"method"`
+	ContentType  string                       `json:"contentType"`
+	Headers      map[string]string            `json:"headers"`
+	FieldMapping *entity.HTTPMailFieldMapping `json:"fieldMapping"`
+	Username     string                       `json:"username"`
+	DisplayName  string                       `json:"displayName"`
+	Password     string                       `json:"password"`
+}
+
+func (resp *HTTPMailConfResp) CopyPassword(field entity.EncryptedField) error {
+	resp.Password = field.String()
+	return nil
 }
 
 func TransformEmail(setting *entity.Setting) (resp *EmailResp, err error) {
@@ -78,7 +86,10 @@ func TransformEmail(setting *entity.Setting) (resp *EmailResp, err error) {
 			resp.SMTP.Password = maskedPassword
 		}
 	case config.HTTP != nil:
-		// TODO: handle this?
+		resp.Encrypted = config.HTTP.Password.IsEncrypted()
+		if resp.Encrypted {
+			resp.HTTP.Password = maskedPassword
+		}
 	}
 
 	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)

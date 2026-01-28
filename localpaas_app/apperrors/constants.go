@@ -24,6 +24,7 @@ var (
 	ErrResourceInactive     = errors.New("ERR_RESOURCE_INACTIVE")
 	ErrRequestTooFrequently = errors.New("ERR_REQUEST_TOO_FREQUENTLY")
 	ErrActionNotAllowed     = errors.New("ERR_ACTION_NOT_ALLOWED")
+	ErrActionFailed         = errors.New("ERR_ACTION_FAILED")
 	ErrNotImplemented       = errors.New("ERR_NOT_IMPLEMENTED")
 	ErrUnsupported          = errors.New("ERR_UNSUPPORTED")
 	ErrTokenInvalid         = errors.New("ERR_TOKEN_INVALID")
@@ -129,6 +130,7 @@ var errorStatusMap = map[error]int{
 	ErrResourceInactive:     http.StatusNotAcceptable,
 	ErrRequestTooFrequently: http.StatusForbidden,
 	ErrActionNotAllowed:     http.StatusForbidden,
+	ErrActionFailed:         http.StatusUnprocessableEntity,
 	ErrNotImplemented:       http.StatusNotImplemented,
 	ErrUnsupported:          http.StatusNotImplemented,
 	ErrTokenInvalid:         http.StatusUnauthorized,

@@ -7,6 +7,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc/emaildto"
+	"github.com/localpaas/localpaas/services/email/http"
 	"github.com/localpaas/localpaas/services/email/smtp"
 )
 
@@ -50,9 +51,23 @@ func (uc *EmailUC) testSendSmtpEmail(
 }
 
 func (uc *EmailUC) testSendHttpEmail(
-	_ context.Context,
-	_ *emaildto.TestSendEmailReq,
+	ctx context.Context,
+	req *emaildto.TestSendEmailReq,
 ) error {
-	// TODO: implement this
+	conf := &entity.HTTPMailConf{
+		Endpoint:     req.HTTP.Endpoint,
+		Method:       req.HTTP.Method,
+		ContentType:  req.HTTP.ContentType,
+		Headers:      req.HTTP.Headers,
+		FieldMapping: req.HTTP.FieldMapping,
+		Username:     req.HTTP.Username,
+		DisplayName:  req.HTTP.DisplayName,
+		Password:     entity.NewEncryptedField(req.HTTP.Password),
+	}
+
+	err := http.SendMail(ctx, conf, []string{req.TestRecipient}, req.TestSubject, req.TestContent)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
 	return nil
 }

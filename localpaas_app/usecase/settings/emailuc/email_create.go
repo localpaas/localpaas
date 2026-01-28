@@ -49,11 +49,14 @@ func (uc *EmailUC) CreateEmail(
 			if req.HTTP != nil {
 				pData.Setting.Kind = string(base.EmailKindHTTP)
 				email.HTTP = &entity.HTTPMailConf{
-					Endpoint:    req.HTTP.Endpoint,
-					Method:      req.HTTP.Method,
-					ContentType: req.HTTP.ContentType,
-					Headers:     req.HTTP.Headers,
-					BodyMapping: req.HTTP.BodyMapping,
+					Endpoint:     req.HTTP.Endpoint,
+					Method:       req.HTTP.Method,
+					ContentType:  req.HTTP.ContentType,
+					Headers:      req.HTTP.Headers,
+					FieldMapping: req.HTTP.FieldMapping,
+					Username:     req.HTTP.Username,
+					DisplayName:  req.HTTP.DisplayName,
+					Password:     entity.NewEncryptedField(req.HTTP.Password),
 				}
 			}
 			err := pData.Setting.SetData(email)
