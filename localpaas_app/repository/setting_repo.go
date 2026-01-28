@@ -324,8 +324,8 @@ func (repo *settingRepo) ListByProject(ctx context.Context, db database.IDB, pro
 	allOpts = append(allOpts,
 		bunex.SelectJoin("LEFT JOIN project_shared_settings pss ON pss.setting_id = setting.id"),
 		bunex.SelectWhereGroup(
-			bunex.SelectWhere("setting.avail_in_projects = TRUE"),
-			bunex.SelectWhereOr("setting.object_id = ?", projectID),
+			bunex.SelectWhere("setting.object_id = ?", projectID),
+			bunex.SelectWhereOr("(setting.object_id IS NULL AND setting.avail_in_projects = TRUE)"),
 			bunex.SelectWhereOr("(setting.object_id IS NULL AND pss.project_id = ?)", projectID),
 		),
 	)
@@ -368,11 +368,9 @@ func (repo *settingRepo) ListByApp(ctx context.Context, db database.IDB, project
 			bunex.SelectJoin("LEFT JOIN project_shared_settings pss ON pss.setting_id = setting.id"),
 			bunex.SelectWhereGroup(
 				bunex.SelectWhere("setting.object_id = ?", appID),
-				bunex.SelectWhereOrGroup(
-					bunex.SelectWhereOr("setting.avail_in_projects = TRUE"),
-					bunex.SelectWhereOr("setting.object_id = ?", projectID),
-					bunex.SelectWhereOr("(setting.object_id IS NULL AND pss.project_id = ?)", projectID),
-				),
+				bunex.SelectWhereOr("setting.object_id = ?", projectID),
+				bunex.SelectWhereOr("(setting.object_id IS NULL AND setting.avail_in_projects = TRUE)"),
+				bunex.SelectWhereOr("(setting.object_id IS NULL AND pss.project_id = ?)", projectID),
 			),
 		)
 	} else {

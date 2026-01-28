@@ -3,8 +3,6 @@ package envvarservice
 import (
 	"context"
 
-	"github.com/tiendc/gofn"
-
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
@@ -29,40 +27,59 @@ func (s *envVarService) BuildAppEnv(
 	app *entity.App,
 	buildPhase bool,
 ) (res []*EnvVar, err error) {
-	objectIDs := gofn.ToSliceSkippingZero(app.ID, app.ParentID, app.ProjectID)
-	settings, _, err := s.settingRepo.List(ctx, db, nil,
+	var settings []*entity.Setting
+	if app.ParentID != "" {
+		parentSettings, _, err := s.settingRepo.ListByApp(ctx, db, app.ProjectID, app.ParentID, nil,
+			bunex.SelectWhereIn("setting.type IN (?)", base.SettingTypeEnvVar, base.SettingTypeSecret),
+			bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
+		)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		settings = append(settings, parentSettings...)
+	}
+
+	appSettings, _, err := s.settingRepo.ListByApp(ctx, db, app.ProjectID, app.ID, nil,
 		bunex.SelectWhereIn("setting.type IN (?)", base.SettingTypeEnvVar, base.SettingTypeSecret),
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
-		bunex.SelectWhere("setting.object_id IN (?)", bunex.In(objectIDs)),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+	settings = append(settings, appSettings...)
 
 	mapAppEnv := make(map[string]string, 20)                  //nolint
 	mapParentAppEnv := make(map[string]string, 20)            //nolint
 	mapProjectEnv := make(map[string]string, 20)              //nolint
+	mapGlobalEnv := make(map[string]string, 20)               //nolint
 	mapAppSecret := make(map[string]*entity.Secret, 10)       //nolint
 	mapParentAppSecret := make(map[string]*entity.Secret, 10) //nolint
 	mapProjectSecret := make(map[string]*entity.Secret, 10)   //nolint
+	mapGlobalSecret := make(map[string]*entity.Secret, 10)    //nolint
 
 	for _, setting := range settings {
 		if setting.Type == base.SettingTypeEnvVar {
 			vars := setting.MustAsEnvVars()
-			switch setting.ObjectID {
-			case app.ID:
+			switch {
+			case setting.ObjectID == app.ID:
 				for _, env := range vars.Data {
 					if env.IsBuildEnv == buildPhase {
 						mapAppEnv[env.Key] = env.Value
 					}
 				}
-			case app.ParentID:
+			case app.ParentID != "" && setting.ObjectID == app.ParentID:
 				for _, env := range vars.Data {
 					if env.IsBuildEnv == buildPhase {
 						mapParentAppEnv[env.Key] = env.Value
 					}
 				}
-			case app.ProjectID:
+			case setting.ObjectID == "":
+				for _, env := range vars.Data {
+					if env.IsBuildEnv == buildPhase {
+						mapGlobalEnv[env.Key] = env.Value
+					}
+				}
+			default:
 				for _, env := range vars.Data {
 					if env.IsBuildEnv == buildPhase {
 						mapProjectEnv[env.Key] = env.Value
@@ -74,19 +91,24 @@ func (s *envVarService) BuildAppEnv(
 
 		if setting.Type == base.SettingTypeSecret {
 			secret := setting.MustAsSecret() // decryption takes time, so do it when needed only
-			switch setting.ObjectID {
-			case app.ID:
+			switch {
+			case setting.ObjectID == app.ID:
 				mapAppSecret[setting.Name] = secret
-			case app.ParentID:
+			case app.ParentID != "" && setting.ObjectID == app.ParentID:
 				mapParentAppSecret[setting.Name] = secret
-			case app.ProjectID:
+			case setting.ObjectID == "":
+				mapGlobalSecret[setting.Name] = secret
+			default:
 				mapProjectSecret[setting.Name] = secret
 			}
 		}
 	}
 
-	// App inherits ENV vars from the parent app and the project
-	appEnv := mapProjectEnv
+	// App inherits ENV vars from the parent app and the project and from global
+	appEnv := mapGlobalEnv
+	for k, v := range mapProjectEnv {
+		appEnv[k] = v
+	}
 	for k, v := range mapParentAppEnv {
 		appEnv[k] = v
 	}
@@ -101,8 +123,8 @@ func (s *envVarService) BuildAppEnv(
 	}
 
 	// Process all references within the ENV values
-	secretStores := []map[string]*entity.Secret{mapAppSecret, mapParentAppSecret, mapProjectSecret}
-	envStores := []map[string]string{mapAppEnv, mapParentAppEnv, mapProjectEnv}
+	secretStores := []map[string]*entity.Secret{mapAppSecret, mapParentAppSecret, mapProjectSecret, mapGlobalSecret}
+	envStores := []map[string]string{mapAppEnv, mapParentAppEnv, mapProjectEnv, mapGlobalEnv}
 	for _, env := range res {
 		s.ProcessEnvVarRefs(env, secretStores, envStores)
 	}
