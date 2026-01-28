@@ -20,6 +20,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
+	"github.com/localpaas/localpaas/localpaas_app/service/emailservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc/userdto"
 )
@@ -49,7 +50,17 @@ func (uc *UserUC) InviteUser(
 		return nil, apperrors.Wrap(err)
 	}
 
-	// TODO: handle if req.SendInviteEmail = true
+	if req.SendInviteEmail {
+		err = uc.emailService.SendMailUserInvite(ctx, uc.db, &emailservice.EmailDataUserInvite{
+			Email:          inviteData.SystemEmail,
+			Recipients:     []string{inviteData.User.Email},
+			InviterName:    gofn.Coalesce(auth.User.FullName, auth.User.Username),
+			UserSignupLink: inviteData.InviteLink,
+		})
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	}
 
 	return &userdto.InviteUserResp{
 		Data: &userdto.InviteUserDataResp{
@@ -62,6 +73,7 @@ type userInviteData struct {
 	User                  *entity.User
 	RemoveCurrentAccesses bool
 	InviteLink            string
+	SystemEmail           *entity.Email
 }
 
 func (uc *UserUC) loadUserInviteData(
@@ -77,6 +89,18 @@ func (uc *UserUC) loadUserInviteData(
 	if user != nil && user.Status != base.UserStatusPending {
 		return apperrors.NewAlreadyExist("User").
 			WithMsgLog("user '%s' already exists", req.Email)
+	}
+
+	if req.SendInviteEmail {
+		emailSetting, err := uc.emailService.GetDefaultSystemEmail(ctx, uc.db)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+		email, err := emailSetting.AsEmail()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+		data.SystemEmail = email
 	}
 
 	// Calculate username from the email

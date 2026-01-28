@@ -16,15 +16,17 @@ func (s *emailService) GetDefaultSystemEmail(
 ) (*entity.Setting, error) {
 	settings, _, err := s.settingRepo.List(ctx, db, nil,
 		bunex.SelectWhere("setting.type = ?", base.SettingTypeEmail),
+		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
 		bunex.SelectWhere("setting.object_id IS NULL"),
 		bunex.SelectOrder("setting.is_default DESC"),
-		bunex.SelectLimit(1),
+		bunex.SelectLimit(2), //nolint
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	if len(settings) == 0 {
-		return nil, apperrors.NewNotFound("EmailSetting").WithMsgLog("default system email not found")
+	if len(settings) == 1 || (len(settings) > 1 && settings[0].Default) {
+		return settings[0], nil
 	}
-	return settings[0], nil
+	return nil, apperrors.NewNotFound("EmailSetting").
+		WithMsgLog("default system email setting not found")
 }

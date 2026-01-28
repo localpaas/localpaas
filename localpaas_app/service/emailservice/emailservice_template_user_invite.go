@@ -11,27 +11,29 @@ import (
 	"github.com/localpaas/localpaas/services/email"
 )
 
-type EmailDataPasswordReset struct {
-	Email             *entity.Email
-	Recipients        []string
-	Subject           string
-	ResetPasswordLink string
+type EmailDataUserInvite struct {
+	Email          *entity.Email
+	Recipients     []string
+	Subject        string
+	InviterName    string
+	UserSignupLink string
 }
 
-func (s *emailService) SendMailPasswordReset(
+func (s *emailService) SendMailUserInvite(
 	ctx context.Context,
 	db database.IDB,
-	data *EmailDataPasswordReset,
+	data *EmailDataUserInvite,
 ) error {
-	template, err := s.GetTemplate(ctx, db, TemplateTypePasswordReset)
+	template, err := s.GetTemplate(ctx, db, TemplateTypeUserInvite)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	subject := gofn.Coalesce(data.Subject, "[LocalPaaS] Password reset")
+	subject := gofn.Coalesce(data.Subject, "You’ve been invited to join LocalPaaS")
 
 	content := template.ExecuteString(map[string]any{
-		"reset_password_link": data.ResetPasswordLink,
+		"inviter_name":     data.InviterName,
+		"user_signup_link": data.UserSignupLink,
 	})
 
 	err = email.SendMail(ctx, data.Email, data.Recipients, subject, content)

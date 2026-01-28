@@ -16,15 +16,11 @@ type TemplateType string
 
 const (
 	TemplateTypePasswordReset TemplateType = "password-reset"
+	TemplateTypeUserInvite    TemplateType = "user-invite"
 )
 
-type templateData struct {
-	TemplateStr string
-	Template    *fasttemplate.Template
-}
-
 var (
-	templateMap = map[TemplateType]*templateData{}
+	templateMap = map[TemplateType]*fasttemplate.Template{}
 	mu          sync.Mutex
 )
 
@@ -32,7 +28,7 @@ func (s *emailService) GetTemplate(
 	_ context.Context,
 	_ database.IDB,
 	typ TemplateType,
-) (_ *templateData, err error) {
+) (_ *fasttemplate.Template, err error) {
 	mu.Lock()
 	defer mu.Unlock()
 
@@ -44,15 +40,14 @@ func (s *emailService) GetTemplate(
 	switch typ { //nolint
 	case TemplateTypePasswordReset:
 		data, err = os.ReadFile("config/email_templates/password_reset.html")
+	case TemplateTypeUserInvite:
+		data, err = os.ReadFile("config/email_templates/user_invite.html")
 	}
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	template := &templateData{
-		TemplateStr: reflectutil.UnsafeBytesToStr(data),
-	}
-	template.Template = fasttemplate.New(template.TemplateStr, "{{", "}}")
+	template := fasttemplate.New(reflectutil.UnsafeBytesToStr(data), "{{", "}}")
 	templateMap[typ] = template
 
 	return template, nil

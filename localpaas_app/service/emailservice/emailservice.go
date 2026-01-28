@@ -12,6 +12,7 @@ type EmailService interface {
 	GetDefaultSystemEmail(ctx context.Context, db database.IDB) (*entity.Setting, error)
 
 	SendMailPasswordReset(ctx context.Context, db database.IDB, data *EmailDataPasswordReset) error
+	SendMailUserInvite(ctx context.Context, db database.IDB, data *EmailDataUserInvite) error
 }
 
 func NewEmailService(
