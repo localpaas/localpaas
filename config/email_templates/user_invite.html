@@ -9,6 +9,11 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700" rel="stylesheet" type="text/css">
+	<!--[if !mso]><!-->
+	<style>
+		@import url(https://fonts.googleapis.com/css?family=Roboto:100,300,400,700);
+	</style>
+	<!--<![endif]-->
 	<style>
 		body {
 			-webkit-text-size-adjust: 100%;
@@ -22,6 +27,10 @@
 
 		b {
 			font-weight:500;
+		}
+
+		.container {
+			padding: 20px 8px;
 		}
 
 		.title {
@@ -65,42 +74,37 @@
 			color:#ffffff;
 		}
 	</style>
-	<!--[if !mso]><!-->
-	<style>
-		@import url(https://fonts.googleapis.com/css?family=Roboto:100,300,400,700);
-	</style>
-	<!--<![endif]-->
 </head>
 
 <body style="background-color:#f2f2f2;">
-	<div style="padding:20px;">
-		<div style="background-color:#ffffff;margin:0 auto;border-radius:8px;max-width:600px;">
-			<div style="padding:20px;">
-				<div class="p_default">
-					<span class="title">Let’s get you started on LocalPaaS</span>
-				</div>
-				<div class="p_default">
-					<span class="text_default"><b>Hello</b></span>
-				</div>
-				<div class="p_default">
-					<span class="text_default"><b>{{inviter_name}}</b> has invited you to join his team on <b>LocalPaaS</b>.
-						Click the button below to accept the invitation and set up your account:</span>
-				</div>
-				<div class="p_default" style="text-align:center;">
-					<a href="{{user_signup_link}}" class="button" target="_blank">
-						<span class="button_text">Complete Your Account</span>
-					</a>
-				</div>
-				<div class="p_default">
-					<div class="text_default">Or copy and paste this link into your browser:</div>
-					<a class="text_default" href="{{user_signup_link}}" target="_blank">{{user_signup_link}}</a>
-				</div>
-				<div class="p_default">
-					<span class="text_default">See you there!<br/>LocalPaaS</span>
-				</div>
+<div class="container">
+	<div style="background-color:#ffffff;margin:0 auto;border-radius:10px;max-width:600px;">
+		<div style="padding:20px 20px;">
+			<div class="p_default">
+				<span class="title">Let’s get you started on LocalPaaS</span>
+			</div>
+			<div class="p_default">
+				<span class="text_default"><b>Hello</b></span>
+			</div>
+			<div class="p_default">
+				<span class="text_default"><b>{{inviter_name}}</b> has invited you to join his team on <b>LocalPaaS</b>.
+					Click the button below to accept the invitation and set up your account:</span>
+			</div>
+			<div class="p_default" style="text-align:center;">
+				<a href="{{user_signup_link}}" class="button" target="_blank">
+					<span class="button_text">Complete Your Account</span>
+				</a>
+			</div>
+			<div class="p_default">
+				<div class="text_default">Or copy and paste this link into your browser:</div>
+				<a class="text_default" href="{{user_signup_link}}" target="_blank">{{user_signup_link}}</a>
+			</div>
+			<div class="p_default">
+				<span class="text_default">See you there!<br/>LocalPaaS</span>
 			</div>
 		</div>
 	</div>
+</div>
 </body>
 
 </html>
