@@ -7,7 +7,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc/ssldto"
@@ -29,13 +28,7 @@ func (uc *SslUC) UpdateSsl(
 			pData *settings.PersistingSettingData,
 		) error {
 			pData.Setting.Name = gofn.Coalesce(req.Name, pData.Setting.Name)
-			err := pData.Setting.SetData(&entity.Ssl{
-				Certificate: req.Certificate,
-				PrivateKey:  entity.NewEncryptedField(req.PrivateKey),
-				KeySize:     req.KeySize,
-				Provider:    req.Provider,
-				Email:       req.Email,
-			})
+			err := pData.Setting.SetData(req.ToEntity())
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

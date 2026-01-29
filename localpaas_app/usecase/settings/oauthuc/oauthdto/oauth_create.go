@@ -6,6 +6,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
@@ -24,6 +25,18 @@ type OAuthBaseReq struct {
 	TokenURL     string         `json:"tokenURL"`
 	ProfileURL   string         `json:"profileURL"`
 	Scopes       []string       `json:"scopes"`
+}
+
+func (req *OAuthBaseReq) ToEntity() *entity.OAuth {
+	return &entity.OAuth{
+		ClientID:     req.ClientID,
+		ClientSecret: entity.NewEncryptedField(req.ClientSecret),
+		Organization: req.Organization,
+		AuthURL:      req.AuthURL,
+		TokenURL:     req.TokenURL,
+		ProfileURL:   req.ProfileURL,
+		Scopes:       req.Scopes,
+	}
 }
 
 func (req *OAuthBaseReq) validate(_ string) []vld.Validator {

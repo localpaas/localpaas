@@ -4,6 +4,7 @@ import (
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
@@ -15,9 +16,21 @@ type CreateEmailReq struct {
 }
 
 type EmailBaseReq struct {
-	Name string        `json:"name"`
-	SMTP *SMTPConf     `json:"smtp"`
-	HTTP *HTTPMailConf `json:"http"`
+	Name string         `json:"name"`
+	Kind base.EmailKind `json:"kind"`
+	SMTP *SMTPConf      `json:"smtp"`
+	HTTP *HTTPMailConf  `json:"http"`
+}
+
+func (req *EmailBaseReq) ToEntity() *entity.Email {
+	email := &entity.Email{}
+	switch req.Kind {
+	case base.EmailKindSMTP:
+		email.SMTP = req.SMTP.ToEntity()
+	case base.EmailKindHTTP:
+		email.HTTP = req.HTTP.ToEntity()
+	}
+	return email
 }
 
 type SMTPConf struct {
@@ -29,6 +42,17 @@ type SMTPConf struct {
 	SSL         bool   `json:"ssl"`
 }
 
+func (r *SMTPConf) ToEntity() *entity.SMTPConf {
+	return &entity.SMTPConf{
+		Host:        r.Host,
+		Port:        r.Port,
+		Username:    r.Username,
+		DisplayName: r.DisplayName,
+		Password:    entity.NewEncryptedField(r.Password),
+		SSL:         r.SSL,
+	}
+}
+
 type HTTPMailConf struct {
 	Endpoint     string                       `json:"endpoint"`
 	Method       string                       `json:"method"`
@@ -38,6 +62,19 @@ type HTTPMailConf struct {
 	Username     string                       `json:"username"`
 	DisplayName  string                       `json:"displayName"`
 	Password     string                       `json:"password"`
+}
+
+func (r *HTTPMailConf) ToEntity() *entity.HTTPMailConf {
+	return &entity.HTTPMailConf{
+		Endpoint:     r.Endpoint,
+		Method:       r.Method,
+		ContentType:  r.ContentType,
+		Headers:      r.Headers,
+		FieldMapping: r.FieldMapping,
+		Username:     r.Username,
+		DisplayName:  r.DisplayName,
+		Password:     entity.NewEncryptedField(r.Password),
+	}
 }
 
 func (req *EmailBaseReq) validate(_ string) []vld.Validator {

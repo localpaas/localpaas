@@ -7,7 +7,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/gittokenuc/gittokendto"
@@ -31,11 +30,7 @@ func (uc *GitTokenUC) UpdateGitToken(
 			pData.Setting.Name = gofn.Coalesce(req.Name, pData.Setting.Name)
 			pData.Setting.Kind = gofn.Coalesce(string(req.Kind), pData.Setting.Kind)
 			pData.Setting.ExpireAt = req.ExpireAt
-			err := pData.Setting.SetData(&entity.GitToken{
-				User:    req.User,
-				Token:   entity.NewEncryptedField(req.Token),
-				BaseURL: req.BaseURL,
-			})
+			err := pData.Setting.SetData(req.ToEntity())
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

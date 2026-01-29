@@ -7,6 +7,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
@@ -23,6 +24,13 @@ type BasicAuthBaseReq struct {
 	Name     string `json:"name"`
 	Username string `json:"username"`
 	Password string `json:"password"`
+}
+
+func (req *BasicAuthBaseReq) ToEntity() *entity.BasicAuth {
+	return &entity.BasicAuth{
+		Username: req.Username,
+		Password: entity.NewEncryptedField(req.Password),
+	}
 }
 
 func (req *BasicAuthBaseReq) modifyRequest() error {

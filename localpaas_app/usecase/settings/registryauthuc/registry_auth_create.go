@@ -34,11 +34,7 @@ func (uc *RegistryAuthUC) CreateRegistryAuth(
 			pData *settings.PersistingSettingCreationData,
 		) error {
 			pData.Setting.Kind = req.Address
-			err := pData.Setting.SetData(&entity.RegistryAuth{
-				Username: req.Username,
-				Password: entity.NewEncryptedField(req.Password),
-				Address:  req.Address,
-			})
+			err := pData.Setting.SetData(req.ToEntity())
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

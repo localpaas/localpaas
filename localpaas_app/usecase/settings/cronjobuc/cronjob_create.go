@@ -8,7 +8,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc/cronjobdto"
 )
@@ -35,15 +34,7 @@ func (uc *CronJobUC) CreateCronJob(
 			pData *settings.PersistingSettingCreationData,
 		) error {
 			pData.Setting.Kind = string(req.Kind)
-			cronJob := &entity.CronJob{
-				Cron:        req.Cron,
-				InitialTime: timeutil.NowUTC(),
-				Priority:    req.Priority,
-				MaxRetry:    req.MaxRetry,
-				RetryDelay:  req.RetryDelay,
-				Timeout:     req.Timeout,
-				Command:     req.Command,
-			}
+			cronJob := req.ToEntity()
 			// Parse the cron expression to make sure it's valid
 			_, err := cronJob.ParseCron()
 			if err != nil {

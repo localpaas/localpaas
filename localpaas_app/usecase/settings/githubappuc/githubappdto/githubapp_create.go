@@ -7,6 +7,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
@@ -26,6 +27,20 @@ type GithubAppBaseReq struct {
 	GhInstallationID int64  `json:"installationId"`
 	PrivateKey       string `json:"privateKey"`
 	SSOEnabled       bool   `json:"ssoEnabled"`
+}
+
+func (req *GithubAppBaseReq) ToEntity() *entity.GithubApp {
+	return &entity.GithubApp{
+		ClientID:       req.ClientID,
+		ClientSecret:   entity.NewEncryptedField(req.ClientSecret),
+		Organization:   req.Organization,
+		WebhookURL:     req.WebhookURL,
+		WebhookSecret:  entity.NewEncryptedField(req.WebhookSecret),
+		AppID:          req.GhAppID,
+		InstallationID: req.GhInstallationID,
+		PrivateKey:     entity.NewEncryptedField(req.PrivateKey),
+		SSOEnabled:     req.SSOEnabled,
+	}
 }
 
 func (req *GithubAppBaseReq) modifyRequest() error {

@@ -9,6 +9,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
@@ -27,6 +28,18 @@ type CronJobBaseReq struct {
 	RetryDelay timeutil.Duration `json:"retryDelay"`
 	Timeout    timeutil.Duration `json:"timeout"`
 	Command    string            `json:"command"`
+}
+
+func (req *CronJobBaseReq) ToEntity() *entity.CronJob {
+	return &entity.CronJob{
+		Cron:        req.Cron,
+		InitialTime: timeutil.NowUTC(),
+		Priority:    req.Priority,
+		MaxRetry:    req.MaxRetry,
+		RetryDelay:  req.RetryDelay,
+		Timeout:     req.Timeout,
+		Command:     req.Command,
+	}
 }
 
 func (req *CronJobBaseReq) modifyRequest() error {

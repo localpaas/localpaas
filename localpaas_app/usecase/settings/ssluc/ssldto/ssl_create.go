@@ -9,6 +9,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
@@ -30,6 +31,16 @@ type SslBaseReq struct {
 	Provider    base.SslProvider `json:"provider"`
 	Email       string           `json:"email"`
 	ExpireAt    time.Time        `json:"expireAt"`
+}
+
+func (req *SslBaseReq) ToEntity() *entity.Ssl {
+	return &entity.Ssl{
+		Certificate: req.Certificate,
+		PrivateKey:  entity.NewEncryptedField(req.PrivateKey),
+		KeySize:     req.KeySize,
+		Provider:    req.Provider,
+		Email:       req.Email,
+	}
 }
 
 func (req *SslBaseReq) modifyRequest() error {

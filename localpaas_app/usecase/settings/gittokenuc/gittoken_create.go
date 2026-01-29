@@ -35,11 +35,7 @@ func (uc *GitTokenUC) CreateGitToken(
 		) error {
 			pData.Setting.Kind = string(req.Kind)
 			pData.Setting.ExpireAt = req.ExpireAt
-			err := pData.Setting.SetData(&entity.GitToken{
-				User:    req.User,
-				Token:   entity.NewEncryptedField(req.Token),
-				BaseURL: req.BaseURL,
-			})
+			err := pData.Setting.SetData(req.ToEntity())
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

@@ -37,17 +37,7 @@ func (uc *GithubAppUC) CreateGithubApp(
 			pData *settings.PersistingSettingCreationData,
 		) error {
 			pData.Setting.Kind = string(base.SettingTypeGithubApp)
-			err := pData.Setting.SetData(&entity.GithubApp{
-				ClientID:       req.ClientID,
-				ClientSecret:   entity.NewEncryptedField(req.ClientSecret),
-				Organization:   req.Organization,
-				WebhookURL:     req.WebhookURL,
-				WebhookSecret:  entity.NewEncryptedField(req.WebhookSecret),
-				AppID:          req.GhAppID,
-				InstallationID: req.GhInstallationID,
-				PrivateKey:     entity.NewEncryptedField(req.PrivateKey),
-				SSOEnabled:     req.SSOEnabled,
-			})
+			err := pData.Setting.SetData(req.ToEntity())
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

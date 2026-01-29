@@ -33,22 +33,8 @@ func (uc *IMServiceUC) CreateIMService(
 			data *settings.CreateSettingData,
 			pData *settings.PersistingSettingCreationData,
 		) error {
-			imService := &entity.IMService{}
-			switch {
-			case req.Slack != nil:
-				pData.Setting.Kind = string(base.IMServiceKindSlack)
-				imService.Slack = &entity.Slack{
-					Webhook: entity.NewEncryptedField(req.Slack.Webhook),
-				}
-
-			case req.Discord != nil:
-				pData.Setting.Kind = string(base.IMServiceKindDiscord)
-				imService.Discord = &entity.Discord{
-					Webhook: entity.NewEncryptedField(req.Discord.Webhook),
-				}
-			}
-
-			err := pData.Setting.SetData(imService)
+			pData.Setting.Kind = string(req.Kind)
+			err := pData.Setting.SetData(req.ToEntity())
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

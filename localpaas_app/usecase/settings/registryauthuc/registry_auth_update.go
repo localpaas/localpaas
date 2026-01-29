@@ -7,7 +7,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/registryauthuc/registryauthdto"
@@ -30,11 +29,7 @@ func (uc *RegistryAuthUC) UpdateRegistryAuth(
 		) error {
 			pData.Setting.Name = gofn.Coalesce(req.Name, pData.Setting.Name)
 			pData.Setting.Kind = req.Address
-			err := pData.Setting.SetData(&entity.RegistryAuth{
-				Username: req.Username,
-				Password: entity.NewEncryptedField(req.Password),
-				Address:  req.Address,
-			})
+			err := pData.Setting.SetData(req.ToEntity())
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

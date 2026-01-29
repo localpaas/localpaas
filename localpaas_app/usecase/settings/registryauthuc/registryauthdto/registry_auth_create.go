@@ -7,6 +7,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
@@ -24,6 +25,14 @@ type RegistryAuthBaseReq struct {
 	Address  string `json:"address"`
 	Username string `json:"username"`
 	Password string `json:"password"`
+}
+
+func (req *RegistryAuthBaseReq) ToEntity() *entity.RegistryAuth {
+	return &entity.RegistryAuth{
+		Username: req.Username,
+		Password: entity.NewEncryptedField(req.Password),
+		Address:  req.Address,
+	}
 }
 
 func (req *RegistryAuthBaseReq) modifyRequest() error {

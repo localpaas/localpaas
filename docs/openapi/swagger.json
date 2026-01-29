@@ -17551,6 +17551,9 @@
           "http" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_emailuc_emaildto.HTTPMailConf"
           },
+          "kind" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.EmailKind"
+          },
           "name" : {
             "type" : "string"
           },
@@ -17558,7 +17561,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_emailuc_emaildto.SMTPConf"
           }
         },
-        "required" : [ "availableInProjects", "default", "http", "name", "smtp" ],
+        "required" : [ "availableInProjects", "default", "http", "kind", "name", "smtp" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_emailuc_emaildto.CreateEmailResp" : {
@@ -17783,6 +17786,9 @@
           "http" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_emailuc_emaildto.HTTPMailConf"
           },
+          "kind" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.EmailKind"
+          },
           "name" : {
             "type" : "string"
           },
@@ -17799,7 +17805,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "http", "name", "smtp", "testContent", "testRecipient", "testSubject" ],
+        "required" : [ "http", "kind", "name", "smtp", "testContent", "testRecipient", "testSubject" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_emailuc_emaildto.TestSendEmailResp" : {
@@ -17852,6 +17858,9 @@
           "http" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_emailuc_emaildto.HTTPMailConf"
           },
+          "kind" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.EmailKind"
+          },
           "name" : {
             "type" : "string"
           },
@@ -17862,7 +17871,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "availableInProjects", "default", "http", "name", "smtp", "updateVer" ],
+        "required" : [ "availableInProjects", "default", "http", "kind", "name", "smtp", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_emailuc_emaildto.UpdateEmailResp" : {
@@ -18497,6 +18506,9 @@
           "discord" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imserviceuc_imservicedto.DiscordReq"
           },
+          "kind" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.IMServiceKind"
+          },
           "name" : {
             "type" : "string"
           },
@@ -18504,7 +18516,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imserviceuc_imservicedto.SlackReq"
           }
         },
-        "required" : [ "availableInProjects", "default", "discord", "name", "slack" ],
+        "required" : [ "availableInProjects", "default", "discord", "kind", "name", "slack" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imserviceuc_imservicedto.CreateIMServiceResp" : {
@@ -18647,6 +18659,9 @@
           "discord" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imserviceuc_imservicedto.DiscordReq"
           },
+          "kind" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.IMServiceKind"
+          },
           "name" : {
             "type" : "string"
           },
@@ -18657,7 +18672,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "discord", "name", "slack", "testMsg" ],
+        "required" : [ "discord", "kind", "name", "slack", "testMsg" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imserviceuc_imservicedto.TestSendInstantMsgResp" : {
@@ -18710,6 +18725,9 @@
           "discord" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imserviceuc_imservicedto.DiscordReq"
           },
+          "kind" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.IMServiceKind"
+          },
           "name" : {
             "type" : "string"
           },
@@ -18720,7 +18738,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "availableInProjects", "default", "discord", "name", "slack", "updateVer" ],
+        "required" : [ "availableInProjects", "default", "discord", "kind", "name", "slack", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imserviceuc_imservicedto.UpdateIMServiceResp" : {

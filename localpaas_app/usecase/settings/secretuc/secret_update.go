@@ -5,7 +5,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc/secretdto"
@@ -25,17 +24,15 @@ func (uc *SecretUC) UpdateSecret(
 			data *settings.UpdateSettingData,
 			pData *settings.PersistingSettingData,
 		) error {
-			setting := pData.Setting
-			secret, err := setting.AsSecret()
+			oldSecret, err := pData.Setting.AsSecret()
 			if err != nil {
 				return apperrors.Wrap(err)
 			}
-			if secret == nil {
-				secret = &entity.Secret{}
+			updatedSecret := req.ToEntity()
+			if oldSecret != nil {
+				updatedSecret.Key = oldSecret.Key // when update, keep the old KEY of the secret
 			}
-			secret.Value = entity.NewEncryptedField(req.Value)
-			secret.Base64 = req.Base64
-			if err = setting.SetData(secret); err != nil {
+			if err = pData.Setting.SetData(updatedSecret); err != nil {
 				return apperrors.Wrap(err)
 			}
 			return nil

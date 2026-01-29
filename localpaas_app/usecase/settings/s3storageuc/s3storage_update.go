@@ -7,7 +7,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/s3storageuc/s3storagedto"
@@ -21,40 +20,16 @@ func (uc *S3StorageUC) UpdateS3Storage(
 	req.Type = currentSettingType
 	_, err := settings.UpdateSetting(ctx, uc.db, &req.UpdateSettingReq, &settings.UpdateSettingData{
 		SettingRepo:   uc.settingRepo,
-		VerifyingName: gofn.PtrValueOrEmpty(req.Name),
+		VerifyingName: req.Name,
 		PrepareUpdate: func(
 			ctx context.Context,
 			db database.Tx,
 			data *settings.UpdateSettingData,
 			pData *settings.PersistingSettingData,
 		) error {
-			setting := pData.Setting
-			if req.Name != nil {
-				setting.Name = *req.Name
-			}
-			s3Storage, err := setting.AsS3Storage()
+			pData.Setting.Name = gofn.Coalesce(req.Name, data.Setting.Name)
+			err := pData.Setting.SetData(req.ToEntity())
 			if err != nil {
-				return apperrors.Wrap(err)
-			}
-			if s3Storage == nil {
-				s3Storage = &entity.S3Storage{}
-			}
-			if req.AccessKeyID != nil {
-				s3Storage.AccessKeyID = *req.AccessKeyID
-			}
-			if req.SecretKey != nil {
-				s3Storage.SecretKey = entity.NewEncryptedField(*req.SecretKey)
-			}
-			if req.Region != nil {
-				s3Storage.Region = *req.Region
-			}
-			if req.Bucket != nil {
-				s3Storage.Bucket = *req.Bucket
-			}
-			if req.Endpoint != nil {
-				s3Storage.Endpoint = *req.Endpoint
-			}
-			if err = setting.SetData(s3Storage); err != nil {
 				return apperrors.Wrap(err)
 			}
 			return nil

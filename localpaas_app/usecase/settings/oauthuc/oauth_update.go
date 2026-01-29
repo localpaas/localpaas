@@ -7,7 +7,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc/oauthdto"
@@ -30,15 +29,7 @@ func (uc *OAuthUC) UpdateOAuth(
 		) error {
 			pData.Setting.Name = gofn.Coalesce(req.Name, pData.Setting.Name)
 			pData.Setting.Kind = gofn.Coalesce(string(req.Kind), pData.Setting.Kind)
-			err := pData.Setting.SetData(&entity.OAuth{
-				ClientID:     req.ClientID,
-				ClientSecret: entity.NewEncryptedField(req.ClientSecret),
-				Organization: req.Organization,
-				AuthURL:      req.AuthURL,
-				TokenURL:     req.TokenURL,
-				ProfileURL:   req.ProfileURL,
-				Scopes:       req.Scopes,
-			})
+			err := pData.Setting.SetData(req.ToEntity())
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

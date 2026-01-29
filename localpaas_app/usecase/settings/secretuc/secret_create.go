@@ -33,11 +33,7 @@ func (uc *SecretUC) CreateSecret(
 			data *settings.CreateSettingData,
 			pData *settings.PersistingSettingCreationData,
 		) error {
-			err := pData.Setting.SetData(&entity.Secret{
-				Key:    req.Key,
-				Value:  entity.NewEncryptedField(req.Value),
-				Base64: req.Base64,
-			})
+			err := pData.Setting.SetData(req.ToEntity())
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

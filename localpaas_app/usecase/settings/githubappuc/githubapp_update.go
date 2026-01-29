@@ -7,7 +7,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc/githubappdto"
@@ -29,17 +28,7 @@ func (uc *GithubAppUC) UpdateGithubApp(
 			pData *settings.PersistingSettingData,
 		) error {
 			pData.Setting.Name = gofn.Coalesce(req.Name, pData.Setting.Name)
-			err := pData.Setting.SetData(&entity.GithubApp{
-				ClientID:       req.ClientID,
-				ClientSecret:   entity.NewEncryptedField(req.ClientSecret),
-				Organization:   req.Organization,
-				WebhookURL:     req.WebhookURL,
-				WebhookSecret:  entity.NewEncryptedField(req.WebhookSecret),
-				AppID:          req.GhAppID,
-				InstallationID: req.GhInstallationID,
-				PrivateKey:     entity.NewEncryptedField(req.PrivateKey),
-				SSOEnabled:     req.SSOEnabled,
-			})
+			err := pData.Setting.SetData(req.ToEntity())
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

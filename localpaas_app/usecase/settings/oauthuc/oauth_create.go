@@ -37,15 +37,7 @@ func (uc *OAuthUC) CreateOAuth(
 			pData *settings.PersistingSettingCreationData,
 		) error {
 			pData.Setting.Kind = string(req.Kind)
-			err := pData.Setting.SetData(&entity.OAuth{
-				ClientID:     req.ClientID,
-				ClientSecret: entity.NewEncryptedField(req.ClientSecret),
-				Organization: req.Organization,
-				AuthURL:      req.AuthURL,
-				TokenURL:     req.TokenURL,
-				ProfileURL:   req.ProfileURL,
-				Scopes:       req.Scopes,
-			})
+			err := pData.Setting.SetData(req.ToEntity())
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

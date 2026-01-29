@@ -9,6 +9,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
@@ -24,6 +25,14 @@ type GitTokenBaseReq struct {
 	Token    string         `json:"token"`
 	BaseURL  string         `json:"baseURL"`
 	ExpireAt time.Time      `json:"expireAt"`
+}
+
+func (req *GitTokenBaseReq) ToEntity() *entity.GitToken {
+	return &entity.GitToken{
+		User:    req.User,
+		Token:   entity.NewEncryptedField(req.Token),
+		BaseURL: req.BaseURL,
+	}
 }
 
 func (req *GitTokenBaseReq) modifyRequest() error {

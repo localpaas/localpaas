@@ -5,6 +5,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
@@ -20,6 +21,16 @@ type S3StorageBaseReq struct {
 	Region      string `json:"region"`
 	Bucket      string `json:"bucket"`
 	Endpoint    string `json:"endpoint"`
+}
+
+func (req *S3StorageBaseReq) ToEntity() *entity.S3Storage {
+	return &entity.S3Storage{
+		AccessKeyID: req.AccessKeyID,
+		SecretKey:   entity.NewEncryptedField(req.SecretKey),
+		Region:      req.Region,
+		Bucket:      req.Bucket,
+		Endpoint:    req.Endpoint,
+	}
 }
 
 func (req *S3StorageBaseReq) validate(field string) (res []vld.Validator) {

@@ -33,13 +33,7 @@ func (uc *S3StorageUC) CreateS3Storage(
 			data *settings.CreateSettingData,
 			pData *settings.PersistingSettingCreationData,
 		) error {
-			err := pData.Setting.SetData(&entity.S3Storage{
-				AccessKeyID: req.AccessKeyID,
-				SecretKey:   entity.NewEncryptedField(req.SecretKey),
-				Region:      req.Region,
-				Bucket:      req.Bucket,
-				Endpoint:    req.Endpoint,
-			})
+			err := pData.Setting.SetData(req.ToEntity())
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

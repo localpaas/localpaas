@@ -10,23 +10,7 @@ import (
 
 type UpdateSSHKeyReq struct {
 	settings.UpdateSettingReq
-	*SSHKeyPartialReq
-}
-
-type SSHKeyPartialReq struct {
-	Name       *string `json:"name"`
-	PrivateKey *string `json:"privateKey"`
-	Passphrase *string `json:"passphrase"`
-}
-
-func (req *SSHKeyPartialReq) validate(field string) (res []vld.Validator) {
-	if field != "" {
-		field += "."
-	}
-	res = append(res, validateSSHKeyName(req.Name, false, field+"name")...)
-	res = append(res, basedto.ValidateStr(req.PrivateKey, false, 1, maxKeyLen, "privateKey")...)
-	res = append(res, basedto.ValidateStr(req.Passphrase, false, 1, maxNameLen, "passphrase")...)
-	return res
+	*SSHKeyBaseReq
 }
 
 func NewUpdateSSHKeyReq() *UpdateSSHKeyReq {

@@ -5,6 +5,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
@@ -22,6 +23,14 @@ type SecretBaseReq struct {
 	Key    string `json:"key"`
 	Value  string `json:"value"`
 	Base64 bool   `json:"base64"`
+}
+
+func (req *SecretBaseReq) ToEntity() *entity.Secret {
+	return &entity.Secret{
+		Key:    req.Key,
+		Value:  entity.NewEncryptedField(req.Value),
+		Base64: req.Base64,
+	}
 }
 
 func (req *SecretBaseReq) validate(field string) (res []vld.Validator) {

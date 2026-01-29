@@ -33,10 +33,7 @@ func (uc *SSHKeyUC) CreateSSHKey(
 			data *settings.CreateSettingData,
 			pData *settings.PersistingSettingCreationData,
 		) error {
-			err := pData.Setting.SetData(&entity.SSHKey{
-				PrivateKey: entity.NewEncryptedField(req.PrivateKey),
-				Passphrase: entity.NewEncryptedField(req.Passphrase),
-			})
+			err := pData.Setting.SetData(req.ToEntity())
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

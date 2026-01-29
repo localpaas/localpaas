@@ -6,9 +6,7 @@ import (
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc/emaildto"
@@ -31,35 +29,8 @@ func (uc *EmailUC) UpdateEmail(
 			pData *settings.PersistingSettingData,
 		) error {
 			pData.Setting.Name = gofn.Coalesce(req.Name, pData.Setting.Name)
-
-			email := &entity.Email{}
-			switch {
-			case req.SMTP != nil:
-				pData.Setting.Kind = string(base.EmailKindSMTP)
-				email.SMTP = &entity.SMTPConf{
-					Host:        req.SMTP.Host,
-					Port:        req.SMTP.Port,
-					Username:    req.SMTP.Username,
-					DisplayName: req.SMTP.DisplayName,
-					Password:    entity.NewEncryptedField(req.SMTP.Password),
-					SSL:         req.SMTP.SSL,
-				}
-
-			case req.HTTP != nil:
-				pData.Setting.Kind = string(base.EmailKindHTTP)
-				email.HTTP = &entity.HTTPMailConf{
-					Endpoint:     req.HTTP.Endpoint,
-					Method:       req.HTTP.Method,
-					ContentType:  req.HTTP.ContentType,
-					Headers:      req.HTTP.Headers,
-					FieldMapping: req.HTTP.FieldMapping,
-					Username:     req.HTTP.Username,
-					DisplayName:  req.HTTP.DisplayName,
-					Password:     entity.NewEncryptedField(req.HTTP.Password),
-				}
-			}
-
-			err := pData.Setting.SetData(email)
+			pData.Setting.Kind = string(req.Kind)
+			err := pData.Setting.SetData(req.ToEntity())
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

@@ -33,10 +33,7 @@ func (uc *BasicAuthUC) CreateBasicAuth(
 			data *settings.CreateSettingData,
 			pData *settings.PersistingSettingCreationData,
 		) error {
-			err := pData.Setting.SetData(&entity.BasicAuth{
-				Username: req.Username,
-				Password: entity.NewEncryptedField(req.Password),
-			})
+			err := pData.Setting.SetData(req.ToEntity())
 			if err != nil {
 				return apperrors.Wrap(err)
 			}
