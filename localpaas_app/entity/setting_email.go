@@ -49,6 +49,9 @@ func (s *Email) MustDecrypt() *Email {
 	if s.SMTP != nil {
 		s.SMTP.Password.MustGetPlain()
 	}
+	if s.HTTP != nil {
+		s.HTTP.Password.MustGetPlain()
+	}
 	return s
 }
 

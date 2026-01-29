@@ -37,8 +37,8 @@ type GetIMServiceResp struct {
 type IMServiceResp struct {
 	*settings.BaseSettingResp
 	Kind      base.IMServiceKind `json:"kind"`
-	Slack     *SlackResp         `json:"slack"`
-	Discord   *DiscordResp       `json:"discord"`
+	Slack     *SlackResp         `json:"slack,omitempty"`
+	Discord   *DiscordResp       `json:"discord,omitempty"`
 	Encrypted bool               `json:"encrypted,omitempty"`
 }
 
