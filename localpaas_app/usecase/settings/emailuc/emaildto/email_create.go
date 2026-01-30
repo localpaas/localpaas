@@ -18,8 +18,8 @@ type CreateEmailReq struct {
 type EmailBaseReq struct {
 	Name string         `json:"name"`
 	Kind base.EmailKind `json:"kind"`
-	SMTP *SMTPConf      `json:"smtp"`
-	HTTP *HTTPMailConf  `json:"http"`
+	SMTP *EmailSMTP     `json:"smtp"`
+	HTTP *EmailHTTP     `json:"http"`
 }
 
 func (req *EmailBaseReq) ToEntity() *entity.Email {
@@ -33,7 +33,7 @@ func (req *EmailBaseReq) ToEntity() *entity.Email {
 	return email
 }
 
-type SMTPConf struct {
+type EmailSMTP struct {
 	Host        string `json:"host"`
 	Port        int    `json:"port"`
 	Username    string `json:"username"`
@@ -42,8 +42,8 @@ type SMTPConf struct {
 	SSL         bool   `json:"ssl"`
 }
 
-func (r *SMTPConf) ToEntity() *entity.SMTPConf {
-	return &entity.SMTPConf{
+func (r *EmailSMTP) ToEntity() *entity.EmailSMTP {
+	return &entity.EmailSMTP{
 		Host:        r.Host,
 		Port:        r.Port,
 		Username:    r.Username,
@@ -53,19 +53,19 @@ func (r *SMTPConf) ToEntity() *entity.SMTPConf {
 	}
 }
 
-type HTTPMailConf struct {
-	Endpoint     string                       `json:"endpoint"`
-	Method       string                       `json:"method"`
-	ContentType  string                       `json:"contentType"`
-	Headers      map[string]string            `json:"headers"`
-	FieldMapping *entity.HTTPMailFieldMapping `json:"fieldMapping"` // NOTE: use entity.HTTPMailFieldMapping directly
-	Username     string                       `json:"username"`
-	DisplayName  string                       `json:"displayName"`
-	Password     string                       `json:"password"`
+type EmailHTTP struct {
+	Endpoint     string                        `json:"endpoint"`
+	Method       string                        `json:"method"`
+	ContentType  string                        `json:"contentType"`
+	Headers      map[string]string             `json:"headers"`
+	FieldMapping *entity.EmailHTTPFieldMapping `json:"fieldMapping"` // NOTE: use entity.EmailHTTPFieldMapping directly
+	Username     string                        `json:"username"`
+	DisplayName  string                        `json:"displayName"`
+	Password     string                        `json:"password"`
 }
 
-func (r *HTTPMailConf) ToEntity() *entity.HTTPMailConf {
-	return &entity.HTTPMailConf{
+func (r *EmailHTTP) ToEntity() *entity.EmailHTTP {
+	return &entity.EmailHTTP{
 		Endpoint:     r.Endpoint,
 		Method:       r.Method,
 		ContentType:  r.ContentType,

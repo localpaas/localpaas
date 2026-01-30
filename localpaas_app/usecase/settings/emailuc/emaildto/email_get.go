@@ -36,13 +36,13 @@ type GetEmailResp struct {
 
 type EmailResp struct {
 	*settings.BaseSettingResp
-	Kind      base.EmailKind    `json:"kind"`
-	SMTP      *SMTPConfResp     `json:"smtp,omitempty"`
-	HTTP      *HTTPMailConfResp `json:"http,omitempty"`
-	Encrypted bool              `json:"encrypted,omitempty"`
+	Kind      base.EmailKind `json:"kind"`
+	SMTP      *EmailSMTPResp `json:"smtp,omitempty"`
+	HTTP      *EmailHTTPResp `json:"http,omitempty"`
+	Encrypted bool           `json:"encrypted,omitempty"`
 }
 
-type SMTPConfResp struct {
+type EmailSMTPResp struct {
 	Host        string `json:"host"`
 	Port        int    `json:"port"`
 	Username    string `json:"username"`
@@ -51,24 +51,34 @@ type SMTPConfResp struct {
 	SSL         bool   `json:"ssl"`
 }
 
-func (resp *SMTPConfResp) CopyPassword(field entity.EncryptedField) error {
+func (resp *EmailSMTPResp) CopyPassword(field entity.EncryptedField) error {
 	resp.Password = field.String()
 	return nil
 }
 
-type HTTPMailConfResp struct {
-	Endpoint     string                       `json:"endpoint"`
-	Method       string                       `json:"method"`
-	ContentType  string                       `json:"contentType"`
-	Headers      map[string]string            `json:"headers"`
-	FieldMapping *entity.HTTPMailFieldMapping `json:"fieldMapping"`
-	Username     string                       `json:"username"`
-	DisplayName  string                       `json:"displayName"`
-	Password     string                       `json:"password"`
+type EmailHTTPResp struct {
+	Endpoint     string                        `json:"endpoint"`
+	Method       string                        `json:"method"`
+	ContentType  string                        `json:"contentType"`
+	Headers      map[string]string             `json:"headers"`
+	FieldMapping *entity.EmailHTTPFieldMapping `json:"fieldMapping"`
+	Username     string                        `json:"username"`
+	DisplayName  string                        `json:"displayName"`
+	Password     string                        `json:"password"`
 }
 
-func (resp *HTTPMailConfResp) CopyPassword(field entity.EncryptedField) error {
+func (resp *EmailHTTPResp) CopyPassword(field entity.EncryptedField) error {
 	resp.Password = field.String()
+	return nil
+}
+
+type EmailGmailAPIKeyResp struct {
+	User   string `json:"user"`
+	APIKey string `json:"apiKey"`
+}
+
+func (resp *EmailGmailAPIKeyResp) CopyPassword(field entity.EncryptedField) error {
+	resp.APIKey = field.String()
 	return nil
 }
 

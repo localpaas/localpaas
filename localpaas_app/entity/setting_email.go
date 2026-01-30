@@ -11,11 +11,11 @@ const (
 )
 
 type Email struct {
-	SMTP *SMTPConf     `json:"smtp,omitempty"`
-	HTTP *HTTPMailConf `json:"http,omitempty"`
+	SMTP *EmailSMTP `json:"smtp,omitempty"`
+	HTTP *EmailHTTP `json:"http,omitempty"`
 }
 
-type SMTPConf struct {
+type EmailSMTP struct {
 	Host        string         `json:"host"`
 	Port        int            `json:"port"`
 	Username    string         `json:"username"`
@@ -24,18 +24,18 @@ type SMTPConf struct {
 	SSL         bool           `json:"ssl"`
 }
 
-type HTTPMailConf struct {
-	Endpoint     string                `json:"endpoint"`
-	Method       string                `json:"method"`
-	ContentType  string                `json:"contentType"`
-	Headers      map[string]string     `json:"headers"`
-	FieldMapping *HTTPMailFieldMapping `json:"fieldMapping"`
-	Username     string                `json:"username"`
-	DisplayName  string                `json:"displayName"`
-	Password     EncryptedField        `json:"password"`
+type EmailHTTP struct {
+	Endpoint     string                 `json:"endpoint"`
+	Method       string                 `json:"method"`
+	ContentType  string                 `json:"contentType"`
+	Headers      map[string]string      `json:"headers"`
+	FieldMapping *EmailHTTPFieldMapping `json:"fieldMapping"`
+	Username     string                 `json:"username"`
+	DisplayName  string                 `json:"displayName"`
+	Password     EncryptedField         `json:"password"`
 }
 
-type HTTPMailFieldMapping struct {
+type EmailHTTPFieldMapping struct {
 	FromAddress string `json:"fromAddress"`
 	FromName    string `json:"fromName"`
 	ToAddress   string `json:"toAddress"`

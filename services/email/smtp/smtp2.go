@@ -14,7 +14,7 @@ type SendMailOption2 func(*gomail.EmailMessage)
 
 func SendMail2(
 	_ context.Context,
-	conf *entity.SMTPConf,
+	conf *entity.EmailSMTP,
 	recipients []string,
 	subject string,
 	content string,

@@ -19,7 +19,7 @@ import (
 //nolint:gocognit
 func SendMail(
 	_ context.Context,
-	conf *entity.HTTPMailConf,
+	conf *entity.EmailHTTP,
 	recipients []string,
 	subject string,
 	content string,
