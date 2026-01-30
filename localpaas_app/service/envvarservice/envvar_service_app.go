@@ -27,26 +27,13 @@ func (s *envVarService) BuildAppEnv(
 	app *entity.App,
 	buildPhase bool,
 ) (res []*EnvVar, err error) {
-	var settings []*entity.Setting
-	if app.ParentID != "" {
-		parentSettings, _, err := s.settingRepo.ListByApp(ctx, db, app.ProjectID, app.ParentID, nil,
-			bunex.SelectWhereIn("setting.type IN (?)", base.SettingTypeEnvVar, base.SettingTypeSecret),
-			bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
-		)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-		settings = append(settings, parentSettings...)
-	}
-
-	appSettings, _, err := s.settingRepo.ListByApp(ctx, db, app.ProjectID, app.ID, nil,
+	settings, _, err := s.settingRepo.ListByAppObject(ctx, db, app, nil,
 		bunex.SelectWhereIn("setting.type IN (?)", base.SettingTypeEnvVar, base.SettingTypeSecret),
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	settings = append(settings, appSettings...)
 
 	mapAppEnv := make(map[string]string, 20)                  //nolint
 	mapParentAppEnv := make(map[string]string, 20)            //nolint

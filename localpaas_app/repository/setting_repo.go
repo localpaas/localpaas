@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"strings"
 
 	"github.com/uptrace/bun"
 
@@ -21,6 +22,8 @@ type SettingRepo interface {
 	GetByIDAndProject(ctx context.Context, db database.IDB, typ base.SettingType, id, projectID string,
 		requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error)
 	GetByIDAndApp(ctx context.Context, db database.IDB, typ base.SettingType, id, projectID, appID string,
+		requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error)
+	GetByIDAndAppObject(ctx context.Context, db database.IDB, typ base.SettingType, id string, app *entity.App,
 		requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error)
 	GetByIDAndUser(ctx context.Context, db database.IDB, typ base.SettingType, id, userID string,
 		requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error)
@@ -43,6 +46,8 @@ type SettingRepo interface {
 		opts ...bunex.SelectQueryOption) ([]*entity.Setting, *basedto.PagingMeta, error)
 	ListByApp(ctx context.Context, db database.IDB, projectID, appID string, paging *basedto.Paging,
 		opts ...bunex.SelectQueryOption) ([]*entity.Setting, *basedto.PagingMeta, error)
+	ListByAppObject(ctx context.Context, db database.IDB, app *entity.App, paging *basedto.Paging,
+		opts ...bunex.SelectQueryOption) ([]*entity.Setting, *basedto.PagingMeta, error)
 	ListByUser(ctx context.Context, db database.IDB, userID string, paging *basedto.Paging,
 		opts ...bunex.SelectQueryOption) ([]*entity.Setting, *basedto.PagingMeta, error)
 
@@ -62,96 +67,55 @@ type SettingRepo interface {
 }
 
 type settingRepo struct {
+	appRepo AppRepo
 }
 
-func NewSettingRepo() SettingRepo {
-	return &settingRepo{}
+func NewSettingRepo(appRepo AppRepo) SettingRepo {
+	return &settingRepo{
+		appRepo: appRepo,
+	}
 }
 
 func (repo *settingRepo) GetByID(ctx context.Context, db database.IDB, typ base.SettingType, id string,
 	requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
-	setting := &entity.Setting{}
-	query := db.NewSelect().Model(setting).Where("setting.id = ?", id)
-	if typ != "" {
-		query = query.Where("setting.type = ?", typ)
-	}
-	if requireActive {
-		query = query.Where("setting.status = ?", base.SettingStatusActive)
-	}
-	query = bunex.ApplySelect(query, opts...)
-
-	err := query.Scan(ctx)
-	if setting == nil || errors.Is(err, sql.ErrNoRows) {
-		return nil, apperrors.NewNotFound("Setting").WithCause(err)
-	}
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-
-	if hasChange, _ := repo.updateExpiredSetting(ctx, db, setting); hasChange {
-		return repo.GetByID(ctx, db, typ, id, requireActive, opts...)
-	}
-	return setting, nil
+	opts = repo.applyFilter(opts, typ, id, requireActive)
+	return repo.get(ctx, db, opts...)
 }
 
 func (repo *settingRepo) GetByIDAndProject(ctx context.Context, db database.IDB, typ base.SettingType,
-	id, projectID string, requireActive bool, opts ...bunex.SelectQueryOption) (_ *entity.Setting, err error) {
-	if projectID == "" {
-		return repo.GetByID(ctx, db, typ, id, requireActive, opts...)
-	}
-
-	opts = append(opts, bunex.SelectWhere("setting.id = ?", id))
-	if typ != "" {
-		opts = append(opts, bunex.SelectWhere("setting.type = ?", typ))
-	}
-	if requireActive {
-		opts = append(opts, bunex.SelectWhere("setting.status = ?", base.SettingStatusActive))
-	}
-
-	settings, _, err := repo.ListByProject(ctx, db, projectID, nil, opts...)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-	if len(settings) == 0 {
-		return nil, apperrors.NewNotFound("Setting")
-	}
-
-	return settings[0], nil
+	id, projectID string, requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
+	opts = repo.applyFilter(opts, typ, id, requireActive)
+	opts = repo.applyAppOrProjectFilter(opts, projectID, "", "")
+	return repo.get(ctx, db, opts...)
 }
 
 func (repo *settingRepo) GetByIDAndApp(ctx context.Context, db database.IDB, typ base.SettingType,
-	id, projectID, appID string, requireActive bool,
-	opts ...bunex.SelectQueryOption) (_ *entity.Setting, err error) {
-	if projectID == "" && appID == "" {
-		return repo.GetByID(ctx, db, typ, id, requireActive, opts...)
+	id, projectID, appID string, requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
+	var parentAppID string
+	if appID != "" {
+		app, err := repo.appRepo.GetByID(ctx, db, projectID, appID, bunex.SelectColumns("parent_id"))
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		parentAppID = app.ParentID
 	}
+	opts = repo.applyFilter(opts, typ, id, requireActive)
+	opts = repo.applyAppOrProjectFilter(opts, projectID, parentAppID, appID)
+	return repo.get(ctx, db, opts...)
+}
 
-	opts = append(opts, bunex.SelectWhere("setting.id = ?", id))
-	if typ != "" {
-		opts = append(opts, bunex.SelectWhere("setting.type = ?", typ))
-	}
-	if requireActive {
-		opts = append(opts, bunex.SelectWhere("setting.status = ?", base.SettingStatusActive))
-	}
-
-	settings, _, err := repo.ListByApp(ctx, db, projectID, appID, nil, opts...)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-	if len(settings) == 0 {
-		return nil, apperrors.NewNotFound("Setting")
-	}
-
-	return settings[0], nil
+func (repo *settingRepo) GetByIDAndAppObject(ctx context.Context, db database.IDB, typ base.SettingType,
+	id string, app *entity.App, requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
+	opts = repo.applyFilter(opts, typ, id, requireActive)
+	opts = repo.applyAppOrProjectFilter(opts, app.ProjectID, app.ParentID, app.ID)
+	return repo.get(ctx, db, opts...)
 }
 
 func (repo *settingRepo) GetByIDAndUser(ctx context.Context, db database.IDB, typ base.SettingType,
 	id, userID string, requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
-	if userID == "" {
-		return repo.GetByID(ctx, db, typ, id, requireActive, opts...)
-	}
-	opts = append(opts, bunex.SelectWhere("setting.object_id = ?", userID))
-	return repo.GetByID(ctx, db, typ, id, requireActive, opts...)
+	opts = repo.applyFilter(opts, typ, id, requireActive)
+	opts = repo.applyUserFilter(opts, userID)
+	return repo.get(ctx, db, opts...)
 }
 
 func (repo *settingRepo) GetByKind(ctx context.Context, db database.IDB, typ base.SettingType, kind string,
@@ -159,27 +123,9 @@ func (repo *settingRepo) GetByKind(ctx context.Context, db database.IDB, typ bas
 	if kind == "" {
 		return nil, nil
 	}
-	setting := &entity.Setting{}
-	query := db.NewSelect().Model(setting).
-		Where("setting.type = ?", typ).
-		Where("setting.kind = ?", kind)
-	if requireActive {
-		query = query.Where("setting.status = ?", base.SettingStatusActive)
-	}
-	query = bunex.ApplySelect(query, opts...)
-
-	err := query.Scan(ctx)
-	if setting == nil || errors.Is(err, sql.ErrNoRows) {
-		return nil, apperrors.NewNotFound("Setting").WithCause(err)
-	}
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-
-	if hasChange, _ := repo.updateExpiredSetting(ctx, db, setting); hasChange {
-		return repo.GetByKind(ctx, db, typ, kind, requireActive, opts...)
-	}
-	return setting, nil
+	opts = repo.applyFilter(opts, typ, "", requireActive)
+	opts = repo.applyNameAndKindFilter(opts, "", kind)
+	return repo.get(ctx, db, opts...)
 }
 
 func (repo *settingRepo) GetByName(ctx context.Context, db database.IDB, typ base.SettingType, name string,
@@ -187,13 +133,67 @@ func (repo *settingRepo) GetByName(ctx context.Context, db database.IDB, typ bas
 	if name == "" {
 		return nil, nil
 	}
-	setting := &entity.Setting{}
-	query := db.NewSelect().Model(setting).
-		Where("setting.type = ?", typ).
-		Where("setting.name = ?", name)
-	if requireActive {
-		query = query.Where("setting.status = ?", base.SettingStatusActive)
+	opts = repo.applyFilter(opts, typ, "", requireActive)
+	opts = repo.applyNameAndKindFilter(opts, name, "")
+	return repo.get(ctx, db, opts...)
+}
+
+func (repo *settingRepo) GetByNameAndProject(ctx context.Context, db database.IDB, typ base.SettingType,
+	name, projectID string, requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
+	if name == "" {
+		return nil, nil
 	}
+	opts = repo.applyFilter(opts, typ, "", requireActive)
+	opts = repo.applyNameAndKindFilter(opts, name, "")
+	opts = repo.applyAppOrProjectFilter(opts, projectID, "", "")
+	return repo.get(ctx, db, opts...)
+}
+
+func (repo *settingRepo) GetByNameAndApp(ctx context.Context, db database.IDB, typ base.SettingType,
+	name, projectID, appID string, requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
+	if name == "" {
+		return nil, nil
+	}
+	var parentAppID string
+	if appID != "" {
+		app, err := repo.appRepo.GetByID(ctx, db, projectID, appID, bunex.SelectColumns("parent_id"))
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		parentAppID = app.ParentID
+	}
+	opts = repo.applyFilter(opts, typ, "", requireActive)
+	opts = repo.applyNameAndKindFilter(opts, name, "")
+	opts = repo.applyAppOrProjectFilter(opts, projectID, parentAppID, appID)
+	return repo.get(ctx, db, opts...)
+}
+
+func (repo *settingRepo) GetByNameAndAppObject(ctx context.Context, db database.IDB, typ base.SettingType,
+	name string, app *entity.App, requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
+	if name == "" {
+		return nil, nil
+	}
+	opts = repo.applyFilter(opts, typ, "", requireActive)
+	opts = repo.applyNameAndKindFilter(opts, name, "")
+	opts = repo.applyAppOrProjectFilter(opts, app.ProjectID, app.ParentID, app.ID)
+	return repo.get(ctx, db, opts...)
+}
+
+func (repo *settingRepo) GetByNameAndUser(ctx context.Context, db database.IDB, typ base.SettingType,
+	name, userID string, requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
+	if name == "" {
+		return nil, nil
+	}
+	opts = repo.applyFilter(opts, typ, "", requireActive)
+	opts = repo.applyNameAndKindFilter(opts, name, "")
+	opts = repo.applyUserFilter(opts, userID)
+	return repo.get(ctx, db, opts...)
+}
+
+func (repo *settingRepo) get(ctx context.Context, db database.IDB,
+	opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
+	setting := &entity.Setting{}
+	query := db.NewSelect().Model(setting)
 	query = bunex.ApplySelect(query, opts...)
 
 	err := query.Scan(ctx)
@@ -205,82 +205,9 @@ func (repo *settingRepo) GetByName(ctx context.Context, db database.IDB, typ bas
 	}
 
 	if hasChange, _ := repo.updateExpiredSetting(ctx, db, setting); hasChange {
-		return repo.GetByName(ctx, db, typ, name, requireActive, opts...)
+		return repo.get(ctx, db, opts...)
 	}
 	return setting, nil
-}
-
-func (repo *settingRepo) GetByNameAndProject(ctx context.Context, db database.IDB, typ base.SettingType,
-	name, projectID string, requireActive bool,
-	opts ...bunex.SelectQueryOption) (_ *entity.Setting, err error) {
-	if name == "" {
-		return nil, nil
-	}
-	if projectID == "" {
-		return repo.GetByName(ctx, db, typ, name, requireActive, opts...)
-	}
-
-	opts = append(opts,
-		bunex.SelectWhere("setting.name = ?", name),
-		bunex.SelectLimit(1),
-	)
-	if typ != "" {
-		opts = append(opts, bunex.SelectWhere("setting.type = ?", typ))
-	}
-	if requireActive {
-		opts = append(opts, bunex.SelectWhere("setting.status = ?", base.SettingStatusActive))
-	}
-
-	settings, _, err := repo.ListByProject(ctx, db, projectID, nil, opts...)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-	if len(settings) == 0 {
-		return nil, apperrors.NewNotFound("Setting")
-	}
-
-	return settings[0], nil
-}
-
-func (repo *settingRepo) GetByNameAndApp(ctx context.Context, db database.IDB, typ base.SettingType,
-	name, projectID, appID string, requireActive bool,
-	opts ...bunex.SelectQueryOption) (_ *entity.Setting, err error) {
-	if name == "" {
-		return nil, nil
-	}
-	if projectID == "" && appID == "" {
-		return repo.GetByName(ctx, db, typ, name, requireActive, opts...)
-	}
-
-	opts = append(opts,
-		bunex.SelectWhere("setting.name = ?", name),
-		bunex.SelectLimit(1),
-	)
-	if typ != "" {
-		opts = append(opts, bunex.SelectWhere("setting.type = ?", typ))
-	}
-	if requireActive {
-		opts = append(opts, bunex.SelectWhere("setting.status = ?", base.SettingStatusActive))
-	}
-
-	settings, _, err := repo.ListByApp(ctx, db, projectID, appID, nil, opts...)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-	if len(settings) == 0 {
-		return nil, apperrors.NewNotFound("Setting")
-	}
-
-	return settings[0], nil
-}
-
-func (repo *settingRepo) GetByNameAndUser(ctx context.Context, db database.IDB, typ base.SettingType,
-	name, userID string, requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
-	if userID == "" {
-		return repo.GetByName(ctx, db, typ, name, requireActive, opts...)
-	}
-	opts = append(opts, bunex.SelectWhere("setting.object_id = ?", userID))
-	return repo.GetByName(ctx, db, typ, name, requireActive, opts...)
 }
 
 func (repo *settingRepo) List(ctx context.Context, db database.IDB, paging *basedto.Paging,
@@ -317,101 +244,34 @@ func (repo *settingRepo) List(ctx context.Context, db database.IDB, paging *base
 
 func (repo *settingRepo) ListByProject(ctx context.Context, db database.IDB, projectID string,
 	paging *basedto.Paging, opts ...bunex.SelectQueryOption) ([]*entity.Setting, *basedto.PagingMeta, error) {
-	var settings []*entity.Setting
-	query := db.NewSelect().Model(&settings)
-
-	allOpts := opts
-	allOpts = append(allOpts,
-		bunex.SelectJoin("LEFT JOIN project_shared_settings pss ON pss.setting_id = setting.id"),
-		bunex.SelectWhereGroup(
-			bunex.SelectWhere("setting.object_id = ?", projectID),
-			bunex.SelectWhereOr("(setting.object_id IS NULL AND setting.avail_in_projects = TRUE)"),
-			bunex.SelectWhereOr("(setting.object_id IS NULL AND pss.project_id = ?)", projectID),
-		),
-	)
-	query = bunex.ApplySelect(query, allOpts...)
-
-	var pagingMeta *basedto.PagingMeta
-	if paging != nil {
-		pagingMeta = newPagingMeta(paging)
-
-		// Counts the total first
-		total, err := query.Count(ctx)
-		if err != nil {
-			return nil, nil, apperrors.Wrap(err)
-		}
-		pagingMeta.Total = total
-
-		// Applies pagination
-		query = bunex.ApplyPagination(query, paging)
-	}
-
-	err := query.Scan(ctx)
-	if err != nil {
-		return nil, nil, wrapPaginationError(err, paging)
-	}
-
-	if hasChange, _ := repo.updateExpiredSettings(ctx, db, settings); hasChange {
-		return repo.ListByProject(ctx, db, projectID, paging, opts...)
-	}
-	return settings, pagingMeta, nil
+	opts = repo.applyAppOrProjectFilter(opts, projectID, "", "")
+	return repo.List(ctx, db, paging, opts...)
 }
 
 func (repo *settingRepo) ListByApp(ctx context.Context, db database.IDB, projectID, appID string,
 	paging *basedto.Paging, opts ...bunex.SelectQueryOption) ([]*entity.Setting, *basedto.PagingMeta, error) {
-	var settings []*entity.Setting
-	query := db.NewSelect().Model(&settings)
-
-	allOpts := opts
-	if projectID != "" {
-		allOpts = append(allOpts,
-			bunex.SelectJoin("LEFT JOIN project_shared_settings pss ON pss.setting_id = setting.id"),
-			bunex.SelectWhereGroup(
-				bunex.SelectWhere("setting.object_id = ?", appID),
-				bunex.SelectWhereOr("setting.object_id = ?", projectID),
-				bunex.SelectWhereOr("(setting.object_id IS NULL AND setting.avail_in_projects = TRUE)"),
-				bunex.SelectWhereOr("(setting.object_id IS NULL AND pss.project_id = ?)", projectID),
-			),
-		)
-	} else {
-		allOpts = append(allOpts,
-			bunex.SelectWhere("setting.object_id = ?", appID),
-		)
-	}
-	query = bunex.ApplySelect(query, allOpts...)
-
-	var pagingMeta *basedto.PagingMeta
-	if paging != nil {
-		pagingMeta = newPagingMeta(paging)
-
-		// Counts the total first
-		total, err := query.Count(ctx)
+	var parentAppID string
+	if appID == "" {
+		// Query app to get its parent ID if there is
+		app, err := repo.appRepo.GetByID(ctx, db, projectID, appID, bunex.SelectColumns("parent_id"))
 		if err != nil {
 			return nil, nil, apperrors.Wrap(err)
 		}
-		pagingMeta.Total = total
-
-		// Applies pagination
-		query = bunex.ApplyPagination(query, paging)
+		parentAppID = app.ParentID
 	}
+	opts = repo.applyAppOrProjectFilter(opts, projectID, parentAppID, appID)
+	return repo.List(ctx, db, paging, opts...)
+}
 
-	err := query.Scan(ctx)
-	if err != nil {
-		return nil, nil, wrapPaginationError(err, paging)
-	}
-
-	if hasChange, _ := repo.updateExpiredSettings(ctx, db, settings); hasChange {
-		return repo.ListByApp(ctx, db, projectID, appID, paging, opts...)
-	}
-	return settings, pagingMeta, nil
+func (repo *settingRepo) ListByAppObject(ctx context.Context, db database.IDB, app *entity.App,
+	paging *basedto.Paging, opts ...bunex.SelectQueryOption) ([]*entity.Setting, *basedto.PagingMeta, error) {
+	opts = repo.applyAppOrProjectFilter(opts, app.ProjectID, app.ParentID, app.ID)
+	return repo.List(ctx, db, paging, opts...)
 }
 
 func (repo *settingRepo) ListByUser(ctx context.Context, db database.IDB, userID string,
 	paging *basedto.Paging, opts ...bunex.SelectQueryOption) ([]*entity.Setting, *basedto.PagingMeta, error) {
-	if userID == "" {
-		return repo.List(ctx, db, paging, opts...)
-	}
-	opts = append(opts, bunex.SelectWhere("setting.object_id = ?", userID))
+	opts = repo.applyUserFilter(opts, userID)
 	return repo.List(ctx, db, paging, opts...)
 }
 
@@ -420,22 +280,10 @@ func (repo *settingRepo) ListByIDs(ctx context.Context, db database.IDB, ids []s
 	if len(ids) == 0 {
 		return nil, nil
 	}
-	var settings []*entity.Setting
-	query := db.NewSelect().Model(&settings).Where("setting.id IN (?)", bun.In(ids))
-	if requireActive {
-		query = query.Where("setting.status = ?", base.SettingStatusActive)
-	}
-	query = bunex.ApplySelect(query, opts...)
-
-	err := query.Scan(ctx)
-	if err != nil {
-		return nil, apperrors.New(err)
-	}
-
-	if hasChange, _ := repo.updateExpiredSettings(ctx, db, settings); hasChange {
-		return repo.ListByIDs(ctx, db, ids, requireActive, opts...)
-	}
-	return settings, nil
+	opts = append(opts, bunex.SelectWhere("setting.id IN (?)", bun.In(ids)))
+	opts = repo.applyFilter(opts, "", "", requireActive)
+	settings, _, err := repo.List(ctx, db, nil, opts...)
+	return settings, apperrors.Wrap(err)
 }
 
 func (repo *settingRepo) ListByIDsAsMap(ctx context.Context, db database.IDB, ids []string, requireActive bool,
@@ -449,6 +297,60 @@ func (repo *settingRepo) ListByIDsAsMap(ctx context.Context, db database.IDB, id
 		res[setting.ID] = setting
 	}
 	return res, nil
+}
+
+func (repo *settingRepo) applyFilter(opts []bunex.SelectQueryOption, typ base.SettingType, id string,
+	requireActive bool) []bunex.SelectQueryOption {
+	if typ != "" {
+		opts = append(opts, bunex.SelectWhere("setting.type = ?", typ))
+	}
+	if id != "" {
+		opts = append(opts, bunex.SelectWhere("setting.id = ?", typ))
+	}
+	if requireActive {
+		opts = append(opts, bunex.SelectWhere("setting.status = ?", base.SettingStatusActive))
+	}
+	return opts
+}
+
+func (repo *settingRepo) applyNameAndKindFilter(opts []bunex.SelectQueryOption,
+	name, kind string) []bunex.SelectQueryOption {
+	if name != "" {
+		opts = append(opts, bunex.SelectWhere("LOWER(setting.name) = ?", strings.ToLower(name)))
+	}
+	if kind != "" {
+		opts = append(opts, bunex.SelectWhere("setting.kind = ?", kind))
+	}
+	return opts
+}
+
+func (repo *settingRepo) applyAppOrProjectFilter(opts []bunex.SelectQueryOption,
+	projectID, parentAppID, appID string) []bunex.SelectQueryOption {
+	if projectID != "" {
+		opts = append(opts,
+			bunex.SelectJoin("LEFT JOIN project_shared_settings pss ON pss.setting_id = setting.id"),
+			bunex.SelectWhereGroup(
+				bunex.SelectWhereIf(appID != "", "setting.object_id = ?", appID),
+				bunex.SelectWhereOrIf(parentAppID != "", "setting.object_id = ?", parentAppID),
+				bunex.SelectWhereOr("setting.object_id = ?", projectID),
+				bunex.SelectWhereOr("(setting.object_id IS NULL AND setting.avail_in_projects = TRUE)"),
+				bunex.SelectWhereOr("(setting.object_id IS NULL AND pss.project_id = ?)", projectID),
+			),
+		)
+	} else if appID != "" {
+		opts = append(opts,
+			bunex.SelectWhereGroup(
+				bunex.SelectWhere("setting.object_id = ?", appID),
+				bunex.SelectWhereOrIf(parentAppID != "", "setting.object_id = ?", parentAppID),
+			),
+		)
+	}
+	return opts
+}
+
+func (repo *settingRepo) applyUserFilter(opts []bunex.SelectQueryOption, userID string) []bunex.SelectQueryOption {
+	opts = append(opts, bunex.SelectWhere("setting.object_id = ?", userID))
+	return opts
 }
 
 func (repo *settingRepo) Upsert(ctx context.Context, db database.IDB, setting *entity.Setting,
