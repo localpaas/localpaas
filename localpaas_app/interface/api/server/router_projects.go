@@ -69,16 +69,28 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		gitTokenGroup.DELETE("/:id", s.handlerRegistry.projectHandler.DeleteGitToken)
 	}
 
-	{ // s3 storage group
-		s3StorageGroup := projectProviderGroup.Group("/s3-storages")
+	{ // aws group
+		awsGroup := projectProviderGroup.Group("/aws")
 		// Info
-		s3StorageGroup.GET("/:id", s.handlerRegistry.projectHandler.GetS3Storage)
-		s3StorageGroup.GET("", s.handlerRegistry.projectHandler.ListS3Storage)
+		awsGroup.GET("/:id", s.handlerRegistry.projectHandler.GetAWS)
+		awsGroup.GET("", s.handlerRegistry.projectHandler.ListAWS)
 		// Creation & Update
-		s3StorageGroup.POST("", s.handlerRegistry.projectHandler.CreateS3Storage)
-		s3StorageGroup.PUT("/:id", s.handlerRegistry.projectHandler.UpdateS3Storage)
-		s3StorageGroup.PUT("/:id/meta", s.handlerRegistry.projectHandler.UpdateS3StorageMeta)
-		s3StorageGroup.DELETE("/:id", s.handlerRegistry.projectHandler.DeleteS3Storage)
+		awsGroup.POST("", s.handlerRegistry.projectHandler.CreateAWS)
+		awsGroup.PUT("/:id", s.handlerRegistry.projectHandler.UpdateAWS)
+		awsGroup.PUT("/:id/meta", s.handlerRegistry.projectHandler.UpdateAWSMeta)
+		awsGroup.DELETE("/:id", s.handlerRegistry.projectHandler.DeleteAWS)
+	}
+
+	{ // aws s3 group
+		awsS3Group := projectProviderGroup.Group("/aws-s3")
+		// Info
+		awsS3Group.GET("/:id", s.handlerRegistry.projectHandler.GetAWSS3)
+		awsS3Group.GET("", s.handlerRegistry.projectHandler.ListAWSS3)
+		// Creation & Update
+		awsS3Group.POST("", s.handlerRegistry.projectHandler.CreateAWSS3)
+		awsS3Group.PUT("/:id", s.handlerRegistry.projectHandler.UpdateAWSS3)
+		awsS3Group.PUT("/:id/meta", s.handlerRegistry.projectHandler.UpdateAWSS3Meta)
+		awsS3Group.DELETE("/:id", s.handlerRegistry.projectHandler.DeleteAWSS3)
 	}
 
 	{ // ssh key group

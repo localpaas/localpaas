@@ -22,6 +22,14 @@ type GithubApp struct {
 	SSOEnabled     bool           `json:"ssoEnabled"`
 }
 
+func (s *GithubApp) GetType() base.SettingType {
+	return base.SettingTypeGithubApp
+}
+
+func (s *GithubApp) GetRefSettingIDs() []string {
+	return nil
+}
+
 func (s *GithubApp) MustDecrypt() *GithubApp {
 	s.ClientSecret.MustGetPlain()
 	s.WebhookSecret.MustGetPlain()
@@ -29,8 +37,19 @@ func (s *GithubApp) MustDecrypt() *GithubApp {
 	return s
 }
 
+func (s *GithubApp) ConvertAsOAuth() *OAuth {
+	if !s.SSOEnabled {
+		return nil
+	}
+	return &OAuth{
+		ClientID:     s.ClientID,
+		ClientSecret: s.ClientSecret,
+		Organization: s.Organization,
+	}
+}
+
 func (s *Setting) AsGithubApp() (*GithubApp, error) {
-	return parseSettingAs(s, base.SettingTypeGithubApp, func() *GithubApp { return &GithubApp{} })
+	return parseSettingAs(s, func() *GithubApp { return &GithubApp{} })
 }
 
 func (s *Setting) MustAsGithubApp() *GithubApp {

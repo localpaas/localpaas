@@ -45,6 +45,17 @@ type RepoCredentials struct {
 type DeploymentTarballSource struct {
 }
 
+func (s *AppDeploymentSettings) GetType() base.SettingType {
+	return base.SettingTypeAppDeployment
+}
+
+func (s *AppDeploymentSettings) GetRefSettingIDs() []string {
+	res := make([]string, 0, 5) //nolint
+	res = append(res, s.GetInUseRegistryAuthIDs()...)
+	res = append(res, s.GetInUseGitCredentialIDs()...)
+	return res
+}
+
 func (s *AppDeploymentSettings) GetInUseRegistryAuthIDs() (res []string) {
 	if s.ImageSource != nil && s.ImageSource.RegistryAuth.ID != "" {
 		res = append(res, s.ImageSource.RegistryAuth.ID)
@@ -64,16 +75,8 @@ func (s *AppDeploymentSettings) GetInUseGitCredentialIDs() (res []string) {
 	return
 }
 
-func (s *AppDeploymentSettings) GetAllInUseSettingIDs() (res []string) {
-	res = make([]string, 0, 5) //nolint
-	res = append(res, s.GetInUseRegistryAuthIDs()...)
-	res = append(res, s.GetInUseGitCredentialIDs()...)
-	return res
-}
-
 func (s *Setting) AsAppDeploymentSettings() (*AppDeploymentSettings, error) {
-	return parseSettingAs(s, base.SettingTypeAppDeployment,
-		func() *AppDeploymentSettings { return &AppDeploymentSettings{} })
+	return parseSettingAs(s, func() *AppDeploymentSettings { return &AppDeploymentSettings{} })
 }
 
 func (s *Setting) MustAsAppDeploymentSettings() *AppDeploymentSettings {

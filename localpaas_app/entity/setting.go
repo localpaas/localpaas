@@ -14,7 +14,8 @@ import (
 var (
 	SettingUpsertingConflictCols = []string{"id"}
 	SettingUpsertingUpdateCols   = []string{"object_id", "type", "kind", "status", "name", "data",
-		"avail_in_projects", "is_default", "version", "update_ver", "updated_at", "expire_at", "deleted_at"}
+		"avail_in_projects", "is_default", "ref_ids", "version", "update_ver",
+		"updated_at", "expire_at", "deleted_at"}
 )
 
 type Setting struct {
@@ -26,7 +27,8 @@ type Setting struct {
 	Name            string `bun:",nullzero"`
 	Data            string `bun:",nullzero"`
 	AvailInProjects bool
-	Default         bool `bun:"is_default"`
+	Default         bool     `bun:"is_default"`
+	RefIDs          []string `bun:"ref_ids,array,nullzero"`
 	Version         int
 	UpdateVer       int
 
@@ -35,15 +37,18 @@ type Setting struct {
 	ExpireAt  time.Time `bun:",nullzero"`
 	DeletedAt time.Time `bun:",soft_delete,nullzero"`
 
-	ObjectAccesses []*ACLPermission `bun:"rel:has-many,join:id=resource_id"`
-	ObjectUser     *User            `bun:"rel:belongs-to,join:object_id=id"`
-	ObjectProject  *Project         `bun:"rel:belongs-to,join:object_id=id"`
-	ObjectApp      *App             `bun:"rel:belongs-to,join:object_id=id"`
-	Tasks          []*Task          `bun:"rel:has-many,join:id=job_id"`
+	ObjectUser *User   `bun:"rel:belongs-to,join:object_id=id"`
+	Tasks      []*Task `bun:"rel:has-many,join:id=job_id"`
 
 	// NOTE: temporary fields
-	parsedData      any
-	CurrentObjectID string `bun:"-"`
+	parsedData      SettingData
+	CurrentObjectID string     `bun:"-"`
+	RefSettings     []*Setting `bun:"-"`
+}
+
+type SettingData interface {
+	GetType() base.SettingType
+	GetRefSettingIDs() []string
 }
 
 // GetID implements IDEntity interface
@@ -69,7 +74,7 @@ func (s *Setting) IsStatusDirty() bool {
 	return s.Status == base.SettingStatusActive && s.IsExpired()
 }
 
-func (s *Setting) parseData(structPtr any) error {
+func (s *Setting) parseData(structPtr SettingData) error {
 	if s == nil || s.Data == "" {
 		return nil
 	}
@@ -81,21 +86,25 @@ func (s *Setting) parseData(structPtr any) error {
 	return nil
 }
 
-func (s *Setting) SetData(data any) error {
+func (s *Setting) SetData(data SettingData) error {
+	if data.GetType() != s.Type {
+		return apperrors.NewTypeInvalid()
+	}
 	b, err := json.Marshal(data)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 	s.Data = reflectutil.UnsafeBytesToStr(b)
 	s.parsedData = data
+	s.RefIDs = s.parsedData.GetRefSettingIDs()
 	return nil
 }
 
-func (s *Setting) MustSetData(data any) {
+func (s *Setting) MustSetData(data SettingData) {
 	gofn.Must1(s.SetData(data))
 }
 
-func parseSettingAs[T any](s *Setting, typ base.SettingType, newFn func() T) (res T, error error) {
+func parseSettingAs[T SettingData](s *Setting, newFn func() T) (res T, error error) {
 	if s.parsedData != nil {
 		res, ok := s.parsedData.(T)
 		if !ok {
@@ -103,8 +112,11 @@ func parseSettingAs[T any](s *Setting, typ base.SettingType, newFn func() T) (re
 		}
 		return res, nil
 	}
-	if s.Data != "" && s.Type == typ {
+	if s.Data != "" {
 		res = newFn()
+		if res.GetType() != s.Type {
+			return res, apperrors.NewTypeInvalid()
+		}
 		if err := s.parseData(res); err != nil {
 			return res, apperrors.Wrap(err)
 		}

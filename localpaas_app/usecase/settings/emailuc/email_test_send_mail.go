@@ -4,28 +4,20 @@ import (
 	"context"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc/emaildto"
-	"github.com/localpaas/localpaas/services/email/http"
-	"github.com/localpaas/localpaas/services/email/smtp"
+	"github.com/localpaas/localpaas/services/email"
 )
 
-func (uc *EmailUC) TestSendEmail(
+func (uc *EmailUC) TestSendMail(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *emaildto.TestSendEmailReq,
-) (_ *emaildto.TestSendEmailResp, err error) {
-	email := req.ToEntity()
-	switch req.Kind {
-	case base.EmailKindSMTP:
-		err = smtp.SendMail(ctx, email.SMTP, []string{req.TestRecipient}, req.TestSubject, req.TestContent)
-	case base.EmailKindHTTP:
-		err = http.SendMail(ctx, email.HTTP, []string{req.TestRecipient}, req.TestSubject, req.TestContent)
-	}
+	req *emaildto.TestSendMailReq,
+) (_ *emaildto.TestSendMailResp, err error) {
+	conf := req.ToEntity()
+	err = email.SendMail(ctx, conf, []string{req.TestRecipient}, req.TestSubject, req.TestContent)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-
-	return &emaildto.TestSendEmailResp{}, nil
+	return &emaildto.TestSendMailResp{}, nil
 }

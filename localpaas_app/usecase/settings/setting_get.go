@@ -35,7 +35,28 @@ func GetSetting(
 	data *GetSettingData,
 ) (*entity.Setting, error) {
 	setting, err := loadSettingByID(ctx, db, data.SettingRepo, &req.BaseSettingReq, req.ID,
-		false, data.ExtraLoadOpts...)
+		false, true, data.ExtraLoadOpts...)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	if setting != nil {
+		setting.CurrentObjectID = req.ObjectID
+	}
+	return setting, nil
+}
+
+func GetSettingByID(
+	ctx context.Context,
+	db database.IDB,
+	settingRepo repository.SettingRepo,
+	req *BaseSettingReq,
+	id string,
+	requireActive bool,
+	loadRefSettings bool,
+	extraLoadOpts ...bunex.SelectQueryOption,
+) (*entity.Setting, error) {
+	setting, err := loadSettingByID(ctx, db, settingRepo, req, id, requireActive,
+		loadRefSettings, extraLoadOpts...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

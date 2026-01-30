@@ -1,4 +1,4 @@
-package s3storageuc
+package awss3uc
 
 import (
 	"context"
@@ -9,18 +9,19 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/s3storageuc/s3storagedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/awss3uc/awss3dto"
 )
 
-func (uc *S3StorageUC) UpdateS3Storage(
+func (uc *AWSS3UC) UpdateAWSS3(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *s3storagedto.UpdateS3StorageReq,
-) (*s3storagedto.UpdateS3StorageResp, error) {
+	req *awss3dto.UpdateAWSS3Req,
+) (*awss3dto.UpdateAWSS3Resp, error) {
 	req.Type = currentSettingType
 	_, err := settings.UpdateSetting(ctx, uc.db, &req.UpdateSettingReq, &settings.UpdateSettingData{
-		SettingRepo:   uc.settingRepo,
-		VerifyingName: req.Name,
+		SettingRepo:     uc.settingRepo,
+		VerifyingName:   req.Name,
+		VerifyingRefIDs: []string{req.Cred.ID},
 		PrepareUpdate: func(
 			ctx context.Context,
 			db database.Tx,
@@ -39,5 +40,5 @@ func (uc *S3StorageUC) UpdateS3Storage(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &s3storagedto.UpdateS3StorageResp{}, nil
+	return &awss3dto.UpdateAWSS3Resp{}, nil
 }

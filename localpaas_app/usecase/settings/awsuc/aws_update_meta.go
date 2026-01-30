@@ -1,4 +1,4 @@
-package s3storageuc
+package awsuc
 
 import (
 	"context"
@@ -6,14 +6,14 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/s3storageuc/s3storagedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/awsuc/awsdto"
 )
 
-func (uc *S3StorageUC) UpdateS3StorageMeta(
+func (uc *AWSUC) UpdateAWSMeta(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *s3storagedto.UpdateS3StorageMetaReq,
-) (*s3storagedto.UpdateS3StorageMetaResp, error) {
+	req *awsdto.UpdateAWSMetaReq,
+) (*awsdto.UpdateAWSMetaResp, error) {
 	req.Type = currentSettingType
 	_, err := settings.UpdateSettingMeta(ctx, uc.db, &req.UpdateSettingMetaReq, &settings.UpdateSettingMetaData{
 		SettingRepo: uc.settingRepo,
@@ -22,5 +22,5 @@ func (uc *S3StorageUC) UpdateS3StorageMeta(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &s3storagedto.UpdateS3StorageMetaResp{}, nil
+	return &awsdto.UpdateAWSMetaResp{}, nil
 }

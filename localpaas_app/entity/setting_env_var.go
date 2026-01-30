@@ -21,8 +21,16 @@ type EnvVar struct {
 	IsLiteral  bool   `json:"isLiteral,omitempty"`
 }
 
+func (s *EnvVars) GetType() base.SettingType {
+	return base.SettingTypeEnvVar
+}
+
+func (s *EnvVars) GetRefSettingIDs() []string {
+	return nil
+}
+
 func (s *Setting) AsEnvVars() (*EnvVars, error) {
-	return parseSettingAs(s, base.SettingTypeEnvVar, func() *EnvVars { return &EnvVars{} })
+	return parseSettingAs(s, func() *EnvVars { return &EnvVars{} })
 }
 
 func (s *Setting) MustAsEnvVars() *EnvVars {

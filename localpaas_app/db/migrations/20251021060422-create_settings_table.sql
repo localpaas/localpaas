@@ -1,18 +1,19 @@
 -- +migrate Up
 CREATE TABLE IF NOT EXISTS settings
 (
-    id           VARCHAR(100) PRIMARY KEY,
-    object_id    VARCHAR(100) NULL,
-    type         VARCHAR(100) NOT NULL,
-    kind         VARCHAR(100) NULL,
-    name         VARCHAR(100) NULL,
-    version      INT2 NOT NULL DEFAULT 1,
-    status       VARCHAR(20) NOT NULL CONSTRAINT chk_status CHECK
-                    (status IN ('active','pending','disabled','expired')) DEFAULT 'active',
-    data         JSONB NULL,
+    id                VARCHAR(100) PRIMARY KEY,
+    object_id         VARCHAR(100) NULL,
+    type              VARCHAR(100) NOT NULL,
+    kind              VARCHAR(100) NULL,
+    name              VARCHAR(100) NULL,
+    version           INT2 NOT NULL DEFAULT 1,
+    status            VARCHAR(20) NOT NULL CONSTRAINT chk_status CHECK
+                        (status IN ('active','pending','disabled','expired')) DEFAULT 'active',
+    data              JSONB NULL,
     avail_in_projects BOOL NOT NULL DEFAULT FALSE,
-    is_default   BOOL NOT NULL DEFAULT FALSE,
-    update_ver   INT4 NOT NULL DEFAULT 1,
+    is_default        BOOL NOT NULL DEFAULT FALSE,
+    ref_ids           VARCHAR [] NULL,
+    update_ver        INT4 NOT NULL DEFAULT 1,
 
     created_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,

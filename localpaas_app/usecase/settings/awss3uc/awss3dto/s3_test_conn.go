@@ -1,4 +1,4 @@
-package s3storagedto
+package awss3dto
 
 import (
 	vld "github.com/tiendc/go-validator"
@@ -8,27 +8,27 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 )
 
-type TestS3StorageConnReq struct {
-	*S3StorageBaseReq
+type TestAWSS3ConnReq struct {
+	*AWSS3BaseReq
 }
 
-func NewTestS3StorageConnReq() *TestS3StorageConnReq {
-	return &TestS3StorageConnReq{}
+func NewTestAWSS3ConnReq() *TestAWSS3ConnReq {
+	return &TestAWSS3ConnReq{}
 }
 
-func (req *TestS3StorageConnReq) ModifyRequest() error {
+func (req *TestAWSS3ConnReq) ModifyRequest() error {
 	// NOTE: make sure req.Name is not empty to not fail the validation
 	req.Name = gofn.Coalesce(req.Name, "x")
 	return nil
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *TestS3StorageConnReq) Validate() apperrors.ValidationErrors {
+func (req *TestAWSS3ConnReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.validate("")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type TestS3StorageConnResp struct {
+type TestAWSS3ConnResp struct {
 	Meta *basedto.Meta `json:"meta"`
 }

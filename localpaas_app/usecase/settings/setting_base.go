@@ -11,6 +11,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/entityutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/strutil"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 )
@@ -45,13 +46,10 @@ func loadSettingByID(
 	req *BaseSettingReq,
 	id string,
 	requireActive bool, //nolint:unparam
+	loadRefSettings bool,
 	opts ...bunex.SelectQueryOption,
 ) (setting *entity.Setting, err error) {
-	loadOpts := []bunex.SelectQueryOption{
-		bunex.SelectWhere("setting.type = ?", req.Type),
-	}
-	loadOpts = append(loadOpts, opts...)
-
+	loadOpts := append([]bunex.SelectQueryOption{}, opts...)
 	switch req.Scope {
 	case base.SettingScopeGlobal:
 		loadOpts = append(loadOpts, bunex.SelectWhere("setting.object_id IS NULL"))
@@ -70,7 +68,51 @@ func loadSettingByID(
 		return nil, apperrors.Wrap(err)
 	}
 
+	if loadRefSettings && setting != nil && len(setting.RefIDs) > 0 {
+		setting.RefSettings, err = loadSettingByIDs(ctx, db, settingRepo, req, setting.RefIDs, requireActive)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	}
+
 	return setting, nil
+}
+
+func loadSettingByIDs(
+	ctx context.Context,
+	db database.IDB,
+	settingRepo repository.SettingRepo,
+	req *BaseSettingReq,
+	ids []string,
+	requireActive bool, //nolint:unparam
+	opts ...bunex.SelectQueryOption,
+) (settings []*entity.Setting, err error) {
+	if len(ids) == 0 {
+		return nil, nil
+	}
+	loadOpts := []bunex.SelectQueryOption{
+		bunex.SelectWhere("setting.id IN (?)", bunex.In(ids)),
+	}
+	if requireActive {
+		loadOpts = append(loadOpts, bunex.SelectWhere("setting.status = ?", base.SettingStatusActive))
+	}
+	loadOpts = append(loadOpts, opts...)
+	switch req.Scope {
+	case base.SettingScopeGlobal:
+		loadOpts = append(loadOpts, bunex.SelectWhere("setting.object_id IS NULL"))
+		settings, _, err = settingRepo.List(ctx, db, nil, loadOpts...)
+	case base.SettingScopeProject:
+		settings, _, err = settingRepo.ListByProject(ctx, db, req.ObjectID, nil, loadOpts...)
+	case base.SettingScopeApp:
+		settings, _, err = settingRepo.ListByApp(ctx, db, req.ParentObjectID, req.ObjectID, nil, loadOpts...)
+	case base.SettingScopeUser:
+		settings, _, err = settingRepo.ListByUser(ctx, db, req.ObjectID, nil, loadOpts...)
+	}
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	return settings, nil
 }
 
 func checkNameConflict(
@@ -102,6 +144,47 @@ func checkNameConflict(
 	if setting != nil {
 		return apperrors.NewAlreadyExist(strutil.ToPascalCase(string(req.Type))).
 			WithMsgLog("%s '%s' already exists", req.Type, setting.Name)
+	}
+	return nil
+}
+
+func checkRefSettingsExistence(
+	ctx context.Context,
+	db database.IDB,
+	settingRepo repository.SettingRepo,
+	req *BaseSettingReq,
+	refSettingIDs []string,
+	requireActive bool,
+) (err error) {
+	if len(refSettingIDs) == 0 {
+		return nil
+	}
+	listOpts := []bunex.SelectQueryOption{
+		bunex.SelectWhere("setting.id IN (?)", bunex.In(refSettingIDs)),
+	}
+	if requireActive {
+		listOpts = append(listOpts, bunex.SelectWhere("setting.status = ?", base.SettingStatusActive))
+	}
+	var settings []*entity.Setting
+	switch req.Scope {
+	case base.SettingScopeGlobal:
+		listOpts = append(listOpts, bunex.SelectWhere("setting.object_id IS NULL"))
+		settings, _, err = settingRepo.List(ctx, db, nil, listOpts...)
+	case base.SettingScopeProject:
+		settings, _, err = settingRepo.ListByProject(ctx, db, req.ObjectID, nil, listOpts...)
+	case base.SettingScopeApp:
+		settings, _, err = settingRepo.ListByApp(ctx, db, req.ParentObjectID, req.ObjectID, nil, listOpts...)
+	case base.SettingScopeUser:
+		settings, _, err = settingRepo.ListByUser(ctx, db, req.ObjectID, nil, listOpts...)
+	}
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	for _, refSettingID := range refSettingIDs {
+		found := entityutil.FindByID(settings, refSettingID)
+		if found == nil {
+			return apperrors.NewNotFound("Setting").WithMsgLog("setting %s not found", refSettingID)
+		}
 	}
 	return nil
 }

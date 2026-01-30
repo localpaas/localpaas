@@ -18,13 +18,21 @@ type Ssl struct {
 	Email       string           `json:"email"`
 }
 
-func (o *Ssl) MustDecrypt() *Ssl {
-	o.PrivateKey.MustGetPlain()
-	return o
+func (s *Ssl) GetType() base.SettingType {
+	return base.SettingTypeSSL
+}
+
+func (s *Ssl) GetRefSettingIDs() []string {
+	return nil
+}
+
+func (s *Ssl) MustDecrypt() *Ssl {
+	s.PrivateKey.MustGetPlain()
+	return s
 }
 
 func (s *Setting) AsSsl() (*Ssl, error) {
-	return parseSettingAs(s, base.SettingTypeSSL, func() *Ssl { return &Ssl{} })
+	return parseSettingAs(s, func() *Ssl { return &Ssl{} })
 }
 
 func (s *Setting) MustAsSsl() *Ssl {

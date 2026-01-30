@@ -45,6 +45,14 @@ type HTTPMailFieldMapping struct {
 	Password    string `json:"password"`
 }
 
+func (s *Email) GetType() base.SettingType {
+	return base.SettingTypeEmail
+}
+
+func (s *Email) GetRefSettingIDs() []string {
+	return nil
+}
+
 func (s *Email) MustDecrypt() *Email {
 	if s.SMTP != nil {
 		s.SMTP.Password.MustGetPlain()
@@ -56,7 +64,7 @@ func (s *Email) MustDecrypt() *Email {
 }
 
 func (s *Setting) AsEmail() (*Email, error) {
-	return parseSettingAs(s, base.SettingTypeEmail, func() *Email { return &Email{} })
+	return parseSettingAs(s, func() *Email { return &Email{} })
 }
 
 func (s *Setting) MustAsEmail() *Email {

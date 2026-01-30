@@ -29,8 +29,16 @@ type CronJob struct {
 	Command     string            `json:"command"`
 }
 
-func (j *CronJob) ParseCron() (cron.Schedule, error) {
-	sched, err := parser.Parse(j.Cron)
+func (s *CronJob) GetType() base.SettingType {
+	return base.SettingTypeCronJob
+}
+
+func (s *CronJob) GetRefSettingIDs() []string {
+	return nil
+}
+
+func (s *CronJob) ParseCron() (cron.Schedule, error) {
+	sched, err := parser.Parse(s.Cron)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -38,7 +46,7 @@ func (j *CronJob) ParseCron() (cron.Schedule, error) {
 }
 
 func (s *Setting) AsCronJob() (*CronJob, error) {
-	return parseSettingAs(s, base.SettingTypeCronJob, func() *CronJob { return &CronJob{} })
+	return parseSettingAs(s, func() *CronJob { return &CronJob{} })
 }
 
 func (s *Setting) MustAsCronJob() *CronJob {

@@ -16,13 +16,21 @@ type GitToken struct {
 	BaseURL string         `json:"baseURL"`
 }
 
+func (s *GitToken) GetType() base.SettingType {
+	return base.SettingTypeGitToken
+}
+
+func (s *GitToken) GetRefSettingIDs() []string {
+	return nil
+}
+
 func (s *GitToken) MustDecrypt() *GitToken {
 	s.Token.MustGetPlain()
 	return s
 }
 
 func (s *Setting) AsGitToken() (*GitToken, error) {
-	return parseSettingAs(s, base.SettingTypeGitToken, func() *GitToken { return &GitToken{} })
+	return parseSettingAs(s, func() *GitToken { return &GitToken{} })
 }
 
 func (s *Setting) MustAsGitToken() *GitToken {

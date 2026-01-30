@@ -1,4 +1,4 @@
-package s3storagedto
+package awss3dto
 
 import (
 	vld "github.com/tiendc/go-validator"
@@ -13,7 +13,7 @@ const (
 	maxKeyLen = 100
 )
 
-func validateS3StorageName(name *string, required bool, field string) []vld.Validator {
+func validateAWSS3Name(name *string, required bool, field string) []vld.Validator {
 	if !required && (name == nil || *name == "") {
 		return nil
 	}

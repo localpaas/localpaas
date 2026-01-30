@@ -1,4 +1,4 @@
-package s3storageuc
+package awss3uc
 
 import (
 	"context"
@@ -6,14 +6,14 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/s3storageuc/s3storagedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/awss3uc/awss3dto"
 )
 
-func (uc *S3StorageUC) GetS3Storage(
+func (uc *AWSS3UC) GetAWSS3(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *s3storagedto.GetS3StorageReq,
-) (*s3storagedto.GetS3StorageResp, error) {
+	req *awss3dto.GetAWSS3Req,
+) (*awss3dto.GetAWSS3Resp, error) {
 	req.Type = currentSettingType
 	setting, err := settings.GetSetting(ctx, uc.db, auth, &req.GetSettingReq, &settings.GetSettingData{
 		SettingRepo: uc.settingRepo,
@@ -22,13 +22,13 @@ func (uc *S3StorageUC) GetS3Storage(
 		return nil, apperrors.Wrap(err)
 	}
 
-	setting.MustAsS3Storage().MustDecrypt()
-	resp, err := s3storagedto.TransformS3Storage(setting)
+	setting.MustAsAWSS3().MustDecrypt()
+	resp, err := awss3dto.TransformAWSS3(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &s3storagedto.GetS3StorageResp{
+	return &awss3dto.GetAWSS3Resp{
 		Data: resp,
 	}, nil
 }

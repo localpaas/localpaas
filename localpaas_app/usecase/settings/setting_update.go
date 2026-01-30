@@ -34,6 +34,7 @@ type UpdateSettingData struct {
 
 	SettingRepo       repository.SettingRepo
 	VerifyingName     string
+	VerifyingRefIDs   []string
 	DefaultMustUnique bool
 	ExtraLoadOpts     []bunex.SelectQueryOption
 
@@ -113,7 +114,7 @@ func loadSettingForUpdate(
 	loadOpts = append(loadOpts, data.ExtraLoadOpts...)
 
 	setting, err := loadSettingByID(ctx, db, data.SettingRepo, &req.BaseSettingReq, req.ID,
-		false, loadOpts...)
+		false, false, loadOpts...)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -130,6 +131,15 @@ func loadSettingForUpdate(
 	// If name changes, validate the new one
 	if data.VerifyingName != "" && !strings.EqualFold(setting.Name, data.VerifyingName) {
 		err = checkNameConflict(ctx, db, data.SettingRepo, &req.BaseSettingReq, data.VerifyingName)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+	}
+
+	// Verify that the referenced settings exist
+	if len(data.VerifyingRefIDs) > 0 {
+		err := checkRefSettingsExistence(ctx, db, data.SettingRepo, &req.BaseSettingReq,
+			data.VerifyingRefIDs, true)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}

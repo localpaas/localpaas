@@ -1,4 +1,4 @@
-package s3storageuc
+package awss3uc
 
 import (
 	"context"
@@ -9,24 +9,25 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/s3storageuc/s3storagedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/awss3uc/awss3dto"
 )
 
 const (
-	currentSettingType    = base.SettingTypeS3Storage
-	currentSettingVersion = entity.CurrentS3StorageVersion
+	currentSettingType    = base.SettingTypeAWSS3
+	currentSettingVersion = entity.CurrentAWSS3Version
 )
 
-func (uc *S3StorageUC) CreateS3Storage(
+func (uc *AWSS3UC) CreateAWSS3(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *s3storagedto.CreateS3StorageReq,
-) (*s3storagedto.CreateS3StorageResp, error) {
+	req *awss3dto.CreateAWSS3Req,
+) (*awss3dto.CreateAWSS3Resp, error) {
 	req.Type = currentSettingType
 	resp, err := settings.CreateSetting(ctx, uc.db, &req.CreateSettingReq, &settings.CreateSettingData{
-		SettingRepo:   uc.settingRepo,
-		VerifyingName: req.Name,
-		Version:       currentSettingVersion,
+		SettingRepo:     uc.settingRepo,
+		VerifyingName:   req.Name,
+		VerifyingRefIDs: []string{req.Cred.ID},
+		Version:         currentSettingVersion,
 		PrepareCreation: func(
 			ctx context.Context,
 			db database.Tx,
@@ -44,7 +45,7 @@ func (uc *S3StorageUC) CreateS3Storage(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &s3storagedto.CreateS3StorageResp{
+	return &awss3dto.CreateAWSS3Resp{
 		Data: resp.Data,
 	}, nil
 }

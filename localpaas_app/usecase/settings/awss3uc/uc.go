@@ -1,4 +1,4 @@
-package s3storageuc
+package awss3uc
 
 import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
@@ -7,7 +7,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
 )
 
-type S3StorageUC struct {
+type AWSS3UC struct {
 	db                       *database.DB
 	settingRepo              repository.SettingRepo
 	projectSharedSettingRepo repository.ProjectSharedSettingRepo
@@ -15,14 +15,14 @@ type S3StorageUC struct {
 	settingService           settingservice.SettingService
 }
 
-func NewS3StorageUC(
+func NewAWSS3UC(
 	db *database.DB,
 	settingRepo repository.SettingRepo,
 	projectSharedSettingRepo repository.ProjectSharedSettingRepo,
 	permissionManager permission.Manager,
 	settingService settingservice.SettingService,
-) *S3StorageUC {
-	return &S3StorageUC{
+) *AWSS3UC {
+	return &AWSS3UC{
 		db:                       db,
 		settingRepo:              settingRepo,
 		projectSharedSettingRepo: projectSharedSettingRepo,

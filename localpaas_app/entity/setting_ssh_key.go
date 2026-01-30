@@ -15,14 +15,22 @@ type SSHKey struct {
 	Passphrase EncryptedField `json:"passphrase,omitzero"`
 }
 
-func (o *SSHKey) MustDecrypt() *SSHKey {
-	o.PrivateKey.MustGetPlain()
-	o.Passphrase.MustGetPlain()
-	return o
+func (s *SSHKey) GetType() base.SettingType {
+	return base.SettingTypeSSHKey
+}
+
+func (s *SSHKey) GetRefSettingIDs() []string {
+	return nil
+}
+
+func (s *SSHKey) MustDecrypt() *SSHKey {
+	s.PrivateKey.MustGetPlain()
+	s.Passphrase.MustGetPlain()
+	return s
 }
 
 func (s *Setting) AsSSHKey() (*SSHKey, error) {
-	return parseSettingAs(s, base.SettingTypeSSHKey, func() *SSHKey { return &SSHKey{} })
+	return parseSettingAs(s, func() *SSHKey { return &SSHKey{} })
 }
 
 func (s *Setting) MustAsSSHKey() *SSHKey {

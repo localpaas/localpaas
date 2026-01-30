@@ -11,6 +11,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/entityutil"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 )
 
@@ -86,8 +87,25 @@ func ListSetting(
 		return nil, apperrors.Wrap(err)
 	}
 
+	refIDs := make([]string, 0)
 	for _, setting := range settings {
 		setting.CurrentObjectID = req.ObjectID
+		refIDs = append(refIDs, setting.RefIDs...)
+	}
+
+	if len(refIDs) > 0 {
+		refSettings, err := loadSettingByIDs(ctx, db, data.SettingRepo, &req.BaseSettingReq, refIDs, false)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		settingMap := entityutil.SliceToIDMap(refSettings)
+		for _, setting := range settings {
+			for _, refID := range setting.RefIDs {
+				if s := settingMap[refID]; s != nil {
+					setting.RefSettings = append(setting.RefSettings, s)
+				}
+			}
+		}
 	}
 
 	return &ListSettingResp{

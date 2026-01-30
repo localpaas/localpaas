@@ -1,0 +1,41 @@
+package entity
+
+import (
+	"github.com/tiendc/gofn"
+
+	"github.com/localpaas/localpaas/localpaas_app/base"
+)
+
+const (
+	CurrentAWSS3Version = 1
+)
+
+type AWSS3 struct {
+	Cred     ObjectID `json:"cred"`
+	Region   string   `json:"region,omitempty"`
+	Bucket   string   `json:"bucket,omitempty"`
+	Endpoint string   `json:"endpoint,omitempty"`
+}
+
+func (s *AWSS3) GetType() base.SettingType {
+	return base.SettingTypeAWSS3
+}
+
+func (s *AWSS3) GetRefSettingIDs() []string {
+	if s == nil {
+		return nil
+	}
+	return []string{s.Cred.ID}
+}
+
+func (s *AWSS3) MustDecrypt() *AWSS3 {
+	return s
+}
+
+func (s *Setting) AsAWSS3() (*AWSS3, error) {
+	return parseSettingAs(s, func() *AWSS3 { return &AWSS3{} })
+}
+
+func (s *Setting) MustAsAWSS3() *AWSS3 {
+	return gofn.Must(s.AsAWSS3())
+}

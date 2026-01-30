@@ -1,4 +1,4 @@
-package s3storageuc
+package awss3uc
 
 import (
 	"context"
@@ -6,14 +6,14 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/s3storageuc/s3storagedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/awss3uc/awss3dto"
 )
 
-func (uc *S3StorageUC) DeleteS3Storage(
+func (uc *AWSS3UC) DeleteAWSS3(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *s3storagedto.DeleteS3StorageReq,
-) (*s3storagedto.DeleteS3StorageResp, error) {
+	req *awss3dto.DeleteAWSS3Req,
+) (*awss3dto.DeleteAWSS3Resp, error) {
 	req.Type = currentSettingType
 	_, err := settings.DeleteSetting(ctx, uc.db, &req.DeleteSettingReq, &settings.DeleteSettingData{
 		SettingRepo:              uc.settingRepo,
@@ -23,5 +23,5 @@ func (uc *S3StorageUC) DeleteS3Storage(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &s3storagedto.DeleteS3StorageResp{}, nil
+	return &awss3dto.DeleteAWSS3Resp{}, nil
 }

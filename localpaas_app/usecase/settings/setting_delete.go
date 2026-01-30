@@ -104,7 +104,8 @@ func loadSettingForDeletion(
 	}
 	loadOpts = append(loadOpts, data.ExtraLoadOpts...)
 
-	setting, err := loadSettingByID(ctx, db, data.SettingRepo, &req.BaseSettingReq, req.ID, false, loadOpts...)
+	setting, err := loadSettingByID(ctx, db, data.SettingRepo, &req.BaseSettingReq, req.ID,
+		false, false, loadOpts...)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

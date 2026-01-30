@@ -30,6 +30,7 @@ type CreateSettingResp struct {
 type CreateSettingData struct {
 	SettingRepo       repository.SettingRepo
 	VerifyingName     string
+	VerifyingRefIDs   []string
 	DefaultMustUnique bool
 	Version           int
 
@@ -105,10 +106,22 @@ func loadSettingForCreation(
 	data *CreateSettingData,
 ) error {
 	// Verify that the name is available to use
-	err := checkNameConflict(ctx, db, data.SettingRepo, &req.BaseSettingReq, data.VerifyingName)
-	if err != nil {
-		return apperrors.Wrap(err)
+	if data.VerifyingName != "" {
+		err := checkNameConflict(ctx, db, data.SettingRepo, &req.BaseSettingReq, data.VerifyingName)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
+
+	// Verify that the referenced settings exist
+	if len(data.VerifyingRefIDs) > 0 {
+		err := checkRefSettingsExistence(ctx, db, data.SettingRepo, &req.BaseSettingReq,
+			data.VerifyingRefIDs, true)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+	}
+
 	return nil
 }
 

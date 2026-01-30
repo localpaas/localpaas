@@ -16,8 +16,16 @@ type APIKey struct {
 	AccessAction *base.AccessActions `json:"accessAction,omitempty"`
 }
 
+func (s *APIKey) GetType() base.SettingType {
+	return base.SettingTypeAPIKey
+}
+
+func (s *APIKey) GetRefSettingIDs() []string {
+	return nil
+}
+
 func (s *Setting) AsAPIKey() (*APIKey, error) {
-	return parseSettingAs(s, base.SettingTypeAPIKey, func() *APIKey { return &APIKey{} })
+	return parseSettingAs(s, func() *APIKey { return &APIKey{} })
 }
 
 func (s *Setting) MustAsAPIKey() *APIKey {

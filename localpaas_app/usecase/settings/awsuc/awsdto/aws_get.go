@@ -1,4 +1,4 @@
-package s3storagedto
+package awsdto
 
 import (
 	vld "github.com/tiendc/go-validator"
@@ -14,48 +14,46 @@ const (
 	maskedSecretKey = "****************"
 )
 
-type GetS3StorageReq struct {
+type GetAWSReq struct {
 	settings.GetSettingReq
 }
 
-func NewGetS3StorageReq() *GetS3StorageReq {
-	return &GetS3StorageReq{}
+func NewGetAWSReq() *GetAWSReq {
+	return &GetAWSReq{}
 }
 
-func (req *GetS3StorageReq) Validate() apperrors.ValidationErrors {
+func (req *GetAWSReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.GetSettingReq.Validate()...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type GetS3StorageResp struct {
-	Meta *basedto.Meta  `json:"meta"`
-	Data *S3StorageResp `json:"data"`
+type GetAWSResp struct {
+	Meta *basedto.Meta `json:"meta"`
+	Data *AWSResp      `json:"data"`
 }
 
-type S3StorageResp struct {
+type AWSResp struct {
 	*settings.BaseSettingResp
 	Kind        string `json:"kind,omitempty"`
 	AccessKeyID string `json:"accessKeyId"`
 	SecretKey   string `json:"secretKey,omitempty"`
 	Region      string `json:"region"`
-	Bucket      string `json:"bucket"`
-	Endpoint    string `json:"endpoint"`
 	Encrypted   bool   `json:"encrypted,omitempty"`
 }
 
-func (resp *S3StorageResp) CopySecretKey(field entity.EncryptedField) error {
+func (resp *AWSResp) CopySecretKey(field entity.EncryptedField) error {
 	resp.SecretKey = field.String()
 	return nil
 }
 
-func TransformS3Storage(setting *entity.Setting) (resp *S3StorageResp, err error) {
-	s3Config := setting.MustAsS3Storage()
-	if err = copier.Copy(&resp, &s3Config); err != nil {
+func TransformAWS(setting *entity.Setting) (resp *AWSResp, err error) {
+	config := setting.MustAsAWS()
+	if err = copier.Copy(&resp, &config); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp.Encrypted = s3Config.SecretKey.IsEncrypted()
+	resp.Encrypted = config.SecretKey.IsEncrypted()
 	if resp.Encrypted {
 		resp.SecretKey = maskedSecretKey
 	}

@@ -1,4 +1,4 @@
-package s3storagedto
+package awsdto
 
 import (
 	vld "github.com/tiendc/go-validator"
@@ -9,12 +9,12 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
-type ListS3StorageReq struct {
+type ListAWSReq struct {
 	settings.ListSettingReq
 }
 
-func NewListS3StorageReq() *ListS3StorageReq {
-	return &ListS3StorageReq{
+func NewListAWSReq() *ListAWSReq {
+	return &ListAWSReq{
 		ListSettingReq: settings.ListSettingReq{
 			Paging: basedto.Paging{
 				// Default paging if unset by client
@@ -24,21 +24,21 @@ func NewListS3StorageReq() *ListS3StorageReq {
 	}
 }
 
-func (req *ListS3StorageReq) Validate() apperrors.ValidationErrors {
+func (req *ListAWSReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.ListSettingReq.Validate()...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type ListS3StorageResp struct {
+type ListAWSResp struct {
 	Meta *basedto.ListMeta `json:"meta"`
-	Data []*S3StorageResp  `json:"data"`
+	Data []*AWSResp        `json:"data"`
 }
 
-func TransformS3Storages(settings []*entity.Setting) (resp []*S3StorageResp, err error) {
-	resp = make([]*S3StorageResp, 0, len(settings))
+func TransformAWSs(settings []*entity.Setting) (resp []*AWSResp, err error) {
+	resp = make([]*AWSResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformS3Storage(setting)
+		item, err := TransformAWS(setting)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

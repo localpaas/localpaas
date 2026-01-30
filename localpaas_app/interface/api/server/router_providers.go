@@ -49,18 +49,30 @@ func (s *HTTPServer) registerProviderRoutes(apiGroup *gin.RouterGroup) *gin.Rout
 		gitTokenGroup.POST("/test-conn", s.handlerRegistry.providersHandler.TestGitTokenConn)
 	}
 
-	{ // s3 storage group
-		s3StorageGroup := providerGroup.Group("/s3-storages")
+	{ // aws group
+		awsGroup := providerGroup.Group("/aws")
 		// Info
-		s3StorageGroup.GET("/:id", s.handlerRegistry.providersHandler.GetS3Storage)
-		s3StorageGroup.GET("", s.handlerRegistry.providersHandler.ListS3Storage)
+		awsGroup.GET("/:id", s.handlerRegistry.providersHandler.GetAWS)
+		awsGroup.GET("", s.handlerRegistry.providersHandler.ListAWS)
 		// Creation & Update
-		s3StorageGroup.POST("", s.handlerRegistry.providersHandler.CreateS3Storage)
-		s3StorageGroup.PUT("/:id", s.handlerRegistry.providersHandler.UpdateS3Storage)
-		s3StorageGroup.PUT("/:id/meta", s.handlerRegistry.providersHandler.UpdateS3StorageMeta)
-		s3StorageGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteS3Storage)
+		awsGroup.POST("", s.handlerRegistry.providersHandler.CreateAWS)
+		awsGroup.PUT("/:id", s.handlerRegistry.providersHandler.UpdateAWS)
+		awsGroup.PUT("/:id/meta", s.handlerRegistry.providersHandler.UpdateAWSMeta)
+		awsGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteAWS)
+	}
+
+	{ // aws s3 group
+		awsS3Group := providerGroup.Group("/aws-s3")
+		// Info
+		awsS3Group.GET("/:id", s.handlerRegistry.providersHandler.GetAWSS3)
+		awsS3Group.GET("", s.handlerRegistry.providersHandler.ListAWSS3)
+		// Creation & Update
+		awsS3Group.POST("", s.handlerRegistry.providersHandler.CreateAWSS3)
+		awsS3Group.PUT("/:id", s.handlerRegistry.providersHandler.UpdateAWSS3)
+		awsS3Group.PUT("/:id/meta", s.handlerRegistry.providersHandler.UpdateAWSS3Meta)
+		awsS3Group.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteAWSS3)
 		// Test connection
-		s3StorageGroup.POST("/test-conn", s.handlerRegistry.providersHandler.TestS3StorageConn)
+		awsS3Group.POST("/test-conn", s.handlerRegistry.providersHandler.TestAWSS3Conn)
 	}
 
 	{ // ssh key group
@@ -138,7 +150,7 @@ func (s *HTTPServer) registerProviderRoutes(apiGroup *gin.RouterGroup) *gin.Rout
 		emailGroup.PUT("/:id/meta", s.handlerRegistry.providersHandler.UpdateEmailMeta)
 		emailGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteEmail)
 		// Test connection
-		emailGroup.POST("/test-send-mail", s.handlerRegistry.providersHandler.TestSendEmail)
+		emailGroup.POST("/test-send-mail", s.handlerRegistry.providersHandler.TestSendMail)
 	}
 
 	return providerGroup

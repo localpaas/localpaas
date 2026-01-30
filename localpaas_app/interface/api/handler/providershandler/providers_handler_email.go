@@ -106,31 +106,31 @@ func (h *ProvidersHandler) DeleteEmail(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeEmail, base.SettingScopeGlobal)
 }
 
-// TestSendEmail Tests sending an email
+// TestSendMail Tests sending an email
 // @Summary Tests sending an email
 // @Description Tests sending an email
 // @Tags    global_providers
 // @Produce json
-// @Id      testSendEmail
-// @Param   body body emaildto.TestSendEmailReq true "request data"
-// @Success 200 {object} emaildto.TestSendEmailResp
+// @Id      testSendMail
+// @Param   body body emaildto.TestSendMailReq true "request data"
+// @Success 200 {object} emaildto.TestSendMailResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /providers/emails/test-send-mail [post]
-func (h *ProvidersHandler) TestSendEmail(ctx *gin.Context) {
+func (h *ProvidersHandler) TestSendMail(ctx *gin.Context) {
 	auth, err := h.AuthHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	req := emaildto.NewTestSendEmailReq()
+	req := emaildto.NewTestSendMailReq()
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.EmailUC.TestSendEmail(h.RequestCtx(ctx), auth, req)
+	resp, err := h.EmailUC.TestSendMail(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

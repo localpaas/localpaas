@@ -44,6 +44,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/gitsourceuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/awss3uc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/awsuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc"
@@ -52,7 +54,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/registryauthuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/s3storageuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc"
@@ -119,7 +120,8 @@ var Provides = []any{
 	projectuc.NewProjectUC,
 	appuc.NewAppUC,
 	appdeploymentuc.NewAppDeploymentUC,
-	s3storageuc.NewS3StorageUC,
+	awsuc.NewAWSUC,
+	awss3uc.NewAWSS3UC,
 	sshkeyuc.NewSSHKeyUC,
 	apikeyuc.NewAPIKeyUC,
 	oauthuc.NewOAuthUC,

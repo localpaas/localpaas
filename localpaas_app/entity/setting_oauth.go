@@ -3,6 +3,7 @@ package entity
 import (
 	"github.com/tiendc/gofn"
 
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
@@ -20,18 +21,29 @@ type OAuth struct {
 	Scopes       []string       `json:"scopes,omitempty"`
 }
 
+func (s *OAuth) GetType() base.SettingType {
+	return base.SettingTypeOAuth
+}
+
+func (s *OAuth) GetRefSettingIDs() []string {
+	return nil
+}
+
 func (s *OAuth) MustDecrypt() *OAuth {
 	s.ClientSecret.MustGetPlain()
 	return s
 }
 
 func (s *Setting) AsOAuth() (*OAuth, error) {
-	settingType := base.SettingTypeOAuth
 	// Github-app setting can be parsed as OAuth
 	if s.Type == base.SettingTypeGithubApp {
-		settingType = base.SettingTypeGithubApp
+		ghApp, err := s.AsGithubApp()
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		return ghApp.ConvertAsOAuth(), nil
 	}
-	return parseSettingAs(s, settingType, func() *OAuth { return &OAuth{} })
+	return parseSettingAs(s, func() *OAuth { return &OAuth{} })
 }
 
 func (s *Setting) MustAsOAuth() *OAuth {

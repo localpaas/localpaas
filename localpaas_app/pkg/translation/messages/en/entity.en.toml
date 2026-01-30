@@ -35,7 +35,7 @@ AppSettings = "App settings"
 # Settings
 Settings = "Settings"
 Setting = "Setting"
-S3Storage = "S3 storage"
+AWSS3 = "S3 storage"
 SSHKey = "SSH key"
 SshKey = "SSH key"
 OAuth = "OAuth"

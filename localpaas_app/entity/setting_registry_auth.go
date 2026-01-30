@@ -18,20 +18,28 @@ type RegistryAuth struct {
 	Address  string         `json:"address"`
 }
 
-func (o *RegistryAuth) MustDecrypt() *RegistryAuth {
-	o.Password.MustGetPlain()
-	return o
+func (s *RegistryAuth) GetType() base.SettingType {
+	return base.SettingTypeRegistryAuth
 }
 
-func (o *RegistryAuth) GenerateAuthHeader() (string, error) {
-	password, err := o.Password.GetPlain()
+func (s *RegistryAuth) GetRefSettingIDs() []string {
+	return nil
+}
+
+func (s *RegistryAuth) MustDecrypt() *RegistryAuth {
+	s.Password.MustGetPlain()
+	return s
+}
+
+func (s *RegistryAuth) GenerateAuthHeader() (string, error) {
+	password, err := s.Password.GetPlain()
 	if err != nil {
 		return "", apperrors.Wrap(err)
 	}
 	h, err := registry.EncodeAuthConfig(registry.AuthConfig{
-		Username:      o.Username,
+		Username:      s.Username,
 		Password:      password,
-		ServerAddress: o.Address,
+		ServerAddress: s.Address,
 	})
 	if err != nil {
 		return "", apperrors.Wrap(err)
@@ -40,7 +48,7 @@ func (o *RegistryAuth) GenerateAuthHeader() (string, error) {
 }
 
 func (s *Setting) AsRegistryAuth() (*RegistryAuth, error) {
-	return parseSettingAs(s, base.SettingTypeRegistryAuth, func() *RegistryAuth { return &RegistryAuth{} })
+	return parseSettingAs(s, func() *RegistryAuth { return &RegistryAuth{} })
 }
 
 func (s *Setting) MustAsRegistryAuth() *RegistryAuth {

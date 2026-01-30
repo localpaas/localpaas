@@ -18,21 +18,29 @@ type Secret struct {
 	Base64 bool           `json:"b64"`
 }
 
-func (o *Secret) MustDecrypt() *Secret {
-	o.Value.MustGetPlain()
-	return o
+func (s *Secret) GetType() base.SettingType {
+	return base.SettingTypeSecret
 }
 
-func (o *Secret) ValueAsBytes() []byte {
-	plain := o.Value.MustGetPlain()
-	if o.Base64 {
+func (s *Secret) GetRefSettingIDs() []string {
+	return nil
+}
+
+func (s *Secret) MustDecrypt() *Secret {
+	s.Value.MustGetPlain()
+	return s
+}
+
+func (s *Secret) ValueAsBytes() []byte {
+	plain := s.Value.MustGetPlain()
+	if s.Base64 {
 		return gofn.Must(base64.StdEncoding.DecodeString(plain))
 	}
 	return []byte(plain)
 }
 
 func (s *Setting) AsSecret() (*Secret, error) {
-	return parseSettingAs(s, base.SettingTypeSecret, func() *Secret { return &Secret{} })
+	return parseSettingAs(s, func() *Secret { return &Secret{} })
 }
 
 func (s *Setting) MustAsSecret() *Secret {

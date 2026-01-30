@@ -14,8 +14,16 @@ type ProjectSettings struct {
 	Test string `json:"test"`
 }
 
+func (s *ProjectSettings) GetType() base.SettingType {
+	return base.SettingTypeProject
+}
+
+func (s *ProjectSettings) GetRefSettingIDs() []string {
+	return nil
+}
+
 func (s *Setting) AsProjectSettings() (*ProjectSettings, error) {
-	return parseSettingAs(s, base.SettingTypeProject, func() *ProjectSettings { return &ProjectSettings{} })
+	return parseSettingAs(s, func() *ProjectSettings { return &ProjectSettings{} })
 }
 
 func (s *Setting) MustAsProjectSettings() *ProjectSettings {

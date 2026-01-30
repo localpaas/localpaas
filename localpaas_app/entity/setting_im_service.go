@@ -23,6 +23,14 @@ type Discord struct {
 	Webhook EncryptedField `json:"webhook"`
 }
 
+func (s *IMService) GetType() base.SettingType {
+	return base.SettingTypeIMService
+}
+
+func (s *IMService) GetRefSettingIDs() []string {
+	return nil
+}
+
 func (s *IMService) MustDecrypt() *IMService {
 	if s.Slack != nil {
 		s.Slack.Webhook.MustGetPlain()
@@ -34,7 +42,7 @@ func (s *IMService) MustDecrypt() *IMService {
 }
 
 func (s *Setting) AsIMService() (*IMService, error) {
-	return parseSettingAs(s, base.SettingTypeIMService, func() *IMService { return &IMService{} })
+	return parseSettingAs(s, func() *IMService { return &IMService{} })
 }
 
 func (s *Setting) MustAsIMService() *IMService {

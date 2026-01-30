@@ -8,18 +8,18 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 )
 
-type TestSendEmailReq struct {
+type TestSendMailReq struct {
 	*EmailBaseReq
 	TestRecipient string `json:"testRecipient"`
 	TestSubject   string `json:"testSubject"`
 	TestContent   string `json:"testContent"`
 }
 
-func NewTestSendEmailReq() *TestSendEmailReq {
-	return &TestSendEmailReq{}
+func NewTestSendMailReq() *TestSendMailReq {
+	return &TestSendMailReq{}
 }
 
-func (req *TestSendEmailReq) ModifyRequest() error {
+func (req *TestSendMailReq) ModifyRequest() error {
 	// NOTE: make sure req.Name is not empty to not fail the validation
 	req.Name = gofn.Coalesce(req.Name, "x")
 	req.TestSubject = gofn.Coalesce(req.TestSubject, "test subject")
@@ -28,12 +28,12 @@ func (req *TestSendEmailReq) ModifyRequest() error {
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *TestSendEmailReq) Validate() apperrors.ValidationErrors {
+func (req *TestSendMailReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.validate("")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type TestSendEmailResp struct {
+type TestSendMailResp struct {
 	Meta *basedto.Meta `json:"meta"`
 }

@@ -3,6 +3,8 @@ package basesettinghandler
 import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/awss3uc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/awsuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc"
@@ -11,7 +13,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/registryauthuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/s3storageuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc"
@@ -22,7 +23,8 @@ type BaseSettingHandler struct {
 	*handler.BaseHandler
 	AuthHandler    *authhandler.AuthHandler
 	OAuthUC        *oauthuc.OAuthUC
-	S3StorageUC    *s3storageuc.S3StorageUC
+	AWSUC          *awsuc.AWSUC
+	AWSS3UC        *awss3uc.AWSS3UC
 	SSHKeyUC       *sshkeyuc.SSHKeyUC
 	IMServiceUC    *imserviceuc.IMServiceUC
 	RegistryAuthUC *registryauthuc.RegistryAuthUC
@@ -40,7 +42,8 @@ func NewBaseSettingHandler(
 	baseHandler *handler.BaseHandler,
 	authHandler *authhandler.AuthHandler,
 	oauthUC *oauthuc.OAuthUC,
-	s3StorageUC *s3storageuc.S3StorageUC,
+	awsUC *awsuc.AWSUC,
+	awsS3UC *awss3uc.AWSS3UC,
 	sshKeyUC *sshkeyuc.SSHKeyUC,
 	imServiceUC *imserviceuc.IMServiceUC,
 	registryAuthUC *registryauthuc.RegistryAuthUC,
@@ -57,7 +60,8 @@ func NewBaseSettingHandler(
 		BaseHandler:    baseHandler,
 		AuthHandler:    authHandler,
 		OAuthUC:        oauthUC,
-		S3StorageUC:    s3StorageUC,
+		AWSUC:          awsUC,
+		AWSS3UC:        awsS3UC,
 		SSHKeyUC:       sshKeyUC,
 		IMServiceUC:    imServiceUC,
 		RegistryAuthUC: registryAuthUC,

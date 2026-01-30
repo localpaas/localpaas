@@ -1,4 +1,4 @@
-package s3storagedto
+package awsdto
 
 import (
 	vld "github.com/tiendc/go-validator"
@@ -9,22 +9,22 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
-type UpdateS3StorageMetaReq struct {
+type UpdateAWSMetaReq struct {
 	settings.UpdateSettingMetaReq
 }
 
-func NewUpdateS3StorageMetaReq() *UpdateS3StorageMetaReq {
-	return &UpdateS3StorageMetaReq{}
+func NewUpdateAWSMetaReq() *UpdateAWSMetaReq {
+	return &UpdateAWSMetaReq{}
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *UpdateS3StorageMetaReq) Validate() apperrors.ValidationErrors {
+func (req *UpdateAWSMetaReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, basedto.ValidateStrIn(req.Status, false,
 		base.AllSettingSettableStatuses, "status")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type UpdateS3StorageMetaResp struct {
+type UpdateAWSMetaResp struct {
 	Meta *basedto.Meta `json:"meta"`
 }
