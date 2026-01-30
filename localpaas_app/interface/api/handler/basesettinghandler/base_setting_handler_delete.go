@@ -112,9 +112,9 @@ func (h *BaseSettingHandler) DeleteSetting(
 		req, ucFunc = r, func() (any, error) { return h.SSHKeyUC.DeleteSSHKey(reqCtx, auth, r) }
 
 	case base.ResourceTypeSSL:
-		r := ssldto.NewDeleteSslReq()
+		r := ssldto.NewDeleteSSLReq()
 		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
-		req, ucFunc = r, func() (any, error) { return h.SSLUC.DeleteSsl(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.SSLUC.DeleteSSL(reqCtx, auth, r) }
 
 	case base.ResourceTypeCronJob:
 		r := cronjobdto.NewDeleteCronJobReq()

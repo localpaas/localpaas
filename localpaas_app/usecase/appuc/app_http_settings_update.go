@@ -157,8 +157,8 @@ func (uc *AppUC) applyAppHttpSettings(
 		return apperrors.Wrap(err)
 	}
 
-	allSslIDs := appHttpSettings.GetInUseSslCertIDs()
-	err = uc.appService.EnsureSslConfigFiles(allSslIDs, false, refSettingMap)
+	allSSLIDs := appHttpSettings.GetInUseSSLCertIDs()
+	err = uc.appService.EnsureSSLConfigFiles(allSSLIDs, false, refSettingMap)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

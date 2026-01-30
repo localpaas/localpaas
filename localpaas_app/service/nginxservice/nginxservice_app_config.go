@@ -264,7 +264,7 @@ func (s *nginxService) buildDomainRedirectionConfig(
 	domainConf.DomainRedirectConf = serverBlock
 
 	confSetServerName(serverBlock, domain.Domain)
-	confSetSslCert(serverBlock, domain.SslCert.ID)
+	confSetSSLCert(serverBlock, domain.SSLCert.ID)
 
 	serverBlock.SetVariable("$lp_redirect_to", domain.DomainRedirect)
 
@@ -287,7 +287,7 @@ func (s *nginxService) buildMainConfig(
 	domainConf.MainConf = serverBlock
 
 	confSetServerName(serverBlock, domain.Domain)
-	confSetSslCert(serverBlock, domain.SslCert.ID)
+	confSetSSLCert(serverBlock, domain.SSLCert.ID)
 	confSetUpstream(serverBlock, domainConf.App.Key, domain.ContainerPort)
 
 	serverConfig := gofn.Coalesce(domain.NginxSettings, &entity.NginxSettings{})
@@ -383,9 +383,9 @@ func confSetServerName(serverBlock *nginx.Block, serverName string) {
 	serverBlock.SetDirectiveArgs("server_name", []string{serverName}, 1)
 }
 
-func confSetSslCert(serverBlock *nginx.Block, sslID string) {
+func confSetSSLCert(serverBlock *nginx.Block, sslID string) {
 	section := "@lp_section ssl"
-	certFile, keyFile := getSslFilePaths(sslID)
+	certFile, keyFile := getSSLFilePaths(sslID)
 	serverBlock.AddDirectivesInSection(section,
 		nginx.NewDirective("ssl_certificate", []string{certFile}),
 		nginx.NewDirective("ssl_certificate_key", []string{keyFile}),
@@ -541,7 +541,7 @@ func confSetCustom(block *nginx.Block, config string) error {
 	return nil
 }
 
-func getSslFilePaths(sslID string) (certFile, keyFile string) {
+func getSSLFilePaths(sslID string) (certFile, keyFile string) {
 	if sslID == "" {
 		return filepath.Join(certsFakeDir, "local.crt"), filepath.Join(certsFakeDir, "local.key")
 	}

@@ -3344,7 +3344,7 @@
     "/projects/{projectID}/apps/{appID}/ssl/obtain" : {
       "post" : {
         "description" : "Obtains domain SSL",
-        "operationId" : "obtainDomainSsl",
+        "operationId" : "obtainDomainSSL",
         "parameters" : [ {
           "description" : "project ID",
           "in" : "path",
@@ -3366,7 +3366,7 @@
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.ObtainDomainSslReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.ObtainDomainSSLReq"
               }
             }
           },
@@ -3378,7 +3378,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.ObtainDomainSslResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.ObtainDomainSSLResp"
                 }
               }
             },
@@ -7603,7 +7603,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.ListSslResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.ListSSLResp"
                 }
               }
             },
@@ -7649,7 +7649,7 @@
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.CreateSslReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.CreateSSLReq"
               }
             }
           },
@@ -7661,7 +7661,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.CreateSslResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.CreateSSLResp"
                 }
               }
             },
@@ -7719,7 +7719,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.DeleteSslResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.DeleteSSLResp"
                 }
               }
             },
@@ -7774,7 +7774,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.GetSslResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.GetSSLResp"
                 }
               }
             },
@@ -7828,7 +7828,7 @@
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSslReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSSLReq"
               }
             }
           },
@@ -7840,7 +7840,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSslResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSSLResp"
                 }
               }
             },
@@ -7897,7 +7897,7 @@
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSslMetaReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSSLMetaReq"
               }
             }
           },
@@ -7909,7 +7909,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSslMetaResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSSLMetaResp"
                 }
               }
             },
@@ -12115,7 +12115,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.ListSslResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.ListSSLResp"
                 }
               }
             },
@@ -12152,7 +12152,7 @@
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.CreateSslReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.CreateSSLReq"
               }
             }
           },
@@ -12164,7 +12164,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.CreateSslResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.CreateSSLResp"
                 }
               }
             },
@@ -12214,7 +12214,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.DeleteSslResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.DeleteSSLResp"
                 }
               }
             },
@@ -12261,7 +12261,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.GetSslResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.GetSSLResp"
                 }
               }
             },
@@ -12307,7 +12307,7 @@
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSslReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSSLReq"
               }
             }
           },
@@ -12319,7 +12319,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSslResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSSLResp"
                 }
               }
             },
@@ -12368,7 +12368,7 @@
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSslMetaReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSSLMetaReq"
               }
             }
           },
@@ -12380,7 +12380,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSslMetaResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSSLMetaResp"
                 }
               }
             },
@@ -15169,6 +15169,11 @@
         "type" : "string",
         "x-enum-varnames" : [ "ProjectStatusActive", "ProjectStatusLocked", "ProjectStatusDisabled", "ProjectStatusDeleting" ]
       },
+      "github_com_localpaas_localpaas_localpaas_app_base.SSLProvider" : {
+        "enum" : [ "letsencrypt", "custom" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "SSLProviderLetsEncrypt", "SSLProviderCustom" ]
+      },
       "github_com_localpaas_localpaas_localpaas_app_base.SettingStatus" : {
         "enum" : [ "active", "pending", "disabled", "expired" ],
         "type" : "string",
@@ -15178,11 +15183,6 @@
         "enum" : [ "project", "app", "app-deployment", "app-http", "env-var", "secret", "aws", "aws-s3", "oauth", "ssh-key", "api-key", "im-service", "registry-auth", "basic-auth", "ssl", "github-app", "git-token", "cron-job", "email" ],
         "type" : "string",
         "x-enum-varnames" : [ "SettingTypeProject", "SettingTypeApp", "SettingTypeAppDeployment", "SettingTypeAppHttp", "SettingTypeEnvVar", "SettingTypeSecret", "SettingTypeAWS", "SettingTypeAWSS3", "SettingTypeOAuth", "SettingTypeSSHKey", "SettingTypeAPIKey", "SettingTypeIMService", "SettingTypeRegistryAuth", "SettingTypeBasicAuth", "SettingTypeSSL", "SettingTypeGithubApp", "SettingTypeGitToken", "SettingTypeCronJob", "SettingTypeEmail" ]
-      },
-      "github_com_localpaas_localpaas_localpaas_app_base.SslProvider" : {
-        "enum" : [ "letsencrypt", "custom" ],
-        "type" : "string",
-        "x-enum-varnames" : [ "SslProviderLetsEncrypt", "SslProviderCustom" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.TaskPriority" : {
         "enum" : [ "low", "default", "critical" ],
@@ -16288,7 +16288,7 @@
         "required" : [ "clientConfig", "customConfig", "gzipConfig", "limitZoneConfig", "locations" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.ObtainDomainSslReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.ObtainDomainSSLReq" : {
         "properties" : {
           "domain" : {
             "type" : "string"
@@ -16303,7 +16303,7 @@
         "required" : [ "domain", "email", "keySize" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.ObtainDomainSslResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.ObtainDomainSSLResp" : {
         "properties" : {
           "data" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
@@ -20717,7 +20717,7 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.CreateSslReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.CreateSSLReq" : {
         "properties" : {
           "availableInProjects" : {
             "type" : "boolean"
@@ -20744,13 +20744,13 @@
             "type" : "string"
           },
           "provider" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SslProvider"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SSLProvider"
           }
         },
         "required" : [ "availableInProjects", "certificate", "default", "email", "expireAt", "keySize", "name", "privateKey", "provider" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.CreateSslResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.CreateSSLResp" : {
         "properties" : {
           "data" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
@@ -20762,7 +20762,7 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.DeleteSslResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.DeleteSSLResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
@@ -20771,10 +20771,10 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.GetSslResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.GetSSLResp" : {
         "properties" : {
           "data" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.SslResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.SSLResp"
           },
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
@@ -20783,11 +20783,11 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.ListSslResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.ListSSLResp" : {
         "properties" : {
           "data" : {
             "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.SslResp"
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.SSLResp"
             },
             "type" : "array"
           },
@@ -20798,7 +20798,7 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.SslResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.SSLResp" : {
         "properties" : {
           "availableInProjects" : {
             "type" : "boolean"
@@ -20858,7 +20858,7 @@
         "required" : [ "certificate", "createdAt", "email", "id", "keySize", "name", "privateKey", "provider", "status", "type", "updateVer", "updatedAt" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSslMetaReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSSLMetaReq" : {
         "properties" : {
           "availableInProjects" : {
             "type" : "boolean"
@@ -20879,7 +20879,7 @@
         "required" : [ "availableInProjects", "default", "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSslMetaResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSSLMetaResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
@@ -20888,7 +20888,7 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSslReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSSLReq" : {
         "properties" : {
           "availableInProjects" : {
             "type" : "boolean"
@@ -20915,7 +20915,7 @@
             "type" : "string"
           },
           "provider" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SslProvider"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SSLProvider"
           },
           "updateVer" : {
             "type" : "integer"
@@ -20924,7 +20924,7 @@
         "required" : [ "availableInProjects", "certificate", "default", "email", "expireAt", "keySize", "name", "privateKey", "provider", "updateVer" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSslResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSSLResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"

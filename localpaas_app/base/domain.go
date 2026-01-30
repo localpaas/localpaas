@@ -1,12 +1,12 @@
 package base
 
-type SslProvider string
+type SSLProvider string
 
 const (
-	SslProviderLetsEncrypt SslProvider = "letsencrypt"
-	SslProviderCustom      SslProvider = "custom"
+	SSLProviderLetsEncrypt SSLProvider = "letsencrypt"
+	SSLProviderCustom      SSLProvider = "custom"
 )
 
 var (
-	AllSslProviders = []SslProvider{SslProviderLetsEncrypt, SslProviderCustom}
+	AllSSLProviders = []SSLProvider{SSLProviderLetsEncrypt, SSLProviderCustom}
 )

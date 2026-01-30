@@ -18,23 +18,23 @@ const (
 	keyMaxLen  = 10000
 )
 
-type CreateSslReq struct {
+type CreateSSLReq struct {
 	settings.CreateSettingReq
-	*SslBaseReq
+	*SSLBaseReq
 }
 
-type SslBaseReq struct {
+type SSLBaseReq struct {
 	Name        string           `json:"name"`
 	Certificate string           `json:"certificate"`
 	PrivateKey  string           `json:"privateKey"`
 	KeySize     int              `json:"keySize"`
-	Provider    base.SslProvider `json:"provider"`
+	Provider    base.SSLProvider `json:"provider"`
 	Email       string           `json:"email"`
 	ExpireAt    time.Time        `json:"expireAt"`
 }
 
-func (req *SslBaseReq) ToEntity() *entity.Ssl {
-	return &entity.Ssl{
+func (req *SSLBaseReq) ToEntity() *entity.SSL {
+	return &entity.SSL{
 		Certificate: req.Certificate,
 		PrivateKey:  entity.NewEncryptedField(req.PrivateKey),
 		KeySize:     req.KeySize,
@@ -43,12 +43,12 @@ func (req *SslBaseReq) ToEntity() *entity.Ssl {
 	}
 }
 
-func (req *SslBaseReq) modifyRequest() error {
+func (req *SSLBaseReq) modifyRequest() error {
 	req.Name = strings.TrimSpace(req.Name)
 	return nil
 }
 
-func (req *SslBaseReq) validate(field string) (res []vld.Validator) {
+func (req *SSLBaseReq) validate(field string) (res []vld.Validator) {
 	if field != "" {
 		field += "."
 	}
@@ -60,22 +60,22 @@ func (req *SslBaseReq) validate(field string) (res []vld.Validator) {
 	return res
 }
 
-func NewCreateSslReq() *CreateSslReq {
-	return &CreateSslReq{}
+func NewCreateSSLReq() *CreateSSLReq {
+	return &CreateSSLReq{}
 }
 
-func (req *CreateSslReq) ModifyRequest() error {
+func (req *CreateSSLReq) ModifyRequest() error {
 	return req.modifyRequest()
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *CreateSslReq) Validate() apperrors.ValidationErrors {
+func (req *CreateSSLReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.validate("")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type CreateSslResp struct {
+type CreateSSLResp struct {
 	Meta *basedto.Meta         `json:"meta"`
 	Data *basedto.ObjectIDResp `json:"data"`
 }

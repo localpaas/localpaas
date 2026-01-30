@@ -26,7 +26,7 @@ type AppService interface {
 	LoadReferenceSettings(ctx context.Context, db database.IDB, app *entity.App,
 		appSettings ...*entity.Setting) (map[string]*entity.Setting, error)
 
-	EnsureSslConfigFiles(sslIDs []string, forceRecreate bool,
+	EnsureSSLConfigFiles(sslIDs []string, forceRecreate bool,
 		refSettingMap map[string]*entity.Setting) error
 	EnsureBasicAuthConfigFiles(basicAuthIDs []string, forceRecreate bool,
 		refSettingMap map[string]*entity.Setting) error

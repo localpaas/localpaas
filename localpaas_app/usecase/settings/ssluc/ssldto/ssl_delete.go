@@ -8,21 +8,21 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
-type DeleteSslReq struct {
+type DeleteSSLReq struct {
 	settings.DeleteSettingReq
 }
 
-func NewDeleteSslReq() *DeleteSslReq {
-	return &DeleteSslReq{}
+func NewDeleteSSLReq() *DeleteSSLReq {
+	return &DeleteSSLReq{}
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *DeleteSslReq) Validate() apperrors.ValidationErrors {
+func (req *DeleteSSLReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.DeleteSettingReq.Validate()...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type DeleteSslResp struct {
+type DeleteSSLResp struct {
 	Meta *basedto.Meta `json:"meta"`
 }

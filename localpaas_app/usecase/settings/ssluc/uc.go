@@ -7,7 +7,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
 )
 
-type SslUC struct {
+type SSLUC struct {
 	db                       *database.DB
 	settingRepo              repository.SettingRepo
 	projectSharedSettingRepo repository.ProjectSharedSettingRepo
@@ -15,14 +15,14 @@ type SslUC struct {
 	settingService           settingservice.SettingService
 }
 
-func NewSslUC(
+func NewSSLUC(
 	db *database.DB,
 	settingRepo repository.SettingRepo,
 	projectSharedSettingRepo repository.ProjectSharedSettingRepo,
 	permissionManager permission.Manager,
 	settingService settingservice.SettingService,
-) *SslUC {
-	return &SslUC{
+) *SSLUC {
+	return &SSLUC{
 		db:                       db,
 		settingRepo:              settingRepo,
 		projectSharedSettingRepo: projectSharedSettingRepo,

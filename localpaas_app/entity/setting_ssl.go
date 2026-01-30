@@ -7,34 +7,34 @@ import (
 )
 
 const (
-	CurrentSslVersion = 1
+	CurrentSSLVersion = 1
 )
 
-type Ssl struct {
+type SSL struct {
 	Certificate string           `json:"certificate"`
 	PrivateKey  EncryptedField   `json:"privateKey"`
 	KeySize     int              `json:"keySize"`
-	Provider    base.SslProvider `json:"provider,omitempty"`
+	Provider    base.SSLProvider `json:"provider,omitempty"`
 	Email       string           `json:"email"`
 }
 
-func (s *Ssl) GetType() base.SettingType {
+func (s *SSL) GetType() base.SettingType {
 	return base.SettingTypeSSL
 }
 
-func (s *Ssl) GetRefSettingIDs() []string {
+func (s *SSL) GetRefSettingIDs() []string {
 	return nil
 }
 
-func (s *Ssl) MustDecrypt() *Ssl {
+func (s *SSL) MustDecrypt() *SSL {
 	s.PrivateKey.MustGetPlain()
 	return s
 }
 
-func (s *Setting) AsSsl() (*Ssl, error) {
-	return parseSettingAs(s, func() *Ssl { return &Ssl{} })
+func (s *Setting) AsSSL() (*SSL, error) {
+	return parseSettingAs(s, func() *SSL { return &SSL{} })
 }
 
-func (s *Setting) MustAsSsl() *Ssl {
-	return gofn.Must(s.AsSsl())
+func (s *Setting) MustAsSSL() *SSL {
+	return gofn.Must(s.AsSSL())
 }

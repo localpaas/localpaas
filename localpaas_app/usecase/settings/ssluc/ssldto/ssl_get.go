@@ -14,26 +14,26 @@ const (
 	maskedKey = "****************"
 )
 
-type GetSslReq struct {
+type GetSSLReq struct {
 	settings.GetSettingReq
 }
 
-func NewGetSslReq() *GetSslReq {
-	return &GetSslReq{}
+func NewGetSSLReq() *GetSSLReq {
+	return &GetSSLReq{}
 }
 
-func (req *GetSslReq) Validate() apperrors.ValidationErrors {
+func (req *GetSSLReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.GetSettingReq.Validate()...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type GetSslResp struct {
+type GetSSLResp struct {
 	Meta *basedto.Meta `json:"meta"`
-	Data *SslResp      `json:"data"`
+	Data *SSLResp      `json:"data"`
 }
 
-type SslResp struct {
+type SSLResp struct {
 	*settings.BaseSettingResp
 	Certificate string `json:"certificate"`
 	PrivateKey  string `json:"privateKey"`
@@ -43,13 +43,13 @@ type SslResp struct {
 	Encrypted   bool   `json:"encrypted,omitempty"`
 }
 
-func (resp *SslResp) CopyPrivateKey(field entity.EncryptedField) error {
+func (resp *SSLResp) CopyPrivateKey(field entity.EncryptedField) error {
 	resp.PrivateKey = field.String()
 	return nil
 }
 
-func TransformSsl(setting *entity.Setting) (resp *SslResp, err error) {
-	config := setting.MustAsSsl()
+func TransformSSL(setting *entity.Setting) (resp *SSLResp, err error) {
+	config := setting.MustAsSSL()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
 	}

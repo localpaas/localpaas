@@ -14,14 +14,14 @@ import (
 
 const (
 	currentSettingType    = base.SettingTypeSSL
-	currentSettingVersion = entity.CurrentSslVersion
+	currentSettingVersion = entity.CurrentSSLVersion
 )
 
-func (uc *SslUC) CreateSsl(
+func (uc *SSLUC) CreateSSL(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *ssldto.CreateSslReq,
-) (*ssldto.CreateSslResp, error) {
+	req *ssldto.CreateSSLReq,
+) (*ssldto.CreateSSLResp, error) {
 	req.Type = currentSettingType
 	resp, err := settings.CreateSetting(ctx, uc.db, &req.CreateSettingReq, &settings.CreateSettingData{
 		SettingRepo:   uc.settingRepo,
@@ -34,7 +34,7 @@ func (uc *SslUC) CreateSsl(
 			pData *settings.PersistingSettingCreationData,
 		) error {
 			pData.Setting.Kind = string(req.Provider)
-			err := pData.Setting.SetData(&entity.Ssl{
+			err := pData.Setting.SetData(&entity.SSL{
 				Certificate: req.Certificate,
 				PrivateKey:  entity.NewEncryptedField(req.PrivateKey),
 				KeySize:     req.KeySize,
@@ -51,7 +51,7 @@ func (uc *SslUC) CreateSsl(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &ssldto.CreateSslResp{
+	return &ssldto.CreateSSLResp{
 		Data: resp.Data,
 	}, nil
 }

@@ -17,7 +17,7 @@ const (
 	basicAuthDirFileMode = 0o755
 )
 
-func (s *appService) EnsureSslConfigFiles(
+func (s *appService) EnsureSSLConfigFiles(
 	sslIDs []string,
 	forceRecreate bool,
 	refSettingMap map[string]*entity.Setting,
@@ -38,11 +38,11 @@ func (s *appService) EnsureSslConfigFiles(
 			continue
 		}
 
-		dbSsl := refSettingMap[sslID]
-		if dbSsl == nil {
+		dbSSL := refSettingMap[sslID]
+		if dbSSL == nil {
 			return apperrors.NewNotFound("SSL").WithMsgLog("ssl %s not found", sslID)
 		}
-		ssl := dbSsl.MustAsSsl()
+		ssl := dbSSL.MustAsSSL()
 		certBytes := reflectutil.UnsafeStrToBytes(ssl.Certificate)
 		keyBytes := reflectutil.UnsafeStrToBytes(ssl.PrivateKey.MustGetPlain())
 

@@ -29,7 +29,7 @@ func (s *appService) LoadReferenceSettings(
 				return nil, apperrors.Wrap(err)
 			}
 			for _, domain := range httpSettings.Domains {
-				settingIDMap[domain.SslCert.ID] = base.SettingTypeSSL
+				settingIDMap[domain.SSLCert.ID] = base.SettingTypeSSL
 				settingIDMap[domain.BasicAuth.ID] = base.SettingTypeBasicAuth
 			}
 

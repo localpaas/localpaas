@@ -9,22 +9,22 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
-type UpdateSslMetaReq struct {
+type UpdateSSLMetaReq struct {
 	settings.UpdateSettingMetaReq
 }
 
-func NewUpdateSslMetaReq() *UpdateSslMetaReq {
-	return &UpdateSslMetaReq{}
+func NewUpdateSSLMetaReq() *UpdateSSLMetaReq {
+	return &UpdateSSLMetaReq{}
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *UpdateSslMetaReq) Validate() apperrors.ValidationErrors {
+func (req *UpdateSSLMetaReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, basedto.ValidateStrIn(req.Status, false,
 		base.AllSettingSettableStatuses, "status")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type UpdateSslMetaResp struct {
+type UpdateSSLMetaResp struct {
 	Meta *basedto.Meta `json:"meta"`
 }

@@ -9,11 +9,11 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc/ssldto"
 )
 
-func (uc *SslUC) UpdateSslMeta(
+func (uc *SSLUC) UpdateSSLMeta(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *ssldto.UpdateSslMetaReq,
-) (*ssldto.UpdateSslMetaResp, error) {
+	req *ssldto.UpdateSSLMetaReq,
+) (*ssldto.UpdateSSLMetaResp, error) {
 	req.Type = currentSettingType
 	_, err := settings.UpdateSettingMeta(ctx, uc.db, &req.UpdateSettingMetaReq, &settings.UpdateSettingMetaData{
 		SettingRepo: uc.settingRepo,
@@ -22,5 +22,5 @@ func (uc *SslUC) UpdateSslMeta(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &ssldto.UpdateSslMetaResp{}, nil
+	return &ssldto.UpdateSSLMetaResp{}, nil
 }

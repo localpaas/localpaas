@@ -9,11 +9,11 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc/ssldto"
 )
 
-func (uc *SslUC) DeleteSsl(
+func (uc *SSLUC) DeleteSSL(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *ssldto.DeleteSslReq,
-) (*ssldto.DeleteSslResp, error) {
+	req *ssldto.DeleteSSLReq,
+) (*ssldto.DeleteSSLResp, error) {
 	req.Type = currentSettingType
 	_, err := settings.DeleteSetting(ctx, uc.db, &req.DeleteSettingReq, &settings.DeleteSettingData{
 		SettingRepo:              uc.settingRepo,
@@ -23,5 +23,5 @@ func (uc *SslUC) DeleteSsl(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &ssldto.DeleteSslResp{}, nil
+	return &ssldto.DeleteSSLResp{}, nil
 }

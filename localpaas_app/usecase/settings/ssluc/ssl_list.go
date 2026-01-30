@@ -9,11 +9,11 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc/ssldto"
 )
 
-func (uc *SslUC) ListSsl(
+func (uc *SSLUC) ListSSL(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *ssldto.ListSslReq,
-) (*ssldto.ListSslResp, error) {
+	req *ssldto.ListSSLReq,
+) (*ssldto.ListSSLResp, error) {
 	req.Type = currentSettingType
 	resp, err := settings.ListSetting(ctx, uc.db, auth, &req.ListSettingReq, &settings.ListSettingData{
 		SettingRepo: uc.settingRepo,
@@ -22,12 +22,12 @@ func (uc *SslUC) ListSsl(
 		return nil, apperrors.Wrap(err)
 	}
 
-	respData, err := ssldto.TransformSsls(resp.Data)
+	respData, err := ssldto.TransformSSLs(resp.Data)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &ssldto.ListSslResp{
+	return &ssldto.ListSSLResp{
 		Meta: resp.Meta,
 		Data: respData,
 	}, nil

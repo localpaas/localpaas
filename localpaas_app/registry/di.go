@@ -129,7 +129,7 @@ var Provides = []any{
 	imserviceuc.NewIMServiceUC,
 	registryauthuc.NewRegistryAuthUC,
 	basicauthuc.NewBasicAuthUC,
-	ssluc.NewSslUC,
+	ssluc.NewSSLUC,
 	githubappuc.NewGithubAppUC,
 	gittokenuc.NewGitTokenUC,
 	nginxuc.NewNginxUC,

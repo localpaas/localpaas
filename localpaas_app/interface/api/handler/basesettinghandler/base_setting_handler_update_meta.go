@@ -100,9 +100,9 @@ func (h *BaseSettingHandler) UpdateSettingMeta(
 		req, ucFunc = r, func() (any, error) { return h.SSHKeyUC.UpdateSSHKeyMeta(reqCtx, auth, r) }
 
 	case base.ResourceTypeSSL:
-		r := ssldto.NewUpdateSslMetaReq()
+		r := ssldto.NewUpdateSSLMetaReq()
 		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
-		req, ucFunc = r, func() (any, error) { return h.SSLUC.UpdateSslMeta(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.SSLUC.UpdateSSLMeta(reqCtx, auth, r) }
 
 	case base.ResourceTypeCronJob:
 		r := cronjobdto.NewUpdateCronJobMetaReq()

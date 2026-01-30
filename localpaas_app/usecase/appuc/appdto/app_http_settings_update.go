@@ -21,7 +21,7 @@ type DomainReq struct {
 	Enabled         bool                `json:"enabled"`
 	Domain          string              `json:"domain"`
 	DomainRedirect  string              `json:"domainRedirect"`
-	SslCert         basedto.ObjectIDReq `json:"sslCert"`
+	SSLCert         basedto.ObjectIDReq `json:"sslCert"`
 	ContainerPort   int                 `json:"containerPort"`
 	ForceHttps      bool                `json:"forceHttps"`
 	WebsocketConfig string              `json:"websocketConfig"`
@@ -34,7 +34,7 @@ func (req *DomainReq) ToEntity() *entity.AppDomain {
 		Enabled:         req.Enabled,
 		Domain:          req.Domain,
 		DomainRedirect:  req.DomainRedirect,
-		SslCert:         entity.ObjectID{ID: req.SslCert.ID},
+		SSLCert:         entity.ObjectID{ID: req.SSLCert.ID},
 		ContainerPort:   req.ContainerPort,
 		ForceHttps:      req.ForceHttps,
 		WebsocketConfig: req.WebsocketConfig,

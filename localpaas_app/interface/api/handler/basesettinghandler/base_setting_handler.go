@@ -29,7 +29,7 @@ type BaseSettingHandler struct {
 	IMServiceUC    *imserviceuc.IMServiceUC
 	RegistryAuthUC *registryauthuc.RegistryAuthUC
 	BasicAuthUC    *basicauthuc.BasicAuthUC
-	SSLUC          *ssluc.SslUC
+	SSLUC          *ssluc.SSLUC
 	GithubAppUC    *githubappuc.GithubAppUC
 	GitTokenUC     *gittokenuc.GitTokenUC
 	CronJobUC      *cronjobuc.CronJobUC
@@ -48,7 +48,7 @@ func NewBaseSettingHandler(
 	imServiceUC *imserviceuc.IMServiceUC,
 	registryAuthUC *registryauthuc.RegistryAuthUC,
 	basicAuthUC *basicauthuc.BasicAuthUC,
-	sslUC *ssluc.SslUC,
+	sslUC *ssluc.SSLUC,
 	githubAppUC *githubappuc.GithubAppUC,
 	gitTokenUC *gittokenuc.GitTokenUC,
 	cronJobUC *cronjobuc.CronJobUC,

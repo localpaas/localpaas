@@ -17,7 +17,7 @@ var (
 	allowedKeySizes = []int{0, 2048, 3072, 4096}
 )
 
-type ObtainDomainSslReq struct {
+type ObtainDomainSSLReq struct {
 	ProjectID string `json:"-"`
 	AppID     string `json:"-"`
 	Domain    string `json:"domain"`
@@ -25,17 +25,17 @@ type ObtainDomainSslReq struct {
 	KeySize   int    `json:"keySize"`
 }
 
-func NewObtainDomainSslReq() *ObtainDomainSslReq {
-	return &ObtainDomainSslReq{}
+func NewObtainDomainSSLReq() *ObtainDomainSSLReq {
+	return &ObtainDomainSSLReq{}
 }
 
-func (req *ObtainDomainSslReq) ModifyRequest() error {
+func (req *ObtainDomainSSLReq) ModifyRequest() error {
 	req.Domain = strings.TrimSpace(strings.ToLower(req.Domain))
 	return nil
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *ObtainDomainSslReq) Validate() apperrors.ValidationErrors {
+func (req *ObtainDomainSSLReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, basedto.ValidateID(&req.ProjectID, true, "projectId")...)
 	validators = append(validators, basedto.ValidateID(&req.AppID, true, "appId")...)
@@ -45,7 +45,7 @@ func (req *ObtainDomainSslReq) Validate() apperrors.ValidationErrors {
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type ObtainDomainSslResp struct {
+type ObtainDomainSSLResp struct {
 	Meta *basedto.Meta         `json:"meta"`
 	Data *basedto.ObjectIDResp `json:"data"`
 }

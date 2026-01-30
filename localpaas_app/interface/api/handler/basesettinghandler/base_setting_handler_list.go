@@ -113,9 +113,9 @@ func (h *BaseSettingHandler) ListSetting(
 		req, ucFunc = r, func() (any, error) { return h.SSHKeyUC.ListSSHKey(reqCtx, auth, r) }
 
 	case base.ResourceTypeSSL:
-		r := ssldto.NewListSslReq()
+		r := ssldto.NewListSSLReq()
 		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
-		req, ucFunc = r, func() (any, error) { return h.SSLUC.ListSsl(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.SSLUC.ListSSL(reqCtx, auth, r) }
 
 	case base.ResourceTypeCronJob:
 		r := cronjobdto.NewListCronJobReq()

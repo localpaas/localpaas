@@ -112,9 +112,9 @@ func (h *BaseSettingHandler) UpdateSetting(
 		req, ucFunc = r, func() (any, error) { return h.SSHKeyUC.UpdateSSHKey(reqCtx, auth, r) }
 
 	case base.ResourceTypeSSL:
-		r := ssldto.NewUpdateSslReq()
+		r := ssldto.NewUpdateSSLReq()
 		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
-		req, ucFunc = r, func() (any, error) { return h.SSLUC.UpdateSsl(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.SSLUC.UpdateSSL(reqCtx, auth, r) }
 
 	case base.ResourceTypeCronJob:
 		r := cronjobdto.NewUpdateCronJobReq()

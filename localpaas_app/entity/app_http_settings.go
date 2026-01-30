@@ -22,7 +22,7 @@ type AppDomain struct {
 	Enabled         bool           `json:"enabled"`
 	Domain          string         `json:"domain"`
 	DomainRedirect  string         `json:"domainRedirect,omitempty"`
-	SslCert         ObjectID       `json:"sslCert,omitzero"`
+	SSLCert         ObjectID       `json:"sslCert,omitzero"`
 	ContainerPort   int            `json:"containerPort,omitempty"`
 	ForceHttps      bool           `json:"forceHttps,omitempty"`
 	WebsocketConfig string         `json:"websocketConfig,omitempty"`
@@ -63,18 +63,18 @@ func (s *AppHttpSettings) GetType() base.SettingType {
 
 func (s *AppHttpSettings) GetRefSettingIDs() []string {
 	res := make([]string, 0, 5) //nolint
-	res = append(res, s.GetInUseSslCertIDs()...)
+	res = append(res, s.GetInUseSSLCertIDs()...)
 	res = append(res, s.GetInUseBasicAuthIDs()...)
 	return res
 }
 
-func (s *AppHttpSettings) GetInUseSslCertIDs() (res []string) {
+func (s *AppHttpSettings) GetInUseSSLCertIDs() (res []string) {
 	for _, domain := range s.Domains {
 		if !domain.Enabled {
 			continue
 		}
-		if domain.SslCert.ID != "" {
-			res = append(res, domain.SslCert.ID)
+		if domain.SSLCert.ID != "" {
+			res = append(res, domain.SSLCert.ID)
 		}
 	}
 	res = gofn.ToSet(res)

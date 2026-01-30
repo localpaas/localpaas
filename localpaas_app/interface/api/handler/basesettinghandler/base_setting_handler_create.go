@@ -112,9 +112,9 @@ func (h *BaseSettingHandler) CreateSetting(
 		req, ucFunc = r, func() (any, error) { return h.SSHKeyUC.CreateSSHKey(reqCtx, auth, r) }
 
 	case base.ResourceTypeSSL:
-		r := ssldto.NewCreateSslReq()
+		r := ssldto.NewCreateSSLReq()
 		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
-		req, ucFunc = r, func() (any, error) { return h.SSLUC.CreateSsl(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.SSLUC.CreateSSL(reqCtx, auth, r) }
 
 	case base.ResourceTypeCronJob:
 		r := cronjobdto.NewCreateCronJobReq()

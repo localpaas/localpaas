@@ -9,12 +9,12 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
-type ListSslReq struct {
+type ListSSLReq struct {
 	settings.ListSettingReq
 }
 
-func NewListSslReq() *ListSslReq {
-	return &ListSslReq{
+func NewListSSLReq() *ListSSLReq {
+	return &ListSSLReq{
 		ListSettingReq: settings.ListSettingReq{
 			Paging: basedto.Paging{
 				// Default paging if unset by client
@@ -24,21 +24,21 @@ func NewListSslReq() *ListSslReq {
 	}
 }
 
-func (req *ListSslReq) Validate() apperrors.ValidationErrors {
+func (req *ListSSLReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.ListSettingReq.Validate()...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type ListSslResp struct {
+type ListSSLResp struct {
 	Meta *basedto.ListMeta `json:"meta"`
-	Data []*SslResp        `json:"data"`
+	Data []*SSLResp        `json:"data"`
 }
 
-func TransformSsls(settings []*entity.Setting) (resp []*SslResp, err error) {
-	resp = make([]*SslResp, 0, len(settings))
+func TransformSSLs(settings []*entity.Setting) (resp []*SSLResp, err error) {
+	resp = make([]*SSLResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformSsl(setting)
+		item, err := TransformSSL(setting)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

@@ -41,7 +41,7 @@ type DomainResp struct {
 	Enabled         bool                      `json:"enabled"`
 	Domain          string                    `json:"domain"`
 	DomainRedirect  string                    `json:"domainRedirect"`
-	SslCert         *settings.BaseSettingResp `json:"sslCert"`
+	SSLCert         *settings.BaseSettingResp `json:"sslCert"`
 	ContainerPort   int                       `json:"containerPort"`
 	ForceHttps      bool                      `json:"forceHttps"`
 	WebsocketConfig string                    `json:"websocketConfig"`
@@ -86,11 +86,11 @@ func TransformHttpSettings(input *AppHttpSettingsTransformInput) (resp *HttpSett
 	}
 
 	for _, domain := range resp.Domains {
-		if domain.SslCert != nil && domain.SslCert.ID != "" {
-			setting := input.RefSettingMap[domain.SslCert.ID]
-			domain.SslCert, _ = settings.TransformSettingBase(setting)
+		if domain.SSLCert != nil && domain.SSLCert.ID != "" {
+			setting := input.RefSettingMap[domain.SSLCert.ID]
+			domain.SSLCert, _ = settings.TransformSettingBase(setting)
 		} else {
-			domain.SslCert = nil
+			domain.SSLCert = nil
 		}
 		if domain.BasicAuth != nil && domain.BasicAuth.ID != "" {
 			setting := input.RefSettingMap[domain.BasicAuth.ID]
