@@ -85,7 +85,7 @@ func (repo *settingRepo) GetByID(ctx context.Context, db database.IDB, typ base.
 func (repo *settingRepo) GetByIDAndProject(ctx context.Context, db database.IDB, typ base.SettingType,
 	id, projectID string, requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
 	opts = repo.applyFilter(opts, typ, id, requireActive)
-	opts = repo.applyAppOrProjectFilter(opts, projectID, "", "")
+	opts = repo.applyAppAndProjectFilter(opts, projectID, "", "")
 	return repo.get(ctx, db, opts...)
 }
 
@@ -100,14 +100,14 @@ func (repo *settingRepo) GetByIDAndApp(ctx context.Context, db database.IDB, typ
 		parentAppID = app.ParentID
 	}
 	opts = repo.applyFilter(opts, typ, id, requireActive)
-	opts = repo.applyAppOrProjectFilter(opts, projectID, parentAppID, appID)
+	opts = repo.applyAppAndProjectFilter(opts, projectID, parentAppID, appID)
 	return repo.get(ctx, db, opts...)
 }
 
 func (repo *settingRepo) GetByIDAndAppObject(ctx context.Context, db database.IDB, typ base.SettingType,
 	id string, app *entity.App, requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
 	opts = repo.applyFilter(opts, typ, id, requireActive)
-	opts = repo.applyAppOrProjectFilter(opts, app.ProjectID, app.ParentID, app.ID)
+	opts = repo.applyAppAndProjectFilter(opts, app.ProjectID, app.ParentID, app.ID)
 	return repo.get(ctx, db, opts...)
 }
 
@@ -145,7 +145,7 @@ func (repo *settingRepo) GetByNameAndProject(ctx context.Context, db database.ID
 	}
 	opts = repo.applyFilter(opts, typ, "", requireActive)
 	opts = repo.applyNameAndKindFilter(opts, name, "")
-	opts = repo.applyAppOrProjectFilter(opts, projectID, "", "")
+	opts = repo.applyAppAndProjectFilter(opts, projectID, "", "")
 	return repo.get(ctx, db, opts...)
 }
 
@@ -164,7 +164,7 @@ func (repo *settingRepo) GetByNameAndApp(ctx context.Context, db database.IDB, t
 	}
 	opts = repo.applyFilter(opts, typ, "", requireActive)
 	opts = repo.applyNameAndKindFilter(opts, name, "")
-	opts = repo.applyAppOrProjectFilter(opts, projectID, parentAppID, appID)
+	opts = repo.applyAppAndProjectFilter(opts, projectID, parentAppID, appID)
 	return repo.get(ctx, db, opts...)
 }
 
@@ -175,7 +175,7 @@ func (repo *settingRepo) GetByNameAndAppObject(ctx context.Context, db database.
 	}
 	opts = repo.applyFilter(opts, typ, "", requireActive)
 	opts = repo.applyNameAndKindFilter(opts, name, "")
-	opts = repo.applyAppOrProjectFilter(opts, app.ProjectID, app.ParentID, app.ID)
+	opts = repo.applyAppAndProjectFilter(opts, app.ProjectID, app.ParentID, app.ID)
 	return repo.get(ctx, db, opts...)
 }
 
@@ -244,7 +244,7 @@ func (repo *settingRepo) List(ctx context.Context, db database.IDB, paging *base
 
 func (repo *settingRepo) ListByProject(ctx context.Context, db database.IDB, projectID string,
 	paging *basedto.Paging, opts ...bunex.SelectQueryOption) ([]*entity.Setting, *basedto.PagingMeta, error) {
-	opts = repo.applyAppOrProjectFilter(opts, projectID, "", "")
+	opts = repo.applyAppAndProjectFilter(opts, projectID, "", "")
 	return repo.List(ctx, db, paging, opts...)
 }
 
@@ -259,13 +259,13 @@ func (repo *settingRepo) ListByApp(ctx context.Context, db database.IDB, project
 		}
 		parentAppID = app.ParentID
 	}
-	opts = repo.applyAppOrProjectFilter(opts, projectID, parentAppID, appID)
+	opts = repo.applyAppAndProjectFilter(opts, projectID, parentAppID, appID)
 	return repo.List(ctx, db, paging, opts...)
 }
 
 func (repo *settingRepo) ListByAppObject(ctx context.Context, db database.IDB, app *entity.App,
 	paging *basedto.Paging, opts ...bunex.SelectQueryOption) ([]*entity.Setting, *basedto.PagingMeta, error) {
-	opts = repo.applyAppOrProjectFilter(opts, app.ProjectID, app.ParentID, app.ID)
+	opts = repo.applyAppAndProjectFilter(opts, app.ProjectID, app.ParentID, app.ID)
 	return repo.List(ctx, db, paging, opts...)
 }
 
@@ -305,7 +305,7 @@ func (repo *settingRepo) applyFilter(opts []bunex.SelectQueryOption, typ base.Se
 		opts = append(opts, bunex.SelectWhere("setting.type = ?", typ))
 	}
 	if id != "" {
-		opts = append(opts, bunex.SelectWhere("setting.id = ?", typ))
+		opts = append(opts, bunex.SelectWhere("setting.id = ?", id))
 	}
 	if requireActive {
 		opts = append(opts, bunex.SelectWhere("setting.status = ?", base.SettingStatusActive))
@@ -324,7 +324,7 @@ func (repo *settingRepo) applyNameAndKindFilter(opts []bunex.SelectQueryOption,
 	return opts
 }
 
-func (repo *settingRepo) applyAppOrProjectFilter(opts []bunex.SelectQueryOption,
+func (repo *settingRepo) applyAppAndProjectFilter(opts []bunex.SelectQueryOption,
 	projectID, parentAppID, appID string) []bunex.SelectQueryOption {
 	if projectID != "" {
 		opts = append(opts,
