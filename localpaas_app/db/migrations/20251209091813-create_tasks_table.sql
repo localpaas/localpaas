@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS tasks
     id               VARCHAR(100) PRIMARY KEY,
     job_id           VARCHAR(100) NULL,
     type             VARCHAR(100) NOT NULL,
-    status           VARCHAR(20) NOT NULL CONSTRAINT chk_status CHECK
+    status           VARCHAR NOT NULL CONSTRAINT chk_status CHECK
                         (status IN ('not-started','in-progress','canceled','failed','done')),
     config           JSONB NOT NULL,
     args             JSON NULL,

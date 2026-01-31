@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS projects
     name         VARCHAR(100) NOT NULL,
     key          VARCHAR(100) NOT NULL,
     photo        VARCHAR(255) NULL,
-    status       VARCHAR(100) NOT NULL,
+    status       VARCHAR NOT NULL CONSTRAINT chk_status CHECK
+                    (status IN ('active','disabled','deleting')),
     note         VARCHAR(10000) NULL,
     owner_id     VARCHAR(100) NOT NULL,
     update_ver   INT4 NOT NULL DEFAULT 1,

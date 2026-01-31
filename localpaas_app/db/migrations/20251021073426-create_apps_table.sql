@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS apps
     project_id   VARCHAR(100) NOT NULL,
     parent_id    VARCHAR(100) NULL,
     service_id   VARCHAR(100) NULL,
-    status       VARCHAR(100) NOT NULL,
+    status       VARCHAR NOT NULL CONSTRAINT chk_status CHECK
+                    (status IN ('active','disabled','deleting')),
     note         VARCHAR(10000) NULL,
     update_ver   INT4 NOT NULL DEFAULT 1,
 

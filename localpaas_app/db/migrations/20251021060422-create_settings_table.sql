@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS settings
     kind              VARCHAR(100) NULL,
     name              VARCHAR(100) NULL,
     version           INT2 NOT NULL DEFAULT 1,
-    status            VARCHAR(20) NOT NULL CONSTRAINT chk_status CHECK
+    status            VARCHAR NOT NULL CONSTRAINT chk_status CHECK
                         (status IN ('active','pending','disabled','expired')) DEFAULT 'active',
     data              JSONB NULL,
     avail_in_projects BOOL NOT NULL DEFAULT FALSE,

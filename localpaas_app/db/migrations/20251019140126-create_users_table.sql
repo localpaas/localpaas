@@ -4,16 +4,16 @@ CREATE TABLE IF NOT EXISTS users
     id              VARCHAR(100) PRIMARY KEY,
     username        VARCHAR(100) NOT NULL,
     email           VARCHAR(255) NULL,
-    role            VARCHAR(20) NOT NULL CONSTRAINT chk_role CHECK
+    role            VARCHAR NOT NULL CONSTRAINT chk_role CHECK
                         (role IN ('admin','member')),
-    status          VARCHAR(20) NOT NULL CONSTRAINT chk_status CHECK
+    status          VARCHAR NOT NULL CONSTRAINT chk_status CHECK
                         (status IN ('active','pending','disabled')),
     full_name       VARCHAR(100) NOT NULL DEFAULT '',
     position        VARCHAR(100) NULL,
     photo           VARCHAR(2000) NULL,
     notes           VARCHAR(10000) NULL,
 
-    security_option VARCHAR(20) NOT NULL CONSTRAINT chk_security_option CHECK
+    security_option VARCHAR NOT NULL CONSTRAINT chk_security_option CHECK
                         (security_option IN ('enforce-sso','password-2fa','password-only')),
     totp_secret     VARCHAR(100) NULL,
 
