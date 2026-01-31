@@ -1,0 +1,95 @@
+package appuc
+
+import (
+	"context"
+
+	"github.com/tiendc/gofn"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/infra/database"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
+)
+
+const (
+	tokenLen = 24
+)
+
+func (uc *AppUC) UpdateAppToken(
+	ctx context.Context,
+	auth *basedto.Auth,
+	req *appdto.UpdateAppTokenReq,
+) (*appdto.UpdateAppTokenResp, error) {
+	var appData *updateAppTokenData
+	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
+		appData = &updateAppTokenData{}
+		err := uc.loadAppDataForUpdateToken(ctx, db, req, appData)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+		uc.preparePersistingAppTokenUpdate(appData)
+		return uc.persistAppTokenData(ctx, db, appData)
+	})
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	return &appdto.UpdateAppTokenResp{
+		Data: &appdto.AppTokenDataResp{Token: appData.App.Token},
+	}, nil
+}
+
+type updateAppTokenData struct {
+	App *entity.App
+}
+
+func (uc *AppUC) loadAppDataForUpdateToken(
+	ctx context.Context,
+	db database.IDB,
+	req *appdto.UpdateAppTokenReq,
+	data *updateAppTokenData,
+) error {
+	app, err := uc.appRepo.GetByID(ctx, db, req.ProjectID, req.ID,
+		bunex.SelectFor("UPDATE OF app"),
+		bunex.SelectRelation("Project"),
+	)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	if app.Project == nil || app.Project.Status != base.ProjectStatusActive {
+		return apperrors.New(apperrors.ErrProjectInactive).WithNTParam("Name", app.Project.Name)
+	}
+	if app.UpdateVer != req.UpdateVer {
+		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
+	}
+	data.App = app
+
+	return nil
+}
+
+func (uc *AppUC) preparePersistingAppTokenUpdate(
+	data *updateAppTokenData,
+) {
+	data.App.Token = gofn.RandTokenAsHex(tokenLen)
+	data.App.UpdateVer++
+	data.App.UpdatedAt = timeutil.NowUTC()
+}
+
+func (uc *AppUC) persistAppTokenData(
+	ctx context.Context,
+	db database.IDB,
+	data *updateAppTokenData,
+) error {
+	err := uc.appRepo.Update(ctx, db, data.App,
+		bunex.UpdateColumns("token", "update_ver", "updated_at"),
+	)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}

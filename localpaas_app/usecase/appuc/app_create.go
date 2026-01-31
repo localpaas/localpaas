@@ -126,6 +126,7 @@ func (uc *AppUC) preparePersistingApp(
 		ID:        gofn.Must(ulid.NewStringULID()),
 		ProjectID: project.ID,
 		Key:       data.AppKey,
+		Token:     gofn.RandTokenAsHex(tokenLen),
 		CreatedAt: timeNow,
 	}
 

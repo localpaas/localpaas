@@ -15,6 +15,8 @@ func (s *HTTPServer) registerAppRoutes(projectGroup *gin.RouterGroup) *gin.Route
 	appGroup.POST("", s.handlerRegistry.appHandler.CreateApp)
 	appGroup.PUT("/:appID", s.handlerRegistry.appHandler.UpdateApp)
 	appGroup.DELETE("/:appID", s.handlerRegistry.appHandler.DeleteApp)
+	// Token
+	appGroup.PUT("/:appID/token", s.handlerRegistry.appHandler.UpdateAppToken)
 	// Tags
 	appGroup.POST("/:appID/tags", s.handlerRegistry.appHandler.CreateAppTag)
 	appGroup.POST("/:appID/tags/delete", s.handlerRegistry.appHandler.DeleteAppTags)

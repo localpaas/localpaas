@@ -31,6 +31,8 @@ type AppRepo interface {
 		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
 	UpsertMulti(ctx context.Context, db database.IDB, apps []*entity.App,
 		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
+	Update(ctx context.Context, db database.IDB, app *entity.App,
+		opts ...bunex.UpdateQueryOption) error
 }
 
 type appRepo struct {
@@ -161,6 +163,18 @@ func (repo *appRepo) UpsertMulti(ctx context.Context, db database.IDB, apps []*e
 	query := db.NewInsert().Model(&apps)
 	query = bunex.ApplyInsert(query, opts...)
 	query = bunex.ApplyUpsert(query, conflictCols, updateCols)
+
+	_, err := query.Exec(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (repo *appRepo) Update(ctx context.Context, db database.IDB, app *entity.App,
+	opts ...bunex.UpdateQueryOption) error {
+	query := db.NewUpdate().Model(app).WherePK()
+	query = bunex.ApplyUpdate(query, opts...)
 
 	_, err := query.Exec(ctx)
 	if err != nil {

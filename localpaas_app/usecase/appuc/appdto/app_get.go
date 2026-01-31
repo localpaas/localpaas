@@ -41,6 +41,7 @@ type AppResp struct {
 	Name      string         `json:"name"`
 	Key       string         `json:"key"`
 	Status    base.AppStatus `json:"status"`
+	Token     string         `json:"token"`
 	Note      string         `json:"note"`
 	Tags      []string       `json:"tags" copy:"-"` // manual copy AppTag -> string
 	UpdateVer int            `json:"updateVer"`
