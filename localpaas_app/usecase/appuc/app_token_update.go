@@ -6,7 +6,6 @@ import (
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
@@ -54,15 +53,12 @@ func (uc *AppUC) loadAppDataForUpdateToken(
 	req *appdto.UpdateAppTokenReq,
 	data *updateAppTokenData,
 ) error {
-	app, err := uc.appRepo.GetByID(ctx, db, req.ProjectID, req.ID,
+	app, err := uc.appService.LoadApp(ctx, db, req.ProjectID, req.ID, true, true,
 		bunex.SelectFor("UPDATE OF app"),
 		bunex.SelectRelation("Project"),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
-	}
-	if app.Project == nil || app.Project.Status != base.ProjectStatusActive {
-		return apperrors.New(apperrors.ErrProjectInactive).WithNTParam("Name", app.Project.Name)
 	}
 	if app.UpdateVer != req.UpdateVer {
 		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)

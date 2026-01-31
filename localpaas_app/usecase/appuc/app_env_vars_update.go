@@ -67,8 +67,9 @@ func (uc *AppUC) loadAppEnvVarsForUpdate(
 	req *appdto.UpdateAppEnvVarsReq,
 	data *updateAppEnvVarsData,
 ) error {
-	app, err := uc.appRepo.GetByID(ctx, db, req.ProjectID, req.AppID,
+	app, err := uc.appService.LoadApp(ctx, db, req.ProjectID, req.AppID, true, true,
 		bunex.SelectFor("UPDATE OF app"),
+		bunex.SelectRelation("Project"),
 		bunex.SelectRelation("Settings",
 			bunex.SelectWhere("setting.type = ?", base.SettingTypeEnvVar),
 		),

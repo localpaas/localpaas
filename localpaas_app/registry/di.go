@@ -18,6 +18,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/systemhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/userhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/usersettingshandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/webhookhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/server"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
@@ -63,6 +64,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/taskuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/webhookuc"
 	"github.com/localpaas/localpaas/services/docker"
 )
 
@@ -109,6 +111,7 @@ var Provides = []any{
 	usersettingshandler.NewUserSettingsHandler,
 	systemhandler.NewSystemHandler,
 	gitsourcehandler.NewGitSourceHandler,
+	webhookhandler.NewWebhookHandler,
 
 	// Use case
 	syserroruc.NewSysErrorUC,
@@ -138,6 +141,7 @@ var Provides = []any{
 	cronjobuc.NewCronJobUC,
 	taskuc.NewTaskUC,
 	emailuc.NewEmailUC,
+	webhookuc.NewWebhookUC,
 
 	// Service
 	clusterservice.NewClusterService,

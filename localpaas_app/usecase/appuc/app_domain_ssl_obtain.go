@@ -85,17 +85,15 @@ func (uc *AppUC) loadAppDataForObtainDomainSSL(
 	req *appdto.ObtainDomainSSLReq,
 	data *obtainSSLData,
 ) error {
-	app, err := uc.appRepo.GetByID(ctx, db, req.ProjectID, req.AppID,
-		bunex.SelectFor("UPDATE"),
+	app, err := uc.appService.LoadApp(ctx, db, req.ProjectID, req.AppID, true, true,
+		bunex.SelectFor("UPDATE OF app"),
+		bunex.SelectRelation("Project"),
 		bunex.SelectRelation("Settings",
 			bunex.SelectWhere("setting.type = ?", base.SettingTypeAppHttp),
 		),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
-	}
-	if app.Status != base.AppStatusActive {
-		return apperrors.Wrap(apperrors.ErrResourceInactive)
 	}
 	data.App = app
 
@@ -171,7 +169,7 @@ func (uc *AppUC) applyDomainSSL(
 		return apperrors.Wrap(err)
 	}
 
-	refSettingMap, err := uc.appService.LoadReferenceSettings(ctx, db, data.App, data.HttpSettings)
+	refSettingMap, err := uc.appService.LoadReferenceSettings(ctx, db, data.App, true, data.HttpSettings)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

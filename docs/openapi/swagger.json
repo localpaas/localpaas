@@ -15092,6 +15092,67 @@
         "tags" : [ "users" ],
         "x-codegen-request-body-name" : "body"
       }
+    },
+    "/webhooks/apps/{appToken}/deploy" : {
+      "post" : {
+        "description" : "Deploys an app",
+        "operationId" : "webhookDeployApp",
+        "parameters" : [ {
+          "description" : "app token",
+          "in" : "path",
+          "name" : "appToken",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.DeployAppReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.DeployAppResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Deploys an app",
+        "tags" : [ "webhooks" ],
+        "x-codegen-request-body-name" : "body"
+      }
     }
   },
   "components" : {
@@ -22004,6 +22065,77 @@
           }
         },
         "required" : [ "accessExpireAt", "createdAt", "email", "fullName", "id", "lastAccess", "photo", "position", "role", "securityOption", "status", "updatedAt", "username" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.DeployAppDataResp" : {
+        "properties" : {
+          "deploymentId" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "deploymentId" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.DeployAppReq" : {
+        "properties" : {
+          "activeMethod" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.DeploymentMethod"
+          },
+          "imageSource" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.DeploymentImageSourceReq"
+          },
+          "repoSource" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.DeploymentRepoSourceReq"
+          },
+          "tarballSource" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.DeploymentTarballSourceReq"
+          }
+        },
+        "required" : [ "activeMethod", "imageSource", "repoSource", "tarballSource" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.DeployAppResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.DeployAppDataResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.DeploymentImageSourceReq" : {
+        "properties" : {
+          "image" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "image" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.DeploymentRepoSourceReq" : {
+        "properties" : {
+          "dockerfilePath" : {
+            "description" : "for BuildToolDockerfile only",
+            "type" : "string"
+          },
+          "imageTags" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "repoRef" : {
+            "description" : "can be branch name, tag...",
+            "type" : "string"
+          }
+        },
+        "required" : [ "dockerfilePath", "imageTags", "repoRef" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.DeploymentTarballSourceReq" : {
         "type" : "object"
       },
       "github_com_localpaas_localpaas_services_docker.AppArmorOpts" : {

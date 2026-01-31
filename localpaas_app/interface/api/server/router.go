@@ -18,6 +18,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/systemhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/userhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/usersettingshandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/webhookhandler"
 )
 
 type HandlerRegistry struct {
@@ -32,6 +33,7 @@ type HandlerRegistry struct {
 	userSettingsHandler *usersettingshandler.UserSettingsHandler
 	systemHandler       *systemhandler.SystemHandler
 	gitSourceHandler    *gitsourcehandler.GitSourceHandler
+	webhookHandler      *webhookhandler.WebhookHandler
 }
 
 func NewHandlerRegistry(
@@ -46,6 +48,7 @@ func NewHandlerRegistry(
 	userSettingsHandler *usersettingshandler.UserSettingsHandler,
 	systemHandler *systemhandler.SystemHandler,
 	gitSourceHandler *gitsourcehandler.GitSourceHandler,
+	webhookHandler *webhookhandler.WebhookHandler,
 ) *HandlerRegistry {
 	return &HandlerRegistry{
 		authHandler:         authHandler,
@@ -59,6 +62,7 @@ func NewHandlerRegistry(
 		userSettingsHandler: userSettingsHandler,
 		systemHandler:       systemHandler,
 		gitSourceHandler:    gitSourceHandler,
+		webhookHandler:      webhookHandler,
 	}
 }
 
@@ -103,6 +107,7 @@ func (s *HTTPServer) registerRoutes() {
 	_ = s.registerSettingRoutes(apiGroup)
 	_ = s.registerSystemRoutes(apiGroup)
 	_ = s.registerClusterRoutes(apiGroup)
+	_ = s.registerWebhookRoutes(apiGroup)
 
 	// OTHER ROUTES (will split later)
 	{ // git source group

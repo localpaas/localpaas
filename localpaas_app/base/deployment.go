@@ -1,5 +1,7 @@
 package base
 
+import "time"
+
 type DeploymentStatus string
 
 const (
@@ -13,4 +15,9 @@ const (
 var (
 	AllDeploymentStatuses = []DeploymentStatus{DeploymentStatusNotStarted, DeploymentStatusInProgress,
 		DeploymentStatusCanceled, DeploymentStatusDone, DeploymentStatusFailed}
+)
+
+const (
+	// TODO: make this configurable
+	DeploymentTimeoutDefault = 60 * time.Minute
 )

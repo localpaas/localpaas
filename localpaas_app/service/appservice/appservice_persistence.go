@@ -12,7 +12,6 @@ type PersistingAppData struct {
 	UpsertingApps        []*entity.App
 	UpsertingTags        []*entity.AppTag
 	UpsertingSettings    []*entity.Setting
-	UpsertingAccesses    []*entity.ACLPermission
 	UpsertingDeployments []*entity.Deployment
 	UpsertingTasks       []*entity.Task
 
@@ -45,12 +44,6 @@ func (s *appService) PersistAppData(ctx context.Context, db database.IDB,
 	// Tags
 	err = s.appTagRepo.UpsertMulti(ctx, db, persistingData.UpsertingTags,
 		entity.AppTagUpsertingConflictCols, entity.AppTagUpsertingUpdateCols)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	// App accesses
-	err = s.permissionManager.UpdateACLPermissions(ctx, db, persistingData.UpsertingAccesses)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

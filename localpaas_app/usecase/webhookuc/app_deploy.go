@@ -1,4 +1,4 @@
-package appuc
+package webhookuc
 
 import (
 	"context"
@@ -8,38 +8,36 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
+	"github.com/localpaas/localpaas/localpaas_app/service/appservice"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/webhookuc/webhookdto"
 )
 
-func (uc *AppUC) UpdateAppDeploymentSettings(
+func (uc *WebhookUC) DeployApp(
 	ctx context.Context,
-	auth *basedto.Auth,
-	req *appdto.UpdateAppDeploymentSettingsReq,
-) (*appdto.UpdateAppDeploymentSettingsResp, error) {
-	var data *updateAppDeploymentSettingsData
+	req *webhookdto.DeployAppReq,
+) (*webhookdto.DeployAppResp, error) {
+	var data *deployAppData
 	var persistingData *persistingAppData
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
-		data = &updateAppDeploymentSettingsData{}
+		data = &deployAppData{}
 		err := uc.loadAppDeploymentSettingsForUpdate(ctx, db, req, data)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
 
 		persistingData = &persistingAppData{}
-		err = uc.prepareUpdatingAppDeploymentSettings(ctx, db, req, data, persistingData)
+		err = uc.prepareUpdatingAppDeploymentSettings(req, data, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
 
-		err = uc.persistData(ctx, db, persistingData)
+		err = uc.persistAppData(ctx, db, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -54,25 +52,26 @@ func (uc *AppUC) UpdateAppDeploymentSettings(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &appdto.UpdateAppDeploymentSettingsResp{}, nil
+	return &webhookdto.DeployAppResp{}, nil
 }
 
-type updateAppDeploymentSettingsData struct {
+type deployAppData struct {
 	App                    *entity.App
 	DeploymentSettings     *entity.Setting
 	CurrDeploymentSettings *entity.AppDeploymentSettings
-	RegistryAuth           *entity.Setting
-	Errors                 []string // stores errors
-	Warnings               []string // stores warnings
 }
 
-func (uc *AppUC) loadAppDeploymentSettingsForUpdate(
+type persistingAppData struct {
+	appservice.PersistingAppData
+}
+
+func (uc *WebhookUC) loadAppDeploymentSettingsForUpdate(
 	ctx context.Context,
 	db database.Tx,
-	req *appdto.UpdateAppDeploymentSettingsReq,
-	data *updateAppDeploymentSettingsData,
+	req *webhookdto.DeployAppReq,
+	data *deployAppData,
 ) error {
-	app, err := uc.appService.LoadApp(ctx, db, req.ProjectID, req.AppID, true, true,
+	app, err := uc.appService.LoadAppByToken(ctx, db, req.AppToken, true, true,
 		bunex.SelectFor("UPDATE OF app"),
 		bunex.SelectRelation("Project"),
 		bunex.SelectRelation("Settings",
@@ -85,28 +84,31 @@ func (uc *AppUC) loadAppDeploymentSettingsForUpdate(
 	data.App = app
 	data.DeploymentSettings, _ = gofn.First(app.Settings)
 
-	deploymentSettings := data.DeploymentSettings
-	if deploymentSettings != nil && deploymentSettings.UpdateVer != req.UpdateVer {
-		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
+	if data.DeploymentSettings == nil || !data.DeploymentSettings.IsActive() {
+		return apperrors.NewNotFound("AppDeploymentSettings").
+			WithMsgLog("app deployment settings not found")
 	}
 
 	// Parse the current deployment settings
-	if deploymentSettings != nil && deploymentSettings.IsActive() {
-		settingData, err := deploymentSettings.AsAppDeploymentSettings()
-		if err != nil {
-			return apperrors.New(err).WithMsgLog("failed to parse app deployment settings")
-		}
-		data.CurrDeploymentSettings = settingData
+	currSetting, err := data.DeploymentSettings.AsAppDeploymentSettings()
+	if err != nil {
+		return apperrors.New(err).WithMsgLog("failed to parse app deployment settings")
+	}
+	data.CurrDeploymentSettings = currSetting
+
+	// Validate active deployment method
+	req.ActiveMethod = gofn.Coalesce(req.ActiveMethod, currSetting.ActiveMethod)
+	if req.ActiveMethod == "" {
+		return apperrors.New(apperrors.ErrActionFailed).
+			WithExtraDetail("Deployment method is missing.")
 	}
 
 	return nil
 }
 
-func (uc *AppUC) prepareUpdatingAppDeploymentSettings(
-	ctx context.Context,
-	db database.IDB,
-	req *appdto.UpdateAppDeploymentSettingsReq,
-	data *updateAppDeploymentSettingsData,
+func (uc *WebhookUC) prepareUpdatingAppDeploymentSettings(
+	req *webhookdto.DeployAppReq,
+	data *deployAppData,
 	persistingData *persistingAppData,
 ) error {
 	app := data.App
@@ -128,19 +130,20 @@ func (uc *AppUC) prepareUpdatingAppDeploymentSettings(
 	setting.ExpireAt = time.Time{}
 	setting.Status = base.SettingStatusActive
 
-	newDeploymentSettings, err := uc.buildNewAppDeploymentSettings(req, data)
+	currDeploymentSettings := data.CurrDeploymentSettings
+	err := req.ApplyTo(currDeploymentSettings)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	setting.MustSetData(newDeploymentSettings)
+	setting.MustSetData(currDeploymentSettings)
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 
 	// Create a deployment and a task for it
 	deployment := &entity.Deployment{
 		ID:        gofn.Must(ulid.NewStringULID()),
 		AppID:     app.ID,
-		Settings:  newDeploymentSettings,
+		Settings:  currDeploymentSettings,
 		Status:    base.DeploymentStatusNotStarted,
 		Version:   entity.CurrentDeploymentVersion,
 		CreatedAt: timeNow,
@@ -168,55 +171,22 @@ func (uc *AppUC) prepareUpdatingAppDeploymentSettings(
 	}
 	persistingData.UpsertingTasks = append(persistingData.UpsertingTasks, deploymentTask)
 
-	// Make sure all reference settings used in this deployment settings exist actively
-	_, err = uc.appService.LoadReferenceSettings(ctx, db, app, true, setting)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
 	return nil
 }
 
-func (uc *AppUC) buildNewAppDeploymentSettings(
-	req *appdto.UpdateAppDeploymentSettingsReq,
-	data *updateAppDeploymentSettingsData,
-) (*entity.AppDeploymentSettings, error) {
-	newDeploymentSettings := data.CurrDeploymentSettings
-	if newDeploymentSettings == nil {
-		newDeploymentSettings = &entity.AppDeploymentSettings{}
+func (uc *WebhookUC) persistAppData(
+	ctx context.Context,
+	db database.IDB,
+	persistingData *persistingAppData,
+) error {
+	err := uc.appService.PersistAppData(ctx, db, &persistingData.PersistingAppData)
+	if err != nil {
+		return apperrors.Wrap(err)
 	}
-
-	newDeploymentSettings.ActiveMethod = req.ActiveMethod
-	if req.ImageSource != nil {
-		err := copier.Copy(&newDeploymentSettings.ImageSource, req.ImageSource)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-	}
-	if req.RepoSource != nil {
-		err := copier.Copy(&newDeploymentSettings.RepoSource, req.RepoSource)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-	}
-	if req.TarballSource != nil {
-		err := copier.Copy(&newDeploymentSettings.TarballSource, req.TarballSource)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-	}
-
-	if req.PreDeploymentCommand != nil {
-		newDeploymentSettings.PreDeploymentCommand = req.PreDeploymentCommand
-	}
-	if req.PostDeploymentCommand != nil {
-		newDeploymentSettings.PostDeploymentCommand = req.PostDeploymentCommand
-	}
-
-	return newDeploymentSettings, nil
+	return nil
 }
 
-func (uc *AppUC) postTransactionAppDeploymentSettings(
+func (uc *WebhookUC) postTransactionAppDeploymentSettings(
 	ctx context.Context,
 	persistingData *persistingAppData,
 ) error {

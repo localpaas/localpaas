@@ -9,7 +9,7 @@ import (
 
 const (
 	imageIDMaxLen   = 100
-	imageNameMaxLen = 100
+	imageNameMaxLen = 200
 )
 
 type CreateImageReq struct {

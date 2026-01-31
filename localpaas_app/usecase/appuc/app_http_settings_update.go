@@ -34,7 +34,7 @@ func (uc *AppUC) UpdateAppHttpSettings(
 		}
 
 		persistingData = &persistingAppData{}
-		err = uc.prepareUpdatingAppHttpSettings(req, data, persistingData)
+		err = uc.prepareUpdatingAppHttpSettings(ctx, db, req, data, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -71,8 +71,9 @@ func (uc *AppUC) loadAppHttpSettingsForUpdate(
 	req *appdto.UpdateAppHttpSettingsReq,
 	data *updateAppHttpSettingsData,
 ) error {
-	app, err := uc.appRepo.GetByID(ctx, db, req.ProjectID, req.AppID,
+	app, err := uc.appService.LoadApp(ctx, db, req.ProjectID, req.AppID, true, true,
 		bunex.SelectFor("UPDATE OF app"),
+		bunex.SelectRelation("Project"),
 		bunex.SelectRelation("Settings",
 			bunex.SelectWhere("setting.type = ?", base.SettingTypeAppHttp),
 		),
@@ -91,6 +92,8 @@ func (uc *AppUC) loadAppHttpSettingsForUpdate(
 }
 
 func (uc *AppUC) prepareUpdatingAppHttpSettings(
+	ctx context.Context,
+	db database.IDB,
 	req *appdto.UpdateAppHttpSettingsReq,
 	data *updateAppHttpSettingsData,
 	persistingData *persistingAppData,
@@ -121,6 +124,13 @@ func (uc *AppUC) prepareUpdatingAppHttpSettings(
 
 	setting.MustSetData(newHttpSettings)
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
+
+	// Make sure all reference settings used in this deployment settings exist actively
+	_, err = uc.appService.LoadReferenceSettings(ctx, db, app, true, setting)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
 	return nil
 }
 
@@ -147,12 +157,12 @@ func (uc *AppUC) applyAppHttpSettings(
 	db database.IDB,
 	data *updateAppHttpSettingsData,
 ) error {
-	appHttpSettings, err := data.HttpSettings.AsAppHttpSettings()
+	refSettingMap, err := uc.appService.LoadReferenceSettings(ctx, db, data.App, true, data.HttpSettings)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	refSettingMap, err := uc.appService.LoadReferenceSettings(ctx, db, data.App, data.HttpSettings)
+	appHttpSettings, err := data.HttpSettings.AsAppHttpSettings()
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

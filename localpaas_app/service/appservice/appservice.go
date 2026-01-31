@@ -8,6 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 	"github.com/localpaas/localpaas/localpaas_app/repository/cacherepository"
 	"github.com/localpaas/localpaas/localpaas_app/service/nginxservice"
@@ -16,6 +17,13 @@ import (
 )
 
 type AppService interface {
+	LoadApp(ctx context.Context, db database.IDB, projectID, appID string,
+		requireProjectActive, requireAppActive bool, extraOpts ...bunex.SelectQueryOption) (
+		*entity.App, error)
+	LoadAppByToken(ctx context.Context, db database.IDB, appToken string,
+		requireProjectActive, requireAppActive bool, extraOpts ...bunex.SelectQueryOption) (
+		*entity.App, error)
+
 	PersistAppData(ctx context.Context, db database.IDB, data *PersistingAppData) error
 	DeleteApp(ctx context.Context, app *entity.App) error
 
@@ -23,7 +31,9 @@ type AppService interface {
 	ServiceUpdate(ctx context.Context, serviceID string, version *swarm.Version, service *swarm.ServiceSpec,
 		options ...docker.ServiceUpdateOption) (*swarm.ServiceUpdateResponse, error)
 
-	LoadReferenceSettings(ctx context.Context, db database.IDB, app *entity.App,
+	LoadSettings(ctx context.Context, db database.IDB, app *entity.App, settingIDs []string,
+		requireActive bool) (map[string]*entity.Setting, error)
+	LoadReferenceSettings(ctx context.Context, db database.IDB, app *entity.App, requireActive bool,
 		appSettings ...*entity.Setting) (map[string]*entity.Setting, error)
 
 	EnsureSSLConfigFiles(sslIDs []string, forceRecreate bool,

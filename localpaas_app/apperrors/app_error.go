@@ -8,6 +8,7 @@ import (
 
 	goerrors "github.com/go-errors/errors"
 	"github.com/hashicorp/go-multierror"
+	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/infra/logging"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/translation"
@@ -35,6 +36,8 @@ type AppError interface {
 	WithParams(map[string]any) AppError
 	// WithNTParam sets a custom but non-translation param
 	WithNTParam(k string, v any) AppError
+	// WithExtraDetail sets extra detail
+	WithExtraDetail(string) AppError
 	// WithMsgLog sets log message (used for debug purpose)
 	WithMsgLog(format string, args ...any) AppError
 
@@ -63,6 +66,7 @@ type appError struct {
 	cause              error
 	params             map[string]any
 	ntParams           map[string]any // non-translation params
+	extraDetail        string
 	msgLog             string
 	displayLevel       DisplayLevel
 	fallbackToErrorMsg bool // when translation missing
@@ -92,6 +96,11 @@ func (e *appError) WithParams(m map[string]any) AppError {
 
 func (e *appError) WithNTParam(k string, v any) AppError {
 	e.ntParams[k] = v
+	return e
+}
+
+func (e *appError) WithExtraDetail(extraDetail string) AppError {
+	e.extraDetail = extraDetail
 	return e
 }
 
@@ -152,6 +161,9 @@ func (e *appError) Build(lang translation.Lang) *ErrorInfo {
 		if e.fallbackToErrorMsg {
 			detail = e.err.Error()
 		}
+	}
+	if e.extraDetail != "" {
+		detail = gofn.If(strings.HasSuffix(detail, "."), detail+e.extraDetail, detail+". "+e.extraDetail)
 	}
 
 	errInfo.Title = http.StatusText(errInfo.Status)

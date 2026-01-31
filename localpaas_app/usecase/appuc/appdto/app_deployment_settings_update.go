@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	imageNameMaxLen = 100
+	imageNameMaxLen = 200
 )
 
 type UpdateAppDeploymentSettingsReq struct {

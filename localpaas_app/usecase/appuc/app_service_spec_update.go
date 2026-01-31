@@ -63,8 +63,9 @@ func (uc *AppUC) loadAppServiceSpecForUpdate(
 	req *appdto.UpdateAppServiceSpecReq,
 	data *updateAppServiceSpecData,
 ) error {
-	app, err := uc.appRepo.GetByID(ctx, db, req.ProjectID, req.AppID,
+	app, err := uc.appService.LoadApp(ctx, db, req.ProjectID, req.AppID, true, true,
 		bunex.SelectFor("UPDATE OF app"),
+		bunex.SelectRelation("Project"),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
