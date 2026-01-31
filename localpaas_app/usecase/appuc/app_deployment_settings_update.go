@@ -195,7 +195,7 @@ func (uc *AppUC) buildNewAppDeploymentSettings(
 		newDeploymentSettings = &entity.AppDeploymentSettings{}
 	}
 
-	newDeploymentSettings.ActiveSource = req.ActiveSource
+	newDeploymentSettings.ActiveMethod = req.ActiveMethod
 	if req.ImageSource != nil {
 		err := copier.Copy(&newDeploymentSettings.ImageSource, req.ImageSource)
 		if err != nil {

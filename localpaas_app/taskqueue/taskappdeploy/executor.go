@@ -102,12 +102,12 @@ func (e *Executor) execute(
 
 	var depErr error
 	depSettings := deployment.Settings
-	switch depSettings.ActiveSource {
-	case base.DeploymentSourceImage:
+	switch depSettings.ActiveMethod {
+	case base.DeploymentMethodImage:
 		depErr = e.deployFromImage(ctx, db, data)
-	case base.DeploymentSourceRepo:
+	case base.DeploymentMethodRepo:
 		depErr = e.deployFromRepo(ctx, db, data)
-	case base.DeploymentSourceTarball:
+	case base.DeploymentMethodTarball:
 		depErr = e.deployFromTarball(ctx, db, data)
 	}
 

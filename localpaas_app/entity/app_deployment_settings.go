@@ -14,7 +14,7 @@ type AppDeploymentSettings struct {
 	ImageSource   *DeploymentImageSource   `json:"imageSource"`
 	RepoSource    *DeploymentRepoSource    `json:"repoSource"`
 	TarballSource *DeploymentTarballSource `json:"tarballSource"`
-	ActiveSource  base.DeploymentSource    `json:"activeSource"`
+	ActiveMethod  base.DeploymentMethod    `json:"activeMethod"`
 
 	Command               *string `json:"command,omitempty"`
 	WorkingDir            *string `json:"workingDir,omitempty"`

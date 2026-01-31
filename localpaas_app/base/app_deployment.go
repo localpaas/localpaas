@@ -11,14 +11,14 @@ var (
 	AllBuildTools = []BuildTool{BuildToolDocker, BuildToolNixpacks}
 )
 
-type DeploymentSource string
+type DeploymentMethod string
 
 const (
-	DeploymentSourceImage   DeploymentSource = `image`
-	DeploymentSourceRepo    DeploymentSource = "repo"
-	DeploymentSourceTarball DeploymentSource = "tarball"
+	DeploymentMethodImage   DeploymentMethod = `image`
+	DeploymentMethodRepo    DeploymentMethod = "repo"
+	DeploymentMethodTarball DeploymentMethod = "tarball"
 )
 
 var (
-	AllDeploymentSources = []DeploymentSource{DeploymentSourceImage, DeploymentSourceRepo, DeploymentSourceTarball}
+	AllDeploymentMethods = []DeploymentMethod{DeploymentMethodImage, DeploymentMethodRepo, DeploymentMethodTarball}
 )

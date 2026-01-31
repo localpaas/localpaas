@@ -15105,19 +15105,19 @@
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_base.AppStatus" : {
-        "enum" : [ "active", "locked", "disabled", "deleting" ],
+        "enum" : [ "active", "disabled", "deleting" ],
         "type" : "string",
-        "x-enum-varnames" : [ "AppStatusActive", "AppStatusLocked", "AppStatusDisabled", "AppStatusDeleting" ]
+        "x-enum-varnames" : [ "AppStatusActive", "AppStatusDisabled", "AppStatusDeleting" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.BuildTool" : {
         "enum" : [ "docker", "nixpacks" ],
         "type" : "string",
         "x-enum-varnames" : [ "BuildToolDocker", "BuildToolNixpacks" ]
       },
-      "github_com_localpaas_localpaas_localpaas_app_base.DeploymentSource" : {
+      "github_com_localpaas_localpaas_localpaas_app_base.DeploymentMethod" : {
         "enum" : [ "image", "repo", "tarball" ],
         "type" : "string",
-        "x-enum-varnames" : [ "DeploymentSourceImage", "DeploymentSourceRepo", "DeploymentSourceTarball" ]
+        "x-enum-varnames" : [ "DeploymentMethodImage", "DeploymentMethodRepo", "DeploymentMethodTarball" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.DeploymentStatus" : {
         "enum" : [ "not-started", "in-progress", "canceled", "done", "failed" ],
@@ -15165,9 +15165,9 @@
         "x-enum-varnames" : [ "OAuthKindGithub", "OAuthKindGithubApp", "OAuthKindGitlab", "OAuthKindGitea", "OAuthKindGoogle", "OAuthKindGitlabCustom" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.ProjectStatus" : {
-        "enum" : [ "active", "locked", "disabled", "deleting" ],
+        "enum" : [ "active", "disabled", "deleting" ],
         "type" : "string",
-        "x-enum-varnames" : [ "ProjectStatusActive", "ProjectStatusLocked", "ProjectStatusDisabled", "ProjectStatusDeleting" ]
+        "x-enum-varnames" : [ "ProjectStatusActive", "ProjectStatusDisabled", "ProjectStatusDeleting" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.SSLProvider" : {
         "enum" : [ "letsencrypt", "custom" ],
@@ -15398,8 +15398,8 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_entity.AppDeploymentSettings" : {
         "properties" : {
-          "activeSource" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.DeploymentSource"
+          "activeMethod" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.DeploymentMethod"
           },
           "command" : {
             "type" : "string"
@@ -15423,7 +15423,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "activeSource", "imageSource", "repoSource", "tarballSource" ],
+        "required" : [ "activeMethod", "imageSource", "repoSource", "tarballSource" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_entity.DeploymentImageSource" : {
@@ -15558,10 +15558,10 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
         "format" : "int64",
         "type" : "integer",
-        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
+        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentReq" : {
         "type" : "object"
@@ -15928,8 +15928,8 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentSettingsResp" : {
         "properties" : {
-          "activeSource" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.DeploymentSource"
+          "activeMethod" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.DeploymentMethod"
           },
           "command" : {
             "type" : "string"
@@ -15956,7 +15956,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "activeSource", "updateVer" ],
+        "required" : [ "activeMethod", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentTarballSourceReq" : {
@@ -16355,8 +16355,8 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.UpdateAppDeploymentSettingsReq" : {
         "properties" : {
-          "activeSource" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.DeploymentSource"
+          "activeMethod" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.DeploymentMethod"
           },
           "command" : {
             "type" : "string"
@@ -16383,7 +16383,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "activeSource", "command", "imageSource", "postDeploymentCommand", "preDeploymentCommand", "repoSource", "tarballSource", "updateVer", "workingDir" ],
+        "required" : [ "activeMethod", "command", "imageSource", "postDeploymentCommand", "preDeploymentCommand", "repoSource", "tarballSource", "updateVer", "workingDir" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.UpdateAppDeploymentSettingsResp" : {

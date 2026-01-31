@@ -19,7 +19,7 @@ type UpdateAppDeploymentSettingsReq struct {
 	ImageSource   *DeploymentImageSourceReq   `json:"imageSource"`
 	RepoSource    *DeploymentRepoSourceReq    `json:"repoSource"`
 	TarballSource *DeploymentTarballSourceReq `json:"tarballSource"`
-	ActiveSource  base.DeploymentSource       `json:"activeSource"`
+	ActiveMethod  base.DeploymentMethod       `json:"activeMethod"`
 
 	Command               *string `json:"command"`
 	WorkingDir            *string `json:"workingDir"`

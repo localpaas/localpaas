@@ -38,7 +38,7 @@ type DeploymentSettingsResp struct {
 	ImageSource   *DeploymentImageSourceResp   `json:"imageSource,omitempty"`
 	RepoSource    *DeploymentRepoSourceResp    `json:"repoSource,omitempty"`
 	TarballSource *DeploymentTarballSourceResp `json:"tarballSource,omitempty"`
-	ActiveSource  base.DeploymentSource        `json:"activeSource"`
+	ActiveMethod  base.DeploymentMethod        `json:"activeMethod"`
 
 	Command               string `json:"command,omitempty"`
 	WorkingDir            string `json:"workingDir,omitempty"`
