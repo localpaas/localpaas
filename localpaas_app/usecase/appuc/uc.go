@@ -2,7 +2,6 @@ package appuc
 
 import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 	"github.com/localpaas/localpaas/localpaas_app/service/appservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/envvarservice"
@@ -15,31 +14,27 @@ import (
 )
 
 type AppUC struct {
-	db                *database.DB
-	userRepo          repository.UserRepo
-	projectRepo       repository.ProjectRepo
-	appRepo           repository.AppRepo
-	settingRepo       repository.SettingRepo
-	deploymentRepo    repository.DeploymentRepo
-	permissionManager permission.Manager
-	userService       userservice.UserService
-	appService        appservice.AppService
-	projectService    projectservice.ProjectService
-	networkService    networkservice.NetworkService
-	envVarService     envvarservice.EnvVarService
-	nginxService      nginxservice.NginxService
-	dockerManager     *docker.Manager
-	taskQueue         taskqueue.TaskQueue
+	db             *database.DB
+	projectRepo    repository.ProjectRepo
+	appRepo        repository.AppRepo
+	settingRepo    repository.SettingRepo
+	deploymentRepo repository.DeploymentRepo
+	userService    userservice.UserService
+	appService     appservice.AppService
+	projectService projectservice.ProjectService
+	networkService networkservice.NetworkService
+	envVarService  envvarservice.EnvVarService
+	nginxService   nginxservice.NginxService
+	dockerManager  *docker.Manager
+	taskQueue      taskqueue.TaskQueue
 }
 
 func NewAppUC(
 	db *database.DB,
-	userRepo repository.UserRepo,
 	projectRepo repository.ProjectRepo,
 	appRepo repository.AppRepo,
 	settingRepo repository.SettingRepo,
 	deploymentRepo repository.DeploymentRepo,
-	permissionManager permission.Manager,
 	userService userservice.UserService,
 	appService appservice.AppService,
 	projectService projectservice.ProjectService,
@@ -50,20 +45,18 @@ func NewAppUC(
 	taskQueue taskqueue.TaskQueue,
 ) *AppUC {
 	return &AppUC{
-		db:                db,
-		userRepo:          userRepo,
-		projectRepo:       projectRepo,
-		appRepo:           appRepo,
-		settingRepo:       settingRepo,
-		deploymentRepo:    deploymentRepo,
-		permissionManager: permissionManager,
-		userService:       userService,
-		appService:        appService,
-		projectService:    projectService,
-		networkService:    networkService,
-		envVarService:     envVarService,
-		nginxService:      nginxService,
-		dockerManager:     dockerManager,
-		taskQueue:         taskQueue,
+		db:             db,
+		projectRepo:    projectRepo,
+		appRepo:        appRepo,
+		settingRepo:    settingRepo,
+		deploymentRepo: deploymentRepo,
+		userService:    userService,
+		appService:     appService,
+		projectService: projectService,
+		networkService: networkService,
+		envVarService:  envVarService,
+		nginxService:   nginxService,
+		dockerManager:  dockerManager,
+		taskQueue:      taskQueue,
 	}
 }

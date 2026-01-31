@@ -12,7 +12,6 @@ import (
 
 type ProjectUC struct {
 	db                       *database.DB
-	userRepo                 repository.UserRepo
 	projectRepo              repository.ProjectRepo
 	settingRepo              repository.SettingRepo
 	projectSharedSettingRepo repository.ProjectSharedSettingRepo
@@ -25,7 +24,6 @@ type ProjectUC struct {
 
 func NewProjectUC(
 	db *database.DB,
-	userRepo repository.UserRepo,
 	projectRepo repository.ProjectRepo,
 	settingRepo repository.SettingRepo,
 	projectSharedSettingRepo repository.ProjectSharedSettingRepo,
@@ -37,7 +35,6 @@ func NewProjectUC(
 ) *ProjectUC {
 	return &ProjectUC{
 		db:                       db,
-		userRepo:                 userRepo,
 		projectRepo:              projectRepo,
 		settingRepo:              settingRepo,
 		projectSharedSettingRepo: projectSharedSettingRepo,

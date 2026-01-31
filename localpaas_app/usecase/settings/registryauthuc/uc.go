@@ -2,7 +2,6 @@ package registryauthuc
 
 import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
 	"github.com/localpaas/localpaas/services/docker"
@@ -12,7 +11,6 @@ type RegistryAuthUC struct {
 	db                       *database.DB
 	settingRepo              repository.SettingRepo
 	projectSharedSettingRepo repository.ProjectSharedSettingRepo
-	permissionManager        permission.Manager
 	settingService           settingservice.SettingService
 	dockerManager            *docker.Manager
 }
@@ -21,7 +19,6 @@ func NewRegistryAuthUC(
 	db *database.DB,
 	settingRepo repository.SettingRepo,
 	projectSharedSettingRepo repository.ProjectSharedSettingRepo,
-	permissionManager permission.Manager,
 	settingService settingservice.SettingService,
 	dockerManager *docker.Manager,
 ) *RegistryAuthUC {
@@ -29,7 +26,6 @@ func NewRegistryAuthUC(
 		db:                       db,
 		settingRepo:              settingRepo,
 		projectSharedSettingRepo: projectSharedSettingRepo,
-		permissionManager:        permissionManager,
 		settingService:           settingService,
 		dockerManager:            dockerManager,
 	}
