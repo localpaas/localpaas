@@ -21,6 +21,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc/secretdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc/sshkeydto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc/ssldto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/webhookuc/webhookdto"
 )
 
 type UpdateSettingOptions struct {
@@ -139,6 +140,11 @@ func (h *BaseSettingHandler) UpdateSetting(
 		r := emaildto.NewUpdateEmailReq()
 		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.EmailUC.UpdateEmail(reqCtx, auth, r) }
+
+	case base.ResourceTypeWebhook:
+		r := webhookdto.NewUpdateWebhookReq()
+		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
+		req, ucFunc = r, func() (any, error) { return h.WebhookUC.UpdateWebhook(reqCtx, auth, r) }
 	}
 	if err != nil {
 		h.RenderError(ctx, err)

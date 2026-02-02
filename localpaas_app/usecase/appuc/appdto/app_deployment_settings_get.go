@@ -56,7 +56,7 @@ type DeploymentImageSourceResp struct {
 type DeploymentRepoSourceResp struct {
 	BuildTool      base.BuildTool            `json:"buildTool"`
 	RepoType       base.RepoType             `json:"repoType"`
-	RepoURL        string                    `json:"repoUrl"`
+	RepoURL        string                    `json:"repoURL"`
 	RepoRef        string                    `json:"repoRef"` // can be branch name, tag...
 	Credentials    *settings.BaseSettingResp `json:"credentials"`
 	DockerfilePath string                    `json:"dockerfilePath"` // for BuildToolDockerfile only

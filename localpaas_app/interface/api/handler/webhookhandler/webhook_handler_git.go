@@ -10,96 +10,35 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/webhookuc/webhookdto"
 )
 
-// HandleGithubWebhook Handles Github webhook
-// @Summary Handles Github webhook
-// @Description Handles Github webhook
+// HandleGitWebhook Handles Git webhook
+// @Summary Handles Git webhook
+// @Description Handles Git webhook
 // @Tags    webhooks
 // @Produce json
-// @Id      handleGithubWebhook
+// @Id      handleGitWebhook
+// @Param   gitSource path string true "git source"
+// @Param   secret path string true "webhook secret"
 // @Param   body body webhookdto.HandleGitWebhookReq true "request data"
 // @Success 200 {object} webhookdto.HandleGitWebhookResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /webhooks/github [post]
-func (h *WebhookHandler) HandleGithubWebhook(ctx *gin.Context) {
-	req := webhookdto.NewHandleGitWebhookReq()
-	req.Request = ctx.Request
-	req.GitSource = base.GitSourceGithub
-
-	resp, err := h.webhookUC.HandleGitWebhook(h.RequestCtx(ctx), req)
+// @Router  /webhooks/{gitSource}/{secret} [post]
+func (h *WebhookHandler) HandleGitWebhook(ctx *gin.Context) {
+	gitSource, err := h.ParseStringParam(ctx, "gitSource")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+	secret, err := h.ParseStringParam(ctx, "secret")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, resp)
-}
-
-// HandleGitlabWebhook Handles Gitlab webhook
-// @Summary Handles Gitlab webhook
-// @Description Handles Gitlab webhook
-// @Tags    webhooks
-// @Produce json
-// @Id      handleGitlabWebhook
-// @Param   body body webhookdto.HandleGitWebhookReq true "request data"
-// @Success 200 {object} webhookdto.HandleGitWebhookResp
-// @Failure 400 {object} apperrors.ErrorInfo
-// @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /webhooks/gitlab [post]
-func (h *WebhookHandler) HandleGitlabWebhook(ctx *gin.Context) {
 	req := webhookdto.NewHandleGitWebhookReq()
 	req.Request = ctx.Request
-	req.GitSource = base.GitSourceGitlab
-
-	resp, err := h.webhookUC.HandleGitWebhook(h.RequestCtx(ctx), req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
-}
-
-// HandleGiteaWebhook Handles Gitea webhook
-// @Summary Handles Gitea webhook
-// @Description Handles Gitea webhook
-// @Tags    webhooks
-// @Produce json
-// @Id      handleGiteaWebhook
-// @Param   body body webhookdto.HandleGitWebhookReq true "request data"
-// @Success 200 {object} webhookdto.HandleGitWebhookResp
-// @Failure 400 {object} apperrors.ErrorInfo
-// @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /webhooks/gitea [post]
-func (h *WebhookHandler) HandleGiteaWebhook(ctx *gin.Context) {
-	req := webhookdto.NewHandleGitWebhookReq()
-	req.Request = ctx.Request
-	req.GitSource = base.GitSourceGitea
-
-	resp, err := h.webhookUC.HandleGitWebhook(h.RequestCtx(ctx), req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
-}
-
-// HandleBitbucketWebhook Handles Bitbucket webhook
-// @Summary Handles Bitbucket webhook
-// @Description Handles Bitbucket webhook
-// @Tags    webhooks
-// @Produce json
-// @Id      handleBitbucketWebhook
-// @Param   body body webhookdto.HandleGitWebhookReq true "request data"
-// @Success 200 {object} webhookdto.HandleGitWebhookResp
-// @Failure 400 {object} apperrors.ErrorInfo
-// @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /webhooks/bitbucket [post]
-func (h *WebhookHandler) HandleBitbucketWebhook(ctx *gin.Context) {
-	req := webhookdto.NewHandleGitWebhookReq()
-	req.Request = ctx.Request
-	req.GitSource = base.GitSourceBitbucket
+	req.GitSource = base.GitSource(gitSource)
+	req.Secret = secret
 
 	resp, err := h.webhookUC.HandleGitWebhook(h.RequestCtx(ctx), req)
 	if err != nil {

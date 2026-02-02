@@ -22,27 +22,18 @@ func (uc *WebhookUC) HandleGitWebhook(
 	var persistingData *appservice.PersistingAppData
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
 		persistingData = &appservice.PersistingAppData{}
-		mapWebhookSecret, err := uc.loadWebhookSecrets(ctx, db)
+
+		webhookSettings, err := uc.loadWebhookSettings(ctx, db, req)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
-
-		var appsToRedeploy []*entity.App
-		for secret, apps := range mapWebhookSecret {
-			success, err := uc.processGitWebhook(req, secret, apps, &appsToRedeploy)
-			if err != nil {
-				return apperrors.Wrap(err)
-			}
-			if success {
-				break
-			}
+		if len(webhookSettings) == 0 { // no matching webhook setting found
+			return nil
 		}
 
-		for _, app := range appsToRedeploy {
-			err = uc.createAppDeployment(app, persistingData)
-			if err != nil {
-				return apperrors.Wrap(err)
-			}
+		err = uc.processGitWebhook(ctx, db, req, persistingData)
+		if err != nil {
+			return apperrors.Wrap(err)
 		}
 
 		err = uc.appService.PersistAppData(ctx, db, persistingData)
@@ -63,62 +54,128 @@ func (uc *WebhookUC) HandleGitWebhook(
 	return &webhookdto.HandleGitWebhookResp{}, nil
 }
 
-func (uc *WebhookUC) processGitWebhook(
-	req *webhookdto.HandleGitWebhookReq,
-	secret string,
-	apps []*entity.App,
-	appsToRedeploy *[]*entity.App,
-) (success bool, err error) {
-	switch req.GitSource {
-	case base.GitSourceGithub:
-		return uc.processGithubWebhook(req, secret, apps, appsToRedeploy)
-	case base.GitSourceGitlab, base.GitSourceGitlabCustom:
-		return uc.processGitlabWebhook(req, secret, apps, appsToRedeploy)
-	case base.GitSourceGitea:
-		return uc.processGiteaWebhook(req, secret, apps, appsToRedeploy)
-	case base.GitSourceBitbucket:
-		return uc.processBitbucketWebhook(req, secret, apps, appsToRedeploy)
-	}
-	return false, apperrors.New(apperrors.ErrUnsupported).
-		WithMsgLog("git source %s not supported", req.GitSource)
+type eventData struct {
+	Push *pushEventData
 }
 
-func (uc *WebhookUC) loadWebhookSecrets(
+type pushEventData struct {
+	RepoRef string
+	RepoURL string
+}
+
+func (uc *WebhookUC) processGitWebhook(
 	ctx context.Context,
 	db database.IDB,
-) (map[string][]*entity.App, error) {
+	req *webhookdto.HandleGitWebhookReq,
+	persistingData *appservice.PersistingAppData,
+) (err error) {
+	data := &eventData{}
+	switch req.GitSource {
+	case base.GitSourceGithub:
+		err = uc.processGithubWebhook(req, data)
+	case base.GitSourceGitlab, base.GitSourceGitlabCustom:
+		err = uc.processGitlabWebhook(req, data)
+	case base.GitSourceGitea:
+		err = uc.processGiteaWebhook(req, data)
+	case base.GitSourceBitbucket:
+		err = uc.processBitbucketWebhook(req, data)
+	default:
+		return apperrors.New(apperrors.ErrUnsupported).
+			WithMsgLog("git source %s not supported", req.GitSource)
+	}
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	if data.Push != nil {
+		apps, err := uc.findAppsToRedeployByPushEvent(ctx, db, data.Push)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+		for _, app := range apps {
+			err = uc.createAppDeployment(app, persistingData)
+			if err != nil {
+				return apperrors.Wrap(err)
+			}
+		}
+	}
+	return nil
+}
+
+func (uc *WebhookUC) loadWebhookSettings(
+	ctx context.Context,
+	db database.IDB,
+	req *webhookdto.HandleGitWebhookReq,
+) ([]*entity.Setting, error) {
+	settings, _, err := uc.settingRepo.List(ctx, db, nil,
+		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
+		bunex.SelectWhereIn("setting.type IN (?)", base.SettingTypeWebhook, base.SettingTypeGithubApp),
+	)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	res := make([]*entity.Setting, 0, len(settings))
+	for _, setting := range settings {
+		switch setting.Type { //nolint:exhaustive
+		case base.SettingTypeGithubApp:
+			if setting.MustAsGithubApp().WebhookSecret == req.Secret {
+				res = append(res, setting)
+			}
+		case base.SettingTypeWebhook:
+			if setting.MustAsWebhook().Secret == req.Secret {
+				res = append(res, setting)
+			}
+		}
+	}
+	return res, nil
+}
+
+func (uc *WebhookUC) findAppsToRedeployByPushEvent(
+	ctx context.Context,
+	db database.IDB,
+	pushEvent *pushEventData,
+) ([]*entity.App, error) {
 	apps, _, err := uc.appRepo.List(ctx, db, "", nil,
 		bunex.SelectFor("UPDATE OF app"),
-		bunex.SelectColumns("id", "project_id", "parent_id", "webhook_secret"),
 		bunex.SelectWhere("app.status = ?", base.AppStatusActive),
-		bunex.SelectWhere("app.webhook_secret IS NOT NULL"),
 		bunex.SelectJoin("JOIN projects ON projects.id = app.project_id"),
-		bunex.SelectWhere("app.status = ?", base.AppStatusActive),
 		bunex.SelectWhere("projects.status = ?", base.ProjectStatusActive),
 		bunex.SelectRelation("Settings",
-			bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
 			bunex.SelectWhere("setting.type = ?", base.SettingTypeAppDeployment),
+			bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
 		),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-
-	res := make(map[string][]*entity.App, len(apps))
-	for _, app := range apps {
-		if app.WebhookSecret == "" || len(app.Settings) == 0 {
-			continue
-		}
-		res[app.WebhookSecret] = append(res[app.WebhookSecret], app)
+	if len(apps) == 0 {
+		return nil, nil
 	}
-	return res, nil
+
+	inRepoURL, err := vcsurl.Parse(pushEvent.RepoURL)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	appsToRedeploy := make([]*entity.App, 0, len(apps))
+	for _, app := range apps {
+		matching, err := uc.shouldRedeployAppByPushEvent(app, inRepoURL, pushEvent.RepoRef)
+		if err == nil && matching {
+			appsToRedeploy = append(appsToRedeploy, app)
+		}
+	}
+
+	return appsToRedeploy, nil
 }
 
-func (uc *WebhookUC) shouldRedeployApp(
+func (uc *WebhookUC) shouldRedeployAppByPushEvent(
 	app *entity.App,
 	inRepoURL *vcsurl.VCS,
 	inRepoRef string,
 ) (bool, error) {
+	if len(app.Settings) == 0 {
+		return false, nil
+	}
 	deploymentSettings, err := app.Settings[0].AsAppDeploymentSettings()
 	if err != nil {
 		return false, apperrors.Wrap(err)

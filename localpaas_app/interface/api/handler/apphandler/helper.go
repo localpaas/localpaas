@@ -41,7 +41,7 @@ func (h *AppHandler) getAuth(
 			Action:         gofn.If(action == base.ActionTypeDelete, base.ActionTypeWrite, action),
 		}
 	}
-	auth, err = h.authHandler.GetCurrentAuth(ctx, accessCheck)
+	auth, err = h.AuthHandler.GetCurrentAuth(ctx, accessCheck)
 	if err != nil {
 		return
 	}
@@ -68,7 +68,7 @@ func (h *AppHandler) getAuthForItem(
 			return
 		}
 	}
-	auth, err = h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+	auth, err = h.AuthHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceModule:     base.ResourceModuleProject,
 		ResourceType:       base.ResourceTypeApp,
 		ResourceID:         appID,

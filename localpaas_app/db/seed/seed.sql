@@ -39,19 +39,19 @@ VALUES ('01JAB9XED0GTXBSQDFVYAJ8WB1', 'tag 1', 0),
        ('01JAB9XED0GTXBSQDFVYAJ8WB2', 'my tag', 1)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO apps (id, name, key, status, project_id, token, webhook_secret, created_at, updated_at)
+INSERT INTO apps (id, name, key, status, project_id, token, created_at, updated_at)
 VALUES ('01JAB9XED0GTXBSQDFVYAJ8WD1', 'Backend', 'project_a__backend', 'active', '01JAB9XED0GTXBSQDFVYAJ8WB1',
-        'tokena1', 'abc123', '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
+        'tokena1', '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WD2', 'Frontend', 'project_a__frontend', 'active', '01JAB9XED0GTXBSQDFVYAJ8WB1',
-        'tokena2', 'abc123',  '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
+        'tokena2',  '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WD3', 'Redis', 'project_a__redis', 'active', '01JAB9XED0GTXBSQDFVYAJ8WB1',
-        'tokena3', 'abc123',  '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
+        'tokena3',  '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WD4', 'Postgres', 'project_a__db', 'active', '01JAB9XED0GTXBSQDFVYAJ8WB1',
-        'tokena4', 'abc123',  '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
+        'tokena4',  '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WD5', 'Backend', 'project_b__backend', 'active', '01JAB9XED0GTXBSQDFVYAJ8WB2',
-        'tokenb1', 'abc123',  '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
+        'tokenb1',  '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WD6', 'Frontend', 'project_b__frontend', 'active', '01JAB9XED0GTXBSQDFVYAJ8WB2',
-        'tokenb2', 'abc123',  '2025-10-01 00:00:00', '2025-10-01 00:00:00')
+        'tokenb2',  '2025-10-01 00:00:00', '2025-10-01 00:00:00')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO app_tags (app_id, tag, display_order)
@@ -156,5 +156,8 @@ VALUES ('01JAB9XED0GTXBSQDFVYAJ8WE1', 'oauth', 'github', 'Github', 'active', tru
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WN1', 'email', 'smtp', 'email smtp 1', 'active', true, true,
         '{"smtp": {"ssl": false, "host": "smtp.gmail.com", "port": 587, "password": "lpsalt:Bnvmb4ScpDv18A== IXTdgLe3cdeElq/lpsF1eUTXsQmGmpbQ0UhyO9T/pNkdapbmGHfOOpHx0GV3EFk=", "username": "techloop.test1@gmail.com", "displayName": "LocalPaas App"}}',
+        '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
+       ('01JAB9XED0GTXBSQDFVYAJ8WO1', 'webhook', 'git', 'webhook git 1', 'active', true, true,
+        '{"kind": "git", "secret": "abc123"}',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00')
 ON CONFLICT DO NOTHING;

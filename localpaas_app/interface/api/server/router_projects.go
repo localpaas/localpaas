@@ -165,5 +165,17 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		emailGroup.DELETE("/:id", s.handlerRegistry.projectHandler.DeleteEmail)
 	}
 
+	{ // webhook group
+		webhookGroup := projectProviderGroup.Group("/webhooks")
+		// Info
+		webhookGroup.GET("/:id", s.handlerRegistry.projectHandler.GetWebhook)
+		webhookGroup.GET("", s.handlerRegistry.projectHandler.ListWebhook)
+		// Creation & Update
+		webhookGroup.POST("", s.handlerRegistry.projectHandler.CreateWebhook)
+		webhookGroup.PUT("/:id", s.handlerRegistry.projectHandler.UpdateWebhook)
+		webhookGroup.PUT("/:id/meta", s.handlerRegistry.projectHandler.UpdateWebhookMeta)
+		webhookGroup.DELETE("/:id", s.handlerRegistry.projectHandler.DeleteWebhook)
+	}
+
 	return projectGroup
 }

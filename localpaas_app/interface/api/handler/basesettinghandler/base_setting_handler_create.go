@@ -20,6 +20,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc/secretdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc/sshkeydto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc/ssldto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/webhookuc/webhookdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc/apikeydto"
 )
 
@@ -140,6 +141,11 @@ func (h *BaseSettingHandler) CreateSetting(
 		r := emaildto.NewCreateEmailReq()
 		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.EmailUC.CreateEmail(reqCtx, auth, r) }
+
+	case base.ResourceTypeWebhook:
+		r := webhookdto.NewCreateWebhookReq()
+		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		req, ucFunc = r, func() (any, error) { return h.WebhookUC.CreateWebhook(reqCtx, auth, r) }
 	}
 
 	if err = h.ParseAndValidateJSONBody(ctx, req); err != nil {

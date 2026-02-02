@@ -27,7 +27,6 @@ func (uc *GitTokenUC) UpdateGitToken(
 			data *settings.UpdateSettingData,
 			pData *settings.PersistingSettingData,
 		) error {
-			pData.Setting.Name = gofn.Coalesce(req.Name, pData.Setting.Name)
 			pData.Setting.Kind = gofn.Coalesce(string(req.Kind), pData.Setting.Kind)
 			pData.Setting.ExpireAt = req.ExpireAt
 			err := pData.Setting.SetData(req.ToEntity())

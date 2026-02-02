@@ -93,9 +93,9 @@ func (h *ProjectHandler) UpdateSSHKeyMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeSSHKey, base.SettingScopeProject)
 }
 
-// DeleteSSHKey Deletes sshkey provider
-// @Summary Deletes sshkey provider
-// @Description Deletes sshkey provider
+// DeleteSSHKey Deletes ssh-key provider
+// @Summary Deletes ssh-key provider
+// @Description Deletes ssh-key provider
 // @Tags    project_providers
 // @Produce json
 // @Id      deleteProjectSSHKey

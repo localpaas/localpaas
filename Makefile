@@ -114,4 +114,4 @@ local-build-fe:
 # ----- Smee.io config -----
 smee-connect:
 	# RUN ONCE go install -v github.com/chmouel/gosmee@latest
-	gosmee client --saveDir tmp/gosmee/savedreplay https://smee.io/RBNiNjxieUIWZ6Ej http://localhost:10000/_/webhooks/github
+	gosmee client --saveDir tmp/gosmee/savedreplay https://smee.io/RBNiNjxieUIWZ6Ej http://localhost:10000/_/webhooks/github/abc123

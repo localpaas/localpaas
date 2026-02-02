@@ -1,4 +1,4 @@
-package sshkeyuc
+package webhookuc
 
 import (
 	"context"
@@ -7,14 +7,14 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc/sshkeydto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/webhookuc/webhookdto"
 )
 
-func (uc *SSHKeyUC) UpdateSSHKey(
+func (uc *WebhookUC) UpdateWebhook(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *sshkeydto.UpdateSSHKeyReq,
-) (*sshkeydto.UpdateSSHKeyResp, error) {
+	req *webhookdto.UpdateWebhookReq,
+) (*webhookdto.UpdateWebhookResp, error) {
 	req.Type = currentSettingType
 	_, err := settings.UpdateSetting(ctx, uc.db, &req.UpdateSettingReq, &settings.UpdateSettingData{
 		SettingRepo:   uc.settingRepo,
@@ -25,6 +25,7 @@ func (uc *SSHKeyUC) UpdateSSHKey(
 			data *settings.UpdateSettingData,
 			pData *settings.PersistingSettingData,
 		) error {
+			pData.Setting.Kind = string(req.Kind)
 			err := pData.Setting.SetData(req.ToEntity())
 			if err != nil {
 				return apperrors.Wrap(err)
@@ -36,5 +37,5 @@ func (uc *SSHKeyUC) UpdateSSHKey(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &sshkeydto.UpdateSSHKeyResp{}, nil
+	return &webhookdto.UpdateWebhookResp{}, nil
 }

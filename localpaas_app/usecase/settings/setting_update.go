@@ -156,6 +156,7 @@ func prepareSettingUpdate(
 ) {
 	timeNow := timeutil.NowUTC()
 	setting := data.Setting
+	setting.Name = gofn.Coalesce(data.VerifyingName, setting.Name)
 	setting.AvailInProjects = gofn.If(req.Scope != base.SettingScopeGlobal, false, req.AvailInProjects)
 	setting.Default = req.Default
 	setting.UpdateVer++

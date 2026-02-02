@@ -17,7 +17,7 @@ import (
 // GetAppDeployment Gets app deployment
 // @Summary Gets app deployment
 // @Description Gets app deployment
-// @Tags    apps_deployments
+// @Tags    app_deployments
 // @Produce json
 // @Id      getAppDeployment
 // @Param   projectID path string true "project ID"
@@ -55,7 +55,7 @@ func (h *AppHandler) GetAppDeployment(ctx *gin.Context) {
 // ListAppDeployment Lists app deployments
 // @Summary Lists app deployments
 // @Description Lists app deployments
-// @Tags    apps_deployments
+// @Tags    app_deployments
 // @Produce json
 // @Id      listAppDeployment
 // @Param   projectID path string true "project ID"
@@ -96,7 +96,7 @@ func (h *AppHandler) ListAppDeployment(ctx *gin.Context) {
 // GetAppDeploymentLogs Stream app deployment logs via websocket
 // @Summary Stream app deployment logs via websocket
 // @Description Stream deployment app logs via websocket
-// @Tags    apps_deployments
+// @Tags    app_deployments
 // @Produce json
 // @Id      getAppDeploymentLogs
 // @Param   projectID path string true "project ID"
@@ -161,7 +161,7 @@ func (h *AppHandler) GetAppDeploymentLogs(ctx *gin.Context, mel *melody.Melody) 
 // CancelAppDeployment Cancels app deployment
 // @Summary Cancels app deployment
 // @Description Cancels app deployment
-// @Tags    apps_deployments
+// @Tags    app_deployments
 // @Produce json
 // @Id      cancelAppDeployment
 // @Param   projectID path string true "project ID"

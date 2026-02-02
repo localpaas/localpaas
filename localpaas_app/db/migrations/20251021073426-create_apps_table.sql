@@ -10,7 +10,6 @@ CREATE TABLE IF NOT EXISTS apps
     status         VARCHAR NOT NULL CONSTRAINT chk_status CHECK
                         (status IN ('active','disabled','deleting')),
     token          VARCHAR(100) NOT NULL,
-    webhook_secret VARCHAR(100) NULL,
     note           VARCHAR(10000) NULL,
     update_ver     INT4 NOT NULL DEFAULT 1,
 

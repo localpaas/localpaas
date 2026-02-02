@@ -1,7 +1,6 @@
 package apphandler
 
 import (
-	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/basesettinghandler"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appdeploymentuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc"
@@ -10,7 +9,6 @@ import (
 
 type AppHandler struct {
 	*basesettinghandler.BaseSettingHandler
-	authHandler     *authhandler.AuthHandler
 	appUC           *appuc.AppUC
 	appDeploymentUC *appdeploymentuc.AppDeploymentUC
 	secretUC        *secretuc.SecretUC
@@ -18,14 +16,12 @@ type AppHandler struct {
 
 func NewAppHandler(
 	baseSettingHandler *basesettinghandler.BaseSettingHandler,
-	authHandler *authhandler.AuthHandler,
 	appUC *appuc.AppUC,
 	appDeploymentUC *appdeploymentuc.AppDeploymentUC,
 	secretUC *secretuc.SecretUC,
 ) *AppHandler {
 	return &AppHandler{
 		BaseSettingHandler: baseSettingHandler,
-		authHandler:        authHandler,
 		appUC:              appUC,
 		appDeploymentUC:    appDeploymentUC,
 		secretUC:           secretUC,

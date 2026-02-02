@@ -52,7 +52,7 @@ type DeploymentRepoSourceReq struct {
 	Enabled        bool                `json:"enabled"`
 	BuildTool      base.BuildTool      `json:"buildTool"`
 	RepoType       base.RepoType       `json:"repoType"`
-	RepoURL        string              `json:"repoUrl"`
+	RepoURL        string              `json:"repoURL"`
 	RepoRef        string              `json:"repoRef"` // can be branch name, tag...
 	Credentials    basedto.ObjectIDReq `json:"credentials"`
 	DockerfilePath string              `json:"dockerfilePath"` // for BuildToolDockerfile only
@@ -70,7 +70,7 @@ func (req *DeploymentRepoSourceReq) validate(field string) (res []vld.Validator)
 	}
 	res = append(res, basedto.ValidateStrIn(&req.BuildTool, true, base.AllBuildTools, field+"buildTool")...)
 	res = append(res, basedto.ValidateStrIn(&req.RepoType, true, base.AllRepoTypes, field+"repoType")...)
-	res = append(res, basedto.ValidateRepoURL(&req.RepoURL, true, field+"repoUrl")...)
+	res = append(res, basedto.ValidateRepoURL(&req.RepoURL, true, field+"repoURL")...)
 	res = append(res, basedto.ValidateStr(&req.RepoRef, false, 1, repoRefMaxLen, field+"repoRef")...)
 	res = append(res, basedto.ValidateObjectIDReq(&req.Credentials, false, field+"credentials")...)
 	res = append(res, basedto.ValidateObjectIDReq(&req.RegistryAuth, false, field+"registryAuth")...)

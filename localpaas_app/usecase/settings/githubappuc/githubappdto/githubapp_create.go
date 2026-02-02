@@ -35,7 +35,7 @@ func (req *GithubAppBaseReq) ToEntity() *entity.GithubApp {
 		ClientSecret:   entity.NewEncryptedField(req.ClientSecret),
 		Organization:   req.Organization,
 		WebhookURL:     req.WebhookURL,
-		WebhookSecret:  entity.NewEncryptedField(req.WebhookSecret),
+		WebhookSecret:  req.WebhookSecret,
 		AppID:          req.GhAppID,
 		InstallationID: req.GhInstallationID,
 		PrivateKey:     entity.NewEncryptedField(req.PrivateKey),

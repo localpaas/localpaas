@@ -15,7 +15,7 @@ type GithubApp struct {
 	ClientSecret   EncryptedField `json:"clientSecret"`
 	Organization   string         `json:"org"`
 	WebhookURL     string         `json:"webhookURL"`
-	WebhookSecret  EncryptedField `json:"webhookSecret"`
+	WebhookSecret  string         `json:"webhookSecret"`
 	AppID          int64          `json:"appId"`
 	InstallationID int64          `json:"installationId"`
 	PrivateKey     EncryptedField `json:"privateKey"`
@@ -32,7 +32,6 @@ func (s *GithubApp) GetRefSettingIDs() []string {
 
 func (s *GithubApp) MustDecrypt() *GithubApp {
 	s.ClientSecret.MustGetPlain()
-	s.WebhookSecret.MustGetPlain()
 	s.PrivateKey.MustGetPlain()
 	return s
 }
