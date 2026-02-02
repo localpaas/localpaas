@@ -54,6 +54,7 @@ func (uc *AppUC) loadAppDataForUpdateToken(
 	data *updateAppTokenData,
 ) error {
 	app, err := uc.appService.LoadApp(ctx, db, req.ProjectID, req.ID, true, true,
+		bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
 		bunex.SelectFor("UPDATE OF app"),
 		bunex.SelectRelation("Project"),
 	)

@@ -19,6 +19,7 @@ func (uc *AppUC) ListApp(
 ) (*appdto.ListAppResp, error) {
 	listOpts := []bunex.SelectQueryOption{
 		bunex.SelectRelation("Project"),
+		bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
 	}
 
 	if len(req.Status) > 0 {

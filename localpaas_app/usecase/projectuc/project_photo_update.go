@@ -53,6 +53,7 @@ func (uc *ProjectUC) loadProjectPhotoDataForUpdate(
 ) error {
 	project, err := uc.projectRepo.GetByID(ctx, db, req.ID,
 		bunex.SelectFor("UPDATE"),
+		bunex.SelectExcludeColumns(entity.ProjectDefaultExcludeColumns...),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)

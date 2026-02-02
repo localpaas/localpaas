@@ -5,6 +5,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
 )
@@ -14,7 +15,9 @@ func (uc *AppUC) ListAppBase(
 	auth *basedto.Auth,
 	req *appdto.ListAppBaseReq,
 ) (*appdto.ListAppBaseResp, error) {
-	listOpts := []bunex.SelectQueryOption{}
+	listOpts := []bunex.SelectQueryOption{
+		bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
+	}
 
 	if len(req.Status) > 0 {
 		listOpts = append(listOpts,

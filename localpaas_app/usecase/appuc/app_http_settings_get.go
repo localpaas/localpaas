@@ -8,6 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/entityutil"
@@ -19,7 +20,9 @@ func (uc *AppUC) GetAppHttpSettings(
 	auth *basedto.Auth,
 	req *appdto.GetAppHttpSettingsReq,
 ) (*appdto.GetAppHttpSettingsResp, error) {
-	app, err := uc.appRepo.GetByID(ctx, uc.db, req.ProjectID, req.AppID)
+	app, err := uc.appRepo.GetByID(ctx, uc.db, req.ProjectID, req.AppID,
+		bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
+	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

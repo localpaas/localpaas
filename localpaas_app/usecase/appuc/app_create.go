@@ -87,6 +87,7 @@ func (uc *AppUC) loadAppData(
 ) error {
 	project, err := uc.projectRepo.GetByID(ctx, db, req.ProjectID,
 		bunex.SelectFor("UPDATE OF project"),
+		bunex.SelectExcludeColumns(entity.ProjectDefaultExcludeColumns...),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -99,11 +100,11 @@ func (uc *AppUC) loadAppData(
 	data.AppKey = project.Key + "__" + slugify.SlugifyEx(req.Name, nil, appKeyMaxLen)
 
 	// App keys must be unique globally
-	app, err := uc.appRepo.GetByKey(ctx, db, "", data.AppKey)
+	conflictApp, err := uc.appRepo.GetByKey(ctx, db, "", data.AppKey, bunex.SelectColumns("id"))
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}
-	if app != nil {
+	if conflictApp != nil {
 		return apperrors.NewAlreadyExist("App").
 			WithMsgLog("app key '%s' already exists", data.AppKey)
 	}

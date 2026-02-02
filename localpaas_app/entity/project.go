@@ -10,6 +10,7 @@ var (
 	ProjectUpsertingConflictCols = []string{"id"}
 	ProjectUpsertingUpdateCols   = []string{"name", "key", "photo", "status", "note", "owner_id",
 		"update_ver", "updated_at", "deleted_at"}
+	ProjectDefaultExcludeColumns = []string{"note"}
 )
 
 type Project struct {

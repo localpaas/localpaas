@@ -86,6 +86,7 @@ func (uc *AppUC) loadAppDataForObtainDomainSSL(
 	data *obtainSSLData,
 ) error {
 	app, err := uc.appService.LoadApp(ctx, db, req.ProjectID, req.AppID, true, true,
+		bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
 		bunex.SelectFor("UPDATE OF app"),
 		bunex.SelectRelation("Project"),
 		bunex.SelectRelation("Settings",

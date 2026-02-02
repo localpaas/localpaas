@@ -59,6 +59,7 @@ func (uc *ProjectUC) loadSettingsForImport(
 	data *settingImportData,
 ) error {
 	project, err := uc.projectRepo.GetByID(ctx, db, req.ProjectID,
+		bunex.SelectExcludeColumns(entity.ProjectDefaultExcludeColumns...),
 		bunex.SelectFor("UPDATE OF project"),
 	)
 	if err != nil {
@@ -96,12 +97,13 @@ func (uc *ProjectUC) preparePersistingSettingImports(
 ) {
 	timeNow := timeutil.NowUTC()
 	for _, setting := range data.Settings {
-		persistingData.ProjectSharedSettings = append(persistingData.ProjectSharedSettings, &entity.ProjectSharedSetting{
-			ProjectID:       data.Project.ID,
-			SettingID:       setting.ID,
-			DataViewAllowed: req.DataViewAllowed,
-			CreatedAt:       timeNow,
-		})
+		persistingData.ProjectSharedSettings = append(persistingData.ProjectSharedSettings,
+			&entity.ProjectSharedSetting{
+				ProjectID:       data.Project.ID,
+				SettingID:       setting.ID,
+				DataViewAllowed: req.DataViewAllowed,
+				CreatedAt:       timeNow,
+			})
 	}
 }
 

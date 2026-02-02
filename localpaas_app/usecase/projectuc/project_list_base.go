@@ -5,6 +5,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc/projectdto"
 )
@@ -14,7 +15,9 @@ func (uc *ProjectUC) ListProjectBase(
 	auth *basedto.Auth,
 	req *projectdto.ListProjectBaseReq,
 ) (*projectdto.ListProjectBaseResp, error) {
-	var listOpts []bunex.SelectQueryOption
+	listOpts := []bunex.SelectQueryOption{
+		bunex.SelectExcludeColumns(entity.ProjectDefaultExcludeColumns...),
+	}
 
 	if len(req.Status) > 0 {
 		listOpts = append(listOpts,

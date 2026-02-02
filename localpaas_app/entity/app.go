@@ -10,6 +10,7 @@ var (
 	AppUpsertingConflictCols = []string{"id"}
 	AppUpsertingUpdateCols   = []string{"name", "key", "project_id", "parent_id", "service_id",
 		"status", "token", "webhook_secret", "note", "update_ver", "updated_at", "deleted_at"}
+	AppDefaultExcludeColumns = []string{"note"}
 )
 
 type App struct {
@@ -29,11 +30,10 @@ type App struct {
 	UpdatedAt time.Time `bun:",default:current_timestamp"`
 	DeletedAt time.Time `bun:",soft_delete,nullzero"`
 
-	Project  *Project         `bun:"rel:has-one,join:project_id=id"`
-	Parent   *App             `bun:"rel:has-one,join:parent_id=id"`
-	Settings []*Setting       `bun:"rel:has-many,join:id=object_id"`
-	Tags     []*AppTag        `bun:"rel:has-many,join:id=app_id"`
-	Accesses []*ACLPermission `bun:"rel:has-many,join:id=resource_id"`
+	Project   *Project   `bun:"rel:has-one,join:project_id=id"`
+	ParentApp *App       `bun:"rel:has-one,join:parent_id=id"`
+	Settings  []*Setting `bun:"rel:has-many,join:id=object_id"`
+	Tags      []*AppTag  `bun:"rel:has-many,join:id=app_id"`
 }
 
 // GetID implements IDEntity interface

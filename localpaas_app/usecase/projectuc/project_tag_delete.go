@@ -53,6 +53,7 @@ func (uc *ProjectUC) loadProjectTagDataForDelete(
 	data *deleteProjectTagData,
 ) error {
 	project, err := uc.projectRepo.GetByID(ctx, db, req.ProjectID,
+		bunex.SelectExcludeColumns(entity.ProjectDefaultExcludeColumns...),
 		bunex.SelectFor("UPDATE OF project"),
 		bunex.SelectRelation("Tags", bunex.SelectOrder("display_order")),
 	)
