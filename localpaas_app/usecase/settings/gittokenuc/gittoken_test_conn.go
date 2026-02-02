@@ -7,9 +7,9 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/gittokenuc/gittokendto"
-	"github.com/localpaas/localpaas/services/gitea"
-	"github.com/localpaas/localpaas/services/github"
-	"github.com/localpaas/localpaas/services/gitlab"
+	"github.com/localpaas/localpaas/services/git/gitea"
+	"github.com/localpaas/localpaas/services/git/github"
+	"github.com/localpaas/localpaas/services/git/gitlab"
 )
 
 func (uc *GitTokenUC) TestGitTokenConn(

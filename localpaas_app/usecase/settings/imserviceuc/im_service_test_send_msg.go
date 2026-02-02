@@ -7,8 +7,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc/imservicedto"
-	"github.com/localpaas/localpaas/services/discord"
-	"github.com/localpaas/localpaas/services/slack"
+	"github.com/localpaas/localpaas/services/im/discord"
+	"github.com/localpaas/localpaas/services/im/slack"
 )
 
 func (uc *IMServiceUC) TestSendInstantMsg(

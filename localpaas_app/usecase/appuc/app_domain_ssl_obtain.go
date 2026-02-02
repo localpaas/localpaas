@@ -18,7 +18,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
 	"github.com/localpaas/localpaas/localpaas_app/service/nginxservice"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
-	"github.com/localpaas/localpaas/services/letsencrypt"
+	"github.com/localpaas/localpaas/services/ssl/letsencrypt"
 )
 
 func (uc *AppUC) ObtainDomainSSL(

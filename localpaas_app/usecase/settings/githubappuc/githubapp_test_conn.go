@@ -7,7 +7,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc/githubappdto"
-	"github.com/localpaas/localpaas/services/github"
+	"github.com/localpaas/localpaas/services/git/github"
 )
 
 func (uc *GithubAppUC) TestGithubAppConn(

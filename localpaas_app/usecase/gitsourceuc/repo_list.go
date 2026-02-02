@@ -11,9 +11,9 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/gitsourceuc/gitsourcedto"
-	"github.com/localpaas/localpaas/services/gitea"
-	"github.com/localpaas/localpaas/services/github"
-	"github.com/localpaas/localpaas/services/gitlab"
+	"github.com/localpaas/localpaas/services/git/gitea"
+	"github.com/localpaas/localpaas/services/git/github"
+	"github.com/localpaas/localpaas/services/git/gitlab"
 )
 
 func (uc *GitSourceUC) ListRepo(
