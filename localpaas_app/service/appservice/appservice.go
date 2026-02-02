@@ -40,6 +40,9 @@ type AppService interface {
 		refSettingMap map[string]*entity.Setting) error
 	EnsureBasicAuthConfigFiles(basicAuthIDs []string, forceRecreate bool,
 		refSettingMap map[string]*entity.Setting) error
+
+	CreateDeployment(app *entity.App, deploymentSettings *entity.AppDeploymentSettings) (
+		*entity.Deployment, *entity.Task, error)
 }
 
 func NewAppService(

@@ -3,10 +3,8 @@ package taskappdeploy
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/docker/docker/api/types/registry"
-	"github.com/go-git/go-git/v6/plumbing"
 	"github.com/go-git/go-git/v6/plumbing/transport"
 	"github.com/go-git/go-git/v6/plumbing/transport/http"
 	"github.com/go-git/go-git/v6/plumbing/transport/ssh"
@@ -22,33 +20,6 @@ import (
 const (
 	maxImageNameLen = 200
 )
-
-func (e *Executor) calcGitRefName(ref string) plumbing.ReferenceName {
-	if ref == "" {
-		return "HEAD"
-	}
-
-	// Tags ref
-	if strings.HasPrefix(ref, "tags/") {
-		ref = strings.TrimPrefix(ref, "tags/")
-		return plumbing.NewTagReferenceName(ref)
-	}
-	if strings.HasPrefix(ref, "refs/tags/") {
-		ref = strings.TrimPrefix(ref, "refs/tags/")
-		return plumbing.NewTagReferenceName(ref)
-	}
-
-	// Heads ref
-	if strings.HasPrefix(ref, "heads/") {
-		ref = strings.TrimPrefix(ref, "heads/")
-		return plumbing.NewBranchReferenceName(ref)
-	}
-	if strings.HasPrefix(ref, "refs/heads/") {
-		ref = strings.TrimPrefix(ref, "refs/heads/")
-		return plumbing.NewBranchReferenceName(ref)
-	}
-	return plumbing.NewBranchReferenceName(ref)
-}
 
 func (e *Executor) calcGitAuthMethod(
 	data *repoDeployTaskData,

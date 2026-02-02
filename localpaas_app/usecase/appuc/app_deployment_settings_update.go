@@ -13,6 +13,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/githelper"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
@@ -99,6 +100,14 @@ func (uc *AppUC) loadAppDeploymentSettingsForUpdate(
 		data.CurrDeploymentSettings = settingData
 	}
 
+	// Normalize repo ref
+	if req.RepoSource != nil {
+		// Normalize repo type (currently supports git type only)
+		if req.RepoSource.RepoType == base.RepoTypeGit {
+			req.RepoSource.RepoRef = string(githelper.NormalizeRepoRef(req.RepoSource.RepoRef))
+		}
+	}
+
 	return nil
 }
 
@@ -133,46 +142,22 @@ func (uc *AppUC) prepareUpdatingAppDeploymentSettings(
 		return apperrors.Wrap(err)
 	}
 
-	setting.MustSetData(newDeploymentSettings)
-	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
-
-	// Create a deployment and a task for it
-	deployment := &entity.Deployment{
-		ID:        gofn.Must(ulid.NewStringULID()),
-		AppID:     app.ID,
-		Settings:  newDeploymentSettings,
-		Status:    base.DeploymentStatusNotStarted,
-		Version:   entity.CurrentDeploymentVersion,
-		CreatedAt: timeNow,
-		UpdatedAt: timeNow,
-	}
-	persistingData.UpsertingDeployments = append(persistingData.UpsertingDeployments, deployment)
-
-	deploymentTask := &entity.Task{
-		ID:     gofn.Must(ulid.NewStringULID()),
-		Type:   base.TaskTypeAppDeploy,
-		Status: base.TaskStatusNotStarted,
-		Config: entity.TaskConfig{
-			Priority: base.TaskPriorityDefault,
-			Timeout:  timeutil.Duration(base.DeploymentTimeoutDefault),
-		},
-		Version:   entity.CurrentTaskVersion,
-		CreatedAt: timeNow,
-		UpdatedAt: timeNow,
-	}
-	err = deploymentTask.SetArgs(&entity.TaskAppDeployArgs{
-		Deployment: entity.ObjectID{ID: deployment.ID},
-	})
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	persistingData.UpsertingTasks = append(persistingData.UpsertingTasks, deploymentTask)
-
-	// Make sure all reference settings used in this deployment settings exist actively
+	// Validation: Make sure all reference settings used in this deployment settings exist actively
 	_, err = uc.appService.LoadReferenceSettings(ctx, db, app, true, setting)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+
+	setting.MustSetData(newDeploymentSettings)
+	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
+
+	// Create a deployment and a task for it
+	deployment, deploymentTask, err := uc.appService.CreateDeployment(app, newDeploymentSettings)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	persistingData.UpsertingDeployments = append(persistingData.UpsertingDeployments, deployment)
+	persistingData.UpsertingTasks = append(persistingData.UpsertingTasks, deploymentTask)
 
 	return nil
 }

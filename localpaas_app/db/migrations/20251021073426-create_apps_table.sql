@@ -1,21 +1,22 @@
 -- +migrate Up
 CREATE TABLE IF NOT EXISTS apps
 (
-    id           VARCHAR(100) PRIMARY KEY,
-    name         VARCHAR(100) NOT NULL,
-    key          VARCHAR(100) NOT NULL,
-    project_id   VARCHAR(100) NOT NULL,
-    parent_id    VARCHAR(100) NULL,
-    service_id   VARCHAR(100) NULL,
-    status       VARCHAR NOT NULL CONSTRAINT chk_status CHECK
-                    (status IN ('active','disabled','deleting')),
-    token        VARCHAR(100) NOT NULL,
-    note         VARCHAR(10000) NULL,
-    update_ver   INT4 NOT NULL DEFAULT 1,
+    id             VARCHAR(100) PRIMARY KEY,
+    name           VARCHAR(100) NOT NULL,
+    key            VARCHAR(100) NOT NULL,
+    project_id     VARCHAR(100) NOT NULL,
+    parent_id      VARCHAR(100) NULL,
+    service_id     VARCHAR(100) NULL,
+    status         VARCHAR NOT NULL CONSTRAINT chk_status CHECK
+                        (status IN ('active','disabled','deleting')),
+    token          VARCHAR(100) NOT NULL,
+    webhook_secret VARCHAR(100) NULL,
+    note           VARCHAR(10000) NULL,
+    update_ver     INT4 NOT NULL DEFAULT 1,
 
-    created_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted_at   TIMESTAMPTZ NULL,
+    created_at     TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at     TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at     TIMESTAMPTZ NULL,
 
     CONSTRAINT fk_apps_project_id FOREIGN KEY (project_id) REFERENCES projects (id)
 );

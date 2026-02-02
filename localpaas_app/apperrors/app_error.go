@@ -8,7 +8,6 @@ import (
 
 	goerrors "github.com/go-errors/errors"
 	"github.com/hashicorp/go-multierror"
-	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/infra/logging"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/translation"
@@ -37,9 +36,9 @@ type AppError interface {
 	// WithNTParam sets a custom but non-translation param
 	WithNTParam(k string, v any) AppError
 	// WithExtraDetail sets extra detail
-	WithExtraDetail(string) AppError
+	WithExtraDetail(string, ...any) AppError
 	// WithMsgLog sets log message (used for debug purpose)
-	WithMsgLog(format string, args ...any) AppError
+	WithMsgLog(string, ...any) AppError
 
 	// DisplayLevel get/set display level
 	DisplayLevel() DisplayLevel
@@ -99,8 +98,13 @@ func (e *appError) WithNTParam(k string, v any) AppError {
 	return e
 }
 
-func (e *appError) WithExtraDetail(extraDetail string) AppError {
-	e.extraDetail = extraDetail
+func (e *appError) WithExtraDetail(format string, args ...any) AppError {
+	in := fmt.Sprintf(format, args...)
+	if e.extraDetail == "" {
+		e.extraDetail = in
+		return e
+	}
+	e.extraDetail = fmt.Sprintf("%s\n%s", e.extraDetail, in)
 	return e
 }
 
@@ -163,7 +167,7 @@ func (e *appError) Build(lang translation.Lang) *ErrorInfo {
 		}
 	}
 	if e.extraDetail != "" {
-		detail = gofn.If(strings.HasSuffix(detail, "."), detail+e.extraDetail, detail+". "+e.extraDetail)
+		detail = detail + "\n\n" + e.extraDetail
 	}
 
 	errInfo.Title = http.StatusText(errInfo.Status)

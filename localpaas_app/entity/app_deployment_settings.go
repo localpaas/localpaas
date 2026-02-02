@@ -29,6 +29,7 @@ type DeploymentImageSource struct {
 
 type DeploymentRepoSource struct {
 	BuildTool      base.BuildTool  `json:"buildTool"`
+	RepoType       base.RepoType   `json:"repoType"`
 	RepoURL        string          `json:"repoUrl"`
 	RepoRef        string          `json:"repoRef"`              // can be branch name, tag...
 	Credentials    RepoCredentials `json:"credentials,omitzero"` // contains setting id of github app/git token/ssh key

@@ -25,6 +25,7 @@ ERR_UNSUPPORTED = "Unsupported"
 
 ERR_UPDATE_VER_MISMATCHED = "Concurrent update detected. Please reload data.\nAnother person made modifications to the object."
 ERR_STATUS_NOT_ALLOW_ACTION = "Status of object does not allow the action"
+ERR_URL_INVALID = "URL '{{.URL}}' is invalid or unsupported"
 
 # Session errors
 ERR_SESSION_JWT_INVALID = "Session JWT is invalid"

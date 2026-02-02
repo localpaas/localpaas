@@ -33,6 +33,7 @@ var (
 
 	ErrUpdateVerMismatched  = errors.New("ERR_UPDATE_VER_MISMATCHED")
 	ErrStatusNotAllowAction = errors.New("ERR_STATUS_NOT_ALLOW_ACTION")
+	ErrURLInvalid           = errors.New("ERR_URL_INVALID")
 )
 
 // Errors for session
@@ -137,8 +138,10 @@ var errorStatusMap = map[error]int{
 	ErrTokenInvalid:         http.StatusUnauthorized,
 	ErrTypeInvalid:          http.StatusInternalServerError,
 	ErrValidation:           http.StatusBadRequest,
+
 	ErrUpdateVerMismatched:  http.StatusConflict,
 	ErrStatusNotAllowAction: http.StatusForbidden,
+	ErrURLInvalid:           http.StatusUnprocessableEntity,
 
 	// Session errors
 	ErrSessionJWTInvalid:           http.StatusUnauthorized,

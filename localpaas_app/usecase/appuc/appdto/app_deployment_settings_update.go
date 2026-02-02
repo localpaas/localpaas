@@ -10,6 +10,7 @@ import (
 
 const (
 	imageNameMaxLen = 200
+	repoRefMaxLen   = 200
 )
 
 type UpdateAppDeploymentSettingsReq struct {
@@ -50,6 +51,7 @@ func (req *DeploymentImageSourceReq) validate(field string) (res []vld.Validator
 type DeploymentRepoSourceReq struct {
 	Enabled        bool                `json:"enabled"`
 	BuildTool      base.BuildTool      `json:"buildTool"`
+	RepoType       base.RepoType       `json:"repoType"`
 	RepoURL        string              `json:"repoUrl"`
 	RepoRef        string              `json:"repoRef"` // can be branch name, tag...
 	Credentials    basedto.ObjectIDReq `json:"credentials"`
@@ -66,6 +68,12 @@ func (req *DeploymentRepoSourceReq) validate(field string) (res []vld.Validator)
 	if field != "" {
 		field += "."
 	}
+	res = append(res, basedto.ValidateStrIn(&req.BuildTool, true, base.AllBuildTools, field+"buildTool")...)
+	res = append(res, basedto.ValidateStrIn(&req.RepoType, true, base.AllRepoTypes, field+"repoType")...)
+	res = append(res, basedto.ValidateRepoURL(&req.RepoURL, true, field+"repoUrl")...)
+	res = append(res, basedto.ValidateStr(&req.RepoRef, false, 1, repoRefMaxLen, field+"repoRef")...)
+	res = append(res, basedto.ValidateObjectIDReq(&req.Credentials, false, field+"credentials")...)
+	res = append(res, basedto.ValidateObjectIDReq(&req.RegistryAuth, false, field+"registryAuth")...)
 	return res
 }
 
@@ -97,6 +105,8 @@ func (req *UpdateAppDeploymentSettingsReq) Validate() apperrors.ValidationErrors
 	validators = append(validators, req.ImageSource.validate("imageSource")...)
 	validators = append(validators, req.RepoSource.validate("repoSource")...)
 	validators = append(validators, req.TarballSource.validate("tarballSource")...)
+	validators = append(validators, basedto.ValidateStrIn(&req.ActiveMethod, true,
+		base.AllDeploymentMethods, "activeMethod")...)
 	// TODO: add validation for deployment settings input
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }

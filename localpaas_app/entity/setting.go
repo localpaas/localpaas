@@ -37,8 +37,10 @@ type Setting struct {
 	ExpireAt  time.Time `bun:",nullzero"`
 	DeletedAt time.Time `bun:",soft_delete,nullzero"`
 
-	ObjectUser *User   `bun:"rel:belongs-to,join:object_id=id"`
-	Tasks      []*Task `bun:"rel:has-many,join:id=job_id"`
+	BelongToUser    *User    `bun:"rel:belongs-to,join:object_id=id"`
+	BelongToProject *Project `bun:"rel:belongs-to,join:object_id=id"`
+	BelongToApp     *App     `bun:"rel:belongs-to,join:object_id=id"`
+	Tasks           []*Task  `bun:"rel:has-many,join:id=job_id"`
 
 	// NOTE: temporary fields
 	parsedData      SettingData

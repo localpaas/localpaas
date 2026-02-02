@@ -11,9 +11,9 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/githelper"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
 	"github.com/localpaas/localpaas/localpaas_app/service/appservice"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/webhookuc/webhookdto"
 )
@@ -52,7 +52,10 @@ func (uc *WebhookUC) DeployApp(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &webhookdto.DeployAppResp{}, nil
+	deployment, _ := gofn.First(persistingData.UpsertingDeployments)
+	return &webhookdto.DeployAppResp{
+		Data: &webhookdto.DeployAppDataResp{DeploymentID: deployment.ID},
+	}, nil
 }
 
 type deployAppData struct {
@@ -103,6 +106,13 @@ func (uc *WebhookUC) loadAppDeploymentSettingsForUpdate(
 			WithExtraDetail("Deployment method is missing.")
 	}
 
+	// Normalize repo ref
+	if req.RepoSource != nil && req.RepoSource.RepoRef != "" && currSetting.RepoSource != nil {
+		if currSetting.RepoSource.RepoType == base.RepoTypeGit {
+			req.RepoSource.RepoRef = string(githelper.NormalizeRepoRef(req.RepoSource.RepoRef))
+		}
+	}
+
 	return nil
 }
 
@@ -113,20 +123,8 @@ func (uc *WebhookUC) prepareUpdatingAppDeploymentSettings(
 ) error {
 	app := data.App
 	setting := data.DeploymentSettings
-	timeNow := timeutil.NowUTC()
-
-	if setting == nil {
-		setting = &entity.Setting{
-			ID:        gofn.Must(ulid.NewStringULID()),
-			ObjectID:  app.ID,
-			Type:      base.SettingTypeAppDeployment,
-			CreatedAt: timeNow,
-			Version:   entity.CurrentAppDeploymentSettingsVersion,
-		}
-		data.DeploymentSettings = setting
-	}
 	setting.UpdateVer++
-	setting.UpdatedAt = timeNow
+	setting.UpdatedAt = timeutil.NowUTC()
 	setting.ExpireAt = time.Time{}
 	setting.Status = base.SettingStatusActive
 
@@ -140,35 +138,11 @@ func (uc *WebhookUC) prepareUpdatingAppDeploymentSettings(
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 
 	// Create a deployment and a task for it
-	deployment := &entity.Deployment{
-		ID:        gofn.Must(ulid.NewStringULID()),
-		AppID:     app.ID,
-		Settings:  currDeploymentSettings,
-		Status:    base.DeploymentStatusNotStarted,
-		Version:   entity.CurrentDeploymentVersion,
-		CreatedAt: timeNow,
-		UpdatedAt: timeNow,
-	}
-	persistingData.UpsertingDeployments = append(persistingData.UpsertingDeployments, deployment)
-
-	deploymentTask := &entity.Task{
-		ID:     gofn.Must(ulid.NewStringULID()),
-		Type:   base.TaskTypeAppDeploy,
-		Status: base.TaskStatusNotStarted,
-		Config: entity.TaskConfig{
-			Priority: base.TaskPriorityDefault,
-			Timeout:  timeutil.Duration(base.DeploymentTimeoutDefault),
-		},
-		Version:   entity.CurrentTaskVersion,
-		CreatedAt: timeNow,
-		UpdatedAt: timeNow,
-	}
-	err = deploymentTask.SetArgs(&entity.TaskAppDeployArgs{
-		Deployment: entity.ObjectID{ID: deployment.ID},
-	})
+	deployment, deploymentTask, err := uc.appService.CreateDeployment(app, currDeploymentSettings)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+	persistingData.UpsertingDeployments = append(persistingData.UpsertingDeployments, deployment)
 	persistingData.UpsertingTasks = append(persistingData.UpsertingTasks, deploymentTask)
 
 	return nil

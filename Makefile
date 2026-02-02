@@ -110,3 +110,8 @@ local-build-fe:
 	cd ${LP_FE_DIR} && git pull && yarn install && yarn build
 	rm -rf dist-dashboard
 	mv ${LP_FE_DIR}/dist dist-dashboard
+
+# ----- Smee.io config -----
+smee-connect:
+	# RUN ONCE go install -v github.com/chmouel/gosmee@latest
+	gosmee client --saveDir tmp/gosmee/savedreplay https://smee.io/RBNiNjxieUIWZ6Ej http://localhost:10000/_/webhooks/github

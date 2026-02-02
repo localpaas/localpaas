@@ -5,7 +5,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc/apikeydto"
 )
@@ -18,10 +17,6 @@ func (uc *APIKeyUC) ListAPIKey(
 	req.Type = currentSettingType
 	resp, err := settings.ListSetting(ctx, uc.db, auth, &req.ListSettingReq, &settings.ListSettingData{
 		SettingRepo: uc.settingRepo,
-		ExtraLoadOpts: []bunex.SelectQueryOption{
-			bunex.SelectWhere("setting.deleted_at IS NULL"),
-			bunex.SelectRelation("ObjectUser", bunex.SelectWithDeleted()),
-		},
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)

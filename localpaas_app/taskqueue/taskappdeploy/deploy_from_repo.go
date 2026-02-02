@@ -9,6 +9,7 @@ import (
 	"github.com/docker/docker/api/types/build"
 	"github.com/gitsight/go-vcsurl"
 	"github.com/go-git/go-git/v6"
+	"github.com/go-git/go-git/v6/plumbing"
 	"github.com/moby/go-archive"
 	"github.com/tiendc/gofn"
 
@@ -56,7 +57,7 @@ func (e *Executor) deployFromRepo(
 	}
 
 	// 1. Repo checkout
-	err = e.repoDeployStepGitCheckout(ctx, data)
+	err = e.repoDeployStepSourceCheckout(ctx, data)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -96,13 +97,19 @@ func (e *Executor) deployFromRepo(
 	return nil
 }
 
-func (e *Executor) repoDeployStepGitCheckout(
+func (e *Executor) repoDeployStepSourceCheckout(
 	ctx context.Context,
 	data *repoDeployTaskData,
 ) (err error) {
 	data.Step = stepCodeCheckout
 	deployment := data.Deployment
 	repoSource := deployment.Settings.RepoSource
+
+	// NOTE: currently supports repo of git type only
+	if repoSource.RepoType != base.RepoTypeGit {
+		return apperrors.New(apperrors.ErrUnsupported).
+			WithExtraDetail("Repo type %s is unsupported", repoSource.RepoType)
+	}
 
 	e.addStepStartLog(ctx, data.taskData, "Start cloning Git repository...")
 	defer e.addStepEndLog(ctx, data.taskData, timeutil.NowUTC(), err)
@@ -114,7 +121,7 @@ func (e *Executor) repoDeployStepGitCheckout(
 
 	repo, err := git.PlainCloneContext(ctx, data.CheckoutPath, &git.CloneOptions{
 		URL:               repoSource.RepoURL,
-		ReferenceName:     e.calcGitRefName(repoSource.RepoRef),
+		ReferenceName:     plumbing.ReferenceName(repoSource.RepoRef),
 		Auth:              authMethod,
 		Depth:             1,
 		SingleBranch:      true,

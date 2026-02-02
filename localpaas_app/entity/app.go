@@ -9,20 +9,21 @@ import (
 var (
 	AppUpsertingConflictCols = []string{"id"}
 	AppUpsertingUpdateCols   = []string{"name", "key", "project_id", "parent_id", "service_id",
-		"status", "token", "note", "update_ver", "updated_at", "deleted_at"}
+		"status", "token", "webhook_secret", "note", "update_ver", "updated_at", "deleted_at"}
 )
 
 type App struct {
-	ID        string `bun:",pk"`
-	Name      string
-	Key       string
-	ProjectID string
-	ParentID  string `bun:",nullzero"`
-	ServiceID string `bun:",nullzero"`
-	Status    base.AppStatus
-	Token     string
-	Note      string `bun:",nullzero"`
-	UpdateVer int
+	ID            string `bun:",pk"`
+	Name          string
+	Key           string
+	ProjectID     string
+	ParentID      string `bun:",nullzero"`
+	ServiceID     string `bun:",nullzero"`
+	Status        base.AppStatus
+	Token         string
+	WebhookSecret string `bun:",nullzero"`
+	Note          string `bun:",nullzero"`
+	UpdateVer     int
 
 	CreatedAt time.Time `bun:",default:current_timestamp"`
 	UpdatedAt time.Time `bun:",default:current_timestamp"`

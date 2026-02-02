@@ -9,5 +9,8 @@ func (s *HTTPServer) registerWebhookRoutes(apiGroup *gin.RouterGroup) *gin.Route
 
 	webhookGroup.POST("/apps/:appToken/deploy", s.handlerRegistry.webhookHandler.WebhookDeployApp)
 
+	// Github
+	webhookGroup.POST("/github", s.handlerRegistry.webhookHandler.HandleWebhookGithub)
+
 	return webhookGroup
 }
