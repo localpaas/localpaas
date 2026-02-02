@@ -1,25 +1,25 @@
 -- Users
-INSERT INTO users (id, username, email, role, status, full_name, position, security_option, totp_secret, password, password_salt, created_at, updated_at)
+INSERT INTO users (id, username, email, role, status, full_name, position, security_option, totp_secret, password, created_at, updated_at)
 VALUES ('01JAB9XED0GTXBSQDFVYAJ8WA1', 'tiendc', 'tiendc@gmail.com', 'admin', 'active', 'Tien DC', 'manager', 'password-only', NULL,
-        '\x9e3e99b9f3ba5e6b934715e887cf423e5cfa80259ccb77ed5681e158b0fc0c8e',	'\x1a8594be97a4ddc71c86f19e3cf9f10c',
+        'VanDSYUU/sHz1w== 3vTE3ZLtpeM23UGllSazQh88/I06G5VrNzHZtBbGjFQ=',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WA2', 'member1', 'member1@domain.name', 'member', 'active', 'Member 1', 'devops', 'password-only', NULL,
-        '\x9e3e99b9f3ba5e6b934715e887cf423e5cfa80259ccb77ed5681e158b0fc0c8e',	'\x1a8594be97a4ddc71c86f19e3cf9f10c',
+        'VanDSYUU/sHz1w== 3vTE3ZLtpeM23UGllSazQh88/I06G5VrNzHZtBbGjFQ=',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WA3', 'member2', 'member2@domain.name', 'member', 'active', 'Member 2', 'developer', 'password-only', NULL,
-        '\x9e3e99b9f3ba5e6b934715e887cf423e5cfa80259ccb77ed5681e158b0fc0c8e',	'\x1a8594be97a4ddc71c86f19e3cf9f10c',
+        'VanDSYUU/sHz1w== 3vTE3ZLtpeM23UGllSazQh88/I06G5VrNzHZtBbGjFQ=',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WA4', 'member3', 'member3@domain.name', 'member', 'active', 'Member 3', NULL, 'password-2fa', 'AAAAAAAAAAAAAAAAAAAA',
-        '\x9e3e99b9f3ba5e6b934715e887cf423e5cfa80259ccb77ed5681e158b0fc0c8e',	'\x1a8594be97a4ddc71c86f19e3cf9f10c',
+        'VanDSYUU/sHz1w== 3vTE3ZLtpeM23UGllSazQh88/I06G5VrNzHZtBbGjFQ=',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WA5', 'member4', 'member4@domain.name', 'member', 'pending', 'Member 4', NULL, 'password-2fa', NULL,
-        '\x9e3e99b9f3ba5e6b934715e887cf423e5cfa80259ccb77ed5681e158b0fc0c8e',	'\x1a8594be97a4ddc71c86f19e3cf9f10c',
+        'VanDSYUU/sHz1w== 3vTE3ZLtpeM23UGllSazQh88/I06G5VrNzHZtBbGjFQ=',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WA6', 'member5', 'member5@domain.name', 'member', 'pending', 'Member 5', NULL, 'password-2fa', NULL,
-        '\x9e3e99b9f3ba5e6b934715e887cf423e5cfa80259ccb77ed5681e158b0fc0c8e',	'\x1a8594be97a4ddc71c86f19e3cf9f10c',
+        'VanDSYUU/sHz1w== 3vTE3ZLtpeM23UGllSazQh88/I06G5VrNzHZtBbGjFQ=',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WA7', 'admin1', 'admin1@domain.name', 'admin', 'active', 'Admin 1', 'developer', 'password-only', NULL,
-        '\x9e3e99b9f3ba5e6b934715e887cf423e5cfa80259ccb77ed5681e158b0fc0c8e',	'\x1a8594be97a4ddc71c86f19e3cf9f10c',
+        'VanDSYUU/sHz1w== 3vTE3ZLtpeM23UGllSazQh88/I06G5VrNzHZtBbGjFQ=',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00')
 ON CONFLICT DO NOTHING;
 

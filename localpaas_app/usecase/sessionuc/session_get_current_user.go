@@ -6,6 +6,8 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/jwtsession"
 )
 
@@ -24,7 +26,9 @@ func (uc *SessionUC) GetCurrentUser(ctx context.Context, jwt string) (*basedto.U
 		return nil, apperrors.New(apperrors.ErrSessionJWTInvalid).WithCause(err)
 	}
 
-	user, err := uc.userRepo.GetByID(ctx, uc.db, authClaims.UserID)
+	user, err := uc.userRepo.GetByID(ctx, uc.db, authClaims.UserID,
+		bunex.SelectExcludeColumns(entity.UserDefaultExcludeColumns...),
+	)
 	if err != nil {
 		return nil, apperrors.New(err)
 	}

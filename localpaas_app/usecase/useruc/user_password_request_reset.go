@@ -8,6 +8,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/config"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/service/emailservice"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc/userdto"
 )
@@ -27,7 +29,9 @@ func (uc *UserUC) RequestResetPassword(
 		req.SendResettingEmail = true
 	}
 
-	user, err := uc.userRepo.GetByID(ctx, uc.db, req.ID)
+	user, err := uc.userRepo.GetByID(ctx, uc.db, req.ID,
+		bunex.SelectExcludeColumns(entity.UserDefaultExcludeColumns...),
+	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

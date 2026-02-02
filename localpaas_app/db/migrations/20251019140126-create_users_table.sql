@@ -13,12 +13,10 @@ CREATE TABLE IF NOT EXISTS users
     photo           VARCHAR(2000) NULL,
     notes           VARCHAR(10000) NULL,
 
-    security_option VARCHAR NOT NULL CONSTRAINT chk_security_option CHECK
-                        (security_option IN ('enforce-sso','password-2fa','password-only')),
-    totp_secret     VARCHAR(100) NULL,
-
-    password               BYTEA NULL,
-    password_salt          BYTEA NULL,
+    security_option        VARCHAR NOT NULL CONSTRAINT chk_security_option CHECK
+                                (security_option IN ('enforce-sso','password-2fa','password-only')),
+    totp_secret            VARCHAR(100) NULL,
+    password               VARCHAR NULL,
     password_fails_in_row  SMALLINT NOT NULL DEFAULT 0,
     password_first_fail_at TIMESTAMPTZ NULL,
 

@@ -38,7 +38,7 @@ func (uc *UserUC) UpdatePassword(
 
 		user.UpdatedAt = timeutil.NowUTC()
 		err = uc.userRepo.Update(ctx, db, user,
-			bunex.UpdateColumns("updated_at", "password", "password_salt"),
+			bunex.UpdateColumns("updated_at", "password"),
 		)
 		if err != nil {
 			return apperrors.Wrap(err)

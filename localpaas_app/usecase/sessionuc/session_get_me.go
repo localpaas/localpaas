@@ -6,6 +6,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc/sessiondto"
 )
@@ -15,7 +16,9 @@ func (uc *SessionUC) GetMe(
 	user *basedto.User,
 	req *sessiondto.GetMeReq,
 ) (*sessiondto.GetMeResp, error) {
-	var loadOpts []bunex.SelectQueryOption
+	loadOpts := []bunex.SelectQueryOption{
+		bunex.SelectExcludeColumns(entity.UserDefaultExcludeColumns...),
+	}
 	if req.GetAccesses {
 		loadOpts = append(loadOpts,
 			bunex.SelectRelation("Accesses.ResourceProject"),

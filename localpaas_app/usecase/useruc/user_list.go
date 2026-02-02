@@ -5,6 +5,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc/userdto"
 )
@@ -14,7 +15,9 @@ func (uc *UserUC) ListUser(
 	auth *basedto.Auth,
 	req *userdto.ListUserReq,
 ) (*userdto.ListUserResp, error) {
-	listOpts := []bunex.SelectQueryOption{}
+	listOpts := []bunex.SelectQueryOption{
+		bunex.SelectExcludeColumns(entity.UserDefaultExcludeColumns...),
+	}
 	if len(req.Status) > 0 {
 		listOpts = append(listOpts,
 			bunex.SelectWhere("\"user\".status IN (?)", bunex.In(req.Status)),

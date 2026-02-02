@@ -55,6 +55,7 @@ func (uc *UserUC) loadUserProfileData(
 	data *userProfileData,
 ) error {
 	user, err := uc.userRepo.GetByID(ctx, db, auth.User.ID,
+		bunex.SelectExcludeColumns(entity.UserDefaultExcludeColumns...),
 		bunex.SelectFor("UPDATE"),
 	)
 	if err != nil {

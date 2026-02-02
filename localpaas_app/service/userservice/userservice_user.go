@@ -9,6 +9,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/entityutil"
 )
 
@@ -36,7 +37,9 @@ func (s *userService) LoadUsers(
 		return nil, nil
 	}
 	userIDs = gofn.ToSet(userIDs)
-	users, err := s.userRepo.ListByIDs(ctx, db, userIDs)
+	users, err := s.userRepo.ListByIDs(ctx, db, userIDs,
+		bunex.SelectExcludeColumns(entity.UserDefaultExcludeColumns...),
+	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -88,7 +91,9 @@ func (s *userService) LoadUsersByEmails(
 	if len(emails) == 0 {
 		return nil, nil
 	}
-	users, err := s.userRepo.ListByEmails(ctx, db, emails)
+	users, err := s.userRepo.ListByEmails(ctx, db, emails,
+		bunex.SelectExcludeColumns(entity.UserDefaultExcludeColumns...),
+	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

@@ -109,8 +109,7 @@ func (uc *UserUC) preparePersistingUserSignupData(
 	user.Status = base.UserStatusActive
 
 	if user.SecurityOption == base.UserSecurityEnforceSSO {
-		user.Password = nil
-		user.PasswordSalt = nil
+		user.Password = ""
 	} else {
 		if req.Password == "" {
 			return apperrors.NewParamInvalid("Password").

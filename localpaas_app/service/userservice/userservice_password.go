@@ -3,7 +3,9 @@ package userservice
 import (
 	"bytes"
 	"crypto/rand"
+	"encoding/base64"
 	"fmt"
+	"strings"
 	"unicode"
 
 	"github.com/tiendc/gofn"
@@ -18,7 +20,7 @@ const (
 )
 
 const (
-	saltLength       = 16
+	saltLength       = 10
 	hashingIteration = 1
 	hashingMemory    = 64 * 1024 // 64MB
 	hashingThreads   = 4
@@ -74,8 +76,8 @@ func (s *userService) ChangePassword(user *entity.User, newPassword, currPasswor
 	hashedPass := argon2.IDKey([]byte(newPassword), salt, hashingIteration, hashingMemory,
 		hashingThreads, hashingKeyLength)
 
-	user.Password = hashedPass
-	user.PasswordSalt = salt
+	user.Password = base64.StdEncoding.EncodeToString(salt) + " " +
+		base64.StdEncoding.EncodeToString(hashedPass)
 	return nil
 }
 
@@ -85,9 +87,14 @@ func (s *userService) VerifyPassword(user *entity.User, password string) error {
 	if password == "" || len(user.Password) == 0 {
 		return apperrors.New(apperrors.ErrPasswordMismatched)
 	}
-	passHash := argon2.IDKey([]byte(password), user.PasswordSalt, hashingIteration, hashingMemory,
+
+	b64Salt, b64Pass, _ := strings.Cut(user.Password, " ")
+	saltBytes, _ := base64.StdEncoding.DecodeString(b64Salt)
+	passBytes, _ := base64.StdEncoding.DecodeString(b64Pass)
+
+	passHash := argon2.IDKey([]byte(password), saltBytes, hashingIteration, hashingMemory,
 		hashingThreads, hashingKeyLength)
-	if !bytes.Equal(passHash, user.Password) {
+	if !bytes.Equal(passHash, passBytes) {
 		return apperrors.New(apperrors.ErrPasswordMismatched)
 	}
 	return nil
