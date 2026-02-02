@@ -1,0 +1,64 @@
+package cacherepository
+
+import (
+	"context"
+	"fmt"
+	"time"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/entity/cacheentity"
+	"github.com/localpaas/localpaas/localpaas_app/infra/rediscache"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/redishelper"
+)
+
+type LoginAttemptRepo interface {
+	Get(ctx context.Context, userID string) (*cacheentity.LoginAttempt, error)
+	Set(ctx context.Context, userID string, attempt *cacheentity.LoginAttempt, exp time.Duration) error
+	Del(ctx context.Context, userID string) error
+}
+
+type loginAttemptRepo struct {
+	client rediscache.Client
+}
+
+func NewLoginAttemptRepo(client rediscache.Client) LoginAttemptRepo {
+	return &loginAttemptRepo{client: client}
+}
+
+func (repo *loginAttemptRepo) Get(
+	ctx context.Context,
+	userID string,
+) (*cacheentity.LoginAttempt, error) {
+	resp, err := redishelper.Get(ctx, repo.client, repo.formatKey(userID),
+		redishelper.JSONValueCreator[*cacheentity.LoginAttempt])
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return resp, nil
+}
+
+func (repo *loginAttemptRepo) Set(
+	ctx context.Context,
+	userID string,
+	attempt *cacheentity.LoginAttempt,
+	exp time.Duration,
+) error {
+	err := redishelper.Set(ctx, repo.client, repo.formatKey(userID),
+		redishelper.NewJSONValue(attempt), exp)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (repo *loginAttemptRepo) Del(ctx context.Context, userID string) error {
+	err := redishelper.Del(ctx, repo.client, repo.formatKey(userID))
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (repo *loginAttemptRepo) formatKey(userID string) string {
+	return fmt.Sprintf("login-attempt:%s", userID)
+}

@@ -10,9 +10,9 @@ import (
 var (
 	UserUpsertingConflictCols = []string{"id"}
 	UserUpsertingUpdateCols   = []string{"username", "email", "role", "status", "full_name", "position", "photo",
-		"notes", "security_option", "totp_secret", "password", "password_fails_in_row", "password_first_fail_at",
-		"access_expire_at", "last_access", "updated_at", "deleted_at"}
-	UserDefaultExcludeColumns = []string{"password", "password_fails_in_row", "password_first_fail_at"}
+		"notes", "security_option", "totp_secret", "password", "access_expire_at", "last_access",
+		"updated_at", "deleted_at"}
+	UserDefaultExcludeColumns = []string{"notes", "password"}
 )
 
 type User struct {
@@ -26,11 +26,9 @@ type User struct {
 	Photo    string `bun:",nullzero"`
 	Notes    string `bun:",nullzero"`
 
-	SecurityOption      base.UserSecurityOption
-	TotpSecret          string `bun:",nullzero"`
-	Password            string `bun:",nullzero"`
-	PasswordFailsInRow  int
-	PasswordFirstFailAt time.Time `bun:",nullzero"`
+	SecurityOption base.UserSecurityOption
+	TotpSecret     string `bun:",nullzero"`
+	Password       string `bun:",nullzero"`
 
 	CreatedAt      time.Time `bun:",default:current_timestamp"`
 	UpdatedAt      time.Time `bun:",default:current_timestamp"`

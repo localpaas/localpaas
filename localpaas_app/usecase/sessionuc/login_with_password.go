@@ -10,16 +10,17 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+	"github.com/localpaas/localpaas/localpaas_app/entity/cacheentity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc/sessiondto"
 )
 
 const (
-	// We allow at most 5 attempts of login in the first minute
+	// We allow at most 10 attempts of login in the first 2 minutes
 	// The duration increase by exponential of 2 after each minute
-	maxPasswordFailsInARow       = 5
-	passwordCheckDurationEachRow = time.Minute
+	maxPasswordFailsInARow       = 10
+	passwordCheckDurationEachRow = 2 * time.Minute
+	loginAttemptExp              = 4 * time.Hour
 )
 
 const (
@@ -36,12 +37,7 @@ func (uc *SessionUC) LoginWithPassword(
 		return nil, uc.wrapSensitiveError(err)
 	}
 
-	if err = uc.allowPasswordLoginAtTheMoment(dbUser); err != nil {
-		return nil, err
-	}
-
-	err = uc.userService.VerifyPassword(dbUser, req.Password)
-	_ = uc.savePasswordCheckingStatus(ctx, dbUser, err == nil)
+	err = uc.passwordCheck(ctx, req, dbUser)
 	if err != nil {
 		return nil, uc.wrapSensitiveError(err)
 	}
@@ -97,49 +93,82 @@ func (uc *SessionUC) LoginWithPassword(
 	}, nil
 }
 
+func (uc *SessionUC) passwordCheck(
+	ctx context.Context,
+	req *sessiondto.LoginWithPasswordReq,
+	dbUser *entity.User,
+) error {
+	attempt, err := uc.allowPasswordLoginAtTheMoment(ctx, dbUser)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	err = uc.userService.VerifyPassword(dbUser, req.Password)
+	_ = uc.savePasswordCheckingStatus(ctx, dbUser, attempt, err == nil)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
 // allowPasswordLoginAtTheMoment checks if user can do password login at the moment.
 // If user made too many login failures, they need to wait for some time before they can try again.
-func (uc *SessionUC) allowPasswordLoginAtTheMoment(dbUser *entity.User) error {
+func (uc *SessionUC) allowPasswordLoginAtTheMoment(
+	ctx context.Context,
+	dbUser *entity.User,
+) (*cacheentity.LoginAttempt, error) {
 	if dbUser.SecurityOption == base.UserSecurityEnforceSSO {
-		return apperrors.New(apperrors.ErrSSORequired)
+		return nil, apperrors.New(apperrors.ErrSSORequired)
 	}
-	if dbUser.PasswordFailsInRow < maxPasswordFailsInARow {
-		return nil
+
+	attempt, err := uc.cacheLoginAttemptRepo.Get(ctx, dbUser.ID)
+	if err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			return nil, nil
+		}
+		return nil, apperrors.Wrap(err)
 	}
-	expo := dbUser.PasswordFailsInRow / maxPasswordFailsInARow
+	if attempt == nil || attempt.Fails < maxPasswordFailsInARow {
+		return attempt, nil
+	}
+
+	expo := attempt.Fails / maxPasswordFailsInARow
 	minWaitingDuration := time.Duration(math.Pow(2, float64(expo))) * passwordCheckDurationEachRow //nolint:mnd
-	durationFromFirstFail := timeutil.NowUTC().Sub(dbUser.PasswordFirstFailAt)
+	durationFromFirstFail := timeutil.NowUTC().Sub(attempt.FirstFailAt)
 	if durationFromFirstFail > minWaitingDuration {
-		return nil
+		return attempt, nil
 	}
 	waitingDuration := int((minWaitingDuration - durationFromFirstFail).Seconds())
-	return apperrors.New(apperrors.ErrTooManyLoginFailures).WithParam("WaitDuration", waitingDuration)
+	return nil, apperrors.New(apperrors.ErrTooManyLoginFailures).WithParam("WaitDuration", waitingDuration)
 }
 
 // savePasswordCheckingStatus saves password checking status including the number of failures
 // and timestamp of the first fail.
-func (uc *SessionUC) savePasswordCheckingStatus(ctx context.Context, dbUser *entity.User, success bool) error {
-	passwordFailsInRow := dbUser.PasswordFailsInRow
-	passwordFirstFailAt := dbUser.PasswordFirstFailAt
+func (uc *SessionUC) savePasswordCheckingStatus(
+	ctx context.Context,
+	dbUser *entity.User,
+	attempt *cacheentity.LoginAttempt,
+	success bool,
+) error {
 	if success {
-		// If user has password check fails, clear it
-		passwordFailsInRow = 0
-		passwordFirstFailAt = time.Time{}
-	} else {
-		// Save failed check count and update the first fail timestamp
-		passwordFailsInRow++
-		if passwordFirstFailAt.IsZero() {
-			passwordFirstFailAt = time.Now()
+		if attempt != nil {
+			err := uc.cacheLoginAttemptRepo.Del(ctx, dbUser.ID)
+			if err != nil {
+				return apperrors.Wrap(err)
+			}
 		}
-	}
-	// Updates user data into DB if there is any change
-	if passwordFailsInRow == dbUser.PasswordFailsInRow && passwordFirstFailAt.Equal(dbUser.PasswordFirstFailAt) {
 		return nil
 	}
-	dbUser.PasswordFailsInRow = passwordFailsInRow
-	dbUser.PasswordFirstFailAt = passwordFirstFailAt
-	err := uc.userRepo.Update(ctx, uc.db, dbUser,
-		bunex.UpdateColumns("password_fails_in_row", "password_first_fail_at"))
+
+	// Save failed check count and update the first fail timestamp
+	if attempt == nil {
+		attempt = &cacheentity.LoginAttempt{}
+	}
+	attempt.Fails++
+	if attempt.FirstFailAt.IsZero() {
+		attempt.FirstFailAt = time.Now()
+	}
+	err := uc.cacheLoginAttemptRepo.Set(ctx, dbUser.ID, attempt, loginAttemptExp)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
