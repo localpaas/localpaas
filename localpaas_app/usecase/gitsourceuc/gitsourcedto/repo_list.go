@@ -3,6 +3,7 @@ package gitsourcedto
 import (
 	"strconv"
 
+	gogitea "code.gitea.io/sdk/gitea"
 	"github.com/google/go-github/v79/github"
 	vld "github.com/tiendc/go-validator"
 	gogitlab "gitlab.com/gitlab-org/api/client-go"
@@ -70,6 +71,26 @@ func TransformGitlabProject(project *gogitlab.Project) (resp *RepoResp, err erro
 
 func TransformGitlabProjects(projects []*gogitlab.Project) ([]*RepoResp, error) {
 	resp, err := basedto.TransformObjectSlice(projects, TransformGitlabProject)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return resp, nil
+}
+
+func TransformGiteaRepo(repo *gogitea.Repository) (resp *RepoResp, err error) {
+	resp = &RepoResp{
+		ID:            strconv.FormatInt(repo.ID, 10),
+		Name:          repo.Name,
+		FullName:      repo.FullName,
+		CloneURL:      repo.CloneURL,
+		GitURL:        repo.SSHURL,
+		DefaultBranch: repo.DefaultBranch,
+	}
+	return resp, nil
+}
+
+func TransformGiteaRepos(repos []*gogitea.Repository) ([]*RepoResp, error) {
+	resp, err := basedto.TransformObjectSlice(repos, TransformGiteaRepo)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

@@ -2,10 +2,8 @@ package webhookuc
 
 import (
 	"context"
-	"errors"
 
 	"github.com/gitsight/go-vcsurl"
-	"github.com/go-playground/webhooks/v6/github"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -17,10 +15,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/webhookuc/webhookdto"
 )
 
-func (uc *WebhookUC) HandleWebhookGithub(
+func (uc *WebhookUC) HandleGitWebhook(
 	ctx context.Context,
-	req *webhookdto.HandleWebhookGithubReq,
-) (*webhookdto.HandleWebhookGithubResp, error) {
+	req *webhookdto.HandleGitWebhookReq,
+) (*webhookdto.HandleGitWebhookResp, error) {
 	var persistingData *appservice.PersistingAppData
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
 		persistingData = &appservice.PersistingAppData{}
@@ -31,7 +29,7 @@ func (uc *WebhookUC) HandleWebhookGithub(
 
 		var appsToRedeploy []*entity.App
 		for secret, apps := range mapWebhookSecret {
-			success, err := uc.processGithubWebhook(req, secret, apps, &appsToRedeploy)
+			success, err := uc.processGitWebhook(req, secret, apps, &appsToRedeploy)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}
@@ -62,42 +60,27 @@ func (uc *WebhookUC) HandleWebhookGithub(
 		_ = uc.taskQueue.ScheduleTask(ctx, task)
 	}
 
-	return &webhookdto.HandleWebhookGithubResp{}, nil
+	return &webhookdto.HandleGitWebhookResp{}, nil
 }
 
-func (uc *WebhookUC) processGithubWebhook(
-	req *webhookdto.HandleWebhookGithubReq,
+func (uc *WebhookUC) processGitWebhook(
+	req *webhookdto.HandleGitWebhookReq,
 	secret string,
 	apps []*entity.App,
 	appsToRedeploy *[]*entity.App,
-) (bool, error) {
-	hook, err := github.New(github.Options.Secret(secret))
-	if err != nil {
-		return false, nil //nolint
+) (success bool, err error) {
+	switch req.GitSource {
+	case base.GitSourceGithub:
+		return uc.processGithubWebhook(req, secret, apps, appsToRedeploy)
+	case base.GitSourceGitlab, base.GitSourceGitlabCustom:
+		return uc.processGitlabWebhook(req, secret, apps, appsToRedeploy)
+	case base.GitSourceGitea:
+		return uc.processGiteaWebhook(req, secret, apps, appsToRedeploy)
+	case base.GitSourceBitbucket:
+		return uc.processBitbucketWebhook(req, secret, apps, appsToRedeploy)
 	}
-	payload, err := hook.Parse(req.Request, github.PushEvent)
-	if err != nil {
-		if errors.Is(err, github.ErrEventNotFound) { // ok event wasn't one of the ones asked to be parsed
-			return true, nil
-		}
-		return false, nil //nolint
-	}
-
-	switch payload.(type) { //nolint
-	case github.PushPayload:
-		push := payload.(github.PushPayload) //nolint
-		repoRef := push.Ref
-		repoURL, err := vcsurl.Parse(push.Repository.HTMLURL)
-		if err != nil {
-			return false, apperrors.Wrap(err)
-		}
-		for _, app := range apps {
-			if flag, _ := uc.shouldRedeployApp(app, repoURL, repoRef); flag {
-				*appsToRedeploy = append(*appsToRedeploy, app)
-			}
-		}
-	}
-	return true, nil
+	return false, apperrors.New(apperrors.ErrUnsupported).
+		WithMsgLog("git source %s not supported", req.GitSource)
 }
 
 func (uc *WebhookUC) loadWebhookSecrets(
@@ -133,8 +116,8 @@ func (uc *WebhookUC) loadWebhookSecrets(
 
 func (uc *WebhookUC) shouldRedeployApp(
 	app *entity.App,
-	repoURL *vcsurl.VCS,
-	repoRef string,
+	inRepoURL *vcsurl.VCS,
+	inRepoRef string,
 ) (bool, error) {
 	deploymentSettings, err := app.Settings[0].AsAppDeploymentSettings()
 	if err != nil {
@@ -145,17 +128,17 @@ func (uc *WebhookUC) shouldRedeployApp(
 	if deploymentSettings.ActiveMethod != base.DeploymentMethodRepo || repoSource == nil {
 		return false, nil
 	}
-	if repoRef != repoSource.RepoRef {
+	if inRepoRef != repoSource.RepoRef {
 		return false, nil
+	}
+	if inRepoURL.Raw == repoSource.RepoURL {
+		return true, nil
 	}
 	url, err := vcsurl.Parse(repoSource.RepoURL)
 	if err != nil {
 		return false, apperrors.Wrap(err)
 	}
-	if url.ID != repoURL.ID {
-		return false, nil
-	}
-	return true, nil
+	return url.ID == inRepoURL.ID, nil
 }
 
 func (uc *WebhookUC) createAppDeployment(

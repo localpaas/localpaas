@@ -15154,15 +15154,15 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/webhooks/github" : {
+    "/webhooks/bitbucket" : {
       "post" : {
-        "description" : "Handles Github webhook",
-        "operationId" : "handleWebhookGithub",
+        "description" : "Handles Bitbucket webhook",
+        "operationId" : "handleBitbucketWebhook",
         "requestBody" : {
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.HandleWebhookGithubReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.HandleGitWebhookReq"
               }
             }
           },
@@ -15174,7 +15174,111 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.HandleWebhookGithubResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.HandleGitWebhookResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Handles Bitbucket webhook",
+        "tags" : [ "webhooks" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/webhooks/gitea" : {
+      "post" : {
+        "description" : "Handles Gitea webhook",
+        "operationId" : "handleGiteaWebhook",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.HandleGitWebhookReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.HandleGitWebhookResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Handles Gitea webhook",
+        "tags" : [ "webhooks" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/webhooks/github" : {
+      "post" : {
+        "description" : "Handles Github webhook",
+        "operationId" : "handleGithubWebhook",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.HandleGitWebhookReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.HandleGitWebhookResp"
                 }
               }
             },
@@ -15202,6 +15306,58 @@
           }
         },
         "summary" : "Handles Github webhook",
+        "tags" : [ "webhooks" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/webhooks/gitlab" : {
+      "post" : {
+        "description" : "Handles Gitlab webhook",
+        "operationId" : "handleGitlabWebhook",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.HandleGitWebhookReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.HandleGitWebhookResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Handles Gitlab webhook",
         "tags" : [ "webhooks" ],
         "x-codegen-request-body-name" : "body"
       }
@@ -15312,9 +15468,9 @@
         "x-enum-varnames" : [ "EmailKindSMTP", "EmailKindHTTP" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.GitSource" : {
-        "enum" : [ "github", "gitlab", "gitlab-custom", "gitea" ],
+        "enum" : [ "github", "gitlab", "gitlab-custom", "gitea", "bitbucket" ],
         "type" : "string",
-        "x-enum-varnames" : [ "GitSourceGithub", "GitSourceGitlab", "GitSourceGitlabCustom", "GitSourceGitea" ]
+        "x-enum-varnames" : [ "GitSourceGithub", "GitSourceGitlab", "GitSourceGitlabCustom", "GitSourceGitea", "GitSourceBitbucket" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.IMServiceKind" : {
         "enum" : [ "slack", "discord" ],
@@ -15748,10 +15904,10 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
         "format" : "int64",
         "type" : "integer",
-        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
+        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentReq" : {
         "type" : "object"
@@ -22204,10 +22360,10 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.DeploymentTarballSourceReq" : {
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.HandleWebhookGithubReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.HandleGitWebhookReq" : {
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.HandleWebhookGithubResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.HandleGitWebhookResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"

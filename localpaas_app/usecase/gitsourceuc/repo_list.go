@@ -11,6 +11,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/gitsourceuc/gitsourcedto"
+	"github.com/localpaas/localpaas/services/gitea"
 	"github.com/localpaas/localpaas/services/github"
 	"github.com/localpaas/localpaas/services/gitlab"
 )
@@ -104,10 +105,27 @@ func (uc *GitSourceUC) listGitlabRepo(
 }
 
 func (uc *GitSourceUC) listGiteaRepo(
-	_ context.Context,
-	_ *gitsourcedto.ListRepoReq,
-	_ *entity.Setting,
+	ctx context.Context,
+	req *gitsourcedto.ListRepoReq,
+	setting *entity.Setting,
 ) (*gitsourcedto.ListRepoResp, error) {
-	// TODO: add implementation
-	return nil, apperrors.Wrap(apperrors.ErrNotImplemented)
+	client, err := gitea.NewFromSetting(setting)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	repos, pagingMeta, err := client.ListRepos(ctx, &req.Paging)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	resp, err := gitsourcedto.TransformGiteaRepos(repos)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	return &gitsourcedto.ListRepoResp{
+		Meta: &basedto.ListMeta{Page: pagingMeta},
+		Data: resp,
+	}, nil
 }

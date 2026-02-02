@@ -7,6 +7,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/gittokenuc/gittokendto"
+	"github.com/localpaas/localpaas/services/gitea"
 	"github.com/localpaas/localpaas/services/github"
 	"github.com/localpaas/localpaas/services/gitlab"
 )
@@ -66,9 +67,16 @@ func (uc *GitTokenUC) testGitlabTokenConn(
 }
 
 func (uc *GitTokenUC) testGiteaTokenConn(
-	_ context.Context,
-	_ *gittokendto.TestGitTokenConnReq,
+	ctx context.Context,
+	req *gittokendto.TestGitTokenConnReq,
 ) error {
-	// TODO: add implementation
-	return apperrors.Wrap(apperrors.ErrNotImplemented)
+	client, err := gitea.NewFromToken(req.Token, req.BaseURL)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	_, _, err = client.ListAllRepos(ctx, &basedto.Paging{Limit: 1})
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
 }
