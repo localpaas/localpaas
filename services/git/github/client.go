@@ -1,6 +1,7 @@
 package github
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/bradleyfalzon/ghinstallation/v2"
@@ -29,6 +30,17 @@ func (c *Client) IsAppClient() bool {
 
 func (c *Client) IsTokenClient() bool {
 	return c.personalToken != ""
+}
+
+func (c *Client) CreateAppToken(ctx context.Context) (string, error) {
+	if !c.IsAppClient() {
+		return "", apperrors.Wrap(ErrGithubAppClientRequired)
+	}
+	token, err := c.installTransport.Token(ctx)
+	if err != nil {
+		return "", apperrors.Wrap(err)
+	}
+	return token, nil
 }
 
 func NewFromApp(appID, installationID int64, privateKey []byte) (*Client, error) {

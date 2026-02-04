@@ -15,6 +15,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
+	"github.com/localpaas/localpaas/services/git/github"
 )
 
 const (
@@ -22,39 +23,51 @@ const (
 )
 
 func (e *Executor) calcGitAuthMethod(
+	ctx context.Context,
 	data *repoDeployTaskData,
 ) (auth transport.AuthMethod, err error) {
-	if data.CredSetting != nil {
-		switch data.CredSetting.Type { //nolint:exhaustive
-		case base.SettingTypeGithubApp:
-			// TODO: add implementation
-			break
+	if data.CredSetting == nil {
+		return auth, nil
+	}
+	switch data.CredSetting.Type { //nolint:exhaustive
+	case base.SettingTypeGithubApp:
+		client, err := github.NewFromSetting(data.CredSetting)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		token, err := client.CreateAppToken(ctx)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		auth = &http.BasicAuth{
+			Username: "default", // this can be anything except an empty string
+			Password: token,
+		}
 
-		case base.SettingTypeGitToken:
-			token, err := data.CredSetting.MustAsGitToken().Token.GetPlain()
-			if err != nil {
-				return nil, apperrors.Wrap(err)
-			}
-			auth = &http.BasicAuth{
-				Username: "default", // this can be anything except an empty string
-				Password: token,
-			}
+	case base.SettingTypeGitToken:
+		token, err := data.CredSetting.MustAsGitToken().Token.GetPlain()
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		auth = &http.BasicAuth{
+			Username: "default", // this can be anything except an empty string
+			Password: token,
+		}
 
-		case base.SettingTypeSSHKey:
-			sshKey := data.CredSetting.MustAsSSHKey()
-			privateKey, err := sshKey.PrivateKey.GetPlain()
-			if err != nil {
-				return nil, apperrors.Wrap(err)
-			}
-			passphrase, err := sshKey.Passphrase.GetPlain()
-			if err != nil {
-				return nil, apperrors.Wrap(err)
-			}
-			gitUser := gofn.Coalesce(data.RepoURLInfo.Username, "git")
-			auth, err = ssh.NewPublicKeys(gitUser, reflectutil.UnsafeStrToBytes(privateKey), passphrase)
-			if err != nil {
-				return nil, apperrors.Wrap(err)
-			}
+	case base.SettingTypeSSHKey:
+		sshKey := data.CredSetting.MustAsSSHKey()
+		privateKey, err := sshKey.PrivateKey.GetPlain()
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		passphrase, err := sshKey.Passphrase.GetPlain()
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		gitUser := gofn.Coalesce(data.RepoURLInfo.Username, "git")
+		auth, err = ssh.NewPublicKeys(gitUser, reflectutil.UnsafeStrToBytes(privateKey), passphrase)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
 		}
 	}
 	return auth, nil

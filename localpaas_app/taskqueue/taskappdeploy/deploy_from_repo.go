@@ -114,7 +114,7 @@ func (e *Executor) repoDeployStepSourceCheckout(
 	e.addStepStartLog(ctx, data.taskData, "Start cloning Git repository...")
 	defer e.addStepEndLog(ctx, data.taskData, timeutil.NowUTC(), err)
 
-	authMethod, err := e.calcGitAuthMethod(data)
+	authMethod, err := e.calcGitAuthMethod(ctx, data)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
