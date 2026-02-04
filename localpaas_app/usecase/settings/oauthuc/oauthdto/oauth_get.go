@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	maskedSecretKey = "****************"
+	maskedSecret = "****************"
 )
 
 type GetOAuthReq struct {
@@ -43,7 +43,7 @@ type OAuthResp struct {
 	TokenURL     string   `json:"tokenURL,omitempty"`
 	ProfileURL   string   `json:"profileURL,omitempty"`
 	Scopes       []string `json:"scopes,omitempty"`
-	Encrypted    bool     `json:"encrypted,omitempty"`
+	SecretMasked bool     `json:"secretMasked,omitempty"`
 }
 
 func (resp *OAuthResp) CopyClientSecret(field entity.EncryptedField) error {
@@ -59,9 +59,9 @@ func TransformOAuth(setting *entity.Setting, baseCallbackURL string, objectID st
 
 	// Recalculate callbackURL for the oauth as it depends on the actual server address
 	resp.CallbackURL = baseCallbackURL + "/" + setting.ID
-	resp.Encrypted = config.ClientSecret.IsEncrypted()
-	if resp.Encrypted {
-		resp.ClientSecret = maskedSecretKey
+	resp.SecretMasked = config.ClientSecret.IsEncrypted()
+	if resp.SecretMasked {
+		resp.ClientSecret = maskedSecret
 	}
 
 	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)

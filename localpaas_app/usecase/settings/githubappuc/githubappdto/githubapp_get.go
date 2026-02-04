@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	maskedSecretKey = "****************"
+	maskedSecret = "****************"
 )
 
 type GetGithubAppReq struct {
@@ -45,7 +45,7 @@ type GithubAppResp struct {
 	InstallationID int64  `json:"installationId"`
 	PrivateKey     string `json:"privateKey"`
 	SSOEnabled     bool   `json:"ssoEnabled"`
-	Encrypted      bool   `json:"encrypted,omitempty"`
+	SecretMasked   bool   `json:"secretMasked,omitempty"`
 }
 
 func (resp *GithubAppResp) CopyClientSecret(field entity.EncryptedField) error {
@@ -67,11 +67,11 @@ func TransformGithubApp(setting *entity.Setting, baseCallbackURL string, objectI
 
 	// Recalculate callbackURL for the github-app as it depends on the actual server address
 	resp.CallbackURL = baseCallbackURL + "/" + setting.ID
-	resp.Encrypted = config.ClientSecret.IsEncrypted()
-	if resp.Encrypted {
-		resp.ClientSecret = maskedSecretKey
-		resp.WebhookSecret = maskedSecretKey
-		resp.PrivateKey = maskedSecretKey
+	resp.SecretMasked = config.ClientSecret.IsEncrypted()
+	if resp.SecretMasked {
+		resp.ClientSecret = maskedSecret
+		resp.WebhookSecret = maskedSecret
+		resp.PrivateKey = maskedSecret
 	}
 
 	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)

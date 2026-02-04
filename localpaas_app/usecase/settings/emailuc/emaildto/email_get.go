@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	maskedPassword = "****************"
+	maskedSecret = "****************"
 )
 
 type GetEmailReq struct {
@@ -36,10 +36,10 @@ type GetEmailResp struct {
 
 type EmailResp struct {
 	*settings.BaseSettingResp
-	Kind      base.EmailKind `json:"kind"`
-	SMTP      *EmailSMTPResp `json:"smtp,omitempty"`
-	HTTP      *EmailHTTPResp `json:"http,omitempty"`
-	Encrypted bool           `json:"encrypted,omitempty"`
+	Kind         base.EmailKind `json:"kind"`
+	SMTP         *EmailSMTPResp `json:"smtp,omitempty"`
+	HTTP         *EmailHTTPResp `json:"http,omitempty"`
+	SecretMasked bool           `json:"secretMasked,omitempty"`
 }
 
 type EmailSMTPResp struct {
@@ -91,14 +91,14 @@ func TransformEmail(setting *entity.Setting) (resp *EmailResp, err error) {
 
 	switch {
 	case config.SMTP != nil:
-		resp.Encrypted = config.SMTP.Password.IsEncrypted()
-		if resp.Encrypted {
-			resp.SMTP.Password = maskedPassword
+		resp.SecretMasked = config.SMTP.Password.IsEncrypted()
+		if resp.SecretMasked {
+			resp.SMTP.Password = maskedSecret
 		}
 	case config.HTTP != nil:
-		resp.Encrypted = config.HTTP.Password.IsEncrypted()
-		if resp.Encrypted {
-			resp.HTTP.Password = maskedPassword
+		resp.SecretMasked = config.HTTP.Password.IsEncrypted()
+		if resp.SecretMasked {
+			resp.HTTP.Password = maskedSecret
 		}
 	}
 

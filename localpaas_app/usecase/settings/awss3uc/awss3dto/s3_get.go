@@ -33,12 +33,12 @@ type GetAWSS3Resp struct {
 
 type AWSS3Resp struct {
 	*settings.BaseSettingResp
-	Kind      string          `json:"kind,omitempty"`
-	Cred      *awsdto.AWSResp `json:"cred,omitempty"`
-	Region    string          `json:"region"`
-	Bucket    string          `json:"bucket"`
-	Endpoint  string          `json:"endpoint"`
-	Encrypted bool            `json:"encrypted,omitempty"`
+	Kind         string          `json:"kind,omitempty"`
+	Cred         *awsdto.AWSResp `json:"cred,omitempty"`
+	Region       string          `json:"region"`
+	Bucket       string          `json:"bucket"`
+	Endpoint     string          `json:"endpoint"`
+	SecretMasked bool            `json:"secretMasked,omitempty"`
 }
 
 func TransformAWSS3(setting *entity.Setting) (resp *AWSS3Resp, err error) {
@@ -54,7 +54,7 @@ func TransformAWSS3(setting *entity.Setting) (resp *AWSS3Resp, err error) {
 			return nil, apperrors.Wrap(err)
 		}
 	}
-	resp.Encrypted = resp.Cred.Encrypted
+	resp.SecretMasked = resp.Cred.SecretMasked
 
 	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {

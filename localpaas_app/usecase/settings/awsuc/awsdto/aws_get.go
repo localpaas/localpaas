@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	maskedSecretKey = "****************"
+	maskedSecret = "****************"
 )
 
 type GetAWSReq struct {
@@ -35,11 +35,11 @@ type GetAWSResp struct {
 
 type AWSResp struct {
 	*settings.BaseSettingResp
-	Kind        string `json:"kind,omitempty"`
-	AccessKeyID string `json:"accessKeyId"`
-	SecretKey   string `json:"secretKey,omitempty"`
-	Region      string `json:"region"`
-	Encrypted   bool   `json:"encrypted,omitempty"`
+	Kind         string `json:"kind,omitempty"`
+	AccessKeyID  string `json:"accessKeyId"`
+	SecretKey    string `json:"secretKey,omitempty"`
+	Region       string `json:"region"`
+	SecretMasked bool   `json:"secretMasked,omitempty"`
 }
 
 func (resp *AWSResp) CopySecretKey(field entity.EncryptedField) error {
@@ -53,9 +53,9 @@ func TransformAWS(setting *entity.Setting) (resp *AWSResp, err error) {
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp.Encrypted = config.SecretKey.IsEncrypted()
-	if resp.Encrypted {
-		resp.SecretKey = maskedSecretKey
+	resp.SecretMasked = config.SecretKey.IsEncrypted()
+	if resp.SecretMasked {
+		resp.SecretKey = maskedSecret
 	}
 
 	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)

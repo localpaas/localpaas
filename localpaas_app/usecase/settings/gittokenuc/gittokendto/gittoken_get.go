@@ -35,10 +35,10 @@ type GetGitTokenResp struct {
 
 type GitTokenResp struct {
 	*settings.BaseSettingResp
-	User      string `json:"user"`
-	Token     string `json:"token"`
-	BaseURL   string `json:"baseURL"`
-	Encrypted bool   `json:"encrypted,omitempty"`
+	User         string `json:"user"`
+	Token        string `json:"token"`
+	BaseURL      string `json:"baseURL"`
+	SecretMasked bool   `json:"secretMasked,omitempty"`
 }
 
 func (resp *GitTokenResp) CopyToken(field entity.EncryptedField) error {
@@ -52,8 +52,8 @@ func TransformGitToken(setting *entity.Setting) (resp *GitTokenResp, err error) 
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp.Encrypted = config.Token.IsEncrypted()
-	if resp.Encrypted {
+	resp.SecretMasked = config.Token.IsEncrypted()
+	if resp.SecretMasked {
 		resp.Token = maskedSecret
 	}
 

@@ -35,9 +35,9 @@ type GetBasicAuthResp struct {
 
 type BasicAuthResp struct {
 	*settings.BaseSettingResp
-	Username  string `json:"username"`
-	Password  string `json:"password"`
-	Encrypted bool   `json:"encrypted,omitempty"`
+	Username     string `json:"username"`
+	Password     string `json:"password"`
+	SecretMasked bool   `json:"secretMasked,omitempty"`
 }
 
 func (resp *BasicAuthResp) CopyPassword(field entity.EncryptedField) error {
@@ -50,8 +50,8 @@ func TransformBasicAuth(setting *entity.Setting) (resp *BasicAuthResp, err error
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	resp.Encrypted = config.Password.IsEncrypted()
-	if resp.Encrypted {
+	resp.SecretMasked = config.Password.IsEncrypted()
+	if resp.SecretMasked {
 		resp.Password = maskedPassword
 	}
 

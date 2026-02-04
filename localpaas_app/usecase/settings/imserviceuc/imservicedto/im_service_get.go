@@ -36,10 +36,10 @@ type GetIMServiceResp struct {
 
 type IMServiceResp struct {
 	*settings.BaseSettingResp
-	Kind      base.IMServiceKind `json:"kind"`
-	Slack     *SlackResp         `json:"slack,omitempty"`
-	Discord   *DiscordResp       `json:"discord,omitempty"`
-	Encrypted bool               `json:"encrypted,omitempty"`
+	Kind         base.IMServiceKind `json:"kind"`
+	Slack        *SlackResp         `json:"slack,omitempty"`
+	Discord      *DiscordResp       `json:"discord,omitempty"`
+	SecretMasked bool               `json:"secretMasked,omitempty"`
 }
 
 type SlackResp struct {
@@ -69,13 +69,13 @@ func TransformIMService(setting *entity.Setting) (resp *IMServiceResp, err error
 
 	switch {
 	case config.Slack != nil:
-		resp.Encrypted = config.Slack.Webhook.IsEncrypted()
-		if resp.Encrypted {
+		resp.SecretMasked = config.Slack.Webhook.IsEncrypted()
+		if resp.SecretMasked {
 			resp.Slack.Webhook = maskedWebhook
 		}
 	case config.Discord != nil:
-		resp.Encrypted = config.Discord.Webhook.IsEncrypted()
-		if resp.Encrypted {
+		resp.SecretMasked = config.Discord.Webhook.IsEncrypted()
+		if resp.SecretMasked {
 			resp.Discord.Webhook = maskedWebhook
 		}
 	}

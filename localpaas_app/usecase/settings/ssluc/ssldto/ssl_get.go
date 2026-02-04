@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	maskedKey = "****************"
+	maskedSecret = "****************"
 )
 
 type GetSSLReq struct {
@@ -35,12 +35,12 @@ type GetSSLResp struct {
 
 type SSLResp struct {
 	*settings.BaseSettingResp
-	Certificate string `json:"certificate"`
-	PrivateKey  string `json:"privateKey"`
-	KeySize     int    `json:"keySize"`
-	Provider    string `json:"provider"`
-	Email       string `json:"email"`
-	Encrypted   bool   `json:"encrypted,omitempty"`
+	Certificate  string `json:"certificate"`
+	PrivateKey   string `json:"privateKey"`
+	KeySize      int    `json:"keySize"`
+	Provider     string `json:"provider"`
+	Email        string `json:"email"`
+	SecretMasked bool   `json:"secretMasked,omitempty"`
 }
 
 func (resp *SSLResp) CopyPrivateKey(field entity.EncryptedField) error {
@@ -54,9 +54,9 @@ func TransformSSL(setting *entity.Setting) (resp *SSLResp, err error) {
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp.Encrypted = config.PrivateKey.IsEncrypted()
-	if resp.Encrypted {
-		resp.PrivateKey = maskedKey
+	resp.SecretMasked = config.PrivateKey.IsEncrypted()
+	if resp.SecretMasked {
+		resp.PrivateKey = maskedSecret
 	}
 
 	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)

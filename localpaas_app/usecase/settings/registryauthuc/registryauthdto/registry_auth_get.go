@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	maskedPassword = "********"
+	maskedSecret = "********"
 )
 
 type GetRegistryAuthReq struct {
@@ -35,10 +35,10 @@ type GetRegistryAuthResp struct {
 
 type RegistryAuthResp struct {
 	*settings.BaseSettingResp
-	Address   string `json:"address"`
-	Username  string `json:"username"`
-	Password  string `json:"password"`
-	Encrypted bool   `json:"encrypted,omitempty"`
+	Address      string `json:"address"`
+	Username     string `json:"username"`
+	Password     string `json:"password"`
+	SecretMasked bool   `json:"secretMasked,omitempty"`
 }
 
 func (resp *RegistryAuthResp) CopyPassword(field entity.EncryptedField) error {
@@ -52,9 +52,9 @@ func TransformRegistryAuth(setting *entity.Setting) (resp *RegistryAuthResp, err
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp.Encrypted = config.Password.IsEncrypted()
-	if resp.Encrypted {
-		resp.Password = maskedPassword
+	resp.SecretMasked = config.Password.IsEncrypted()
+	if resp.SecretMasked {
+		resp.Password = maskedSecret
 	}
 
 	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)

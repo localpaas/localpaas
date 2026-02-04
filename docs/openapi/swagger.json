@@ -16586,10 +16586,10 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
         "format" : "int64",
         "type" : "integer",
-        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
+        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentReq" : {
         "type" : "object"
@@ -18935,9 +18935,6 @@
           "default" : {
             "type" : "boolean"
           },
-          "encrypted" : {
-            "type" : "boolean"
-          },
           "endpoint" : {
             "type" : "string"
           },
@@ -18958,6 +18955,9 @@
           },
           "region" : {
             "type" : "string"
+          },
+          "secretMasked" : {
+            "type" : "boolean"
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
@@ -19163,9 +19163,6 @@
           "default" : {
             "type" : "boolean"
           },
-          "encrypted" : {
-            "type" : "boolean"
-          },
           "expireAt" : {
             "type" : "string"
           },
@@ -19186,6 +19183,9 @@
           },
           "secretKey" : {
             "type" : "string"
+          },
+          "secretMasked" : {
+            "type" : "boolean"
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
@@ -19352,9 +19352,6 @@
           "default" : {
             "type" : "boolean"
           },
-          "encrypted" : {
-            "type" : "boolean"
-          },
           "expireAt" : {
             "type" : "string"
           },
@@ -19372,6 +19369,9 @@
           },
           "password" : {
             "type" : "string"
+          },
+          "secretMasked" : {
+            "type" : "boolean"
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
@@ -19875,9 +19875,6 @@
           "default" : {
             "type" : "boolean"
           },
-          "encrypted" : {
-            "type" : "boolean"
-          },
           "expireAt" : {
             "type" : "string"
           },
@@ -19895,6 +19892,9 @@
           },
           "name" : {
             "type" : "string"
+          },
+          "secretMasked" : {
+            "type" : "boolean"
           },
           "smtp" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_emailuc_emaildto.EmailSMTPResp"
@@ -20220,9 +20220,6 @@
           "default" : {
             "type" : "boolean"
           },
-          "encrypted" : {
-            "type" : "boolean"
-          },
           "expireAt" : {
             "type" : "string"
           },
@@ -20246,6 +20243,9 @@
           },
           "privateKey" : {
             "type" : "string"
+          },
+          "secretMasked" : {
+            "type" : "boolean"
           },
           "ssoEnabled" : {
             "type" : "boolean"
@@ -20544,9 +20544,6 @@
           "default" : {
             "type" : "boolean"
           },
-          "encrypted" : {
-            "type" : "boolean"
-          },
           "expireAt" : {
             "type" : "string"
           },
@@ -20561,6 +20558,9 @@
           },
           "name" : {
             "type" : "string"
+          },
+          "secretMasked" : {
+            "type" : "boolean"
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
@@ -20793,9 +20793,6 @@
           "discord" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imserviceuc_imservicedto.DiscordResp"
           },
-          "encrypted" : {
-            "type" : "boolean"
-          },
           "expireAt" : {
             "type" : "string"
           },
@@ -20810,6 +20807,9 @@
           },
           "name" : {
             "type" : "string"
+          },
+          "secretMasked" : {
+            "type" : "boolean"
           },
           "slack" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imserviceuc_imservicedto.SlackResp"
@@ -21084,9 +21084,6 @@
           "default" : {
             "type" : "boolean"
           },
-          "encrypted" : {
-            "type" : "boolean"
-          },
           "expireAt" : {
             "type" : "string"
           },
@@ -21113,6 +21110,9 @@
               "type" : "string"
             },
             "type" : "array"
+          },
+          "secretMasked" : {
+            "type" : "boolean"
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
@@ -21303,9 +21303,6 @@
           "default" : {
             "type" : "boolean"
           },
-          "encrypted" : {
-            "type" : "boolean"
-          },
           "expireAt" : {
             "type" : "string"
           },
@@ -21323,6 +21320,9 @@
           },
           "password" : {
             "type" : "string"
+          },
+          "secretMasked" : {
+            "type" : "boolean"
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
@@ -21858,9 +21858,6 @@
           "default" : {
             "type" : "boolean"
           },
-          "encrypted" : {
-            "type" : "boolean"
-          },
           "expireAt" : {
             "type" : "string"
           },
@@ -21881,6 +21878,9 @@
           },
           "privateKey" : {
             "type" : "string"
+          },
+          "secretMasked" : {
+            "type" : "boolean"
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
@@ -22059,9 +22059,6 @@
           "email" : {
             "type" : "string"
           },
-          "encrypted" : {
-            "type" : "boolean"
-          },
           "expireAt" : {
             "type" : "string"
           },
@@ -22085,6 +22082,9 @@
           },
           "provider" : {
             "type" : "string"
+          },
+          "secretMasked" : {
+            "type" : "boolean"
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"

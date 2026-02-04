@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	maskedSecretKey = "****************"
+	maskedSecret = "****************"
 )
 
 type GetSSHKeyReq struct {
@@ -35,9 +35,9 @@ type GetSSHKeyResp struct {
 
 type SSHKeyResp struct {
 	*settings.BaseSettingResp
-	PrivateKey string `json:"privateKey"`
-	Passphrase string `json:"passphrase,omitempty"`
-	Encrypted  bool   `json:"encrypted,omitempty"`
+	PrivateKey   string `json:"privateKey"`
+	Passphrase   string `json:"passphrase,omitempty"`
+	SecretMasked bool   `json:"secretMasked,omitempty"`
 }
 
 func (resp *SSHKeyResp) CopyPrivateKey(field entity.EncryptedField) error {
@@ -56,11 +56,11 @@ func TransformSSHKey(setting *entity.Setting) (resp *SSHKeyResp, err error) {
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp.Encrypted = sshKey.PrivateKey.IsEncrypted()
-	if resp.Encrypted {
-		resp.PrivateKey = maskedSecretKey
+	resp.SecretMasked = sshKey.PrivateKey.IsEncrypted()
+	if resp.SecretMasked {
+		resp.PrivateKey = maskedSecret
 		if resp.Passphrase != "" {
-			resp.Passphrase = maskedSecretKey
+			resp.Passphrase = maskedSecret
 		}
 	}
 
