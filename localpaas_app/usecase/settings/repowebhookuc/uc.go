@@ -1,4 +1,4 @@
-package webhookuc
+package repowebhookuc
 
 import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
@@ -6,20 +6,20 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
 )
 
-type WebhookUC struct {
+type RepoWebhookUC struct {
 	db                       *database.DB
 	settingRepo              repository.SettingRepo
 	projectSharedSettingRepo repository.ProjectSharedSettingRepo
 	settingService           settingservice.SettingService
 }
 
-func NewWebhookUC(
+func NewRepoWebhookUC(
 	db *database.DB,
 	settingRepo repository.SettingRepo,
 	projectSharedSettingRepo repository.ProjectSharedSettingRepo,
 	settingService settingservice.SettingService,
-) *WebhookUC {
-	return &WebhookUC{
+) *RepoWebhookUC {
+	return &RepoWebhookUC{
 		db:                       db,
 		settingRepo:              settingRepo,
 		projectSharedSettingRepo: projectSharedSettingRepo,

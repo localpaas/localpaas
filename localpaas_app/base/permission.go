@@ -39,7 +39,7 @@ const (
 	ResourceTypeGitToken     ResourceType = "git-token"
 	ResourceTypeCronJob      ResourceType = "cron-job"
 	ResourceTypeEmail        ResourceType = "email"
-	ResourceTypeWebhook      ResourceType = "webhook"
+	ResourceTypeRepoWebhook  ResourceType = "repo-webhook"
 	ResourceTypeSysError     ResourceType = "sys-error"
 	ResourceTypeTask         ResourceType = "task"
 )

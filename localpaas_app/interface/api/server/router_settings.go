@@ -9,9 +9,7 @@ func (s *HTTPServer) registerSettingRoutes(apiGroup *gin.RouterGroup) *gin.Route
 
 	{ // secrets group
 		secretGroup := settingGroup.Group("/secrets")
-		// Info
 		secretGroup.GET("", s.handlerRegistry.settingHandler.ListSecret)
-		// Creation & Update
 		secretGroup.POST("", s.handlerRegistry.settingHandler.CreateSecret)
 		secretGroup.PUT("/:id", s.handlerRegistry.settingHandler.UpdateSecret)
 		secretGroup.PUT("/:id/meta", s.handlerRegistry.settingHandler.UpdateSecretMeta)
@@ -20,10 +18,8 @@ func (s *HTTPServer) registerSettingRoutes(apiGroup *gin.RouterGroup) *gin.Route
 
 	{ // cron-job group
 		cronJobGroup := settingGroup.Group("/cron-jobs")
-		// Info
 		cronJobGroup.GET("/:id", s.handlerRegistry.settingHandler.GetCronJob)
 		cronJobGroup.GET("", s.handlerRegistry.settingHandler.ListCronJob)
-		// Creation & Update
 		cronJobGroup.POST("", s.handlerRegistry.settingHandler.CreateCronJob)
 		cronJobGroup.PUT("/:id", s.handlerRegistry.settingHandler.UpdateCronJob)
 		cronJobGroup.PUT("/:id/meta", s.handlerRegistry.settingHandler.UpdateCronJobMeta)

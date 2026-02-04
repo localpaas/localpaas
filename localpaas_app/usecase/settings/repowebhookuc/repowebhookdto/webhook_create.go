@@ -1,4 +1,4 @@
-package webhookdto
+package repowebhookdto
 
 import (
 	vld "github.com/tiendc/go-validator"
@@ -15,25 +15,25 @@ const (
 	webhookSecretMaxLen = 200
 )
 
-type CreateWebhookReq struct {
+type CreateRepoWebhookReq struct {
 	settings.CreateSettingReq
-	*WebhookBaseReq
+	*RepoWebhookBaseReq
 }
 
-type WebhookBaseReq struct {
+type RepoWebhookBaseReq struct {
 	Name   string           `json:"name"`
 	Kind   base.WebhookKind `json:"kind"`
 	Secret string           `json:"secret"`
 }
 
-func (req *WebhookBaseReq) ToEntity() *entity.Webhook {
-	return &entity.Webhook{
+func (req *RepoWebhookBaseReq) ToEntity() *entity.RepoWebhook {
+	return &entity.RepoWebhook{
 		Kind:   req.Kind,
 		Secret: req.Secret,
 	}
 }
 
-func (req *WebhookBaseReq) validate(field string) (res []vld.Validator) {
+func (req *RepoWebhookBaseReq) validate(field string) (res []vld.Validator) {
 	if field != "" {
 		field += "."
 	}
@@ -43,18 +43,18 @@ func (req *WebhookBaseReq) validate(field string) (res []vld.Validator) {
 	return res
 }
 
-func NewCreateWebhookReq() *CreateWebhookReq {
-	return &CreateWebhookReq{}
+func NewCreateRepoWebhookReq() *CreateRepoWebhookReq {
+	return &CreateRepoWebhookReq{}
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *CreateWebhookReq) Validate() apperrors.ValidationErrors {
+func (req *CreateRepoWebhookReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.validate("")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type CreateWebhookResp struct {
+type CreateRepoWebhookResp struct {
 	Meta *basedto.Meta         `json:"meta"`
 	Data *basedto.ObjectIDResp `json:"data"`
 }

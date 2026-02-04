@@ -1,4 +1,4 @@
-package webhookdto
+package repowebhookdto
 
 import (
 	vld "github.com/tiendc/go-validator"
@@ -8,21 +8,21 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
-type DeleteWebhookReq struct {
+type DeleteRepoWebhookReq struct {
 	settings.DeleteSettingReq
 }
 
-func NewDeleteWebhookReq() *DeleteWebhookReq {
-	return &DeleteWebhookReq{}
+func NewDeleteRepoWebhookReq() *DeleteRepoWebhookReq {
+	return &DeleteRepoWebhookReq{}
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *DeleteWebhookReq) Validate() apperrors.ValidationErrors {
+func (req *DeleteRepoWebhookReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.DeleteSettingReq.Validate()...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type DeleteWebhookResp struct {
+type DeleteRepoWebhookResp struct {
 	Meta *basedto.Meta `json:"meta"`
 }

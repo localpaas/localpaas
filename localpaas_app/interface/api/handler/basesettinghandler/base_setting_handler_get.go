@@ -18,9 +18,9 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc/imservicedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc/oauthdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/registryauthuc/registryauthdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/repowebhookuc/repowebhookdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc/sshkeydto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc/ssldto"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/webhookuc/webhookdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc/apikeydto"
 )
 
@@ -141,10 +141,10 @@ func (h *BaseSettingHandler) GetSetting(
 		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.EmailUC.GetEmail(reqCtx, auth, r) }
 
-	case base.ResourceTypeWebhook:
-		r := webhookdto.NewGetWebhookReq()
+	case base.ResourceTypeRepoWebhook:
+		r := repowebhookdto.NewGetRepoWebhookReq()
 		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
-		req, ucFunc = r, func() (any, error) { return h.WebhookUC.GetWebhook(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.RepoWebhookUC.GetRepoWebhook(reqCtx, auth, r) }
 	}
 	if err != nil {
 		h.RenderError(ctx, err)

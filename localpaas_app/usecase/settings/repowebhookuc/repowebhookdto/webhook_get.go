@@ -1,4 +1,4 @@
-package webhookdto
+package repowebhookdto
 
 import (
 	vld "github.com/tiendc/go-validator"
@@ -11,47 +11,37 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
-const (
-	maskedSecret = "****************"
-)
-
-type GetWebhookReq struct {
+type GetRepoWebhookReq struct {
 	settings.GetSettingReq
 }
 
-func NewGetWebhookReq() *GetWebhookReq {
-	return &GetWebhookReq{}
+func NewGetRepoWebhookReq() *GetRepoWebhookReq {
+	return &GetRepoWebhookReq{}
 }
 
-func (req *GetWebhookReq) Validate() apperrors.ValidationErrors {
+func (req *GetRepoWebhookReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.GetSettingReq.Validate()...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type GetWebhookResp struct {
-	Meta *basedto.Meta `json:"meta"`
-	Data *WebhookResp  `json:"data"`
+type GetRepoWebhookResp struct {
+	Meta *basedto.Meta    `json:"meta"`
+	Data *RepoWebhookResp `json:"data"`
 }
 
-type WebhookResp struct {
+type RepoWebhookResp struct {
 	*settings.BaseSettingResp
-	Kind      base.WebhookKind `json:"kind"`
-	Secret    string           `json:"secret"`
-	Encrypted bool             `json:"encrypted,omitempty"`
+	Kind   base.WebhookKind `json:"kind"`
+	Secret string           `json:"secret"`
 }
 
-func TransformWebhook(setting *entity.Setting) (resp *WebhookResp, err error) {
-	config := setting.MustAsWebhook()
+func TransformRepoWebhook(setting *entity.Setting) (resp *RepoWebhookResp, err error) {
+	config := setting.MustAsRepoWebhook()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 	resp.Kind = base.WebhookKind(setting.Kind)
-
-	// resp.Encrypted = config.Secret.IsEncrypted()
-	if resp.Encrypted {
-		resp.Secret = maskedSecret
-	}
 
 	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {

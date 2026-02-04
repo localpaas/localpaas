@@ -50,14 +50,6 @@ func (s *HTTPServer) registerAppRoutes(projectGroup *gin.RouterGroup) *gin.Route
 	appGroup.PUT("/:appID/cron-jobs/:id/meta", s.handlerRegistry.appHandler.UpdateAppCronJobMeta)
 	appGroup.DELETE("/:appID/cron-jobs/:id", s.handlerRegistry.appHandler.DeleteAppCronJob)
 
-	// Webhooks
-	appGroup.GET("/:appID/webhooks", s.handlerRegistry.appHandler.ListAppWebhook)
-	appGroup.GET("/:appID/webhooks/:id", s.handlerRegistry.appHandler.GetAppWebhook)
-	appGroup.POST("/:appID/webhooks", s.handlerRegistry.appHandler.CreateAppWebhook)
-	appGroup.PUT("/:appID/webhooks/:id", s.handlerRegistry.appHandler.UpdateAppWebhook)
-	appGroup.PUT("/:appID/webhooks/:id/meta", s.handlerRegistry.appHandler.UpdateAppWebhookMeta)
-	appGroup.DELETE("/:appID/webhooks/:id", s.handlerRegistry.appHandler.DeleteAppWebhook)
-
 	appDeploymentGroup := appGroup.Group("/:appID/deployments")
 	{ // app deployment group
 		// Info

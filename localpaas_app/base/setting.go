@@ -24,7 +24,7 @@ const (
 	SettingTypeGitToken      SettingType = "git-token"
 	SettingTypeCronJob       SettingType = "cron-job"
 	SettingTypeEmail         SettingType = "email"
-	SettingTypeWebhook       SettingType = "webhook"
+	SettingTypeRepoWebhook   SettingType = "repo-webhook"
 )
 
 var (

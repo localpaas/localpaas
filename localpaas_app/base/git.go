@@ -7,8 +7,10 @@ const (
 	GitSourceGitlab    GitSource = "gitlab"
 	GitSourceGitea     GitSource = "gitea"
 	GitSourceBitbucket GitSource = "bitbucket"
+	GitSourceGogs      GitSource = "gogs"
 )
 
 var (
-	AllGitSources = []GitSource{GitSourceGithub, GitSourceGitlab, GitSourceGitea, GitSourceBitbucket}
+	AllGitSources = []GitSource{GitSourceGithub, GitSourceGitlab, GitSourceGitea, GitSourceBitbucket,
+		GitSourceGogs}
 )

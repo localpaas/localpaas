@@ -1,4 +1,4 @@
-package webhookuc
+package repowebhookuc
 
 import (
 	"context"
@@ -9,19 +9,19 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/webhookuc/webhookdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/repowebhookuc/repowebhookdto"
 )
 
 const (
-	currentSettingType    = base.SettingTypeWebhook
-	currentSettingVersion = entity.CurrentWebhookVersion
+	currentSettingType    = base.SettingTypeRepoWebhook
+	currentSettingVersion = entity.CurrentRepoWebhookVersion
 )
 
-func (uc *WebhookUC) CreateWebhook(
+func (uc *RepoWebhookUC) CreateRepoWebhook(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *webhookdto.CreateWebhookReq,
-) (*webhookdto.CreateWebhookResp, error) {
+	req *repowebhookdto.CreateRepoWebhookReq,
+) (*repowebhookdto.CreateRepoWebhookResp, error) {
 	req.Type = currentSettingType
 	resp, err := settings.CreateSetting(ctx, uc.db, &req.CreateSettingReq, &settings.CreateSettingData{
 		SettingRepo:   uc.settingRepo,
@@ -45,7 +45,7 @@ func (uc *WebhookUC) CreateWebhook(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &webhookdto.CreateWebhookResp{
+	return &repowebhookdto.CreateRepoWebhookResp{
 		Data: resp.Data,
 	}, nil
 }

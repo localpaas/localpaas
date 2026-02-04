@@ -13,10 +13,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/registryauthuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/repowebhookuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/webhookuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc"
 )
 
@@ -37,7 +37,7 @@ type BaseSettingHandler struct {
 	SecretUC       *secretuc.SecretUC
 	EmailUC        *emailuc.EmailUC
 	APIKeyUC       *apikeyuc.APIKeyUC
-	WebhookUC      *webhookuc.WebhookUC
+	RepoWebhookUC  *repowebhookuc.RepoWebhookUC
 }
 
 func NewBaseSettingHandler(
@@ -57,7 +57,7 @@ func NewBaseSettingHandler(
 	secretUC *secretuc.SecretUC,
 	emailUC *emailuc.EmailUC,
 	apiKeyUC *apikeyuc.APIKeyUC,
-	webhookUC *webhookuc.WebhookUC,
+	repoWebhookUC *repowebhookuc.RepoWebhookUC,
 ) *BaseSettingHandler {
 	return &BaseSettingHandler{
 		BaseHandler:    baseHandler,
@@ -76,6 +76,6 @@ func NewBaseSettingHandler(
 		SecretUC:       secretUC,
 		EmailUC:        emailUC,
 		APIKeyUC:       apiKeyUC,
-		WebhookUC:      webhookUC,
+		RepoWebhookUC:  repoWebhookUC,
 	}
 }

@@ -84,6 +84,10 @@ func (uc *WebhookUC) processRepoWebhook(
 		err = uc.processGiteaWebhook(req, data)
 	case base.WebhookKindBitbucket:
 		err = uc.processBitbucketWebhook(req, data)
+	case base.WebhookKindGogs:
+		err = uc.processGogsWebhook(req, data)
+	case base.WebhookKindAzureDevOps:
+		err = uc.processAzureDevOpsWebhook(req, data)
 	default:
 		return apperrors.New(apperrors.ErrUnsupported).
 			WithMsgLog("webhook kind '%s' not supported", req.WebhookKind)
@@ -115,7 +119,7 @@ func (uc *WebhookUC) loadWebhookSettings(
 	settings, _, err := uc.settingRepo.List(ctx, db, nil,
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
 		bunex.SelectWhereGroup(
-			bunex.SelectWhere("setting.type = ?", base.SettingTypeWebhook),
+			bunex.SelectWhere("setting.type = ?", base.SettingTypeRepoWebhook),
 			bunex.SelectWhere("setting.data->>'secret' = ?", req.Secret),
 		),
 		bunex.SelectWhereOrGroup(

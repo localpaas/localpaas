@@ -1,4 +1,4 @@
-package webhookuc
+package repowebhookuc
 
 import (
 	"context"
@@ -7,14 +7,14 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/webhookuc/webhookdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/repowebhookuc/repowebhookdto"
 )
 
-func (uc *WebhookUC) UpdateWebhook(
+func (uc *RepoWebhookUC) UpdateRepoWebhook(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *webhookdto.UpdateWebhookReq,
-) (*webhookdto.UpdateWebhookResp, error) {
+	req *repowebhookdto.UpdateRepoWebhookReq,
+) (*repowebhookdto.UpdateRepoWebhookResp, error) {
 	req.Type = currentSettingType
 	_, err := settings.UpdateSetting(ctx, uc.db, &req.UpdateSettingReq, &settings.UpdateSettingData{
 		SettingRepo:   uc.settingRepo,
@@ -37,5 +37,5 @@ func (uc *WebhookUC) UpdateWebhook(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &webhookdto.UpdateWebhookResp{}, nil
+	return &repowebhookdto.UpdateRepoWebhookResp{}, nil
 }

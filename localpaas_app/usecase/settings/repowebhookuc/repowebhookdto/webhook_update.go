@@ -1,4 +1,4 @@
-package webhookdto
+package repowebhookdto
 
 import (
 	vld "github.com/tiendc/go-validator"
@@ -8,22 +8,22 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
-type UpdateWebhookReq struct {
+type UpdateRepoWebhookReq struct {
 	settings.UpdateSettingReq
-	*WebhookBaseReq
+	*RepoWebhookBaseReq
 }
 
-func NewUpdateWebhookReq() *UpdateWebhookReq {
-	return &UpdateWebhookReq{}
+func NewUpdateRepoWebhookReq() *UpdateRepoWebhookReq {
+	return &UpdateRepoWebhookReq{}
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *UpdateWebhookReq) Validate() apperrors.ValidationErrors {
+func (req *UpdateRepoWebhookReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.validate("")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type UpdateWebhookResp struct {
+type UpdateRepoWebhookResp struct {
 	Meta *basedto.Meta `json:"meta"`
 }

@@ -47,10 +47,8 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 
 	{ // github-app group
 		githubAppGroup := projectProviderGroup.Group("/github-apps")
-		// Info
 		githubAppGroup.GET("/:id", s.handlerRegistry.projectHandler.GetGithubApp)
 		githubAppGroup.GET("", s.handlerRegistry.projectHandler.ListGithubApp)
-		// Creation & Update
 		githubAppGroup.POST("", s.handlerRegistry.projectHandler.CreateGithubApp)
 		githubAppGroup.PUT("/:id", s.handlerRegistry.projectHandler.UpdateGithubApp)
 		githubAppGroup.PUT("/:id/meta", s.handlerRegistry.projectHandler.UpdateGithubAppMeta)
@@ -59,10 +57,8 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 
 	{ // git-token group
 		gitTokenGroup := projectProviderGroup.Group("/git-tokens")
-		// Info
 		gitTokenGroup.GET("/:id", s.handlerRegistry.projectHandler.GetGitToken)
 		gitTokenGroup.GET("", s.handlerRegistry.projectHandler.ListGitToken)
-		// Creation & Update
 		gitTokenGroup.POST("", s.handlerRegistry.projectHandler.CreateGitToken)
 		gitTokenGroup.PUT("/:id", s.handlerRegistry.projectHandler.UpdateGitToken)
 		gitTokenGroup.PUT("/:id/meta", s.handlerRegistry.projectHandler.UpdateGitTokenMeta)
@@ -71,10 +67,8 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 
 	{ // aws group
 		awsGroup := projectProviderGroup.Group("/aws")
-		// Info
 		awsGroup.GET("/:id", s.handlerRegistry.projectHandler.GetAWS)
 		awsGroup.GET("", s.handlerRegistry.projectHandler.ListAWS)
-		// Creation & Update
 		awsGroup.POST("", s.handlerRegistry.projectHandler.CreateAWS)
 		awsGroup.PUT("/:id", s.handlerRegistry.projectHandler.UpdateAWS)
 		awsGroup.PUT("/:id/meta", s.handlerRegistry.projectHandler.UpdateAWSMeta)
@@ -83,10 +77,8 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 
 	{ // aws s3 group
 		awsS3Group := projectProviderGroup.Group("/aws-s3")
-		// Info
 		awsS3Group.GET("/:id", s.handlerRegistry.projectHandler.GetAWSS3)
 		awsS3Group.GET("", s.handlerRegistry.projectHandler.ListAWSS3)
-		// Creation & Update
 		awsS3Group.POST("", s.handlerRegistry.projectHandler.CreateAWSS3)
 		awsS3Group.PUT("/:id", s.handlerRegistry.projectHandler.UpdateAWSS3)
 		awsS3Group.PUT("/:id/meta", s.handlerRegistry.projectHandler.UpdateAWSS3Meta)
@@ -95,10 +87,8 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 
 	{ // ssh key group
 		sshKeyGroup := projectProviderGroup.Group("/ssh-keys")
-		// Info
 		sshKeyGroup.GET("/:id", s.handlerRegistry.projectHandler.GetSSHKey)
 		sshKeyGroup.GET("", s.handlerRegistry.projectHandler.ListSSHKey)
-		// Creation & Update
 		sshKeyGroup.POST("", s.handlerRegistry.projectHandler.CreateSSHKey)
 		sshKeyGroup.PUT("/:id", s.handlerRegistry.projectHandler.UpdateSSHKey)
 		sshKeyGroup.PUT("/:id/meta", s.handlerRegistry.projectHandler.UpdateSSHKeyMeta)
@@ -107,10 +97,8 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 
 	{ // IM service group
 		imServiceGroup := projectProviderGroup.Group("/im-services")
-		// Info
 		imServiceGroup.GET("/:id", s.handlerRegistry.projectHandler.GetIMService)
 		imServiceGroup.GET("", s.handlerRegistry.projectHandler.ListIMService)
-		// Creation & Update
 		imServiceGroup.POST("", s.handlerRegistry.projectHandler.CreateIMService)
 		imServiceGroup.PUT("/:id", s.handlerRegistry.projectHandler.UpdateIMService)
 		imServiceGroup.PUT("/:id/meta", s.handlerRegistry.projectHandler.UpdateIMServiceMeta)
@@ -119,10 +107,8 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 
 	{ // registry auth group
 		registryAuthGroup := projectProviderGroup.Group("/registry-auth")
-		// Info
 		registryAuthGroup.GET("/:id", s.handlerRegistry.projectHandler.GetRegistryAuth)
 		registryAuthGroup.GET("", s.handlerRegistry.projectHandler.ListRegistryAuth)
-		// Creation & Update
 		registryAuthGroup.POST("", s.handlerRegistry.projectHandler.CreateRegistryAuth)
 		registryAuthGroup.PUT("/:id", s.handlerRegistry.projectHandler.UpdateRegistryAuth)
 		registryAuthGroup.PUT("/:id/meta", s.handlerRegistry.projectHandler.UpdateRegistryAuthMeta)
@@ -131,10 +117,8 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 
 	{ // basic auth group
 		basicAuthGroup := projectProviderGroup.Group("/basic-auth")
-		// Info
 		basicAuthGroup.GET("/:id", s.handlerRegistry.projectHandler.GetBasicAuth)
 		basicAuthGroup.GET("", s.handlerRegistry.projectHandler.ListBasicAuth)
-		// Creation & Update
 		basicAuthGroup.POST("", s.handlerRegistry.projectHandler.CreateBasicAuth)
 		basicAuthGroup.PUT("/:id", s.handlerRegistry.projectHandler.UpdateBasicAuth)
 		basicAuthGroup.PUT("/:id/meta", s.handlerRegistry.projectHandler.UpdateBasicAuthMeta)
@@ -143,10 +127,8 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 
 	{ // ssl group
 		sslGroup := projectProviderGroup.Group("/ssls")
-		// Info
 		sslGroup.GET("/:id", s.handlerRegistry.projectHandler.GetSSL)
 		sslGroup.GET("", s.handlerRegistry.projectHandler.ListSSL)
-		// Creation & Update
 		sslGroup.POST("", s.handlerRegistry.projectHandler.CreateSSL)
 		sslGroup.PUT("/:id", s.handlerRegistry.projectHandler.UpdateSSL)
 		sslGroup.PUT("/:id/meta", s.handlerRegistry.projectHandler.UpdateSSLMeta)
@@ -155,26 +137,22 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 
 	{ // email group
 		emailGroup := projectProviderGroup.Group("/emails")
-		// Info
 		emailGroup.GET("/:id", s.handlerRegistry.projectHandler.GetEmail)
 		emailGroup.GET("", s.handlerRegistry.projectHandler.ListEmail)
-		// Creation & Update
 		emailGroup.POST("", s.handlerRegistry.projectHandler.CreateEmail)
 		emailGroup.PUT("/:id", s.handlerRegistry.projectHandler.UpdateEmail)
 		emailGroup.PUT("/:id/meta", s.handlerRegistry.projectHandler.UpdateEmailMeta)
 		emailGroup.DELETE("/:id", s.handlerRegistry.projectHandler.DeleteEmail)
 	}
 
-	{ // webhook group
-		webhookGroup := projectProviderGroup.Group("/webhooks")
-		// Info
-		webhookGroup.GET("/:id", s.handlerRegistry.projectHandler.GetWebhook)
-		webhookGroup.GET("", s.handlerRegistry.projectHandler.ListWebhook)
-		// Creation & Update
-		webhookGroup.POST("", s.handlerRegistry.projectHandler.CreateWebhook)
-		webhookGroup.PUT("/:id", s.handlerRegistry.projectHandler.UpdateWebhook)
-		webhookGroup.PUT("/:id/meta", s.handlerRegistry.projectHandler.UpdateWebhookMeta)
-		webhookGroup.DELETE("/:id", s.handlerRegistry.projectHandler.DeleteWebhook)
+	{ // repo webhook group
+		repoWebhookGroup := projectProviderGroup.Group("/repo-webhooks")
+		repoWebhookGroup.GET("/:id", s.handlerRegistry.projectHandler.GetRepoWebhook)
+		repoWebhookGroup.GET("", s.handlerRegistry.projectHandler.ListRepoWebhook)
+		repoWebhookGroup.POST("", s.handlerRegistry.projectHandler.CreateRepoWebhook)
+		repoWebhookGroup.PUT("/:id", s.handlerRegistry.projectHandler.UpdateRepoWebhook)
+		repoWebhookGroup.PUT("/:id/meta", s.handlerRegistry.projectHandler.UpdateRepoWebhookMeta)
+		repoWebhookGroup.DELETE("/:id", s.handlerRegistry.projectHandler.DeleteRepoWebhook)
 	}
 
 	return projectGroup

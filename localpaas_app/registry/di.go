@@ -55,10 +55,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/registryauthuc"
+	repowebhooksettingsuc "github.com/localpaas/localpaas/localpaas_app/usecase/settings/repowebhookuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc"
-	webhooksettingsuc "github.com/localpaas/localpaas/localpaas_app/usecase/settings/webhookuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/lpappuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/nginxuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/syserroruc"
@@ -143,7 +143,7 @@ var Provides = []any{
 	taskuc.NewTaskUC,
 	emailuc.NewEmailUC,
 	webhookuc.NewWebhookUC,
-	webhooksettingsuc.NewWebhookUC,
+	repowebhooksettingsuc.NewRepoWebhookUC,
 
 	// Service
 	clusterservice.NewClusterService,

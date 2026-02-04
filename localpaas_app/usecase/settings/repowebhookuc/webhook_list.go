@@ -1,4 +1,4 @@
-package webhookuc
+package repowebhookuc
 
 import (
 	"context"
@@ -6,14 +6,14 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/webhookuc/webhookdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/repowebhookuc/repowebhookdto"
 )
 
-func (uc *WebhookUC) ListWebhook(
+func (uc *RepoWebhookUC) ListRepoWebhook(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *webhookdto.ListWebhookReq,
-) (*webhookdto.ListWebhookResp, error) {
+	req *repowebhookdto.ListRepoWebhookReq,
+) (*repowebhookdto.ListRepoWebhookResp, error) {
 	req.Type = currentSettingType
 	resp, err := settings.ListSetting(ctx, uc.db, auth, &req.ListSettingReq, &settings.ListSettingData{
 		SettingRepo: uc.settingRepo,
@@ -22,12 +22,12 @@ func (uc *WebhookUC) ListWebhook(
 		return nil, apperrors.Wrap(err)
 	}
 
-	respData, err := webhookdto.TransformWebhooks(resp.Data)
+	respData, err := repowebhookdto.TransformRepoWebhooks(resp.Data)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &webhookdto.ListWebhookResp{
+	return &repowebhookdto.ListRepoWebhookResp{
 		Meta: resp.Meta,
 		Data: respData,
 	}, nil

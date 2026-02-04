@@ -1,4 +1,4 @@
-package webhookuc
+package repowebhookuc
 
 import (
 	"context"
@@ -6,14 +6,14 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/webhookuc/webhookdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/repowebhookuc/repowebhookdto"
 )
 
-func (uc *WebhookUC) DeleteWebhook(
+func (uc *RepoWebhookUC) DeleteRepoWebhook(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *webhookdto.DeleteWebhookReq,
-) (*webhookdto.DeleteWebhookResp, error) {
+	req *repowebhookdto.DeleteRepoWebhookReq,
+) (*repowebhookdto.DeleteRepoWebhookResp, error) {
 	req.Type = currentSettingType
 	_, err := settings.DeleteSetting(ctx, uc.db, &req.DeleteSettingReq, &settings.DeleteSettingData{
 		SettingRepo:              uc.settingRepo,
@@ -23,5 +23,5 @@ func (uc *WebhookUC) DeleteWebhook(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &webhookdto.DeleteWebhookResp{}, nil
+	return &repowebhookdto.DeleteRepoWebhookResp{}, nil
 }
