@@ -1,29 +1,31 @@
-package gittokendto
+package accesstokendto
 
 import (
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
-type UpdateGitTokenReq struct {
-	settings.UpdateSettingReq
-	*GitTokenBaseReq
+type TestAccessTokenConnReq struct {
+	*AccessTokenBaseReq
 }
 
-func NewUpdateGitTokenReq() *UpdateGitTokenReq {
-	return &UpdateGitTokenReq{}
+func NewTestAccessTokenConnReq() *TestAccessTokenConnReq {
+	return &TestAccessTokenConnReq{}
+}
+
+func (req *TestAccessTokenConnReq) ModifyRequest() error {
+	return req.modifyRequest()
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *UpdateGitTokenReq) Validate() apperrors.ValidationErrors {
+func (req *TestAccessTokenConnReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.validate("")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type UpdateGitTokenResp struct {
+type TestAccessTokenConnResp struct {
 	Meta *basedto.Meta `json:"meta"`
 }

@@ -1,4 +1,4 @@
-package gittokendto
+package accesstokendto
 
 import (
 	vld "github.com/tiendc/go-validator"
@@ -14,26 +14,26 @@ const (
 	maskedSecret = "****************"
 )
 
-type GetGitTokenReq struct {
+type GetAccessTokenReq struct {
 	settings.GetSettingReq
 }
 
-func NewGetGitTokenReq() *GetGitTokenReq {
-	return &GetGitTokenReq{}
+func NewGetAccessTokenReq() *GetAccessTokenReq {
+	return &GetAccessTokenReq{}
 }
 
-func (req *GetGitTokenReq) Validate() apperrors.ValidationErrors {
+func (req *GetAccessTokenReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.GetSettingReq.Validate()...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type GetGitTokenResp struct {
-	Meta *basedto.Meta `json:"meta"`
-	Data *GitTokenResp `json:"data"`
+type GetAccessTokenResp struct {
+	Meta *basedto.Meta    `json:"meta"`
+	Data *AccessTokenResp `json:"data"`
 }
 
-type GitTokenResp struct {
+type AccessTokenResp struct {
 	*settings.BaseSettingResp
 	User         string `json:"user"`
 	Token        string `json:"token"`
@@ -41,13 +41,13 @@ type GitTokenResp struct {
 	SecretMasked bool   `json:"secretMasked,omitempty"`
 }
 
-func (resp *GitTokenResp) CopyToken(field entity.EncryptedField) error {
+func (resp *AccessTokenResp) CopyToken(field entity.EncryptedField) error {
 	resp.Token = field.String()
 	return nil
 }
 
-func TransformGitToken(setting *entity.Setting) (resp *GitTokenResp, err error) {
-	config := setting.MustAsGitToken()
+func TransformAccessToken(setting *entity.Setting) (resp *AccessTokenResp, err error) {
+	config := setting.MustAsAccessToken()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
 	}

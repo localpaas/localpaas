@@ -1,4 +1,4 @@
-package gittokendto
+package accesstokendto
 
 import (
 	"strings"
@@ -13,13 +13,19 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
-type CreateGitTokenReq struct {
+const (
+	nameMaxLen  = 100
+	tokenMaxLen = 500
+	urlMaxLen   = 200
+)
+
+type CreateAccessTokenReq struct {
 	settings.CreateSettingReq
-	*GitTokenBaseReq
+	*AccessTokenBaseReq
 }
 
-type GitTokenBaseReq struct {
-	Kind     base.GitSource `json:"kind"`
+type AccessTokenBaseReq struct {
+	Kind     base.TokenKind `json:"kind"`
 	Name     string         `json:"name"`
 	User     string         `json:"user"`
 	Token    string         `json:"token"`
@@ -27,15 +33,15 @@ type GitTokenBaseReq struct {
 	ExpireAt time.Time      `json:"expireAt"`
 }
 
-func (req *GitTokenBaseReq) ToEntity() *entity.GitToken {
-	return &entity.GitToken{
+func (req *AccessTokenBaseReq) ToEntity() *entity.AccessToken {
+	return &entity.AccessToken{
 		User:    req.User,
 		Token:   entity.NewEncryptedField(req.Token),
 		BaseURL: req.BaseURL,
 	}
 }
 
-func (req *GitTokenBaseReq) modifyRequest() error {
+func (req *AccessTokenBaseReq) modifyRequest() error {
 	req.Name = strings.TrimSpace(req.Name)
 	req.User = strings.TrimSpace(req.User)
 	req.Token = strings.TrimSpace(req.Token)
@@ -43,27 +49,34 @@ func (req *GitTokenBaseReq) modifyRequest() error {
 	return nil
 }
 
-func (req *GitTokenBaseReq) validate(_ string) []vld.Validator {
-	// TODO: add validation
-	return nil
+func (req *AccessTokenBaseReq) validate(field string) (res []vld.Validator) {
+	if field != "" {
+		field += "."
+	}
+	res = append(res, basedto.ValidateStrIn(&req.Kind, true, base.AllTokenKinds, field+"kind")...)
+	res = append(res, basedto.ValidateStr(&req.Name, true, 1, nameMaxLen, field+"name")...)
+	res = append(res, basedto.ValidateStr(&req.Token, true, 1, tokenMaxLen, field+"token")...)
+	res = append(res, basedto.ValidateStr(&req.User, false, 1, nameMaxLen, field+"user")...)
+	res = append(res, basedto.ValidateStr(&req.BaseURL, false, 1, urlMaxLen, field+"baseURL")...)
+	return res
 }
 
-func NewCreateGitTokenReq() *CreateGitTokenReq {
-	return &CreateGitTokenReq{}
+func NewCreateAccessTokenReq() *CreateAccessTokenReq {
+	return &CreateAccessTokenReq{}
 }
 
-func (req *CreateGitTokenReq) ModifyRequest() error {
+func (req *CreateAccessTokenReq) ModifyRequest() error {
 	return req.modifyRequest()
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *CreateGitTokenReq) Validate() apperrors.ValidationErrors {
+func (req *CreateAccessTokenReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.validate("")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type CreateGitTokenResp struct {
+type CreateAccessTokenResp struct {
 	Meta *basedto.Meta         `json:"meta"`
 	Data *basedto.ObjectIDResp `json:"data"`
 }

@@ -1,4 +1,4 @@
-package gittokenuc
+package accesstokenuc
 
 import (
 	"context"
@@ -6,14 +6,14 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/gittokenuc/gittokendto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accesstokenuc/accesstokendto"
 )
 
-func (uc *GitTokenUC) DeleteGitToken(
+func (uc *AccessTokenUC) DeleteAccessToken(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *gittokendto.DeleteGitTokenReq,
-) (*gittokendto.DeleteGitTokenResp, error) {
+	req *accesstokendto.DeleteAccessTokenReq,
+) (*accesstokendto.DeleteAccessTokenResp, error) {
 	req.Type = currentSettingType
 	_, err := settings.DeleteSetting(ctx, uc.db, &req.DeleteSettingReq, &settings.DeleteSettingData{
 		SettingRepo:              uc.settingRepo,
@@ -23,5 +23,5 @@ func (uc *GitTokenUC) DeleteGitToken(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &gittokendto.DeleteGitTokenResp{}, nil
+	return &accesstokendto.DeleteAccessTokenResp{}, nil
 }

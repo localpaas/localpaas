@@ -44,8 +44,8 @@ func (e *Executor) calcGitAuthMethod(
 			Password: token,
 		}
 
-	case base.SettingTypeGitToken:
-		token, err := data.CredSetting.MustAsGitToken().Token.GetPlain()
+	case base.SettingTypeAccessToken:
+		token, err := data.CredSetting.MustAsAccessToken().Token.GetPlain()
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

@@ -21,7 +21,7 @@ const (
 	SettingTypeBasicAuth     SettingType = "basic-auth"
 	SettingTypeSSL           SettingType = "ssl"
 	SettingTypeGithubApp     SettingType = "github-app"
-	SettingTypeGitToken      SettingType = "git-token"
+	SettingTypeAccessToken   SettingType = "access-token"
 	SettingTypeCronJob       SettingType = "cron-job"
 	SettingTypeEmail         SettingType = "email"
 	SettingTypeRepoWebhook   SettingType = "repo-webhook"

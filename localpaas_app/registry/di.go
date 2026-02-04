@@ -45,13 +45,13 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/gitsourceuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accesstokenuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/awss3uc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/awsuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/gittokenuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/registryauthuc"
@@ -135,7 +135,7 @@ var Provides = []any{
 	basicauthuc.NewBasicAuthUC,
 	ssluc.NewSSLUC,
 	githubappuc.NewGithubAppUC,
-	gittokenuc.NewGitTokenUC,
+	accesstokenuc.NewAccessTokenUC,
 	nginxuc.NewNginxUC,
 	lpappuc.NewLpAppUC,
 	gitsourceuc.NewGitSourceUC,

@@ -36,7 +36,7 @@ const (
 	ResourceTypeBasicAuth    ResourceType = "basic-auth"
 	ResourceTypeSSL          ResourceType = "ssl"
 	ResourceTypeGithubApp    ResourceType = "github-app"
-	ResourceTypeGitToken     ResourceType = "git-token"
+	ResourceTypeAccessToken  ResourceType = "access-token"
 	ResourceTypeCronJob      ResourceType = "cron-job"
 	ResourceTypeEmail        ResourceType = "email"
 	ResourceTypeRepoWebhook  ResourceType = "repo-webhook"

@@ -1,4 +1,4 @@
-package gittokenuc
+package accesstokenuc
 
 import (
 	"context"
@@ -9,19 +9,19 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/gittokenuc/gittokendto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accesstokenuc/accesstokendto"
 )
 
 const (
-	currentSettingType    = base.SettingTypeGitToken
-	currentSettingVersion = entity.CurrentGitTokenVersion
+	currentSettingType    = base.SettingTypeAccessToken
+	currentSettingVersion = entity.CurrentAccessTokenVersion
 )
 
-func (uc *GitTokenUC) CreateGitToken(
+func (uc *AccessTokenUC) CreateAccessToken(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *gittokendto.CreateGitTokenReq,
-) (*gittokendto.CreateGitTokenResp, error) {
+	req *accesstokendto.CreateAccessTokenReq,
+) (*accesstokendto.CreateAccessTokenResp, error) {
 	req.Type = currentSettingType
 	resp, err := settings.CreateSetting(ctx, uc.db, &req.CreateSettingReq, &settings.CreateSettingData{
 		SettingRepo:   uc.settingRepo,
@@ -46,7 +46,7 @@ func (uc *GitTokenUC) CreateGitToken(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &gittokendto.CreateGitTokenResp{
+	return &accesstokendto.CreateAccessTokenResp{
 		Data: resp.Data,
 	}, nil
 }

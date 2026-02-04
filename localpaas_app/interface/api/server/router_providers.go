@@ -31,16 +31,16 @@ func (s *HTTPServer) registerProviderRoutes(apiGroup *gin.RouterGroup) *gin.Rout
 		githubAppGroup.POST("/installations/list", s.handlerRegistry.providersHandler.ListAppInstallation)
 	}
 
-	{ // git-token group
-		gitTokenGroup := providerGroup.Group("/git-tokens")
-		gitTokenGroup.GET("/:id", s.handlerRegistry.providersHandler.GetGitToken)
-		gitTokenGroup.GET("", s.handlerRegistry.providersHandler.ListGitToken)
-		gitTokenGroup.POST("", s.handlerRegistry.providersHandler.CreateGitToken)
-		gitTokenGroup.PUT("/:id", s.handlerRegistry.providersHandler.UpdateGitToken)
-		gitTokenGroup.PUT("/:id/meta", s.handlerRegistry.providersHandler.UpdateGitTokenMeta)
-		gitTokenGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteGitToken)
+	{ // access-token group
+		accessTokenGroup := providerGroup.Group("/access-tokens")
+		accessTokenGroup.GET("/:id", s.handlerRegistry.providersHandler.GetAccessToken)
+		accessTokenGroup.GET("", s.handlerRegistry.providersHandler.ListAccessToken)
+		accessTokenGroup.POST("", s.handlerRegistry.providersHandler.CreateAccessToken)
+		accessTokenGroup.PUT("/:id", s.handlerRegistry.providersHandler.UpdateAccessToken)
+		accessTokenGroup.PUT("/:id/meta", s.handlerRegistry.providersHandler.UpdateAccessTokenMeta)
+		accessTokenGroup.DELETE("/:id", s.handlerRegistry.providersHandler.DeleteAccessToken)
 		// Test connection
-		gitTokenGroup.POST("/test-conn", s.handlerRegistry.providersHandler.TestGitTokenConn)
+		accessTokenGroup.POST("/test-conn", s.handlerRegistry.providersHandler.TestAccessTokenConn)
 	}
 
 	{ // aws group

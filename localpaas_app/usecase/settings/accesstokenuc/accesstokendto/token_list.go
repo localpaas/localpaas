@@ -1,4 +1,4 @@
-package gittokendto
+package accesstokendto
 
 import (
 	vld "github.com/tiendc/go-validator"
@@ -9,12 +9,12 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
-type ListGitTokenReq struct {
+type ListAccessTokenReq struct {
 	settings.ListSettingReq
 }
 
-func NewListGitTokenReq() *ListGitTokenReq {
-	return &ListGitTokenReq{
+func NewListAccessTokenReq() *ListAccessTokenReq {
+	return &ListAccessTokenReq{
 		ListSettingReq: settings.ListSettingReq{
 			Paging: basedto.Paging{
 				// Default paging if unset by client
@@ -24,21 +24,21 @@ func NewListGitTokenReq() *ListGitTokenReq {
 	}
 }
 
-func (req *ListGitTokenReq) Validate() apperrors.ValidationErrors {
+func (req *ListAccessTokenReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.ListSettingReq.Validate()...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type ListGitTokenResp struct {
-	Meta *basedto.ListMeta `json:"meta"`
-	Data []*GitTokenResp   `json:"data"`
+type ListAccessTokenResp struct {
+	Meta *basedto.ListMeta  `json:"meta"`
+	Data []*AccessTokenResp `json:"data"`
 }
 
-func TransformGitTokens(settings []*entity.Setting) (resp []*GitTokenResp, err error) {
-	resp = make([]*GitTokenResp, 0, len(settings))
+func TransformAccessTokens(settings []*entity.Setting) (resp []*AccessTokenResp, err error) {
+	resp = make([]*AccessTokenResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformGitToken(setting)
+		item, err := TransformAccessToken(setting)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

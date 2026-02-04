@@ -1,4 +1,4 @@
-package gittokendto
+package accesstokendto
 
 import (
 	vld "github.com/tiendc/go-validator"
@@ -8,21 +8,22 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
-type DeleteGitTokenReq struct {
-	settings.DeleteSettingReq
+type UpdateAccessTokenReq struct {
+	settings.UpdateSettingReq
+	*AccessTokenBaseReq
 }
 
-func NewDeleteGitTokenReq() *DeleteGitTokenReq {
-	return &DeleteGitTokenReq{}
+func NewUpdateAccessTokenReq() *UpdateAccessTokenReq {
+	return &UpdateAccessTokenReq{}
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *DeleteGitTokenReq) Validate() apperrors.ValidationErrors {
+func (req *UpdateAccessTokenReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, req.DeleteSettingReq.Validate()...)
+	validators = append(validators, req.validate("")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type DeleteGitTokenResp struct {
+type UpdateAccessTokenResp struct {
 	Meta *basedto.Meta `json:"meta"`
 }

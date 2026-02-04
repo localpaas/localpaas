@@ -3,13 +3,13 @@ package basesettinghandler
 import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accesstokenuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/awss3uc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/awsuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/gittokenuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/registryauthuc"
@@ -32,7 +32,7 @@ type BaseSettingHandler struct {
 	BasicAuthUC    *basicauthuc.BasicAuthUC
 	SSLUC          *ssluc.SSLUC
 	GithubAppUC    *githubappuc.GithubAppUC
-	GitTokenUC     *gittokenuc.GitTokenUC
+	AccessTokenUC  *accesstokenuc.AccessTokenUC
 	CronJobUC      *cronjobuc.CronJobUC
 	SecretUC       *secretuc.SecretUC
 	EmailUC        *emailuc.EmailUC
@@ -52,7 +52,7 @@ func NewBaseSettingHandler(
 	basicAuthUC *basicauthuc.BasicAuthUC,
 	sslUC *ssluc.SSLUC,
 	githubAppUC *githubappuc.GithubAppUC,
-	gitTokenUC *gittokenuc.GitTokenUC,
+	accessTokenUC *accesstokenuc.AccessTokenUC,
 	cronJobUC *cronjobuc.CronJobUC,
 	secretUC *secretuc.SecretUC,
 	emailUC *emailuc.EmailUC,
@@ -71,7 +71,7 @@ func NewBaseSettingHandler(
 		BasicAuthUC:    basicAuthUC,
 		SSLUC:          sslUC,
 		GithubAppUC:    githubAppUC,
-		GitTokenUC:     gitTokenUC,
+		AccessTokenUC:  accessTokenUC,
 		CronJobUC:      cronJobUC,
 		SecretUC:       secretUC,
 		EmailUC:        emailUC,

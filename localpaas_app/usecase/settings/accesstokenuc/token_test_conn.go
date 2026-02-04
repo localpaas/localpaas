@@ -1,4 +1,4 @@
-package gittokenuc
+package accesstokenuc
 
 import (
 	"context"
@@ -6,24 +6,24 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/gittokenuc/gittokendto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accesstokenuc/accesstokendto"
 	"github.com/localpaas/localpaas/services/git/gitea"
 	"github.com/localpaas/localpaas/services/git/github"
 	"github.com/localpaas/localpaas/services/git/gitlab"
 )
 
-func (uc *GitTokenUC) TestGitTokenConn(
+func (uc *AccessTokenUC) TestAccessTokenConn(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *gittokendto.TestGitTokenConnReq,
-) (*gittokendto.TestGitTokenConnResp, error) {
+	req *accesstokendto.TestAccessTokenConnReq,
+) (*accesstokendto.TestAccessTokenConnResp, error) {
 	var err error
 	switch req.Kind { //nolint:exhaustive
-	case base.GitSourceGithub:
+	case base.TokenKindGithub:
 		err = uc.testGithubTokenConn(ctx, req)
-	case base.GitSourceGitlab:
+	case base.TokenKindGitlab:
 		err = uc.testGitlabTokenConn(ctx, req)
-	case base.GitSourceGitea:
+	case base.TokenKindGitea:
 		err = uc.testGiteaTokenConn(ctx, req)
 	default:
 		err = apperrors.New(apperrors.ErrUnsupported).
@@ -33,12 +33,12 @@ func (uc *GitTokenUC) TestGitTokenConn(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &gittokendto.TestGitTokenConnResp{}, nil
+	return &accesstokendto.TestAccessTokenConnResp{}, nil
 }
 
-func (uc *GitTokenUC) testGithubTokenConn(
+func (uc *AccessTokenUC) testGithubTokenConn(
 	ctx context.Context,
-	req *gittokendto.TestGitTokenConnReq,
+	req *accesstokendto.TestAccessTokenConnReq,
 ) error {
 	client, err := github.NewFromPersonalToken(req.Token)
 	if err != nil {
@@ -51,9 +51,9 @@ func (uc *GitTokenUC) testGithubTokenConn(
 	return nil
 }
 
-func (uc *GitTokenUC) testGitlabTokenConn(
+func (uc *AccessTokenUC) testGitlabTokenConn(
 	ctx context.Context,
-	req *gittokendto.TestGitTokenConnReq,
+	req *accesstokendto.TestAccessTokenConnReq,
 ) error {
 	client, err := gitlab.NewFromToken(req.Token, req.BaseURL)
 	if err != nil {
@@ -66,9 +66,9 @@ func (uc *GitTokenUC) testGitlabTokenConn(
 	return nil
 }
 
-func (uc *GitTokenUC) testGiteaTokenConn(
+func (uc *AccessTokenUC) testGiteaTokenConn(
 	ctx context.Context,
-	req *gittokendto.TestGitTokenConnReq,
+	req *accesstokendto.TestAccessTokenConnReq,
 ) error {
 	client, err := gitea.NewFromToken(req.Token, req.BaseURL)
 	if err != nil {

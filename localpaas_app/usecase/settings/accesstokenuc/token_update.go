@@ -1,4 +1,4 @@
-package gittokenuc
+package accesstokenuc
 
 import (
 	"context"
@@ -9,14 +9,14 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/gittokenuc/gittokendto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accesstokenuc/accesstokendto"
 )
 
-func (uc *GitTokenUC) UpdateGitToken(
+func (uc *AccessTokenUC) UpdateAccessToken(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *gittokendto.UpdateGitTokenReq,
-) (*gittokendto.UpdateGitTokenResp, error) {
+	req *accesstokendto.UpdateAccessTokenReq,
+) (*accesstokendto.UpdateAccessTokenResp, error) {
 	req.Type = currentSettingType
 	_, err := settings.UpdateSetting(ctx, uc.db, &req.UpdateSettingReq, &settings.UpdateSettingData{
 		SettingRepo:   uc.settingRepo,
@@ -40,5 +40,5 @@ func (uc *GitTokenUC) UpdateGitToken(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &gittokendto.UpdateGitTokenResp{}, nil
+	return &accesstokendto.UpdateAccessTokenResp{}, nil
 }

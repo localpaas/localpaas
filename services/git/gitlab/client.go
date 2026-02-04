@@ -37,10 +37,10 @@ func NewFromToken(token string, baseURL string) (*Client, error) {
 
 func NewFromSetting(setting *entity.Setting) (*Client, error) {
 	switch setting.Type { //nolint:exhaustive
-	case base.SettingTypeGitToken:
-		gitToken, err := setting.AsGitToken()
-		gitSource := base.GitSource(setting.Kind)
-		if gitSource != base.GitSourceGitlab {
+	case base.SettingTypeAccessToken:
+		gitToken, err := setting.AsAccessToken()
+		tokenKind := base.TokenKind(setting.Kind)
+		if tokenKind != base.TokenKindGitlab {
 			return nil, apperrors.New(ErrAccessProviderInvalid).
 				WithMsgLog("git source '%s' is invalid", setting.Kind)
 		}

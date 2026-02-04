@@ -1,4 +1,4 @@
-package gittokenuc
+package accesstokenuc
 
 import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
@@ -6,20 +6,20 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
 )
 
-type GitTokenUC struct {
+type AccessTokenUC struct {
 	db                       *database.DB
 	settingRepo              repository.SettingRepo
 	projectSharedSettingRepo repository.ProjectSharedSettingRepo
 	settingService           settingservice.SettingService
 }
 
-func NewGitTokenUC(
+func NewAccessTokenUC(
 	db *database.DB,
 	settingRepo repository.SettingRepo,
 	projectSharedSettingRepo repository.ProjectSharedSettingRepo,
 	settingService settingservice.SettingService,
-) *GitTokenUC {
-	return &GitTokenUC{
+) *AccessTokenUC {
+	return &AccessTokenUC{
 		db:                       db,
 		settingRepo:              settingRepo,
 		projectSharedSettingRepo: projectSharedSettingRepo,

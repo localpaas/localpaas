@@ -7,13 +7,13 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accesstokenuc/accesstokendto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/awss3uc/awss3dto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/awsuc/awsdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc/basicauthdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc/cronjobdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc/emaildto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc/githubappdto"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/gittokenuc/gittokendto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc/imservicedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc/oauthdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/registryauthuc/registryauthdto"
@@ -82,10 +82,10 @@ func (h *BaseSettingHandler) CreateSetting(
 		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.GithubAppUC.CreateGithubApp(reqCtx, auth, r) }
 
-	case base.ResourceTypeGitToken:
-		r := gittokendto.NewCreateGitTokenReq()
+	case base.ResourceTypeAccessToken:
+		r := accesstokendto.NewCreateAccessTokenReq()
 		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
-		req, ucFunc = r, func() (any, error) { return h.GitTokenUC.CreateGitToken(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.AccessTokenUC.CreateAccessToken(reqCtx, auth, r) }
 
 	case base.ResourceTypeOAuth:
 		r := oauthdto.NewCreateOAuthReq()

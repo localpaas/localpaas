@@ -87,12 +87,12 @@ func NewFromSetting(setting *entity.Setting) (*Client, error) {
 		}
 		return NewFromApp(githubApp.AppID, githubApp.InstallationID, reflectutil.UnsafeStrToBytes(privateKey))
 
-	case base.SettingTypeGitToken:
-		if base.GitSource(setting.Kind) != base.GitSourceGithub {
+	case base.SettingTypeAccessToken:
+		if base.TokenKind(setting.Kind) != base.TokenKindGithub {
 			return nil, apperrors.New(ErrAccessProviderInvalid).
-				WithMsgLog("git source '%s' is invalid", setting.Kind)
+				WithMsgLog("token kind '%s' is unsupported", setting.Kind)
 		}
-		gitToken, err := setting.AsGitToken()
+		gitToken, err := setting.AsAccessToken()
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

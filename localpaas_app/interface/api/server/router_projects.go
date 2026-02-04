@@ -55,14 +55,14 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		githubAppGroup.DELETE("/:id", s.handlerRegistry.projectHandler.DeleteGithubApp)
 	}
 
-	{ // git-token group
-		gitTokenGroup := projectProviderGroup.Group("/git-tokens")
-		gitTokenGroup.GET("/:id", s.handlerRegistry.projectHandler.GetGitToken)
-		gitTokenGroup.GET("", s.handlerRegistry.projectHandler.ListGitToken)
-		gitTokenGroup.POST("", s.handlerRegistry.projectHandler.CreateGitToken)
-		gitTokenGroup.PUT("/:id", s.handlerRegistry.projectHandler.UpdateGitToken)
-		gitTokenGroup.PUT("/:id/meta", s.handlerRegistry.projectHandler.UpdateGitTokenMeta)
-		gitTokenGroup.DELETE("/:id", s.handlerRegistry.projectHandler.DeleteGitToken)
+	{ // access-token group
+		accessTokenGroup := projectProviderGroup.Group("/access-tokens")
+		accessTokenGroup.GET("/:id", s.handlerRegistry.projectHandler.GetAccessToken)
+		accessTokenGroup.GET("", s.handlerRegistry.projectHandler.ListAccessToken)
+		accessTokenGroup.POST("", s.handlerRegistry.projectHandler.CreateAccessToken)
+		accessTokenGroup.PUT("/:id", s.handlerRegistry.projectHandler.UpdateAccessToken)
+		accessTokenGroup.PUT("/:id/meta", s.handlerRegistry.projectHandler.UpdateAccessTokenMeta)
+		accessTokenGroup.DELETE("/:id", s.handlerRegistry.projectHandler.DeleteAccessToken)
 	}
 
 	{ // aws group

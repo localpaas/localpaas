@@ -17,7 +17,7 @@ import (
 // @Tags    git_source
 // @Produce json
 // @Id      listGitRepo
-// @Param   settingID path string true "github-app ID or git-token ID"
+// @Param   settingID path string true "github-app ID or access-token ID"
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
@@ -35,7 +35,7 @@ func (h *GitSourceHandler) ListGitRepo(ctx *gin.Context) {
 
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceModule: base.ResourceModuleSettings,
-		ResourceType:   base.ResourceTypeGitToken,
+		ResourceType:   base.ResourceTypeAccessToken,
 		Action:         base.ActionTypeRead,
 	})
 	if err != nil {
