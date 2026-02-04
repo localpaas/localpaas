@@ -3,14 +3,12 @@ package base
 type GitSource string
 
 const (
-	GitSourceGithub       GitSource = "github"
-	GitSourceGitlab       GitSource = "gitlab"
-	GitSourceGitlabCustom GitSource = "gitlab-custom"
-	GitSourceGitea        GitSource = "gitea"
-	GitSourceBitbucket    GitSource = "bitbucket"
+	GitSourceGithub    GitSource = "github"
+	GitSourceGitlab    GitSource = "gitlab"
+	GitSourceGitea     GitSource = "gitea"
+	GitSourceBitbucket GitSource = "bitbucket"
 )
 
 var (
-	AllGitSources = []GitSource{GitSourceGithub, GitSourceGitlab, GitSourceGitlabCustom,
-		GitSourceGitea, GitSourceBitbucket}
+	AllGitSources = []GitSource{GitSourceGithub, GitSourceGitlab, GitSourceGitea, GitSourceBitbucket}
 )

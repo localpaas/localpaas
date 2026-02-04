@@ -120,6 +120,22 @@ func NewInUseNT(name string) AppError { // NT: non translation param
 	return New(ErrResourceInUse).WithNTParam("Name", name)
 }
 
+// NewInactive return AppError for error ResourceInactive
+func NewInactive(name string) AppError {
+	return New(ErrResourceInactive).WithParam("Name", name)
+}
+func NewInactiveNT(name string) AppError { // NT: non translation param
+	return New(ErrResourceInactive).WithNTParam("Name", name)
+}
+
+// NewMissing return AppError for error ResourceMissing
+func NewMissing(name string) AppError {
+	return New(ErrResourceMissing).WithParam("Name", name)
+}
+func NewMissingNT(name string) AppError { // NT: non translation param
+	return New(ErrResourceMissing).WithNTParam("Name", name)
+}
+
 // NewTypeInvalid return AppError for error TypeInvalid
 func NewTypeInvalid() AppError {
 	return New(ErrTypeInvalid)

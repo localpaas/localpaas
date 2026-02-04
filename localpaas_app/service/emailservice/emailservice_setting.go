@@ -27,6 +27,6 @@ func (s *emailService) GetDefaultSystemEmail(
 	if len(settings) == 1 || (len(settings) > 1 && settings[0].Default) {
 		return settings[0], nil
 	}
-	return nil, apperrors.NewNotFound("EmailSetting").
+	return nil, apperrors.NewNotFound("Email setting").
 		WithMsgLog("default system email setting not found")
 }

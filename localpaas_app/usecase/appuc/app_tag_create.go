@@ -62,7 +62,7 @@ func (uc *AppUC) loadAppTagDataForAddNew(
 	nextDisplayOrder := 0
 	for _, tag := range app.Tags {
 		if tag.DeletedAt.IsZero() && strings.EqualFold(tag.Tag, req.Tag) {
-			return apperrors.NewAlreadyExist("AppTag")
+			return apperrors.NewAlreadyExist("App tag")
 		}
 		nextDisplayOrder = max(nextDisplayOrder, tag.DisplayOrder+1)
 	}

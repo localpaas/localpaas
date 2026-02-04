@@ -18,10 +18,11 @@ const (
 type DeployAppReq struct {
 	AppToken string `json:"-"`
 
-	ImageSource   *DeploymentImageSourceReq   `json:"imageSource"`
-	RepoSource    *DeploymentRepoSourceReq    `json:"repoSource"`
-	TarballSource *DeploymentTarballSourceReq `json:"tarballSource"`
-	ActiveMethod  base.DeploymentMethod       `json:"activeMethod"`
+	ImageSource         *DeploymentImageSourceReq   `json:"imageSource"`
+	RepoSource          *DeploymentRepoSourceReq    `json:"repoSource"`
+	TarballSource       *DeploymentTarballSourceReq `json:"tarballSource"`
+	ActiveMethod        base.DeploymentMethod       `json:"activeMethod"`
+	DeploymentTriggerID string                      `json:"deploymentTriggerID"`
 }
 
 func (req *DeployAppReq) ApplyTo(setting *entity.AppDeploymentSettings) error {

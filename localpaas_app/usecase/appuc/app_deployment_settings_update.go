@@ -157,6 +157,11 @@ func (uc *AppUC) prepareUpdatingAppDeploymentSettings(
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+	// Set trigger for the deployment
+	deployment.Trigger = &entity.AppDeploymentTrigger{
+		Source: base.DeploymentTriggerSourceUser,
+	}
+
 	persistingData.UpsertingDeployments = append(persistingData.UpsertingDeployments, deployment)
 	persistingData.UpsertingTasks = append(persistingData.UpsertingTasks, deploymentTask)
 

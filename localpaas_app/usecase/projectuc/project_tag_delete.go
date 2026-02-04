@@ -71,7 +71,7 @@ func (uc *ProjectUC) loadProjectTagDataForDelete(
 		}
 	}
 	if len(data.DeletingProjectTags) != len(req.Tags) {
-		return apperrors.NewNotFound("ProjectTag").
+		return apperrors.NewNotFound("Project tag").
 			WithMsgLog("one or more tags not found in project")
 	}
 

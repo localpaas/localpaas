@@ -142,6 +142,12 @@ func (uc *WebhookUC) prepareUpdatingAppDeploymentSettings(
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+	// Set trigger for the deployment
+	deployment.Trigger = &entity.AppDeploymentTrigger{
+		Source: base.DeploymentTriggerSourceAPIWebhook,
+		ID:     req.DeploymentTriggerID,
+	}
+
 	persistingData.UpsertingDeployments = append(persistingData.UpsertingDeployments, deployment)
 	persistingData.UpsertingTasks = append(persistingData.UpsertingTasks, deploymentTask)
 

@@ -10,12 +10,12 @@ import (
 )
 
 func (uc *WebhookUC) processGitlabWebhook(
-	req *webhookdto.HandleGitWebhookReq,
-	data *eventData,
+	req *webhookdto.HandleRepoWebhookReq,
+	data *repoEventData,
 ) error {
 	hook, err := gitlab.New()
 	if err != nil {
-		return nil //nolint
+		return apperrors.Wrap(err)
 	}
 	payload, err := hook.Parse(req.Request, gitlab.PushEvents)
 	if err != nil {
@@ -28,9 +28,10 @@ func (uc *WebhookUC) processGitlabWebhook(
 	switch payload.(type) { //nolint
 	case gitlab.PushEventPayload:
 		push, _ := payload.(gitlab.PushEventPayload) //nolint
-		data.Push = &pushEventData{
-			RepoRef: push.Ref,
-			RepoURL: push.Repository.GitHTTPURL,
+		data.Push = &repoPushEventData{
+			RepoRef:  push.Ref,
+			RepoURL:  push.Repository.GitHTTPURL,
+			ChangeID: push.After,
 		}
 	}
 	return nil

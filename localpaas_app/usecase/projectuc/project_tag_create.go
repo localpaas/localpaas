@@ -62,7 +62,7 @@ func (uc *ProjectUC) loadProjectTagDataForAddNew(
 	nextDisplayOrder := 0
 	for _, projectTag := range project.Tags {
 		if projectTag.DeletedAt.IsZero() && strings.EqualFold(projectTag.Tag, req.Tag) {
-			return apperrors.NewAlreadyExist("ProjectTag")
+			return apperrors.NewAlreadyExist("Project tag")
 		}
 		nextDisplayOrder = max(nextDisplayOrder, projectTag.DisplayOrder+1)
 	}

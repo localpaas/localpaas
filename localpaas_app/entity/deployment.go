@@ -12,7 +12,7 @@ const (
 
 var (
 	DeploymentUpsertingConflictCols = []string{"id"}
-	DeploymentUpsertingUpdateCols   = []string{"app_id", "status", "settings", "output",
+	DeploymentUpsertingUpdateCols   = []string{"app_id", "status", "settings", "trigger", "output",
 		"version", "update_ver", "started_at", "ended_at", "updated_at", "deleted_at"}
 )
 
@@ -21,6 +21,7 @@ type Deployment struct {
 	AppID     string
 	Status    base.DeploymentStatus
 	Settings  *AppDeploymentSettings
+	Trigger   *AppDeploymentTrigger
 	Output    *AppDeploymentOutput
 	Version   int
 	UpdateVer int
@@ -32,12 +33,6 @@ type Deployment struct {
 	DeletedAt time.Time `bun:",soft_delete,nullzero"`
 
 	App *App `bun:"rel:belongs-to,join:app_id=id"`
-}
-
-type AppDeploymentOutput struct {
-	CommitHash    string   `json:"commitHash,omitempty"`
-	CommitMessage string   `json:"commitMessage,omitempty"`
-	ImageTags     []string `json:"imageTags,omitempty"`
 }
 
 // GetID implements IDEntity interface
@@ -52,4 +47,15 @@ func (d *Deployment) CanCancel() bool {
 		return false
 	}
 	return true
+}
+
+type AppDeploymentTrigger struct {
+	Source base.DeploymentTriggerSource `json:"source"`
+	ID     string                       `json:"id"`
+}
+
+type AppDeploymentOutput struct {
+	CommitHash    string   `json:"commitHash,omitempty"`
+	CommitMessage string   `json:"commitMessage,omitempty"`
+	ImageTags     []string `json:"imageTags,omitempty"`
 }

@@ -11,12 +11,12 @@ import (
 )
 
 func (uc *WebhookUC) processBitbucketWebhook(
-	req *webhookdto.HandleGitWebhookReq,
-	data *eventData,
+	req *webhookdto.HandleRepoWebhookReq,
+	data *repoEventData,
 ) error {
 	hook, err := bitbucket.New()
 	if err != nil {
-		return nil //nolint
+		return apperrors.Wrap(err)
 	}
 	payload, err := hook.Parse(req.Request, bitbucket.RepoPushEvent)
 	if err != nil {
@@ -29,9 +29,10 @@ func (uc *WebhookUC) processBitbucketWebhook(
 	switch payload.(type) { //nolint
 	case bitbucket.RepoPushPayload:
 		push, _ := payload.(bitbucket.RepoPushPayload) //nolint
-		data.Push = &pushEventData{
-			RepoRef: string(githelper.NormalizeRepoRef(push.Push.Changes[0].New.Name)),
-			RepoURL: push.Repository.Links.HTML.Href,
+		data.Push = &repoPushEventData{
+			RepoRef:  string(githelper.NormalizeRepoRef(push.Push.Changes[0].New.Name)),
+			RepoURL:  push.Repository.Links.HTML.Href,
+			ChangeID: push.Push.Changes[len(push.Push.Changes)-1].New.Target.Hash,
 		}
 	}
 	return nil

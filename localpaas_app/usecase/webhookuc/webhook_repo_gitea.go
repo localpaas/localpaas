@@ -10,12 +10,12 @@ import (
 )
 
 func (uc *WebhookUC) processGiteaWebhook(
-	req *webhookdto.HandleGitWebhookReq,
-	data *eventData,
+	req *webhookdto.HandleRepoWebhookReq,
+	data *repoEventData,
 ) error {
 	hook, err := gitea.New()
 	if err != nil {
-		return nil //nolint
+		return apperrors.Wrap(err)
 	}
 	payload, err := hook.Parse(req.Request, gitea.PushEvent)
 	if err != nil {
@@ -28,9 +28,10 @@ func (uc *WebhookUC) processGiteaWebhook(
 	switch payload.(type) { //nolint
 	case gitea.PushPayload:
 		push, _ := payload.(gitea.PushPayload) //nolint
-		data.Push = &pushEventData{
-			RepoRef: push.Ref,
-			RepoURL: push.Repo.HTMLURL,
+		data.Push = &repoPushEventData{
+			RepoRef:  push.Ref,
+			RepoURL:  push.Repo.HTMLURL,
+			ChangeID: push.After,
 		}
 	}
 	return nil

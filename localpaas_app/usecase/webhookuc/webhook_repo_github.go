@@ -10,12 +10,12 @@ import (
 )
 
 func (uc *WebhookUC) processGithubWebhook(
-	req *webhookdto.HandleGitWebhookReq,
-	data *eventData,
+	req *webhookdto.HandleRepoWebhookReq,
+	data *repoEventData,
 ) error {
 	hook, err := github.New()
 	if err != nil {
-		return nil //nolint
+		return apperrors.Wrap(err)
 	}
 	payload, err := hook.Parse(req.Request, github.PushEvent)
 	if err != nil {
@@ -28,9 +28,10 @@ func (uc *WebhookUC) processGithubWebhook(
 	switch payload.(type) { //nolint
 	case github.PushPayload:
 		push, _ := payload.(github.PushPayload) //nolint
-		data.Push = &pushEventData{
-			RepoRef: push.Ref,
-			RepoURL: push.Repository.HTMLURL,
+		data.Push = &repoPushEventData{
+			RepoRef:  push.Ref,
+			RepoURL:  push.Repository.HTMLURL,
+			ChangeID: push.After,
 		}
 	}
 	return nil

@@ -7,6 +7,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/cryptoutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
 )
@@ -20,16 +21,21 @@ type EncryptedField struct {
 	decrypted string
 }
 
-func (s *EncryptedField) MarshalJSON() ([]byte, error) {
-	encrypted, err := s.encrypt()
-	if err != nil {
-		return nil, apperrors.Wrap(err)
+func (s *EncryptedField) MarshalJSON() (res []byte, err error) {
+	var encrypted string
+	if config.Current.Secret != "" {
+		encrypted, err = s.encrypt()
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	} else {
+		encrypted = s.encrypted
 	}
 	return reflectutil.UnsafeStrToBytes(gofn.StringWrap(encrypted, "\"")), nil
 }
 
 func (s *EncryptedField) UnmarshalJSON(data []byte) error {
-	s.encrypted = gofn.StringUnwrap(reflectutil.UnsafeBytesToStr(data), "\"")
+	s.Set(gofn.StringUnwrap(reflectutil.UnsafeBytesToStr(data), "\""))
 	return nil
 }
 
@@ -83,7 +89,10 @@ func (s *EncryptedField) encrypt() (string, error) {
 	if s.encrypted != "" {
 		return s.encrypted, nil
 	}
-	encrypted, err := cryptoutil.EncryptBase64(s.decrypted, defaultSaltLen)
+	if config.Current.Secret == "" {
+		return "", apperrors.NewMissing("Encryption secret")
+	}
+	encrypted, err := cryptoutil.EncryptBase64(s.decrypted, defaultSaltLen, config.Current.Secret)
 	if err != nil {
 		return "", apperrors.Wrap(err)
 	}
@@ -96,7 +105,10 @@ func (s *EncryptedField) decrypt() (string, error) {
 	if s.decrypted != "" {
 		return s.decrypted, nil
 	}
-	decrypted, err := cryptoutil.DecryptBase64(s.encrypted)
+	if config.Current.Secret == "" {
+		return "", apperrors.NewMissing("Encryption secret")
+	}
+	decrypted, err := cryptoutil.DecryptBase64(s.encrypted, config.Current.Secret)
 	if err != nil {
 		return "", apperrors.Wrap(err)
 	}

@@ -14,26 +14,26 @@ const (
 	secretMaxLen = 100
 )
 
-type HandleGitWebhookReq struct {
-	Request   *http.Request  `json:"-"`
-	GitSource base.GitSource `json:"-"`
-	Secret    string         `json:"-"`
+type HandleRepoWebhookReq struct {
+	Request     *http.Request    `json:"-"`
+	WebhookKind base.WebhookKind `json:"-"`
+	Secret      string           `json:"-"`
 }
 
-func NewHandleGitWebhookReq() *HandleGitWebhookReq {
-	return &HandleGitWebhookReq{}
+func NewHandleRepoWebhookReq() *HandleRepoWebhookReq {
+	return &HandleRepoWebhookReq{}
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *HandleGitWebhookReq) Validate() apperrors.ValidationErrors {
+func (req *HandleRepoWebhookReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, basedto.ValidateStrIn(&req.GitSource, true,
-		base.AllGitSources, "gitSource")...)
+	validators = append(validators, basedto.ValidateStrIn(&req.WebhookKind, true,
+		base.AllWebhookKinds, "webhookKind")...)
 	validators = append(validators, basedto.ValidateStr(&req.Secret, true,
 		1, secretMaxLen, "secret")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type HandleGitWebhookResp struct {
+type HandleRepoWebhookResp struct {
 	Meta *basedto.Meta `json:"meta"`
 }

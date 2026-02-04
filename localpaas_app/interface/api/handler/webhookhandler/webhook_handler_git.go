@@ -10,21 +10,21 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/webhookuc/webhookdto"
 )
 
-// HandleGitWebhook Handles Git webhook
-// @Summary Handles Git webhook
-// @Description Handles Git webhook
+// HandleRepoWebhook Handles Repo webhook
+// @Summary Handles Repo webhook
+// @Description Handles Repo webhook
 // @Tags    webhooks
 // @Produce json
-// @Id      handleGitWebhook
-// @Param   gitSource path string true "git source"
+// @Id      handleRepoWebhook
+// @Param   kind path string true "webhook kind"
 // @Param   secret path string true "webhook secret"
-// @Param   body body webhookdto.HandleGitWebhookReq true "request data"
-// @Success 200 {object} webhookdto.HandleGitWebhookResp
+// @Param   body body webhookdto.HandleRepoWebhookReq true "request data"
+// @Success 200 {object} webhookdto.HandleRepoWebhookResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /webhooks/{gitSource}/{secret} [post]
-func (h *WebhookHandler) HandleGitWebhook(ctx *gin.Context) {
-	gitSource, err := h.ParseStringParam(ctx, "gitSource")
+// @Router  /webhooks/{kind}/{secret} [post]
+func (h *WebhookHandler) HandleRepoWebhook(ctx *gin.Context) {
+	kind, err := h.ParseStringParam(ctx, "kind")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -35,12 +35,12 @@ func (h *WebhookHandler) HandleGitWebhook(ctx *gin.Context) {
 		return
 	}
 
-	req := webhookdto.NewHandleGitWebhookReq()
+	req := webhookdto.NewHandleRepoWebhookReq()
 	req.Request = ctx.Request
-	req.GitSource = base.GitSource(gitSource)
+	req.WebhookKind = base.WebhookKind(kind)
 	req.Secret = secret
 
-	resp, err := h.webhookUC.HandleGitWebhook(h.RequestCtx(ctx), req)
+	resp, err := h.webhookUC.HandleRepoWebhook(h.RequestCtx(ctx), req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

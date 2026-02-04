@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS deployments
     status           VARCHAR NOT NULL CONSTRAINT chk_status CHECK
                         (status IN ('not-started','in-progress','canceled','failed','done')) DEFAULT 'not-started',
     settings         JSON NOT NULL,
+    trigger          JSONB NOT NULL,
     output           JSON NULL,
     version          INT2 NOT NULL DEFAULT 1,
     update_ver       INT4 NOT NULL DEFAULT 1,
@@ -21,6 +22,7 @@ CREATE TABLE IF NOT EXISTS deployments
 
 CREATE INDEX idx_deployments_app_id ON deployments(app_id);
 CREATE INDEX idx_deployments_status ON deployments(status);
+CREATE INDEX idx_deployments_created_at ON deployments(created_at);
 CREATE INDEX idx_deployments_deleted_at ON deployments(deleted_at);
 
 -- +migrate Down

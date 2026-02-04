@@ -10,24 +10,19 @@ func NormalizeRepoRef(ref string) plumbing.ReferenceName {
 	if ref == "" {
 		return "HEAD"
 	}
+	if strings.HasPrefix(ref, "refs/") {
+		return plumbing.ReferenceName(ref)
+	}
 
 	// Tags ref
 	if strings.HasPrefix(ref, "tags/") {
 		ref = strings.TrimPrefix(ref, "tags/")
 		return plumbing.NewTagReferenceName(ref)
 	}
-	if strings.HasPrefix(ref, "refs/tags/") {
-		ref = strings.TrimPrefix(ref, "refs/tags/")
-		return plumbing.NewTagReferenceName(ref)
-	}
 
 	// Heads ref
 	if strings.HasPrefix(ref, "heads/") {
 		ref = strings.TrimPrefix(ref, "heads/")
-		return plumbing.NewBranchReferenceName(ref)
-	}
-	if strings.HasPrefix(ref, "refs/heads/") {
-		ref = strings.TrimPrefix(ref, "refs/heads/")
 		return plumbing.NewBranchReferenceName(ref)
 	}
 	return plumbing.NewBranchReferenceName(ref)

@@ -16402,14 +16402,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/webhooks/{gitSource}/{secret}" : {
+    "/webhooks/{kind}/{secret}" : {
       "post" : {
-        "description" : "Handles Git webhook",
-        "operationId" : "handleGitWebhook",
+        "description" : "Handles Repo webhook",
+        "operationId" : "handleRepoWebhook",
         "parameters" : [ {
-          "description" : "git source",
+          "description" : "webhook kind",
           "in" : "path",
-          "name" : "gitSource",
+          "name" : "kind",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -16427,7 +16427,7 @@
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.HandleGitWebhookReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.HandleRepoWebhookReq"
               }
             }
           },
@@ -16439,7 +16439,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.HandleGitWebhookResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.HandleRepoWebhookResp"
                 }
               }
             },
@@ -16466,7 +16466,7 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Handles Git webhook",
+        "summary" : "Handles Repo webhook",
         "tags" : [ "webhooks" ],
         "x-codegen-request-body-name" : "body"
       }
@@ -16577,9 +16577,9 @@
         "x-enum-varnames" : [ "EmailKindSMTP", "EmailKindHTTP" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.GitSource" : {
-        "enum" : [ "github", "gitlab", "gitlab-custom", "gitea", "bitbucket" ],
+        "enum" : [ "github", "gitlab", "gitea", "bitbucket" ],
         "type" : "string",
-        "x-enum-varnames" : [ "GitSourceGithub", "GitSourceGitlab", "GitSourceGitlabCustom", "GitSourceGitea", "GitSourceBitbucket" ]
+        "x-enum-varnames" : [ "GitSourceGithub", "GitSourceGitlab", "GitSourceGitea", "GitSourceBitbucket" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.IMServiceKind" : {
         "enum" : [ "slack", "discord" ],
@@ -16607,9 +16607,9 @@
         "x-enum-varnames" : [ "NodeStatusUnknown", "NodeStatusDown", "NodeStatusReady", "NodeStatusDisconnected" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.OAuthKind" : {
-        "enum" : [ "github", "github-app", "gitlab", "gitea", "google", "gitlab-custom" ],
+        "enum" : [ "github", "github-app", "gitlab", "gitea", "google" ],
         "type" : "string",
-        "x-enum-varnames" : [ "OAuthKindGithub", "OAuthKindGithubApp", "OAuthKindGitlab", "OAuthKindGitea", "OAuthKindGoogle", "OAuthKindGitlabCustom" ]
+        "x-enum-varnames" : [ "OAuthKindGithub", "OAuthKindGithubApp", "OAuthKindGitlab", "OAuthKindGitea", "OAuthKindGoogle" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.ProjectStatus" : {
         "enum" : [ "active", "disabled", "deleting" ],
@@ -17018,10 +17018,10 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
         "format" : "int64",
         "type" : "integer",
-        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
+        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentReq" : {
         "type" : "object"
@@ -23597,6 +23597,9 @@
           "activeMethod" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.DeploymentMethod"
           },
+          "deploymentTriggerID" : {
+            "type" : "string"
+          },
           "imageSource" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.DeploymentImageSourceReq"
           },
@@ -23607,7 +23610,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.DeploymentTarballSourceReq"
           }
         },
-        "required" : [ "activeMethod", "imageSource", "repoSource", "tarballSource" ],
+        "required" : [ "activeMethod", "deploymentTriggerID", "imageSource", "repoSource", "tarballSource" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.DeployAppResp" : {
@@ -23654,10 +23657,10 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.DeploymentTarballSourceReq" : {
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.HandleGitWebhookReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.HandleRepoWebhookReq" : {
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.HandleGitWebhookResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.HandleRepoWebhookResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"

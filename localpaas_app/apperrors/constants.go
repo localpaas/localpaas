@@ -22,6 +22,7 @@ var (
 	ErrNonDeletable         = errors.New("ERR_NON_DELETABLE")
 	ErrResourceInUse        = errors.New("ERR_RESOURCE_IN_USE")
 	ErrResourceInactive     = errors.New("ERR_RESOURCE_INACTIVE")
+	ErrResourceMissing      = errors.New("ERR_RESOURCE_MISSING")
 	ErrRequestTooFrequently = errors.New("ERR_REQUEST_TOO_FREQUENTLY")
 	ErrActionNotAllowed     = errors.New("ERR_ACTION_NOT_ALLOWED")
 	ErrActionFailed         = errors.New("ERR_ACTION_FAILED")
@@ -130,6 +131,7 @@ var errorStatusMap = map[error]int{
 	ErrNonDeletable:         http.StatusUnprocessableEntity,
 	ErrResourceInUse:        http.StatusConflict,
 	ErrResourceInactive:     http.StatusNotAcceptable,
+	ErrResourceMissing:      http.StatusNotAcceptable,
 	ErrRequestTooFrequently: http.StatusForbidden,
 	ErrActionNotAllowed:     http.StatusForbidden,
 	ErrActionFailed:         http.StatusUnprocessableEntity,

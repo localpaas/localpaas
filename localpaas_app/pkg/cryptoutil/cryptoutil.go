@@ -13,7 +13,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/config"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
 )
 
 const (
@@ -27,7 +27,7 @@ func makeKey(secret, salt []byte) []byte {
 	return argon2.IDKey(secret, salt, hashIteration, hashMemory, hashThread, keyLen)
 }
 
-func EncryptEx(plaintext, salt, secret []byte) ([]byte, error) {
+func Encrypt(plaintext, salt, secret []byte) ([]byte, error) {
 	block, err := aes.NewCipher(makeKey(secret, salt))
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -47,18 +47,15 @@ func EncryptEx(plaintext, salt, secret []byte) ([]byte, error) {
 	return ciphertext, nil
 }
 
-func Encrypt(plaintext, salt []byte) ([]byte, error) {
-	return EncryptEx(plaintext, salt, []byte(config.Current.Secret))
-}
-
 // EncryptBase64 this encrypts the input and returns a string in form: `lpsalt:<salt> <secret>`
-func EncryptBase64(plaintext string, saltLen int) (ciphertext string, err error) {
+func EncryptBase64(plaintext string, saltLen int, secret string) (ciphertext string, err error) {
 	if saltLen <= 0 {
 		return plaintext, nil
 	}
 
 	saltBytes := gofn.RandToken(saltLen)
-	ciphertextBytes, err := Encrypt([]byte(plaintext), saltBytes)
+	ciphertextBytes, err := Encrypt(reflectutil.UnsafeStrToBytes(plaintext), saltBytes,
+		reflectutil.UnsafeStrToBytes(secret))
 	if err != nil {
 		return "", apperrors.Wrap(err)
 	}
@@ -67,7 +64,7 @@ func EncryptBase64(plaintext string, saltLen int) (ciphertext string, err error)
 	return PackSecret(ciphertext, salt), nil
 }
 
-func DecryptEx(ciphertext, salt, secret []byte) ([]byte, error) {
+func Decrypt(ciphertext, salt, secret []byte) ([]byte, error) {
 	block, err := aes.NewCipher(makeKey(secret, salt))
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -92,13 +89,9 @@ func DecryptEx(ciphertext, salt, secret []byte) ([]byte, error) {
 	return plaintext, nil
 }
 
-func Decrypt(ciphertext, salt []byte) ([]byte, error) {
-	return DecryptEx(ciphertext, salt, []byte(config.Current.Secret))
-}
-
 // DecryptBase64 this decrypts the input in form: `lpsalt:<salt> <secret>`
-func DecryptBase64(secret string) (plaintext string, err error) {
-	ciphertext, salt := UnpackSecret(secret)
+func DecryptBase64(encryptedText, secret string) (plaintext string, err error) {
+	ciphertext, salt := UnpackSecret(encryptedText)
 	if salt == "" {
 		return ciphertext, nil
 	}
@@ -112,7 +105,7 @@ func DecryptBase64(secret string) (plaintext string, err error) {
 		return "", apperrors.Wrap(err)
 	}
 
-	plaintextBytes, err := Decrypt(ciphertextBytes, saltBytes)
+	plaintextBytes, err := Decrypt(ciphertextBytes, saltBytes, reflectutil.UnsafeStrToBytes(secret))
 	if err != nil {
 		return "", apperrors.Wrap(err)
 	}

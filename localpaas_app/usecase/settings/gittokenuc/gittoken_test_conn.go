@@ -21,7 +21,7 @@ func (uc *GitTokenUC) TestGitTokenConn(
 	switch req.Kind { //nolint:exhaustive
 	case base.GitSourceGithub:
 		err = uc.testGithubTokenConn(ctx, req)
-	case base.GitSourceGitlab, base.GitSourceGitlabCustom:
+	case base.GitSourceGitlab:
 		err = uc.testGitlabTokenConn(ctx, req)
 	case base.GitSourceGitea:
 		err = uc.testGiteaTokenConn(ctx, req)

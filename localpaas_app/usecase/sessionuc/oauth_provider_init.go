@@ -32,17 +32,20 @@ func (uc *SessionUC) InitOAuthProvider(
 	switch base.OAuthKind(setting.Kind) {
 	case base.OAuthKindGithub, base.OAuthKindGithubApp:
 		provider = github.New(oauth.ClientID, clientSecret, callbackURL, oauth.Scopes...)
+
 	case base.OAuthKindGitlab:
-		provider = gitlab.New(oauth.ClientID, clientSecret, callbackURL, oauth.Scopes...)
+		if oauth.AuthURL == "" {
+			provider = gitlab.New(oauth.ClientID, clientSecret, callbackURL, oauth.Scopes...)
+		} else { // custom gitlab
+			provider = gitlab.NewCustomisedURL(oauth.ClientID, clientSecret, callbackURL,
+				oauth.AuthURL, oauth.TokenURL, oauth.ProfileURL, oauth.Scopes...)
+		}
+
 	case base.OAuthKindGitea:
 		provider = gitea.New(oauth.ClientID, clientSecret, callbackURL, oauth.Scopes...)
+
 	case base.OAuthKindGoogle:
 		provider = google.New(oauth.ClientID, clientSecret, callbackURL, oauth.Scopes...)
-
-	// Custom types
-	case base.OAuthKindGitlabCustom:
-		provider = gitlab.NewCustomisedURL(oauth.ClientID, clientSecret, callbackURL,
-			oauth.AuthURL, oauth.TokenURL, oauth.ProfileURL, oauth.Scopes...)
 	}
 	provider.SetName(req.Name)
 	goth.UseProviders(provider)

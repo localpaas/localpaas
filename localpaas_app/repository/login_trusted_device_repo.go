@@ -43,7 +43,7 @@ func (repo *loginTrustedDeviceRepo) GetByUserAndDevice(
 
 	err := query.Scan(ctx)
 	if trustedDevice == nil || errors.Is(err, sql.ErrNoRows) {
-		return nil, apperrors.NewNotFound("LoginTrustedDevice").WithCause(err).
+		return nil, apperrors.NewNotFound("Login trusted device").WithCause(err).
 			WithMsgLog("user id: %s, device id: %s", userID, deviceID)
 	}
 	if err != nil {

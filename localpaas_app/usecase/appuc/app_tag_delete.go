@@ -72,7 +72,7 @@ func (uc *AppUC) loadAppTagDataForDelete(
 		}
 	}
 	if len(data.DeletingAppTags) != len(req.Tags) {
-		return apperrors.NewNotFound("AppTag").
+		return apperrors.NewNotFound("App tag").
 			WithMsgLog("one or more tags not found in app")
 	}
 
