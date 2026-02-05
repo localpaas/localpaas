@@ -27,6 +27,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/clusterservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/emailservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/envvarservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/imservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/lpappservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/networkservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/nginxservice"
@@ -36,6 +37,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/taskqueue"
 	"github.com/localpaas/localpaas/localpaas_app/taskqueue/initializer"
 	"github.com/localpaas/localpaas/localpaas_app/taskqueue/taskappdeploy"
+	"github.com/localpaas/localpaas/localpaas_app/taskqueue/taskappnotification"
 	"github.com/localpaas/localpaas/localpaas_app/taskqueue/tasktest"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appdeploymentuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc"
@@ -96,6 +98,7 @@ var Provides = []any{
 	initializer.NewWorkerInitializer,
 	tasktest.NewExecutor,
 	taskappdeploy.NewExecutor,
+	taskappnotification.NewExecutor,
 
 	// Route handler
 	server.NewHandlerRegistry, // for all handler list
@@ -156,6 +159,7 @@ var Provides = []any{
 	nginxservice.NewNginxService,
 	lpappservice.NewLpAppService,
 	emailservice.NewEmailService,
+	imservice.NewIMService,
 
 	// Repo: User
 	repository.NewUserRepo,

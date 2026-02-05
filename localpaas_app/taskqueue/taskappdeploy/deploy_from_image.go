@@ -119,7 +119,7 @@ func (e *Executor) imageDeployStepServiceApply(
 		return apperrors.Wrap(err)
 	}
 
-	service, err := e.dockerManager.ServiceInspect(ctx, deployment.App.ServiceID)
+	service, err := e.dockerManager.ServiceInspect(ctx, data.App.ServiceID)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -134,7 +134,7 @@ func (e *Executor) imageDeployStepServiceApply(
 		docker.ApplyServiceCommand(contSpec, *deployment.Settings.Command)
 	}
 
-	_, err = e.dockerManager.ServiceUpdate(ctx, deployment.App.ServiceID, &service.Version, spec,
+	_, err = e.dockerManager.ServiceUpdate(ctx, data.App.ServiceID, &service.Version, spec,
 		func(options *swarm.ServiceUpdateOptions) {
 			options.EncodedRegistryAuth = regAuthHeader
 		})

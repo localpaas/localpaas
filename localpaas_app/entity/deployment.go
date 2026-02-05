@@ -49,6 +49,10 @@ func (d *Deployment) CanCancel() bool {
 	return true
 }
 
+func (d *Deployment) GetDuration() time.Duration {
+	return d.EndedAt.Sub(d.StartedAt)
+}
+
 type AppDeploymentTrigger struct {
 	Source base.DeploymentTriggerSource `json:"source"`
 	ID     string                       `json:"id"`

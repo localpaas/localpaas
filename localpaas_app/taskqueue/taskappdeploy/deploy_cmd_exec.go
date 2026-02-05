@@ -60,7 +60,7 @@ func (e *Executor) deployStepExecCmd(
 		retryDelay = postDeploymentContainerFindRetryDelay
 	}
 
-	contSum, _, err := e.dockerManager.ServiceContainerGetActive(ctx, deployment.App.ServiceID,
+	contSum, _, err := e.dockerManager.ServiceContainerGetActive(ctx, data.App.ServiceID,
 		maxRetry, retryDelay)
 	if err != nil {
 		return apperrors.Wrap(err)

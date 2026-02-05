@@ -13,3 +13,13 @@ type NamedEntity interface {
 type ObjectID struct {
 	ID string `json:"id"`
 }
+
+type ObjectIDSlice []*ObjectID
+
+func (o ObjectIDSlice) ToIDStringSlice() []string {
+	res := make([]string, 0, len(o))
+	for _, obj := range o {
+		res = append(res, obj.ID)
+	}
+	return res
+}

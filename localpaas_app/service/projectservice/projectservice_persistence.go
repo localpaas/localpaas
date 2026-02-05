@@ -13,7 +13,6 @@ type PersistingProjectData struct {
 	UpsertingApps     []*entity.App
 	UpsertingTags     []*entity.ProjectTag
 	UpsertingSettings []*entity.Setting
-	UpsertingAccesses []*entity.ACLPermission
 
 	ProjectsToDeleteTags []string
 }
@@ -51,12 +50,6 @@ func (s *projectService) PersistProjectData(ctx context.Context, db database.IDB
 	// Project Tags
 	err = s.projectTagRepo.UpsertMulti(ctx, db, persistingData.UpsertingTags,
 		entity.ProjectTagUpsertingConflictCols, entity.ProjectTagUpsertingUpdateCols)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	// Project accesses
-	err = s.permissionManager.UpdateACLPermissions(ctx, db, persistingData.UpsertingAccesses)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

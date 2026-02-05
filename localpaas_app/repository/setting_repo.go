@@ -6,6 +6,7 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/tiendc/gofn"
 	"github.com/uptrace/bun"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -17,6 +18,7 @@ import (
 )
 
 type SettingRepo interface {
+	// Get a setting by id in the given scope with handling inheritance
 	GetByID(ctx context.Context, db database.IDB, typ base.SettingType, id string, requireActive bool,
 		opts ...bunex.SelectQueryOption) (*entity.Setting, error)
 	GetByIDAndProject(ctx context.Context, db database.IDB, typ base.SettingType, id, projectID string,
@@ -31,6 +33,7 @@ type SettingRepo interface {
 	GetByKind(ctx context.Context, db database.IDB, typ base.SettingType, kind string, requireActive bool,
 		opts ...bunex.SelectQueryOption) (*entity.Setting, error)
 
+	// Get a setting by name in the given scope with handling inheritance
 	GetByName(ctx context.Context, db database.IDB, typ base.SettingType, name string, requireActive bool,
 		opts ...bunex.SelectQueryOption) (*entity.Setting, error)
 	GetByNameAndProject(ctx context.Context, db database.IDB, typ base.SettingType, name, projectID string,
@@ -40,6 +43,18 @@ type SettingRepo interface {
 	GetByNameAndUser(ctx context.Context, db database.IDB, typ base.SettingType, name, userID string,
 		requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error)
 
+	// Get a single setting in the given scope with handling inheritance by priority order:
+	// own setting, parent app setting, parent project setting, global setting.
+	GetSingleByProject(ctx context.Context, db database.IDB, typ base.SettingType, projectID string,
+		requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error)
+	GetSingleByApp(ctx context.Context, db database.IDB, typ base.SettingType, projectID, appID string,
+		requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error)
+	GetSingleByAppObject(ctx context.Context, db database.IDB, typ base.SettingType, app *entity.App,
+		requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error)
+	GetSingleByUser(ctx context.Context, db database.IDB, typ base.SettingType, userID string,
+		requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error)
+
+	// List settings in the given scope with handling inheritance
 	List(ctx context.Context, db database.IDB, paging *basedto.Paging,
 		opts ...bunex.SelectQueryOption) ([]*entity.Setting, *basedto.PagingMeta, error)
 	ListByProject(ctx context.Context, db database.IDB, projectID string, paging *basedto.Paging,
@@ -55,6 +70,17 @@ type SettingRepo interface {
 		opts ...bunex.SelectQueryOption) ([]*entity.Setting, error)
 	ListByIDsAsMap(ctx context.Context, db database.IDB, ids []string, requireActive bool,
 		opts ...bunex.SelectQueryOption) (map[string]*entity.Setting, error)
+
+	// Make sure there is at most one active setting in the given scope.
+	// Inherited settings are still allowed.
+	EnsureSingleGlobally(ctx context.Context, db database.IDB, typ base.SettingType,
+		opts ...bunex.SelectQueryOption) error
+	EnsureSingleByProject(ctx context.Context, db database.IDB, typ base.SettingType, projectID string,
+		opts ...bunex.SelectQueryOption) error
+	EnsureSingleByApp(ctx context.Context, db database.IDB, typ base.SettingType, appID string,
+		opts ...bunex.SelectQueryOption) error
+	EnsureSingleByUser(ctx context.Context, db database.IDB, typ base.SettingType, userID string,
+		opts ...bunex.SelectQueryOption) error
 
 	Upsert(ctx context.Context, db database.IDB, setting *entity.Setting,
 		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
@@ -210,6 +236,121 @@ func (repo *settingRepo) get(ctx context.Context, db database.IDB,
 	return setting, nil
 }
 
+func (repo *settingRepo) GetSingleByProject(ctx context.Context, db database.IDB, typ base.SettingType,
+	projectID string, requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
+	opts = repo.applyFilter(opts, typ, "", requireActive)
+	settings, _, err := repo.ListByProject(ctx, db, projectID, nil, opts...)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	if len(settings) == 0 {
+		return nil, apperrors.NewNotFound("Setting")
+	}
+	if len(settings) == 1 {
+		return settings[0], nil
+	}
+
+	var globalSetting *entity.Setting
+	for _, setting := range settings {
+		if setting.ObjectID == projectID { // setting belongs to the project directly has the highest priority
+			return setting, nil
+		}
+		if globalSetting == nil && setting.ObjectID == "" {
+			globalSetting = setting
+			continue
+		}
+	}
+	if globalSetting != nil {
+		return globalSetting, nil
+	}
+	return nil, apperrors.NewNotFound("Setting")
+}
+
+func (repo *settingRepo) GetSingleByApp(ctx context.Context, db database.IDB, typ base.SettingType,
+	projectID, appID string, requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
+	app := &entity.App{
+		ID:        appID,
+		ProjectID: projectID,
+	}
+	if appID != "" {
+		currApp, err := repo.appRepo.GetByID(ctx, db, projectID, appID, bunex.SelectColumns("parent_id"))
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		app.ParentID = currApp.ParentID
+	}
+	return repo.GetSingleByAppObject(ctx, db, typ, app, requireActive, opts...)
+}
+
+func (repo *settingRepo) GetSingleByAppObject(ctx context.Context, db database.IDB, typ base.SettingType,
+	app *entity.App, requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
+	opts = repo.applyFilter(opts, typ, "", requireActive)
+	settings, _, err := repo.ListByAppObject(ctx, db, app, nil, opts...)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	if len(settings) == 0 {
+		return nil, apperrors.NewNotFound("Setting")
+	}
+	if len(settings) == 1 {
+		return settings[0], nil
+	}
+
+	var parentSetting, projectSetting, globalSetting *entity.Setting
+	for _, setting := range settings {
+		if setting.ObjectID == app.ID { // setting belongs to the app directly has the highest priority
+			return setting, nil
+		}
+		if parentSetting == nil && setting.ObjectID == app.ParentID {
+			parentSetting = setting
+			continue
+		}
+		if projectSetting == nil && setting.ObjectID == app.ProjectID {
+			projectSetting = setting
+			continue
+		}
+		if globalSetting == nil && setting.ObjectID == "" {
+			globalSetting = setting
+			continue
+		}
+	}
+	setting := gofn.Coalesce(parentSetting, projectSetting, globalSetting)
+	if setting != nil {
+		return setting, nil
+	}
+	return nil, apperrors.NewNotFound("Setting")
+}
+
+func (repo *settingRepo) GetSingleByUser(ctx context.Context, db database.IDB, typ base.SettingType,
+	userID string, requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
+	opts = repo.applyFilter(opts, typ, "", requireActive)
+	settings, _, err := repo.ListByUser(ctx, db, userID, nil, opts...)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	if len(settings) == 0 {
+		return nil, apperrors.NewNotFound("Setting")
+	}
+	if len(settings) == 1 {
+		return settings[0], nil
+	}
+
+	var globalSetting *entity.Setting
+	for _, setting := range settings {
+		if setting.ObjectID == userID { // setting belongs to the user directly has the highest priority
+			return setting, nil
+		}
+		if globalSetting == nil && setting.ObjectID == "" {
+			globalSetting = setting
+			continue
+		}
+	}
+	if globalSetting != nil {
+		return globalSetting, nil
+	}
+	return nil, apperrors.NewNotFound("Setting")
+}
+
 func (repo *settingRepo) List(ctx context.Context, db database.IDB, paging *basedto.Paging,
 	opts ...bunex.SelectQueryOption) ([]*entity.Setting, *basedto.PagingMeta, error) {
 	var settings []*entity.Setting
@@ -353,6 +494,90 @@ func (repo *settingRepo) applyUserFilter(opts []bunex.SelectQueryOption, userID 
 	return opts
 }
 
+func (repo *settingRepo) EnsureSingleGlobally(ctx context.Context, db database.IDB, typ base.SettingType,
+	opts ...bunex.SelectQueryOption) error {
+	query := db.NewSelect().Model((*entity.Setting)(nil)).
+		Where("setting.type = ?", typ).
+		Where("setting.status = ?", base.SettingStatusActive).
+		Where("setting.object_id IS NULL")
+	query = bunex.ApplySelect(query, opts...)
+
+	count, err := query.Count(ctx)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil
+		}
+		return apperrors.Wrap(err)
+	}
+	if count > 1 {
+		return apperrors.Wrap(apperrors.ErrConflict)
+	}
+	return nil
+}
+
+func (repo *settingRepo) EnsureSingleByProject(ctx context.Context, db database.IDB, typ base.SettingType,
+	projectID string, opts ...bunex.SelectQueryOption) error {
+	query := db.NewSelect().Model((*entity.Setting)(nil)).
+		Where("setting.type = ?", typ).
+		Where("setting.status = ?", base.SettingStatusActive).
+		Where("setting.object_id = ?", projectID)
+	query = bunex.ApplySelect(query, opts...)
+
+	count, err := query.Count(ctx)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil
+		}
+		return apperrors.Wrap(err)
+	}
+	if count > 1 {
+		return apperrors.Wrap(apperrors.ErrConflict)
+	}
+	return nil
+}
+
+func (repo *settingRepo) EnsureSingleByApp(ctx context.Context, db database.IDB, typ base.SettingType,
+	appID string, opts ...bunex.SelectQueryOption) error {
+	query := db.NewSelect().Model((*entity.Setting)(nil)).
+		Where("setting.type = ?", typ).
+		Where("setting.status = ?", base.SettingStatusActive).
+		Where("setting.object_id = ?", appID)
+	query = bunex.ApplySelect(query, opts...)
+
+	count, err := query.Count(ctx)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil
+		}
+		return apperrors.Wrap(err)
+	}
+	if count > 1 {
+		return apperrors.Wrap(apperrors.ErrConflict)
+	}
+	return nil
+}
+
+func (repo *settingRepo) EnsureSingleByUser(ctx context.Context, db database.IDB, typ base.SettingType,
+	userID string, opts ...bunex.SelectQueryOption) error {
+	query := db.NewSelect().Model((*entity.Setting)(nil)).
+		Where("setting.type = ?", typ).
+		Where("setting.status = ?", base.SettingStatusActive).
+		Where("setting.object_id = ?", userID)
+	query = bunex.ApplySelect(query, opts...)
+
+	count, err := query.Count(ctx)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil
+		}
+		return apperrors.Wrap(err)
+	}
+	if count > 1 {
+		return apperrors.Wrap(apperrors.ErrConflict)
+	}
+	return nil
+}
+
 func (repo *settingRepo) Upsert(ctx context.Context, db database.IDB, setting *entity.Setting,
 	conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error {
 	return repo.UpsertMulti(ctx, db, []*entity.Setting{setting}, conflictCols, updateCols, opts...)
@@ -404,16 +629,16 @@ func (repo *settingRepo) UpdateClearDefaultFlag(ctx context.Context, db database
 	return nil
 }
 
-func (repo *settingRepo) updateExpiredSetting(ctx context.Context, db database.IDB, setting *entity.Setting) (
-	bool, error) {
+func (repo *settingRepo) updateExpiredSetting(ctx context.Context, db database.IDB,
+	setting *entity.Setting) (bool, error) {
 	if setting == nil {
 		return false, nil
 	}
 	return repo.updateExpiredSettings(ctx, db, []*entity.Setting{setting})
 }
 
-func (repo *settingRepo) updateExpiredSettings(ctx context.Context, db database.IDB, settings []*entity.Setting) (
-	hasChange bool, err error) {
+func (repo *settingRepo) updateExpiredSettings(ctx context.Context, db database.IDB,
+	settings []*entity.Setting) (hasChange bool, err error) {
 	for _, setting := range settings {
 		if setting.IsStatusDirty() {
 			hasChange = true

@@ -23,6 +23,10 @@ type TaskRepo interface {
 	ListByIDs(ctx context.Context, db database.IDB, ids []string,
 		opts ...bunex.SelectQueryOption) ([]*entity.Task, error)
 
+	Insert(ctx context.Context, db database.IDB, task *entity.Task,
+		opts ...bunex.InsertQueryOption) error
+	InsertMulti(ctx context.Context, db database.IDB, tasks []*entity.Task,
+		opts ...bunex.InsertQueryOption) error
 	Upsert(ctx context.Context, db database.IDB, task *entity.Task, conflictCols, updateCols []string,
 		opts ...bunex.InsertQueryOption) error
 	UpsertMulti(ctx context.Context, db database.IDB, tasks []*entity.Task, conflictCols, updateCols []string,
@@ -102,6 +106,26 @@ func (repo *taskRepo) ListByIDs(ctx context.Context, db database.IDB, ids []stri
 		return nil, apperrors.New(err)
 	}
 	return tasks, nil
+}
+
+func (repo *taskRepo) Insert(ctx context.Context, db database.IDB, task *entity.Task,
+	opts ...bunex.InsertQueryOption) error {
+	return repo.InsertMulti(ctx, db, []*entity.Task{task}, opts...)
+}
+
+func (repo *taskRepo) InsertMulti(ctx context.Context, db database.IDB, tasks []*entity.Task,
+	opts ...bunex.InsertQueryOption) error {
+	if len(tasks) == 0 {
+		return nil
+	}
+	query := db.NewInsert().Model(&tasks)
+	query = bunex.ApplyInsert(query, opts...)
+
+	_, err := query.Exec(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
 }
 
 func (repo *taskRepo) Upsert(ctx context.Context, db database.IDB, task *entity.Task,

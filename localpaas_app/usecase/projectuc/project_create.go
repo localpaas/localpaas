@@ -8,6 +8,7 @@ import (
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
@@ -22,6 +23,9 @@ import (
 
 const (
 	projectKeyMaxLen = 100
+
+	projectWebhookName      = "default"
+	projectWebhookSecretLen = 24
 )
 
 var (
@@ -130,6 +134,7 @@ func (uc *ProjectUC) preparePersistingProject(
 
 	uc.preparePersistingProjectBase(project, req.ProjectBaseReq, timeNow, persistingData)
 	uc.preparePersistingProjectTags(project, req.Tags, 0, persistingData)
+	uc.preparePersistingProjectWebhook(project, timeNow, persistingData)
 }
 
 func (uc *ProjectUC) preparePersistingProjectBase(
@@ -163,6 +168,28 @@ func (uc *ProjectUC) preparePersistingProjectTags(
 			})
 		displayOrder++
 	}
+}
+
+func (uc *ProjectUC) preparePersistingProjectWebhook(
+	project *entity.Project,
+	timeNow time.Time,
+	persistingData *persistingProjectData,
+) {
+	setting := &entity.Setting{
+		ID:        gofn.Must(ulid.NewStringULID()),
+		Type:      base.SettingTypeRepoWebhook,
+		Status:    base.SettingStatusActive,
+		Name:      projectWebhookName,
+		ObjectID:  project.ID,
+		Default:   true,
+		Version:   entity.CurrentRepoWebhookVersion,
+		CreatedAt: timeNow,
+		UpdatedAt: timeNow,
+	}
+	setting.MustSetData(&entity.RepoWebhook{
+		Secret: gofn.RandTokenAsHex(projectWebhookSecretLen),
+	})
+	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 }
 
 func (uc *ProjectUC) persistData(

@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-	<title> LocalPaaS Service </title>
+	<title> LocalPaaS Notification </title>
 	<!--[if !mso]><!-->
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<!--<![endif]-->
@@ -69,6 +69,11 @@
 		.button_text {
 			color:#ffffff;
 		}
+
+		.col_20p {
+			text-align:left;
+			width: 20%;
+		}
 	</style>
 </head>
 
@@ -77,26 +82,90 @@
 	<div style="background-color:#ffffff;margin:0 auto;border:2px solid #f2f2f2;border-radius:8px;max-width:600px;">
 		<div style="padding:20px 20px;">
 			<div class="p_default">
-				<span class="title">Let’s get you started on LocalPaaS</span>
+				{{if .Succeeded}}
+					<span class="title">Deployment succeeded</span>
+				{{else}}
+					<span class="title">Deployment failed</span>
+				{{end}}
 			</div>
-			<div class="p_default">
-				<span class="text_default"><b>Hello</b></span>
-			</div>
-			<div class="p_default">
-				<span class="text_default"><b>{{.InviterName}}</b> has invited you to join his team on <b>LocalPaaS</b>.
-					Click the button below to accept the invitation and set up your account:</span>
-			</div>
+			
+			<table style="width:100%;border:0;border-spacing:0;text-align:left;">
+				<tbody>
+				<tr class="text_default">
+					<td class="col_20p">
+						<b>Project:</b>
+					</td>
+					<td>
+						{{.ProjectName}}
+					</td>
+				</tr>
+				<tr class="text_default">
+					<td class="col_20p">
+						<b>App:</b>
+					</td>
+					<td>
+						{{.AppName}}
+					</td>
+				</tr>
+				{{if .Method | eq "repo"}}
+				<tr class="text_default">
+					<td class="col_20p">
+						<b>Repository:</b>
+					</td>
+					<td>
+						{{.RepoURL}}
+					</td>
+				</tr>
+				<tr class="text_default">
+					<td class="col_20p">
+						<b>Branch/Ref:</b>
+					</td>
+					<td>
+						{{.RepoRef}}
+					</td>
+				</tr>
+				{{else if .Method | eq "image"}}
+				<tr class="text_default">
+					<td class="col_20p">
+						<b>Image:</b>
+					</td>
+					<td>
+						{{.Image}}
+					</td>
+				</tr>
+				{{else if .Method | eq "tarball"}}
+				<tr class="text_default">
+					<td class="col_20p">
+						<b>Source Archive:</b>
+					</td>
+					<td>
+						{{.SourceArchive}}
+					</td>
+				</tr>
+				{{end}}
+
+				<tr class="text_default">
+					<td class="col_20p">
+						<b>Duration:</b>
+					</td>
+					<td>
+						{{.Duration}}
+					</td>
+				</tr>
+				</tbody>
+			</table>
+
 			<div class="p_default" style="text-align:center;">
-				<a href="{{.UserSignupLink}}" class="button" target="_blank">
-					<span class="button_text">Complete Your Account</span>
+				<a href="{{.DashboardLink}}" class="button" target="_blank">
+					<span class="button_text">See Details</span>
 				</a>
 			</div>
 			<div class="p_default">
 				<div class="text_default">Or copy and paste this link into your browser:</div>
-				<a class="text_default" href="{{.UserSignupLink}}" target="_blank">{{.UserSignupLink}}</a>
+				<a class="text_default" href="{{.DashboardLink}}" target="_blank">{{.DashboardLink}}</a>
 			</div>
 			<div class="p_default">
-				<span class="text_default">See you there!<br/>LocalPaaS</span>
+				<span class="text_default">Cheers,<br/>LocalPaaS</span>
 			</div>
 		</div>
 	</div>

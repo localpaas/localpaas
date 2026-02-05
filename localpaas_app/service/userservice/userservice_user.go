@@ -2,6 +2,7 @@ package userservice
 
 import (
 	"context"
+	"strings"
 
 	"github.com/tiendc/gofn"
 
@@ -18,7 +19,7 @@ func (s *userService) LoadUser(
 	db database.IDB,
 	userID string,
 ) (*entity.User, error) {
-	userMap, err := s.LoadUsers(ctx, db, []string{userID})
+	userMap, err := s.LoadUsers(ctx, db, []string{userID}, true)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -32,10 +33,12 @@ func (s *userService) LoadUsers(
 	ctx context.Context,
 	db database.IDB,
 	userIDs []string,
-) (userMap map[string]*entity.User, err error) {
+	errorIfUnavail bool,
+) (map[string]*entity.User, error) {
 	if len(userIDs) == 0 {
 		return nil, nil
 	}
+
 	userIDs = gofn.ToSet(userIDs)
 	users, err := s.userRepo.ListByIDs(ctx, db, userIDs,
 		bunex.SelectExcludeColumns(entity.UserDefaultExcludeColumns...),
@@ -43,29 +46,14 @@ func (s *userService) LoadUsers(
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+	userMap := entityutil.SliceToIDMap(users)
 
-	userMap = entityutil.SliceToIDMap(users)
-	for _, userID := range userIDs {
-		user := userMap[userID]
-		if user == nil {
-			return nil, apperrors.NewNotFound("User").
-				WithMsgLog("user %s not found", userID)
-		}
-		if user.Status != base.UserStatusActive {
-			return nil, apperrors.New(apperrors.ErrUserUnavailable).
-				WithMsgLog("user %s is not active", userID)
-		}
-		if user.IsAccessExpired() {
-			return nil, apperrors.New(apperrors.ErrUserUnavailable).
-				WithMsgLog("user access expired at: %v", user.AccessExpireAt)
-		}
-		if user.SecurityOption == base.UserSecurityPassword2FA && user.TotpSecret == "" {
-			return nil, apperrors.New(apperrors.ErrUserNotCompleteMFASetup).
-				WithMsgLog("user %s hasn't completed the MFA setup", userID)
-		}
+	resultMap, err := s.collectAvailUsers(userMap, userIDs, errorIfUnavail)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
 	}
 
-	return userMap, nil
+	return resultMap, nil
 }
 
 func (s *userService) LoadUserByEmail(
@@ -73,7 +61,7 @@ func (s *userService) LoadUserByEmail(
 	db database.IDB,
 	email string,
 ) (*entity.User, error) {
-	userMap, err := s.LoadUsersByEmails(ctx, db, []string{email})
+	userMap, err := s.LoadUsersByEmails(ctx, db, []string{email}, true)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -87,40 +75,92 @@ func (s *userService) LoadUsersByEmails(
 	ctx context.Context,
 	db database.IDB,
 	emails []string,
-) (userMap map[string]*entity.User, err error) {
+	errorIfUnavail bool,
+) (map[string]*entity.User, error) {
 	if len(emails) == 0 {
 		return nil, nil
 	}
-	users, err := s.userRepo.ListByEmails(ctx, db, emails,
+
+	lowercaseEmails := gofn.MapSlice(emails, strings.ToLower)
+	users, err := s.userRepo.ListByEmails(ctx, db, lowercaseEmails,
 		bunex.SelectExcludeColumns(entity.UserDefaultExcludeColumns...),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	userMap = make(map[string]*entity.User, len(users))
+	userMap := make(map[string]*entity.User, len(users))
 	for _, user := range users {
 		userMap[user.Email] = user
 	}
 
-	for _, email := range emails {
-		user := userMap[email]
-		if user == nil {
-			return nil, apperrors.NewNotFound("User").
-				WithMsgLog("user '%s' not found", email)
-		}
-		if user.Status != base.UserStatusActive {
-			return nil, apperrors.New(apperrors.ErrUserUnavailable).
-				WithMsgLog("user '%s' is not active", email)
-		}
-		if user.IsAccessExpired() {
-			return nil, apperrors.New(apperrors.ErrUserUnavailable).
-				WithMsgLog("user access expired at: %v", user.AccessExpireAt)
-		}
-		if user.SecurityOption == base.UserSecurityPassword2FA && user.TotpSecret == "" {
-			return nil, apperrors.New(apperrors.ErrUserNotCompleteMFASetup).
-				WithMsgLog("user '%s' hasn't completed the MFA setup", email)
-		}
+	resultMap, err := s.collectAvailUsers(userMap, lowercaseEmails, errorIfUnavail)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
 	}
 
-	return userMap, nil
+	return resultMap, nil
+}
+
+func (s *userService) collectAvailUsers(
+	userMap map[string]*entity.User,
+	requiredKeys []string,
+	errorIfUnavail bool,
+) (map[string]*entity.User, error) {
+	resultMap := make(map[string]*entity.User, len(userMap))
+	for _, userKey := range requiredKeys {
+		user := userMap[userKey]
+		if user == nil {
+			if errorIfUnavail {
+				return nil, apperrors.NewNotFound("User").
+					WithMsgLog("user '%s' not found", userKey)
+			}
+			continue
+		}
+		if user.Status != base.UserStatusActive {
+			if errorIfUnavail {
+				return nil, apperrors.New(apperrors.ErrUserUnavailable).
+					WithMsgLog("user '%s' is not active", userKey)
+			}
+			continue
+		}
+		if user.IsAccessExpired() {
+			if errorIfUnavail {
+				return nil, apperrors.New(apperrors.ErrUserUnavailable).
+					WithMsgLog("user '%s' has access expired at: %v", userKey, user.AccessExpireAt)
+			}
+			continue
+		}
+		if user.SecurityOption == base.UserSecurityPassword2FA && user.TotpSecret == "" {
+			if errorIfUnavail {
+				return nil, apperrors.New(apperrors.ErrUserNotCompleteMFASetup).
+					WithMsgLog("user '%s' hasn't completed the MFA setup", userKey)
+			}
+			continue
+		}
+		resultMap[userKey] = user
+	}
+
+	return resultMap, nil
+}
+
+func (s *userService) LoadUsersEx(
+	ctx context.Context,
+	db database.IDB,
+	errorIfUnavail bool,
+	loadOpts ...bunex.SelectQueryOption,
+) (map[string]*entity.User, error) {
+	users, _, err := s.userRepo.List(ctx, db, nil, loadOpts...)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	userMap := entityutil.SliceToIDMap(users)
+	userIDs := gofn.MapKeys(userMap)
+
+	resultMap, err := s.collectAvailUsers(userMap, userIDs, errorIfUnavail)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	return resultMap, nil
 }

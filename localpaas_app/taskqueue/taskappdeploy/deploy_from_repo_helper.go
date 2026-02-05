@@ -81,7 +81,7 @@ func (e *Executor) calcBuildImageTags(
 		return imageTags
 	}
 
-	appKey := data.Deployment.App.Key
+	appKey := data.App.Key
 	if len(appKey) > maxImageNameLen {
 		appKey = appKey[:maxImageNameLen]
 	}
@@ -98,7 +98,7 @@ func (e *Executor) calcBuildEnvVars(
 	db database.Tx,
 	data *repoDeployTaskData,
 ) (map[string]*string, error) {
-	envVars, err := e.envVarService.BuildAppEnv(ctx, db, data.Deployment.App, true)
+	envVars, err := e.envVarService.BuildAppEnv(ctx, db, data.App, true)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -116,8 +116,7 @@ func (e *Executor) calcBuildRegistryAuths(
 	db database.Tx,
 	data *repoDeployTaskData,
 ) (map[string]registry.AuthConfig, error) {
-	deployment := data.Deployment
-	app := deployment.App
+	app := data.App
 
 	settings, _, err := e.settingRepo.ListByProject(ctx, db, app.ProjectID, nil,
 		bunex.SelectWhere("setting.type = ?", base.SettingTypeRegistryAuth),

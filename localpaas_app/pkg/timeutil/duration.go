@@ -30,6 +30,10 @@ func (dur Duration) String() string {
 	return s
 }
 
+func (dur Duration) ToDuration() time.Duration {
+	return time.Duration(dur)
+}
+
 func (dur Duration) MarshalJSON() ([]byte, error) {
 	return []byte(`"` + dur.String() + `"`), nil
 }

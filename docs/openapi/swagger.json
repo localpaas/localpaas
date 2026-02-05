@@ -16195,9 +16195,9 @@
         "x-enum-varnames" : [ "SettingStatusActive", "SettingStatusPending", "SettingStatusDisabled", "SettingStatusExpired" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.SettingType" : {
-        "enum" : [ "project", "app", "app-deployment", "app-http", "env-var", "secret", "aws", "aws-s3", "oauth", "ssh-key", "api-key", "im-service", "registry-auth", "basic-auth", "ssl", "github-app", "access-token", "cron-job", "email", "repo-webhook" ],
+        "enum" : [ "project", "app", "app-deployment", "app-http", "app-notification", "env-var", "secret", "aws", "aws-s3", "oauth", "ssh-key", "api-key", "im-service", "registry-auth", "basic-auth", "ssl", "github-app", "access-token", "cron-job", "email", "repo-webhook" ],
         "type" : "string",
-        "x-enum-varnames" : [ "SettingTypeProject", "SettingTypeApp", "SettingTypeAppDeployment", "SettingTypeAppHttp", "SettingTypeEnvVar", "SettingTypeSecret", "SettingTypeAWS", "SettingTypeAWSS3", "SettingTypeOAuth", "SettingTypeSSHKey", "SettingTypeAPIKey", "SettingTypeIMService", "SettingTypeRegistryAuth", "SettingTypeBasicAuth", "SettingTypeSSL", "SettingTypeGithubApp", "SettingTypeAccessToken", "SettingTypeCronJob", "SettingTypeEmail", "SettingTypeRepoWebhook" ]
+        "x-enum-varnames" : [ "SettingTypeProject", "SettingTypeApp", "SettingTypeAppDeployment", "SettingTypeAppHttp", "SettingTypeAppNotification", "SettingTypeEnvVar", "SettingTypeSecret", "SettingTypeAWS", "SettingTypeAWSS3", "SettingTypeOAuth", "SettingTypeSSHKey", "SettingTypeAPIKey", "SettingTypeIMService", "SettingTypeRegistryAuth", "SettingTypeBasicAuth", "SettingTypeSSL", "SettingTypeGithubApp", "SettingTypeAccessToken", "SettingTypeCronJob", "SettingTypeEmail", "SettingTypeRepoWebhook" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.TaskPriority" : {
         "enum" : [ "low", "default", "critical" ],
@@ -16210,9 +16210,9 @@
         "x-enum-varnames" : [ "TaskStatusNotStarted", "TaskStatusInProgress", "TaskStatusCanceled", "TaskStatusDone", "TaskStatusFailed" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.TaskType" : {
-        "enum" : [ "task:test", "task:app-deploy" ],
+        "enum" : [ "task:test", "task:app-deploy", "task:app-notification" ],
         "type" : "string",
-        "x-enum-varnames" : [ "TaskTypeTest", "TaskTypeAppDeploy" ]
+        "x-enum-varnames" : [ "TaskTypeTest", "TaskTypeAppDeploy", "TaskTypeAppNotification" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.TokenKind" : {
         "enum" : [ "github", "gitlab", "gitea", "bitbucket", "gogs" ],

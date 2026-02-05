@@ -1,6 +1,7 @@
 package emailservice
 
 import (
+	"bytes"
 	"context"
 
 	"github.com/tiendc/gofn"
@@ -29,14 +30,14 @@ func (s *emailService) SendMailUserInvite(
 		return apperrors.Wrap(err)
 	}
 
+	buf := bytes.NewBuffer(make([]byte, 0, 5000)) //nolint
+	err = template.Execute(buf, *data)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
 	subject := gofn.Coalesce(data.Subject, "You’ve been invited to join LocalPaaS")
-
-	content := template.ExecuteString(map[string]any{
-		"inviter_name":     data.InviterName,
-		"user_signup_link": data.UserSignupLink,
-	})
-
-	err = email.SendMail(ctx, data.Email, data.Recipients, subject, content)
+	err = email.SendMail(ctx, data.Email, data.Recipients, subject, buf.String())
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

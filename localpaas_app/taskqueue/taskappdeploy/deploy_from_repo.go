@@ -228,7 +228,7 @@ func (e *Executor) repoDeployStepServiceApply(
 	e.addStepStartLog(ctx, data.taskData, "Applying changes to service...")
 	defer e.addStepEndLog(ctx, data.taskData, timeutil.NowUTC(), err)
 
-	service, err := e.dockerManager.ServiceInspect(ctx, deployment.App.ServiceID)
+	service, err := e.dockerManager.ServiceInspect(ctx, data.App.ServiceID)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -243,7 +243,7 @@ func (e *Executor) repoDeployStepServiceApply(
 		docker.ApplyServiceCommand(contSpec, *deployment.Settings.Command)
 	}
 
-	_, err = e.dockerManager.ServiceUpdate(ctx, deployment.App.ServiceID, &service.Version, spec)
+	_, err = e.dockerManager.ServiceUpdate(ctx, data.App.ServiceID, &service.Version, spec)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

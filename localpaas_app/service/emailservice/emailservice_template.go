@@ -2,25 +2,23 @@ package emailservice
 
 import (
 	"context"
-	"os"
+	"html/template"
 	"sync"
-
-	"github.com/valyala/fasttemplate"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
 )
 
 type TemplateType string
 
 const (
-	TemplateTypePasswordReset TemplateType = "password-reset"
-	TemplateTypeUserInvite    TemplateType = "user-invite"
+	TemplateTypePasswordReset             TemplateType = "password-reset"
+	TemplateTypeUserInvite                TemplateType = "user-invite"
+	TemplateTypeAppDeploymentNotification TemplateType = "app-deployment-notification"
 )
 
 var (
-	templateMap = map[TemplateType]*fasttemplate.Template{}
+	templateMap = map[TemplateType]*template.Template{}
 	mu          sync.Mutex
 )
 
@@ -28,27 +26,26 @@ func (s *emailService) GetTemplate(
 	_ context.Context,
 	_ database.IDB,
 	typ TemplateType,
-) (_ *fasttemplate.Template, err error) {
+) (tpl *template.Template, err error) {
 	mu.Lock()
 	defer mu.Unlock()
 
-	if template, exists := templateMap[typ]; exists {
-		return template, nil
+	if tpl, exists := templateMap[typ]; exists {
+		return tpl, nil
 	}
 
-	var data []byte
 	switch typ { //nolint
 	case TemplateTypePasswordReset:
-		data, err = os.ReadFile("config/email_templates/password_reset.html")
+		tpl, err = template.ParseFiles("config/email_templates/password_reset.html")
 	case TemplateTypeUserInvite:
-		data, err = os.ReadFile("config/email_templates/user_invite.html")
+		tpl, err = template.ParseFiles("config/email_templates/user_invite.html")
+	case TemplateTypeAppDeploymentNotification:
+		tpl, err = template.ParseFiles("config/email_templates/app_deployment_notification.html")
 	}
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+	templateMap[typ] = tpl
 
-	template := fasttemplate.New(reflectutil.UnsafeBytesToStr(data), "{{", "}}")
-	templateMap[typ] = template
-
-	return template, nil
+	return tpl, nil
 }
