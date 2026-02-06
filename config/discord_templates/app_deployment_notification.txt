@@ -1,7 +1,7 @@
 {{if .Succeeded}}
-*[{{.ProjectName}}/{{.AppName}}] Deployment succeeded*
+**[{{.ProjectName}}/{{.AppName}}] Deployment succeeded**
 {{else}}
-*[{{.ProjectName}}/{{.AppName}}] Deployment failed*
+**[{{.ProjectName}}/{{.AppName}}] Deployment failed**
 {{end}}
 > Project: `{{.ProjectName}}`
 > App: `{{.AppName}}`

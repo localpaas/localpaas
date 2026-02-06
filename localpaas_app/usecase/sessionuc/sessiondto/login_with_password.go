@@ -13,6 +13,7 @@ import (
 
 const (
 	maxUsernameLen = 100
+	maxEmailLen    = 100
 	maxPasswordLen = 100
 )
 
@@ -30,13 +31,12 @@ func NewLoginWithPasswordReq() *LoginWithPasswordReq {
 
 func (req *LoginWithPasswordReq) ModifyRequest() error {
 	req.Username = strings.TrimSpace(req.Username)
+	req.Username = strings.TrimSpace(req.Username)
+	req.TrustedDeviceID = strings.TrimSpace(req.TrustedDeviceID)
 	return nil
 }
 
 func (req *LoginWithPasswordReq) Validate() apperrors.ValidationErrors {
-	req.Username = strings.TrimSpace(req.Username)
-	req.TrustedDeviceID = strings.TrimSpace(req.TrustedDeviceID)
-
 	var validators []vld.Validator
 	validators = append(validators, basedto.ValidateStr(&req.Username, true, 1,
 		maxUsernameLen, "username")...)

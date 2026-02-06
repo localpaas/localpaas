@@ -5,6 +5,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 	"github.com/localpaas/localpaas/localpaas_app/repository/cacherepository"
+	"github.com/localpaas/localpaas/localpaas_app/service/emailservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
 )
 
@@ -17,6 +18,7 @@ type SessionUC struct {
 	cacheMfaPasscodeRepo   cacherepository.MFAPasscodeRepo
 	cacheLoginAttemptRepo  cacherepository.LoginAttemptRepo
 	userService            userservice.UserService
+	emailService           emailservice.EmailService
 	permissionManager      permission.Manager
 }
 
@@ -29,6 +31,7 @@ func NewSessionUC(
 	cacheMfaPasscodeRepo cacherepository.MFAPasscodeRepo,
 	cacheLoginAttemptRepo cacherepository.LoginAttemptRepo,
 	userService userservice.UserService,
+	emailService emailservice.EmailService,
 	permissionManager permission.Manager,
 ) *SessionUC {
 	return &SessionUC{
@@ -40,6 +43,7 @@ func NewSessionUC(
 		cacheMfaPasscodeRepo:   cacheMfaPasscodeRepo,
 		cacheLoginAttemptRepo:  cacheLoginAttemptRepo,
 		userService:            userService,
+		emailService:           emailService,
 		permissionManager:      permissionManager,
 	}
 }

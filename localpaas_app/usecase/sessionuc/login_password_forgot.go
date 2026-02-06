@@ -1,4 +1,4 @@
-package useruc
+package sessionuc
 
 import (
 	"context"
@@ -6,12 +6,11 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/service/emailservice"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc/userdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc/sessiondto"
 )
 
 const (
@@ -19,12 +18,16 @@ const (
 	passwordResetFEPath = "auth/reset-password"
 )
 
-func (uc *UserUC) RequestResetPassword(
+func (uc *SessionUC) LoginPasswordForgot(
 	ctx context.Context,
-	auth *basedto.Auth,
-	req *userdto.RequestResetPasswordReq,
-) (*userdto.RequestResetPasswordResp, error) {
-	user, err := uc.userRepo.GetByID(ctx, uc.db, req.ID,
+	req *sessiondto.LoginPasswordForgotReq,
+) (*sessiondto.LoginPasswordForgotResp, error) {
+	emailSetting, err := uc.emailService.GetDefaultSystemEmail(ctx, uc.db)
+	if err != nil {
+		return nil, apperrors.NewNotFound("System email setting")
+	}
+
+	user, err := uc.userRepo.GetByUsernameOrEmail(ctx, uc.db, req.Email, req.Email,
 		bunex.SelectExcludeColumns(entity.UserDefaultExcludeColumns...),
 	)
 	if err != nil {
@@ -44,33 +47,19 @@ func (uc *UserUC) RequestResetPassword(
 	resetLink := fmt.Sprintf("%s/%s?userId=%s&token=%s", config.Current.BaseURL,
 		passwordResetFEPath, user.ID, token)
 
-	if req.SendResettingEmail {
-		emailSetting, err := uc.emailService.GetDefaultSystemEmail(ctx, uc.db)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-
-		email, err := emailSetting.AsEmail()
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-
-		err = uc.emailService.SendMailPasswordReset(ctx, uc.db, &emailservice.EmailDataPasswordReset{
-			Email:             email,
-			Recipients:        []string{user.Email},
-			ResetPasswordLink: resetLink,
-		})
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-
-		// When send the link via email, we don't return it via the response
-		resetLink = ""
+	email, err := emailSetting.AsEmail()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
 	}
 
-	return &userdto.RequestResetPasswordResp{
-		Data: &userdto.RequestResetPasswordDataResp{
-			ResetPasswordLink: resetLink,
-		},
-	}, nil
+	err = uc.emailService.SendMailPasswordReset(ctx, uc.db, &emailservice.EmailDataPasswordReset{
+		Email:             email,
+		Recipients:        []string{user.Email},
+		ResetPasswordLink: resetLink,
+	})
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	return &sessiondto.LoginPasswordForgotResp{}, nil
 }

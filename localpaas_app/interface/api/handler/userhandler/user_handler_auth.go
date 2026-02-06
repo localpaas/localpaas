@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc/userdto"
@@ -60,6 +60,11 @@ func (h *UserHandler) RequestResetPassword(ctx *gin.Context) {
 	auth, userID, err := h.getAuth(ctx, "", base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
+		return
+	}
+	if auth == nil || userID == auth.User.ID {
+		h.RenderError(ctx, apperrors.New(apperrors.ErrActionNotAllowed).
+			WithMsgLog("you are not allowed to reset your own password via this api"))
 		return
 	}
 
