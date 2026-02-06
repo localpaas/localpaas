@@ -10,7 +10,7 @@ const (
 	minProjectNameLen = 1
 	maxProjectNameLen = 100
 
-	minProjectTagLen = 1
+	minProjectTagLen = 0
 	maxProjectTagLen = 100
 
 	minProjectNoteLen = 10

@@ -10,7 +10,7 @@ const (
 	minAppNameLen = 1
 	maxAppNameLen = 100
 
-	minAppTagLen = 1
+	minAppTagLen = 0
 	maxAppTagLen = 100
 
 	minAppNoteLen = 10
