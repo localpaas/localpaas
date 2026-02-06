@@ -25,7 +25,7 @@ func (uc *CronJobUC) UpdateCronJob(
 			if err != nil {
 				return apperrors.Wrap(err)
 			}
-			unscheduleCurrentTasks = req.Cron != job.Cron
+			unscheduleCurrentTasks = req.CronExpr != job.CronExpr
 			return nil
 		},
 		PrepareUpdate: func(

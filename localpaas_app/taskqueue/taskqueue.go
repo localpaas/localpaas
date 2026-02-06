@@ -20,8 +20,8 @@ type TaskQueue interface {
 	Shutdown() error
 	RegisterExecutor(typ base.TaskType, processorFunc TaskExecFunc)
 
-	ScheduleTask(ctx context.Context, task *entity.Task) error
-	UnscheduleTask(ctx context.Context, task *entity.Task) error
+	ScheduleTask(ctx context.Context, tasks ...*entity.Task) error
+	UnscheduleTask(ctx context.Context, tasks ...*entity.Task) error
 	ScheduleTasksForCronJob(ctx context.Context, db database.Tx, cronJob *entity.Setting,
 		unscheduleCurrentTasks bool) error
 }

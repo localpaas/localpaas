@@ -72,6 +72,10 @@ func (t *Task) IsDone() bool {
 	return t.Status == base.TaskStatusDone
 }
 
+func (t *Task) IsFailedCompletely() bool {
+	return t.Status == base.TaskStatusFailed && !t.CanRetry()
+}
+
 func (t *Task) IsCanceled() bool {
 	return t.Status == base.TaskStatusCanceled
 }

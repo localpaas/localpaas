@@ -37,6 +37,12 @@ func MaxRetryTimes(times uint) func(*options) {
 	}
 }
 
+func NoRetry() func(*options) {
+	return func(r *options) {
+		r.maxRetryTimes = 0
+	}
+}
+
 func RetryDelay(delay time.Duration) func(*options) {
 	return func(r *options) {
 		r.retryDelay = delay

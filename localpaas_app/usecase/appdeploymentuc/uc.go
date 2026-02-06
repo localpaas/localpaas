@@ -15,7 +15,7 @@ type AppDeploymentUC struct {
 	projectRepo        repository.ProjectRepo
 	appRepo            repository.AppRepo
 	deploymentRepo     repository.DeploymentRepo
-	deploymentLogRepo  repository.DeploymentLogRepo
+	taskLogRepo        repository.TaskLogRepo
 	deploymentInfoRepo cacherepository.DeploymentInfoRepo
 	taskControlRepo    cacherepository.TaskControlRepo
 	appService         appservice.AppService
@@ -28,7 +28,7 @@ func NewAppDeploymentUC(
 	projectRepo repository.ProjectRepo,
 	appRepo repository.AppRepo,
 	deploymentRepo repository.DeploymentRepo,
-	deploymentLogRepo repository.DeploymentLogRepo,
+	taskLogRepo repository.TaskLogRepo,
 	deploymentInfoRepo cacherepository.DeploymentInfoRepo,
 	taskControlRepo cacherepository.TaskControlRepo,
 	appService appservice.AppService,
@@ -40,7 +40,7 @@ func NewAppDeploymentUC(
 		projectRepo:        projectRepo,
 		appRepo:            appRepo,
 		deploymentRepo:     deploymentRepo,
-		deploymentLogRepo:  deploymentLogRepo,
+		taskLogRepo:        taskLogRepo,
 		deploymentInfoRepo: deploymentInfoRepo,
 		taskControlRepo:    taskControlRepo,
 		appService:         appService,

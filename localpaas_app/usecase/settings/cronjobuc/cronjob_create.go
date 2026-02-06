@@ -36,7 +36,7 @@ func (uc *CronJobUC) CreateCronJob(
 			pData.Setting.Kind = string(req.Kind)
 			cronJob := req.ToEntity()
 			// Parse the cron expression to make sure it's valid
-			_, err := cronJob.ParseCron()
+			_, err := cronJob.ParseCronExpr()
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

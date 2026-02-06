@@ -92,14 +92,14 @@ func (uc *AppDeploymentUC) getHistoryDeploymentLogs(
 
 	if !req.Since.IsZero() {
 		listOpts = append(listOpts,
-			bunex.SelectWhere("deployment_log.ts >= ?", req.Since))
+			bunex.SelectWhere("task_log.ts >= ?", req.Since))
 		if req.Duration > 0 {
 			listOpts = append(listOpts,
-				bunex.SelectWhere("deployment_log.ts < ?", req.Since.Add(req.Duration)))
+				bunex.SelectWhere("task_log.ts < ?", req.Since.Add(req.Duration)))
 		}
 	}
 
-	logs, _, err := uc.deploymentLogRepo.List(ctx, uc.db, deployment.ID, nil, listOpts...)
+	logs, _, err := uc.taskLogRepo.List(ctx, uc.db, "", deployment.ID, nil, listOpts...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

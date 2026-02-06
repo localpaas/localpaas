@@ -19,37 +19,22 @@ type AppDeploymentNtfnSettings struct {
 	Failure *AppDeploymentTargetNtfnSettings `json:"failure,omitempty"`
 }
 
-func (s *AppDeploymentNtfnSettings) HasViaEmailNotificationSettings() bool {
+func (s *AppDeploymentNtfnSettings) HasViaEmailNtfnSettings() bool {
 	return (s.Success != nil && s.Success.ViaEmail != nil) || (s.Failure != nil && s.Failure.ViaEmail != nil)
 }
 
-func (s *AppDeploymentNtfnSettings) HasViaSlackNotificationSettings() bool {
+func (s *AppDeploymentNtfnSettings) HasViaSlackNtfnSettings() bool {
 	return (s.Success != nil && s.Success.ViaSlack != nil) || (s.Failure != nil && s.Failure.ViaSlack != nil)
 }
 
-func (s *AppDeploymentNtfnSettings) HasViaDiscordNotificationSettings() bool {
+func (s *AppDeploymentNtfnSettings) HasViaDiscordNtfnSettings() bool {
 	return (s.Success != nil && s.Success.ViaDiscord != nil) || (s.Failure != nil && s.Failure.ViaDiscord != nil)
 }
 
 type AppDeploymentTargetNtfnSettings struct {
-	ViaEmail   *AppEmailNtfnSettings   `json:"viaEmail,omitempty"`
-	ViaSlack   *AppSlackNtfnSettings   `json:"viaSlack,omitempty"`
-	ViaDiscord *AppDiscordNtfnSettings `json:"viaDiscord,omitempty"`
-}
-
-type AppEmailNtfnSettings struct {
-	Sender           ObjectID `json:"sender"`
-	ToProjectMembers bool     `json:"toProjectMembers,omitempty"`
-	ToProjectOwners  bool     `json:"toProjectOwners,omitempty"`
-	ToAllAdmins      bool     `json:"toAllAdmins,omitempty"`
-}
-
-type AppSlackNtfnSettings struct {
-	Webhook ObjectID `json:"webhook"`
-}
-
-type AppDiscordNtfnSettings struct {
-	Webhook ObjectID `json:"webhook"`
+	ViaEmail   *EmailNtfnSetting   `json:"viaEmail,omitempty"`
+	ViaSlack   *SlackNtfnSetting   `json:"viaSlack,omitempty"`
+	ViaDiscord *DiscordNtfnSetting `json:"viaDiscord,omitempty"`
 }
 
 func (s *AppNotificationSettings) GetType() base.SettingType {
@@ -64,14 +49,12 @@ func (s *AppNotificationSettings) GetRefSettingIDs() []string {
 }
 
 func (s *AppNotificationSettings) GetRefEmailIDs() (res []string) {
-	if s.Deployment != nil && s.Deployment.Success != nil {
-		if s.Deployment.Success.ViaEmail != nil {
-			res = append(res, s.Deployment.Success.ViaEmail.Sender.ID)
+	if s.Deployment != nil {
+		if s.Deployment.Success != nil {
+			res = append(res, s.Deployment.Success.ViaEmail.GetRefSettingIDs()...)
 		}
-	}
-	if s.Deployment != nil && s.Deployment.Failure != nil {
-		if s.Deployment.Failure.ViaEmail != nil {
-			res = append(res, s.Deployment.Failure.ViaEmail.Sender.ID)
+		if s.Deployment.Failure != nil {
+			res = append(res, s.Deployment.Failure.ViaEmail.GetRefSettingIDs()...)
 		}
 	}
 	res = gofn.ToSet(res)
@@ -79,20 +62,14 @@ func (s *AppNotificationSettings) GetRefEmailIDs() (res []string) {
 }
 
 func (s *AppNotificationSettings) GetRefIMServiceIDs() (res []string) {
-	if s.Deployment != nil && s.Deployment.Success != nil {
-		if s.Deployment.Success.ViaSlack != nil {
-			res = append(res, s.Deployment.Success.ViaSlack.Webhook.ID)
+	if s.Deployment != nil {
+		if s.Deployment.Success != nil {
+			res = append(res, s.Deployment.Success.ViaSlack.GetRefSettingIDs()...)
+			res = append(res, s.Deployment.Success.ViaDiscord.GetRefSettingIDs()...)
 		}
-		if s.Deployment.Success.ViaDiscord != nil {
-			res = append(res, s.Deployment.Success.ViaDiscord.Webhook.ID)
-		}
-	}
-	if s.Deployment != nil && s.Deployment.Failure != nil {
-		if s.Deployment.Failure.ViaSlack != nil {
-			res = append(res, s.Deployment.Failure.ViaSlack.Webhook.ID)
-		}
-		if s.Deployment.Failure.ViaDiscord != nil {
-			res = append(res, s.Deployment.Failure.ViaDiscord.Webhook.ID)
+		if s.Deployment.Failure != nil {
+			res = append(res, s.Deployment.Failure.ViaSlack.GetRefSettingIDs()...)
+			res = append(res, s.Deployment.Failure.ViaDiscord.GetRefSettingIDs()...)
 		}
 	}
 	res = gofn.ToSet(res)

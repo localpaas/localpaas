@@ -32,11 +32,10 @@ const (
 
 type Executor struct {
 	logger             logging.Logger
-	taskQueue          taskqueue.TaskQueue
 	redisClient        rediscache.Client
 	settingRepo        repository.SettingRepo
 	deploymentRepo     repository.DeploymentRepo
-	deploymentLogRepo  repository.DeploymentLogRepo
+	taskLogRepo        repository.TaskLogRepo
 	taskRepo           repository.TaskRepo
 	taskInfoRepo       cacherepository.TaskInfoRepo
 	deploymentInfoRepo cacherepository.DeploymentInfoRepo
@@ -47,10 +46,11 @@ type Executor struct {
 func NewExecutor(
 	taskQueue taskqueue.TaskQueue,
 	logger logging.Logger,
+	db *database.DB,
 	redisClient rediscache.Client,
 	settingRepo repository.SettingRepo,
 	deploymentRepo repository.DeploymentRepo,
-	deploymentLogRepo repository.DeploymentLogRepo,
+	taskLogRepo repository.TaskLogRepo,
 	taskRepo repository.TaskRepo,
 	taskInfoRepo cacherepository.TaskInfoRepo,
 	deploymentInfoRepo cacherepository.DeploymentInfoRepo,
@@ -59,11 +59,10 @@ func NewExecutor(
 ) *Executor {
 	p := &Executor{
 		logger:             logger,
-		taskQueue:          taskQueue,
 		redisClient:        redisClient,
 		settingRepo:        settingRepo,
 		deploymentRepo:     deploymentRepo,
-		deploymentLogRepo:  deploymentLogRepo,
+		taskLogRepo:        taskLogRepo,
 		taskRepo:           taskRepo,
 		taskInfoRepo:       taskInfoRepo,
 		deploymentInfoRepo: deploymentInfoRepo,
@@ -89,6 +88,8 @@ func (e *Executor) execute(
 	task *taskqueue.TaskExecData,
 ) (err error) {
 	data := &taskData{TaskExecData: task}
+	data.OnPostExec(func() { e.onPostExec(ctx, db, data) })
+
 	deployment, err := e.loadDeployment(ctx, db, data)
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -118,27 +119,17 @@ func (e *Executor) execute(
 		depErr = e.deployFromTarball(ctx, db, data)
 	}
 
-	sendNotifications := false
 	deployment.EndedAt = timeutil.NowUTC()
 	if data.Canceled {
 		deployment.Status = base.DeploymentStatusCanceled
 	} else {
 		deployment.Status = gofn.If(depErr != nil, base.DeploymentStatusFailed, base.DeploymentStatusDone)
 		deployment.Output = data.DeploymentOutput
-		sendNotifications = true
 	}
 
 	err = e.updateDeployment(ctx, db, deployment)
 	if err != nil {
 		return apperrors.Wrap(err)
-	}
-
-	if sendNotifications {
-		optionalErr := e.createNotificationTask(ctx, db, data)
-		if optionalErr != nil {
-			_ = data.LogStore.Add(ctx, realtimelog.NewOutFrame("Failed to send deployment notification"+
-				" with error: "+optionalErr.Error(), nil))
-		}
 	}
 
 	return nil
@@ -233,16 +224,17 @@ func (e *Executor) saveLogs(
 
 	// Insert data in to DB by chunk to avoid exceeding DBMS limit
 	for _, chunk := range gofn.Chunk(logFrames, 10000) { //nolint
-		deploymentLogs := make([]*entity.DeploymentLog, 0, len(chunk))
+		taskLogs := make([]*entity.TaskLog, 0, len(chunk))
 		for _, logFrame := range chunk {
-			deploymentLogs = append(deploymentLogs, &entity.DeploymentLog{
-				DeploymentID: deployment.ID,
-				Type:         logFrame.Type,
-				Data:         logFrame.Data,
-				Ts:           logFrame.Ts,
+			taskLogs = append(taskLogs, &entity.TaskLog{
+				TaskID:   taskData.Task.ID,
+				TargetID: deployment.ID,
+				Type:     logFrame.Type,
+				Data:     logFrame.Data,
+				Ts:       logFrame.Ts,
 			})
 		}
-		err = e.deploymentLogRepo.InsertMulti(ctx, db, deploymentLogs)
+		err = e.taskLogRepo.InsertMulti(ctx, db, taskLogs)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -273,6 +265,20 @@ func (e *Executor) addStepEndLog(
 			" with error: "+err.Error(), nil))
 	} else {
 		_ = taskData.LogStore.Add(ctx, realtimelog.NewOutFrame("Task finished in "+duration.String(), nil))
+	}
+}
+
+func (e *Executor) onPostExec(
+	ctx context.Context,
+	db database.Tx,
+	data *taskData,
+) {
+	if data.Task.IsDone() || data.Task.IsFailedCompletely() {
+		err := e.createNotificationTask(ctx, db, data)
+		if err != nil {
+			_ = data.LogStore.Add(ctx, realtimelog.NewOutFrame("Failed to schedule notification sending"+
+				" with error: "+err.Error(), nil))
+		}
 	}
 }
 
@@ -319,23 +325,11 @@ func (e *Executor) createNotificationTask(
 		CreatedAt: timeNow,
 		UpdatedAt: timeNow,
 	}
-	err = task.SetArgs(&entity.TaskAppNotificationArgs{
+	task.MustSetArgs(&entity.TaskAppNotificationArgs{
 		App:        entity.ObjectID{ID: data.App.ID},
 		Deployment: &entity.ObjectID{ID: data.Deployment.ID},
 	})
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	err = e.taskRepo.Insert(ctx, db, task)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	err = e.taskQueue.ScheduleTask(ctx, task)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
+	data.ScheduleNextTasks(task)
 
 	return nil
 }

@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/tiendc/gofn"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
@@ -94,12 +96,9 @@ func (e *Executor) execute(
 		}
 	}()
 
-	taskTimeout := data.Task.Config.Timeout.ToDuration()
-	if taskTimeout > 0 {
-		var cancel context.CancelFunc
-		ctx, cancel = context.WithTimeout(ctx, taskTimeout)
-		defer cancel()
-	}
+	taskTimeout := gofn.Coalesce(data.Task.Config.Timeout.ToDuration(), base.DeploymentNotificationTimeoutDefault)
+	ctx, cancel := context.WithTimeout(ctx, taskTimeout)
+	defer cancel()
 
 	switch { //nolint:gocritic
 	case data.Deployment != nil:

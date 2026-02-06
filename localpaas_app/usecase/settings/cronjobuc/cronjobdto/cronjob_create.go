@@ -20,31 +20,46 @@ type CreateCronJobReq struct {
 }
 
 type CronJobBaseReq struct {
-	Name       string            `json:"name"`
-	Kind       base.TaskType     `json:"kind"`
-	Cron       string            `json:"cron"`
-	Priority   base.TaskPriority `json:"priority"`
-	MaxRetry   int               `json:"maxRetry"`
-	RetryDelay timeutil.Duration `json:"retryDelay"`
-	Timeout    timeutil.Duration `json:"timeout"`
-	Command    string            `json:"command"`
+	Name       string                      `json:"name"`
+	Kind       base.TaskType               `json:"kind"`
+	CronType   base.CronJobType            `json:"cronType"`
+	CronExpr   string                      `json:"cronExpr"`
+	App        basedto.ObjectIDReq         `json:"app"`
+	Priority   base.TaskPriority           `json:"priority"`
+	MaxRetry   int                         `json:"maxRetry"`
+	RetryDelay timeutil.Duration           `json:"retryDelay"`
+	Timeout    timeutil.Duration           `json:"timeout"`
+	Command    *CronJobContainerCommandReq `json:"command"`
+}
+
+type CronJobContainerCommandReq struct {
+	Command    string `json:"command"`
+	WorkingDir string `json:"workingDir"`
 }
 
 func (req *CronJobBaseReq) ToEntity() *entity.CronJob {
-	return &entity.CronJob{
-		Cron:        req.Cron,
+	item := &entity.CronJob{
+		CronType:    req.CronType,
+		CronExpr:    req.CronExpr,
+		App:         entity.ObjectID{ID: req.App.ID},
 		InitialTime: timeutil.NowUTC(),
 		Priority:    req.Priority,
 		MaxRetry:    req.MaxRetry,
 		RetryDelay:  req.RetryDelay,
 		Timeout:     req.Timeout,
-		Command:     req.Command,
 	}
+	if req.Command != nil {
+		item.Command = &entity.CronJobContainerCommand{
+			Command:    req.Command.Command,
+			WorkingDir: req.Command.WorkingDir,
+		}
+	}
+	return item
 }
 
 func (req *CronJobBaseReq) modifyRequest() error {
 	req.Name = strings.TrimSpace(req.Name)
-	req.Cron = strings.TrimSpace(req.Cron)
+	req.CronExpr = strings.TrimSpace(req.CronExpr)
 	req.Priority = gofn.Coalesce(req.Priority, base.TaskPriorityDefault)
 	return nil
 }

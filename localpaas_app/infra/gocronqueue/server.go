@@ -27,7 +27,7 @@ var (
 	ErrTaskProcessorNotFound = errors.New("task processor not found")
 )
 
-type TaskExecFunc func(taskID string, payload string) (time.Time, error)
+type TaskExecFunc func(taskID string, payload string) *time.Time
 
 type Server struct {
 	config    *Config
@@ -162,7 +162,7 @@ func (s *Server) shouldSchedule(task *entity.Task, runAt time.Time) bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	existingJob := s.jobMap[task.ID]
-	if existingJob != nil && existingJob.RunAt.Equal(runAt) {
+	if existingJob != nil && existingJob.RunAt.Equal(runAt) { // NOTE: zero time values equal
 		return false
 	}
 	return true
@@ -190,15 +190,12 @@ func (s *Server) executeTask(task *entity.Task, priorityCheck bool) error {
 		return fmt.Errorf("%w: task processor func not found for task type '%v'",
 			ErrTaskProcessorNotFound, task.Type)
 	}
-	rescheduleAt, err := execFunc(task.ID, task.Args)
-	if err != nil {
-		if !rescheduleAt.IsZero() {
-			err := s.ScheduleTask(task, rescheduleAt)
-			if err != nil {
-				return apperrors.Wrap(err)
-			}
+	rescheduleAt := execFunc(task.ID, task.Args)
+	if rescheduleAt != nil {
+		err := s.ScheduleTask(task, *rescheduleAt)
+		if err != nil {
+			return apperrors.Wrap(err)
 		}
-		return apperrors.Wrap(err)
 	}
 	return nil
 }

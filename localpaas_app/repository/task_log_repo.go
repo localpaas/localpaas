@@ -12,34 +12,34 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 )
 
-type DeploymentLogRepo interface {
+type TaskLogRepo interface {
 	GetByID(ctx context.Context, db database.IDB, id string,
-		opts ...bunex.SelectQueryOption) (*entity.DeploymentLog, error)
-	List(ctx context.Context, db database.IDB, deploymentID string, paging *basedto.Paging,
-		opts ...bunex.SelectQueryOption) ([]*entity.DeploymentLog, *basedto.PagingMeta, error)
+		opts ...bunex.SelectQueryOption) (*entity.TaskLog, error)
+	List(ctx context.Context, db database.IDB, taskID, targetID string, paging *basedto.Paging,
+		opts ...bunex.SelectQueryOption) ([]*entity.TaskLog, *basedto.PagingMeta, error)
 
-	Insert(ctx context.Context, db database.IDB, log *entity.DeploymentLog,
+	Insert(ctx context.Context, db database.IDB, log *entity.TaskLog,
 		opts ...bunex.InsertQueryOption) error
-	InsertMulti(ctx context.Context, db database.IDB, logs []*entity.DeploymentLog,
+	InsertMulti(ctx context.Context, db database.IDB, logs []*entity.TaskLog,
 		opts ...bunex.InsertQueryOption) error
 }
 
-type deploymentLogRepo struct {
+type taskLogRepo struct {
 }
 
-func NewDeploymentLogRepo() DeploymentLogRepo {
-	return &deploymentLogRepo{}
+func NewTaskLogRepo() TaskLogRepo {
+	return &taskLogRepo{}
 }
 
-func (repo *deploymentLogRepo) GetByID(ctx context.Context, db database.IDB, id string,
-	opts ...bunex.SelectQueryOption) (*entity.DeploymentLog, error) {
-	log := &entity.DeploymentLog{}
-	query := db.NewSelect().Model(log).Where("deployment_log.id = ?", id)
+func (repo *taskLogRepo) GetByID(ctx context.Context, db database.IDB, id string,
+	opts ...bunex.SelectQueryOption) (*entity.TaskLog, error) {
+	log := &entity.TaskLog{}
+	query := db.NewSelect().Model(log).Where("task_log.id = ?", id)
 	query = bunex.ApplySelect(query, opts...)
 
 	err := query.Scan(ctx)
 	if log == nil || errors.Is(err, sql.ErrNoRows) {
-		return nil, apperrors.NewNotFound("DeploymentLog").WithCause(err)
+		return nil, apperrors.NewNotFound("TaskLog").WithCause(err)
 	}
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -47,12 +47,15 @@ func (repo *deploymentLogRepo) GetByID(ctx context.Context, db database.IDB, id 
 	return log, nil
 }
 
-func (repo *deploymentLogRepo) List(ctx context.Context, db database.IDB, deploymentID string, paging *basedto.Paging,
-	opts ...bunex.SelectQueryOption) ([]*entity.DeploymentLog, *basedto.PagingMeta, error) {
-	var logs []*entity.DeploymentLog
+func (repo *taskLogRepo) List(ctx context.Context, db database.IDB, taskID, targetID string,
+	paging *basedto.Paging, opts ...bunex.SelectQueryOption) ([]*entity.TaskLog, *basedto.PagingMeta, error) {
+	var logs []*entity.TaskLog
 	query := db.NewSelect().Model(&logs)
-	if deploymentID != "" {
-		query = query.Where("deployment_log.deployment_id = ?", deploymentID)
+	if taskID != "" {
+		query = query.Where("task_log.task_id = ?", taskID)
+	}
+	if targetID != "" {
+		query = query.Where("task_log.target_id = ?", targetID)
 	}
 	query = bunex.ApplySelect(query, opts...)
 
@@ -78,12 +81,12 @@ func (repo *deploymentLogRepo) List(ctx context.Context, db database.IDB, deploy
 	return logs, pagingMeta, nil
 }
 
-func (repo *deploymentLogRepo) Insert(ctx context.Context, db database.IDB, log *entity.DeploymentLog,
+func (repo *taskLogRepo) Insert(ctx context.Context, db database.IDB, log *entity.TaskLog,
 	opts ...bunex.InsertQueryOption) error {
-	return repo.InsertMulti(ctx, db, []*entity.DeploymentLog{log}, opts...)
+	return repo.InsertMulti(ctx, db, []*entity.TaskLog{log}, opts...)
 }
 
-func (repo *deploymentLogRepo) InsertMulti(ctx context.Context, db database.IDB, logs []*entity.DeploymentLog,
+func (repo *taskLogRepo) InsertMulti(ctx context.Context, db database.IDB, logs []*entity.TaskLog,
 	opts ...bunex.InsertQueryOption) error {
 	if len(logs) == 0 {
 		return nil

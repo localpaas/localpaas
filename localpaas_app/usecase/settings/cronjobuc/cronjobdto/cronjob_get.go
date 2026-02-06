@@ -35,13 +35,20 @@ type GetCronJobResp struct {
 
 type CronJobResp struct {
 	*settings.BaseSettingResp
-	Cron        string            `json:"cron"`
-	InitialTime time.Time         `json:"initialTime"`
-	Priority    base.TaskPriority `json:"priority"`
-	MaxRetry    int               `json:"maxRetry"`
-	RetryDelay  timeutil.Duration `json:"retryDelay"`
-	Timeout     timeutil.Duration `json:"timeout"`
-	Command     string            `json:"command"`
+	CronType    base.CronJobType         `json:"cronType"`
+	CronExpr    string                   `json:"cronExpr"`
+	App         *basedto.NamedObjectResp `json:"app"`
+	InitialTime time.Time                `json:"initialTime"`
+	Priority    base.TaskPriority        `json:"priority"`
+	MaxRetry    int                      `json:"maxRetry"`
+	RetryDelay  timeutil.Duration        `json:"retryDelay"`
+	Timeout     timeutil.Duration        `json:"timeout"`
+	Command     string                   `json:"command"`
+}
+
+type CronJobContainerCommandResp struct {
+	Command    string `json:"command"`
+	WorkingDir string `json:"workingDir"`
 }
 
 func TransformCronJob(setting *entity.Setting) (resp *CronJobResp, err error) {

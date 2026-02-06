@@ -27,17 +27,17 @@ func (e *Executor) notifyForDeployment(
 	ntfnSettings := data.NtfnSettings.Deployment
 	var execFuncs []func(ctx context.Context) error
 
-	if ntfnSettings.HasViaEmailNotificationSettings() {
+	if ntfnSettings.HasViaEmailNtfnSettings() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
 			return e.notifyForDeploymentViaEmail(ctx, db, data)
 		})
 	}
-	if ntfnSettings.HasViaSlackNotificationSettings() {
+	if ntfnSettings.HasViaSlackNtfnSettings() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
 			return e.notifyForDeploymentViaSlack(ctx, db, data)
 		})
 	}
-	if ntfnSettings.HasViaDiscordNotificationSettings() {
+	if ntfnSettings.HasViaDiscordNtfnSettings() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
 			return e.notifyForDeploymentViaDiscord(ctx, db, data)
 		})
@@ -118,6 +118,9 @@ func (e *Executor) notifyForDeploymentViaEmail(
 	userEmails := make([]string, 0, len(userMap))
 	for _, user := range userMap {
 		userEmails = append(userEmails, user.Email)
+	}
+	if len(settings.ViaEmail.ToAddresses) > 0 {
+		userEmails = gofn.ToSet(append(userEmails, settings.ViaEmail.ToAddresses...))
 	}
 
 	subject := fmt.Sprintf("[%s/%s]", data.Project.Name, data.App.Name)

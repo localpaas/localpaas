@@ -20,9 +20,12 @@ import (
 type TaskExecData struct {
 	Task         *entity.Task
 	Uncancelable bool
+	NonRetryable bool
 	Canceled     bool
 	Done         bool
+	NextTasks    []*entity.Task
 	onCommand    func(base.TaskCommand, ...any)
+	onPostExec   func()
 }
 
 func (t *TaskExecData) IsCanceled() bool {
@@ -33,9 +36,17 @@ func (t *TaskExecData) IsDone() bool {
 	return t.Done
 }
 
+func (t *TaskExecData) ScheduleNextTasks(tasks ...*entity.Task) {
+	t.NextTasks = append(t.NextTasks, tasks...)
+}
+
 func (t *TaskExecData) OnCommand(fn func(base.TaskCommand, ...any)) {
 	// NOTE: do we need to use mutex?
 	t.onCommand = fn
+}
+
+func (t *TaskExecData) OnPostExec(fn func()) {
+	t.onPostExec = fn
 }
 
 type TaskExecFunc func(context.Context, database.Tx, *TaskExecData) error
@@ -47,13 +58,24 @@ func (q *taskQueue) RegisterExecutor(typ base.TaskType, execFunc TaskExecFunc) {
 	if q.taskExecutorMap == nil {
 		q.taskExecutorMap = make(map[base.TaskType]gocronqueue.TaskExecFunc, 10) //nolint:mnd
 	}
-	q.taskExecutorMap[typ] = func(taskID string, payload string) (time.Time, error) {
+	q.taskExecutorMap[typ] = func(taskID string, payload string) *time.Time {
 		return q.executeTask(context.Background(), taskID, payload, execFunc)
 	}
 }
 
 func (q *taskQueue) ScheduleTask(
 	ctx context.Context,
+	tasks ...*entity.Task,
+) error {
+	for _, task := range tasks {
+		if err := q.scheduleTask(task); err != nil {
+			return apperrors.Wrap(err)
+		}
+	}
+	return nil
+}
+
+func (q *taskQueue) scheduleTask(
 	task *entity.Task,
 ) error {
 	if task.Status == base.TaskStatusDone || task.Status == base.TaskStatusCanceled {
@@ -77,6 +99,17 @@ func (q *taskQueue) ScheduleTask(
 
 func (q *taskQueue) UnscheduleTask(
 	ctx context.Context,
+	tasks ...*entity.Task,
+) error {
+	for _, task := range tasks {
+		if err := q.unscheduleTask(task); err != nil {
+			return apperrors.Wrap(err)
+		}
+	}
+	return nil
+}
+
+func (q *taskQueue) unscheduleTask(
 	task *entity.Task,
 ) error {
 	if q.server != nil {
@@ -164,7 +197,7 @@ func (q *taskQueue) createTasks(ctx context.Context, db database.Tx, jobIDs []st
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}
-		cronSched, err := cronJob.ParseCron()
+		cronSched, err := cronJob.ParseCronExpr()
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

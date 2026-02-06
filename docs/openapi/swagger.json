@@ -16181,6 +16181,11 @@
         "type" : "string",
         "x-enum-varnames" : [ "BuildToolDocker", "BuildToolNixpacks" ]
       },
+      "github_com_localpaas_localpaas_localpaas_app_base.CronJobType" : {
+        "enum" : [ "container-command" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "CronJobTypeContainerCommand" ]
+      },
       "github_com_localpaas_localpaas_localpaas_app_base.DeploymentMethod" : {
         "enum" : [ "image", "repo", "tarball" ],
         "type" : "string",
@@ -16262,9 +16267,9 @@
         "x-enum-varnames" : [ "TaskStatusNotStarted", "TaskStatusInProgress", "TaskStatusCanceled", "TaskStatusDone", "TaskStatusFailed" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.TaskType" : {
-        "enum" : [ "task:test", "task:app-deploy", "task:app-notification" ],
+        "enum" : [ "task:test", "task:app-deploy", "task:app-notification", "task:cron-job-exec", "task:cron-job-notification" ],
         "type" : "string",
-        "x-enum-varnames" : [ "TaskTypeTest", "TaskTypeAppDeploy", "TaskTypeAppNotification" ]
+        "x-enum-varnames" : [ "TaskTypeTest", "TaskTypeAppDeploy", "TaskTypeAppNotification", "TaskTypeCronJobExec", "TaskTypeCronJobNotification" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.TokenKind" : {
         "enum" : [ "github", "gitlab", "gitea", "bitbucket", "gogs" ],
@@ -16373,6 +16378,18 @@
           }
         },
         "required" : [ "access", "id" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_basedto.NamedObjectResp" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "id", "name" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_basedto.ObjectAccessReq" : {
@@ -19833,14 +19850,20 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CreateCronJobReq" : {
         "properties" : {
+          "app" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
+          },
           "availableInProjects" : {
             "type" : "boolean"
           },
           "command" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobContainerCommandReq"
+          },
+          "cronExpr" : {
             "type" : "string"
           },
-          "cron" : {
-            "type" : "string"
+          "cronType" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.CronJobType"
           },
           "default" : {
             "type" : "boolean"
@@ -19864,7 +19887,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
           }
         },
-        "required" : [ "availableInProjects", "command", "cron", "default", "kind", "maxRetry", "name", "priority", "retryDelay", "timeout" ],
+        "required" : [ "app", "availableInProjects", "command", "cronExpr", "cronType", "default", "kind", "maxRetry", "name", "priority", "retryDelay", "timeout" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CreateCronJobResp" : {
@@ -19879,8 +19902,23 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobContainerCommandReq" : {
+        "properties" : {
+          "command" : {
+            "type" : "string"
+          },
+          "workingDir" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "command", "workingDir" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobResp" : {
         "properties" : {
+          "app" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.NamedObjectResp"
+          },
           "availableInProjects" : {
             "type" : "boolean"
           },
@@ -19890,8 +19928,11 @@
           "createdAt" : {
             "type" : "string"
           },
-          "cron" : {
+          "cronExpr" : {
             "type" : "string"
+          },
+          "cronType" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.CronJobType"
           },
           "default" : {
             "type" : "boolean"
@@ -19939,7 +19980,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "command", "createdAt", "cron", "id", "initialTime", "maxRetry", "name", "priority", "retryDelay", "status", "timeout", "type", "updateVer", "updatedAt" ],
+        "required" : [ "app", "command", "createdAt", "cronExpr", "cronType", "id", "initialTime", "maxRetry", "name", "priority", "retryDelay", "status", "timeout", "type", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.DeleteCronJobResp" : {
@@ -20010,14 +20051,20 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.UpdateCronJobReq" : {
         "properties" : {
+          "app" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
+          },
           "availableInProjects" : {
             "type" : "boolean"
           },
           "command" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobContainerCommandReq"
+          },
+          "cronExpr" : {
             "type" : "string"
           },
-          "cron" : {
-            "type" : "string"
+          "cronType" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.CronJobType"
           },
           "default" : {
             "type" : "boolean"
@@ -20044,7 +20091,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "availableInProjects", "command", "cron", "default", "kind", "maxRetry", "name", "priority", "retryDelay", "timeout", "updateVer" ],
+        "required" : [ "app", "availableInProjects", "command", "cronExpr", "cronType", "default", "kind", "maxRetry", "name", "priority", "retryDelay", "timeout", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.UpdateCronJobResp" : {

@@ -45,7 +45,7 @@ type DeploymentLogsDataResp struct {
 	LogChanCloser func() error                   `json:"-"`
 }
 
-func TransformDeploymentLogs(logs []*entity.DeploymentLog) (resp []*realtimelog.LogFrame) {
+func TransformDeploymentLogs(logs []*entity.TaskLog) (resp []*realtimelog.LogFrame) {
 	resp = make([]*realtimelog.LogFrame, 0, len(logs))
 	for _, log := range logs {
 		resp = append(resp, &realtimelog.LogFrame{

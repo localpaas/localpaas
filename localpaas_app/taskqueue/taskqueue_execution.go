@@ -57,15 +57,16 @@ func (q *taskQueue) loadTask(
 	return task, nil
 }
 
+//nolint:gocognit
 func (q *taskQueue) executeTask(
 	ctx context.Context,
 	taskID string,
 	_ string,
 	executorFunc func(context.Context, database.Tx, *TaskExecData) error,
-) (rescheduleAt time.Time, err error) {
-	var task *entity.Task
-	err = transaction.Execute(ctx, q.db, func(db database.Tx) error {
-		task, err = q.loadTask(ctx, db, taskID)
+) (rescheduleAt *time.Time) {
+	var taskData *TaskExecData
+	err := transaction.Execute(ctx, q.db, func(db database.Tx) (err error) {
+		task, err := q.loadTask(ctx, db, taskID)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -73,21 +74,21 @@ func (q *taskQueue) executeTask(
 			return nil
 		}
 
-		taskData := &TaskExecData{
+		taskData = &TaskExecData{
 			Task: task,
 		}
 		taskTimeout := task.Config.Timeout.ToDuration()
 		ctx, cancel := context.WithTimeout(ctx, gofn.Coalesce(taskTimeout, taskDefaultTimeout))
 		defer cancel()
 
-		// Check for commands from other processes
-		go q.taskControlCheck(ctx, taskData)
-
 		// Put task to in-progress state
 		task.StartedAt = timeutil.NowUTC()
 		if task.Status == base.TaskStatusFailed {
 			task.Config.Retry++
 		}
+
+		// Check for commands from other processes
+		go q.taskControlCheck(ctx, taskData)
 
 		// Mark the task as `in-progress` by inserting a new record in to redis
 		taskInfo := &cacheentity.TaskInfo{
@@ -100,41 +101,61 @@ func (q *taskQueue) executeTask(
 			return apperrors.Wrap(err)
 		}
 
+		var execErr error
 		defer func() {
 			if err == nil {
 				if r := recover(); r != nil { // recover from panic
 					err = apperrors.NewPanic(fmt.Sprintf("%v", r))
 				}
 			}
+			if err != nil {
+				return
+			}
+			timeNow := timeutil.NowUTC()
+			if execErr != nil {
+				task.Status = base.TaskStatusFailed
+				if taskData.NonRetryable {
+					task.Config.MaxRetry = task.Config.Retry
+				}
+				if task.CanRetry() {
+					task.RetryAt = timeNow.Add(calcExpBackoffRetry(task))
+					rescheduleAt = &task.RetryAt
+				} else {
+					task.RetryAt = time.Time{}
+				}
+				_ = task.AddRun(&entity.TaskRun{
+					StartedAt: task.StartedAt,
+					EndedAt:   timeNow,
+					Error:     execErr.Error(),
+				})
+			} else {
+				task.EndedAt = timeNow
+				task.Status = gofn.If(taskData.Canceled, base.TaskStatusCanceled, base.TaskStatusDone)
+			}
+			// Post execution event
+			if taskData.onPostExec != nil {
+				taskData.onPostExec()
+			}
+			// Delete data in cache
 			_ = q.taskInfoRepo.Del(ctx, task.ID)
-			err = q.taskRepo.Update(ctx, db, task)
+			// Save tasks in DB
+			err = q.taskRepo.UpsertMulti(ctx, db, append([]*entity.Task{task}, taskData.NextTasks...),
+				entity.TaskUpsertingConflictCols, entity.TaskUpsertingUpdateCols)
 		}()
 
-		err = executorFunc(ctx, db, taskData)
-		timeNow := timeutil.NowUTC()
-		if err != nil {
-			task.Status = base.TaskStatusFailed
-			task.RetryAt = timeNow.Add(calcExpBackoffRetry(task))
-			_ = task.AddRun(&entity.TaskRun{
-				StartedAt: task.StartedAt,
-				EndedAt:   timeNow,
-				Error:     err.Error(),
-			})
-			return apperrors.Wrap(err)
-		}
-
-		task.EndedAt = timeNow
-		task.Status = gofn.If(taskData.Canceled, base.TaskStatusCanceled, base.TaskStatusDone)
-		return nil
-	})
+		execErr = executorFunc(ctx, db, taskData)
+		return err //nolint:wrapcheck
+	}, transaction.NoRetry())
 	if err != nil {
-		if task != nil && task.Status == base.TaskStatusFailed {
-			rescheduleAt = task.RetryAt
-		}
-		return rescheduleAt, apperrors.Wrap(err)
+		return rescheduleAt
 	}
 
-	return rescheduleAt, nil
+	// If next tasks are set, schedule them
+	if taskData != nil && len(taskData.NextTasks) > 0 {
+		_ = q.ScheduleTask(ctx, taskData.NextTasks...)
+	}
+
+	return rescheduleAt
 }
 
 func (q *taskQueue) taskControlCheck(
