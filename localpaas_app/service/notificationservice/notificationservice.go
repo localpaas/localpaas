@@ -1,4 +1,4 @@
-package imservice
+package notificationservice
 
 import (
 	"context"
@@ -7,24 +7,24 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 )
 
-type IMService interface {
-	// Slack
+type NotificationService interface {
+	// App deployment notification
+	EmailSendAppDeploymentNotification(ctx context.Context, db database.IDB,
+		data *EmailMsgDataAppDeploymentNotification) error
 	SlackSendAppDeploymentNotification(ctx context.Context, db database.IDB,
 		data *SlackMsgDataAppDeploymentNotification) error
-
-	// Discord
 	DiscordSendAppDeploymentNotification(ctx context.Context, db database.IDB,
 		data *DiscordMsgDataAppDeploymentNotification) error
 }
 
-func NewIMService(
+func NewNotificationService(
 	settingRepo repository.SettingRepo,
-) IMService {
-	return &imService{
+) NotificationService {
+	return &notificationService{
 		settingRepo: settingRepo,
 	}
 }
 
-type imService struct {
+type notificationService struct {
 	settingRepo repository.SettingRepo
 }

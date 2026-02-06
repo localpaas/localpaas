@@ -10,12 +10,12 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/service/emailservice"
-	"github.com/localpaas/localpaas/localpaas_app/service/imservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
 )
 
 type deploymentNtfnTaskData struct {
 	*taskData
+	MsgData *notificationservice.BaseMsgDataAppDeploymentNotification
 }
 
 func (e *Executor) notifyForDeployment(
@@ -29,22 +29,24 @@ func (e *Executor) notifyForDeployment(
 
 	if ntfnSettings.HasViaEmailNotificationSettings() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
-			return e.notifyForDeploymentViaEmail(ctx, db, taskData)
+			return e.notifyForDeploymentViaEmail(ctx, db, data)
 		})
 	}
 	if ntfnSettings.HasViaSlackNotificationSettings() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
-			return e.notifyForDeploymentViaSlack(ctx, db, taskData)
+			return e.notifyForDeploymentViaSlack(ctx, db, data)
 		})
 	}
 	if ntfnSettings.HasViaDiscordNotificationSettings() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
-			return e.notifyForDeploymentViaDiscord(ctx, db, taskData)
+			return e.notifyForDeploymentViaDiscord(ctx, db, data)
 		})
 	}
 	if len(execFuncs) == 0 {
 		return nil
 	}
+
+	e.buildDeploymentMsgData(data)
 
 	err := gofn.ExecTasks(ctx, 0, execFuncs...)
 	if err != nil {
@@ -54,10 +56,40 @@ func (e *Executor) notifyForDeployment(
 	return nil
 }
 
+func (e *Executor) buildDeploymentMsgData(
+	data *deploymentNtfnTaskData,
+) {
+	deployment := data.Deployment
+	success := deployment.Status == base.DeploymentStatusDone
+
+	msgData := &notificationservice.BaseMsgDataAppDeploymentNotification{
+		ProjectName:   data.Project.Name,
+		AppName:       data.App.Name,
+		Succeeded:     success,
+		Method:        deployment.Settings.ActiveMethod,
+		Duration:      deployment.GetDuration(),
+		DashboardLink: config.Current.DashboardDeploymentDetailsURL(deployment.ID),
+	}
+	data.MsgData = msgData
+
+	switch deployment.Settings.ActiveMethod {
+	case base.DeploymentMethodRepo:
+		msgData.RepoURL = deployment.Settings.RepoSource.RepoURL
+		msgData.RepoRef = deployment.Settings.RepoSource.RepoRef
+		if deployment.Output != nil {
+			msgData.CommitMsg = deployment.Output.CommitMessage
+		}
+	case base.DeploymentMethodImage:
+		msgData.Image = deployment.Settings.ImageSource.Image
+	case base.DeploymentMethodTarball:
+		msgData.SourceArchive = "source tarball" // TODO: update this
+	}
+}
+
 func (e *Executor) notifyForDeploymentViaEmail(
 	ctx context.Context,
 	db database.Tx,
-	data *taskData,
+	data *deploymentNtfnTaskData,
 ) error {
 	success := data.Deployment.Status == base.DeploymentStatusDone
 	settings := gofn.If(success, data.NtfnSettings.Deployment.Success, data.NtfnSettings.Deployment.Failure)
@@ -65,8 +97,12 @@ func (e *Executor) notifyForDeploymentViaEmail(
 		return nil
 	}
 
-	senderEmail := data.RefSettingMap[settings.ViaEmail.Sender.ID]
-	if senderEmail == nil {
+	emailSetting := data.RefSettingMap[settings.ViaEmail.Sender.ID]
+	if emailSetting == nil {
+		return apperrors.NewMissing("Sender email account")
+	}
+	emailAcc := emailSetting.MustAsEmail()
+	if emailAcc == nil {
 		return apperrors.NewMissing("Sender email account")
 	}
 
@@ -91,30 +127,13 @@ func (e *Executor) notifyForDeploymentViaEmail(
 		subject += " deployment failed"
 	}
 
-	deployment := data.Deployment
-	emailData := &emailservice.EmailDataAppDeploymentNotification{
-		Email:         senderEmail.MustAsEmail(),
-		Recipients:    userEmails,
-		Subject:       subject,
-		ProjectName:   data.Project.Name,
-		AppName:       data.App.Name,
-		Succeeded:     success,
-		Method:        deployment.Settings.ActiveMethod,
-		Duration:      deployment.GetDuration(),
-		DashboardLink: config.Current.DashboardDeploymentDetailsURL(deployment.ID),
-	}
-
-	switch deployment.Settings.ActiveMethod {
-	case base.DeploymentMethodRepo:
-		emailData.RepoURL = deployment.Settings.RepoSource.RepoURL
-		emailData.RepoRef = deployment.Settings.RepoSource.RepoRef
-	case base.DeploymentMethodImage:
-		emailData.Image = deployment.Settings.ImageSource.Image
-	case base.DeploymentMethodTarball:
-		emailData.SourceArchive = "source tarball" //nolint TODO: update this
-	}
-
-	err = e.emailService.SendMailAppDeploymentNotification(ctx, db, emailData)
+	err = e.notificationService.EmailSendAppDeploymentNotification(ctx, db,
+		&notificationservice.EmailMsgDataAppDeploymentNotification{
+			BaseMsgDataAppDeploymentNotification: data.MsgData,
+			Email:                                emailAcc,
+			Recipients:                           userEmails,
+			Subject:                              subject,
+		})
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -125,7 +144,7 @@ func (e *Executor) notifyForDeploymentViaEmail(
 func (e *Executor) notifyForDeploymentViaSlack(
 	ctx context.Context,
 	db database.Tx,
-	data *taskData,
+	data *deploymentNtfnTaskData,
 ) error {
 	success := data.Deployment.Status == base.DeploymentStatusDone
 	settings := gofn.If(success, data.NtfnSettings.Deployment.Success, data.NtfnSettings.Deployment.Failure)
@@ -138,32 +157,15 @@ func (e *Executor) notifyForDeploymentViaSlack(
 		return apperrors.NewMissing("Slack webhook")
 	}
 	imService := imSetting.MustAsIMService()
-	if imService.Slack == nil {
+	if imService == nil || imService.Slack == nil {
 		return apperrors.NewMissing("Slack webhook")
 	}
 
-	deployment := data.Deployment
-	slackData := &imservice.SlackMsgDataAppDeploymentNotification{
-		Slack:         imService.Slack,
-		ProjectName:   data.Project.Name,
-		AppName:       data.App.Name,
-		Succeeded:     success,
-		Method:        deployment.Settings.ActiveMethod,
-		Duration:      deployment.GetDuration(),
-		DashboardLink: config.Current.DashboardDeploymentDetailsURL(deployment.ID),
-	}
-
-	switch deployment.Settings.ActiveMethod {
-	case base.DeploymentMethodRepo:
-		slackData.RepoURL = deployment.Settings.RepoSource.RepoURL
-		slackData.RepoRef = deployment.Settings.RepoSource.RepoRef
-	case base.DeploymentMethodImage:
-		slackData.Image = deployment.Settings.ImageSource.Image
-	case base.DeploymentMethodTarball:
-		slackData.SourceArchive = "source tarball" // TODO: update this
-	}
-
-	err := e.imService.SlackSendAppDeploymentNotification(ctx, db, slackData)
+	err := e.notificationService.SlackSendAppDeploymentNotification(ctx, db,
+		&notificationservice.SlackMsgDataAppDeploymentNotification{
+			BaseMsgDataAppDeploymentNotification: data.MsgData,
+			Setting:                              imService.Slack,
+		})
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -174,7 +176,7 @@ func (e *Executor) notifyForDeploymentViaSlack(
 func (e *Executor) notifyForDeploymentViaDiscord(
 	ctx context.Context,
 	db database.Tx,
-	data *taskData,
+	data *deploymentNtfnTaskData,
 ) error {
 	success := data.Deployment.Status == base.DeploymentStatusDone
 	settings := gofn.If(success, data.NtfnSettings.Deployment.Success, data.NtfnSettings.Deployment.Failure)
@@ -187,32 +189,15 @@ func (e *Executor) notifyForDeploymentViaDiscord(
 		return apperrors.NewMissing("Discord webhook")
 	}
 	imService := imSetting.MustAsIMService()
-	if imService.Discord == nil {
+	if imService == nil || imService.Discord == nil {
 		return apperrors.NewMissing("Discord webhook")
 	}
 
-	deployment := data.Deployment
-	discordData := &imservice.DiscordMsgDataAppDeploymentNotification{
-		Discord:       imService.Discord,
-		ProjectName:   data.Project.Name,
-		AppName:       data.App.Name,
-		Succeeded:     success,
-		Method:        deployment.Settings.ActiveMethod,
-		Duration:      deployment.GetDuration(),
-		DashboardLink: config.Current.DashboardDeploymentDetailsURL(deployment.ID),
-	}
-
-	switch deployment.Settings.ActiveMethod {
-	case base.DeploymentMethodRepo:
-		discordData.RepoURL = deployment.Settings.RepoSource.RepoURL
-		discordData.RepoRef = deployment.Settings.RepoSource.RepoRef
-	case base.DeploymentMethodImage:
-		discordData.Image = deployment.Settings.ImageSource.Image
-	case base.DeploymentMethodTarball:
-		discordData.SourceArchive = "source tarball" // TODO: update this
-	}
-
-	err := e.imService.DiscordSendAppDeploymentNotification(ctx, db, discordData)
+	err := e.notificationService.DiscordSendAppDeploymentNotification(ctx, db,
+		&notificationservice.DiscordMsgDataAppDeploymentNotification{
+			BaseMsgDataAppDeploymentNotification: data.MsgData,
+			Setting:                              imService.Discord,
+		})
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

@@ -14,10 +14,6 @@ type EmailService interface {
 	// Users
 	SendMailPasswordReset(ctx context.Context, db database.IDB, data *EmailDataPasswordReset) error
 	SendMailUserInvite(ctx context.Context, db database.IDB, data *EmailDataUserInvite) error
-
-	// Apps
-	SendMailAppDeploymentNotification(ctx context.Context, db database.IDB,
-		data *EmailDataAppDeploymentNotification) error
 }
 
 func NewEmailService(

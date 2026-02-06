@@ -27,10 +27,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/clusterservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/emailservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/envvarservice"
-	"github.com/localpaas/localpaas/localpaas_app/service/imservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/lpappservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/networkservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/nginxservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/projectservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
@@ -159,7 +159,7 @@ var Provides = []any{
 	nginxservice.NewNginxService,
 	lpappservice.NewLpAppService,
 	emailservice.NewEmailService,
-	imservice.NewIMService,
+	notificationservice.NewNotificationService,
 
 	// Repo: User
 	repository.NewUserRepo,

@@ -16,22 +16,22 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/repository/cacherepository"
 	"github.com/localpaas/localpaas/localpaas_app/service/appservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/emailservice"
-	"github.com/localpaas/localpaas/localpaas_app/service/imservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
 	"github.com/localpaas/localpaas/localpaas_app/taskqueue"
 )
 
 type Executor struct {
-	logger         logging.Logger
-	redisClient    rediscache.Client
-	appRepo        repository.AppRepo
-	settingRepo    repository.SettingRepo
-	deploymentRepo repository.DeploymentRepo
-	taskInfoRepo   cacherepository.TaskInfoRepo
-	appService     appservice.AppService
-	userService    userservice.UserService
-	emailService   emailservice.EmailService
-	imService      imservice.IMService
+	logger              logging.Logger
+	redisClient         rediscache.Client
+	appRepo             repository.AppRepo
+	settingRepo         repository.SettingRepo
+	deploymentRepo      repository.DeploymentRepo
+	taskInfoRepo        cacherepository.TaskInfoRepo
+	appService          appservice.AppService
+	userService         userservice.UserService
+	emailService        emailservice.EmailService
+	notificationService notificationservice.NotificationService
 }
 
 func NewExecutor(
@@ -45,19 +45,19 @@ func NewExecutor(
 	appService appservice.AppService,
 	userService userservice.UserService,
 	emailService emailservice.EmailService,
-	imService imservice.IMService,
+	notificationService notificationservice.NotificationService,
 ) *Executor {
 	p := &Executor{
-		logger:         logger,
-		redisClient:    redisClient,
-		appRepo:        appRepo,
-		settingRepo:    settingRepo,
-		deploymentRepo: deploymentRepo,
-		taskInfoRepo:   taskInfoRepo,
-		appService:     appService,
-		userService:    userService,
-		emailService:   emailService,
-		imService:      imService,
+		logger:              logger,
+		redisClient:         redisClient,
+		appRepo:             appRepo,
+		settingRepo:         settingRepo,
+		deploymentRepo:      deploymentRepo,
+		taskInfoRepo:        taskInfoRepo,
+		appService:          appService,
+		userService:         userService,
+		emailService:        emailService,
+		notificationService: notificationService,
 	}
 	taskQueue.RegisterExecutor(base.TaskTypeAppNotification, p.execute)
 	return p

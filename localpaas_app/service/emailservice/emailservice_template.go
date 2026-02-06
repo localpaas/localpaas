@@ -12,9 +12,8 @@ import (
 type TemplateType string
 
 const (
-	TemplateTypePasswordReset             TemplateType = "password-reset"
-	TemplateTypeUserInvite                TemplateType = "user-invite"
-	TemplateTypeAppDeploymentNotification TemplateType = "app-deployment-notification"
+	TemplateTypePasswordReset TemplateType = "password-reset"
+	TemplateTypeUserInvite    TemplateType = "user-invite"
 )
 
 var (
@@ -36,11 +35,9 @@ func (s *emailService) GetTemplate(
 
 	switch typ { //nolint
 	case TemplateTypePasswordReset:
-		tpl, err = template.ParseFiles("config/email_templates/password_reset.html")
+		tpl, err = template.ParseFiles("config/email/templates/password_reset.html")
 	case TemplateTypeUserInvite:
-		tpl, err = template.ParseFiles("config/email_templates/user_invite.html")
-	case TemplateTypeAppDeploymentNotification:
-		tpl, err = template.ParseFiles("config/email_templates/app_deployment_notification.html")
+		tpl, err = template.ParseFiles("config/email/templates/user_invite.html")
 	}
 	if err != nil {
 		return nil, apperrors.Wrap(err)

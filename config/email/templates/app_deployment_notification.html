@@ -70,9 +70,13 @@
 			color:#ffffff;
 		}
 
-		.col_20p {
+		.col_left {
 			text-align:left;
-			width: 20%;
+			max-width:30%;
+		}
+		.col_main {
+			text-align:left;
+			padding-left:10px;
 		}
 	</style>
 </head>
@@ -92,63 +96,71 @@
 			<table style="width:100%;border:0;border-spacing:0;text-align:left;">
 				<tbody>
 				<tr class="text_default">
-					<td class="col_20p">
+					<td class="col_left">
 						<b>Project:</b>
 					</td>
-					<td>
+					<td class="col_main">
 						{{.ProjectName}}
 					</td>
 				</tr>
 				<tr class="text_default">
-					<td class="col_20p">
+					<td class="col_left">
 						<b>App:</b>
 					</td>
-					<td>
+					<td class="col_main">
 						{{.AppName}}
 					</td>
 				</tr>
 				{{if .Method | eq "repo"}}
 				<tr class="text_default">
-					<td class="col_20p">
+					<td class="col_left">
 						<b>Repository:</b>
 					</td>
-					<td>
+					<td class="col_main">
 						{{.RepoURL}}
 					</td>
 				</tr>
 				<tr class="text_default">
-					<td class="col_20p">
+					<td class="col_left">
 						<b>Branch/Ref:</b>
 					</td>
-					<td>
+					<td class="col_main">
 						{{.RepoRef}}
+					</td>
+				</tr>
+				<tr class="text_default">
+					<td class="col_left">
+						<b>Commit Message:</b>
+					</td>
+					<td class="col_main">
+						{{.CommitMsg}}
 					</td>
 				</tr>
 				{{else if .Method | eq "image"}}
 				<tr class="text_default">
-					<td class="col_20p">
+					<td class="col_left">
 						<b>Image:</b>
 					</td>
-					<td>
+					<td class="col_main">
 						{{.Image}}
 					</td>
 				</tr>
 				{{else if .Method | eq "tarball"}}
 				<tr class="text_default">
-					<td class="col_20p">
+					<td class="col_left">
 						<b>Source Archive:</b>
 					</td>
-					<td>
+					<td class="col_main">
 						{{.SourceArchive}}
 					</td>
 				</tr>
 				{{end}}
 
 				<tr class="text_default">
-					<td class="col_20p">
+					<td class="col_left">
 						<b>Duration:</b>
 					</td>
-					<td>
+					<td class="col_main">
 						{{.Duration}}
 					</td>
 				</tr>

@@ -12,6 +12,10 @@ import (
 	"github.com/localpaas/localpaas/services/email"
 )
 
+const (
+	buffSizeMd = 5000
+)
+
 type EmailDataPasswordReset struct {
 	Email             *entity.Email
 	Recipients        []string
@@ -29,7 +33,7 @@ func (s *emailService) SendMailPasswordReset(
 		return apperrors.Wrap(err)
 	}
 
-	buf := bytes.NewBuffer(make([]byte, 0, 5000)) //nolint
+	buf := bytes.NewBuffer(make([]byte, 0, buffSizeMd))
 	err = template.Execute(buf, data)
 	if err != nil {
 		return apperrors.Wrap(err)

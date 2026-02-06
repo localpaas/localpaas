@@ -30,7 +30,7 @@ func (s *emailService) SendMailUserInvite(
 		return apperrors.Wrap(err)
 	}
 
-	buf := bytes.NewBuffer(make([]byte, 0, 5000)) //nolint
+	buf := bytes.NewBuffer(make([]byte, 0, buffSizeMd))
 	err = template.Execute(buf, *data)
 	if err != nil {
 		return apperrors.Wrap(err)
