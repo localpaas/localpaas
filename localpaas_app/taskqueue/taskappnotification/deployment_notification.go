@@ -3,7 +3,6 @@ package taskappnotification
 import (
 	"context"
 	"fmt"
-	"net/url"
 
 	"github.com/tiendc/gofn"
 
@@ -13,10 +12,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/service/emailservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/imservice"
-)
-
-const (
-	dashboardDeploymentDetailsPath = "/deployment/%s" // TODO: update this path
 )
 
 type deploymentNtfnTaskData struct {
@@ -97,9 +92,6 @@ func (e *Executor) notifyForDeploymentViaEmail(
 	}
 
 	deployment := data.Deployment
-	deploymentLink := gofn.Must(url.JoinPath(config.Current.BaseURL,
-		fmt.Sprintf(dashboardDeploymentDetailsPath, deployment.ID)))
-
 	emailData := &emailservice.EmailDataAppDeploymentNotification{
 		Email:         senderEmail.MustAsEmail(),
 		Recipients:    userEmails,
@@ -109,7 +101,7 @@ func (e *Executor) notifyForDeploymentViaEmail(
 		Succeeded:     success,
 		Method:        deployment.Settings.ActiveMethod,
 		Duration:      deployment.GetDuration(),
-		DashboardLink: deploymentLink,
+		DashboardLink: config.Current.DashboardDeploymentDetailsURL(deployment.ID),
 	}
 
 	switch deployment.Settings.ActiveMethod {
@@ -151,9 +143,6 @@ func (e *Executor) notifyForDeploymentViaSlack(
 	}
 
 	deployment := data.Deployment
-	deploymentLink := gofn.Must(url.JoinPath(config.Current.BaseURL,
-		fmt.Sprintf(dashboardDeploymentDetailsPath, deployment.ID)))
-
 	slackData := &imservice.SlackMsgDataAppDeploymentNotification{
 		Slack:         imService.Slack,
 		ProjectName:   data.Project.Name,
@@ -161,7 +150,7 @@ func (e *Executor) notifyForDeploymentViaSlack(
 		Succeeded:     success,
 		Method:        deployment.Settings.ActiveMethod,
 		Duration:      deployment.GetDuration(),
-		DashboardLink: deploymentLink,
+		DashboardLink: config.Current.DashboardDeploymentDetailsURL(deployment.ID),
 	}
 
 	switch deployment.Settings.ActiveMethod {
@@ -203,9 +192,6 @@ func (e *Executor) notifyForDeploymentViaDiscord(
 	}
 
 	deployment := data.Deployment
-	deploymentLink := gofn.Must(url.JoinPath(config.Current.BaseURL,
-		fmt.Sprintf(dashboardDeploymentDetailsPath, deployment.ID)))
-
 	discordData := &imservice.DiscordMsgDataAppDeploymentNotification{
 		Discord:       imService.Discord,
 		ProjectName:   data.Project.Name,
@@ -213,7 +199,7 @@ func (e *Executor) notifyForDeploymentViaDiscord(
 		Succeeded:     success,
 		Method:        deployment.Settings.ActiveMethod,
 		Duration:      deployment.GetDuration(),
-		DashboardLink: deploymentLink,
+		DashboardLink: config.Current.DashboardDeploymentDetailsURL(deployment.ID),
 	}
 
 	switch deployment.Settings.ActiveMethod {

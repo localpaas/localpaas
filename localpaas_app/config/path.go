@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"net/url"
 	"path/filepath"
 
@@ -15,6 +16,20 @@ func (cfg *Config) BaseAPIURL() string {
 
 func (cfg *Config) DashboardSsoSuccessURL() string {
 	return gofn.Must(url.JoinPath(cfg.BaseURL, "auth/sso/success"))
+}
+
+func (cfg *Config) DashboardUserSignupURL(token string) string {
+	return gofn.Must(url.JoinPath(cfg.BaseURL, "auth/sign-up")) +
+		fmt.Sprintf("?token=%s", token)
+}
+
+func (cfg *Config) DashboardPasswordResetURL(userID, token string) string {
+	return gofn.Must(url.JoinPath(cfg.BaseURL, "auth/reset-password")) +
+		fmt.Sprintf("?userId=%s&token=%s", userID, token)
+}
+
+func (cfg *Config) DashboardDeploymentDetailsURL(deploymentID string) string {
+	return gofn.Must(url.JoinPath(cfg.BaseURL, "deployments", deploymentID)) // TODO: update this later
 }
 
 /// BACK-END

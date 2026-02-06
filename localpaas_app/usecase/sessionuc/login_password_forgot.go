@@ -2,7 +2,6 @@ package sessionuc
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -11,11 +10,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/service/emailservice"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc/sessiondto"
-)
-
-const (
-	//nolint passwordResetFEPath front-end path to the UI
-	passwordResetFEPath = "auth/reset-password"
 )
 
 func (uc *SessionUC) LoginPasswordForgot(
@@ -44,8 +38,7 @@ func (uc *SessionUC) LoginPasswordForgot(
 		return nil, apperrors.New(err).WithMsgLog("failed to generate password reset token")
 	}
 
-	resetLink := fmt.Sprintf("%s/%s?userId=%s&token=%s", config.Current.BaseURL,
-		passwordResetFEPath, user.ID, token)
+	resetLink := config.Current.DashboardPasswordResetURL(user.ID, token)
 
 	email, err := emailSetting.AsEmail()
 	if err != nil {

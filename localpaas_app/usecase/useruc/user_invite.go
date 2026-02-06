@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
-	"net/url"
 	"strings"
 	"time"
 
@@ -23,10 +22,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/emailservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc/userdto"
-)
-
-const (
-	dashboardUserSignUpPath = "/auth/sign-up"
 )
 
 func (uc *UserUC) InviteUser(
@@ -133,9 +128,7 @@ func (uc *UserUC) loadUserInviteData(
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	signupLink := gofn.Must(url.JoinPath(config.Current.BaseURL, dashboardUserSignUpPath)) +
-		fmt.Sprintf("?token=%s", inviteToken)
-	data.InviteLink = signupLink
+	data.InviteLink = config.Current.DashboardUserSignupURL(inviteToken)
 
 	return nil
 }
