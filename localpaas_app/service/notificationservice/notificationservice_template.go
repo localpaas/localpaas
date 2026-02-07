@@ -2,11 +2,19 @@ package notificationservice
 
 import (
 	"context"
-	"html/template"
+	htmltemplate "html/template"
+	"io"
 	"sync"
+	texttemplate "text/template"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
+)
+
+const (
+	emailTemplateDir   = "config/email/templates/" // NOTE: must end with /
+	slackTemplateDir   = "config/slack/templates/"
+	discordTemplateDir = "config/discord/templates/"
 )
 
 type TemplateType string
@@ -24,8 +32,12 @@ const (
 	TemplateCronTaskNotification      TemplateName = "cron-job-notification"
 )
 
+type Template interface {
+	Execute(wr io.Writer, data any) error
+}
+
 var (
-	templateMap = map[TemplateType]map[TemplateName]*template.Template{}
+	templateMap = map[TemplateType]map[TemplateName]Template{}
 	mu          sync.Mutex
 )
 
@@ -34,13 +46,13 @@ func (s *notificationService) GetTemplate(
 	db database.IDB,
 	typ TemplateType,
 	name TemplateName,
-) (tpl *template.Template, err error) {
+) (tpl Template, err error) {
 	mu.Lock()
 	defer mu.Unlock()
 
 	mapTplByName, exists := templateMap[typ]
 	if !exists {
-		mapTplByName = make(map[TemplateName]*template.Template, 5) //nolint:mnd
+		mapTplByName = make(map[TemplateName]Template, 5) //nolint:mnd
 		templateMap[typ] = mapTplByName
 	}
 
@@ -69,12 +81,12 @@ func (s *notificationService) loadEmailTemplate(
 	_ context.Context,
 	_ database.IDB,
 	name TemplateName,
-) (tpl *template.Template, err error) {
+) (tpl Template, err error) {
 	switch name { //nolint
 	case TemplateAppDeploymentNotification:
-		tpl, err = template.ParseFiles("config/email/templates/app_deployment_notification.html")
+		tpl, err = htmltemplate.ParseFiles(emailTemplateDir + "app_deployment_notification.html")
 	case TemplateCronTaskNotification:
-		tpl, err = template.ParseFiles("config/email/templates/cron_task_notification.html")
+		tpl, err = htmltemplate.ParseFiles(emailTemplateDir + "cron_task_notification.html")
 	}
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -87,12 +99,12 @@ func (s *notificationService) loadSlackTemplate(
 	_ context.Context,
 	_ database.IDB,
 	name TemplateName,
-) (tpl *template.Template, err error) {
+) (tpl Template, err error) {
 	switch name { //nolint
 	case TemplateAppDeploymentNotification:
-		tpl, err = template.ParseFiles("config/slack/templates/app_deployment_notification.txt")
+		tpl, err = texttemplate.ParseFiles(slackTemplateDir + "app_deployment_notification.tpl")
 	case TemplateCronTaskNotification:
-		tpl, err = template.ParseFiles("config/slack/templates/cron_task_notification.txt")
+		tpl, err = texttemplate.ParseFiles(slackTemplateDir + "cron_task_notification.tpl")
 	}
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -105,12 +117,12 @@ func (s *notificationService) loadDiscordTemplate(
 	_ context.Context,
 	_ database.IDB,
 	name TemplateName,
-) (tpl *template.Template, err error) {
+) (tpl Template, err error) {
 	switch name { //nolint
 	case TemplateAppDeploymentNotification:
-		tpl, err = template.ParseFiles("config/discord/templates/app_deployment_notification.txt")
+		tpl, err = texttemplate.ParseFiles(discordTemplateDir + "app_deployment_notification.tpl")
 	case TemplateCronTaskNotification:
-		tpl, err = template.ParseFiles("config/discord/templates/cron_task_notification.txt")
+		tpl, err = texttemplate.ParseFiles(discordTemplateDir + "cron_task_notification.tpl")
 	}
 	if err != nil {
 		return nil, apperrors.Wrap(err)
