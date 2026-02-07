@@ -17,12 +17,13 @@ const (
 )
 
 type Store struct {
-	redisClient redis.UniversalClient
-	key         string
-	initialized bool
-	storeLocal  bool
-	mu          sync.RWMutex
-	frames      []*LogFrame
+	redisClient       redis.UniversalClient
+	Key               string
+	storeLocal        bool
+	storeRemote       bool
+	remoteInitialized bool
+	mu                sync.RWMutex
+	frames            []*LogFrame
 }
 
 func (s *Store) Add(ctx context.Context, frames ...*LogFrame) error {
@@ -32,21 +33,23 @@ func (s *Store) Add(ctx context.Context, frames ...*LogFrame) error {
 		s.mu.Unlock()
 	}
 
-	// Store log data in redis
-	err := redishelper.RPush(ctx, s.redisClient, s.key, redishelper.NewJSONValues(frames)...)
-	if err != nil {
-		return apperrors.New(err).WithMsgLog("failed to push log frames to redis")
-	}
+	if s.storeRemote {
+		// Store log data in redis
+		err := redishelper.RPush(ctx, s.redisClient, s.Key, redishelper.NewJSONValues(frames)...)
+		if err != nil {
+			return apperrors.New(err).WithMsgLog("failed to push log frames to redis")
+		}
 
-	if !s.initialized {
-		s.redisClient.ExpireXX(ctx, s.key, storeExpiration)
-		s.initialized = true
-	}
+		if !s.remoteInitialized {
+			s.redisClient.ExpireXX(ctx, s.Key, storeExpiration)
+			s.remoteInitialized = true
+		}
 
-	// Notify consumers about the new data
-	_, err = s.redisClient.Publish(ctx, s.key, buildMessage(CommandNewData)).Result()
-	if err != nil {
-		return apperrors.New(err).WithMsgLog("failed to notify consumers about the new data")
+		// Notify consumers about the new data
+		_, err = s.redisClient.Publish(ctx, s.Key, buildMessage(CommandNewData)).Result()
+		if err != nil {
+			return apperrors.New(err).WithMsgLog("failed to notify consumers about the new data")
+		}
 	}
 
 	return nil
@@ -56,7 +59,10 @@ func (s *Store) GetData(ctx context.Context, fromIndex int64) ([]*LogFrame, erro
 	if s.storeLocal {
 		return s.GetLocalData(ctx, fromIndex)
 	}
-	return s.GetRemoteData(ctx, fromIndex)
+	if s.storeRemote {
+		return s.GetRemoteData(ctx, fromIndex)
+	}
+	return nil, apperrors.NewUnavailable("Log store")
 }
 
 func (s *Store) GetLocalData(ctx context.Context, fromIndex int64) ([]*LogFrame, error) {
@@ -69,7 +75,7 @@ func (s *Store) GetLocalData(ctx context.Context, fromIndex int64) ([]*LogFrame,
 }
 
 func (s *Store) GetRemoteData(ctx context.Context, fromIndex int64) ([]*LogFrame, error) {
-	frames, err := redishelper.LRange(ctx, s.redisClient, s.key, fromIndex, -1,
+	frames, err := redishelper.LRange(ctx, s.redisClient, s.Key, fromIndex, -1,
 		redishelper.JSONValueCreator[*LogFrame])
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -80,36 +86,54 @@ func (s *Store) GetRemoteData(ctx context.Context, fromIndex int64) ([]*LogFrame
 func (s *Store) Close() (err error) {
 	ctx := context.Background()
 	defer func() {
-		removeLocalStore(s.key)
+		removeLocalStore(s.Key)
 	}()
 
-	// Send close-msg to consumers
-	_, e := s.redisClient.Publish(ctx, s.key, buildMessage(CommandClosed)).Result()
-	if e != nil {
-		err = errors.Join(err, apperrors.New(err).WithMsgLog("failed to notify consumers"))
-	}
-	// Delete log data in redis
-	e = redishelper.Del(ctx, s.redisClient, s.key)
-	if e != nil {
-		err = errors.Join(err, apperrors.New(err).WithMsgLog("failed to remove data from redis"))
+	if s.storeRemote {
+		// Send close-msg to consumers
+		_, e := s.redisClient.Publish(ctx, s.Key, buildMessage(CommandClosed)).Result()
+		if e != nil {
+			err = errors.Join(err, apperrors.New(err).WithMsgLog("failed to notify consumers"))
+		}
+		// Delete log data in redis
+		e = redishelper.Del(ctx, s.redisClient, s.Key)
+		if e != nil {
+			err = errors.Join(err, apperrors.New(err).WithMsgLog("failed to remove data from redis"))
+		}
 	}
 
 	return err
 }
 
-func NewStore(
+func newStore(
 	key string,
 	storeLocal bool,
+	storeRemote bool,
 	redisClient redis.UniversalClient,
 ) *Store {
 	s := &Store{
 		redisClient: redisClient,
-		key:         key,
+		Key:         key,
 		storeLocal:  storeLocal,
+		storeRemote: storeRemote,
 	}
 	if storeLocal {
 		addLocalStore(key, s)
 		s.frames = make([]*LogFrame, 0, 100) //nolint:mnd
 	}
 	return s
+}
+
+func NewRemoteStore(
+	key string,
+	storeLocal bool,
+	redisClient redis.UniversalClient,
+) *Store {
+	return newStore(key, storeLocal, true, redisClient)
+}
+
+func NewLocalStore(
+	key string,
+) *Store {
+	return newStore(key, true, false, nil)
 }

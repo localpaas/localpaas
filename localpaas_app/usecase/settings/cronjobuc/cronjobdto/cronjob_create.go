@@ -11,6 +11,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/notification/notificationdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
@@ -20,16 +21,16 @@ type CreateCronJobReq struct {
 }
 
 type CronJobBaseReq struct {
-	Name       string                      `json:"name"`
-	Kind       base.TaskType               `json:"kind"`
-	CronType   base.CronJobType            `json:"cronType"`
-	CronExpr   string                      `json:"cronExpr"`
-	App        basedto.ObjectIDReq         `json:"app"`
-	Priority   base.TaskPriority           `json:"priority"`
-	MaxRetry   int                         `json:"maxRetry"`
-	RetryDelay timeutil.Duration           `json:"retryDelay"`
-	Timeout    timeutil.Duration           `json:"timeout"`
-	Command    *CronJobContainerCommandReq `json:"command"`
+	Name         string                                       `json:"name"`
+	CronType     base.CronJobType                             `json:"cronType"`
+	CronExpr     string                                       `json:"cronExpr"`
+	App          basedto.ObjectIDReq                          `json:"app"`
+	Priority     base.TaskPriority                            `json:"priority"`
+	MaxRetry     int                                          `json:"maxRetry"`
+	RetryDelay   timeutil.Duration                            `json:"retryDelay"`
+	Timeout      timeutil.Duration                            `json:"timeout"`
+	Command      *CronJobContainerCommandReq                  `json:"command"`
+	Notification *notificationdto.DefaultResultNtfnSettingReq `json:"notification"`
 }
 
 type CronJobContainerCommandReq struct {
@@ -39,14 +40,15 @@ type CronJobContainerCommandReq struct {
 
 func (req *CronJobBaseReq) ToEntity() *entity.CronJob {
 	item := &entity.CronJob{
-		CronType:    req.CronType,
-		CronExpr:    req.CronExpr,
-		App:         entity.ObjectID{ID: req.App.ID},
-		InitialTime: timeutil.NowUTC(),
-		Priority:    req.Priority,
-		MaxRetry:    req.MaxRetry,
-		RetryDelay:  req.RetryDelay,
-		Timeout:     req.Timeout,
+		CronType:     req.CronType,
+		CronExpr:     req.CronExpr,
+		App:          entity.ObjectID{ID: req.App.ID},
+		InitialTime:  timeutil.NowUTC(),
+		Priority:     req.Priority,
+		MaxRetry:     req.MaxRetry,
+		RetryDelay:   req.RetryDelay,
+		Timeout:      req.Timeout,
+		Notification: req.Notification.ToEntity(),
 	}
 	if req.Command != nil {
 		item.Command = &entity.CronJobContainerCommand{

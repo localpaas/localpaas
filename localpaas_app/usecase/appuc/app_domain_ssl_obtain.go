@@ -170,7 +170,8 @@ func (uc *AppUC) applyDomainSSL(
 		return apperrors.Wrap(err)
 	}
 
-	refSettingMap, err := uc.appService.LoadReferenceSettings(ctx, db, data.App, true, data.HttpSettings)
+	refSettingMap, err := uc.settingService.LoadReferenceSettings(ctx, db, nil, data.App, true,
+		data.HttpSettings)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

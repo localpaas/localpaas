@@ -21,6 +21,7 @@ type TemplateName string
 
 const (
 	TemplateAppDeploymentNotification TemplateName = "app-deployment-notification"
+	TemplateCronTaskNotification      TemplateName = "cron-job-notification"
 )
 
 var (
@@ -72,6 +73,8 @@ func (s *notificationService) loadEmailTemplate(
 	switch name { //nolint
 	case TemplateAppDeploymentNotification:
 		tpl, err = template.ParseFiles("config/email/templates/app_deployment_notification.html")
+	case TemplateCronTaskNotification:
+		tpl, err = template.ParseFiles("config/email/templates/cron_task_notification.html")
 	}
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -88,6 +91,8 @@ func (s *notificationService) loadSlackTemplate(
 	switch name { //nolint
 	case TemplateAppDeploymentNotification:
 		tpl, err = template.ParseFiles("config/slack/templates/app_deployment_notification.txt")
+	case TemplateCronTaskNotification:
+		tpl, err = template.ParseFiles("config/slack/templates/cron_task_notification.txt")
 	}
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -104,6 +109,8 @@ func (s *notificationService) loadDiscordTemplate(
 	switch name { //nolint
 	case TemplateAppDeploymentNotification:
 		tpl, err = template.ParseFiles("config/discord/templates/app_deployment_notification.txt")
+	case TemplateCronTaskNotification:
+		tpl, err = template.ParseFiles("config/discord/templates/cron_task_notification.txt")
 	}
 	if err != nil {
 		return nil, apperrors.Wrap(err)

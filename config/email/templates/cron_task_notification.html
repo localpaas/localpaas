@@ -87,14 +87,15 @@
 		<div style="padding:20px 20px;">
 			<div class="p_default">
 				{{if .Succeeded}}
-					<span class="title">Deployment succeeded</span>
+					<span class="title">Scheduled task succeeded</span>
 				{{else}}
-					<span class="title">Deployment failed</span>
+					<span class="title">Scheduled task failed</span>
 				{{end}}
 			</div>
 			
 			<table style="width:100%;border:0;border-spacing:0;text-align:left;">
 				<tbody>
+				{{if .ProjectName | ne ""}}
 				<tr class="text_default">
 					<td class="col_left">
 						<b>Project:</b>
@@ -103,6 +104,8 @@
 						{{.ProjectName}}
 					</td>
 				</tr>
+				{{end}}
+				{{if .AppName | ne ""}}
 				<tr class="text_default">
 					<td class="col_left">
 						<b>App:</b>
@@ -111,50 +114,32 @@
 						{{.AppName}}
 					</td>
 				</tr>
-				{{if .Method | eq "repo"}}
-				<tr class="text_default">
-					<td class="col_left">
-						<b>Repository:</b>
-					</td>
-					<td class="col_main">
-						{{.RepoURL}}
-					</td>
-				</tr>
-				<tr class="text_default">
-					<td class="col_left">
-						<b>Branch/Ref:</b>
-					</td>
-					<td class="col_main">
-						{{.RepoRef}}
-					</td>
-				</tr>
-				<tr class="text_default">
-					<td class="col_left">
-						<b>Commit Message:</b>
-					</td>
-					<td class="col_main">
-						{{.CommitMsg}}
-					</td>
-				</tr>
-				{{else if .Method | eq "image"}}
-				<tr class="text_default">
-					<td class="col_left">
-						<b>Image:</b>
-					</td>
-					<td class="col_main">
-						{{.Image}}
-					</td>
-				</tr>
-				{{else if .Method | eq "tarball"}}
-				<tr class="text_default">
-					<td class="col_left">
-						<b>Source Archive:</b>
-					</td>
-					<td class="col_main">
-						{{.SourceArchive}}
-					</td>
-				</tr>
 				{{end}}
+
+				<tr class="text_default">
+					<td class="col_left">
+						<b>Cron job:</b>
+					</td>
+					<td class="col_main">
+						{{.CronJobName}}
+					</td>
+				</tr>
+				<tr class="text_default">
+					<td class="col_left">
+						<b>Cron job expr:</b>
+					</td>
+					<td class="col_main">
+						{{.CronJobExpr}}
+					</td>
+				</tr>
+				<tr class="text_default">
+					<td class="col_left">
+						<b>Created at:</b>
+					</td>
+					<td class="col_main">
+						{{.CreatedAt}}
+					</td>
+				</tr>
 
 				<tr class="text_default">
 					<td class="col_left">
@@ -170,6 +155,14 @@
 					</td>
 					<td class="col_main">
 						{{.Duration}}
+					</td>
+				</tr>
+				<tr class="text_default">
+					<td class="col_left">
+						<b>Retries:</b>
+					</td>
+					<td class="col_main">
+						{{.Retries}}
 					</td>
 				</tr>
 				</tbody>

@@ -18,14 +18,15 @@ import (
 )
 
 type TaskExecData struct {
-	Task         *entity.Task
-	Uncancelable bool
-	NonRetryable bool
-	Canceled     bool
-	Done         bool
-	NextTasks    []*entity.Task
-	onCommand    func(base.TaskCommand, ...any)
-	onPostExec   func()
+	Task              *entity.Task
+	Uncancelable      bool
+	NonRetryable      bool
+	Canceled          bool
+	Done              bool
+	NextTasks         []*entity.Task
+	onCommand         func(base.TaskCommand, ...any)
+	onPostExec        func()
+	onPostTransaction func()
 }
 
 func (t *TaskExecData) IsCanceled() bool {
@@ -47,6 +48,10 @@ func (t *TaskExecData) OnCommand(fn func(base.TaskCommand, ...any)) {
 
 func (t *TaskExecData) OnPostExec(fn func()) {
 	t.onPostExec = fn
+}
+
+func (t *TaskExecData) OnPostTransaction(fn func()) {
+	t.onPostTransaction = fn
 }
 
 type TaskExecFunc func(context.Context, database.Tx, *TaskExecData) error
@@ -166,8 +171,12 @@ func (q *taskQueue) ScheduleTasksForCronJob(
 	return nil
 }
 
-func (q *taskQueue) createTasks(ctx context.Context, db database.Tx, jobIDs []string,
-	withinDuration time.Duration) ([]*entity.Task, error) {
+func (q *taskQueue) createTasks(
+	ctx context.Context,
+	db database.Tx,
+	jobIDs []string,
+	withinDuration time.Duration,
+) ([]*entity.Task, error) {
 	opts := []bunex.SelectQueryOption{
 		bunex.SelectWhere("setting.type = ?", base.SettingTypeCronJob),
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
@@ -217,7 +226,7 @@ func (q *taskQueue) createTasks(ctx context.Context, db database.Tx, jobIDs []st
 			task := &entity.Task{
 				ID:     gofn.Must(ulid.NewStringULID()),
 				JobID:  jobSetting.ID,
-				Type:   base.TaskType(jobSetting.Kind),
+				Type:   base.TaskTypeCronJobExec,
 				Status: base.TaskStatusNotStarted,
 				Config: entity.TaskConfig{
 					Priority:   cronJob.Priority,
@@ -243,8 +252,11 @@ func (q *taskQueue) createTasks(ctx context.Context, db database.Tx, jobIDs []st
 	return allNewTasks, nil
 }
 
-func (q *taskQueue) queryLastTaskRunAt(ctx context.Context, db database.IDB, jobIDs []string) (
-	map[string]time.Time, error) {
+func (q *taskQueue) queryLastTaskRunAt(
+	ctx context.Context,
+	db database.IDB,
+	jobIDs []string,
+) (map[string]time.Time, error) {
 	tasks, _, err := q.taskRepo.List(ctx, db, "", nil,
 		bunex.SelectDistinctOn("job_id", "run_at"),
 		bunex.SelectWhereIn("job_id IN (?)", jobIDs...),

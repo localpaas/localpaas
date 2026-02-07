@@ -17,6 +17,7 @@ func (s *appService) LoadApp(
 	requireProjectActive, requireAppActive bool,
 	extraOpts ...bunex.SelectQueryOption,
 ) (*entity.App, error) {
+	// NOTE: make sure to add SelectRelation("Project") into extraOpts
 	app, err := s.appRepo.GetByID(ctx, db, projectID, appID, extraOpts...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -41,6 +42,7 @@ func (s *appService) LoadAppByToken(
 	requireProjectActive, requireAppActive bool,
 	extraOpts ...bunex.SelectQueryOption,
 ) (*entity.App, error) {
+	// NOTE: make sure to add SelectRelation("Project") into extraOpts
 	app, err := s.appRepo.GetByToken(ctx, db, appToken, extraOpts...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)

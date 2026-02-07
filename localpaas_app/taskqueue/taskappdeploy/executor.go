@@ -18,10 +18,12 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/realtimelog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 	"github.com/localpaas/localpaas/localpaas_app/repository/cacherepository"
 	"github.com/localpaas/localpaas/localpaas_app/service/envvarservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
 	"github.com/localpaas/localpaas/localpaas_app/taskqueue"
 	"github.com/localpaas/localpaas/services/docker"
 )
@@ -31,16 +33,20 @@ const (
 )
 
 type Executor struct {
-	logger             logging.Logger
-	redisClient        rediscache.Client
-	settingRepo        repository.SettingRepo
-	deploymentRepo     repository.DeploymentRepo
-	taskLogRepo        repository.TaskLogRepo
-	taskRepo           repository.TaskRepo
-	taskInfoRepo       cacherepository.TaskInfoRepo
-	deploymentInfoRepo cacherepository.DeploymentInfoRepo
-	dockerManager      *docker.Manager
-	envVarService      envvarservice.EnvVarService
+	logger              logging.Logger
+	db                  *database.DB
+	redisClient         rediscache.Client
+	settingRepo         repository.SettingRepo
+	deploymentRepo      repository.DeploymentRepo
+	taskLogRepo         repository.TaskLogRepo
+	taskRepo            repository.TaskRepo
+	taskInfoRepo        cacherepository.TaskInfoRepo
+	deploymentInfoRepo  cacherepository.DeploymentInfoRepo
+	dockerManager       *docker.Manager
+	envVarService       envvarservice.EnvVarService
+	settingService      settingservice.SettingService
+	userService         userservice.UserService
+	notificationService notificationservice.NotificationService
 }
 
 func NewExecutor(
@@ -56,18 +62,25 @@ func NewExecutor(
 	deploymentInfoRepo cacherepository.DeploymentInfoRepo,
 	dockerManager *docker.Manager,
 	envVarService envvarservice.EnvVarService,
+	settingService settingservice.SettingService,
+	userService userservice.UserService,
+	notificationService notificationservice.NotificationService,
 ) *Executor {
 	p := &Executor{
-		logger:             logger,
-		redisClient:        redisClient,
-		settingRepo:        settingRepo,
-		deploymentRepo:     deploymentRepo,
-		taskLogRepo:        taskLogRepo,
-		taskRepo:           taskRepo,
-		taskInfoRepo:       taskInfoRepo,
-		deploymentInfoRepo: deploymentInfoRepo,
-		dockerManager:      dockerManager,
-		envVarService:      envVarService,
+		logger:              logger,
+		db:                  db,
+		redisClient:         redisClient,
+		settingRepo:         settingRepo,
+		deploymentRepo:      deploymentRepo,
+		taskLogRepo:         taskLogRepo,
+		taskRepo:            taskRepo,
+		taskInfoRepo:        taskInfoRepo,
+		deploymentInfoRepo:  deploymentInfoRepo,
+		dockerManager:       dockerManager,
+		envVarService:       envVarService,
+		settingService:      settingService,
+		userService:         userService,
+		notificationService: notificationService,
 	}
 	taskQueue.RegisterExecutor(base.TaskTypeAppDeploy, p.execute)
 	return p
@@ -75,11 +88,15 @@ func NewExecutor(
 
 type taskData struct {
 	*taskqueue.TaskExecData
+	Project          *entity.Project
 	App              *entity.App
 	Deployment       *entity.Deployment
 	DeploymentOutput *entity.AppDeploymentOutput
 	Step             string
 	LogStore         *realtimelog.Store
+	RefSettingMap    map[string]*entity.Setting
+	NtfnSettings     *entity.AppNotificationSettings
+	NtfnMsgData      *notificationservice.BaseMsgDataAppDeploymentNotification
 }
 
 func (e *Executor) execute(
@@ -88,14 +105,11 @@ func (e *Executor) execute(
 	task *taskqueue.TaskExecData,
 ) (err error) {
 	data := &taskData{TaskExecData: task}
-	data.OnPostExec(func() { e.onPostExec(ctx, db, data) })
+	data.OnPostTransaction(func() { e.onPostTransaction(data) }) //nolint
 
-	deployment, err := e.loadDeployment(ctx, db, data)
+	err = e.loadDeploymentData(ctx, db, data)
 	if err != nil {
 		return apperrors.Wrap(err)
-	}
-	if deployment == nil {
-		return nil
 	}
 
 	defer func() {
@@ -104,12 +118,12 @@ func (e *Executor) execute(
 				err = apperrors.NewPanic(fmt.Sprintf("%v", r))
 			}
 		}
-		_ = e.deploymentInfoRepo.Del(ctx, deployment.ID)
+		_ = e.deploymentInfoRepo.Del(ctx, data.Deployment.ID)
 		_ = e.saveLogs(ctx, db, data)
 	}()
 
 	var depErr error
-	depSettings := deployment.Settings
+	depSettings := data.Deployment.Settings
 	switch depSettings.ActiveMethod {
 	case base.DeploymentMethodImage:
 		depErr = e.deployFromImage(ctx, db, data)
@@ -119,15 +133,15 @@ func (e *Executor) execute(
 		depErr = e.deployFromTarball(ctx, db, data)
 	}
 
-	deployment.EndedAt = timeutil.NowUTC()
+	data.Deployment.EndedAt = timeutil.NowUTC()
 	if data.Canceled {
-		deployment.Status = base.DeploymentStatusCanceled
+		data.Deployment.Status = base.DeploymentStatusCanceled
 	} else {
-		deployment.Status = gofn.If(depErr != nil, base.DeploymentStatusFailed, base.DeploymentStatusDone)
-		deployment.Output = data.DeploymentOutput
+		data.Deployment.Status = gofn.If(depErr != nil, base.DeploymentStatusFailed, base.DeploymentStatusDone)
+		data.Deployment.Output = data.DeploymentOutput
 	}
 
-	err = e.updateDeployment(ctx, db, deployment)
+	err = e.updateDeployment(ctx, db, data.Deployment)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -135,30 +149,35 @@ func (e *Executor) execute(
 	return nil
 }
 
-func (e *Executor) loadDeployment(
+func (e *Executor) loadDeploymentData(
 	ctx context.Context,
 	db database.Tx,
 	data *taskData,
-) (*entity.Deployment, error) {
+) error {
 	task := data.Task
 	args, err := task.ArgsAsAppDeploy()
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return apperrors.Wrap(err)
 	}
 
 	deployment, err := e.deploymentRepo.GetByID(ctx, db, "", args.Deployment.ID,
 		bunex.SelectWhereIn("deployment.status IN (?)",
 			base.DeploymentStatusNotStarted, base.DeploymentStatusInProgress),
 		bunex.SelectRelation("App",
+			bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
 			bunex.SelectWhere("app.status = ?", base.AppStatusActive),
+		),
+		bunex.SelectRelation("App.Project",
+			bunex.SelectExcludeColumns(entity.ProjectDefaultExcludeColumns...),
+			bunex.SelectWhere("app__project.status = ?", base.ProjectStatusActive),
 		),
 		bunex.SelectFor("UPDATE OF deployment"),
 	)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-		return nil, apperrors.Wrap(err)
+		return apperrors.Wrap(err)
 	}
-	if deployment == nil || deployment.App == nil { // no active deployment, return
-		return nil, nil
+	if deployment == nil || deployment.App == nil || deployment.App.Project == nil { // no active deployment, return
+		return nil
 	}
 
 	if deployment.Status == base.DeploymentStatusNotStarted {
@@ -175,16 +194,33 @@ func (e *Executor) loadDeployment(
 		StartedAt: deployment.StartedAt,
 	}, deploymentInfoCacheExp)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return apperrors.Wrap(err)
 	}
 
 	data.App = deployment.App
+	data.Project = data.App.Project
 	data.Deployment = deployment
 	data.DeploymentOutput = &entity.AppDeploymentOutput{}
 	logStoreKey := fmt.Sprintf("deployment:%s:log", deployment.ID)
-	data.LogStore = realtimelog.NewStore(logStoreKey, true, e.redisClient)
+	data.LogStore = realtimelog.NewRemoteStore(logStoreKey, true, e.redisClient)
 
-	return deployment, nil
+	// Load notification settings for the deployment
+	ntfnSetting, err := e.settingRepo.GetSingleByAppObject(ctx, db, base.SettingTypeAppNotification, data.App, true)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	data.NtfnSettings = ntfnSetting.MustAsAppNotificationSettings()
+	// Load reference settings
+	if data.NtfnSettings.HasDeploymentNtfnSetting() {
+		ntfnSetting.RefIDs = data.NtfnSettings.GetRefSettingIDs()
+		refSettingMap, err := e.settingService.LoadReferenceSettings(ctx, db, nil, data.App, true, ntfnSetting)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+		data.RefSettingMap = refSettingMap
+	}
+
+	return nil
 }
 
 func (e *Executor) updateDeployment(
@@ -201,33 +237,30 @@ func (e *Executor) updateDeployment(
 
 func (e *Executor) saveLogs(
 	ctx context.Context,
-	db database.Tx,
-	taskData *taskData,
+	db database.IDB,
+	data *taskData,
 ) error {
-	deployment := taskData.Deployment
-	logStore := taskData.LogStore
+	deployment := data.Deployment
+	logStore := data.LogStore
 	if logStore == nil {
 		return nil
 	}
 
-	duration := deployment.EndedAt.Sub(deployment.StartedAt)
-	_ = logStore.Add(ctx, realtimelog.NewOutFrame("Deployment finished in "+duration.String(), nil))
+	_ = logStore.Add(ctx, realtimelog.NewOutFrame("Deployment finished in "+
+		deployment.GetDuration().String(), nil))
 
 	logFrames, err := logStore.GetData(ctx, 0)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	err = logStore.Close() //nolint
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
+	_ = logStore.Close() //nolint
 
 	// Insert data in to DB by chunk to avoid exceeding DBMS limit
 	for _, chunk := range gofn.Chunk(logFrames, 10000) { //nolint
 		taskLogs := make([]*entity.TaskLog, 0, len(chunk))
 		for _, logFrame := range chunk {
 			taskLogs = append(taskLogs, &entity.TaskLog{
-				TaskID:   taskData.Task.ID,
+				TaskID:   data.Task.ID,
 				TargetID: deployment.ID,
 				Type:     logFrame.Type,
 				Data:     logFrame.Data,
@@ -245,91 +278,46 @@ func (e *Executor) saveLogs(
 
 func (e *Executor) addStepStartLog(
 	ctx context.Context,
-	taskData *taskData,
+	data *taskData,
 	msg string,
 ) {
-	_ = taskData.LogStore.Add(ctx,
+	_ = data.LogStore.Add(ctx,
 		realtimelog.NewOutFrame("---------------------------------", nil),
 		realtimelog.NewOutFrame(msg, nil))
 }
 
 func (e *Executor) addStepEndLog(
 	ctx context.Context,
-	taskData *taskData,
+	data *taskData,
 	start time.Time,
 	err error,
 ) {
 	duration := timeutil.NowUTC().Sub(start)
 	if err != nil {
-		_ = taskData.LogStore.Add(ctx, realtimelog.NewOutFrame("Task finished in "+duration.String()+
+		_ = data.LogStore.Add(ctx, realtimelog.NewOutFrame("Task finished in "+duration.String()+
 			" with error: "+err.Error(), nil))
 	} else {
-		_ = taskData.LogStore.Add(ctx, realtimelog.NewOutFrame("Task finished in "+duration.String(), nil))
+		_ = data.LogStore.Add(ctx, realtimelog.NewOutFrame("Task finished in "+duration.String(), nil))
 	}
 }
 
-func (e *Executor) onPostExec(
-	ctx context.Context,
-	db database.Tx,
+func (e *Executor) onPostTransaction(
 	data *taskData,
 ) {
+	ctx := context.Background()
+
+	// NOTE: We are now outside the transaction, need to reset some data before using them again
+	data.LogStore = realtimelog.NewLocalStore(data.LogStore.Key)
+
+	defer func() {
+		_ = e.saveLogs(ctx, e.db, data)
+	}()
+
 	if data.Task.IsDone() || data.Task.IsFailedCompletely() {
-		err := e.createNotificationTask(ctx, db, data)
+		err := e.notifyForDeployment(ctx, e.db, data)
 		if err != nil {
-			_ = data.LogStore.Add(ctx, realtimelog.NewOutFrame("Failed to schedule notification sending"+
+			_ = data.LogStore.Add(ctx, realtimelog.NewOutFrame("Failed to send deployment notification"+
 				" with error: "+err.Error(), nil))
 		}
 	}
-}
-
-func (e *Executor) createNotificationTask(
-	ctx context.Context,
-	db database.Tx,
-	data *taskData,
-) error {
-	setting, err := e.settingRepo.GetSingleByAppObject(ctx, db, base.SettingTypeAppNotification, data.App, true)
-	if err != nil {
-		if errors.Is(err, apperrors.ErrNotFound) {
-			return nil
-		}
-		return apperrors.Wrap(err)
-	}
-
-	ntfnSettings, err := setting.AsAppNotificationSettings()
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	deployment := data.Deployment
-	if (deployment.Status != base.DeploymentStatusDone && deployment.Status != base.DeploymentStatusFailed) ||
-		ntfnSettings.Deployment == nil {
-		return nil
-	}
-	if deployment.Status == base.DeploymentStatusDone && ntfnSettings.Deployment.Success == nil {
-		return nil
-	}
-	if deployment.Status == base.DeploymentStatusFailed && ntfnSettings.Deployment.Failure == nil {
-		return nil
-	}
-
-	timeNow := timeutil.NowUTC()
-	task := &entity.Task{
-		ID:     gofn.Must(ulid.NewStringULID()),
-		Type:   base.TaskTypeAppNotification,
-		Status: base.TaskStatusNotStarted,
-		Config: entity.TaskConfig{
-			Priority: base.TaskPriorityDefault,
-			Timeout:  timeutil.Duration(base.DeploymentNotificationTimeoutDefault),
-		},
-		Version:   entity.CurrentTaskVersion,
-		CreatedAt: timeNow,
-		UpdatedAt: timeNow,
-	}
-	task.MustSetArgs(&entity.TaskAppNotificationArgs{
-		App:        entity.ObjectID{ID: data.App.ID},
-		Deployment: &entity.ObjectID{ID: data.Deployment.ID},
-	})
-	data.ScheduleNextTasks(task)
-
-	return nil
 }

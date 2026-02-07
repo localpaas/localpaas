@@ -16267,9 +16267,9 @@
         "x-enum-varnames" : [ "TaskStatusNotStarted", "TaskStatusInProgress", "TaskStatusCanceled", "TaskStatusDone", "TaskStatusFailed" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.TaskType" : {
-        "enum" : [ "task:test", "task:app-deploy", "task:app-notification", "task:cron-job-exec", "task:cron-job-notification" ],
+        "enum" : [ "task:test", "task:app-deploy", "task:cron-job-exec" ],
         "type" : "string",
-        "x-enum-varnames" : [ "TaskTypeTest", "TaskTypeAppDeploy", "TaskTypeAppNotification", "TaskTypeCronJobExec", "TaskTypeCronJobNotification" ]
+        "x-enum-varnames" : [ "TaskTypeTest", "TaskTypeAppDeploy", "TaskTypeCronJobExec" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.TokenKind" : {
         "enum" : [ "github", "gitlab", "gitea", "bitbucket", "gogs" ],
@@ -16655,10 +16655,10 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
         "format" : "int64",
         "type" : "integer",
-        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
+        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentReq" : {
         "type" : "object"
@@ -18275,6 +18275,144 @@
         "required" : [ "cloneURL", "defaultBranch", "fullName", "gitURL", "id", "name" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultResultNtfnSettingReq" : {
+        "properties" : {
+          "failure" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultTargetNtfnSettingReq"
+          },
+          "success" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultTargetNtfnSettingReq"
+          }
+        },
+        "required" : [ "failure", "success" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultResultNtfnSettingResp" : {
+        "properties" : {
+          "failure" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultTargetNtfnSettingResp"
+          },
+          "success" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultTargetNtfnSettingResp"
+          }
+        },
+        "required" : [ "failure", "success" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultTargetNtfnSettingReq" : {
+        "properties" : {
+          "viaDiscord" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DiscordNtfnSettingReq"
+          },
+          "viaEmail" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.EmailNtfnSettingReq"
+          },
+          "viaSlack" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.SlackNtfnSettingReq"
+          }
+        },
+        "required" : [ "viaDiscord", "viaEmail", "viaSlack" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultTargetNtfnSettingResp" : {
+        "properties" : {
+          "viaDiscord" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DiscordNtfnSettingResp"
+          },
+          "viaEmail" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.EmailNtfnSettingResp"
+          },
+          "viaSlack" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.SlackNtfnSettingResp"
+          }
+        },
+        "required" : [ "viaDiscord", "viaEmail", "viaSlack" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DiscordNtfnSettingReq" : {
+        "properties" : {
+          "webhook" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
+          }
+        },
+        "required" : [ "webhook" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DiscordNtfnSettingResp" : {
+        "properties" : {
+          "webhook" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.NamedObjectResp"
+          }
+        },
+        "required" : [ "webhook" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.EmailNtfnSettingReq" : {
+        "properties" : {
+          "sender" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
+          },
+          "toAddresses" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "toAllAdmins" : {
+            "type" : "boolean"
+          },
+          "toProjectMembers" : {
+            "type" : "boolean"
+          },
+          "toProjectOwners" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "sender", "toAddresses", "toAllAdmins", "toProjectMembers", "toProjectOwners" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.EmailNtfnSettingResp" : {
+        "properties" : {
+          "sender" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.NamedObjectResp"
+          },
+          "toAddresses" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "toAllAdmins" : {
+            "type" : "boolean"
+          },
+          "toProjectMembers" : {
+            "type" : "boolean"
+          },
+          "toProjectOwners" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "sender", "toAddresses", "toAllAdmins", "toProjectMembers", "toProjectOwners" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.SlackNtfnSettingReq" : {
+        "properties" : {
+          "webhook" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
+          }
+        },
+        "required" : [ "webhook" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.SlackNtfnSettingResp" : {
+        "properties" : {
+          "webhook" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.NamedObjectResp"
+          }
+        },
+        "required" : [ "webhook" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.CreateProjectReq" : {
         "properties" : {
           "name" : {
@@ -19868,14 +20006,14 @@
           "default" : {
             "type" : "boolean"
           },
-          "kind" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.TaskType"
-          },
           "maxRetry" : {
             "type" : "integer"
           },
           "name" : {
             "type" : "string"
+          },
+          "notification" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultResultNtfnSettingReq"
           },
           "priority" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.TaskPriority"
@@ -19887,7 +20025,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
           }
         },
-        "required" : [ "app", "availableInProjects", "command", "cronExpr", "cronType", "default", "kind", "maxRetry", "name", "priority", "retryDelay", "timeout" ],
+        "required" : [ "app", "availableInProjects", "command", "cronExpr", "cronType", "default", "maxRetry", "name", "notification", "priority", "retryDelay", "timeout" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CreateCronJobResp" : {
@@ -19914,6 +20052,18 @@
         "required" : [ "command", "workingDir" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobContainerCommandResp" : {
+        "properties" : {
+          "command" : {
+            "type" : "string"
+          },
+          "workingDir" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "command", "workingDir" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobResp" : {
         "properties" : {
           "app" : {
@@ -19923,7 +20073,7 @@
             "type" : "boolean"
           },
           "command" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobContainerCommandResp"
           },
           "createdAt" : {
             "type" : "string"
@@ -19957,6 +20107,9 @@
           },
           "name" : {
             "type" : "string"
+          },
+          "notification" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultResultNtfnSettingResp"
           },
           "priority" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.TaskPriority"
@@ -20069,14 +20222,14 @@
           "default" : {
             "type" : "boolean"
           },
-          "kind" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.TaskType"
-          },
           "maxRetry" : {
             "type" : "integer"
           },
           "name" : {
             "type" : "string"
+          },
+          "notification" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultResultNtfnSettingReq"
           },
           "priority" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.TaskPriority"
@@ -20091,7 +20244,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "app", "availableInProjects", "command", "cronExpr", "cronType", "default", "kind", "maxRetry", "name", "priority", "retryDelay", "timeout", "updateVer" ],
+        "required" : [ "app", "availableInProjects", "command", "cronExpr", "cronType", "default", "maxRetry", "name", "notification", "priority", "retryDelay", "timeout", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.UpdateCronJobResp" : {

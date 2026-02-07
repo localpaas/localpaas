@@ -27,7 +27,7 @@ func (e *Executor) cronExecContainerCmd(
 	command := data.CronJob.Command
 	if command == nil || command.Command == "" { // can't continue if this happens
 		data.NonRetryable = true
-		data.Logs = append(data.Logs, realtimelog.NewErrFrame(
+		_ = data.LogStore.Add(ctx, realtimelog.NewErrFrame(
 			"execution command is empty, execution aborted", nil))
 		return apperrors.New(apperrors.ErrInternalServer).WithMsgLog("cron job command is empty")
 	}
@@ -38,7 +38,7 @@ func (e *Executor) cronExecContainerCmd(
 		return apperrors.Wrap(err)
 	}
 	if contSum == nil {
-		data.Logs = append(data.Logs, realtimelog.NewWarnFrame(
+		_ = data.LogStore.Add(ctx, realtimelog.NewWarnFrame(
 			"No running container found, execution skipped", nil))
 		return nil
 	}
@@ -59,7 +59,7 @@ func (e *Executor) cronExecContainerCmd(
 	defer resp.Close()
 
 	for msgs := range logChan {
-		data.Logs = append(data.Logs, msgs...)
+		_ = data.LogStore.Add(ctx, msgs...)
 	}
 
 	// Get exit code
@@ -69,7 +69,7 @@ func (e *Executor) cronExecContainerCmd(
 	}
 
 	if execInfo.ExitCode != 0 {
-		data.Logs = append(data.Logs, realtimelog.NewWarnFrame(fmt.Sprintf(
+		_ = data.LogStore.Add(ctx, realtimelog.NewWarnFrame(fmt.Sprintf(
 			"Command execution failed with exit code: %v", execInfo.ExitCode), nil))
 		return apperrors.Wrap(apperrors.ErrInfraActionFailed)
 	}

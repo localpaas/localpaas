@@ -33,7 +33,6 @@ func (uc *CronJobUC) CreateCronJob(
 			data *settings.CreateSettingData,
 			pData *settings.PersistingSettingCreationData,
 		) error {
-			pData.Setting.Kind = string(req.Kind)
 			cronJob := req.ToEntity()
 			// Parse the cron expression to make sure it's valid
 			_, err := cronJob.ParseCronExpr()

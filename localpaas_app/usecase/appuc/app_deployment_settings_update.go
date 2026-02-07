@@ -144,7 +144,7 @@ func (uc *AppUC) prepareUpdatingAppDeploymentSettings(
 	}
 
 	// Validation: Make sure all reference settings used in this deployment settings exist actively
-	_, err = uc.appService.LoadReferenceSettings(ctx, db, app, true, setting)
+	_, err = uc.settingService.LoadReferenceSettings(ctx, db, nil, app, true, setting)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

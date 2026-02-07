@@ -127,7 +127,7 @@ func (uc *AppUC) prepareUpdatingAppHttpSettings(
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 
 	// Make sure all reference settings used in this deployment settings exist actively
-	_, err = uc.appService.LoadReferenceSettings(ctx, db, app, true, setting)
+	_, err = uc.settingService.LoadReferenceSettings(ctx, db, nil, app, true, setting)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -158,7 +158,8 @@ func (uc *AppUC) applyAppHttpSettings(
 	db database.IDB,
 	data *updateAppHttpSettingsData,
 ) error {
-	refSettingMap, err := uc.appService.LoadReferenceSettings(ctx, db, data.App, true, data.HttpSettings)
+	refSettingMap, err := uc.settingService.LoadReferenceSettings(ctx, db, nil, data.App, true,
+		data.HttpSettings)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

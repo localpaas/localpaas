@@ -15,6 +15,14 @@ type NotificationService interface {
 		data *SlackMsgDataAppDeploymentNotification) error
 	DiscordSendAppDeploymentNotification(ctx context.Context, db database.IDB,
 		data *DiscordMsgDataAppDeploymentNotification) error
+
+	// Cron job notification
+	EmailSendCronTaskNotification(ctx context.Context, db database.IDB,
+		data *EmailMsgDataCronTaskNotification) error
+	SlackSendCronTaskNotification(ctx context.Context, db database.IDB,
+		data *SlackMsgDataCronTaskNotification) error
+	DiscordSendCronTaskNotification(ctx context.Context, db database.IDB,
+		data *DiscordMsgDataCronTaskNotification) error
 }
 
 func NewNotificationService(

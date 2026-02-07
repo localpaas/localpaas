@@ -150,6 +150,11 @@ func (q *taskQueue) executeTask(
 		return rescheduleAt
 	}
 
+	// Post transaction event
+	if taskData != nil && taskData.onPostTransaction != nil {
+		taskData.onPostTransaction()
+	}
+
 	// If next tasks are set, schedule them
 	if taskData != nil && len(taskData.NextTasks) > 0 {
 		_ = q.ScheduleTask(ctx, taskData.NextTasks...)

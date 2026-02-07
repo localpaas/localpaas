@@ -31,11 +31,6 @@ type AppService interface {
 	ServiceUpdate(ctx context.Context, serviceID string, version *swarm.Version, service *swarm.ServiceSpec,
 		options ...docker.ServiceUpdateOption) (*swarm.ServiceUpdateResponse, error)
 
-	LoadSettings(ctx context.Context, db database.IDB, app *entity.App, settingIDs []string,
-		requireActive bool) (map[string]*entity.Setting, error)
-	LoadReferenceSettings(ctx context.Context, db database.IDB, app *entity.App, requireActive bool,
-		appSettings ...*entity.Setting) (map[string]*entity.Setting, error)
-
 	EnsureSSLConfigFiles(sslIDs []string, forceRecreate bool,
 		refSettingMap map[string]*entity.Setting) error
 	EnsureBasicAuthConfigFiles(basicAuthIDs []string, forceRecreate bool,

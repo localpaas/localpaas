@@ -3,16 +3,13 @@ package base
 type TaskType string
 
 const (
-	TaskTypeTest                TaskType = "task:test"
-	TaskTypeAppDeploy           TaskType = "task:app-deploy"
-	TaskTypeAppNotification     TaskType = "task:app-notification"
-	TaskTypeCronJobExec         TaskType = "task:cron-job-exec"
-	TaskTypeCronJobNotification TaskType = "task:cron-job-notification"
+	TaskTypeTest        TaskType = "task:test"
+	TaskTypeAppDeploy   TaskType = "task:app-deploy"
+	TaskTypeCronJobExec TaskType = "task:cron-job-exec"
 )
 
 var (
-	AllTaskTypes = []TaskType{TaskTypeTest, TaskTypeAppDeploy, TaskTypeAppNotification,
-		TaskTypeCronJobExec, TaskTypeCronJobNotification}
+	AllTaskTypes = []TaskType{TaskTypeTest, TaskTypeAppDeploy, TaskTypeCronJobExec}
 )
 
 type TaskStatus string

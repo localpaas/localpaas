@@ -29,7 +29,11 @@ func (cfg *Config) DashboardPasswordResetURL(userID, token string) string {
 }
 
 func (cfg *Config) DashboardDeploymentDetailsURL(deploymentID string) string {
-	return gofn.Must(url.JoinPath(cfg.BaseURL, "deployments", deploymentID)) // TODO: update this later
+	return gofn.Must(url.JoinPath(cfg.BaseURL, "deployments", deploymentID)) // TODO: update this
+}
+
+func (cfg *Config) DashboardCronTaskDetailsURL(cronJobID, taskID string) string {
+	return gofn.Must(url.JoinPath(cfg.BaseURL, "cron-jobs", cronJobID, "tasks", taskID)) // TODO: update this
 }
 
 /// BACK-END

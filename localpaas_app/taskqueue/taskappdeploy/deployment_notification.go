@@ -1,4 +1,4 @@
-package taskappnotification
+package taskappdeploy
 
 import (
 	"context"
@@ -13,31 +13,28 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
 )
 
-type deploymentNtfnTaskData struct {
-	*taskData
-	MsgData *notificationservice.BaseMsgDataAppDeploymentNotification
-}
-
 func (e *Executor) notifyForDeployment(
 	ctx context.Context,
-	db database.Tx,
-	taskData *taskData,
+	db database.IDB,
+	data *taskData,
 ) error {
-	data := &deploymentNtfnTaskData{taskData: taskData}
+	if data.NtfnSettings == nil || !data.NtfnSettings.HasDeploymentNtfnSetting() {
+		return nil
+	}
 	ntfnSettings := data.NtfnSettings.Deployment
 	var execFuncs []func(ctx context.Context) error
 
-	if ntfnSettings.HasViaEmailNtfnSettings() {
+	if ntfnSettings.HasViaEmailNtfnSetting() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
 			return e.notifyForDeploymentViaEmail(ctx, db, data)
 		})
 	}
-	if ntfnSettings.HasViaSlackNtfnSettings() {
+	if ntfnSettings.HasViaSlackNtfnSetting() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
 			return e.notifyForDeploymentViaSlack(ctx, db, data)
 		})
 	}
-	if ntfnSettings.HasViaDiscordNtfnSettings() {
+	if ntfnSettings.HasViaDiscordNtfnSetting() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
 			return e.notifyForDeploymentViaDiscord(ctx, db, data)
 		})
@@ -46,7 +43,7 @@ func (e *Executor) notifyForDeployment(
 		return nil
 	}
 
-	e.buildDeploymentMsgData(data)
+	e.buildDeploymentNtfnMsgData(data)
 
 	err := gofn.ExecTasks(ctx, 0, execFuncs...)
 	if err != nil {
@@ -56,21 +53,21 @@ func (e *Executor) notifyForDeployment(
 	return nil
 }
 
-func (e *Executor) buildDeploymentMsgData(
-	data *deploymentNtfnTaskData,
+func (e *Executor) buildDeploymentNtfnMsgData(
+	data *taskData,
 ) {
 	deployment := data.Deployment
-	success := deployment.Status == base.DeploymentStatusDone
 
 	msgData := &notificationservice.BaseMsgDataAppDeploymentNotification{
 		ProjectName:   data.Project.Name,
 		AppName:       data.App.Name,
-		Succeeded:     success,
+		Succeeded:     deployment.IsDone(),
 		Method:        deployment.Settings.ActiveMethod,
+		StartedAt:     deployment.StartedAt,
 		Duration:      deployment.GetDuration(),
 		DashboardLink: config.Current.DashboardDeploymentDetailsURL(deployment.ID),
 	}
-	data.MsgData = msgData
+	data.NtfnMsgData = msgData
 
 	switch deployment.Settings.ActiveMethod {
 	case base.DeploymentMethodRepo:
@@ -88,11 +85,11 @@ func (e *Executor) buildDeploymentMsgData(
 
 func (e *Executor) notifyForDeploymentViaEmail(
 	ctx context.Context,
-	db database.Tx,
-	data *deploymentNtfnTaskData,
+	db database.IDB,
+	data *taskData,
 ) error {
-	success := data.Deployment.Status == base.DeploymentStatusDone
-	settings := gofn.If(success, data.NtfnSettings.Deployment.Success, data.NtfnSettings.Deployment.Failure)
+	settings := gofn.If(data.Deployment.IsDone(), data.NtfnSettings.Deployment.Success,
+		data.NtfnSettings.Deployment.Failure)
 	if settings == nil || settings.ViaEmail == nil {
 		return nil
 	}
@@ -111,9 +108,6 @@ func (e *Executor) notifyForDeploymentViaEmail(
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	if len(userMap) == 0 {
-		return nil
-	}
 
 	userEmails := make([]string, 0, len(userMap))
 	for _, user := range userMap {
@@ -122,9 +116,12 @@ func (e *Executor) notifyForDeploymentViaEmail(
 	if len(settings.ViaEmail.ToAddresses) > 0 {
 		userEmails = gofn.ToSet(append(userEmails, settings.ViaEmail.ToAddresses...))
 	}
+	if len(userEmails) == 0 {
+		return nil
+	}
 
 	subject := fmt.Sprintf("[%s/%s]", data.Project.Name, data.App.Name)
-	if success {
+	if data.Deployment.IsDone() {
 		subject += " deployment succeeded"
 	} else {
 		subject += " deployment failed"
@@ -132,7 +129,7 @@ func (e *Executor) notifyForDeploymentViaEmail(
 
 	err = e.notificationService.EmailSendAppDeploymentNotification(ctx, db,
 		&notificationservice.EmailMsgDataAppDeploymentNotification{
-			BaseMsgDataAppDeploymentNotification: data.MsgData,
+			BaseMsgDataAppDeploymentNotification: data.NtfnMsgData,
 			Email:                                emailAcc,
 			Recipients:                           userEmails,
 			Subject:                              subject,
@@ -146,11 +143,11 @@ func (e *Executor) notifyForDeploymentViaEmail(
 
 func (e *Executor) notifyForDeploymentViaSlack(
 	ctx context.Context,
-	db database.Tx,
-	data *deploymentNtfnTaskData,
+	db database.IDB,
+	data *taskData,
 ) error {
-	success := data.Deployment.Status == base.DeploymentStatusDone
-	settings := gofn.If(success, data.NtfnSettings.Deployment.Success, data.NtfnSettings.Deployment.Failure)
+	settings := gofn.If(data.Deployment.IsDone(), data.NtfnSettings.Deployment.Success,
+		data.NtfnSettings.Deployment.Failure)
 	if settings == nil || settings.ViaSlack == nil {
 		return nil
 	}
@@ -166,7 +163,7 @@ func (e *Executor) notifyForDeploymentViaSlack(
 
 	err := e.notificationService.SlackSendAppDeploymentNotification(ctx, db,
 		&notificationservice.SlackMsgDataAppDeploymentNotification{
-			BaseMsgDataAppDeploymentNotification: data.MsgData,
+			BaseMsgDataAppDeploymentNotification: data.NtfnMsgData,
 			Setting:                              imService.Slack,
 		})
 	if err != nil {
@@ -178,12 +175,12 @@ func (e *Executor) notifyForDeploymentViaSlack(
 
 func (e *Executor) notifyForDeploymentViaDiscord(
 	ctx context.Context,
-	db database.Tx,
-	data *deploymentNtfnTaskData,
+	db database.IDB,
+	data *taskData,
 ) error {
-	success := data.Deployment.Status == base.DeploymentStatusDone
-	settings := gofn.If(success, data.NtfnSettings.Deployment.Success, data.NtfnSettings.Deployment.Failure)
-	if settings == nil || settings.ViaSlack == nil {
+	settings := gofn.If(data.Deployment.IsDone(), data.NtfnSettings.Deployment.Success,
+		data.NtfnSettings.Deployment.Failure)
+	if settings == nil || settings.ViaDiscord == nil {
 		return nil
 	}
 
@@ -198,7 +195,7 @@ func (e *Executor) notifyForDeploymentViaDiscord(
 
 	err := e.notificationService.DiscordSendAppDeploymentNotification(ctx, db,
 		&notificationservice.DiscordMsgDataAppDeploymentNotification{
-			BaseMsgDataAppDeploymentNotification: data.MsgData,
+			BaseMsgDataAppDeploymentNotification: data.NtfnMsgData,
 			Setting:                              imService.Discord,
 		})
 	if err != nil {

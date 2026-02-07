@@ -1,4 +1,4 @@
-package appservice
+package settingservice
 
 import (
 	"context"
@@ -13,45 +13,16 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/entityutil"
 )
 
-func (s *appService) LoadSettings(
+func (s *settingService) LoadReferenceSettings(
 	ctx context.Context,
 	db database.IDB,
-	app *entity.App,
-	settingIDs []string,
-	requireActive bool,
-) (settingMap map[string]*entity.Setting, err error) {
-	opts := []bunex.SelectQueryOption{
-		bunex.SelectWhere("setting.id IN (?)", bunex.In(settingIDs)),
-	}
-	if requireActive {
-		opts = append(opts, bunex.SelectWhere("setting.status = ?", base.SettingStatusActive))
-	}
-	settings, _, err := s.settingRepo.ListByAppObject(ctx, db, app, nil, opts...)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-	settingMap = entityutil.SliceToIDMap(settings)
-
-	// Check setting existence
-	for _, id := range settingIDs {
-		if _, exists := settingMap[id]; !exists {
-			return nil, apperrors.NewNotFound("Setting").
-				WithMsgLog("setting %s not found or expired", id)
-		}
-	}
-
-	return settingMap, nil
-}
-
-func (s *appService) LoadReferenceSettings(
-	ctx context.Context,
-	db database.IDB,
+	project *entity.Project,
 	app *entity.App,
 	requireActive bool,
-	appSettings ...*entity.Setting,
+	inSettings ...*entity.Setting,
 ) (settingMap map[string]*entity.Setting, err error) {
 	settingIDMap := make(map[string]struct{}, 10) //nolint
-	for _, setting := range appSettings {
+	for _, setting := range inSettings {
 		for _, settingID := range setting.RefIDs {
 			settingIDMap[settingID] = struct{}{}
 		}
@@ -63,7 +34,16 @@ func (s *appService) LoadReferenceSettings(
 	if requireActive {
 		opts = append(opts, bunex.SelectWhere("setting.status = ?", base.SettingStatusActive))
 	}
-	settings, _, err := s.settingRepo.ListByAppObject(ctx, db, app, nil, opts...)
+
+	var settings []*entity.Setting
+	switch {
+	case app != nil:
+		settings, _, err = s.settingRepo.ListByAppObject(ctx, db, app, nil, opts...)
+	case project != nil:
+		settings, _, err = s.settingRepo.ListByProject(ctx, db, project.ID, nil, opts...)
+	default:
+		settings, _, err = s.settingRepo.ListGlobally(ctx, db, nil, opts...)
+	}
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

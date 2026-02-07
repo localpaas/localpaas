@@ -21,6 +21,8 @@ type SettingRepo interface {
 	// Get a setting by id in the given scope with handling inheritance
 	GetByID(ctx context.Context, db database.IDB, typ base.SettingType, id string, requireActive bool,
 		opts ...bunex.SelectQueryOption) (*entity.Setting, error)
+	GetByIDGlobally(ctx context.Context, db database.IDB, typ base.SettingType, id string,
+		requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error)
 	GetByIDAndProject(ctx context.Context, db database.IDB, typ base.SettingType, id, projectID string,
 		requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error)
 	GetByIDAndApp(ctx context.Context, db database.IDB, typ base.SettingType, id, projectID, appID string,
@@ -36,6 +38,8 @@ type SettingRepo interface {
 	// Get a setting by name in the given scope with handling inheritance
 	GetByName(ctx context.Context, db database.IDB, typ base.SettingType, name string, requireActive bool,
 		opts ...bunex.SelectQueryOption) (*entity.Setting, error)
+	GetByNameGlobally(ctx context.Context, db database.IDB, typ base.SettingType, name string, requireActive bool,
+		opts ...bunex.SelectQueryOption) (*entity.Setting, error)
 	GetByNameAndProject(ctx context.Context, db database.IDB, typ base.SettingType, name, projectID string,
 		requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error)
 	GetByNameAndApp(ctx context.Context, db database.IDB, typ base.SettingType, name, projectID, appID string,
@@ -45,6 +49,8 @@ type SettingRepo interface {
 
 	// Get a single setting in the given scope with handling inheritance by priority order:
 	// own setting, parent app setting, parent project setting, global setting.
+	GetSingleGlobally(ctx context.Context, db database.IDB, typ base.SettingType,
+		requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error)
 	GetSingleByProject(ctx context.Context, db database.IDB, typ base.SettingType, projectID string,
 		requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error)
 	GetSingleByApp(ctx context.Context, db database.IDB, typ base.SettingType, projectID, appID string,
@@ -56,6 +62,8 @@ type SettingRepo interface {
 
 	// List settings in the given scope with handling inheritance
 	List(ctx context.Context, db database.IDB, paging *basedto.Paging,
+		opts ...bunex.SelectQueryOption) ([]*entity.Setting, *basedto.PagingMeta, error)
+	ListGlobally(ctx context.Context, db database.IDB, paging *basedto.Paging,
 		opts ...bunex.SelectQueryOption) ([]*entity.Setting, *basedto.PagingMeta, error)
 	ListByProject(ctx context.Context, db database.IDB, projectID string, paging *basedto.Paging,
 		opts ...bunex.SelectQueryOption) ([]*entity.Setting, *basedto.PagingMeta, error)
@@ -105,6 +113,13 @@ func NewSettingRepo(appRepo AppRepo) SettingRepo {
 func (repo *settingRepo) GetByID(ctx context.Context, db database.IDB, typ base.SettingType, id string,
 	requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
 	opts = repo.applyFilter(opts, typ, id, requireActive)
+	return repo.get(ctx, db, opts...)
+}
+
+func (repo *settingRepo) GetByIDGlobally(ctx context.Context, db database.IDB, typ base.SettingType, id string,
+	requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
+	opts = repo.applyFilter(opts, typ, id, requireActive)
+	opts = append(opts, bunex.SelectWhere("setting.object_id IS NULL"))
 	return repo.get(ctx, db, opts...)
 }
 
@@ -161,6 +176,17 @@ func (repo *settingRepo) GetByName(ctx context.Context, db database.IDB, typ bas
 	}
 	opts = repo.applyFilter(opts, typ, "", requireActive)
 	opts = repo.applyNameAndKindFilter(opts, name, "")
+	return repo.get(ctx, db, opts...)
+}
+
+func (repo *settingRepo) GetByNameGlobally(ctx context.Context, db database.IDB, typ base.SettingType, name string,
+	requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
+	if name == "" {
+		return nil, nil
+	}
+	opts = repo.applyFilter(opts, typ, "", requireActive)
+	opts = repo.applyNameAndKindFilter(opts, name, "")
+	opts = append(opts, bunex.SelectWhere("setting.object_id IS NULL"))
 	return repo.get(ctx, db, opts...)
 }
 
@@ -232,6 +258,16 @@ func (repo *settingRepo) get(ctx context.Context, db database.IDB,
 
 	if hasChange, _ := repo.updateExpiredSetting(ctx, db, setting); hasChange {
 		return repo.get(ctx, db, opts...)
+	}
+	return setting, nil
+}
+
+func (repo *settingRepo) GetSingleGlobally(ctx context.Context, db database.IDB, typ base.SettingType,
+	requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
+	opts = repo.applyFilter(opts, typ, "", requireActive)
+	setting, err := repo.get(ctx, db, opts...)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
 	}
 	return setting, nil
 }
@@ -381,6 +417,12 @@ func (repo *settingRepo) List(ctx context.Context, db database.IDB, paging *base
 		return repo.List(ctx, db, paging, opts...)
 	}
 	return settings, pagingMeta, nil
+}
+
+func (repo *settingRepo) ListGlobally(ctx context.Context, db database.IDB,
+	paging *basedto.Paging, opts ...bunex.SelectQueryOption) ([]*entity.Setting, *basedto.PagingMeta, error) {
+	opts = append(opts, bunex.SelectWhere("setting.object_id IS NULL"))
+	return repo.List(ctx, db, paging, opts...)
 }
 
 func (repo *settingRepo) ListByProject(ctx context.Context, db database.IDB, projectID string,

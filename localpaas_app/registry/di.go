@@ -37,7 +37,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/taskqueue"
 	"github.com/localpaas/localpaas/localpaas_app/taskqueue/initializer"
 	"github.com/localpaas/localpaas/localpaas_app/taskqueue/taskappdeploy"
-	"github.com/localpaas/localpaas/localpaas_app/taskqueue/taskappnotification"
 	"github.com/localpaas/localpaas/localpaas_app/taskqueue/taskcronjobexec"
 	"github.com/localpaas/localpaas/localpaas_app/taskqueue/tasktest"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appdeploymentuc"
@@ -99,7 +98,6 @@ var Provides = []any{
 	initializer.NewWorkerInitializer,
 	tasktest.NewExecutor,
 	taskappdeploy.NewExecutor,
-	taskappnotification.NewExecutor,
 	taskcronjobexec.NewExecutor,
 
 	// Route handler

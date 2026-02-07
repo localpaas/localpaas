@@ -20,16 +20,16 @@ var (
 )
 
 type CronJob struct {
-	CronType     base.CronJobType         `json:"cronType"`
-	CronExpr     string                   `json:"cronExpr"`
-	App          ObjectID                 `json:"app,omitzero"`
-	InitialTime  time.Time                `json:"initialTime"`
-	Priority     base.TaskPriority        `json:"priority"`
-	MaxRetry     int                      `json:"maxRetry"`
-	RetryDelay   timeutil.Duration        `json:"retryDelay"`
-	Timeout      timeutil.Duration        `json:"timeout"`
-	Command      *CronJobContainerCommand `json:"command"`
-	Notification *CronJobNtfnSettings     `json:"notification,omitempty"`
+	CronType     base.CronJobType          `json:"cronType"`
+	CronExpr     string                    `json:"cronExpr"`
+	App          ObjectID                  `json:"app,omitzero"`
+	InitialTime  time.Time                 `json:"initialTime"`
+	Priority     base.TaskPriority         `json:"priority"`
+	MaxRetry     int                       `json:"maxRetry"`
+	RetryDelay   timeutil.Duration         `json:"retryDelay"`
+	Timeout      timeutil.Duration         `json:"timeout"`
+	Command      *CronJobContainerCommand  `json:"command"`
+	Notification *DefaultResultNtfnSetting `json:"notification,omitempty"`
 }
 
 type CronJobContainerCommand struct {
@@ -37,35 +37,14 @@ type CronJobContainerCommand struct {
 	WorkingDir string `json:"workingDir,omitempty"`
 }
 
-type CronJobNtfnSettings struct {
-	Success *CronJobTargetNtfnSettings `json:"success,omitempty"`
-	Failure *CronJobTargetNtfnSettings `json:"failure,omitempty"`
-}
-
-func (s *CronJobNtfnSettings) HasViaEmailNtfnSettings() bool {
-	return (s.Success != nil && s.Success.ViaEmail != nil) || (s.Failure != nil && s.Failure.ViaEmail != nil)
-}
-
-func (s *CronJobNtfnSettings) HasViaSlackNtfnSettings() bool {
-	return (s.Success != nil && s.Success.ViaSlack != nil) || (s.Failure != nil && s.Failure.ViaSlack != nil)
-}
-
-func (s *CronJobNtfnSettings) HasViaDiscordNtfnSettings() bool {
-	return (s.Success != nil && s.Success.ViaDiscord != nil) || (s.Failure != nil && s.Failure.ViaDiscord != nil)
-}
-
-type CronJobTargetNtfnSettings struct {
-	ViaEmail   *EmailNtfnSetting   `json:"viaEmail,omitempty"`
-	ViaSlack   *SlackNtfnSetting   `json:"viaSlack,omitempty"`
-	ViaDiscord *DiscordNtfnSetting `json:"viaDiscord,omitempty"`
-}
-
 func (s *CronJob) GetType() base.SettingType {
 	return base.SettingTypeCronJob
 }
 
 func (s *CronJob) GetRefSettingIDs() []string {
-	return nil
+	res := make([]string, 0, 5) //nolint
+	res = append(res, s.Notification.GetRefSettingIDs()...)
+	return res
 }
 
 func (s *CronJob) ParseCronExpr() (cron.Schedule, error) {

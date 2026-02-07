@@ -91,6 +91,10 @@ func (t *Task) CanRetry() bool {
 	return t.Status == base.TaskStatusFailed && t.Config.MaxRetry > t.Config.Retry
 }
 
+func (t *Task) GetDuration() time.Duration {
+	return t.EndedAt.Sub(t.StartedAt)
+}
+
 func (t *Task) ShouldRunAt() (runAt time.Time) {
 	runAt = t.RunAt
 	if t.Status == base.TaskStatusFailed {

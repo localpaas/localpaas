@@ -40,6 +40,26 @@ func (d *Deployment) GetID() string {
 	return d.ID
 }
 
+func (d *Deployment) IsDone() bool {
+	return d.Status == base.DeploymentStatusDone
+}
+
+func (d *Deployment) IsFailed() bool {
+	return d.Status == base.DeploymentStatusFailed
+}
+
+func (d *Deployment) IsCanceled() bool {
+	return d.Status == base.DeploymentStatusCanceled
+}
+
+func (d *Deployment) IsNotStarted() bool {
+	return d.Status == base.DeploymentStatusNotStarted
+}
+
+func (d *Deployment) IsInProgress() bool {
+	return d.Status == base.DeploymentStatusInProgress
+}
+
 func (d *Deployment) CanCancel() bool {
 	if d.Status == base.DeploymentStatusDone ||
 		d.Status == base.DeploymentStatusCanceled ||

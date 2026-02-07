@@ -14,5 +14,5 @@ var (
 
 const (
 	// TODO: make this configurable
-	CronJobNotificationTimeoutDefault = 1 * time.Minute
+	CronTaskNotificationTimeoutDefault = 1 * time.Minute
 )

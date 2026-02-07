@@ -14,5 +14,6 @@
 > {{else if .Method | eq "tarball"}}
 > Source Archive: `{{.SourceArchive}}`
 > {{end}}
+> Started at: `{{.StartedAt}}`
 > Duration: `{{.Duration}}`
 > See deployment details: {{.DashboardLink}}

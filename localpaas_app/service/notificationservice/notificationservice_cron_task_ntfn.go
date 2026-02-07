@@ -8,45 +8,37 @@ import (
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/services/email"
 )
 
-const (
-	buffSizeXs = 1000
-	buffSizeMd = 5000
-)
-
-type BaseMsgDataAppDeploymentNotification struct {
+type BaseMsgDataCronTaskNotification struct {
 	ProjectName   string
 	AppName       string
 	Succeeded     bool
-	Method        base.DeploymentMethod
-	RepoURL       string
-	RepoRef       string
-	CommitMsg     string
-	Image         string
-	SourceArchive string
+	CronJobName   string
+	CronJobExpr   string
+	CreatedAt     time.Time
 	StartedAt     time.Time
 	Duration      time.Duration
+	Retries       int
 	DashboardLink string
 }
 
-type EmailMsgDataAppDeploymentNotification struct {
-	*BaseMsgDataAppDeploymentNotification
+type EmailMsgDataCronTaskNotification struct {
+	*BaseMsgDataCronTaskNotification
 	Email      *entity.Email
 	Recipients []string
 	Subject    string
 }
 
-func (s *notificationService) EmailSendAppDeploymentNotification(
+func (s *notificationService) EmailSendCronTaskNotification(
 	ctx context.Context,
 	db database.IDB,
-	data *EmailMsgDataAppDeploymentNotification,
+	data *EmailMsgDataCronTaskNotification,
 ) error {
-	template, err := s.GetTemplate(ctx, db, TemplateTypeEmail, TemplateAppDeploymentNotification)
+	template, err := s.GetTemplate(ctx, db, TemplateTypeEmail, TemplateCronTaskNotification)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -57,7 +49,7 @@ func (s *notificationService) EmailSendAppDeploymentNotification(
 		return apperrors.Wrap(err)
 	}
 
-	subject := gofn.Coalesce(data.Subject, "Deployment notification")
+	subject := gofn.Coalesce(data.Subject, "Scheduled task notification")
 	err = email.SendMail(ctx, data.Email, data.Recipients, subject, buf.String())
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -65,17 +57,17 @@ func (s *notificationService) EmailSendAppDeploymentNotification(
 	return nil
 }
 
-type SlackMsgDataAppDeploymentNotification struct {
-	*BaseMsgDataAppDeploymentNotification
+type SlackMsgDataCronTaskNotification struct {
+	*BaseMsgDataCronTaskNotification
 	Setting *entity.Slack
 }
 
-func (s *notificationService) SlackSendAppDeploymentNotification(
+func (s *notificationService) SlackSendCronTaskNotification(
 	ctx context.Context,
 	db database.IDB,
-	data *SlackMsgDataAppDeploymentNotification,
+	data *SlackMsgDataCronTaskNotification,
 ) error {
-	template, err := s.GetTemplate(ctx, db, TemplateTypeSlack, TemplateAppDeploymentNotification)
+	template, err := s.GetTemplate(ctx, db, TemplateTypeSlack, TemplateCronTaskNotification)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -93,17 +85,17 @@ func (s *notificationService) SlackSendAppDeploymentNotification(
 	return nil
 }
 
-type DiscordMsgDataAppDeploymentNotification struct {
-	*BaseMsgDataAppDeploymentNotification
+type DiscordMsgDataCronTaskNotification struct {
+	*BaseMsgDataCronTaskNotification
 	Setting *entity.Discord
 }
 
-func (s *notificationService) DiscordSendAppDeploymentNotification(
+func (s *notificationService) DiscordSendCronTaskNotification(
 	ctx context.Context,
 	db database.IDB,
-	data *DiscordMsgDataAppDeploymentNotification,
+	data *DiscordMsgDataCronTaskNotification,
 ) error {
-	template, err := s.GetTemplate(ctx, db, TemplateTypeDiscord, TemplateAppDeploymentNotification)
+	template, err := s.GetTemplate(ctx, db, TemplateTypeDiscord, TemplateCronTaskNotification)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

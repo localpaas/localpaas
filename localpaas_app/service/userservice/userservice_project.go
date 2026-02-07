@@ -19,6 +19,9 @@ func (s *userService) LoadProjectUsers(
 	loadOwners bool,
 	loadAdmins bool,
 ) (map[string]*entity.User, error) {
+	if !loadMembers && !loadOwners && !loadAdmins {
+		return nil, nil
+	}
 	userIDs := make([]string, 0, 10) //nolint:mnd
 
 	if loadMembers {
