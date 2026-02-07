@@ -11,6 +11,7 @@ type CronJobUC struct {
 	db                       *database.DB
 	settingRepo              repository.SettingRepo
 	projectSharedSettingRepo repository.ProjectSharedSettingRepo
+	appRepo                  repository.AppRepo
 	taskRepo                 repository.TaskRepo
 	settingService           settingservice.SettingService
 	taskQueue                taskqueue.TaskQueue
@@ -20,6 +21,7 @@ func NewCronJobUC(
 	db *database.DB,
 	settingRepo repository.SettingRepo,
 	projectSharedSettingRepo repository.ProjectSharedSettingRepo,
+	appRepo repository.AppRepo,
 	taskRepo repository.TaskRepo,
 	settingService settingservice.SettingService,
 	taskQueue taskqueue.TaskQueue,
@@ -28,6 +30,7 @@ func NewCronJobUC(
 		db:                       db,
 		settingRepo:              settingRepo,
 		projectSharedSettingRepo: projectSharedSettingRepo,
+		appRepo:                  appRepo,
 		taskRepo:                 taskRepo,
 		settingService:           settingService,
 		taskQueue:                taskQueue,

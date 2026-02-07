@@ -97,29 +97,17 @@ func TransformDeploymentSettings(input *AppDeploymentSettingsTransformInput) (re
 	if resp.ImageSource != nil { //nolint:nestif
 		if resp.ImageSource.RegistryAuth != nil && resp.ImageSource.RegistryAuth.ID != "" {
 			settingResp, _ := settings.TransformSettingBase(input.RefSettingMap[resp.ImageSource.RegistryAuth.ID])
-			if settingResp != nil {
-				resp.ImageSource.RegistryAuth = settingResp
-			} else {
-				resp.ImageSource.RegistryAuth = nil
-			}
+			resp.ImageSource.RegistryAuth = settingResp
 		}
 	}
 	if resp.RepoSource != nil { //nolint:nestif
 		if resp.RepoSource.Credentials != nil && resp.RepoSource.Credentials.ID != "" {
 			settingResp, _ := settings.TransformSettingBase(input.RefSettingMap[resp.RepoSource.Credentials.ID])
-			if settingResp != nil {
-				resp.RepoSource.Credentials = settingResp
-			} else {
-				resp.RepoSource.Credentials = nil
-			}
+			resp.RepoSource.Credentials = settingResp
 		}
 		if resp.RepoSource.RegistryAuth != nil && resp.RepoSource.RegistryAuth.ID != "" {
 			settingResp, _ := settings.TransformSettingBase(input.RefSettingMap[resp.RepoSource.RegistryAuth.ID])
-			if settingResp != nil {
-				resp.RepoSource.RegistryAuth = settingResp
-			} else {
-				resp.RepoSource.RegistryAuth = nil
-			}
+			resp.RepoSource.RegistryAuth = settingResp
 		}
 	}
 

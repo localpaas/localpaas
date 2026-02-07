@@ -53,7 +53,12 @@ type CronJobContainerCommandResp struct {
 	WorkingDir string `json:"workingDir"`
 }
 
-func TransformCronJob(setting *entity.Setting) (resp *CronJobResp, err error) {
+type CronJobTransformInput struct {
+	AppMap        map[string]*entity.App
+	RefSettingMap map[string]*entity.Setting
+}
+
+func TransformCronJob(setting *entity.Setting, input *CronJobTransformInput) (resp *CronJobResp, err error) {
 	config := setting.MustAsCronJob()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
@@ -63,5 +68,19 @@ func TransformCronJob(setting *entity.Setting) (resp *CronJobResp, err error) {
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+
+	if config.App.ID != "" {
+		refApp := input.AppMap[config.App.ID]
+		if err = copier.Copy(&resp.App, refApp); err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	}
+
+	resp.Notification, err = notificationdto.TransformDefaultResultNtfnSetting(
+		config.Notification, input.RefSettingMap)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
 	return resp, nil
 }

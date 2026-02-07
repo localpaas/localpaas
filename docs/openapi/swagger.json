@@ -16655,10 +16655,10 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
         "format" : "int64",
         "type" : "integer",
-        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
+        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentReq" : {
         "type" : "object"
@@ -18341,7 +18341,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DiscordNtfnSettingResp" : {
         "properties" : {
           "webhook" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.NamedObjectResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
           }
         },
         "required" : [ "webhook" ],
@@ -18374,7 +18374,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.EmailNtfnSettingResp" : {
         "properties" : {
           "sender" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.NamedObjectResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
           },
           "toAddresses" : {
             "items" : {
@@ -18407,7 +18407,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.SlackNtfnSettingResp" : {
         "properties" : {
           "webhook" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.NamedObjectResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
           }
         },
         "required" : [ "webhook" ],
