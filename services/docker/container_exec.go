@@ -69,16 +69,11 @@ func (m *Manager) ContainerExecWait(
 		return nil, nil, apperrors.Wrap(err)
 	}
 
-	logChan, _ := StartScanningLog(ctx, io.NopCloser(resp.Reader), WithParseFrameHeader(false))
+	logChan, _ := StartScanningLog(ctx, io.NopCloser(resp.Reader), WithParseLogHeader(false))
 	defer resp.Close()
 
 	logs := make([]*realtimelog.LogFrame, 0, 20) //nolint
 	for msgs := range logChan {
-		for _, msg := range msgs {
-			if msg.Type == "" {
-				msg.Type = realtimelog.LogTypeOut
-			}
-		}
 		logs = append(logs, msgs...)
 	}
 

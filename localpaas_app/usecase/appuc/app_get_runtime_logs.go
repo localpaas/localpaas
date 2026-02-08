@@ -79,7 +79,7 @@ func (uc *AppUC) GetAppRuntimeLogs(
 		// I'm not expert about this, appreciate if anyone can verify this solution.
 		// This solution: only send data to client after a period of time or when we have some frames.
 		resp.LogChan, resp.LogChanCloser = docker.StartScanningLog(ctx, logsReader,
-			docker.WithParseFrameHeader(true),
+			docker.WithParseLogHeader(true),
 			docker.WithBatchRecvOptions(batchrecvchan.Options{
 				ThresholdPeriod: runtimeLogBatchThresholdPeriod,
 				MaxItem:         runtimeLogBatchMaxFrame,
@@ -87,7 +87,7 @@ func (uc *AppUC) GetAppRuntimeLogs(
 		)
 	} else {
 		// Scan all data at once
-		logChan, _ := docker.StartScanningLog(ctx, logsReader, docker.WithParseFrameHeader(true))
+		logChan, _ := docker.StartScanningLog(ctx, logsReader, docker.WithParseLogHeader(true))
 		for frames := range logChan {
 			resp.Logs = append(resp.Logs, frames...)
 		}

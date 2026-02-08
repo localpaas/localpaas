@@ -14,7 +14,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.21.0
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.95.1
 	github.com/bradleyfalzon/ghinstallation/v2 v2.17.0
-	github.com/buildkite/shellwords v1.0.1
 	github.com/bwmarrin/discordgo v0.29.0
 	github.com/containerd/errdefs v1.0.0
 	github.com/darkrockmountain/gomail v0.6.1

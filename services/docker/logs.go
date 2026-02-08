@@ -5,20 +5,23 @@ import (
 	"context"
 	"io"
 
+	"github.com/docker/docker/pkg/stdcopy"
+
 	"github.com/localpaas/localpaas/localpaas_app/pkg/batchrecvchan"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/realtimelog"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
 )
 
 type ScanningLogOptions struct {
 	BatchRecvOptions batchrecvchan.Options
-	ParseFrameHeader bool
+	ParseLogHeader   bool
 }
 
 type ScanningLogOption func(*ScanningLogOptions)
 
-func WithParseFrameHeader(flag bool) ScanningLogOption {
+func WithParseLogHeader(flag bool) ScanningLogOption {
 	return func(o *ScanningLogOptions) {
-		o.ParseFrameHeader = flag
+		o.ParseLogHeader = flag
 	}
 }
 
@@ -28,13 +31,26 @@ func WithBatchRecvOptions(recvOpts batchrecvchan.Options) ScanningLogOption {
 	}
 }
 
+type logWriter struct {
+	LogType realtimelog.LogType
+	LogChan *batchrecvchan.Chan[*realtimelog.LogFrame]
+}
+
+func (w *logWriter) Write(p []byte) (int, error) {
+	w.LogChan.Send(&realtimelog.LogFrame{
+		Type: w.LogType,
+		Data: string(p),
+	})
+	return len(p), nil
+}
+
 func StartScanningLog(
 	ctx context.Context,
 	reader io.ReadCloser,
 	options ...ScanningLogOption,
 ) (logChan <-chan []*realtimelog.LogFrame, closeFunc func() error) {
 	opts := &ScanningLogOptions{
-		ParseFrameHeader: true,
+		ParseLogHeader: true,
 	}
 	for _, o := range options {
 		o(opts)
@@ -56,39 +72,38 @@ func StartScanningLog(
 		// Close logs stream
 		defer reader.Close()
 
-		scanner := bufio.NewScanner(reader)
-		for scanner.Scan() {
-			logFrame := parseLogFrame(scanner.Bytes(), opts.ParseFrameHeader)
-			select {
-			case <-ctx.Done(): // Make sure to quit if the context is done
-				return
-			default:
-				batchChan.Send(logFrame)
+		if opts.ParseLogHeader {
+			outWriter := &logWriter{
+				LogType: realtimelog.LogTypeOut,
+				LogChan: batchChan,
+			}
+			errWriter := &logWriter{
+				LogType: realtimelog.LogTypeErr,
+				LogChan: batchChan,
+			}
+			// Use stdcopy.StdCopy to demultiplex and format the logs
+			// Docker logs have an 8-byte header for stdout/stderr which stdcopy handles
+			// Ref: https://docs.docker.com/reference/api/engine/version/v1.51/#tag/Container/operation/ContainerAttach
+			_, err := stdcopy.StdCopy(outWriter, errWriter, reader)
+			if err != nil {
+				panic(err)
+			}
+		} else {
+			scanner := bufio.NewScanner(reader)
+			for scanner.Scan() {
+				logFrame := &realtimelog.LogFrame{
+					Type: realtimelog.LogTypeOut,
+					Data: reflectutil.UnsafeBytesToStr(scanner.Bytes()),
+				}
+				select {
+				case <-ctx.Done(): // Make sure to quit if the context is done
+					return
+				default:
+					batchChan.Send(logFrame)
+				}
 			}
 		}
 	}()
 
 	return batchChan.Receiver(), func() error { return reader.Close() }
-}
-
-func parseLogFrame(logBytes []byte, parseHeader bool) *realtimelog.LogFrame {
-	var logType realtimelog.LogType
-	// Format structure of the logs data, see:
-	// https://docs.docker.com/reference/api/engine/version/v1.51/#tag/Container/operation/ContainerAttach
-	//nolint:mnd
-	if parseHeader && len(logBytes) > 8 {
-		switch logBytes[0] {
-		case 0:
-			logType = realtimelog.LogTypeIn
-		case 1:
-			logType = realtimelog.LogTypeOut
-		case 2:
-			logType = realtimelog.LogTypeErr
-		}
-		logBytes = logBytes[8:]
-	}
-	return &realtimelog.LogFrame{
-		Data: string(logBytes),
-		Type: logType,
-	}
 }
