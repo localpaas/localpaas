@@ -9,12 +9,38 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/realtimelog"
 )
 
+type ScanningLogOptions struct {
+	BatchRecvOptions batchrecvchan.Options
+	ParseFrameHeader bool
+}
+
+type ScanningLogOption func(*ScanningLogOptions)
+
+func WithParseFrameHeader(flag bool) ScanningLogOption {
+	return func(o *ScanningLogOptions) {
+		o.ParseFrameHeader = flag
+	}
+}
+
+func WithBatchRecvOptions(recvOpts batchrecvchan.Options) ScanningLogOption {
+	return func(o *ScanningLogOptions) {
+		o.BatchRecvOptions = recvOpts
+	}
+}
+
 func StartScanningLog(
 	ctx context.Context,
 	reader io.ReadCloser,
-	options batchrecvchan.Options, // if zero, scan one by one
+	options ...ScanningLogOption,
 ) (logChan <-chan []*realtimelog.LogFrame, closeFunc func() error) {
-	batchChan := batchrecvchan.NewChan[*realtimelog.LogFrame](options)
+	opts := &ScanningLogOptions{
+		ParseFrameHeader: true,
+	}
+	for _, o := range options {
+		o(opts)
+	}
+
+	batchChan := batchrecvchan.NewChan[*realtimelog.LogFrame](opts.BatchRecvOptions)
 
 	_, hasDeadline := ctx.Deadline()
 	if hasDeadline {
@@ -32,7 +58,7 @@ func StartScanningLog(
 
 		scanner := bufio.NewScanner(reader)
 		for scanner.Scan() {
-			logFrame := parseLogFrame(scanner.Bytes())
+			logFrame := parseLogFrame(scanner.Bytes(), opts.ParseFrameHeader)
 			select {
 			case <-ctx.Done(): // Make sure to quit if the context is done
 				return
@@ -45,12 +71,12 @@ func StartScanningLog(
 	return batchChan.Receiver(), func() error { return reader.Close() }
 }
 
-func parseLogFrame(logBytes []byte) *realtimelog.LogFrame {
+func parseLogFrame(logBytes []byte, parseHeader bool) *realtimelog.LogFrame {
 	var logType realtimelog.LogType
 	// Format structure of the logs data, see:
 	// https://docs.docker.com/reference/api/engine/version/v1.51/#tag/Container/operation/ContainerAttach
 	//nolint:mnd
-	if len(logBytes) > 8 {
+	if parseHeader && len(logBytes) > 8 {
 		switch logBytes[0] {
 		case 0:
 			logType = realtimelog.LogTypeIn

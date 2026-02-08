@@ -45,12 +45,27 @@ type CronJobResp struct {
 	RetryDelay   timeutil.Duration                             `json:"retryDelay"`
 	Timeout      timeutil.Duration                             `json:"timeout"`
 	Command      *CronJobContainerCommandResp                  `json:"command"`
-	Notification *notificationdto.DefaultResultNtfnSettingResp `json:"notification,omitempty"`
+	Notification *notificationdto.DefaultResultNtfnSettingResp `json:"notification"`
 }
 
 type CronJobContainerCommandResp struct {
-	Command    string `json:"command"`
-	WorkingDir string `json:"workingDir"`
+	RunInShell string                        `json:"runInShell"`
+	Command    string                        `json:"command"`
+	WorkingDir string                        `json:"workingDir"`
+	EnvVars    []*basedto.EnvVarResp         `json:"envVars"`
+	ArgGroups  []*CronJobCommandArgGroupResp `json:"argGroups"`
+}
+
+type CronJobCommandArgGroupResp struct {
+	ExportEnv string                   `json:"exportEnv"`
+	Separator string                   `json:"separator"`
+	Args      []*CronJobCommandArgResp `json:"args"`
+}
+
+type CronJobCommandArgResp struct {
+	Use   bool   `json:"use"`
+	Name  string `json:"name"`
+	Value string `json:"value"`
 }
 
 type CronJobTransformInput struct {

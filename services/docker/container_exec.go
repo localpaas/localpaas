@@ -2,11 +2,17 @@ package docker
 
 import (
 	"context"
+	"io"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/realtimelog"
+)
+
+var (
+	DefaultConsoleSize = [2]uint{40, 120}
 )
 
 func (m *Manager) ContainerExec(
@@ -17,6 +23,10 @@ func (m *Manager) ContainerExec(
 	_, err := m.client.ContainerInspect(ctx, containerID)
 	if err != nil {
 		return "", nil, apperrors.NewInfra(err)
+	}
+
+	if options.ConsoleSize != nil {
+		options.Tty = true
 	}
 
 	resp, err := m.client.ContainerExecCreate(ctx, containerID, *options)
@@ -47,6 +57,37 @@ func (m *Manager) ContainerExec(
 	}
 
 	return execID, &hijackResp, nil
+}
+
+func (m *Manager) ContainerExecWait(
+	ctx context.Context,
+	containerID string,
+	options *container.ExecOptions,
+) (*container.ExecInspect, []*realtimelog.LogFrame, error) {
+	execID, resp, err := m.ContainerExec(ctx, containerID, options)
+	if err != nil {
+		return nil, nil, apperrors.Wrap(err)
+	}
+
+	logChan, _ := StartScanningLog(ctx, io.NopCloser(resp.Reader), WithParseFrameHeader(false))
+	defer resp.Close()
+
+	logs := make([]*realtimelog.LogFrame, 0, 20) //nolint
+	for msgs := range logChan {
+		for _, msg := range msgs {
+			if msg.Type == "" {
+				msg.Type = realtimelog.LogTypeOut
+			}
+		}
+		logs = append(logs, msgs...)
+	}
+
+	execInfo, err := m.ContainerExecInspect(ctx, execID)
+	if err != nil {
+		return nil, nil, apperrors.Wrap(err)
+	}
+
+	return execInfo, logs, nil
 }
 
 func (m *Manager) ContainerExecInspect(

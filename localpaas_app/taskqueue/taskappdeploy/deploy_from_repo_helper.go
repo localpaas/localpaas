@@ -98,7 +98,7 @@ func (e *Executor) calcBuildEnvVars(
 	db database.Tx,
 	data *repoDeployTaskData,
 ) (map[string]*string, error) {
-	envVars, err := e.envVarService.BuildAppEnv(ctx, db, data.App, true)
+	envVars, err := e.envVarService.BuildAppEnvVars(ctx, db, data.App, true)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

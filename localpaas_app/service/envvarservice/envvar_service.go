@@ -10,7 +10,9 @@ import (
 )
 
 type EnvVarService interface {
-	BuildAppEnv(ctx context.Context, db database.IDB, app *entity.App, buildPhase bool) ([]*EnvVar, error)
+	BuildAppEnvVars(ctx context.Context, db database.IDB, app *entity.App, buildPhase bool) ([]*EnvVar, error)
+	ProcessEnvRefs(ctx context.Context, db database.IDB, app *entity.App, envVars []*entity.EnvVar,
+		loadEnvVars bool, loadSecrets bool, buildPhase bool) (res []*EnvVar, err error)
 }
 
 func NewEnvVarService(

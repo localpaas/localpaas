@@ -78,13 +78,16 @@ func (uc *AppUC) GetAppRuntimeLogs(
 		// NOTE: We may want to send log frames to client by batch to reduce network overhead.
 		// I'm not expert about this, appreciate if anyone can verify this solution.
 		// This solution: only send data to client after a period of time or when we have some frames.
-		resp.LogChan, resp.LogChanCloser = docker.StartScanningLog(ctx, logsReader, batchrecvchan.Options{
-			ThresholdPeriod: runtimeLogBatchThresholdPeriod,
-			MaxItem:         runtimeLogBatchMaxFrame,
-		})
+		resp.LogChan, resp.LogChanCloser = docker.StartScanningLog(ctx, logsReader,
+			docker.WithParseFrameHeader(true),
+			docker.WithBatchRecvOptions(batchrecvchan.Options{
+				ThresholdPeriod: runtimeLogBatchThresholdPeriod,
+				MaxItem:         runtimeLogBatchMaxFrame,
+			}),
+		)
 	} else {
 		// Scan all data at once
-		logChan, _ := docker.StartScanningLog(ctx, logsReader, batchrecvchan.Options{})
+		logChan, _ := docker.StartScanningLog(ctx, logsReader, docker.WithParseFrameHeader(true))
 		for frames := range logChan {
 			resp.Logs = append(resp.Logs, frames...)
 		}

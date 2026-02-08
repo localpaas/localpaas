@@ -131,7 +131,7 @@ func (uc *AppUC) applyAppEnvVars(
 	data *updateAppEnvVarsData,
 ) error {
 	app := data.App
-	envs, err := uc.envVarService.BuildAppEnv(ctx, db, app, false)
+	envs, err := uc.envVarService.BuildAppEnvVars(ctx, db, app, false)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -139,9 +139,7 @@ func (uc *AppUC) applyAppEnvVars(
 	envVars := make([]string, 0, len(envs))
 	for _, env := range envs {
 		envVars = append(envVars, env.ToString("="))
-		if env.Error != "" {
-			data.Errors = append(data.Errors, env.Error)
-		}
+		data.Errors = append(data.Errors, env.Errors...)
 	}
 
 	service, err := uc.appService.ServiceInspect(ctx, app.ServiceID, false)

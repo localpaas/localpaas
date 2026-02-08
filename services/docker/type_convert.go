@@ -11,6 +11,7 @@ import (
 	"github.com/docker/docker/api/types/swarm"
 	"github.com/tiendc/gofn"
 
+	"github.com/localpaas/localpaas/localpaas_app/pkg/shellutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
@@ -167,7 +168,7 @@ func ConvertFromServiceCommand(cmd []string, args []string) string {
 }
 
 func ApplyServiceCommand(contSpec *swarm.ContainerSpec, cmd string) {
-	contSpec.Command = gofn.StringSplit(cmd, " ", "\"")
+	contSpec.Command = gofn.Must(shellutil.CmdSplit(cmd))
 }
 
 func ConvertFromServicePrivileges(privileges *swarm.Privileges) (res *Privileges) {
@@ -386,7 +387,7 @@ func ApplyServiceHealthcheck(contSpec *swarm.ContainerSpec, healthcheck *Healthc
 	if contSpec.Healthcheck == nil {
 		contSpec.Healthcheck = &container.HealthConfig{}
 	}
-	cmd := gofn.StringSplit(healthcheck.Command, " ", "\"")
+	cmd := gofn.Must(shellutil.CmdSplit(healthcheck.Command))
 	contSpec.Healthcheck.Test = gofn.Concat([]string{string(healthcheck.Mode)}, cmd)
 	contSpec.Healthcheck.Interval = time.Duration(healthcheck.Interval)
 	contSpec.Healthcheck.Timeout = time.Duration(healthcheck.Timeout)

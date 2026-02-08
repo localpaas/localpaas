@@ -14,6 +14,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.21.0
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.95.1
 	github.com/bradleyfalzon/ghinstallation/v2 v2.17.0
+	github.com/buildkite/shellwords v1.0.1
 	github.com/bwmarrin/discordgo v0.29.0
 	github.com/containerd/errdefs v1.0.0
 	github.com/darkrockmountain/gomail v0.6.1
@@ -34,6 +35,7 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/jackc/pgx/v5 v5.8.0
 	github.com/jinzhu/configor v1.2.2
+	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51
 	github.com/localpaas/nginx-go-crossplane v0.4.87-0.20260122180215-91f983fe3fc0
 	github.com/markbates/goth v1.82.0
 	github.com/mitchellh/mapstructure v1.5.0
@@ -58,7 +60,6 @@ require (
 	github.com/uptrace/bun v1.2.16
 	github.com/uptrace/bun/dialect/pgdialect v1.2.16
 	github.com/uptrace/bun/extra/bundebug v1.2.16
-	github.com/valyala/fasttemplate v1.2.2
 	gitlab.com/gitlab-org/api/client-go v1.20.0
 	go.uber.org/fx v1.24.0
 	go.uber.org/zap v1.27.1
@@ -190,7 +191,6 @@ require (
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.3.0 // indirect
-	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect

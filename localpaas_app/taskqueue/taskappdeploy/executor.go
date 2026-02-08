@@ -119,7 +119,7 @@ func (e *Executor) execute(
 			}
 		}
 		_ = e.deploymentInfoRepo.Del(ctx, data.Deployment.ID)
-		_ = e.saveLogs(ctx, db, data)
+		_ = e.saveLogs(ctx, db, data, true)
 	}()
 
 	var depErr error
@@ -239,6 +239,7 @@ func (e *Executor) saveLogs(
 	ctx context.Context,
 	db database.IDB,
 	data *taskData,
+	addDurationInfo bool,
 ) error {
 	deployment := data.Deployment
 	logStore := data.LogStore
@@ -246,8 +247,10 @@ func (e *Executor) saveLogs(
 		return nil
 	}
 
-	_ = logStore.Add(ctx, realtimelog.NewOutFrame("Deployment finished in "+
-		deployment.GetDuration().String(), nil))
+	if addDurationInfo {
+		_ = logStore.Add(ctx, realtimelog.NewOutFrame("Deployment finished in "+
+			deployment.GetDuration().String(), nil))
+	}
 
 	logFrames, err := logStore.GetData(ctx, 0)
 	if err != nil {
@@ -305,16 +308,17 @@ func (e *Executor) onPostTransaction(
 	data *taskData,
 ) {
 	ctx := context.Background()
+	db := e.db
 
 	// NOTE: We are now outside the transaction, need to reset some data before using them again
 	data.LogStore = realtimelog.NewLocalStore(data.LogStore.Key)
 
 	defer func() {
-		_ = e.saveLogs(ctx, e.db, data)
+		_ = e.saveLogs(ctx, db, data, false)
 	}()
 
 	if data.Task.IsDone() || data.Task.IsFailedCompletely() {
-		err := e.notifyForDeployment(ctx, e.db, data)
+		err := e.notifyForDeployment(ctx, db, data)
 		if err != nil {
 			_ = data.LogStore.Add(ctx, realtimelog.NewOutFrame("Failed to send deployment notification"+
 				" with error: "+err.Error(), nil))

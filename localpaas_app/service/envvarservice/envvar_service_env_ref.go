@@ -9,61 +9,66 @@ import (
 )
 
 var (
-	reEnvRef = regexp.MustCompile(`\$\{(secrets\.)?(\w)+\}`)
+	reEnvOrSecretRef = regexp.MustCompile(`\$\{(secrets\.)?(\w)+\}`)
+	// reSecretRef = regexp.MustCompile(`\$\{secrets\.(\w)+\}`)
 )
 
-func (s *envVarService) ProcessEnvVarRefs(env *EnvVar, secretStores []map[string]*entity.Secret,
-	envStores []map[string]string) {
-	s.processEnvVarRefs(env, secretStores, envStores, make(map[string]struct{}))
+func (s *envVarService) processRefs(
+	env *EnvVar,
+	envStore map[string]*entity.EnvVar,
+	secretStore map[string]*entity.Secret,
+) {
+	processRefs(env, envStore, secretStore, make(map[string]struct{}))
 }
 
-func (s *envVarService) processEnvVarRefs(env *EnvVar, secretStores []map[string]*entity.Secret,
-	envStores []map[string]string, visitMap map[string]struct{}) {
+func processRefs(
+	env *EnvVar,
+	envStore map[string]*entity.EnvVar,
+	secretStore map[string]*entity.Secret,
+	visitMap map[string]struct{},
+) {
+	if env.IsLiteral {
+		return
+	}
+
 	replFunc := func(match string) string {
 		envName, isSecret := parseEnvName(match) // env form: ${NAME} or ${secrets.NAME}
 		if isSecret {
-			for _, store := range secretStores {
-				secret, exists := store[envName]
-				if !exists {
-					continue
-				}
-				value, err := secret.Value.GetPlain()
-				if err != nil {
-					env.Error += fmt.Sprintf("failed to parse secret '%s'\n", envName)
-					return match
-				}
-				return value
+			refSecret, exists := secretStore[envName]
+			if !exists {
+				env.Errors = append(env.Errors, fmt.Sprintf("secret '%s' not found", envName))
+				return match
 			}
-			env.Error += fmt.Sprintf("secret '%s' not found\n", envName)
-			return match
+			value, err := refSecret.Value.GetPlain()
+			if err != nil {
+				env.Errors = append(env.Errors, fmt.Sprintf("failed to parse secret '%s'", envName))
+				return match
+			}
+			return value
 		}
 
 		// Prevent infinite loop due to circular references
 		if _, exists := visitMap[envName]; exists {
-			env.Error += fmt.Sprintf("circular references detected at '%s'\n", envName)
+			env.Errors = append(env.Errors, fmt.Sprintf("circular references detected at '%s'", envName))
 			return match
 		}
 		visitMap[envName] = struct{}{}
 
-		for _, store := range envStores {
-			val, exists := store[envName]
-			if !exists {
-				continue
-			}
-			refEnv := &EnvVar{Key: envName, Value: val}
-			s.processEnvVarRefs(refEnv, secretStores, envStores, visitMap)
-			if refEnv.Error != "" {
-				env.Error += refEnv.Error
-				return match
-			}
-			return refEnv.Value
+		val, exists := envStore[envName]
+		if !exists {
+			env.Errors = append(env.Errors, fmt.Sprintf("env '%s' not found", envName))
+			return match
 		}
-
-		env.Error += fmt.Sprintf("env '%s' not found\n", envName)
-		return match
+		refEnv := &EnvVar{EnvVar: val}
+		processRefs(refEnv, envStore, secretStore, visitMap)
+		if len(refEnv.Errors) > 0 {
+			env.Errors = append(env.Errors, refEnv.Errors...)
+			return match
+		}
+		return refEnv.Value
 	}
 
-	env.Value = reEnvRef.ReplaceAllStringFunc(env.Value, replFunc)
+	env.Value = reEnvOrSecretRef.ReplaceAllStringFunc(env.Value, replFunc)
 }
 
 func parseEnvName(match string) (string, bool) {

@@ -33,13 +33,8 @@ type CronJobBaseReq struct {
 	Notification *notificationdto.DefaultResultNtfnSettingReq `json:"notification"`
 }
 
-type CronJobContainerCommandReq struct {
-	Command    string `json:"command"`
-	WorkingDir string `json:"workingDir"`
-}
-
 func (req *CronJobBaseReq) ToEntity() *entity.CronJob {
-	item := &entity.CronJob{
+	return &entity.CronJob{
 		CronType:     req.CronType,
 		CronExpr:     req.CronExpr,
 		App:          entity.ObjectID{ID: req.App.ID},
@@ -48,15 +43,66 @@ func (req *CronJobBaseReq) ToEntity() *entity.CronJob {
 		MaxRetry:     req.MaxRetry,
 		RetryDelay:   req.RetryDelay,
 		Timeout:      req.Timeout,
+		Command:      req.Command.ToEntity(),
 		Notification: req.Notification.ToEntity(),
 	}
-	if req.Command != nil {
-		item.Command = &entity.CronJobContainerCommand{
-			Command:    req.Command.Command,
-			WorkingDir: req.Command.WorkingDir,
-		}
+}
+
+type CronJobContainerCommandReq struct {
+	RunInShell string                       `json:"runInShell"`
+	Command    string                       `json:"command"`
+	WorkingDir string                       `json:"workingDir"`
+	EnvVars    []*basedto.EnvVarReq         `json:"envVars"`
+	ArgGroups  []*CronJobCommandArgGroupReq `json:"argGroups"`
+}
+
+func (req *CronJobContainerCommandReq) ToEntity() *entity.CronJobContainerCommand {
+	if req == nil {
+		return nil
 	}
-	return item
+	return &entity.CronJobContainerCommand{
+		Command:    req.Command,
+		WorkingDir: req.WorkingDir,
+		ArgGroups: gofn.MapSlice(req.ArgGroups, func(item *CronJobCommandArgGroupReq) *entity.CronJobCommandArgGroup {
+			return item.ToEntity()
+		}),
+	}
+}
+
+type CronJobCommandArgGroupReq struct {
+	ExportEnv string                  `json:"exportEnv"`
+	Separator string                  `json:"separator"`
+	Args      []*CronJobCommandArgReq `json:"args,omitempty"`
+}
+
+func (req *CronJobCommandArgGroupReq) ToEntity() *entity.CronJobCommandArgGroup {
+	if req == nil {
+		return nil
+	}
+	return &entity.CronJobCommandArgGroup{
+		ExportEnv: req.ExportEnv,
+		Separator: req.Separator,
+		Args: gofn.MapSlice(req.Args, func(item *CronJobCommandArgReq) *entity.CronJobCommandArg {
+			return item.ToEntity()
+		}),
+	}
+}
+
+type CronJobCommandArgReq struct {
+	Use   bool   `json:"use"`
+	Name  string `json:"name"`
+	Value string `json:"value"`
+}
+
+func (req *CronJobCommandArgReq) ToEntity() *entity.CronJobCommandArg {
+	if req == nil {
+		return nil
+	}
+	return &entity.CronJobCommandArg{
+		Use:   req.Use,
+		Name:  req.Name,
+		Value: req.Value,
+	}
 }
 
 func (req *CronJobBaseReq) modifyRequest() error {

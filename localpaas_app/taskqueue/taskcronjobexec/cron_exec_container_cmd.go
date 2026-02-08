@@ -3,15 +3,14 @@ package taskcronjobexec
 import (
 	"context"
 	"fmt"
-	"io"
 	"time"
 
 	"github.com/docker/docker/api/types/container"
-	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/batchrecvchan"
+	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/realtimelog"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/shellutil"
 	"github.com/localpaas/localpaas/services/docker"
 )
 
@@ -22,13 +21,14 @@ const (
 
 func (e *Executor) cronExecContainerCmd(
 	ctx context.Context,
+	db database.IDB,
 	data *taskData,
 ) (err error) {
 	command := data.CronJob.Command
 	if command == nil || command.Command == "" { // can't continue if this happens
 		data.NonRetryable = true
 		_ = data.LogStore.Add(ctx, realtimelog.NewErrFrame(
-			"execution command is empty, execution aborted", nil))
+			"Execution command is empty, aborted", nil))
 		return apperrors.New(apperrors.ErrInternalServer).WithMsgLog("cron job command is empty")
 	}
 
@@ -43,33 +43,43 @@ func (e *Executor) cronExecContainerCmd(
 		return nil
 	}
 
+	envVars, err := e.cronJobService.BuildCommandEnv(ctx, db, data.App, data.CronJob)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	env := make([]string, 0, len(envVars))
+	for _, v := range envVars {
+		env = append(env, v.ToString("="))
+	}
+
+	var cmd []string
+	if command.RunInShell != "" {
+		cmd = []string{command.RunInShell, "-c", shellutil.ArgQuote(command.Command)}
+	} else {
+		cmd, err = shellutil.CmdSplit(command.Command)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+	}
+
 	execOptions := &container.ExecOptions{
 		AttachStdout: true,
 		AttachStderr: true,
-		Cmd:          gofn.StringSplit(command.Command, " ", "\""),
+		Cmd:          cmd,
 		WorkingDir:   command.WorkingDir,
+		Env:          env,
+		Tty:          true,
+		ConsoleSize:  &docker.DefaultConsoleSize,
 	}
 
-	execID, resp, err := e.dockerManager.ContainerExec(ctx, contSum.ID, execOptions)
+	execInfo, logs, err := e.dockerManager.ContainerExecWait(ctx, contSum.ID, execOptions)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-
-	logChan, _ := docker.StartScanningLog(ctx, io.NopCloser(resp.Reader), batchrecvchan.Options{})
-	defer resp.Close()
-
-	for msgs := range logChan {
-		_ = data.LogStore.Add(ctx, msgs...)
-	}
-
-	// Get exit code
-	execInfo, err := e.dockerManager.ContainerExecInspect(ctx, execID)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
+	_ = data.LogStore.Add(ctx, logs...)
 
 	if execInfo.ExitCode != 0 {
-		_ = data.LogStore.Add(ctx, realtimelog.NewWarnFrame(fmt.Sprintf(
+		_ = data.LogStore.Add(ctx, realtimelog.NewErrFrame(fmt.Sprintf(
 			"Command execution failed with exit code: %v", execInfo.ExitCode), nil))
 		return apperrors.Wrap(apperrors.ErrInfraActionFailed)
 	}

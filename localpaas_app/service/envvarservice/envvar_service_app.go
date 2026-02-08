@@ -11,38 +11,173 @@ import (
 )
 
 type EnvVar struct {
-	Key   string
-	Value string
-	Error string
+	*entity.EnvVar
+	Errors []string
 }
 
 func (env *EnvVar) ToString(sep string) string {
 	return env.Key + sep + env.Value
 }
 
-//nolint:gocognit
-func (s *envVarService) BuildAppEnv(
+func (s *envVarService) BuildAppEnvVars(
 	ctx context.Context,
 	db database.IDB,
 	app *entity.App,
 	buildPhase bool,
 ) (res []*EnvVar, err error) {
-	settings, _, err := s.settingRepo.ListByAppObject(ctx, db, app, nil,
-		bunex.SelectWhereIn("setting.type IN (?)", base.SettingTypeEnvVar, base.SettingTypeSecret),
-		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
-	)
+	vars, secrets, err := s.LoadAppEnvVarsAndSecrets(ctx, db, app, true, true, buildPhase)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	mapAppEnv := make(map[string]string, 20)                  //nolint
-	mapParentAppEnv := make(map[string]string, 20)            //nolint
-	mapProjectEnv := make(map[string]string, 20)              //nolint
-	mapGlobalEnv := make(map[string]string, 20)               //nolint
-	mapAppSecret := make(map[string]*entity.Secret, 10)       //nolint
-	mapParentAppSecret := make(map[string]*entity.Secret, 10) //nolint
-	mapProjectSecret := make(map[string]*entity.Secret, 10)   //nolint
-	mapGlobalSecret := make(map[string]*entity.Secret, 10)    //nolint
+	// App inherits ENV vars in order from the parent app, then the project, and then from global
+	envStore := vars.FinalEnvVars()
+	secretStore := secrets.FinalSecrets()
+
+	// Construct result
+	res = make([]*EnvVar, 0, len(envStore))
+	for _, env := range envStore {
+		res = append(res, &EnvVar{EnvVar: env})
+	}
+
+	// Process all references within the ENV values
+	for _, env := range res {
+		s.processRefs(env, envStore, secretStore)
+	}
+
+	return res, nil
+}
+
+func (s *envVarService) ProcessEnvRefs(
+	ctx context.Context,
+	db database.IDB,
+	app *entity.App,
+	envVars []*entity.EnvVar,
+	loadEnvVars bool,
+	loadSecrets bool,
+	buildPhase bool,
+) (res []*EnvVar, err error) {
+	if len(envVars) == 0 {
+		return nil, nil
+	}
+	vars, secrets, err := s.LoadAppEnvVarsAndSecrets(ctx, db, app, loadEnvVars, loadSecrets, buildPhase)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	// Construct result
+	res = make([]*EnvVar, 0, len(envVars))
+	for _, env := range envVars {
+		res = append(res, &EnvVar{EnvVar: env})
+	}
+
+	// App inherits ENV vars in order from the parent app, then the project, and then from global
+	envStore := vars.FinalEnvVars()
+	// Update the envStore with the input values
+	for _, env := range envVars {
+		envStore[env.Key] = env
+	}
+	secretStore := secrets.FinalSecrets()
+	// Process all references within the ENV values
+	for _, env := range res {
+		s.processRefs(env, envStore, secretStore)
+	}
+	return res, nil
+}
+
+type AppEnvVars struct {
+	App       map[string]*entity.EnvVar
+	ParentApp map[string]*entity.EnvVar
+	Project   map[string]*entity.EnvVar
+	Global    map[string]*entity.EnvVar
+}
+
+func (ev *AppEnvVars) FinalEnvVars() map[string]*entity.EnvVar {
+	res := make(map[string]*entity.EnvVar, 20) //nolint
+	for k, v := range ev.Global {
+		res[k] = v
+	}
+	for k, v := range ev.Project {
+		res[k] = v
+	}
+	for k, v := range ev.ParentApp {
+		res[k] = v
+	}
+	for k, v := range ev.App {
+		res[k] = v
+	}
+	return res
+}
+
+type AppSecrets struct {
+	App       map[string]*entity.Secret
+	ParentApp map[string]*entity.Secret
+	Project   map[string]*entity.Secret
+	Global    map[string]*entity.Secret
+}
+
+func (ev *AppSecrets) FinalSecrets() map[string]*entity.Secret {
+	res := make(map[string]*entity.Secret, 20) //nolint
+	for k, v := range ev.Global {
+		res[k] = v
+	}
+	for k, v := range ev.Project {
+		res[k] = v
+	}
+	for k, v := range ev.ParentApp {
+		res[k] = v
+	}
+	for k, v := range ev.App {
+		res[k] = v
+	}
+	return res
+}
+
+//nolint:gocognit
+func (s *envVarService) LoadAppEnvVarsAndSecrets(
+	ctx context.Context,
+	db database.IDB,
+	app *entity.App,
+	loadEnvVars bool,
+	loadSecrets bool,
+	buildPhase bool,
+) (envVars *AppEnvVars, secrets *AppSecrets, err error) {
+	var settingTypes []base.SettingType
+	if loadEnvVars {
+		settingTypes = append(settingTypes, base.SettingTypeEnvVar)
+		//nolint:mnd
+		envVars = &AppEnvVars{
+			App:       make(map[string]*entity.EnvVar, 20),
+			ParentApp: make(map[string]*entity.EnvVar, 20),
+			Project:   make(map[string]*entity.EnvVar, 20),
+			Global:    make(map[string]*entity.EnvVar, 20),
+		}
+	}
+	if loadSecrets {
+		settingTypes = append(settingTypes, base.SettingTypeSecret)
+		//nolint:mnd
+		secrets = &AppSecrets{
+			App:       make(map[string]*entity.Secret, 10),
+			ParentApp: make(map[string]*entity.Secret, 10),
+			Project:   make(map[string]*entity.Secret, 10),
+			Global:    make(map[string]*entity.Secret, 10),
+		}
+	}
+	if len(settingTypes) == 0 {
+		return nil, nil, nil
+	}
+
+	settings, _, err := s.settingRepo.ListByAppObject(ctx, db, app, nil,
+		bunex.SelectWhereIn("setting.type IN (?)", settingTypes...),
+		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
+	)
+	if err != nil {
+		return nil, nil, apperrors.Wrap(err)
+	}
+
+	if len(settings) == 0 {
+		return envVars, secrets, nil
+	}
 
 	for _, setting := range settings {
 		if setting.Type == base.SettingTypeEnvVar {
@@ -51,25 +186,25 @@ func (s *envVarService) BuildAppEnv(
 			case setting.ObjectID == app.ID:
 				for _, env := range vars.Data {
 					if env.IsBuildEnv == buildPhase {
-						mapAppEnv[env.Key] = env.Value
+						envVars.App[env.Key] = env
 					}
 				}
 			case app.ParentID != "" && setting.ObjectID == app.ParentID:
 				for _, env := range vars.Data {
 					if env.IsBuildEnv == buildPhase {
-						mapParentAppEnv[env.Key] = env.Value
+						envVars.ParentApp[env.Key] = env
 					}
 				}
 			case setting.ObjectID == "":
 				for _, env := range vars.Data {
 					if env.IsBuildEnv == buildPhase {
-						mapGlobalEnv[env.Key] = env.Value
+						envVars.Global[env.Key] = env
 					}
 				}
 			default:
 				for _, env := range vars.Data {
 					if env.IsBuildEnv == buildPhase {
-						mapProjectEnv[env.Key] = env.Value
+						envVars.Project[env.Key] = env
 					}
 				}
 			}
@@ -80,41 +215,16 @@ func (s *envVarService) BuildAppEnv(
 			secret := setting.MustAsSecret() // decryption takes time, so do it when needed only
 			switch {
 			case setting.ObjectID == app.ID:
-				mapAppSecret[setting.Name] = secret
+				secrets.App[setting.Name] = secret
 			case app.ParentID != "" && setting.ObjectID == app.ParentID:
-				mapParentAppSecret[setting.Name] = secret
+				secrets.ParentApp[setting.Name] = secret
 			case setting.ObjectID == "":
-				mapGlobalSecret[setting.Name] = secret
+				secrets.Global[setting.Name] = secret
 			default:
-				mapProjectSecret[setting.Name] = secret
+				secrets.Project[setting.Name] = secret
 			}
 		}
 	}
 
-	// App inherits ENV vars from the parent app and the project and from global
-	appEnv := mapGlobalEnv
-	for k, v := range mapProjectEnv {
-		appEnv[k] = v
-	}
-	for k, v := range mapParentAppEnv {
-		appEnv[k] = v
-	}
-	for k, v := range mapAppEnv {
-		appEnv[k] = v
-	}
-
-	// Construct result
-	res = make([]*EnvVar, 0, len(appEnv))
-	for k, v := range appEnv {
-		res = append(res, &EnvVar{Key: k, Value: v})
-	}
-
-	// Process all references within the ENV values
-	secretStores := []map[string]*entity.Secret{mapAppSecret, mapParentAppSecret, mapProjectSecret, mapGlobalSecret}
-	envStores := []map[string]string{mapAppEnv, mapParentAppEnv, mapProjectEnv, mapGlobalEnv}
-	for _, env := range res {
-		s.ProcessEnvVarRefs(env, secretStores, envStores)
-	}
-
-	return res, nil
+	return envVars, secrets, nil
 }

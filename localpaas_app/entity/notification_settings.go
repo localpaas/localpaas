@@ -15,14 +15,23 @@ func (s *DefaultResultNtfnSetting) GetRefSettingIDs() (res []string) {
 }
 
 func (s *DefaultResultNtfnSetting) HasViaEmailNtfnSetting() bool {
+	if s == nil {
+		return false
+	}
 	return (s.Success != nil && s.Success.ViaEmail != nil) || (s.Failure != nil && s.Failure.ViaEmail != nil)
 }
 
 func (s *DefaultResultNtfnSetting) HasViaSlackNtfnSetting() bool {
+	if s == nil {
+		return false
+	}
 	return (s.Success != nil && s.Success.ViaSlack != nil) || (s.Failure != nil && s.Failure.ViaSlack != nil)
 }
 
 func (s *DefaultResultNtfnSetting) HasViaDiscordNtfnSetting() bool {
+	if s == nil {
+		return false
+	}
 	return (s.Success != nil && s.Success.ViaDiscord != nil) || (s.Failure != nil && s.Failure.ViaDiscord != nil)
 }
 

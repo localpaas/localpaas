@@ -24,17 +24,32 @@ type CronJob struct {
 	CronExpr     string                    `json:"cronExpr"`
 	App          ObjectID                  `json:"app,omitzero"`
 	InitialTime  time.Time                 `json:"initialTime"`
-	Priority     base.TaskPriority         `json:"priority"`
-	MaxRetry     int                       `json:"maxRetry"`
-	RetryDelay   timeutil.Duration         `json:"retryDelay"`
-	Timeout      timeutil.Duration         `json:"timeout"`
-	Command      *CronJobContainerCommand  `json:"command"`
+	Priority     base.TaskPriority         `json:"priority,omitempty"`
+	MaxRetry     int                       `json:"maxRetry,omitempty"`
+	RetryDelay   timeutil.Duration         `json:"retryDelay,omitempty"`
+	Timeout      timeutil.Duration         `json:"timeout,omitempty"`
+	Command      *CronJobContainerCommand  `json:"command,omitempty"`
 	Notification *DefaultResultNtfnSetting `json:"notification,omitempty"`
 }
 
 type CronJobContainerCommand struct {
-	Command    string `json:"command"`
-	WorkingDir string `json:"workingDir,omitempty"`
+	RunInShell string                    `json:"runInShell,omitempty"`
+	Command    string                    `json:"command"`
+	WorkingDir string                    `json:"workingDir,omitempty"`
+	EnvVars    []*EnvVar                 `json:"envVars,omitempty"`
+	ArgGroups  []*CronJobCommandArgGroup `json:"argGroups,omitempty"`
+}
+
+type CronJobCommandArgGroup struct {
+	ExportEnv string               `json:"exportEnv"`
+	Separator string               `json:"separator"`
+	Args      []*CronJobCommandArg `json:"args,omitempty"`
+}
+
+type CronJobCommandArg struct {
+	Use   bool   `json:"use"`
+	Name  string `json:"name"`
+	Value string `json:"value"`
 }
 
 func (s *CronJob) GetType() base.SettingType {
