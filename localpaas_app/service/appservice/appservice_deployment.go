@@ -26,9 +26,10 @@ func (s *appService) CreateDeployment(
 	}
 
 	deploymentTask := &entity.Task{
-		ID:     gofn.Must(ulid.NewStringULID()),
-		Type:   base.TaskTypeAppDeploy,
-		Status: base.TaskStatusNotStarted,
+		ID:       gofn.Must(ulid.NewStringULID()),
+		TargetID: deployment.ID,
+		Type:     base.TaskTypeAppDeploy,
+		Status:   base.TaskStatusNotStarted,
 		Config: entity.TaskConfig{
 			Priority: base.TaskPriorityDefault,
 			Timeout:  timeutil.Duration(base.DeploymentTimeoutDefault),

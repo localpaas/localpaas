@@ -22,7 +22,7 @@ func NewListTaskReq() *ListTaskReq {
 	return &ListTaskReq{
 		Paging: basedto.Paging{
 			// Default paging if unset by client
-			Sort: basedto.Orders{{Direction: basedto.DirectionAsc, ColumnName: "created_at"}},
+			Sort: basedto.Orders{{Direction: basedto.DirectionDesc, ColumnName: "created_at"}},
 		},
 	}
 }

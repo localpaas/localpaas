@@ -1,13 +1,10 @@
 package apphandler
 
 import (
-	"encoding/json"
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/olahol/melody"
-	"github.com/tiendc/gofn"
 
 	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -104,7 +101,7 @@ func (h *AppHandler) ListAppDeployment(ctx *gin.Context) {
 // @Param   id path string true "deployment ID"
 // @Param   follow query string false "`follow=true/false`"
 // @Param   since query string false "`since=YYYY-MM-DDTHH:mm:SSZ`"
-// @Param   duration query int false "`duration=` logs within the period"
+// @Param   duration query string false "`duration=24h` logs within the period"
 // @Param   tail query int false "`tail=1000` to get last 1000 lines of logs"
 // @Success 200 {object} appdeploymentdto.GetDeploymentLogsResp
 // @Failure 400 {object} apperrors.ErrorInfo
@@ -126,36 +123,23 @@ func (h *AppHandler) GetAppDeploymentLogs(ctx *gin.Context, mel *melody.Melody) 
 		return
 	}
 
+	isWebsocketReq := h.IsWebsocketRequest(ctx)
+	if !isWebsocketReq {
+		req.Follow = false // Not a websocket request, we don't support `follow` flag
+	}
+
 	resp, err := h.appDeploymentUC.GetDeploymentLogs(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	// Not a websocket request, return data via body
-	if strings.ToLower(ctx.Request.Header.Get("Connection")) != "upgrade" {
+	if !isWebsocketReq {
+		// Not a websocket request, return data via body
 		ctx.JSON(http.StatusOK, resp)
-		return
+	} else {
+		h.StreamAppLogs(ctx, resp.Data.Logs, resp.Data.LogChan, resp.Data.LogChanCloser, mel)
 	}
-
-	go func() {
-		for log := range resp.Data.LogChan {
-			dataBytes := gofn.Must(json.Marshal(log))
-			_ = mel.BroadcastBinaryFilter(dataBytes, func(session *melody.Session) bool {
-				return session.Request == ctx.Request
-			})
-		}
-
-		// Close the session
-		for _, session := range gofn.Head(mel.Sessions()) {
-			if session.Request == ctx.Request {
-				_ = session.Close()
-			}
-		}
-	}()
-
-	_ = mel.HandleRequest(ctx.Writer, ctx.Request)
-	_ = resp.Data.LogChanCloser()
 }
 
 // CancelAppDeployment Cancels app deployment

@@ -6,6 +6,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 	"github.com/localpaas/localpaas/localpaas_app/repository/cacherepository"
 	"github.com/localpaas/localpaas/localpaas_app/service/appservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/taskservice"
 	"github.com/localpaas/localpaas/services/docker"
 )
 
@@ -19,6 +20,7 @@ type AppDeploymentUC struct {
 	deploymentInfoRepo cacherepository.DeploymentInfoRepo
 	taskControlRepo    cacherepository.TaskControlRepo
 	appService         appservice.AppService
+	taskService        taskservice.TaskService
 	dockerManager      *docker.Manager
 }
 
@@ -32,6 +34,7 @@ func NewAppDeploymentUC(
 	deploymentInfoRepo cacherepository.DeploymentInfoRepo,
 	taskControlRepo cacherepository.TaskControlRepo,
 	appService appservice.AppService,
+	taskService taskservice.TaskService,
 	dockerManager *docker.Manager,
 ) *AppDeploymentUC {
 	return &AppDeploymentUC{
@@ -44,6 +47,7 @@ func NewAppDeploymentUC(
 		deploymentInfoRepo: deploymentInfoRepo,
 		taskControlRepo:    taskControlRepo,
 		appService:         appService,
+		taskService:        taskService,
 		dockerManager:      dockerManager,
 	}
 }

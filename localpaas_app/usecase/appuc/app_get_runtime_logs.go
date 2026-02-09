@@ -12,6 +12,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/batchrecvchan"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
 	"github.com/localpaas/localpaas/services/docker"
 )
@@ -39,13 +40,14 @@ func (uc *AppUC) GetAppRuntimeLogs(
 	}
 
 	var since, until, tail string
-	if !req.Follow {
-		if !req.Since.IsZero() {
-			since = fmt.Sprintf("%d", req.Since.Unix())
-			if req.Duration > 0 {
-				until = fmt.Sprintf("%d", req.Since.Add(req.Duration).Unix())
-			}
-		}
+	if req.Since.IsZero() && req.Duration > 0 {
+		req.Since = timeutil.NowUTC().Add(-req.Duration)
+	}
+	if !req.Since.IsZero() {
+		since = fmt.Sprintf("%d", req.Since.Unix())
+	}
+	if !req.Follow && req.Duration > 0 {
+		until = fmt.Sprintf("%d", req.Since.Add(req.Duration).Unix())
 	}
 	if req.Tail > 0 {
 		tail = fmt.Sprintf("%d", req.Tail)

@@ -201,7 +201,7 @@ func (e *Executor) loadDeploymentData(
 	data.Project = data.App.Project
 	data.Deployment = deployment
 	data.DeploymentOutput = &entity.AppDeploymentOutput{}
-	logStoreKey := fmt.Sprintf("deployment:%s:log", deployment.ID)
+	logStoreKey := fmt.Sprintf("task:%s:log", task.ID)
 	data.LogStore = applog.NewRemoteStore(logStoreKey, true, e.redisClient)
 
 	// Load notification settings for the deployment

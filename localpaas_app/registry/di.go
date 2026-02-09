@@ -34,6 +34,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/projectservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/taskservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
 	"github.com/localpaas/localpaas/localpaas_app/taskqueue"
 	"github.com/localpaas/localpaas/localpaas_app/taskqueue/initializer"
@@ -162,6 +163,7 @@ var Provides = []any{
 	emailservice.NewEmailService,
 	notificationservice.NewNotificationService,
 	cronjobservice.NewCronJobService,
+	taskservice.NewTaskService,
 
 	// Repo: User
 	repository.NewUserRepo,

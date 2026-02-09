@@ -1,13 +1,10 @@
 package apphandler
 
 import (
-	"encoding/json"
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/olahol/melody"
-	"github.com/tiendc/gofn"
 
 	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -45,34 +42,21 @@ func (h *AppHandler) GetAppRuntimeLogs(ctx *gin.Context, mel *melody.Melody) {
 		return
 	}
 
+	isWebsocketReq := h.IsWebsocketRequest(ctx)
+	if !isWebsocketReq {
+		req.Follow = false // Not a websocket request, we don't support `follow` flag
+	}
+
 	resp, err := h.appUC.GetAppRuntimeLogs(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	// Not a websocket request, return data via body
-	if strings.ToLower(ctx.Request.Header.Get("Connection")) != "upgrade" {
+	if !isWebsocketReq {
+		// Not a websocket request, return data via body
 		ctx.JSON(http.StatusOK, resp)
-		return
+	} else {
+		h.StreamAppLogs(ctx, resp.Data.Logs, resp.Data.LogChan, resp.Data.LogChanCloser, mel)
 	}
-
-	go func() {
-		for log := range resp.Data.LogChan {
-			dataBytes := gofn.Must(json.Marshal(log))
-			_ = mel.BroadcastBinaryFilter(dataBytes, func(session *melody.Session) bool {
-				return session.Request == ctx.Request
-			})
-		}
-
-		// Close the session
-		for _, session := range gofn.Head(mel.Sessions()) {
-			if session.Request == ctx.Request {
-				_ = session.Close()
-			}
-		}
-	}()
-
-	_ = mel.HandleRequest(ctx.Writer, ctx.Request)
-	_ = resp.Data.LogChanCloser()
 }

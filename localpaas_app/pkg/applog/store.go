@@ -84,12 +84,8 @@ func (s *Store) GetRemoteData(ctx context.Context, fromIndex int64) ([]*LogFrame
 }
 
 func (s *Store) Close() (err error) {
-	ctx := context.Background()
-	defer func() {
-		removeLocalStore(s.Key)
-	}()
-
 	if s.storeRemote {
+		ctx := context.Background()
 		// Send close-msg to consumers
 		_, e := s.redisClient.Publish(ctx, s.Key, buildMessage(CommandClosed)).Result()
 		if e != nil {
@@ -118,7 +114,6 @@ func newStore(
 		storeRemote: storeRemote,
 	}
 	if storeLocal {
-		addLocalStore(key, s)
 		s.frames = make([]*LogFrame, 0, 100) //nolint:mnd
 	}
 	return s

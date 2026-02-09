@@ -183,6 +183,21 @@ func Del(
 	return nil
 }
 
+func Exists(
+	ctx context.Context,
+	cmder Cmdable,
+	key string,
+) (bool, error) {
+	count, err := cmder.Exists(ctx, key).Result()
+	if err != nil {
+		return false, apperrors.New(err)
+	}
+	if count == 0 {
+		return false, nil
+	}
+	return true, nil
+}
+
 func Expire(
 	ctx context.Context,
 	cmder Cmdable,

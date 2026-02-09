@@ -2,18 +2,14 @@ package appdeploymentuc
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/batchrecvchan"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+	"github.com/localpaas/localpaas/localpaas_app/service/taskservice"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appdeploymentuc/appdeploymentdto"
 )
 
@@ -28,107 +24,38 @@ func (uc *AppDeploymentUC) GetDeploymentLogs(
 	auth *basedto.Auth,
 	req *appdeploymentdto.GetDeploymentLogsReq,
 ) (*appdeploymentdto.GetDeploymentLogsResp, error) {
-	deployment, err := uc.deploymentRepo.GetByID(ctx, uc.db, req.AppID, req.DeploymentID)
+	deployment, err := uc.deploymentRepo.GetByID(ctx, uc.db, req.AppID, req.DeploymentID,
+		bunex.SelectRelation("Tasks"),
+	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	if deployment.Status == base.DeploymentStatusNotStarted {
-		return uc.getRealtimeDeploymentLogs(ctx, deployment, req)
+	task := gofn.FirstOr(deployment.Tasks, nil)
+	if task == nil {
+		return nil, apperrors.NewNotFound("Deployment task")
 	}
 
-	return uc.getHistoryDeploymentLogs(ctx, deployment, req)
-}
-
-func (uc *AppDeploymentUC) getRealtimeDeploymentLogs(
-	ctx context.Context,
-	deployment *entity.Deployment,
-	req *appdeploymentdto.GetDeploymentLogsReq,
-) (*appdeploymentdto.GetDeploymentLogsResp, error) {
-	key := fmt.Sprintf("deployment:%s:log", deployment.ID)
-	consumer := applog.NewConsumer(key, uc.redisClient)
-
-	resp := &appdeploymentdto.DeploymentLogsDataResp{}
-	var err error
-	if req.Follow {
-		// NOTE: we don't want to keep the log stream session forever
-		ctx, _ = context.WithTimeout(ctx, deploymentLogSessionTimeout) //nolint:govet
-
-		resp.LogChan, resp.LogChanCloser, err = consumer.Consume(ctx, batchrecvchan.Options{
-			ThresholdPeriod: deploymentLogBatchThresholdPeriod,
-			MaxItem:         deploymentLogBatchMaxFrame,
-		})
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-	} else {
-		frames, err := consumer.GetAllData(ctx)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-		resp.Logs = append(resp.Logs, frames...)
-	}
-
-	return &appdeploymentdto.GetDeploymentLogsResp{
-		Data: resp,
-	}, nil
-}
-
-func (uc *AppDeploymentUC) getHistoryDeploymentLogs(
-	ctx context.Context,
-	deployment *entity.Deployment,
-	req *appdeploymentdto.GetDeploymentLogsReq,
-) (*appdeploymentdto.GetDeploymentLogsResp, error) {
-	var listOpts []bunex.SelectQueryOption
-
-	reverseLogs := false
-	if req.Tail > 0 {
-		listOpts = append(listOpts, bunex.SelectLimit(req.Tail),
-			bunex.SelectOrder("id DESC"))
-		reverseLogs = true
-	} else {
-		listOpts = append(listOpts, bunex.SelectOrder("id"))
-	}
-
-	if !req.Since.IsZero() {
-		listOpts = append(listOpts,
-			bunex.SelectWhere("task_log.ts >= ?", req.Since))
-		if req.Duration > 0 {
-			listOpts = append(listOpts,
-				bunex.SelectWhere("task_log.ts < ?", req.Since.Add(req.Duration)))
-		}
-	}
-
-	logs, _, err := uc.taskLogRepo.List(ctx, uc.db, "", deployment.ID, nil, listOpts...)
+	resp, err := uc.taskService.GetTaskLogs(ctx, uc.db, &taskservice.GetTaskLogsReq{
+		TaskID:                  task.ID,
+		Follow:                  req.Follow,
+		Since:                   req.Since,
+		Duration:                req.Duration,
+		Tail:                    req.Tail,
+		Timestamps:              req.Timestamps,
+		LogBatchThresholdPeriod: deploymentLogBatchThresholdPeriod,
+		LogBatchMaxFrame:        deploymentLogBatchMaxFrame,
+		LogSessionTimeout:       deploymentLogSessionTimeout,
+	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	// Reverse the data
-	if reverseLogs {
-		gofn.Reverse(logs)
-	}
-
-	logFrames := appdeploymentdto.TransformDeploymentLogs(logs)
-	logChan := make(chan []*applog.LogFrame, 100) //nolint:mnd
-
-	resp := &appdeploymentdto.DeploymentLogsDataResp{
-		Logs:          logFrames,
-		LogChan:       logChan,
-		LogChanCloser: func() error { return nil },
-	}
-
-	go func() {
-		for _, chunk := range gofn.Chunk(logFrames, deploymentLogBatchMaxFrame) {
-			logChan <- chunk
-		}
-		for len(logChan) > 0 {
-			time.Sleep(300 * time.Millisecond) //nolint:mnd
-		}
-		close(logChan)
-	}()
-
 	return &appdeploymentdto.GetDeploymentLogsResp{
-		Data: resp,
+		Data: &appdeploymentdto.DeploymentLogsDataResp{
+			Logs:          resp.Logs,
+			LogChan:       resp.LogChan,
+			LogChanCloser: resp.LogChanCloser,
+		},
 	}, nil
 }

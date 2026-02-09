@@ -3,16 +3,20 @@ package handler
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"io"
 	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/mitchellh/mapstructure"
+	"github.com/olahol/melody"
+	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/config"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/httputil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/strutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
@@ -305,4 +309,46 @@ func (h *BaseHandler) ParseJSONBody(ctx *gin.Context, reqStruct any) error {
 
 func (h *BaseHandler) ParseRequestLang(ctx *gin.Context) translation.Lang {
 	return httputil.ParseRequestLang(ctx.GetHeader("Accept-Language"))
+}
+
+func (h *BaseHandler) StreamAppLogs(
+	ctx *gin.Context,
+	staticLogs []*applog.LogFrame, // static logs are in DB
+	logChan <-chan []*applog.LogFrame, // realtime logs are in redis
+	logChanCloser func() error,
+	mel *melody.Melody,
+) {
+	go func() {
+		// Send the static logs first
+		for _, chunk := range gofn.Chunk(staticLogs, 100) { //nolint:mnd
+			dataBytes := gofn.Must(json.Marshal(chunk))
+			_ = mel.BroadcastBinaryFilter(dataBytes, func(session *melody.Session) bool {
+				return session.Request == ctx.Request
+			})
+		}
+
+		// Send the logs retrieved from the channel
+		for log := range logChan {
+			dataBytes := gofn.Must(json.Marshal(log))
+			_ = mel.BroadcastBinaryFilter(dataBytes, func(session *melody.Session) bool {
+				return session.Request == ctx.Request
+			})
+		}
+
+		// Close the session
+		for _, session := range gofn.Head(mel.Sessions()) {
+			if session.Request == ctx.Request {
+				_ = session.Close()
+			}
+		}
+	}()
+
+	_ = mel.HandleRequest(ctx.Writer, ctx.Request)
+	if logChanCloser != nil {
+		_ = logChanCloser()
+	}
+}
+
+func (h *BaseHandler) IsWebsocketRequest(ctx *gin.Context) bool {
+	return strings.ToLower(ctx.Request.Header.Get("Connection")) == "upgrade"
 }

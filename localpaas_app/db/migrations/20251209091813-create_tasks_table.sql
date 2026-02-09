@@ -3,11 +3,12 @@ CREATE TABLE IF NOT EXISTS tasks
 (
     id               VARCHAR(100) PRIMARY KEY,
     job_id           VARCHAR(100) NULL,
+    target_id        VARCHAR(100) NULL,
     type             VARCHAR(100) NOT NULL,
     status           VARCHAR NOT NULL CONSTRAINT chk_status CHECK
                         (status IN ('not-started','in-progress','canceled','failed','done')),
     config           JSONB NOT NULL,
-    args             JSON NULL,
+    args             JSONB NULL,
     runs             JSON NULL,
     output           JSON NULL,
     version          INT2 NOT NULL DEFAULT 1,
@@ -26,6 +27,7 @@ CREATE TABLE IF NOT EXISTS tasks
 );
 
 CREATE INDEX idx_tasks_job_id ON tasks(job_id);
+CREATE INDEX idx_tasks_target_id ON tasks(target_id);
 CREATE INDEX idx_tasks_type ON tasks(type);
 CREATE INDEX idx_tasks_status ON tasks(status);
 CREATE INDEX idx_tasks_run_at ON tasks(run_at);

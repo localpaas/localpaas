@@ -62,6 +62,10 @@ func (ch *Chan[T]) Receiver() <-chan []T {
 	return ch.channel
 }
 
+func (ch *Chan[T]) CloseFunc() func() error {
+	return func() error { return ch.Close() }
+}
+
 func (ch *Chan[T]) Close() (err error) {
 	defer func() {
 		if r := recover(); r != nil {

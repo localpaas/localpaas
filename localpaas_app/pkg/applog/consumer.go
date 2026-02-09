@@ -26,7 +26,7 @@ func NewConsumer(
 	}
 }
 
-func (c *Consumer) Consume(
+func (c *Consumer) StartConsuming(
 	ctx context.Context,
 	options batchrecvchan.Options,
 ) (<-chan []*LogFrame, func() error, error) {
@@ -75,22 +75,11 @@ func (c *Consumer) getData(
 	ctx context.Context,
 	frameIndex *int64,
 ) (frames []*LogFrame, err error) {
-	// Get data from local store first, if not found, get data from redis
-	localStore := getLocalStore(c.key, 0)
-
-	if localStore != nil {
-		frames, err = localStore.GetData(ctx, *frameIndex)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-	} else {
-		frames, err = redishelper.LRange(ctx, c.redisClient, c.key, *frameIndex, -1,
-			redishelper.JSONValueCreator[*LogFrame])
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
+	frames, err = redishelper.LRange(ctx, c.redisClient, c.key, *frameIndex, -1,
+		redishelper.JSONValueCreator[*LogFrame])
+	if err != nil {
+		return nil, apperrors.Wrap(err)
 	}
-
 	*frameIndex += int64(len(frames))
 	return frames, nil
 }

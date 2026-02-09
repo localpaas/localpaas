@@ -2,6 +2,7 @@ package taskuc
 
 import (
 	"context"
+	"errors"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -23,7 +24,7 @@ func (uc *TaskUC) GetTask(
 	var taskInfo *cacheentity.TaskInfo
 	if task.Status != base.TaskStatusDone && task.Status != base.TaskStatusCanceled {
 		taskInfo, err = uc.taskInfoRepo.Get(ctx, task.ID)
-		if err != nil {
+		if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 			return nil, apperrors.Wrap(err)
 		}
 	}

@@ -32,7 +32,8 @@ type Deployment struct {
 	UpdatedAt time.Time `bun:",default:current_timestamp"`
 	DeletedAt time.Time `bun:",soft_delete,nullzero"`
 
-	App *App `bun:"rel:belongs-to,join:app_id=id"`
+	App   *App    `bun:"rel:belongs-to,join:app_id=id"`
+	Tasks []*Task `bun:"rel:has-many,join:id=target_id"`
 }
 
 // GetID implements IDEntity interface
