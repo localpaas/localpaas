@@ -8,7 +8,7 @@ import (
 	"github.com/docker/docker/api/types/container"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/realtimelog"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 )
 
 var (
@@ -63,7 +63,7 @@ func (m *Manager) ContainerExecWait(
 	ctx context.Context,
 	containerID string,
 	options *container.ExecOptions,
-) (*container.ExecInspect, []*realtimelog.LogFrame, error) {
+) (*container.ExecInspect, []*applog.LogFrame, error) {
 	execID, resp, err := m.ContainerExec(ctx, containerID, options)
 	if err != nil {
 		return nil, nil, apperrors.Wrap(err)
@@ -72,7 +72,7 @@ func (m *Manager) ContainerExecWait(
 	logChan, _ := StartScanningLog(ctx, io.NopCloser(resp.Reader), WithParseLogHeader(false))
 	defer resp.Close()
 
-	logs := make([]*realtimelog.LogFrame, 0, 20) //nolint
+	logs := make([]*applog.LogFrame, 0, 20) //nolint
 	for msgs := range logChan {
 		logs = append(logs, msgs...)
 	}

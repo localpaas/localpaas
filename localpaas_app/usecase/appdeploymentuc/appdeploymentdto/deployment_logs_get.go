@@ -8,7 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/realtimelog"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 )
 
 type GetDeploymentLogsReq struct {
@@ -40,15 +40,15 @@ type GetDeploymentLogsResp struct {
 }
 
 type DeploymentLogsDataResp struct {
-	Logs          []*realtimelog.LogFrame        `json:"logs"`
-	LogChan       <-chan []*realtimelog.LogFrame `json:"-"`
-	LogChanCloser func() error                   `json:"-"`
+	Logs          []*applog.LogFrame        `json:"logs"`
+	LogChan       <-chan []*applog.LogFrame `json:"-"`
+	LogChanCloser func() error              `json:"-"`
 }
 
-func TransformDeploymentLogs(logs []*entity.TaskLog) (resp []*realtimelog.LogFrame) {
-	resp = make([]*realtimelog.LogFrame, 0, len(logs))
+func TransformDeploymentLogs(logs []*entity.TaskLog) (resp []*applog.LogFrame) {
+	resp = make([]*applog.LogFrame, 0, len(logs))
 	for _, log := range logs {
-		resp = append(resp, &realtimelog.LogFrame{
+		resp = append(resp, &applog.LogFrame{
 			Type: log.Type,
 			Data: log.Data,
 			Ts:   log.Ts,

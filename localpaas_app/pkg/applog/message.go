@@ -1,4 +1,4 @@
-package realtimelog
+package applog
 
 import (
 	"strings"

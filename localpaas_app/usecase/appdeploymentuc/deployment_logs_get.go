@@ -11,9 +11,9 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/batchrecvchan"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/realtimelog"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appdeploymentuc/appdeploymentdto"
 )
 
@@ -46,7 +46,7 @@ func (uc *AppDeploymentUC) getRealtimeDeploymentLogs(
 	req *appdeploymentdto.GetDeploymentLogsReq,
 ) (*appdeploymentdto.GetDeploymentLogsResp, error) {
 	key := fmt.Sprintf("deployment:%s:log", deployment.ID)
-	consumer := realtimelog.NewConsumer(key, uc.redisClient)
+	consumer := applog.NewConsumer(key, uc.redisClient)
 
 	resp := &appdeploymentdto.DeploymentLogsDataResp{}
 	var err error
@@ -110,7 +110,7 @@ func (uc *AppDeploymentUC) getHistoryDeploymentLogs(
 	}
 
 	logFrames := appdeploymentdto.TransformDeploymentLogs(logs)
-	logChan := make(chan []*realtimelog.LogFrame, 100) //nolint:mnd
+	logChan := make(chan []*applog.LogFrame, 100) //nolint:mnd
 
 	resp := &appdeploymentdto.DeploymentLogsDataResp{
 		Logs:          logFrames,

@@ -44,11 +44,13 @@ func (q *taskQueue) loadTask(
 		}
 		return nil, apperrors.Wrap(err)
 	}
-	if task.JobID != "" {
-		// Task's job is not active
-		if task.Job == nil || !task.Job.IsActive() {
-			return nil, nil
-		}
+	// Task's job is not active, mark the task as canceled
+	if task.JobID != "" && (task.Job == nil || !task.Job.IsActive()) {
+		task.Status = base.TaskStatusCanceled
+		task.UpdatedAt = timeutil.NowUTC()
+		_ = q.taskRepo.Update(ctx, db, task, bunex.UpdateColumns("status", "updated_at"))
+		// No task to continue
+		return nil, nil
 	}
 	// Task not allow retrying
 	if task.Status == base.TaskStatusFailed && !task.CanRetry() {

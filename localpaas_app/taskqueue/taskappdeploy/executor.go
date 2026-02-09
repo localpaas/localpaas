@@ -15,8 +15,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/infra/logging"
 	"github.com/localpaas/localpaas/localpaas_app/infra/rediscache"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/realtimelog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 	"github.com/localpaas/localpaas/localpaas_app/repository/cacherepository"
@@ -93,7 +93,7 @@ type taskData struct {
 	Deployment       *entity.Deployment
 	DeploymentOutput *entity.AppDeploymentOutput
 	Step             string
-	LogStore         *realtimelog.Store
+	LogStore         *applog.Store
 	RefSettingMap    map[string]*entity.Setting
 	NtfnSettings     *entity.AppNotificationSettings
 	NtfnMsgData      *notificationservice.BaseMsgDataAppDeploymentNotification
@@ -202,7 +202,7 @@ func (e *Executor) loadDeploymentData(
 	data.Deployment = deployment
 	data.DeploymentOutput = &entity.AppDeploymentOutput{}
 	logStoreKey := fmt.Sprintf("deployment:%s:log", deployment.ID)
-	data.LogStore = realtimelog.NewRemoteStore(logStoreKey, true, e.redisClient)
+	data.LogStore = applog.NewRemoteStore(logStoreKey, true, e.redisClient)
 
 	// Load notification settings for the deployment
 	ntfnSetting, err := e.settingRepo.GetSingleByAppObject(ctx, db, base.SettingTypeAppNotification, data.App, true)
@@ -248,8 +248,8 @@ func (e *Executor) saveLogs(
 	}
 
 	if addDurationInfo {
-		_ = logStore.Add(ctx, realtimelog.NewOutFrame("Deployment finished in "+
-			deployment.GetDuration().String(), nil))
+		_ = logStore.Add(ctx, applog.NewOutFrame("Deployment finished in "+
+			deployment.GetDuration().String(), applog.TsNow))
 	}
 
 	logFrames, err := logStore.GetData(ctx, 0)
@@ -285,8 +285,8 @@ func (e *Executor) addStepStartLog(
 	msg string,
 ) {
 	_ = data.LogStore.Add(ctx,
-		realtimelog.NewOutFrame("---------------------------------", nil),
-		realtimelog.NewOutFrame(msg, nil))
+		applog.NewOutFrame("---------------------------------", applog.TsNow),
+		applog.NewOutFrame(msg, applog.TsNow))
 }
 
 func (e *Executor) addStepEndLog(
@@ -297,10 +297,11 @@ func (e *Executor) addStepEndLog(
 ) {
 	duration := timeutil.NowUTC().Sub(start)
 	if err != nil {
-		_ = data.LogStore.Add(ctx, realtimelog.NewOutFrame("Task finished in "+duration.String()+
-			" with error: "+err.Error(), nil))
+		_ = data.LogStore.Add(ctx, applog.NewOutFrame("Task finished in "+duration.String()+
+			" with error: "+err.Error(), applog.TsNow))
 	} else {
-		_ = data.LogStore.Add(ctx, realtimelog.NewOutFrame("Task finished in "+duration.String(), nil))
+		_ = data.LogStore.Add(ctx, applog.NewOutFrame("Task finished in "+duration.String(),
+			applog.TsNow))
 	}
 }
 
@@ -311,7 +312,7 @@ func (e *Executor) onPostTransaction(
 	db := e.db
 
 	// NOTE: We are now outside the transaction, need to reset some data before using them again
-	data.LogStore = realtimelog.NewLocalStore(data.LogStore.Key)
+	data.LogStore = applog.NewLocalStore(data.LogStore.Key)
 
 	defer func() {
 		_ = e.saveLogs(ctx, db, data, false)
@@ -320,8 +321,8 @@ func (e *Executor) onPostTransaction(
 	if data.Task.IsDone() || data.Task.IsFailedCompletely() {
 		err := e.notifyForDeployment(ctx, db, data)
 		if err != nil {
-			_ = data.LogStore.Add(ctx, realtimelog.NewOutFrame("Failed to send deployment notification"+
-				" with error: "+err.Error(), nil))
+			_ = data.LogStore.Add(ctx, applog.NewOutFrame("Failed to send deployment notification"+
+				" with error: "+err.Error(), applog.TsNow))
 		}
 	}
 }

@@ -17,9 +17,9 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/batchrecvchan"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/fileutil"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/realtimelog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/services/docker"
 )
@@ -146,7 +146,8 @@ func (e *Executor) repoDeployStepSourceCheckout(
 	// Remove .git dir within the source dir
 	ee := os.RemoveAll(filepath.Join(data.CheckoutPath, ".git"))
 	if ee != nil { // Just log
-		_ = data.LogStore.Add(ctx, realtimelog.NewErrFrame("failed to remove .git folder", nil))
+		_ = data.LogStore.Add(ctx, applog.NewErrFrame("failed to remove .git folder",
+			applog.TsNow))
 	}
 
 	return nil
@@ -205,9 +206,9 @@ func (e *Executor) repoDeployStepImageBuild(
 		for _, msg := range msgs {
 			if msg.Error != nil {
 				err = errors.Join(err, msg.Error)
-				_ = data.LogStore.Add(ctx, realtimelog.NewErrFrame(msg.String(), nil))
+				_ = data.LogStore.Add(ctx, applog.NewErrFrame(msg.String(), applog.TsNow))
 			} else {
-				_ = data.LogStore.Add(ctx, realtimelog.NewOutFrame(msg.String(), nil))
+				_ = data.LogStore.Add(ctx, applog.NewOutFrame(msg.String(), applog.TsNow))
 			}
 		}
 	}
@@ -306,8 +307,8 @@ func (e *Executor) onRepoDeployCommand(
 	if cmd == base.TaskCommandCancel && taskData.Step == stepImageBuild {
 		err := e.dockerManager.ImageBuildCancel(ctx, taskData.Task.ID)
 		if err != nil {
-			_ = taskData.LogStore.Add(ctx,
-				realtimelog.NewErrFrame("failed to cancel image build: "+err.Error(), nil))
+			_ = taskData.LogStore.Add(ctx, applog.NewErrFrame("failed to cancel image build: "+
+				err.Error(), applog.TsNow))
 		}
 	}
 }

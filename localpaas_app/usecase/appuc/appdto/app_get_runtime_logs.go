@@ -7,7 +7,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/realtimelog"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 )
 
 type GetAppRuntimeLogsReq struct {
@@ -37,7 +37,7 @@ type GetAppRuntimeLogsResp struct {
 }
 
 type AppRuntimeLogsDataResp struct {
-	Logs          []*realtimelog.LogFrame        `json:"logs"`
-	LogChan       <-chan []*realtimelog.LogFrame `json:"-"`
-	LogChanCloser func() error                   `json:"-"`
+	Logs          []*applog.LogFrame        `json:"logs"`
+	LogChan       <-chan []*applog.LogFrame `json:"-"`
+	LogChanCloser func() error              `json:"-"`
 }

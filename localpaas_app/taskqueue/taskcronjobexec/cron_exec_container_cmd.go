@@ -9,7 +9,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/realtimelog"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/shellutil"
 	"github.com/localpaas/localpaas/services/docker"
 )
@@ -27,8 +27,8 @@ func (e *Executor) cronExecContainerCmd(
 	command := data.CronJob.Command
 	if command == nil || command.Command == "" { // can't continue if this happens
 		data.NonRetryable = true
-		_ = data.LogStore.Add(ctx, realtimelog.NewErrFrame(
-			"Execution command is empty, aborted", nil))
+		_ = data.LogStore.Add(ctx, applog.NewErrFrame(
+			"Execution command is empty, aborted", applog.TsNow))
 		return apperrors.New(apperrors.ErrInternalServer).WithMsgLog("cron job command is empty")
 	}
 
@@ -38,8 +38,8 @@ func (e *Executor) cronExecContainerCmd(
 		return apperrors.Wrap(err)
 	}
 	if contSum == nil {
-		_ = data.LogStore.Add(ctx, realtimelog.NewWarnFrame(
-			"No running container found, execution skipped", nil))
+		_ = data.LogStore.Add(ctx, applog.NewWarnFrame(
+			"No running container found, execution skipped", applog.TsNow))
 		return nil
 	}
 
@@ -79,8 +79,8 @@ func (e *Executor) cronExecContainerCmd(
 	_ = data.LogStore.Add(ctx, logs...)
 
 	if execInfo.ExitCode != 0 {
-		_ = data.LogStore.Add(ctx, realtimelog.NewErrFrame(fmt.Sprintf(
-			"Command execution failed with exit code: %v", execInfo.ExitCode), nil))
+		_ = data.LogStore.Add(ctx, applog.NewErrFrame(fmt.Sprintf(
+			"Command execution failed with exit code: %v", execInfo.ExitCode), applog.TsNow))
 		return apperrors.Wrap(apperrors.ErrInfraActionFailed)
 	}
 
