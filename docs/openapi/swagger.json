@@ -2373,7 +2373,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/apps/{appID}/cron-jobs/{id}" : {
+    "/projects/{projectID}/apps/{appID}/cron-jobs/{itemID}" : {
       "delete" : {
         "description" : "Deletes cron-job",
         "operationId" : "deleteAppCronJob",
@@ -2394,9 +2394,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -2457,9 +2457,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -2520,9 +2520,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -2576,7 +2576,83 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/apps/{appID}/cron-jobs/{id}/meta" : {
+    "/projects/{projectID}/apps/{appID}/cron-jobs/{itemID}/exec" : {
+      "post" : {
+        "description" : "Executes a cron job",
+        "operationId" : "executeAppCronJob",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "app ID",
+          "in" : "path",
+          "name" : "appID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.ExecuteCronJobReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.ExecuteCronJobResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "tags" : [ "apps" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/projects/{projectID}/apps/{appID}/cron-jobs/{itemID}/meta" : {
       "put" : {
         "description" : "Updates cron-job meta",
         "operationId" : "updateAppCronJobMeta",
@@ -2597,9 +2673,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -2651,6 +2727,245 @@
         "summary" : "Updates cron-job meta",
         "tags" : [ "apps" ],
         "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/projects/{projectID}/apps/{appID}/cron-jobs/{itemID}/tasks" : {
+      "get" : {
+        "description" : "Lists cron-job tasks",
+        "operationId" : "listAppCronJobTask",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "app ID",
+          "in" : "path",
+          "name" : "appID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`search=<target> (support *)`",
+          "in" : "query",
+          "name" : "search",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`pageOffset=offset`",
+          "in" : "query",
+          "name" : "pageOffset",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`pageLimit=limit`",
+          "in" : "query",
+          "name" : "pageLimit",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`sort=[-]field1|field2...`",
+          "in" : "query",
+          "name" : "sort",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.ListCronJobTaskResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Lists cron-job tasks",
+        "tags" : [ "apps" ]
+      }
+    },
+    "/projects/{projectID}/apps/{appID}/cron-jobs/{itemID}/tasks/{taskID}" : {
+      "get" : {
+        "description" : "Gets a cron-job task",
+        "operationId" : "getAppCronJobTask",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "app ID",
+          "in" : "path",
+          "name" : "appID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "task ID",
+          "in" : "path",
+          "name" : "taskID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.GetCronJobTaskResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Gets a cron-job task",
+        "tags" : [ "apps" ]
+      }
+    },
+    "/projects/{projectID}/apps/{appID}/cron-jobs/{itemID}/tasks/{taskID}/logs" : {
+      "get" : {
+        "description" : "Gets logs of a cron-job task",
+        "operationId" : "getAppCronJobTaskLogs",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "app ID",
+          "in" : "path",
+          "name" : "appID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "task ID",
+          "in" : "path",
+          "name" : "taskID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.GetCronJobTaskLogsResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Gets logs of a cron-job task",
+        "tags" : [ "apps" ]
       }
     },
     "/projects/{projectID}/apps/{appID}/deployment-settings" : {
@@ -2869,7 +3184,7 @@
         "tags" : [ "app_deployments" ]
       }
     },
-    "/projects/{projectID}/apps/{appID}/deployments/{id}" : {
+    "/projects/{projectID}/apps/{appID}/deployments/{deploymentID}" : {
       "get" : {
         "description" : "Gets app deployment",
         "operationId" : "getAppDeployment",
@@ -2892,7 +3207,7 @@
         }, {
           "description" : "deployment ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "deploymentID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -2934,7 +3249,7 @@
         "tags" : [ "app_deployments" ]
       }
     },
-    "/projects/{projectID}/apps/{appID}/deployments/{id}/cancel" : {
+    "/projects/{projectID}/apps/{appID}/deployments/{deploymentID}/cancel" : {
       "post" : {
         "description" : "Cancels app deployment",
         "operationId" : "cancelAppDeployment",
@@ -2957,7 +3272,7 @@
         }, {
           "description" : "deployment ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "deploymentID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -3011,7 +3326,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/apps/{appID}/deployments/{id}/logs" : {
+    "/projects/{projectID}/apps/{appID}/deployments/{deploymentID}/logs" : {
       "get" : {
         "description" : "Stream deployment app logs via websocket",
         "operationId" : "getAppDeploymentLogs",
@@ -3034,7 +3349,7 @@
         }, {
           "description" : "deployment ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "deploymentID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -3561,7 +3876,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/apps/{appID}/secrets/{id}" : {
+    "/projects/{projectID}/apps/{appID}/secrets/{itemID}" : {
       "delete" : {
         "description" : "Deletes an app secret",
         "operationId" : "deleteAppSecret",
@@ -3582,9 +3897,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "secret ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -3647,7 +3962,7 @@
         }, {
           "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -4237,7 +4552,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/cron-jobs/{id}" : {
+    "/projects/{projectID}/cron-jobs/{itemID}" : {
       "delete" : {
         "description" : "Deletes cron-job",
         "operationId" : "deleteProjectCronJob",
@@ -4252,7 +4567,7 @@
         }, {
           "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -4307,7 +4622,7 @@
         }, {
           "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -4362,7 +4677,7 @@
         }, {
           "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -4416,7 +4731,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/cron-jobs/{id}/meta" : {
+    "/projects/{projectID}/cron-jobs/{itemID}/meta" : {
       "put" : {
         "description" : "Updates cron-job meta",
         "operationId" : "updateProjectCronJobMeta",
@@ -4431,7 +4746,7 @@
         }, {
           "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -4790,7 +5105,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/providers/access-tokens/{id}" : {
+    "/projects/{projectID}/providers/access-tokens/{itemID}" : {
       "delete" : {
         "description" : "Deletes access-token provider",
         "operationId" : "deleteProjectAccessToken",
@@ -4803,9 +5118,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -4858,9 +5173,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -4913,9 +5228,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -4969,7 +5284,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/providers/access-tokens/{id}/meta" : {
+    "/projects/{projectID}/providers/access-tokens/{itemID}/meta" : {
       "put" : {
         "description" : "Updates access-token meta",
         "operationId" : "updateProjectAccessTokenMeta",
@@ -4982,9 +5297,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -5310,7 +5625,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/providers/aws-s3/{id}" : {
+    "/projects/{projectID}/providers/aws-s3/{itemID}" : {
       "delete" : {
         "description" : "Deletes S3 storage provider",
         "operationId" : "deleteProjectAWSS3",
@@ -5323,9 +5638,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -5378,9 +5693,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -5433,9 +5748,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -5489,7 +5804,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/providers/aws-s3/{id}/meta" : {
+    "/projects/{projectID}/providers/aws-s3/{itemID}/meta" : {
       "put" : {
         "description" : "Updates S3 storage meta",
         "operationId" : "updateProjectAWSS3Meta",
@@ -5502,9 +5817,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -5558,7 +5873,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/providers/aws/{id}" : {
+    "/projects/{projectID}/providers/aws/{itemID}" : {
       "delete" : {
         "description" : "Deletes AWS credential",
         "operationId" : "deleteProjectAWS",
@@ -5571,9 +5886,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -5626,9 +5941,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -5681,9 +5996,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -5737,7 +6052,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/providers/aws/{id}/meta" : {
+    "/projects/{projectID}/providers/aws/{itemID}/meta" : {
       "put" : {
         "description" : "Updates AWS credential meta",
         "operationId" : "updateProjectAWSMeta",
@@ -5750,9 +6065,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -5942,7 +6257,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/providers/basic-auth/{id}" : {
+    "/projects/{projectID}/providers/basic-auth/{itemID}" : {
       "delete" : {
         "description" : "Deletes basic auth provider",
         "operationId" : "deleteProjectBasicAuth",
@@ -5955,9 +6270,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -6010,9 +6325,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -6065,9 +6380,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -6121,7 +6436,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/providers/basic-auth/{id}/meta" : {
+    "/projects/{projectID}/providers/basic-auth/{itemID}/meta" : {
       "put" : {
         "description" : "Updates basic auth meta",
         "operationId" : "updateProjectBasicAuthMeta",
@@ -6134,9 +6449,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -6326,7 +6641,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/providers/emails/{id}" : {
+    "/projects/{projectID}/providers/emails/{itemID}" : {
       "delete" : {
         "description" : "Deletes email provider",
         "operationId" : "deleteProjectEmail",
@@ -6339,9 +6654,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -6394,9 +6709,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -6449,9 +6764,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -6505,7 +6820,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/providers/emails/{id}/meta" : {
+    "/projects/{projectID}/providers/emails/{itemID}/meta" : {
       "put" : {
         "description" : "Updates Email meta provider",
         "operationId" : "updateProjectEmailMeta",
@@ -6518,9 +6833,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -6710,7 +7025,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/providers/github-apps/{id}" : {
+    "/projects/{projectID}/providers/github-apps/{itemID}" : {
       "delete" : {
         "description" : "Deletes github-app provider",
         "operationId" : "deleteProjectGithubApp",
@@ -6723,9 +7038,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -6778,9 +7093,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -6833,9 +7148,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -6889,7 +7204,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/providers/github-apps/{id}/meta" : {
+    "/projects/{projectID}/providers/github-apps/{itemID}/meta" : {
       "put" : {
         "description" : "Updates github-app meta",
         "operationId" : "updateProjectGithubAppMeta",
@@ -6902,9 +7217,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -7094,7 +7409,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/providers/im-services/{id}" : {
+    "/projects/{projectID}/providers/im-services/{itemID}" : {
       "delete" : {
         "description" : "Deletes IM service",
         "operationId" : "deleteProjectIMService",
@@ -7107,9 +7422,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -7162,9 +7477,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -7217,9 +7532,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -7273,7 +7588,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/providers/im-services/{id}/meta" : {
+    "/projects/{projectID}/providers/im-services/{itemID}/meta" : {
       "put" : {
         "description" : "Updates IM service meta",
         "operationId" : "updateProjectIMServiceMeta",
@@ -7286,9 +7601,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -7478,7 +7793,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/providers/registry-auth/{id}" : {
+    "/projects/{projectID}/providers/registry-auth/{itemID}" : {
       "delete" : {
         "description" : "Deletes registry auth provider",
         "operationId" : "deleteProjectRegistryAuth",
@@ -7491,9 +7806,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -7546,9 +7861,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -7601,9 +7916,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -7657,7 +7972,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/providers/registry-auth/{id}/meta" : {
+    "/projects/{projectID}/providers/registry-auth/{itemID}/meta" : {
       "put" : {
         "description" : "Updates registry auth meta",
         "operationId" : "updateProjectRegistryAuthMeta",
@@ -7670,9 +7985,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -7862,7 +8177,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/providers/repo-webhooks/{id}" : {
+    "/projects/{projectID}/providers/repo-webhooks/{itemID}" : {
       "delete" : {
         "description" : "Deletes webhook provider",
         "operationId" : "deleteProjectRepoWebhook",
@@ -7875,9 +8190,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -7930,9 +8245,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -7985,9 +8300,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -8041,7 +8356,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/providers/repo-webhooks/{id}/meta" : {
+    "/projects/{projectID}/providers/repo-webhooks/{itemID}/meta" : {
       "put" : {
         "description" : "Updates webhook meta",
         "operationId" : "updateProjectRepoWebhookMeta",
@@ -8054,9 +8369,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -8246,7 +8561,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/providers/ssh-keys/{id}" : {
+    "/projects/{projectID}/providers/ssh-keys/{itemID}" : {
       "delete" : {
         "description" : "Deletes ssh-key provider",
         "operationId" : "deleteProjectSSHKey",
@@ -8259,9 +8574,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -8314,9 +8629,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -8369,9 +8684,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -8425,7 +8740,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/providers/ssh-keys/{id}/meta" : {
+    "/projects/{projectID}/providers/ssh-keys/{itemID}/meta" : {
       "put" : {
         "description" : "Updates ssh-key meta",
         "operationId" : "updateProjectSSHKeyMeta",
@@ -8438,9 +8753,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -8630,7 +8945,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/providers/ssls/{id}" : {
+    "/projects/{projectID}/providers/ssls/{itemID}" : {
       "delete" : {
         "description" : "Deletes SSL provider",
         "operationId" : "deleteProjectSSL",
@@ -8643,9 +8958,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -8698,9 +9013,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -8753,9 +9068,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -8809,7 +9124,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/providers/ssls/{id}/meta" : {
+    "/projects/{projectID}/providers/ssls/{itemID}/meta" : {
       "put" : {
         "description" : "Updates SSL meta",
         "operationId" : "updateProjectSSLMeta",
@@ -8822,9 +9137,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -8993,7 +9308,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/secrets/{id}" : {
+    "/projects/{projectID}/secrets/{itemID}" : {
       "delete" : {
         "description" : "Deletes a project secret",
         "operationId" : "deleteProjectSecret",
@@ -9006,9 +9321,9 @@
             "type" : "string"
           }
         }, {
-          "description" : "secret ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -9063,7 +9378,7 @@
         }, {
           "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -9471,14 +9786,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/access-tokens/{id}" : {
+    "/providers/access-tokens/{itemID}" : {
       "delete" : {
         "description" : "Deletes access-token provider",
         "operationId" : "deleteProviderAccessToken",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -9523,9 +9838,9 @@
         "description" : "Gets access-token provider details",
         "operationId" : "getProviderAccessToken",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -9570,9 +9885,9 @@
         "description" : "Updates access-token",
         "operationId" : "updateProviderAccessToken",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -9626,14 +9941,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/access-tokens/{id}/meta" : {
+    "/providers/access-tokens/{itemID}/meta" : {
       "put" : {
         "description" : "Updates access-token meta",
         "operationId" : "updateProviderAccessTokenMeta",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -9977,14 +10292,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/aws-s3/{id}" : {
+    "/providers/aws-s3/{itemID}" : {
       "delete" : {
         "description" : "Deletes S3 storage provider",
         "operationId" : "deleteProviderAWSS3",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -10029,9 +10344,9 @@
         "description" : "Gets S3 storage provider details",
         "operationId" : "getProviderAWSS3",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -10076,9 +10391,9 @@
         "description" : "Updates S3 storage",
         "operationId" : "updateProviderAWSS3",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -10132,14 +10447,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/aws-s3/{id}/meta" : {
+    "/providers/aws-s3/{itemID}/meta" : {
       "put" : {
         "description" : "Updates S3 storage meta",
         "operationId" : "updateProviderAWSS3Meta",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -10193,14 +10508,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/aws/{id}" : {
+    "/providers/aws/{itemID}" : {
       "delete" : {
         "description" : "Deletes AWS credential",
         "operationId" : "deleteProviderAWS",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -10245,9 +10560,9 @@
         "description" : "Gets AWS credential details",
         "operationId" : "getProviderAWS",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -10292,9 +10607,9 @@
         "description" : "Updates S3 storage",
         "operationId" : "updateProviderAWS",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -10348,14 +10663,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/aws/{id}/meta" : {
+    "/providers/aws/{itemID}/meta" : {
       "put" : {
         "description" : "Updates S3 storage meta",
         "operationId" : "updateProviderAWSMeta",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -10528,14 +10843,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/basic-auth/{id}" : {
+    "/providers/basic-auth/{itemID}" : {
       "delete" : {
         "description" : "Deletes basic auth provider",
         "operationId" : "deleteProviderBasicAuth",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -10580,9 +10895,9 @@
         "description" : "Gets basic auth provider details",
         "operationId" : "getProviderBasicAuth",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -10627,9 +10942,9 @@
         "description" : "Updates basic auth",
         "operationId" : "updateProviderBasicAuth",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -10683,14 +10998,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/basic-auth/{id}/meta" : {
+    "/providers/basic-auth/{itemID}/meta" : {
       "put" : {
         "description" : "Updates basic auth meta",
         "operationId" : "updateProviderBasicAuthMeta",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -10915,14 +11230,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/emails/{id}" : {
+    "/providers/emails/{itemID}" : {
       "delete" : {
         "description" : "Deletes e-mail provider",
         "operationId" : "deleteProviderEmail",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -10967,9 +11282,9 @@
         "description" : "Gets e-mail provider details",
         "operationId" : "getProviderEmail",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -11014,9 +11329,9 @@
         "description" : "Updates e-mail provider",
         "operationId" : "updateProviderEmail",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -11070,14 +11385,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/emails/{id}/meta" : {
+    "/providers/emails/{itemID}/meta" : {
       "put" : {
         "description" : "Updates email provider meta",
         "operationId" : "updateProviderEmailMeta",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -11354,14 +11669,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/github-apps/{id}" : {
+    "/providers/github-apps/{itemID}" : {
       "delete" : {
         "description" : "Deletes github-app provider",
         "operationId" : "deleteProviderGithubApp",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -11406,9 +11721,9 @@
         "description" : "Gets github-app provider details",
         "operationId" : "getProviderGithubApp",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -11453,9 +11768,9 @@
         "description" : "Updates github-app",
         "operationId" : "updateProviderGithubApp",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -11509,14 +11824,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/github-apps/{id}/meta" : {
+    "/providers/github-apps/{itemID}/meta" : {
       "put" : {
         "description" : "Updates github-app meta",
         "operationId" : "updateProviderGithubAppMeta",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -11741,14 +12056,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/im-services/{id}" : {
+    "/providers/im-services/{itemID}" : {
       "delete" : {
         "description" : "Deletes IM service",
         "operationId" : "deleteProviderIMService",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -11793,9 +12108,9 @@
         "description" : "Gets IM service details",
         "operationId" : "getProviderIMService",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -11840,9 +12155,9 @@
         "description" : "Updates IM service",
         "operationId" : "updateProviderIMService",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -11896,14 +12211,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/im-services/{id}/meta" : {
+    "/providers/im-services/{itemID}/meta" : {
       "put" : {
         "description" : "Updates IMService meta provider",
         "operationId" : "updateProviderIMServiceMeta",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -12076,14 +12391,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/oauth/{id}" : {
+    "/providers/oauth/{itemID}" : {
       "delete" : {
         "description" : "Deletes oauth provider",
         "operationId" : "deleteProviderOAuth",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -12128,9 +12443,9 @@
         "description" : "Gets oauth provider details",
         "operationId" : "getProviderOAuth",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -12175,9 +12490,9 @@
         "description" : "Updates oauth",
         "operationId" : "updateProviderOAuth",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -12231,14 +12546,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/oauth/{id}/meta" : {
+    "/providers/oauth/{itemID}/meta" : {
       "put" : {
         "description" : "Updates oauth meta",
         "operationId" : "updateProviderOAuthMeta",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -12463,14 +12778,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/registry-auth/{id}" : {
+    "/providers/registry-auth/{itemID}" : {
       "delete" : {
         "description" : "Deletes registry auth provider",
         "operationId" : "deleteProviderRegistryAuth",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -12515,9 +12830,9 @@
         "description" : "Gets registry auth provider details",
         "operationId" : "getProviderRegistryAuth",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -12562,9 +12877,9 @@
         "description" : "Updates registry auth",
         "operationId" : "updateProviderRegistryAuth",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -12618,14 +12933,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/registry-auth/{id}/meta" : {
+    "/providers/registry-auth/{itemID}/meta" : {
       "put" : {
         "description" : "Updates registry auth meta",
         "operationId" : "updateProviderRegistryAuthMeta",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -12798,14 +13113,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/ssh-keys/{id}" : {
+    "/providers/ssh-keys/{itemID}" : {
       "delete" : {
         "description" : "Deletes sshkey provider",
         "operationId" : "deleteProviderSSHKey",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -12850,9 +13165,9 @@
         "description" : "Gets ssh-key provider details",
         "operationId" : "getProviderSSHKey",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -12897,9 +13212,9 @@
         "description" : "Updates ssh-key",
         "operationId" : "updateProviderSSHKey",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -12953,14 +13268,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/ssh-keys/{id}/meta" : {
+    "/providers/ssh-keys/{itemID}/meta" : {
       "put" : {
         "description" : "Updates ssh-key meta",
         "operationId" : "updateProviderSSHKeyMeta",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -13133,14 +13448,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/ssls/{id}" : {
+    "/providers/ssls/{itemID}" : {
       "delete" : {
         "description" : "Deletes SSL provider",
         "operationId" : "deleteProviderSSL",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -13185,9 +13500,9 @@
         "description" : "Gets SSL provider details",
         "operationId" : "getProviderSSL",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -13232,9 +13547,9 @@
         "description" : "Updates SSL",
         "operationId" : "updateProviderSSL",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -13288,14 +13603,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/providers/ssls/{id}/meta" : {
+    "/providers/ssls/{itemID}/meta" : {
       "put" : {
         "description" : "Updates SSL meta",
         "operationId" : "updateProviderSSLMeta",
         "parameters" : [ {
-          "description" : "provider ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -13636,14 +13951,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/settings/cron-jobs/{id}" : {
+    "/settings/cron-jobs/{itemID}" : {
       "delete" : {
         "description" : "Deletes cron-job",
         "operationId" : "deleteSettingCronJob",
         "parameters" : [ {
           "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -13690,7 +14005,7 @@
         "parameters" : [ {
           "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -13737,7 +14052,7 @@
         "parameters" : [ {
           "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -13791,14 +14106,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/settings/cron-jobs/{id}/meta" : {
+    "/settings/cron-jobs/{itemID}/meta" : {
       "put" : {
         "description" : "Updates cron-job meta",
         "operationId" : "updateSettingCronJobMeta",
         "parameters" : [ {
           "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -13971,14 +14286,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/settings/secrets/{id}" : {
+    "/settings/secrets/{itemID}" : {
       "delete" : {
         "description" : "Deletes a secret",
         "operationId" : "deleteSettingSecret",
         "parameters" : [ {
           "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -14025,7 +14340,7 @@
         "parameters" : [ {
           "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -14079,14 +14394,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/settings/secrets/{id}/meta" : {
+    "/settings/secrets/{itemID}/meta" : {
       "put" : {
         "description" : "Updates secret meta",
         "operationId" : "updateSettingSecretMeta",
         "parameters" : [ {
           "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -14223,14 +14538,14 @@
         "tags" : [ "system_errors" ]
       }
     },
-    "/system/errors/{id}" : {
+    "/system/errors/{errorID}" : {
       "delete" : {
         "description" : "Deletes sys error",
         "operationId" : "deleteSysError",
         "parameters" : [ {
           "description" : "error ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "errorID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -14277,7 +14592,7 @@
         "parameters" : [ {
           "description" : "error ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "errorID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -14662,14 +14977,14 @@
         "tags" : [ "system_tasks" ]
       }
     },
-    "/system/tasks/{id}/cancel" : {
+    "/system/tasks/{taskID}/cancel" : {
       "post" : {
         "description" : "Cancels a task",
         "operationId" : "cancelTask",
         "parameters" : [ {
           "description" : "task ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "taskID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -14723,14 +15038,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/system/tasks/{id}/meta" : {
+    "/system/tasks/{taskID}/meta" : {
       "put" : {
         "description" : "Updates task meta",
         "operationId" : "updateTaskMeta",
         "parameters" : [ {
           "description" : "task ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "taskID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -14784,14 +15099,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/tasks/{id}" : {
+    "/tasks/{taskID}" : {
       "get" : {
         "description" : "Gets task",
         "operationId" : "getTask",
         "parameters" : [ {
           "description" : "task ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "taskID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -15364,14 +15679,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/users/current/settings/api-keys/{id}" : {
+    "/users/current/settings/api-keys/{itemID}" : {
       "delete" : {
         "description" : "Deletes an API key",
         "operationId" : "deleteUserAPIKey",
         "parameters" : [ {
-          "description" : "API key ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -15416,9 +15731,9 @@
         "description" : "Gets API key details",
         "operationId" : "getUserAPIKey",
         "parameters" : [ {
-          "description" : "s3 storage ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -15460,14 +15775,14 @@
         "tags" : [ "user_settings" ]
       }
     },
-    "/users/current/settings/api-keys/{id}/meta" : {
+    "/users/current/settings/api-keys/{itemID}/meta" : {
       "put" : {
         "description" : "Updates API key meta",
         "operationId" : "updateUserAPIKeyMeta",
         "parameters" : [ {
-          "description" : "API key ID",
+          "description" : "setting ID",
           "in" : "path",
-          "name" : "id",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -16655,10 +16970,10 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
         "format" : "int64",
         "type" : "integer",
-        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
+        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentReq" : {
         "type" : "object"
@@ -20232,6 +20547,18 @@
         "required" : [ "app", "command", "createdAt", "cronExpr", "cronType", "id", "initialTime", "maxRetry", "name", "notification", "priority", "retryDelay", "status", "timeout", "type", "updateVer", "updatedAt" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobTaskLogsDataResp" : {
+        "properties" : {
+          "logs" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_applog.LogFrame"
+            },
+            "type" : "array"
+          }
+        },
+        "required" : [ "logs" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.DeleteCronJobResp" : {
         "properties" : {
           "meta" : {
@@ -20239,6 +20566,30 @@
           }
         },
         "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.ExecuteCronJobDataResp" : {
+        "properties" : {
+          "task" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
+          }
+        },
+        "required" : [ "task" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.ExecuteCronJobReq" : {
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.ExecuteCronJobResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.ExecuteCronJobDataResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "data", "meta" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.GetCronJobResp" : {
@@ -20253,11 +20604,50 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.GetCronJobTaskLogsResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobTaskLogsDataResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.GetCronJobTaskResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_taskuc_taskdto.TaskResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.ListCronJobResp" : {
         "properties" : {
           "data" : {
             "items" : {
               "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobResp"
+            },
+            "type" : "array"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.ListCronJobTaskResp" : {
+        "properties" : {
+          "data" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_taskuc_taskdto.TaskResp"
             },
             "type" : "array"
           },

@@ -35,11 +35,11 @@ func (h *ProvidersHandler) ListGithubApp(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      getProviderGithubApp
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} githubappdto.GetGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/github-apps/{id} [get]
+// @Router  /providers/github-apps/{itemID} [get]
 func (h *ProvidersHandler) GetGithubApp(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeGithubApp, base.SettingScopeGlobal)
 }
@@ -65,12 +65,12 @@ func (h *ProvidersHandler) CreateGithubApp(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      updateProviderGithubApp
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body githubappdto.UpdateGithubAppReq true "request data"
 // @Success 200 {object} githubappdto.UpdateGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/github-apps/{id} [put]
+// @Router  /providers/github-apps/{itemID} [put]
 func (h *ProvidersHandler) UpdateGithubApp(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeGithubApp, base.SettingScopeGlobal)
 }
@@ -81,12 +81,12 @@ func (h *ProvidersHandler) UpdateGithubApp(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      updateProviderGithubAppMeta
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body githubappdto.UpdateGithubAppMetaReq true "request data"
 // @Success 200 {object} githubappdto.UpdateGithubAppMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/github-apps/{id}/meta [put]
+// @Router  /providers/github-apps/{itemID}/meta [put]
 func (h *ProvidersHandler) UpdateGithubAppMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeGithubApp, base.SettingScopeGlobal)
 }
@@ -97,11 +97,11 @@ func (h *ProvidersHandler) UpdateGithubAppMeta(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      deleteProviderGithubApp
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} githubappdto.DeleteGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/github-apps/{id} [delete]
+// @Router  /providers/github-apps/{itemID} [delete]
 func (h *ProvidersHandler) DeleteGithubApp(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeGithubApp, base.SettingScopeGlobal)
 }

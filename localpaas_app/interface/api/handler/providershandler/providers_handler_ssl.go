@@ -32,11 +32,11 @@ func (h *ProvidersHandler) ListSSL(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      getProviderSSL
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} ssldto.GetSSLResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssls/{id} [get]
+// @Router  /providers/ssls/{itemID} [get]
 func (h *ProvidersHandler) GetSSL(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeSSL, base.SettingScopeGlobal)
 }
@@ -62,12 +62,12 @@ func (h *ProvidersHandler) CreateSSL(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      updateProviderSSL
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body ssldto.UpdateSSLReq true "request data"
 // @Success 200 {object} ssldto.UpdateSSLResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssls/{id} [put]
+// @Router  /providers/ssls/{itemID} [put]
 func (h *ProvidersHandler) UpdateSSL(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeSSL, base.SettingScopeGlobal)
 }
@@ -78,12 +78,12 @@ func (h *ProvidersHandler) UpdateSSL(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      updateProviderSSLMeta
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body ssldto.UpdateSSLMetaReq true "request data"
 // @Success 200 {object} ssldto.UpdateSSLMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssls/{id}/meta [put]
+// @Router  /providers/ssls/{itemID}/meta [put]
 func (h *ProvidersHandler) UpdateSSLMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeSSL, base.SettingScopeGlobal)
 }
@@ -94,11 +94,11 @@ func (h *ProvidersHandler) UpdateSSLMeta(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      deleteProviderSSL
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} ssldto.DeleteSSLResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssls/{id} [delete]
+// @Router  /providers/ssls/{itemID} [delete]
 func (h *ProvidersHandler) DeleteSSL(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeSSL, base.SettingScopeGlobal)
 }

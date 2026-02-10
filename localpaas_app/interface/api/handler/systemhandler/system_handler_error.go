@@ -59,13 +59,13 @@ func (h *SystemHandler) ListSysError(ctx *gin.Context) {
 // @Tags    system_errors
 // @Produce json
 // @Id      getSysError
-// @Param   id path string true "error ID"
+// @Param   errorID path string true "error ID"
 // @Success 200 {object} syserrordto.GetSysErrorResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /system/errors/{id} [get]
+// @Router  /system/errors/{errorID} [get]
 func (h *SystemHandler) GetSysError(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
+	errorID, err := h.ParseStringParam(ctx, "errorID")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -74,7 +74,7 @@ func (h *SystemHandler) GetSysError(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceModule: base.ResourceModuleSystem,
 		ResourceType:   base.ResourceTypeSysError,
-		ResourceID:     id,
+		ResourceID:     errorID,
 		Action:         base.ActionTypeRead,
 	})
 	if err != nil {
@@ -83,7 +83,7 @@ func (h *SystemHandler) GetSysError(ctx *gin.Context) {
 	}
 
 	req := syserrordto.NewGetSysErrorReq()
-	req.ID = id
+	req.ID = errorID
 	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
 		h.RenderError(ctx, err)
 		return
@@ -104,13 +104,13 @@ func (h *SystemHandler) GetSysError(ctx *gin.Context) {
 // @Tags    system_errors
 // @Produce json
 // @Id      deleteSysError
-// @Param   id path string true "error ID"
+// @Param   errorID path string true "error ID"
 // @Success 200 {object} syserrordto.DeleteSysErrorResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /system/errors/{id} [delete]
+// @Router  /system/errors/{errorID} [delete]
 func (h *SystemHandler) DeleteSysError(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
+	errorID, err := h.ParseStringParam(ctx, "errorID")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -119,7 +119,7 @@ func (h *SystemHandler) DeleteSysError(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceModule: base.ResourceModuleSystem,
 		ResourceType:   base.ResourceTypeSysError,
-		ResourceID:     id,
+		ResourceID:     errorID,
 		Action:         base.ActionTypeDelete,
 	})
 	if err != nil {
@@ -128,7 +128,7 @@ func (h *SystemHandler) DeleteSysError(ctx *gin.Context) {
 	}
 
 	req := syserrordto.NewGetSysErrorReq()
-	req.ID = id
+	req.ID = errorID
 	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil { // to make sure Validate() to be called
 		h.RenderError(ctx, err)
 		return

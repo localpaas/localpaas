@@ -34,11 +34,11 @@ func (h *ProjectHandler) ListAWS(ctx *gin.Context) {
 // @Produce json
 // @Id      getProjectAWS
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} awsdto.GetAWSResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/aws/{id} [get]
+// @Router  /projects/{projectID}/providers/aws/{itemID} [get]
 func (h *ProjectHandler) GetAWS(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeAWS, base.SettingScopeProject)
 }
@@ -66,12 +66,12 @@ func (h *ProjectHandler) CreateAWS(ctx *gin.Context) {
 // @Produce json
 // @Id      updateProjectAWS
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body awsdto.UpdateAWSReq true "request data"
 // @Success 200 {object} awsdto.UpdateAWSResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/aws/{id} [put]
+// @Router  /projects/{projectID}/providers/aws/{itemID} [put]
 func (h *ProjectHandler) UpdateAWS(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeAWS, base.SettingScopeProject)
 }
@@ -83,12 +83,12 @@ func (h *ProjectHandler) UpdateAWS(ctx *gin.Context) {
 // @Produce json
 // @Id      updateProjectAWSMeta
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body awsdto.UpdateAWSMetaReq true "request data"
 // @Success 200 {object} awsdto.UpdateAWSMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/aws/{id}/meta [put]
+// @Router  /projects/{projectID}/providers/aws/{itemID}/meta [put]
 func (h *ProjectHandler) UpdateAWSMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeAWS, base.SettingScopeProject)
 }
@@ -100,11 +100,11 @@ func (h *ProjectHandler) UpdateAWSMeta(ctx *gin.Context) {
 // @Produce json
 // @Id      deleteProjectAWS
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} awsdto.DeleteAWSResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/aws/{id} [delete]
+// @Router  /projects/{projectID}/providers/aws/{itemID} [delete]
 func (h *ProjectHandler) DeleteAWS(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeAWS, base.SettingScopeProject)
 }

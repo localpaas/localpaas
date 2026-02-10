@@ -33,8 +33,8 @@ func (s *HTTPServer) registerAppRoutes(projectGroup *gin.RouterGroup) *gin.Route
 	// Secrets
 	appGroup.GET("/:appID/secrets", s.handlerRegistry.appHandler.ListAppSecret)
 	appGroup.POST("/:appID/secrets", s.handlerRegistry.appHandler.CreateAppSecret)
-	appGroup.PUT("/:appID/secrets/:id", s.handlerRegistry.appHandler.UpdateAppSecret)
-	appGroup.DELETE("/:appID/secrets/:id", s.handlerRegistry.appHandler.DeleteAppSecret)
+	appGroup.PUT("/:appID/secrets/:itemID", s.handlerRegistry.appHandler.UpdateAppSecret)
+	appGroup.DELETE("/:appID/secrets/:itemID", s.handlerRegistry.appHandler.DeleteAppSecret)
 	// Domain SSL
 	appGroup.POST("/:appID/ssl/obtain", s.handlerRegistry.appHandler.ObtainDomainSSL)
 	// Logs
@@ -42,23 +42,34 @@ func (s *HTTPServer) registerAppRoutes(projectGroup *gin.RouterGroup) *gin.Route
 		s.handlerRegistry.appHandler.GetAppRuntimeLogs(ctx, s.websocket)
 	})
 
-	// Cron jobs
-	appGroup.GET("/:appID/cron-jobs", s.handlerRegistry.appHandler.ListAppCronJob)
-	appGroup.GET("/:appID/cron-jobs/:id", s.handlerRegistry.appHandler.GetAppCronJob)
-	appGroup.POST("/:appID/cron-jobs", s.handlerRegistry.appHandler.CreateAppCronJob)
-	appGroup.PUT("/:appID/cron-jobs/:id", s.handlerRegistry.appHandler.UpdateAppCronJob)
-	appGroup.PUT("/:appID/cron-jobs/:id/meta", s.handlerRegistry.appHandler.UpdateAppCronJobMeta)
-	appGroup.DELETE("/:appID/cron-jobs/:id", s.handlerRegistry.appHandler.DeleteAppCronJob)
+	cronJobGroup := appGroup.Group("/:appID/cron-jobs")
+	{ // Cron job group
+		cronJobGroup.GET("", s.handlerRegistry.appHandler.ListAppCronJob)
+		cronJobGroup.GET("/:itemID", s.handlerRegistry.appHandler.GetAppCronJob)
+		cronJobGroup.POST("", s.handlerRegistry.appHandler.CreateAppCronJob)
+		cronJobGroup.PUT("/:itemID", s.handlerRegistry.appHandler.UpdateAppCronJob)
+		cronJobGroup.PUT("/:itemID/meta", s.handlerRegistry.appHandler.UpdateAppCronJobMeta)
+		cronJobGroup.DELETE("/:itemID", s.handlerRegistry.appHandler.DeleteAppCronJob)
+		// Execute
+		cronJobGroup.POST("/:itemID/exec", s.handlerRegistry.appHandler.ExecuteAppCronJob)
+
+		// Cron job task group
+		cronJobGroup.GET("/:itemID/tasks", s.handlerRegistry.appHandler.ListAppCronJobTask)
+		cronJobGroup.GET("/:itemID/tasks/:taskID", s.handlerRegistry.appHandler.GetAppCronJobTask)
+		cronJobGroup.GET("/:itemID/tasks/:taskID/logs", func(ctx *gin.Context) {
+			s.handlerRegistry.appHandler.GetAppCronJobTaskLogs(ctx, s.websocket)
+		})
+	}
 
 	appDeploymentGroup := appGroup.Group("/:appID/deployments")
 	{ // app deployment group
 		// Info
-		appDeploymentGroup.GET("/:id", s.handlerRegistry.appHandler.GetAppDeployment)
+		appDeploymentGroup.GET("/:deploymentID", s.handlerRegistry.appHandler.GetAppDeployment)
 		appDeploymentGroup.GET("", s.handlerRegistry.appHandler.ListAppDeployment)
 		// Cancel
-		appDeploymentGroup.POST("/:id/cancel", s.handlerRegistry.appHandler.CancelAppDeployment)
+		appDeploymentGroup.POST("/:deploymentID/cancel", s.handlerRegistry.appHandler.CancelAppDeployment)
 		// Logs
-		appDeploymentGroup.GET("/:id/logs", func(ctx *gin.Context) {
+		appDeploymentGroup.GET("/:deploymentID/logs", func(ctx *gin.Context) {
 			s.handlerRegistry.appHandler.GetAppDeploymentLogs(ctx, s.websocket)
 		})
 	}

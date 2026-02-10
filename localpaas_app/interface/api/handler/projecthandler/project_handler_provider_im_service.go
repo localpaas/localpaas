@@ -34,11 +34,11 @@ func (h *ProjectHandler) ListIMService(ctx *gin.Context) {
 // @Produce json
 // @Id      getProjectIMService
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} imservicedto.GetIMServiceResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/im-services/{id} [get]
+// @Router  /projects/{projectID}/providers/im-services/{itemID} [get]
 func (h *ProjectHandler) GetIMService(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeIMService, base.SettingScopeProject)
 }
@@ -66,12 +66,12 @@ func (h *ProjectHandler) CreateIMService(ctx *gin.Context) {
 // @Produce json
 // @Id      updateProjectIMService
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body imservicedto.UpdateIMServiceReq true "request data"
 // @Success 200 {object} imservicedto.UpdateIMServiceResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/im-services/{id} [put]
+// @Router  /projects/{projectID}/providers/im-services/{itemID} [put]
 func (h *ProjectHandler) UpdateIMService(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeIMService, base.SettingScopeProject)
 }
@@ -83,12 +83,12 @@ func (h *ProjectHandler) UpdateIMService(ctx *gin.Context) {
 // @Produce json
 // @Id      updateProjectIMServiceMeta
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body imservicedto.UpdateIMServiceMetaReq true "request data"
 // @Success 200 {object} imservicedto.UpdateIMServiceMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/im-services/{id}/meta [put]
+// @Router  /projects/{projectID}/providers/im-services/{itemID}/meta [put]
 func (h *ProjectHandler) UpdateIMServiceMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeIMService, base.SettingScopeProject)
 }
@@ -100,11 +100,11 @@ func (h *ProjectHandler) UpdateIMServiceMeta(ctx *gin.Context) {
 // @Produce json
 // @Id      deleteProjectIMService
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} imservicedto.DeleteIMServiceResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/im-services/{id} [delete]
+// @Router  /projects/{projectID}/providers/im-services/{itemID} [delete]
 func (h *ProjectHandler) DeleteIMService(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeIMService, base.SettingScopeProject)
 }

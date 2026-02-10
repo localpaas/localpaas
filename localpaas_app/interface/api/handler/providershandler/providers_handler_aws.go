@@ -32,11 +32,11 @@ func (h *ProvidersHandler) ListAWS(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      getProviderAWS
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} awsdto.GetAWSResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/aws/{id} [get]
+// @Router  /providers/aws/{itemID} [get]
 func (h *ProvidersHandler) GetAWS(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeAWS, base.SettingScopeGlobal)
 }
@@ -62,12 +62,12 @@ func (h *ProvidersHandler) CreateAWS(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      updateProviderAWS
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body awsdto.UpdateAWSReq true "request data"
 // @Success 200 {object} awsdto.UpdateAWSResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/aws/{id} [put]
+// @Router  /providers/aws/{itemID} [put]
 func (h *ProvidersHandler) UpdateAWS(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeAWS, base.SettingScopeGlobal)
 }
@@ -78,12 +78,12 @@ func (h *ProvidersHandler) UpdateAWS(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      updateProviderAWSMeta
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body awsdto.UpdateAWSMetaReq true "request data"
 // @Success 200 {object} awsdto.UpdateAWSMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/aws/{id}/meta [put]
+// @Router  /providers/aws/{itemID}/meta [put]
 func (h *ProvidersHandler) UpdateAWSMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeAWS, base.SettingScopeGlobal)
 }
@@ -94,11 +94,11 @@ func (h *ProvidersHandler) UpdateAWSMeta(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      deleteProviderAWS
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} awsdto.DeleteAWSResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/aws/{id} [delete]
+// @Router  /providers/aws/{itemID} [delete]
 func (h *ProvidersHandler) DeleteAWS(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeAWS, base.SettingScopeGlobal)
 }

@@ -47,12 +47,12 @@ func (h *SettingHandler) CreateSecret(ctx *gin.Context) {
 // @Tags    settings
 // @Produce json
 // @Id      updateSettingSecret
-// @Param   id path string true "setting ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body secretdto.UpdateSecretReq true "request data"
 // @Success 201 {object} secretdto.UpdateSecretResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /settings/secrets/{id} [put]
+// @Router  /settings/secrets/{itemID} [put]
 func (h *SettingHandler) UpdateSecret(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeSecret, base.SettingScopeGlobal)
 }
@@ -63,12 +63,12 @@ func (h *SettingHandler) UpdateSecret(ctx *gin.Context) {
 // @Tags    settings
 // @Produce json
 // @Id      updateSettingSecretMeta
-// @Param   id path string true "setting ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body secretdto.UpdateSecretMetaReq true "request data"
 // @Success 201 {object} secretdto.UpdateSecretMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /settings/secrets/{id}/meta [put]
+// @Router  /settings/secrets/{itemID}/meta [put]
 func (h *SettingHandler) UpdateSecretMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeSecret, base.SettingScopeGlobal)
 }
@@ -79,11 +79,11 @@ func (h *SettingHandler) UpdateSecretMeta(ctx *gin.Context) {
 // @Tags    settings
 // @Produce json
 // @Id      deleteSettingSecret
-// @Param   id path string true "setting ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} secretdto.DeleteSecretResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /settings/secrets/{id} [delete]
+// @Router  /settings/secrets/{itemID} [delete]
 func (h *SettingHandler) DeleteSecret(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeSecret, base.SettingScopeGlobal)
 }

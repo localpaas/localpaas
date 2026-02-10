@@ -32,11 +32,11 @@ func (h *ProvidersHandler) ListBasicAuth(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      getProviderBasicAuth
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} basicauthdto.GetBasicAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/basic-auth/{id} [get]
+// @Router  /providers/basic-auth/{itemID} [get]
 func (h *ProvidersHandler) GetBasicAuth(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeBasicAuth, base.SettingScopeGlobal)
 }
@@ -62,12 +62,12 @@ func (h *ProvidersHandler) CreateBasicAuth(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      updateProviderBasicAuth
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body basicauthdto.UpdateBasicAuthReq true "request data"
 // @Success 200 {object} basicauthdto.UpdateBasicAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/basic-auth/{id} [put]
+// @Router  /providers/basic-auth/{itemID} [put]
 func (h *ProvidersHandler) UpdateBasicAuth(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeBasicAuth, base.SettingScopeGlobal)
 }
@@ -78,12 +78,12 @@ func (h *ProvidersHandler) UpdateBasicAuth(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      updateProviderBasicAuthMeta
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body basicauthdto.UpdateBasicAuthMetaReq true "request data"
 // @Success 200 {object} basicauthdto.UpdateBasicAuthMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/basic-auth/{id}/meta [put]
+// @Router  /providers/basic-auth/{itemID}/meta [put]
 func (h *ProvidersHandler) UpdateBasicAuthMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeBasicAuth, base.SettingScopeGlobal)
 }
@@ -94,11 +94,11 @@ func (h *ProvidersHandler) UpdateBasicAuthMeta(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      deleteProviderBasicAuth
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} basicauthdto.DeleteBasicAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/basic-auth/{id} [delete]
+// @Router  /providers/basic-auth/{itemID} [delete]
 func (h *ProvidersHandler) DeleteBasicAuth(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeBasicAuth, base.SettingScopeGlobal)
 }

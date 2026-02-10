@@ -10,16 +10,16 @@ func (s *HTTPServer) registerSystemRoutes(apiGroup *gin.RouterGroup) *gin.Router
 	{ // task group
 		taskGroup := systemGroup.Group("/tasks")
 		taskGroup.GET("", s.handlerRegistry.systemHandler.ListTask)
-		taskGroup.GET("/:id", s.handlerRegistry.systemHandler.GetTask)
-		taskGroup.PUT("/:id/meta", s.handlerRegistry.systemHandler.UpdateTaskMeta)
-		taskGroup.POST("/:id/cancel", s.handlerRegistry.systemHandler.CancelTask)
+		taskGroup.GET("/:taskID", s.handlerRegistry.systemHandler.GetTask)
+		taskGroup.PUT("/:taskID/meta", s.handlerRegistry.systemHandler.UpdateTaskMeta)
+		taskGroup.POST("/:taskID/cancel", s.handlerRegistry.systemHandler.CancelTask)
 	}
 
 	{ // error group
 		errorGroup := systemGroup.Group("/errors")
 		errorGroup.GET("", s.handlerRegistry.systemHandler.ListSysError)
-		errorGroup.GET("/:id", s.handlerRegistry.systemHandler.GetSysError)
-		errorGroup.DELETE("/:id", s.handlerRegistry.systemHandler.DeleteSysError)
+		errorGroup.GET("/:errorID", s.handlerRegistry.systemHandler.GetSysError)
+		errorGroup.DELETE("/:errorID", s.handlerRegistry.systemHandler.DeleteSysError)
 	}
 
 	{ // nginx group

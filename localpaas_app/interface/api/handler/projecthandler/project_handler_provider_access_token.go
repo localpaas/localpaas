@@ -34,11 +34,11 @@ func (h *ProjectHandler) ListAccessToken(ctx *gin.Context) {
 // @Produce json
 // @Id      getProjectAccessToken
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} accesstokendto.GetAccessTokenResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/access-tokens/{id} [get]
+// @Router  /projects/{projectID}/providers/access-tokens/{itemID} [get]
 func (h *ProjectHandler) GetAccessToken(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeAccessToken, base.SettingScopeProject)
 }
@@ -66,12 +66,12 @@ func (h *ProjectHandler) CreateAccessToken(ctx *gin.Context) {
 // @Produce json
 // @Id      updateProjectAccessToken
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body accesstokendto.UpdateAccessTokenReq true "request data"
 // @Success 200 {object} accesstokendto.UpdateAccessTokenResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/access-tokens/{id} [put]
+// @Router  /projects/{projectID}/providers/access-tokens/{itemID} [put]
 func (h *ProjectHandler) UpdateAccessToken(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeAccessToken, base.SettingScopeProject)
 }
@@ -83,12 +83,12 @@ func (h *ProjectHandler) UpdateAccessToken(ctx *gin.Context) {
 // @Produce json
 // @Id      updateProjectAccessTokenMeta
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body accesstokendto.UpdateAccessTokenMetaReq true "request data"
 // @Success 200 {object} accesstokendto.UpdateAccessTokenMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/access-tokens/{id}/meta [put]
+// @Router  /projects/{projectID}/providers/access-tokens/{itemID}/meta [put]
 func (h *ProjectHandler) UpdateAccessTokenMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeAccessToken, base.SettingScopeProject)
 }
@@ -100,11 +100,11 @@ func (h *ProjectHandler) UpdateAccessTokenMeta(ctx *gin.Context) {
 // @Produce json
 // @Id      deleteProjectAccessToken
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} accesstokendto.DeleteAccessTokenResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/access-tokens/{id} [delete]
+// @Router  /projects/{projectID}/providers/access-tokens/{itemID} [delete]
 func (h *ProjectHandler) DeleteAccessToken(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeAccessToken, base.SettingScopeProject)
 }

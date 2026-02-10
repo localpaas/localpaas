@@ -35,11 +35,11 @@ func (h *ProvidersHandler) ListRegistryAuth(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      getProviderRegistryAuth
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} registryauthdto.GetRegistryAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/registry-auth/{id} [get]
+// @Router  /providers/registry-auth/{itemID} [get]
 func (h *ProvidersHandler) GetRegistryAuth(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeRegistryAuth, base.SettingScopeGlobal)
 }
@@ -65,12 +65,12 @@ func (h *ProvidersHandler) CreateRegistryAuth(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      updateProviderRegistryAuth
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body registryauthdto.UpdateRegistryAuthReq true "request data"
 // @Success 200 {object} registryauthdto.UpdateRegistryAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/registry-auth/{id} [put]
+// @Router  /providers/registry-auth/{itemID} [put]
 func (h *ProvidersHandler) UpdateRegistryAuth(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeRegistryAuth, base.SettingScopeGlobal)
 }
@@ -81,12 +81,12 @@ func (h *ProvidersHandler) UpdateRegistryAuth(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      updateProviderRegistryAuthMeta
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body registryauthdto.UpdateRegistryAuthMetaReq true "request data"
 // @Success 200 {object} registryauthdto.UpdateRegistryAuthMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/registry-auth/{id}/meta [put]
+// @Router  /providers/registry-auth/{itemID}/meta [put]
 func (h *ProvidersHandler) UpdateRegistryAuthMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeRegistryAuth, base.SettingScopeGlobal)
 }
@@ -97,11 +97,11 @@ func (h *ProvidersHandler) UpdateRegistryAuthMeta(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      deleteProviderRegistryAuth
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} registryauthdto.DeleteRegistryAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/registry-auth/{id} [delete]
+// @Router  /providers/registry-auth/{itemID} [delete]
 func (h *ProvidersHandler) DeleteRegistryAuth(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeRegistryAuth, base.SettingScopeGlobal)
 }

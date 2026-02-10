@@ -34,11 +34,11 @@ func (h *ProjectHandler) ListBasicAuth(ctx *gin.Context) {
 // @Produce json
 // @Id      getProjectBasicAuth
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} basicauthdto.GetBasicAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/basic-auth/{id} [get]
+// @Router  /projects/{projectID}/providers/basic-auth/{itemID} [get]
 func (h *ProjectHandler) GetBasicAuth(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeBasicAuth, base.SettingScopeProject)
 }
@@ -66,12 +66,12 @@ func (h *ProjectHandler) CreateBasicAuth(ctx *gin.Context) {
 // @Produce json
 // @Id      updateProjectBasicAuth
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body basicauthdto.UpdateBasicAuthReq true "request data"
 // @Success 200 {object} basicauthdto.UpdateBasicAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/basic-auth/{id} [put]
+// @Router  /projects/{projectID}/providers/basic-auth/{itemID} [put]
 func (h *ProjectHandler) UpdateBasicAuth(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeBasicAuth, base.SettingScopeProject)
 }
@@ -83,12 +83,12 @@ func (h *ProjectHandler) UpdateBasicAuth(ctx *gin.Context) {
 // @Produce json
 // @Id      updateProjectBasicAuthMeta
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body basicauthdto.UpdateBasicAuthMetaReq true "request data"
 // @Success 200 {object} basicauthdto.UpdateBasicAuthMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/basic-auth/{id}/meta [put]
+// @Router  /projects/{projectID}/providers/basic-auth/{itemID}/meta [put]
 func (h *ProjectHandler) UpdateBasicAuthMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeBasicAuth, base.SettingScopeProject)
 }
@@ -100,11 +100,11 @@ func (h *ProjectHandler) UpdateBasicAuthMeta(ctx *gin.Context) {
 // @Produce json
 // @Id      deleteProjectBasicAuth
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} basicauthdto.DeleteBasicAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/basic-auth/{id} [delete]
+// @Router  /projects/{projectID}/providers/basic-auth/{itemID} [delete]
 func (h *ProjectHandler) DeleteBasicAuth(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeBasicAuth, base.SettingScopeProject)
 }

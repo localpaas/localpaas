@@ -34,11 +34,11 @@ func (h *ProjectHandler) ListSSL(ctx *gin.Context) {
 // @Produce json
 // @Id      getProjectSSL
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} ssldto.GetSSLResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/ssls/{id} [get]
+// @Router  /projects/{projectID}/providers/ssls/{itemID} [get]
 func (h *ProjectHandler) GetSSL(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeSSL, base.SettingScopeProject)
 }
@@ -66,12 +66,12 @@ func (h *ProjectHandler) CreateSSL(ctx *gin.Context) {
 // @Produce json
 // @Id      updateProjectSSL
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body ssldto.UpdateSSLReq true "request data"
 // @Success 200 {object} ssldto.UpdateSSLResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/ssls/{id} [put]
+// @Router  /projects/{projectID}/providers/ssls/{itemID} [put]
 func (h *ProjectHandler) UpdateSSL(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeSSL, base.SettingScopeProject)
 }
@@ -83,12 +83,12 @@ func (h *ProjectHandler) UpdateSSL(ctx *gin.Context) {
 // @Produce json
 // @Id      updateProjectSSLMeta
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body ssldto.UpdateSSLMetaReq true "request data"
 // @Success 200 {object} ssldto.UpdateSSLMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/ssls/{id}/meta [put]
+// @Router  /projects/{projectID}/providers/ssls/{itemID}/meta [put]
 func (h *ProjectHandler) UpdateSSLMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeSSL, base.SettingScopeProject)
 }
@@ -100,11 +100,11 @@ func (h *ProjectHandler) UpdateSSLMeta(ctx *gin.Context) {
 // @Produce json
 // @Id      deleteProjectSSL
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} ssldto.DeleteSSLResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/ssls/{id} [delete]
+// @Router  /projects/{projectID}/providers/ssls/{itemID} [delete]
 func (h *ProjectHandler) DeleteSSL(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeSSL, base.SettingScopeProject)
 }

@@ -34,11 +34,11 @@ func (h *ProjectHandler) ListRepoWebhook(ctx *gin.Context) {
 // @Produce json
 // @Id      getProjectRepoWebhook
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} repowebhookdto.GetRepoWebhookResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/repo-webhooks/{id} [get]
+// @Router  /projects/{projectID}/providers/repo-webhooks/{itemID} [get]
 func (h *ProjectHandler) GetRepoWebhook(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeRepoWebhook, base.SettingScopeProject)
 }
@@ -66,12 +66,12 @@ func (h *ProjectHandler) CreateRepoWebhook(ctx *gin.Context) {
 // @Produce json
 // @Id      updateProjectRepoWebhook
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body repowebhookdto.UpdateRepoWebhookReq true "request data"
 // @Success 200 {object} repowebhookdto.UpdateRepoWebhookResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/repo-webhooks/{id} [put]
+// @Router  /projects/{projectID}/providers/repo-webhooks/{itemID} [put]
 func (h *ProjectHandler) UpdateRepoWebhook(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeRepoWebhook, base.SettingScopeProject)
 }
@@ -83,12 +83,12 @@ func (h *ProjectHandler) UpdateRepoWebhook(ctx *gin.Context) {
 // @Produce json
 // @Id      updateProjectRepoWebhookMeta
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body repowebhookdto.UpdateRepoWebhookMetaReq true "request data"
 // @Success 200 {object} repowebhookdto.UpdateRepoWebhookMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/repo-webhooks/{id}/meta [put]
+// @Router  /projects/{projectID}/providers/repo-webhooks/{itemID}/meta [put]
 func (h *ProjectHandler) UpdateRepoWebhookMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeRepoWebhook, base.SettingScopeProject)
 }
@@ -100,11 +100,11 @@ func (h *ProjectHandler) UpdateRepoWebhookMeta(ctx *gin.Context) {
 // @Produce json
 // @Id      deleteProjectRepoWebhook
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} repowebhookdto.DeleteRepoWebhookResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/repo-webhooks/{id} [delete]
+// @Router  /projects/{projectID}/providers/repo-webhooks/{itemID} [delete]
 func (h *ProjectHandler) DeleteRepoWebhook(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeRepoWebhook, base.SettingScopeProject)
 }

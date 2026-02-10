@@ -35,11 +35,11 @@ func (h *ProvidersHandler) ListAccessToken(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      getProviderAccessToken
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} accesstokendto.GetAccessTokenResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/access-tokens/{id} [get]
+// @Router  /providers/access-tokens/{itemID} [get]
 func (h *ProvidersHandler) GetAccessToken(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeAccessToken, base.SettingScopeGlobal)
 }
@@ -65,12 +65,12 @@ func (h *ProvidersHandler) CreateAccessToken(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      updateProviderAccessToken
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body accesstokendto.UpdateAccessTokenReq true "request data"
 // @Success 200 {object} accesstokendto.UpdateAccessTokenResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/access-tokens/{id} [put]
+// @Router  /providers/access-tokens/{itemID} [put]
 func (h *ProvidersHandler) UpdateAccessToken(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeAccessToken, base.SettingScopeGlobal)
 }
@@ -81,12 +81,12 @@ func (h *ProvidersHandler) UpdateAccessToken(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      updateProviderAccessTokenMeta
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body accesstokendto.UpdateAccessTokenMetaReq true "request data"
 // @Success 200 {object} accesstokendto.UpdateAccessTokenMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/access-tokens/{id}/meta [put]
+// @Router  /providers/access-tokens/{itemID}/meta [put]
 func (h *ProvidersHandler) UpdateAccessTokenMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeAccessToken, base.SettingScopeGlobal)
 }
@@ -97,11 +97,11 @@ func (h *ProvidersHandler) UpdateAccessTokenMeta(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      deleteProviderAccessToken
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} accesstokendto.DeleteAccessTokenResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/access-tokens/{id} [delete]
+// @Router  /providers/access-tokens/{itemID} [delete]
 func (h *ProvidersHandler) DeleteAccessToken(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeAccessToken, base.SettingScopeGlobal)
 }

@@ -34,11 +34,11 @@ func (h *ProjectHandler) ListRegistryAuth(ctx *gin.Context) {
 // @Produce json
 // @Id      getProjectRegistryAuth
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} registryauthdto.GetRegistryAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/registry-auth/{id} [get]
+// @Router  /projects/{projectID}/providers/registry-auth/{itemID} [get]
 func (h *ProjectHandler) GetRegistryAuth(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeRegistryAuth, base.SettingScopeProject)
 }
@@ -66,12 +66,12 @@ func (h *ProjectHandler) CreateRegistryAuth(ctx *gin.Context) {
 // @Produce json
 // @Id      updateProjectRegistryAuth
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body registryauthdto.UpdateRegistryAuthReq true "request data"
 // @Success 200 {object} registryauthdto.UpdateRegistryAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/registry-auth/{id} [put]
+// @Router  /projects/{projectID}/providers/registry-auth/{itemID} [put]
 func (h *ProjectHandler) UpdateRegistryAuth(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeRegistryAuth, base.SettingScopeProject)
 }
@@ -83,12 +83,12 @@ func (h *ProjectHandler) UpdateRegistryAuth(ctx *gin.Context) {
 // @Produce json
 // @Id      updateProjectRegistryAuthMeta
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body registryauthdto.UpdateRegistryAuthMetaReq true "request data"
 // @Success 200 {object} registryauthdto.UpdateRegistryAuthMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/registry-auth/{id}/meta [put]
+// @Router  /projects/{projectID}/providers/registry-auth/{itemID}/meta [put]
 func (h *ProjectHandler) UpdateRegistryAuthMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeRegistryAuth, base.SettingScopeProject)
 }
@@ -100,11 +100,11 @@ func (h *ProjectHandler) UpdateRegistryAuthMeta(ctx *gin.Context) {
 // @Produce json
 // @Id      deleteProjectRegistryAuth
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} registryauthdto.DeleteRegistryAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/registry-auth/{id} [delete]
+// @Router  /projects/{projectID}/providers/registry-auth/{itemID} [delete]
 func (h *ProjectHandler) DeleteRegistryAuth(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeRegistryAuth, base.SettingScopeProject)
 }

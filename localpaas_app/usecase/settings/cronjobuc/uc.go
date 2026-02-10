@@ -3,7 +3,9 @@ package cronjobuc
 import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
+	"github.com/localpaas/localpaas/localpaas_app/service/cronjobservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/taskservice"
 	"github.com/localpaas/localpaas/localpaas_app/taskqueue"
 )
 
@@ -14,6 +16,8 @@ type CronJobUC struct {
 	appRepo                  repository.AppRepo
 	taskRepo                 repository.TaskRepo
 	settingService           settingservice.SettingService
+	taskService              taskservice.TaskService
+	cronJobService           cronjobservice.CronJobService
 	taskQueue                taskqueue.TaskQueue
 }
 
@@ -24,6 +28,8 @@ func NewCronJobUC(
 	appRepo repository.AppRepo,
 	taskRepo repository.TaskRepo,
 	settingService settingservice.SettingService,
+	taskService taskservice.TaskService,
+	cronJobService cronjobservice.CronJobService,
 	taskQueue taskqueue.TaskQueue,
 ) *CronJobUC {
 	return &CronJobUC{
@@ -33,6 +39,8 @@ func NewCronJobUC(
 		appRepo:                  appRepo,
 		taskRepo:                 taskRepo,
 		settingService:           settingService,
+		taskService:              taskService,
+		cronJobService:           cronJobService,
 		taskQueue:                taskQueue,
 	}
 }

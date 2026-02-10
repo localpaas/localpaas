@@ -42,7 +42,6 @@ func (uc *AppDeploymentUC) GetDeploymentLogs(
 		Since:                   req.Since,
 		Duration:                req.Duration,
 		Tail:                    req.Tail,
-		Timestamps:              req.Timestamps,
 		LogBatchThresholdPeriod: deploymentLogBatchThresholdPeriod,
 		LogBatchMaxFrame:        deploymentLogBatchMaxFrame,
 		LogSessionTimeout:       deploymentLogSessionTimeout,

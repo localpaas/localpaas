@@ -34,11 +34,11 @@ func (h *ProjectHandler) ListAWSS3(ctx *gin.Context) {
 // @Produce json
 // @Id      getProjectAWSS3
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} awss3dto.GetAWSS3Resp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/aws-s3/{id} [get]
+// @Router  /projects/{projectID}/providers/aws-s3/{itemID} [get]
 func (h *ProjectHandler) GetAWSS3(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeAWSS3, base.SettingScopeProject)
 }
@@ -66,12 +66,12 @@ func (h *ProjectHandler) CreateAWSS3(ctx *gin.Context) {
 // @Produce json
 // @Id      updateProjectAWSS3
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body awss3dto.UpdateAWSS3Req true "request data"
 // @Success 200 {object} awss3dto.UpdateAWSS3Resp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/aws-s3/{id} [put]
+// @Router  /projects/{projectID}/providers/aws-s3/{itemID} [put]
 func (h *ProjectHandler) UpdateAWSS3(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeAWSS3, base.SettingScopeProject)
 }
@@ -83,12 +83,12 @@ func (h *ProjectHandler) UpdateAWSS3(ctx *gin.Context) {
 // @Produce json
 // @Id      updateProjectAWSS3Meta
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body awss3dto.UpdateAWSS3MetaReq true "request data"
 // @Success 200 {object} awss3dto.UpdateAWSS3MetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/aws-s3/{id}/meta [put]
+// @Router  /projects/{projectID}/providers/aws-s3/{itemID}/meta [put]
 func (h *ProjectHandler) UpdateAWSS3Meta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeAWSS3, base.SettingScopeProject)
 }
@@ -100,11 +100,11 @@ func (h *ProjectHandler) UpdateAWSS3Meta(ctx *gin.Context) {
 // @Produce json
 // @Id      deleteProjectAWSS3
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} awss3dto.DeleteAWSS3Resp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/aws-s3/{id} [delete]
+// @Router  /projects/{projectID}/providers/aws-s3/{itemID} [delete]
 func (h *ProjectHandler) DeleteAWSS3(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeAWSS3, base.SettingScopeProject)
 }

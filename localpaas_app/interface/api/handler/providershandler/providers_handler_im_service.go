@@ -35,11 +35,11 @@ func (h *ProvidersHandler) ListIMService(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      getProviderIMService
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} imservicedto.GetIMServiceResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/im-services/{id} [get]
+// @Router  /providers/im-services/{itemID} [get]
 func (h *ProvidersHandler) GetIMService(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeIMService, base.SettingScopeGlobal)
 }
@@ -65,12 +65,12 @@ func (h *ProvidersHandler) CreateIMService(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      updateProviderIMService
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body imservicedto.UpdateIMServiceReq true "request data"
 // @Success 200 {object} imservicedto.UpdateIMServiceResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/im-services/{id} [put]
+// @Router  /providers/im-services/{itemID} [put]
 func (h *ProvidersHandler) UpdateIMService(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeIMService, base.SettingScopeGlobal)
 }
@@ -81,12 +81,12 @@ func (h *ProvidersHandler) UpdateIMService(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      updateProviderIMServiceMeta
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body imservicedto.UpdateIMServiceMetaReq true "request data"
 // @Success 200 {object} imservicedto.UpdateIMServiceMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/im-services/{id}/meta [put]
+// @Router  /providers/im-services/{itemID}/meta [put]
 func (h *ProvidersHandler) UpdateIMServiceMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeIMService, base.SettingScopeGlobal)
 }
@@ -97,11 +97,11 @@ func (h *ProvidersHandler) UpdateIMServiceMeta(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      deleteProviderIMService
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} imservicedto.DeleteIMServiceResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/im-services/{id} [delete]
+// @Router  /providers/im-services/{itemID} [delete]
 func (h *ProvidersHandler) DeleteIMService(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeIMService, base.SettingScopeGlobal)
 }

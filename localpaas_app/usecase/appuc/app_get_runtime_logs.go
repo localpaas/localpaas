@@ -40,8 +40,9 @@ func (uc *AppUC) GetAppRuntimeLogs(
 	}
 
 	var since, until, tail string
-	if req.Since.IsZero() && req.Duration > 0 {
+	if req.Duration > 0 && req.Since.IsZero() {
 		req.Since = timeutil.NowUTC().Add(-req.Duration)
+		req.Duration = 0
 	}
 	if !req.Since.IsZero() {
 		since = fmt.Sprintf("%d", req.Since.Unix())

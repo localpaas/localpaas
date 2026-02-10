@@ -49,12 +49,12 @@ func (h *AppHandler) CreateAppSecret(ctx *gin.Context) {
 // @Id      updateAppSecret
 // @Param   projectID path string true "project ID"
 // @Param   appID path string true "app ID"
-// @Param   id path string true "setting ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body secretdto.UpdateSecretReq true "request data"
 // @Success 200 {object} secretdto.UpdateSecretResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/apps/{appID}/secrets/{id} [put]
+// @Router  /projects/{projectID}/apps/{appID}/secrets/{itemID} [put]
 func (h *AppHandler) UpdateAppSecret(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeSecret, base.SettingScopeApp)
 }
@@ -67,11 +67,11 @@ func (h *AppHandler) UpdateAppSecret(ctx *gin.Context) {
 // @Id      deleteAppSecret
 // @Param   projectID path string true "project ID"
 // @Param   appID path string true "app ID"
-// @Param   id path string true "secret ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} secretdto.DeleteSecretResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/apps/{appID}/secrets/{id} [delete]
+// @Router  /projects/{projectID}/apps/{appID}/secrets/{itemID} [delete]
 func (h *AppHandler) DeleteAppSecret(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeSecret, base.SettingScopeApp)
 }

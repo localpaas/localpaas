@@ -32,11 +32,11 @@ func (h *ProvidersHandler) ListOAuth(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      getProviderOAuth
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} oauthdto.GetOAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/oauth/{id} [get]
+// @Router  /providers/oauth/{itemID} [get]
 func (h *ProvidersHandler) GetOAuth(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeOAuth, base.SettingScopeGlobal)
 }
@@ -62,12 +62,12 @@ func (h *ProvidersHandler) CreateOAuth(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      updateProviderOAuth
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body oauthdto.UpdateOAuthReq true "request data"
 // @Success 200 {object} oauthdto.UpdateOAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/oauth/{id} [put]
+// @Router  /providers/oauth/{itemID} [put]
 func (h *ProvidersHandler) UpdateOAuth(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeOAuth, base.SettingScopeGlobal)
 }
@@ -78,12 +78,12 @@ func (h *ProvidersHandler) UpdateOAuth(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      updateProviderOAuthMeta
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body oauthdto.UpdateOAuthMetaReq true "request data"
 // @Success 200 {object} oauthdto.UpdateOAuthMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/oauth/{id}/meta [put]
+// @Router  /providers/oauth/{itemID}/meta [put]
 func (h *ProvidersHandler) UpdateOAuthMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeOAuth, base.SettingScopeGlobal)
 }
@@ -94,11 +94,11 @@ func (h *ProvidersHandler) UpdateOAuthMeta(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      deleteProviderOAuth
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} oauthdto.DeleteOAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/oauth/{id} [delete]
+// @Router  /providers/oauth/{itemID} [delete]
 func (h *ProvidersHandler) DeleteOAuth(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeOAuth, base.SettingScopeGlobal)
 }

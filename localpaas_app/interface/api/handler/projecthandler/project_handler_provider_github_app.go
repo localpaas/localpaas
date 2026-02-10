@@ -34,11 +34,11 @@ func (h *ProjectHandler) ListGithubApp(ctx *gin.Context) {
 // @Produce json
 // @Id      getProjectGithubApp
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} githubappdto.GetGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/github-apps/{id} [get]
+// @Router  /projects/{projectID}/providers/github-apps/{itemID} [get]
 func (h *ProjectHandler) GetGithubApp(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeGithubApp, base.SettingScopeProject)
 }
@@ -66,12 +66,12 @@ func (h *ProjectHandler) CreateGithubApp(ctx *gin.Context) {
 // @Produce json
 // @Id      updateProjectGithubApp
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body githubappdto.UpdateGithubAppReq true "request data"
 // @Success 200 {object} githubappdto.UpdateGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/github-apps/{id} [put]
+// @Router  /projects/{projectID}/providers/github-apps/{itemID} [put]
 func (h *ProjectHandler) UpdateGithubApp(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeGithubApp, base.SettingScopeProject)
 }
@@ -83,12 +83,12 @@ func (h *ProjectHandler) UpdateGithubApp(ctx *gin.Context) {
 // @Produce json
 // @Id      updateProjectGithubAppMeta
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body githubappdto.UpdateGithubAppMetaReq true "request data"
 // @Success 200 {object} githubappdto.UpdateGithubAppMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/github-apps/{id}/meta [put]
+// @Router  /projects/{projectID}/providers/github-apps/{itemID}/meta [put]
 func (h *ProjectHandler) UpdateGithubAppMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeGithubApp, base.SettingScopeProject)
 }
@@ -100,11 +100,11 @@ func (h *ProjectHandler) UpdateGithubAppMeta(ctx *gin.Context) {
 // @Produce json
 // @Id      deleteProjectGithubApp
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} githubappdto.DeleteGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/github-apps/{id} [delete]
+// @Router  /projects/{projectID}/providers/github-apps/{itemID} [delete]
 func (h *ProjectHandler) DeleteGithubApp(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeGithubApp, base.SettingScopeProject)
 }

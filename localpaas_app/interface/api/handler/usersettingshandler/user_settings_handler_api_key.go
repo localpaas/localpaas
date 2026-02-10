@@ -34,11 +34,11 @@ func (h *UserSettingsHandler) ListAPIKey(ctx *gin.Context) {
 // @Tags    user_settings
 // @Produce json
 // @Id      getUserAPIKey
-// @Param   id path string true "s3 storage ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} apikeydto.GetAPIKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /users/current/settings/api-keys/{id} [get]
+// @Router  /users/current/settings/api-keys/{itemID} [get]
 func (h *UserSettingsHandler) GetAPIKey(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeAPIKey, base.SettingScopeUser)
 }
@@ -72,12 +72,12 @@ func (h *UserSettingsHandler) CreateAPIKey(ctx *gin.Context) {
 // @Tags    user_settings
 // @Produce json
 // @Id      updateUserAPIKeyMeta
-// @Param   id path string true "API key ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body apikeydto.UpdateAPIKeyMetaReq true "request data"
 // @Success 200 {object} apikeydto.UpdateAPIKeyMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /users/current/settings/api-keys/{id}/meta [put]
+// @Router  /users/current/settings/api-keys/{itemID}/meta [put]
 func (h *UserSettingsHandler) UpdateAPIKeyMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeAPIKey, base.SettingScopeUser,
 		basesettinghandler.UpdateSettingPreRequestHandler(func(auth *basedto.Auth, req any) error {
@@ -96,11 +96,11 @@ func (h *UserSettingsHandler) UpdateAPIKeyMeta(ctx *gin.Context) {
 // @Tags    user_settings
 // @Produce json
 // @Id      deleteUserAPIKey
-// @Param   id path string true "API key ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} apikeydto.DeleteAPIKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /users/current/settings/api-keys/{id} [delete]
+// @Router  /users/current/settings/api-keys/{itemID} [delete]
 func (h *UserSettingsHandler) DeleteAPIKey(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeAPIKey, base.SettingScopeUser,
 		basesettinghandler.DeleteSettingPreRequestHandler(func(auth *basedto.Auth, req any) error {

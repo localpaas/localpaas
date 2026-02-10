@@ -35,11 +35,11 @@ func (h *ProvidersHandler) ListEmail(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      getProviderEmail
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} emaildto.GetEmailResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/emails/{id} [get]
+// @Router  /providers/emails/{itemID} [get]
 func (h *ProvidersHandler) GetEmail(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeEmail, base.SettingScopeGlobal)
 }
@@ -65,12 +65,12 @@ func (h *ProvidersHandler) CreateEmail(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      updateProviderEmail
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body emaildto.UpdateEmailReq true "request data"
 // @Success 200 {object} emaildto.UpdateEmailResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/emails/{id} [put]
+// @Router  /providers/emails/{itemID} [put]
 func (h *ProvidersHandler) UpdateEmail(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeEmail, base.SettingScopeGlobal)
 }
@@ -81,12 +81,12 @@ func (h *ProvidersHandler) UpdateEmail(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      updateProviderEmailMeta
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body emaildto.UpdateEmailMetaReq true "request data"
 // @Success 200 {object} emaildto.UpdateEmailMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/emails/{id}/meta [put]
+// @Router  /providers/emails/{itemID}/meta [put]
 func (h *ProvidersHandler) UpdateEmailMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeEmail, base.SettingScopeGlobal)
 }
@@ -97,11 +97,11 @@ func (h *ProvidersHandler) UpdateEmailMeta(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      deleteProviderEmail
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} emaildto.DeleteEmailResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/emails/{id} [delete]
+// @Router  /providers/emails/{itemID} [delete]
 func (h *ProvidersHandler) DeleteEmail(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeEmail, base.SettingScopeGlobal)
 }

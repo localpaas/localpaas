@@ -35,11 +35,11 @@ func (s *HTTPServer) registerUserRoutes(apiGroup *gin.RouterGroup) (*gin.RouterG
 
 	{ // API key group
 		apiKeyGroup := userSettingGroup.Group("/api-keys")
-		apiKeyGroup.GET("/:id", s.handlerRegistry.userSettingsHandler.GetAPIKey)
+		apiKeyGroup.GET("/:itemID", s.handlerRegistry.userSettingsHandler.GetAPIKey)
 		apiKeyGroup.GET("", s.handlerRegistry.userSettingsHandler.ListAPIKey)
 		apiKeyGroup.POST("", s.handlerRegistry.userSettingsHandler.CreateAPIKey)
-		apiKeyGroup.PUT("/:id/meta", s.handlerRegistry.userSettingsHandler.UpdateAPIKeyMeta)
-		apiKeyGroup.DELETE("/:id", s.handlerRegistry.userSettingsHandler.DeleteAPIKey)
+		apiKeyGroup.PUT("/:itemID/meta", s.handlerRegistry.userSettingsHandler.UpdateAPIKeyMeta)
+		apiKeyGroup.DELETE("/:itemID", s.handlerRegistry.userSettingsHandler.DeleteAPIKey)
 	}
 
 	return userGroup, userSettingGroup

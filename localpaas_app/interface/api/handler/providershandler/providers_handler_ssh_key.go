@@ -32,11 +32,11 @@ func (h *ProvidersHandler) ListSSHKey(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      getProviderSSHKey
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} sshkeydto.GetSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssh-keys/{id} [get]
+// @Router  /providers/ssh-keys/{itemID} [get]
 func (h *ProvidersHandler) GetSSHKey(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeSSHKey, base.SettingScopeGlobal)
 }
@@ -62,12 +62,12 @@ func (h *ProvidersHandler) CreateSSHKey(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      updateProviderSSHKey
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body sshkeydto.UpdateSSHKeyReq true "request data"
 // @Success 200 {object} sshkeydto.UpdateSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssh-keys/{id} [put]
+// @Router  /providers/ssh-keys/{itemID} [put]
 func (h *ProvidersHandler) UpdateSSHKey(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeSSHKey, base.SettingScopeGlobal)
 }
@@ -78,12 +78,12 @@ func (h *ProvidersHandler) UpdateSSHKey(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      updateProviderSSHKeyMeta
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body sshkeydto.UpdateSSHKeyMetaReq true "request data"
 // @Success 200 {object} sshkeydto.UpdateSSHKeyMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssh-keys/{id}/meta [put]
+// @Router  /providers/ssh-keys/{itemID}/meta [put]
 func (h *ProvidersHandler) UpdateSSHKeyMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeSSHKey, base.SettingScopeGlobal)
 }
@@ -94,11 +94,11 @@ func (h *ProvidersHandler) UpdateSSHKeyMeta(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      deleteProviderSSHKey
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} sshkeydto.DeleteSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssh-keys/{id} [delete]
+// @Router  /providers/ssh-keys/{itemID} [delete]
 func (h *ProvidersHandler) DeleteSSHKey(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeSSHKey, base.SettingScopeGlobal)
 }

@@ -47,12 +47,12 @@ func (h *ProjectHandler) CreateProjectSecret(ctx *gin.Context) {
 // @Produce json
 // @Id      updateProjectSecret
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "setting ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body secretdto.UpdateSecretReq true "request data"
 // @Success 200 {object} secretdto.UpdateSecretResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/secrets/{id} [put]
+// @Router  /projects/{projectID}/secrets/{itemID} [put]
 func (h *ProjectHandler) UpdateProjectSecret(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeSecret, base.SettingScopeProject)
 }
@@ -64,11 +64,11 @@ func (h *ProjectHandler) UpdateProjectSecret(ctx *gin.Context) {
 // @Produce json
 // @Id      deleteProjectSecret
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "secret ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} secretdto.DeleteSecretResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/secrets/{id} [delete]
+// @Router  /projects/{projectID}/secrets/{itemID} [delete]
 func (h *ProjectHandler) DeleteProjectSecret(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeSecret, base.SettingScopeProject)
 }

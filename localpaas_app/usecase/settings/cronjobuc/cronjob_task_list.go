@@ -1,4 +1,4 @@
-package taskuc
+package cronjobuc
 
 import (
 	"context"
@@ -6,16 +6,25 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/service/taskservice"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc/cronjobdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/taskuc/taskdto"
 )
 
-func (uc *TaskUC) ListTask(
+func (uc *CronJobUC) ListCronJobTask(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *taskdto.ListTaskReq,
-) (*taskdto.ListTaskResp, error) {
+	req *cronjobdto.ListCronJobTaskReq,
+) (*cronjobdto.ListCronJobTaskResp, error) {
+	req.Type = currentSettingType
+	jobSetting, err := settings.GetSettingByID(ctx, uc.db, uc.settingRepo, &req.BaseSettingReq, req.JobID,
+		false, false)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
 	listResp, err := uc.taskService.ListTask(ctx, uc.db, &taskservice.ListTaskReq{
-		JobID:  req.JobID,
+		JobID:  []string{jobSetting.ID},
 		Status: req.Status,
 		Search: req.Search,
 		Paging: req.Paging,
@@ -29,7 +38,7 @@ func (uc *TaskUC) ListTask(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &taskdto.ListTaskResp{
+	return &cronjobdto.ListCronJobTaskResp{
 		Meta: &basedto.ListMeta{Page: listResp.PagingMeta},
 		Data: resp,
 	}, nil

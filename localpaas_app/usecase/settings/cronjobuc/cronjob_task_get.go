@@ -1,4 +1,4 @@
-package taskuc
+package cronjobuc
 
 import (
 	"context"
@@ -6,16 +6,26 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/service/taskservice"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc/cronjobdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/taskuc/taskdto"
 )
 
-func (uc *TaskUC) GetTask(
+func (uc *CronJobUC) GetCronJobTask(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *taskdto.GetTaskReq,
-) (*taskdto.GetTaskResp, error) {
+	req *cronjobdto.GetCronJobTaskReq,
+) (*cronjobdto.GetCronJobTaskResp, error) {
+	req.Type = currentSettingType
+	jobSetting, err := settings.GetSettingByID(ctx, uc.db, uc.settingRepo, &req.BaseSettingReq, req.JobID,
+		false, false)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
 	getResp, err := uc.taskService.GetTask(ctx, uc.db, &taskservice.GetTaskReq{
-		ID: req.ID,
+		ID:    req.TaskID,
+		JobID: jobSetting.ID,
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -26,7 +36,7 @@ func (uc *TaskUC) GetTask(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &taskdto.GetTaskResp{
+	return &cronjobdto.GetCronJobTaskResp{
 		Data: resp,
 	}, nil
 }

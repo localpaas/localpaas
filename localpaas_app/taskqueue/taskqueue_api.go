@@ -14,7 +14,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/entityutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
 )
 
 type TaskExecData struct {
@@ -223,21 +222,9 @@ func (q *taskQueue) createTasks(
 				break
 			}
 
-			task := &entity.Task{
-				ID:     gofn.Must(ulid.NewStringULID()),
-				JobID:  jobSetting.ID,
-				Type:   base.TaskTypeCronJobExec,
-				Status: base.TaskStatusNotStarted,
-				Config: entity.TaskConfig{
-					Priority:   cronJob.Priority,
-					MaxRetry:   cronJob.MaxRetry,
-					RetryDelay: cronJob.RetryDelay,
-					Timeout:    cronJob.Timeout,
-				},
-				Version:   entity.CurrentTaskVersion,
-				RunAt:     nextRunAt,
-				CreatedAt: timeNow,
-				UpdatedAt: timeNow,
+			task, err := q.cronJobService.CreateCronJobTask(jobSetting, nextRunAt, timeNow)
+			if err != nil {
+				return nil, apperrors.Wrap(err)
 			}
 			allNewTasks = append(allNewTasks, task)
 		}

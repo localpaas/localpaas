@@ -42,13 +42,13 @@ func (h *BaseSettingHandler) UpdateSettingMeta(
 
 	switch scope {
 	case base.SettingScopeGlobal:
-		auth, itemID, err = h.GetAuthGlobalSettings(ctx, resType, base.ActionTypeWrite, "id")
+		auth, itemID, err = h.GetAuthGlobalSettings(ctx, resType, base.ActionTypeWrite, "itemID")
 	case base.SettingScopeProject:
-		auth, objectID, itemID, err = h.GetAuthProjectSettings(ctx, base.ActionTypeWrite, "id")
+		auth, objectID, itemID, err = h.GetAuthProjectSettings(ctx, base.ActionTypeWrite, "itemID")
 	case base.SettingScopeApp:
-		auth, parentObjectID, objectID, itemID, err = h.GetAuthAppSettings(ctx, base.ActionTypeWrite, "id")
+		auth, parentObjectID, objectID, itemID, err = h.GetAuthAppSettings(ctx, base.ActionTypeWrite, "itemID")
 	case base.SettingScopeUser:
-		auth, objectID, itemID, err = h.GetAuthUserSettings(ctx, base.ActionTypeWrite, "id")
+		auth, objectID, itemID, err = h.GetAuthUserSettings(ctx, base.ActionTypeWrite, "itemID")
 	}
 	if err != nil {
 		h.RenderError(ctx, err)

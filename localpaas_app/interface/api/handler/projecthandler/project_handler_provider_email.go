@@ -34,11 +34,11 @@ func (h *ProjectHandler) ListEmail(ctx *gin.Context) {
 // @Produce json
 // @Id      getProjectEmail
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} emaildto.GetEmailResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/emails/{id} [get]
+// @Router  /projects/{projectID}/providers/emails/{itemID} [get]
 func (h *ProjectHandler) GetEmail(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeEmail, base.SettingScopeProject)
 }
@@ -66,12 +66,12 @@ func (h *ProjectHandler) CreateEmail(ctx *gin.Context) {
 // @Produce json
 // @Id      updateProjectEmail
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body emaildto.UpdateEmailReq true "request data"
 // @Success 200 {object} emaildto.UpdateEmailResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/emails/{id} [put]
+// @Router  /projects/{projectID}/providers/emails/{itemID} [put]
 func (h *ProjectHandler) UpdateEmail(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeEmail, base.SettingScopeProject)
 }
@@ -83,12 +83,12 @@ func (h *ProjectHandler) UpdateEmail(ctx *gin.Context) {
 // @Produce json
 // @Id      updateProjectEmailMeta
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body emaildto.UpdateEmailMetaReq true "request data"
 // @Success 200 {object} emaildto.UpdateEmailMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/emails/{id}/meta [put]
+// @Router  /projects/{projectID}/providers/emails/{itemID}/meta [put]
 func (h *ProjectHandler) UpdateEmailMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeEmail, base.SettingScopeProject)
 }
@@ -100,11 +100,11 @@ func (h *ProjectHandler) UpdateEmailMeta(ctx *gin.Context) {
 // @Produce json
 // @Id      deleteProjectEmail
 // @Param   projectID path string true "project ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} emaildto.DeleteEmailResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/emails/{id} [delete]
+// @Router  /projects/{projectID}/providers/emails/{itemID} [delete]
 func (h *ProjectHandler) DeleteEmail(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeEmail, base.SettingScopeProject)
 }

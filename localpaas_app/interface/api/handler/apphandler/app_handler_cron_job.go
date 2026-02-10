@@ -1,11 +1,13 @@
 package apphandler
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 
 	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	_ "github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc/cronjobdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc/cronjobdto"
 )
 
 // ListAppCronJob Lists cron-jobs
@@ -36,11 +38,11 @@ func (h *AppHandler) ListAppCronJob(ctx *gin.Context) {
 // @Id      getAppCronJob
 // @Param   projectID path string true "project ID"
 // @Param   appID path string true "app ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} cronjobdto.GetCronJobResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/apps/{appID}/cron-jobs/{id} [get]
+// @Router  /projects/{projectID}/apps/{appID}/cron-jobs/{itemID} [get]
 func (h *AppHandler) GetAppCronJob(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeCronJob, base.SettingScopeApp)
 }
@@ -70,12 +72,12 @@ func (h *AppHandler) CreateAppCronJob(ctx *gin.Context) {
 // @Id      updateAppCronJob
 // @Param   projectID path string true "project ID"
 // @Param   appID path string true "app ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body cronjobdto.UpdateCronJobReq true "request data"
 // @Success 200 {object} cronjobdto.UpdateCronJobResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/apps/{appID}/cron-jobs/{id} [put]
+// @Router  /projects/{projectID}/apps/{appID}/cron-jobs/{itemID} [put]
 func (h *AppHandler) UpdateAppCronJob(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeCronJob, base.SettingScopeApp)
 }
@@ -88,12 +90,12 @@ func (h *AppHandler) UpdateAppCronJob(ctx *gin.Context) {
 // @Id      updateAppCronJobMeta
 // @Param   projectID path string true "project ID"
 // @Param   appID path string true "app ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body cronjobdto.UpdateCronJobMetaReq true "request data"
 // @Success 200 {object} cronjobdto.UpdateCronJobMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/apps/{appID}/cron-jobs/{id}/meta [put]
+// @Router  /projects/{projectID}/apps/{appID}/cron-jobs/{itemID}/meta [put]
 func (h *AppHandler) UpdateAppCronJobMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeCronJob, base.SettingScopeApp)
 }
@@ -106,11 +108,51 @@ func (h *AppHandler) UpdateAppCronJobMeta(ctx *gin.Context) {
 // @Id      deleteAppCronJob
 // @Param   projectID path string true "project ID"
 // @Param   appID path string true "app ID"
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} cronjobdto.DeleteCronJobResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/apps/{appID}/cron-jobs/{id} [delete]
+// @Router  /projects/{projectID}/apps/{appID}/cron-jobs/{itemID} [delete]
 func (h *AppHandler) DeleteAppCronJob(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeCronJob, base.SettingScopeApp)
+}
+
+// ExecuteAppCronJob Executes a cron job
+// @Description Executes a cron job
+// @Tags    apps
+// @Produce json
+// @Id      executeAppCronJob
+// @Param   projectID path string true "project ID"
+// @Param   appID path string true "app ID"
+// @Param   itemID path string true "setting ID"
+// @Param   body body cronjobdto.ExecuteCronJobReq true "request data"
+// @Success 200 {object} cronjobdto.ExecuteCronJobResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /projects/{projectID}/apps/{appID}/cron-jobs/{itemID}/exec [post]
+func (h *AppHandler) ExecuteAppCronJob(ctx *gin.Context) {
+	auth, projectID, appID, jobID, err := h.GetAuthAppSettings(ctx, base.ActionTypeRead, "itemID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := cronjobdto.NewExecuteCronJobReq()
+	req.ID = jobID
+	req.ObjectID = appID
+	req.ParentObjectID = projectID
+	req.Scope = base.SettingScopeApp
+
+	if err = h.ParseJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.CronJobUC.ExecuteCronJob(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
 }

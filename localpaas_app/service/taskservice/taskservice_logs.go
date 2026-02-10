@@ -14,16 +14,16 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/batchrecvchan"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/taskuc/taskdto"
 )
 
 type GetTaskLogsReq struct {
-	TaskID     string
-	Follow     bool
-	Since      time.Time
-	Duration   time.Duration
-	Tail       int
-	Timestamps bool
+	TaskID   string
+	Follow   bool
+	Since    time.Time
+	Duration time.Duration
+	Tail     int
 
 	LogBatchThresholdPeriod time.Duration
 	LogBatchMaxFrame        int
@@ -41,6 +41,11 @@ func (s *taskService) GetTaskLogs(
 	db database.IDB,
 	req *GetTaskLogsReq,
 ) (*GetTaskLogsResp, error) {
+	if req.Duration > 0 && req.Since.IsZero() {
+		req.Since = timeutil.NowUTC().Add(-req.Duration)
+		req.Duration = 0
+	}
+
 	task, err := s.taskRepo.GetByID(ctx, db, "", req.TaskID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)

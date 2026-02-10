@@ -59,13 +59,13 @@ func (h *SystemHandler) ListTask(ctx *gin.Context) {
 // @Tags    system_tasks
 // @Produce json
 // @Id      getTask
-// @Param   id path string true "task ID"
+// @Param   taskID path string true "task ID"
 // @Success 200 {object} taskdto.GetTaskResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /tasks/{id} [get]
+// @Router  /tasks/{taskID} [get]
 func (h *SystemHandler) GetTask(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
+	taskID, err := h.ParseStringParam(ctx, "taskID")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -74,7 +74,7 @@ func (h *SystemHandler) GetTask(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceModule: base.ResourceModuleSystem,
 		ResourceType:   base.ResourceTypeTask,
-		ResourceID:     id,
+		ResourceID:     taskID,
 		Action:         base.ActionTypeRead,
 	})
 	if err != nil {
@@ -83,7 +83,7 @@ func (h *SystemHandler) GetTask(ctx *gin.Context) {
 	}
 
 	req := taskdto.NewGetTaskReq()
-	req.ID = id
+	req.ID = taskID
 	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -104,14 +104,14 @@ func (h *SystemHandler) GetTask(ctx *gin.Context) {
 // @Tags    system_tasks
 // @Produce json
 // @Id      updateTaskMeta
-// @Param   id path string true "task ID"
+// @Param   taskID path string true "task ID"
 // @Param   body body taskdto.UpdateTaskMetaReq true "request data"
 // @Success 200 {object} taskdto.UpdateTaskMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /system/tasks/{id}/meta [put]
+// @Router  /system/tasks/{taskID}/meta [put]
 func (h *SystemHandler) UpdateTaskMeta(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
+	taskID, err := h.ParseStringParam(ctx, "taskID")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -120,7 +120,7 @@ func (h *SystemHandler) UpdateTaskMeta(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceModule: base.ResourceModuleSystem,
 		ResourceType:   base.ResourceTypeTask,
-		ResourceID:     id,
+		ResourceID:     taskID,
 		Action:         base.ActionTypeWrite,
 	})
 	if err != nil {
@@ -129,7 +129,7 @@ func (h *SystemHandler) UpdateTaskMeta(ctx *gin.Context) {
 	}
 
 	req := taskdto.NewUpdateTaskMetaReq()
-	req.ID = id
+	req.ID = taskID
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -150,14 +150,14 @@ func (h *SystemHandler) UpdateTaskMeta(ctx *gin.Context) {
 // @Tags    system_tasks
 // @Produce json
 // @Id      cancelTask
-// @Param   id path string true "task ID"
+// @Param   taskID path string true "task ID"
 // @Param   body body taskdto.CancelTaskReq true "request data"
 // @Success 200 {object} taskdto.CancelTaskResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /system/tasks/{id}/cancel [post]
+// @Router  /system/tasks/{taskID}/cancel [post]
 func (h *SystemHandler) CancelTask(ctx *gin.Context) {
-	id, err := h.ParseStringParam(ctx, "id")
+	taskID, err := h.ParseStringParam(ctx, "taskID")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -166,7 +166,7 @@ func (h *SystemHandler) CancelTask(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceModule: base.ResourceModuleSystem,
 		ResourceType:   base.ResourceTypeTask,
-		ResourceID:     id,
+		ResourceID:     taskID,
 		Action:         base.ActionTypeWrite,
 	})
 	if err != nil {
@@ -175,7 +175,7 @@ func (h *SystemHandler) CancelTask(ctx *gin.Context) {
 	}
 
 	req := taskdto.NewCancelTaskReq()
-	req.ID = id
+	req.ID = taskID
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return

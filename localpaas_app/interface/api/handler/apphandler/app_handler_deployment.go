@@ -19,13 +19,13 @@ import (
 // @Id      getAppDeployment
 // @Param   projectID path string true "project ID"
 // @Param   appID path string true "app ID"
-// @Param   id path string true "deployment ID"
+// @Param   deploymentID path string true "deployment ID"
 // @Success 200 {object} appdeploymentdto.GetDeploymentResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/apps/{appID}/deployments/{id} [get]
+// @Router  /projects/{projectID}/apps/{appID}/deployments/{deploymentID} [get]
 func (h *AppHandler) GetAppDeployment(ctx *gin.Context) {
-	auth, projectID, appID, itemID, err := h.getAuthForItem(ctx, base.ActionTypeRead, "id")
+	auth, projectID, appID, deploymentID, err := h.getAuthForItem(ctx, base.ActionTypeRead, "deploymentID")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -34,7 +34,7 @@ func (h *AppHandler) GetAppDeployment(ctx *gin.Context) {
 	req := appdeploymentdto.NewGetDeploymentReq()
 	req.ProjectID = projectID
 	req.AppID = appID
-	req.DeploymentID = itemID
+	req.DeploymentID = deploymentID
 	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -98,7 +98,7 @@ func (h *AppHandler) ListAppDeployment(ctx *gin.Context) {
 // @Id      getAppDeploymentLogs
 // @Param   projectID path string true "project ID"
 // @Param   appID path string true "app ID"
-// @Param   id path string true "deployment ID"
+// @Param   deploymentID path string true "deployment ID"
 // @Param   follow query string false "`follow=true/false`"
 // @Param   since query string false "`since=YYYY-MM-DDTHH:mm:SSZ`"
 // @Param   duration query string false "`duration=24h` logs within the period"
@@ -106,9 +106,9 @@ func (h *AppHandler) ListAppDeployment(ctx *gin.Context) {
 // @Success 200 {object} appdeploymentdto.GetDeploymentLogsResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/apps/{appID}/deployments/{id}/logs [get]
+// @Router  /projects/{projectID}/apps/{appID}/deployments/{deploymentID}/logs [get]
 func (h *AppHandler) GetAppDeploymentLogs(ctx *gin.Context, mel *melody.Melody) {
-	auth, projectID, appID, itemID, err := h.getAuthForItem(ctx, base.ActionTypeRead, "id")
+	auth, projectID, appID, deploymentID, err := h.getAuthForItem(ctx, base.ActionTypeRead, "deploymentID")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -117,7 +117,7 @@ func (h *AppHandler) GetAppDeploymentLogs(ctx *gin.Context, mel *melody.Melody) 
 	req := appdeploymentdto.NewGetDeploymentLogsReq()
 	req.ProjectID = projectID
 	req.AppID = appID
-	req.DeploymentID = itemID
+	req.DeploymentID = deploymentID
 	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -150,14 +150,14 @@ func (h *AppHandler) GetAppDeploymentLogs(ctx *gin.Context, mel *melody.Melody) 
 // @Id      cancelAppDeployment
 // @Param   projectID path string true "project ID"
 // @Param   appID path string true "app ID"
-// @Param   id path string true "deployment ID"
+// @Param   deploymentID path string true "deployment ID"
 // @Param   body body appdeploymentdto.CancelDeploymentReq true "request data"
 // @Success 200 {object} appdeploymentdto.CancelDeploymentResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/apps/{appID}/deployments/{id}/cancel [post]
+// @Router  /projects/{projectID}/apps/{appID}/deployments/{deploymentID}/cancel [post]
 func (h *AppHandler) CancelAppDeployment(ctx *gin.Context) {
-	auth, projectID, appID, itemID, err := h.getAuthForItem(ctx, base.ActionTypeWrite, "id")
+	auth, projectID, appID, itemID, err := h.getAuthForItem(ctx, base.ActionTypeWrite, "deploymentID")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

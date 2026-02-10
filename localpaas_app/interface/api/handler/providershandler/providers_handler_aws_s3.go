@@ -35,11 +35,11 @@ func (h *ProvidersHandler) ListAWSS3(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      getProviderAWSS3
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} awss3dto.GetAWSS3Resp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/aws-s3/{id} [get]
+// @Router  /providers/aws-s3/{itemID} [get]
 func (h *ProvidersHandler) GetAWSS3(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeAWSS3, base.SettingScopeGlobal)
 }
@@ -65,12 +65,12 @@ func (h *ProvidersHandler) CreateAWSS3(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      updateProviderAWSS3
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body awss3dto.UpdateAWSS3Req true "request data"
 // @Success 200 {object} awss3dto.UpdateAWSS3Resp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/aws-s3/{id} [put]
+// @Router  /providers/aws-s3/{itemID} [put]
 func (h *ProvidersHandler) UpdateAWSS3(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeAWSS3, base.SettingScopeGlobal)
 }
@@ -81,12 +81,12 @@ func (h *ProvidersHandler) UpdateAWSS3(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      updateProviderAWSS3Meta
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body awss3dto.UpdateAWSS3MetaReq true "request data"
 // @Success 200 {object} awss3dto.UpdateAWSS3MetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/aws-s3/{id}/meta [put]
+// @Router  /providers/aws-s3/{itemID}/meta [put]
 func (h *ProvidersHandler) UpdateAWSS3Meta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeAWSS3, base.SettingScopeGlobal)
 }
@@ -97,11 +97,11 @@ func (h *ProvidersHandler) UpdateAWSS3Meta(ctx *gin.Context) {
 // @Tags    global_providers
 // @Produce json
 // @Id      deleteProviderAWSS3
-// @Param   id path string true "provider ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} awss3dto.DeleteAWSS3Resp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/aws-s3/{id} [delete]
+// @Router  /providers/aws-s3/{itemID} [delete]
 func (h *ProvidersHandler) DeleteAWSS3(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeAWSS3, base.SettingScopeGlobal)
 }

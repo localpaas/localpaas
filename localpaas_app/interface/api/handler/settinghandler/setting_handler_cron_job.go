@@ -32,11 +32,11 @@ func (h *SettingHandler) ListCronJob(ctx *gin.Context) {
 // @Tags    settings
 // @Produce json
 // @Id      getSettingCronJob
-// @Param   id path string true "setting ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} cronjobdto.GetCronJobResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /settings/cron-jobs/{id} [get]
+// @Router  /settings/cron-jobs/{itemID} [get]
 func (h *SettingHandler) GetCronJob(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeCronJob, base.SettingScopeGlobal)
 }
@@ -62,12 +62,12 @@ func (h *SettingHandler) CreateCronJob(ctx *gin.Context) {
 // @Tags    settings
 // @Produce json
 // @Id      updateSettingCronJob
-// @Param   id path string true "setting ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body cronjobdto.UpdateCronJobReq true "request data"
 // @Success 200 {object} cronjobdto.UpdateCronJobResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /settings/cron-jobs/{id} [put]
+// @Router  /settings/cron-jobs/{itemID} [put]
 func (h *SettingHandler) UpdateCronJob(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeCronJob, base.SettingScopeGlobal)
 }
@@ -78,12 +78,12 @@ func (h *SettingHandler) UpdateCronJob(ctx *gin.Context) {
 // @Tags    settings
 // @Produce json
 // @Id      updateSettingCronJobMeta
-// @Param   id path string true "setting ID"
+// @Param   itemID path string true "setting ID"
 // @Param   body body cronjobdto.UpdateCronJobMetaReq true "request data"
 // @Success 200 {object} cronjobdto.UpdateCronJobMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /settings/cron-jobs/{id}/meta [put]
+// @Router  /settings/cron-jobs/{itemID}/meta [put]
 func (h *SettingHandler) UpdateCronJobMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeCronJob, base.SettingScopeGlobal)
 }
@@ -94,11 +94,11 @@ func (h *SettingHandler) UpdateCronJobMeta(ctx *gin.Context) {
 // @Tags    settings
 // @Produce json
 // @Id      deleteSettingCronJob
-// @Param   id path string true "setting ID"
+// @Param   itemID path string true "setting ID"
 // @Success 200 {object} cronjobdto.DeleteCronJobResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /settings/cron-jobs/{id} [delete]
+// @Router  /settings/cron-jobs/{itemID} [delete]
 func (h *SettingHandler) DeleteCronJob(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeCronJob, base.SettingScopeGlobal)
 }

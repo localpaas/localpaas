@@ -13,6 +13,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/rediscache"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 	"github.com/localpaas/localpaas/localpaas_app/repository/cacherepository"
+	"github.com/localpaas/localpaas/localpaas_app/service/cronjobservice"
 )
 
 type TaskQueue interface {
@@ -27,15 +28,16 @@ type TaskQueue interface {
 }
 
 type taskQueue struct {
-	db           *database.DB
-	config       *config.Config
-	logger       logging.Logger
-	server       *gocronqueue.Server
-	client       *gocronqueue.Client
-	redisClient  rediscache.Client
-	settingRepo  repository.SettingRepo
-	taskRepo     repository.TaskRepo
-	taskInfoRepo cacherepository.TaskInfoRepo
+	db             *database.DB
+	config         *config.Config
+	logger         logging.Logger
+	server         *gocronqueue.Server
+	client         *gocronqueue.Client
+	redisClient    rediscache.Client
+	settingRepo    repository.SettingRepo
+	taskRepo       repository.TaskRepo
+	taskInfoRepo   cacherepository.TaskInfoRepo
+	cronJobService cronjobservice.CronJobService
 
 	taskExecutorMap map[base.TaskType]gocronqueue.TaskExecFunc
 }
@@ -48,15 +50,17 @@ func NewTaskQueue(
 	settingRepo repository.SettingRepo,
 	taskRepo repository.TaskRepo,
 	cacheTaskInfoRepo cacherepository.TaskInfoRepo,
+	cronJobService cronjobservice.CronJobService,
 ) TaskQueue {
 	return &taskQueue{
-		db:           db,
-		config:       config,
-		logger:       logger,
-		redisClient:  redisClient,
-		settingRepo:  settingRepo,
-		taskRepo:     taskRepo,
-		taskInfoRepo: cacheTaskInfoRepo,
+		db:             db,
+		config:         config,
+		logger:         logger,
+		redisClient:    redisClient,
+		settingRepo:    settingRepo,
+		taskRepo:       taskRepo,
+		taskInfoRepo:   cacheTaskInfoRepo,
+		cronJobService: cronJobService,
 	}
 }
 
