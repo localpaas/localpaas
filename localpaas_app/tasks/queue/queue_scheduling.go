@@ -1,4 +1,4 @@
-package taskqueue
+package queue
 
 import (
 	"context"
@@ -21,7 +21,7 @@ func (q *taskQueue) doCreateTasks(
 	ctx context.Context,
 ) error {
 	err := transaction.Execute(ctx, q.db, func(db database.Tx) error {
-		_, err := q.createTasks(ctx, db, nil, q.config.TaskQueue.TaskCreateInterval)
+		_, err := q.createTasks(ctx, db, nil, q.config.Tasks.Queue.TaskCreateInterval)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -38,8 +38,9 @@ func (q *taskQueue) doScheduleTasks(
 ) ([]*entity.Task, error) {
 	timeNow := timeutil.NowUTC()
 	scanFrom := timeNow.Add(-missedTaskPeriod)
-	scanTo := timeNow.Add(q.config.TaskQueue.TaskCheckInterval)
+	scanTo := timeNow.Add(q.config.Tasks.Queue.TaskCheckInterval)
 	tasks, _, err := q.taskRepo.List(ctx, q.db, "", nil,
+		bunex.SelectWhere("task.type != ?", base.TaskTypeHealthcheck), // special tasks no need scheduling
 		// Not-started tasks
 		bunex.SelectWhereGroup(
 			bunex.SelectWhere("task.status = ?", base.TaskStatusNotStarted),

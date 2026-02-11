@@ -2,6 +2,7 @@ package taskservice
 
 import (
 	"context"
+	"time"
 
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/infra/rediscache"
@@ -18,6 +19,9 @@ type TaskService interface {
 
 	// Logs
 	GetTaskLogs(ctx context.Context, db database.IDB, req *GetTaskLogsReq) (*GetTaskLogsResp, error)
+
+	// Lock
+	CreateLock(ctx context.Context, key string, exp time.Duration) (success bool, releaser func(), err error)
 }
 
 func NewTaskService(

@@ -1,9 +1,9 @@
 package initializer
 
 import (
-	"github.com/localpaas/localpaas/localpaas_app/taskqueue/taskappdeploy"
-	"github.com/localpaas/localpaas/localpaas_app/taskqueue/taskcronjobexec"
-	"github.com/localpaas/localpaas/localpaas_app/taskqueue/tasktest"
+	"github.com/localpaas/localpaas/localpaas_app/tasks/taskappdeploy"
+	"github.com/localpaas/localpaas/localpaas_app/tasks/taskcronjobexec"
+	"github.com/localpaas/localpaas/localpaas_app/tasks/taskhealthcheck"
 )
 
 type WorkerInitializer struct {
@@ -11,9 +11,9 @@ type WorkerInitializer struct {
 
 // NOTE: these injections are required to make the task executor be available
 func NewWorkerInitializer(
-	_ *tasktest.Executor,
 	_ *taskappdeploy.Executor,
 	_ *taskcronjobexec.Executor,
+	_ *taskhealthcheck.Executor,
 ) *WorkerInitializer {
 	return nil
 }

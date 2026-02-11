@@ -9,7 +9,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/nginxservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/projectservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
-	"github.com/localpaas/localpaas/localpaas_app/taskqueue"
+	"github.com/localpaas/localpaas/localpaas_app/tasks/queue"
 	"github.com/localpaas/localpaas/services/docker"
 )
 
@@ -26,7 +26,7 @@ type WebhookUC struct {
 	envVarService  envvarservice.EnvVarService
 	nginxService   nginxservice.NginxService
 	dockerManager  *docker.Manager
-	taskQueue      taskqueue.TaskQueue
+	taskQueue      queue.TaskQueue
 }
 
 func NewWebhookUC(
@@ -42,7 +42,7 @@ func NewWebhookUC(
 	envVarService envvarservice.EnvVarService,
 	nginxService nginxservice.NginxService,
 	dockerManager *docker.Manager,
-	taskQueue taskqueue.TaskQueue,
+	taskQueue queue.TaskQueue,
 ) *WebhookUC {
 	return &WebhookUC{
 		db:             db,

@@ -46,6 +46,10 @@ type Config struct {
 	TaskCheckInterval  time.Duration
 	TaskCreateFunc     func(ctx context.Context) error
 	TaskCreateInterval time.Duration
+
+	// Healthcheck: a special kind of task
+	HealthcheckInterval time.Duration
+	HealthcheckFunc     func(ctx context.Context) error
 }
 
 type jobData struct {
@@ -89,6 +93,26 @@ func (s *Server) Start() error {
 		}
 	}()
 	s.scanTasks()
+
+	// Start a job to periodically do health check
+	go func() {
+		interval := s.config.HealthcheckInterval
+		timeNow := time.Now()
+		wait := timeNow.Truncate(interval).Add(interval).Sub(timeNow)
+		time.Sleep(wait)
+		_, err := s.scheduler.NewJob(
+			gocron.DurationJob(interval),
+			gocron.NewTask(func() {
+				err := s.config.HealthcheckFunc(context.Background())
+				if err != nil {
+					s.config.Logger.Errorf("failed to execute healthcheck task: %v", err)
+				}
+			}),
+		)
+		if err != nil {
+			s.config.Logger.Errorf("failed to schedule healthcheck task: %v", err)
+		}
+	}()
 
 	return nil
 }

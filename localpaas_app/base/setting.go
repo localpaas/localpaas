@@ -26,11 +26,12 @@ const (
 	SettingTypeCronJob         SettingType = "cron-job"
 	SettingTypeEmail           SettingType = "email"
 	SettingTypeRepoWebhook     SettingType = "repo-webhook"
+	SettingTypeHealthcheck     SettingType = "healthcheck"
 )
 
 var (
 	AllAppSettingTypes = []SettingType{SettingTypeApp, SettingTypeAppDeployment,
-		SettingTypeAppHttp, SettingTypeEnvVar, SettingTypeSecret}
+		SettingTypeAppHttp, SettingTypeEnvVar, SettingTypeSecret, SettingTypeCronJob, SettingTypeHealthcheck}
 
 	AllProjectSettingTypes = []SettingType{SettingTypeProject, SettingTypeEnvVar, SettingTypeSecret}
 )

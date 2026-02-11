@@ -42,3 +42,11 @@ app_path = "/var/lib/localpaas"
     https_proxy = ""
     no_proxy = ""
     socks5_proxy = ""
+
+[tasks.queue]
+    concurrency = 5
+    task_check_interval = "1m"
+    task_create_interval = "1m"
+
+[tasks.healthcheck]
+    interval = "5s"

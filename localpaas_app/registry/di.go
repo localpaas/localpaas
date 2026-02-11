@@ -36,11 +36,11 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/taskservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
-	"github.com/localpaas/localpaas/localpaas_app/taskqueue"
-	"github.com/localpaas/localpaas/localpaas_app/taskqueue/initializer"
-	"github.com/localpaas/localpaas/localpaas_app/taskqueue/taskappdeploy"
-	"github.com/localpaas/localpaas/localpaas_app/taskqueue/taskcronjobexec"
-	"github.com/localpaas/localpaas/localpaas_app/taskqueue/tasktest"
+	"github.com/localpaas/localpaas/localpaas_app/tasks/initializer"
+	"github.com/localpaas/localpaas/localpaas_app/tasks/queue"
+	"github.com/localpaas/localpaas/localpaas_app/tasks/taskappdeploy"
+	"github.com/localpaas/localpaas/localpaas_app/tasks/taskcronjobexec"
+	"github.com/localpaas/localpaas/localpaas_app/tasks/taskhealthcheck"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appdeploymentuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/imageuc"
@@ -96,11 +96,11 @@ var Provides = []any{
 	docker.New,
 
 	// Task queue
-	taskqueue.NewTaskQueue,
+	queue.NewTaskQueue,
 	initializer.NewWorkerInitializer,
-	tasktest.NewExecutor,
 	taskappdeploy.NewExecutor,
 	taskcronjobexec.NewExecutor,
+	taskhealthcheck.NewExecutor,
 
 	// Route handler
 	server.NewHandlerRegistry, // for all handler list

@@ -21,7 +21,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
-	"github.com/localpaas/localpaas/localpaas_app/taskqueue"
+	"github.com/localpaas/localpaas/localpaas_app/tasks/queue"
 	"github.com/localpaas/localpaas/services/docker"
 )
 
@@ -43,7 +43,7 @@ type Executor struct {
 func NewExecutor(
 	logger logging.Logger,
 	db *database.DB,
-	taskQueue taskqueue.TaskQueue,
+	taskQueue queue.TaskQueue,
 	redisClient rediscache.Client,
 	settingRepo repository.SettingRepo,
 	taskRepo repository.TaskRepo,
@@ -74,7 +74,7 @@ func NewExecutor(
 }
 
 type taskData struct {
-	*taskqueue.TaskExecData
+	*queue.TaskExecData
 	CronJobSetting *entity.Setting
 	CronJob        *entity.CronJob
 	Project        *entity.Project
@@ -87,7 +87,7 @@ type taskData struct {
 func (e *Executor) execute(
 	ctx context.Context,
 	db database.Tx,
-	task *taskqueue.TaskExecData,
+	task *queue.TaskExecData,
 ) (err error) {
 	data := &taskData{
 		TaskExecData:   task,

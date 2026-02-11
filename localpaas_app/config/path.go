@@ -36,6 +36,10 @@ func (cfg *Config) DashboardCronTaskDetailsURL(cronJobID, taskID string) string 
 	return gofn.Must(url.JoinPath(cfg.BaseURL, "cron-jobs", cronJobID, "tasks", taskID)) // TODO: update this
 }
 
+func (cfg *Config) DashboardHealthcheckDetailsURL(settingID, taskID string) string {
+	return gofn.Must(url.JoinPath(cfg.BaseURL, "healthcheck", settingID, "tasks", taskID)) // TODO: update this
+}
+
 /// BACK-END
 
 func (cfg *Config) SsoBaseCallbackURL() string {

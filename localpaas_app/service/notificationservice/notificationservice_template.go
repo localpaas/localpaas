@@ -30,6 +30,7 @@ type TemplateName string
 const (
 	TemplateAppDeploymentNotification TemplateName = "app-deployment-notification"
 	TemplateCronTaskNotification      TemplateName = "cron-job-notification"
+	TemplateHealthcheckNotification   TemplateName = "healthcheck-notification"
 )
 
 type Template interface {
@@ -87,6 +88,8 @@ func (s *notificationService) loadEmailTemplate(
 		tpl, err = htmltemplate.ParseFiles(emailTemplateDir + "app_deployment_notification.html")
 	case TemplateCronTaskNotification:
 		tpl, err = htmltemplate.ParseFiles(emailTemplateDir + "cron_task_notification.html")
+	case TemplateHealthcheckNotification:
+		tpl, err = htmltemplate.ParseFiles(emailTemplateDir + "healthcheck_notification.html")
 	}
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -105,6 +108,8 @@ func (s *notificationService) loadSlackTemplate(
 		tpl, err = texttemplate.ParseFiles(slackTemplateDir + "app_deployment_notification.tpl")
 	case TemplateCronTaskNotification:
 		tpl, err = texttemplate.ParseFiles(slackTemplateDir + "cron_task_notification.tpl")
+	case TemplateHealthcheckNotification:
+		tpl, err = texttemplate.ParseFiles(slackTemplateDir + "healthcheck_notification.tpl")
 	}
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -123,6 +128,8 @@ func (s *notificationService) loadDiscordTemplate(
 		tpl, err = texttemplate.ParseFiles(discordTemplateDir + "app_deployment_notification.tpl")
 	case TemplateCronTaskNotification:
 		tpl, err = texttemplate.ParseFiles(discordTemplateDir + "cron_task_notification.tpl")
+	case TemplateHealthcheckNotification:
+		tpl, err = texttemplate.ParseFiles(discordTemplateDir + "healthcheck_notification.tpl")
 	}
 	if err != nil {
 		return nil, apperrors.Wrap(err)

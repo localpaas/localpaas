@@ -1,4 +1,4 @@
-package taskcronjobexec
+package taskhealthcheck
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/config"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
 )
@@ -17,7 +18,11 @@ func (e *Executor) sendNotification(
 	db database.IDB,
 	data *taskData,
 ) error {
-	ntfnSettings := data.CronJob.Notification
+	ntfnSettings := data.Healthcheck.Notification
+	if ntfnSettings == nil {
+		return nil
+	}
+
 	var execFuncs []func(ctx context.Context) error
 
 	if ntfnSettings.HasViaEmailNtfnSetting() {
@@ -52,15 +57,14 @@ func (e *Executor) sendNotification(
 func (e *Executor) buildNotificationMsgData(
 	data *taskData,
 ) {
-	msgData := &notificationservice.BaseMsgDataCronTaskNotification{
-		Succeeded:     data.Task.IsDone(),
-		CronJobName:   data.CronJobSetting.Name,
-		CronJobExpr:   data.CronJob.CronExpr,
-		CreatedAt:     data.CronJob.InitialTime,
-		StartedAt:     data.Task.StartedAt,
-		Duration:      data.Task.GetDuration(),
-		Retries:       data.Task.Config.Retry,
-		DashboardLink: config.Current.DashboardCronTaskDetailsURL(data.CronJobSetting.ID, data.Task.ID),
+	msgData := &notificationservice.BaseMsgDataHealthcheckNotification{
+		Succeeded:       data.Task.IsDone(),
+		HealthcheckName: data.HealthcheckSetting.Name,
+		HealthcheckType: data.Healthcheck.Type,
+		StartedAt:       data.Task.StartedAt,
+		Duration:        data.Task.GetDuration(),
+		Retries:         data.Task.Config.Retry,
+		DashboardLink:   config.Current.DashboardHealthcheckDetailsURL(data.HealthcheckSetting.ID, data.Task.ID),
 	}
 	if data.Project != nil {
 		msgData.ProjectName = data.Project.Name
@@ -76,17 +80,17 @@ func (e *Executor) sendNotificationViaEmail(
 	db database.IDB,
 	data *taskData,
 ) error {
-	settings := gofn.If(data.Task.IsDone(), data.CronJob.Notification.Success,
-		data.CronJob.Notification.Failure)
+	settings := gofn.If(data.Task.IsDone(), data.Healthcheck.Notification.Success,
+		data.Healthcheck.Notification.Failure)
 	if settings == nil || settings.ViaEmail == nil {
 		return nil
 	}
 
-	emailSetting := data.RefSettingMap[settings.ViaEmail.Sender.ID]
+	emailSetting := data.ObjectMap[settings.ViaEmail.Sender.ID]
 	if emailSetting == nil {
 		return apperrors.NewMissing("Sender email account")
 	}
-	emailAcc := emailSetting.MustAsEmail()
+	emailAcc := emailSetting.(*entity.Setting).MustAsEmail() //nolint
 	if emailAcc == nil {
 		return apperrors.NewMissing("Sender email account")
 	}
@@ -110,17 +114,17 @@ func (e *Executor) sendNotificationViaEmail(
 
 	subject := fmt.Sprintf("[%s/%s]", data.Project.Name, data.App.Name)
 	if data.Task.IsDone() {
-		subject += " scheduled task succeeded"
+		subject += " Healthcheck succeeded"
 	} else {
-		subject += " scheduled task failed"
+		subject += " Healthcheck failed"
 	}
 
-	err = e.notificationService.EmailSendCronTaskNotification(ctx, db,
-		&notificationservice.EmailMsgDataCronTaskNotification{
-			BaseMsgDataCronTaskNotification: data.NtfnMsgData,
-			Email:                           emailAcc,
-			Recipients:                      userEmails,
-			Subject:                         subject,
+	err = e.notificationService.EmailSendHealthcheckNotification(ctx, db,
+		&notificationservice.EmailMsgDataHealthcheckNotification{
+			BaseMsgDataHealthcheckNotification: data.NtfnMsgData,
+			Email:                              emailAcc,
+			Recipients:                         userEmails,
+			Subject:                            subject,
 		})
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -134,25 +138,25 @@ func (e *Executor) sendNotificationViaSlack(
 	db database.IDB,
 	data *taskData,
 ) error {
-	settings := gofn.If(data.Task.IsDone(), data.CronJob.Notification.Success,
-		data.CronJob.Notification.Failure)
+	settings := gofn.If(data.Task.IsDone(), data.Healthcheck.Notification.Success,
+		data.Healthcheck.Notification.Failure)
 	if settings == nil || settings.ViaSlack == nil {
 		return nil
 	}
 
-	imSetting := data.RefSettingMap[settings.ViaSlack.Webhook.ID]
+	imSetting := data.ObjectMap[settings.ViaSlack.Webhook.ID]
 	if imSetting == nil {
 		return apperrors.NewMissing("Slack webhook")
 	}
-	imService := imSetting.MustAsIMService()
+	imService := imSetting.(*entity.Setting).MustAsIMService() //nolint
 	if imService == nil || imService.Slack == nil {
 		return apperrors.NewMissing("Slack webhook")
 	}
 
-	err := e.notificationService.SlackSendCronTaskNotification(ctx, db,
-		&notificationservice.SlackMsgDataCronTaskNotification{
-			BaseMsgDataCronTaskNotification: data.NtfnMsgData,
-			Setting:                         imService.Slack,
+	err := e.notificationService.SlackSendHealthcheckNotification(ctx, db,
+		&notificationservice.SlackMsgDataHealthcheckNotification{
+			BaseMsgDataHealthcheckNotification: data.NtfnMsgData,
+			Setting:                            imService.Slack,
 		})
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -166,25 +170,25 @@ func (e *Executor) sendNotificationViaDiscord(
 	db database.IDB,
 	data *taskData,
 ) error {
-	settings := gofn.If(data.Task.IsDone(), data.CronJob.Notification.Success,
-		data.CronJob.Notification.Failure)
+	settings := gofn.If(data.Task.IsDone(), data.Healthcheck.Notification.Success,
+		data.Healthcheck.Notification.Failure)
 	if settings == nil || settings.ViaDiscord == nil {
 		return nil
 	}
 
-	imSetting := data.RefSettingMap[settings.ViaDiscord.Webhook.ID]
+	imSetting := data.ObjectMap[settings.ViaDiscord.Webhook.ID]
 	if imSetting == nil {
 		return apperrors.NewMissing("Discord webhook")
 	}
-	imService := imSetting.MustAsIMService()
+	imService := imSetting.(*entity.Setting).MustAsIMService() //nolint
 	if imService == nil || imService.Discord == nil {
 		return apperrors.NewMissing("Discord webhook")
 	}
 
-	err := e.notificationService.DiscordSendCronTaskNotification(ctx, db,
-		&notificationservice.DiscordMsgDataCronTaskNotification{
-			BaseMsgDataCronTaskNotification: data.NtfnMsgData,
-			Setting:                         imService.Discord,
+	err := e.notificationService.DiscordSendHealthcheckNotification(ctx, db,
+		&notificationservice.DiscordMsgDataHealthcheckNotification{
+			BaseMsgDataHealthcheckNotification: data.NtfnMsgData,
+			Setting:                            imService.Discord,
 		})
 	if err != nil {
 		return apperrors.Wrap(err)

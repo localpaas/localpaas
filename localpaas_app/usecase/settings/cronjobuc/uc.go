@@ -6,7 +6,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/cronjobservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/taskservice"
-	"github.com/localpaas/localpaas/localpaas_app/taskqueue"
+	"github.com/localpaas/localpaas/localpaas_app/tasks/queue"
 )
 
 type CronJobUC struct {
@@ -18,7 +18,7 @@ type CronJobUC struct {
 	settingService           settingservice.SettingService
 	taskService              taskservice.TaskService
 	cronJobService           cronjobservice.CronJobService
-	taskQueue                taskqueue.TaskQueue
+	taskQueue                queue.TaskQueue
 }
 
 func NewCronJobUC(
@@ -30,7 +30,7 @@ func NewCronJobUC(
 	settingService settingservice.SettingService,
 	taskService taskservice.TaskService,
 	cronJobService cronjobservice.CronJobService,
-	taskQueue taskqueue.TaskQueue,
+	taskQueue queue.TaskQueue,
 ) *CronJobUC {
 	return &CronJobUC{
 		db:                       db,

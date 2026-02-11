@@ -1,7 +1,8 @@
-package taskqueue
+package queue
 
 import (
 	"context"
+	"time"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -14,6 +15,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 	"github.com/localpaas/localpaas/localpaas_app/repository/cacherepository"
 	"github.com/localpaas/localpaas/localpaas_app/service/cronjobservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/taskservice"
 )
 
 type TaskQueue interface {
@@ -38,8 +41,10 @@ type taskQueue struct {
 	taskRepo       repository.TaskRepo
 	taskInfoRepo   cacherepository.TaskInfoRepo
 	cronJobService cronjobservice.CronJobService
+	taskService    taskservice.TaskService
+	settingService settingservice.SettingService
 
-	taskExecutorMap map[base.TaskType]gocronqueue.TaskExecFunc
+	taskExecutorMap map[base.TaskType]TaskExecFunc
 }
 
 func NewTaskQueue(
@@ -51,6 +56,8 @@ func NewTaskQueue(
 	taskRepo repository.TaskRepo,
 	cacheTaskInfoRepo cacherepository.TaskInfoRepo,
 	cronJobService cronjobservice.CronJobService,
+	taskService taskservice.TaskService,
+	settingService settingservice.SettingService,
 ) TaskQueue {
 	return &taskQueue{
 		db:             db,
@@ -61,6 +68,8 @@ func NewTaskQueue(
 		taskRepo:       taskRepo,
 		taskInfoRepo:   cacheTaskInfoRepo,
 		cronJobService: cronJobService,
+		taskService:    taskService,
+		settingService: settingService,
 	}
 }
 
@@ -68,15 +77,23 @@ func (q *taskQueue) Start() (err error) {
 	// Initialize task queue worker if configured
 	if q.isWorkerMode() {
 		q.logger.Infof("starting task queue server...")
+		taskExecutorMap := make(map[base.TaskType]gocronqueue.TaskExecFunc, len(q.taskExecutorMap))
+		for k, v := range q.taskExecutorMap {
+			taskExecutorMap[k] = func(taskID string, payload string) *time.Time {
+				return q.executeTask(context.Background(), taskID, payload, v)
+			}
+		}
 		q.server, err = gocronqueue.NewServer(&gocronqueue.Config{
-			TaskMap:            q.taskExecutorMap,
-			RedisClient:        q.redisClient,
-			Logger:             q.logger,
-			Concurrency:        q.config.TaskQueue.Concurrency,
-			TaskCheckInterval:  q.config.TaskQueue.TaskCheckInterval,
-			TaskCheckFunc:      q.doScheduleTasks,
-			TaskCreateInterval: q.config.TaskQueue.TaskCreateInterval,
-			TaskCreateFunc:     q.doCreateTasks,
+			TaskMap:             taskExecutorMap,
+			RedisClient:         q.redisClient,
+			Logger:              q.logger,
+			Concurrency:         q.config.Tasks.Queue.Concurrency,
+			TaskCheckInterval:   q.config.Tasks.Queue.TaskCheckInterval,
+			TaskCheckFunc:       q.doScheduleTasks,
+			TaskCreateInterval:  q.config.Tasks.Queue.TaskCreateInterval,
+			TaskCreateFunc:      q.doCreateTasks,
+			HealthcheckInterval: q.config.Tasks.Healthcheck.Interval,
+			HealthcheckFunc:     q.doHealthcheck,
 		})
 		if err != nil {
 			return apperrors.Wrap(err)

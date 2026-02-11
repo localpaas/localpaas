@@ -1,4 +1,4 @@
-package taskqueue
+package queue
 
 import (
 	"context"
@@ -10,19 +10,25 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/infra/gocronqueue"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/entityutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
 type TaskExecData struct {
-	Task              *entity.Task
-	Uncancelable      bool
-	NonRetryable      bool
-	Canceled          bool
-	Done              bool
-	NextTasks         []*entity.Task
+	Task *entity.Task
+
+	Uncancelable bool
+	NonRetryable bool
+	Canceled     bool
+	Done         bool
+
+	// NextTasks next tasks to schedule if the handler adds some to it
+	NextTasks []*entity.Task
+	// ObjectMap can be used as a cache to store objects
+	ObjectMap map[string]any
+
+	// Callback functions
 	onCommand         func(base.TaskCommand, ...any)
 	onPostExec        func()
 	onPostTransaction func()
@@ -60,11 +66,9 @@ func (q *taskQueue) RegisterExecutor(typ base.TaskType, execFunc TaskExecFunc) {
 		return
 	}
 	if q.taskExecutorMap == nil {
-		q.taskExecutorMap = make(map[base.TaskType]gocronqueue.TaskExecFunc, 10) //nolint:mnd
+		q.taskExecutorMap = make(map[base.TaskType]TaskExecFunc, 5) //nolint:mnd
 	}
-	q.taskExecutorMap[typ] = func(taskID string, payload string) *time.Time {
-		return q.executeTask(context.Background(), taskID, payload, execFunc)
-	}
+	q.taskExecutorMap[typ] = execFunc
 }
 
 func (q *taskQueue) ScheduleTask(
@@ -156,7 +160,7 @@ func (q *taskQueue) ScheduleTasksForCronJob(
 	}
 
 	if jobSetting.DeletedAt.IsZero() && jobSetting.IsActive() {
-		tasks, err := q.createTasks(ctx, db, []string{jobSetting.ID}, q.config.TaskQueue.TaskCreateInterval)
+		tasks, err := q.createTasks(ctx, db, []string{jobSetting.ID}, q.config.Tasks.Queue.TaskCreateInterval)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}

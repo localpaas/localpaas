@@ -7,13 +7,13 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/infra/logging"
-	"github.com/localpaas/localpaas/localpaas_app/taskqueue"
-	"github.com/localpaas/localpaas/localpaas_app/taskqueue/initializer"
+	"github.com/localpaas/localpaas/localpaas_app/tasks/initializer"
+	"github.com/localpaas/localpaas/localpaas_app/tasks/queue"
 )
 
 func InitTaskQueue(
 	lc fx.Lifecycle,
-	taskQueue taskqueue.TaskQueue,
+	taskQueue queue.TaskQueue,
 	_ *initializer.WorkerInitializer,
 	logger logging.Logger,
 ) {
