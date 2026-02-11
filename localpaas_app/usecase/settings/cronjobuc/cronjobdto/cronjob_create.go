@@ -21,16 +21,16 @@ type CreateCronJobReq struct {
 }
 
 type CronJobBaseReq struct {
-	Name         string                                       `json:"name"`
-	CronType     base.CronJobType                             `json:"cronType"`
-	CronExpr     string                                       `json:"cronExpr"`
-	App          basedto.ObjectIDReq                          `json:"app"`
-	Priority     base.TaskPriority                            `json:"priority"`
-	MaxRetry     int                                          `json:"maxRetry"`
-	RetryDelay   timeutil.Duration                            `json:"retryDelay"`
-	Timeout      timeutil.Duration                            `json:"timeout"`
-	Command      *CronJobContainerCommandReq                  `json:"command"`
-	Notification *notificationdto.DefaultResultNtfnSettingReq `json:"notification"`
+	Name         string                                        `json:"name"`
+	CronType     base.CronJobType                              `json:"cronType"`
+	CronExpr     string                                        `json:"cronExpr"`
+	App          basedto.ObjectIDReq                           `json:"app"`
+	Priority     base.TaskPriority                             `json:"priority"`
+	MaxRetry     int                                           `json:"maxRetry"`
+	RetryDelay   timeutil.Duration                             `json:"retryDelay"`
+	Timeout      timeutil.Duration                             `json:"timeout"`
+	Command      *CronJobContainerCommandReq                   `json:"command"`
+	Notification *notificationdto.DefaultResultNotifSettingReq `json:"notification"`
 }
 
 func (req *CronJobBaseReq) ToEntity() *entity.CronJob {

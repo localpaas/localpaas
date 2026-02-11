@@ -18,23 +18,23 @@ func (e *Executor) notifyForDeployment(
 	db database.IDB,
 	data *taskData,
 ) error {
-	if data.NtfnSettings == nil || !data.NtfnSettings.HasDeploymentNtfnSetting() {
+	if data.NotifSettings == nil || !data.NotifSettings.HasDeploymentNotifSetting() {
 		return nil
 	}
-	ntfnSettings := data.NtfnSettings.Deployment
+	notifSettings := data.NotifSettings.Deployment
 	var execFuncs []func(ctx context.Context) error
 
-	if ntfnSettings.HasViaEmailNtfnSetting() {
+	if notifSettings.HasViaEmailNotifSetting() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
 			return e.notifyForDeploymentViaEmail(ctx, db, data)
 		})
 	}
-	if ntfnSettings.HasViaSlackNtfnSetting() {
+	if notifSettings.HasViaSlackNotifSetting() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
 			return e.notifyForDeploymentViaSlack(ctx, db, data)
 		})
 	}
-	if ntfnSettings.HasViaDiscordNtfnSetting() {
+	if notifSettings.HasViaDiscordNotifSetting() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
 			return e.notifyForDeploymentViaDiscord(ctx, db, data)
 		})
@@ -43,7 +43,7 @@ func (e *Executor) notifyForDeployment(
 		return nil
 	}
 
-	e.buildDeploymentNtfnMsgData(data)
+	e.buildDeploymentNotifMsgData(data)
 
 	err := gofn.ExecTasks(ctx, 0, execFuncs...)
 	if err != nil {
@@ -53,7 +53,7 @@ func (e *Executor) notifyForDeployment(
 	return nil
 }
 
-func (e *Executor) buildDeploymentNtfnMsgData(
+func (e *Executor) buildDeploymentNotifMsgData(
 	data *taskData,
 ) {
 	deployment := data.Deployment
@@ -67,7 +67,7 @@ func (e *Executor) buildDeploymentNtfnMsgData(
 		Duration:      deployment.GetDuration(),
 		DashboardLink: config.Current.DashboardDeploymentDetailsURL(deployment.ID),
 	}
-	data.NtfnMsgData = msgData
+	data.NotifMsgData = msgData
 
 	switch deployment.Settings.ActiveMethod {
 	case base.DeploymentMethodRepo:
@@ -88,8 +88,8 @@ func (e *Executor) notifyForDeploymentViaEmail(
 	db database.IDB,
 	data *taskData,
 ) error {
-	settings := gofn.If(data.Deployment.IsDone(), data.NtfnSettings.Deployment.Success,
-		data.NtfnSettings.Deployment.Failure)
+	settings := gofn.If(data.Deployment.IsDone(), data.NotifSettings.Deployment.Success,
+		data.NotifSettings.Deployment.Failure)
 	if settings == nil || settings.ViaEmail == nil {
 		return nil
 	}
@@ -129,7 +129,7 @@ func (e *Executor) notifyForDeploymentViaEmail(
 
 	err = e.notificationService.EmailSendAppDeploymentNotification(ctx, db,
 		&notificationservice.EmailMsgDataAppDeploymentNotification{
-			BaseMsgDataAppDeploymentNotification: data.NtfnMsgData,
+			BaseMsgDataAppDeploymentNotification: data.NotifMsgData,
 			Email:                                emailAcc,
 			Recipients:                           userEmails,
 			Subject:                              subject,
@@ -146,8 +146,8 @@ func (e *Executor) notifyForDeploymentViaSlack(
 	db database.IDB,
 	data *taskData,
 ) error {
-	settings := gofn.If(data.Deployment.IsDone(), data.NtfnSettings.Deployment.Success,
-		data.NtfnSettings.Deployment.Failure)
+	settings := gofn.If(data.Deployment.IsDone(), data.NotifSettings.Deployment.Success,
+		data.NotifSettings.Deployment.Failure)
 	if settings == nil || settings.ViaSlack == nil {
 		return nil
 	}
@@ -163,7 +163,7 @@ func (e *Executor) notifyForDeploymentViaSlack(
 
 	err := e.notificationService.SlackSendAppDeploymentNotification(ctx, db,
 		&notificationservice.SlackMsgDataAppDeploymentNotification{
-			BaseMsgDataAppDeploymentNotification: data.NtfnMsgData,
+			BaseMsgDataAppDeploymentNotification: data.NotifMsgData,
 			Setting:                              imService.Slack,
 		})
 	if err != nil {
@@ -178,8 +178,8 @@ func (e *Executor) notifyForDeploymentViaDiscord(
 	db database.IDB,
 	data *taskData,
 ) error {
-	settings := gofn.If(data.Deployment.IsDone(), data.NtfnSettings.Deployment.Success,
-		data.NtfnSettings.Deployment.Failure)
+	settings := gofn.If(data.Deployment.IsDone(), data.NotifSettings.Deployment.Success,
+		data.NotifSettings.Deployment.Failure)
 	if settings == nil || settings.ViaDiscord == nil {
 		return nil
 	}
@@ -195,7 +195,7 @@ func (e *Executor) notifyForDeploymentViaDiscord(
 
 	err := e.notificationService.DiscordSendAppDeploymentNotification(ctx, db,
 		&notificationservice.DiscordMsgDataAppDeploymentNotification{
-			BaseMsgDataAppDeploymentNotification: data.NtfnMsgData,
+			BaseMsgDataAppDeploymentNotification: data.NotifMsgData,
 			Setting:                              imService.Discord,
 		})
 	if err != nil {

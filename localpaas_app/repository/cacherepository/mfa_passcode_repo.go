@@ -33,8 +33,7 @@ func (repo *mfaPasscodeRepo) Get(
 	ctx context.Context,
 	userID string,
 ) (*cacheentity.MFAPasscode, error) {
-	resp, err := redishelper.Get(ctx, repo.client, repo.formatKey(userID),
-		redishelper.JSONValueCreator[*cacheentity.MFAPasscode])
+	resp, err := redishelper.Get[*cacheentity.MFAPasscode](ctx, repo.client, repo.formatKey(userID))
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -58,8 +57,7 @@ func (repo *mfaPasscodeRepo) Set(
 	passcode *cacheentity.MFAPasscode,
 	exp time.Duration,
 ) error {
-	err := redishelper.Set(ctx, repo.client, repo.formatKey(userID),
-		redishelper.NewJSONValue(passcode), exp)
+	err := redishelper.Set(ctx, repo.client, repo.formatKey(userID), passcode, exp)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -73,8 +71,7 @@ func (repo *mfaPasscodeRepo) IncrAttempts(
 ) error {
 	passcode.Attempts++
 	// Only set value, not set expiration to keep the current expiration value
-	err := redishelper.Set(ctx, repo.client, repo.formatKey(userID),
-		redishelper.NewJSONValue(passcode), redis.KeepTTL)
+	err := redishelper.Set(ctx, repo.client, repo.formatKey(userID), passcode, redis.KeepTTL)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

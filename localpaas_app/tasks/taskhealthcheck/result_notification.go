@@ -9,35 +9,73 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/entity/cacheentity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
 )
 
+const (
+	eventSuccess = "success"
+	eventFailure = "failure"
+)
+
+//nolint:unparam
 func (e *Executor) sendNotification(
 	ctx context.Context,
 	db database.IDB,
 	data *taskData,
 ) error {
-	ntfnSettings := data.Healthcheck.Notification
-	if ntfnSettings == nil {
+	notifSettings := data.Healthcheck.Notification
+	if notifSettings == nil {
 		return nil
+	}
+	notifEventSettings := gofn.If(data.Task.IsDone(), data.Healthcheck.Notification.Success,
+		data.Healthcheck.Notification.Failure)
+	if notifEventSettings == nil {
+		return nil
+	}
+	minSendingInterval := notifEventSettings.MinSendInterval.ToDuration()
+
+	currEvent := gofn.If(data.Task.IsDone(), eventSuccess, eventFailure)
+	lastNotifEvent := data.NotifEventMap[data.HealthcheckSetting.ID]
+	timeNow := timeutil.NowUTC()
+	shouldSkipNotifEmail := false
+	shouldSkipNotifSlack := false
+	shouldSkipNotifDiscord := false
+
+	if minSendingInterval > 0 && lastNotifEvent != nil && lastNotifEvent.Event == currEvent {
+		if timeNow.Sub(lastNotifEvent.Ts) < minSendingInterval {
+			shouldSkipNotifEmail = lastNotifEvent.EmailSent
+			shouldSkipNotifSlack = lastNotifEvent.SlackSent
+			shouldSkipNotifDiscord = lastNotifEvent.DiscordSent
+		}
 	}
 
 	var execFuncs []func(ctx context.Context) error
+	emailSent := false
+	slackSent := false
+	discordSent := false
 
-	if ntfnSettings.HasViaEmailNtfnSetting() {
+	if !shouldSkipNotifEmail && notifSettings.HasViaEmailNotifSetting() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
-			return e.sendNotificationViaEmail(ctx, db, data)
+			err := e.sendNotificationViaEmail(ctx, db, data)
+			emailSent = err == nil
+			return err
 		})
 	}
-	if ntfnSettings.HasViaSlackNtfnSetting() {
+	if !shouldSkipNotifSlack && notifSettings.HasViaSlackNotifSetting() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
-			return e.sendNotificationViaSlack(ctx, db, data)
+			err := e.sendNotificationViaSlack(ctx, db, data)
+			slackSent = err == nil
+			return err
 		})
 	}
-	if ntfnSettings.HasViaDiscordNtfnSetting() {
+	if !shouldSkipNotifDiscord && notifSettings.HasViaDiscordNotifSetting() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
-			return e.sendNotificationViaDiscord(ctx, db, data)
+			err := e.sendNotificationViaDiscord(ctx, db, data)
+			discordSent = err == nil
+			return err
 		})
 	}
 	if len(execFuncs) == 0 {
@@ -46,9 +84,17 @@ func (e *Executor) sendNotification(
 
 	e.buildNotificationMsgData(data)
 
-	err := gofn.ExecTasks(ctx, 0, execFuncs...)
-	if err != nil {
-		return apperrors.Wrap(err)
+	_ = gofn.ExecTasksEx(ctx, 20, false, execFuncs...) //nolint
+
+	// Update notification events in redis
+	if minSendingInterval > 0 {
+		_ = e.notifEventRepo.Set(ctx, data.HealthcheckSetting.ID, &cacheentity.HealthcheckNotifEvent{
+			Event:       currEvent,
+			Ts:          timeNow,
+			EmailSent:   emailSent,
+			SlackSent:   slackSent,
+			DiscordSent: discordSent,
+		}, minSendingInterval)
 	}
 
 	return nil
@@ -60,7 +106,7 @@ func (e *Executor) buildNotificationMsgData(
 	msgData := &notificationservice.BaseMsgDataHealthcheckNotification{
 		Succeeded:       data.Task.IsDone(),
 		HealthcheckName: data.HealthcheckSetting.Name,
-		HealthcheckType: data.Healthcheck.Type,
+		HealthcheckType: data.Healthcheck.HealthcheckType,
 		StartedAt:       data.Task.StartedAt,
 		Duration:        data.Task.GetDuration(),
 		Retries:         data.Task.Config.Retry,
@@ -72,7 +118,7 @@ func (e *Executor) buildNotificationMsgData(
 	if data.App != nil {
 		msgData.AppName = data.App.Name
 	}
-	data.NtfnMsgData = msgData
+	data.NotifMsgData = msgData
 }
 
 func (e *Executor) sendNotificationViaEmail(
@@ -113,15 +159,11 @@ func (e *Executor) sendNotificationViaEmail(
 	}
 
 	subject := fmt.Sprintf("[%s/%s]", data.Project.Name, data.App.Name)
-	if data.Task.IsDone() {
-		subject += " Healthcheck succeeded"
-	} else {
-		subject += " Healthcheck failed"
-	}
+	subject += gofn.If(data.Task.IsDone(), " Healthcheck succeeded", " Healthcheck failed")
 
 	err = e.notificationService.EmailSendHealthcheckNotification(ctx, db,
 		&notificationservice.EmailMsgDataHealthcheckNotification{
-			BaseMsgDataHealthcheckNotification: data.NtfnMsgData,
+			BaseMsgDataHealthcheckNotification: data.NotifMsgData,
 			Email:                              emailAcc,
 			Recipients:                         userEmails,
 			Subject:                            subject,
@@ -155,7 +197,7 @@ func (e *Executor) sendNotificationViaSlack(
 
 	err := e.notificationService.SlackSendHealthcheckNotification(ctx, db,
 		&notificationservice.SlackMsgDataHealthcheckNotification{
-			BaseMsgDataHealthcheckNotification: data.NtfnMsgData,
+			BaseMsgDataHealthcheckNotification: data.NotifMsgData,
 			Setting:                            imService.Slack,
 		})
 	if err != nil {
@@ -187,7 +229,7 @@ func (e *Executor) sendNotificationViaDiscord(
 
 	err := e.notificationService.DiscordSendHealthcheckNotification(ctx, db,
 		&notificationservice.DiscordMsgDataHealthcheckNotification{
-			BaseMsgDataHealthcheckNotification: data.NtfnMsgData,
+			BaseMsgDataHealthcheckNotification: data.NotifMsgData,
 			Setting:                            imService.Discord,
 		})
 	if err != nil {

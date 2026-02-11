@@ -34,8 +34,7 @@ func (repo *taskInfoRepo) Get(
 	ctx context.Context,
 	taskID string,
 ) (*cacheentity.TaskInfo, error) {
-	resp, err := redishelper.Get(ctx, repo.client, repo.formatKey(taskID),
-		redishelper.JSONValueCreator[*cacheentity.TaskInfo])
+	resp, err := redishelper.Get[*cacheentity.TaskInfo](ctx, repo.client, repo.formatKey(taskID))
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -73,8 +72,7 @@ func (repo *taskInfoRepo) mGet(
 	ctx context.Context,
 	keys []string,
 ) (map[string]*cacheentity.TaskInfo, error) {
-	resp, err := redishelper.MGet(ctx, repo.client, keys,
-		redishelper.JSONValueCreator[*cacheentity.TaskInfo])
+	resp, err := redishelper.MGet[*cacheentity.TaskInfo](ctx, repo.client, keys...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -93,8 +91,7 @@ func (repo *taskInfoRepo) Set(
 	taskInfo *cacheentity.TaskInfo,
 	exp time.Duration,
 ) error {
-	err := redishelper.Set(ctx, repo.client, repo.formatKey(taskID),
-		redishelper.NewJSONValue(taskInfo), exp)
+	err := redishelper.Set(ctx, repo.client, repo.formatKey(taskID), taskInfo, exp)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -106,8 +103,7 @@ func (repo *taskInfoRepo) Update(
 	taskID string,
 	taskInfo *cacheentity.TaskInfo,
 ) error {
-	err := redishelper.SetXX(ctx, repo.client, repo.formatKey(taskID),
-		redishelper.NewJSONValue(taskInfo), redis.KeepTTL)
+	err := redishelper.SetXX(ctx, repo.client, repo.formatKey(taskID), taskInfo, redis.KeepTTL)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

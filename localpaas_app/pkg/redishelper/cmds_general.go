@@ -8,7 +8,6 @@ import (
 	"github.com/redis/go-redis/v9"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
 )
 
 func Keys(
@@ -30,26 +29,21 @@ func Get[T any](
 	ctx context.Context,
 	cmder Cmdable,
 	key string,
-	valueCreator ValueCreator[T],
 ) (value T, err error) {
 	valueStr, err := cmder.Get(ctx, key).Result()
-	if err != nil && errors.Is(err, redis.Nil) {
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			return value, apperrors.NewNotFoundNT(key)
+		}
 		return value, apperrors.NewNotFoundNT(key)
 	}
-
-	model := valueCreator(value)
-	err = model.RedisUnmarshal(reflectutil.UnsafeStrToBytes(valueStr))
-	if err != nil {
-		return value, apperrors.New(err).WithMsgLog("failed to unmarshal value")
-	}
-	return model.GetData(), nil
+	return unmarshalStr[T](valueStr)
 }
 
 func MGet[T any](
 	ctx context.Context,
 	cmder Cmdable,
-	keys []string,
-	valueCreator ValueCreator[T],
+	keys ...string,
 ) (values []T, err error) {
 	if len(keys) == 0 {
 		return values, nil
@@ -61,37 +55,20 @@ func MGet[T any](
 		}
 		return nil, apperrors.Wrap(err)
 	}
-
-	var valDefault T
-	for _, item := range slice {
-		model := valueCreator(valDefault)
-		itemBytes := ParseBytes(item)
-		if len(itemBytes) == 0 {
-			values = append(values, model.GetData())
-			continue
-		}
-		err = model.RedisUnmarshal(ParseBytes(item))
-		if err != nil {
-			return nil, apperrors.New(err).WithMsgLog("failed to unmarshal value")
-		}
-		values = append(values, model.GetData())
-	}
-
-	return values, nil
+	return unmarshalSlice[T](slice...)
 }
 
 func Set[T any](
 	ctx context.Context,
 	cmder Cmdable,
 	key string,
-	value Value[T],
+	value T,
 	expiration time.Duration,
 ) (err error) {
-	data, err := value.RedisMarshal()
+	data, err := jsonMarshal(value)
 	if err != nil {
 		return apperrors.New(err).WithMsgLog("failed to marshal value")
 	}
-
 	_, err = cmder.Set(ctx, key, data, expiration).Result()
 	if err != nil {
 		return apperrors.New(err).WithMsgLog("failed to set value in redis")
@@ -103,14 +80,13 @@ func SetXX[T any](
 	ctx context.Context,
 	cmder Cmdable,
 	key string,
-	value Value[T],
+	value T,
 	expiration time.Duration,
 ) (err error) {
-	data, err := value.RedisMarshal()
+	data, err := jsonMarshal(value)
 	if err != nil {
 		return apperrors.New(err).WithMsgLog("failed to marshal value")
 	}
-
 	_, err = cmder.SetXX(ctx, key, data, expiration).Result()
 	if err != nil {
 		return apperrors.New(err).WithMsgLog("failed to set value in redis")
@@ -122,14 +98,13 @@ func SetNX[T any](
 	ctx context.Context,
 	cmder Cmdable,
 	key string,
-	value Value[T],
+	value T,
 	expiration time.Duration,
 ) (err error) {
-	data, err := value.RedisMarshal()
+	data, err := jsonMarshal(value)
 	if err != nil {
 		return apperrors.New(err).WithMsgLog("failed to marshal value")
 	}
-
 	_, err = cmder.SetNX(ctx, key, data, expiration).Result()
 	if err != nil {
 		return apperrors.New(err).WithMsgLog("failed to set value in redis")
@@ -141,7 +116,7 @@ func MSet[T any](
 	ctx context.Context,
 	cmder Cmdable,
 	keys []string,
-	values []Value[T],
+	values []T,
 	expiration time.Duration,
 ) (err error) {
 	if len(keys) == 0 {
@@ -149,15 +124,14 @@ func MSet[T any](
 	}
 	_, err = cmder.TxPipelined(ctx, func(p redis.Pipeliner) error {
 		for i, key := range keys {
-			val, err := values[i].RedisMarshal()
+			data, err := jsonMarshal(values[i])
 			if err != nil {
 				return apperrors.New(err).WithMsgLog("failed to marshal value")
 			}
-			valStr := reflectutil.UnsafeBytesToStr(val)
 			if expiration == redis.KeepTTL {
-				_, err = p.SetXX(ctx, key, valStr, expiration).Result()
+				_, err = p.SetXX(ctx, key, data, expiration).Result()
 			} else {
-				_, err = p.Set(ctx, key, valStr, expiration).Result()
+				_, err = p.Set(ctx, key, data, expiration).Result()
 			}
 			if err != nil {
 				return apperrors.New(err).WithMsgLog("failed to set value in redis")

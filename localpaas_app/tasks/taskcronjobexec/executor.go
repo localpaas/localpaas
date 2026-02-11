@@ -81,7 +81,7 @@ type taskData struct {
 	App            *entity.App
 	LogStore       *applog.Store
 	RefSettingMap  map[string]*entity.Setting
-	NtfnMsgData    *notificationservice.BaseMsgDataCronTaskNotification
+	NotifMsgData   *notificationservice.BaseMsgDataCronTaskNotification
 }
 
 func (e *Executor) execute(

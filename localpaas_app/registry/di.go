@@ -56,6 +56,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/healthcheckuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/registryauthuc"
@@ -145,6 +146,7 @@ var Provides = []any{
 	lpappuc.NewLpAppUC,
 	gitsourceuc.NewGitSourceUC,
 	cronjobuc.NewCronJobUC,
+	healthcheckuc.NewHealthcheckUC,
 	taskuc.NewTaskUC,
 	emailuc.NewEmailUC,
 	webhookuc.NewWebhookUC,
@@ -195,4 +197,5 @@ var Provides = []any{
 	cacherepository.NewTaskControlRepo,
 	cacherepository.NewDeploymentInfoRepo,
 	cacherepository.NewLoginAttemptRepo,
+	cacherepository.NewHealthcheckNotifEventRepo,
 }

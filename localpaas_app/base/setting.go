@@ -24,9 +24,9 @@ const (
 	SettingTypeGithubApp       SettingType = "github-app"
 	SettingTypeAccessToken     SettingType = "access-token"
 	SettingTypeCronJob         SettingType = "cron-job"
+	SettingTypeHealthcheck     SettingType = "healthcheck"
 	SettingTypeEmail           SettingType = "email"
 	SettingTypeRepoWebhook     SettingType = "repo-webhook"
-	SettingTypeHealthcheck     SettingType = "healthcheck"
 )
 
 var (

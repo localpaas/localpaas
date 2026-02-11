@@ -48,8 +48,8 @@ type Config struct {
 	TaskCreateInterval time.Duration
 
 	// Healthcheck: a special kind of task
-	HealthcheckInterval time.Duration
-	HealthcheckFunc     func(ctx context.Context) error
+	HealthcheckBaseInterval time.Duration
+	HealthcheckFunc         func(ctx context.Context) error
 }
 
 type jobData struct {
@@ -96,7 +96,7 @@ func (s *Server) Start() error {
 
 	// Start a job to periodically do health check
 	go func() {
-		interval := s.config.HealthcheckInterval
+		interval := s.config.HealthcheckBaseInterval
 		timeNow := time.Now()
 		wait := timeNow.Truncate(interval).Add(interval).Sub(timeNow)
 		time.Sleep(wait)

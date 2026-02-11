@@ -10,6 +10,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
+	"github.com/localpaas/localpaas/localpaas_app/infra/gocronqueue"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/entityutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
@@ -66,9 +67,11 @@ func (q *taskQueue) RegisterExecutor(typ base.TaskType, execFunc TaskExecFunc) {
 		return
 	}
 	if q.taskExecutorMap == nil {
-		q.taskExecutorMap = make(map[base.TaskType]TaskExecFunc, 5) //nolint:mnd
+		q.taskExecutorMap = make(map[base.TaskType]gocronqueue.TaskExecFunc, 5) //nolint:mnd
 	}
-	q.taskExecutorMap[typ] = execFunc
+	q.taskExecutorMap[typ] = func(taskID string, payload string) *time.Time {
+		return q.executeTask(context.Background(), taskID, payload, execFunc)
+	}
 }
 
 func (q *taskQueue) ScheduleTask(

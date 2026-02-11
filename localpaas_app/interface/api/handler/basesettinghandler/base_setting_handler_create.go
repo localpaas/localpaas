@@ -14,6 +14,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc/cronjobdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc/emaildto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc/githubappdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/healthcheckuc/healthcheckdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc/imservicedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc/oauthdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/registryauthuc/registryauthdto"
@@ -121,6 +122,11 @@ func (h *BaseSettingHandler) CreateSetting(
 		r := cronjobdto.NewCreateCronJobReq()
 		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.CronJobUC.CreateCronJob(reqCtx, auth, r) }
+
+	case base.ResourceTypeHealthcheck:
+		r := healthcheckdto.NewCreateHealthcheckReq()
+		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		req, ucFunc = r, func() (any, error) { return h.HealthcheckUC.CreateHealthcheck(reqCtx, auth, r) }
 
 	case base.ResourceTypeSecret:
 		r := secretdto.NewCreateSecretReq()

@@ -1,11 +1,13 @@
 package entity
 
-type DefaultResultNtfnSetting struct {
-	Success *DefaultTargetNtfnSetting `json:"success,omitempty"`
-	Failure *DefaultTargetNtfnSetting `json:"failure,omitempty"`
+import "github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
+
+type DefaultResultNotifSetting struct {
+	Success *DefaultTargetNotifSetting `json:"success,omitempty"`
+	Failure *DefaultTargetNotifSetting `json:"failure,omitempty"`
 }
 
-func (s *DefaultResultNtfnSetting) GetRefSettingIDs() (res []string) {
+func (s *DefaultResultNotifSetting) GetRefSettingIDs() (res []string) {
 	if s == nil {
 		return res
 	}
@@ -14,34 +16,36 @@ func (s *DefaultResultNtfnSetting) GetRefSettingIDs() (res []string) {
 	return res
 }
 
-func (s *DefaultResultNtfnSetting) HasViaEmailNtfnSetting() bool {
+func (s *DefaultResultNotifSetting) HasViaEmailNotifSetting() bool {
 	if s == nil {
 		return false
 	}
 	return (s.Success != nil && s.Success.ViaEmail != nil) || (s.Failure != nil && s.Failure.ViaEmail != nil)
 }
 
-func (s *DefaultResultNtfnSetting) HasViaSlackNtfnSetting() bool {
+func (s *DefaultResultNotifSetting) HasViaSlackNotifSetting() bool {
 	if s == nil {
 		return false
 	}
 	return (s.Success != nil && s.Success.ViaSlack != nil) || (s.Failure != nil && s.Failure.ViaSlack != nil)
 }
 
-func (s *DefaultResultNtfnSetting) HasViaDiscordNtfnSetting() bool {
+func (s *DefaultResultNotifSetting) HasViaDiscordNotifSetting() bool {
 	if s == nil {
 		return false
 	}
 	return (s.Success != nil && s.Success.ViaDiscord != nil) || (s.Failure != nil && s.Failure.ViaDiscord != nil)
 }
 
-type DefaultTargetNtfnSetting struct {
-	ViaEmail   *EmailNtfnSetting   `json:"viaEmail,omitempty"`
-	ViaSlack   *SlackNtfnSetting   `json:"viaSlack,omitempty"`
-	ViaDiscord *DiscordNtfnSetting `json:"viaDiscord,omitempty"`
+type DefaultTargetNotifSetting struct {
+	ViaEmail   *EmailNotifSetting   `json:"viaEmail,omitempty"`
+	ViaSlack   *SlackNotifSetting   `json:"viaSlack,omitempty"`
+	ViaDiscord *DiscordNotifSetting `json:"viaDiscord,omitempty"`
+
+	MinSendInterval timeutil.Duration `json:"minSendInterval,omitempty"`
 }
 
-func (s *DefaultTargetNtfnSetting) GetRefSettingIDs() (res []string) {
+func (s *DefaultTargetNotifSetting) GetRefSettingIDs() (res []string) {
 	if s == nil {
 		return res
 	}
@@ -51,19 +55,19 @@ func (s *DefaultTargetNtfnSetting) GetRefSettingIDs() (res []string) {
 	return res
 }
 
-func (s *DefaultTargetNtfnSetting) HasViaEmailNtfnSettings() bool {
+func (s *DefaultTargetNotifSetting) HasViaEmailNotifSettings() bool {
 	return s.ViaEmail != nil
 }
 
-func (s *DefaultTargetNtfnSetting) HasViaSlackNtfnSettings() bool {
+func (s *DefaultTargetNotifSetting) HasViaSlackNotifSettings() bool {
 	return s.ViaSlack != nil
 }
 
-func (s *DefaultTargetNtfnSetting) HasViaDiscordNtfnSettings() bool {
+func (s *DefaultTargetNotifSetting) HasViaDiscordNotifSettings() bool {
 	return s.ViaDiscord != nil
 }
 
-type EmailNtfnSetting struct {
+type EmailNotifSetting struct {
 	Sender           ObjectID `json:"sender"`
 	ToProjectMembers bool     `json:"toProjectMembers,omitempty"`
 	ToProjectOwners  bool     `json:"toProjectOwners,omitempty"`
@@ -71,7 +75,7 @@ type EmailNtfnSetting struct {
 	ToAddresses      []string `json:"toAddresses,omitempty"`
 }
 
-func (s *EmailNtfnSetting) GetRefSettingIDs() (res []string) {
+func (s *EmailNotifSetting) GetRefSettingIDs() (res []string) {
 	if s == nil {
 		return res
 	}
@@ -79,11 +83,11 @@ func (s *EmailNtfnSetting) GetRefSettingIDs() (res []string) {
 	return res
 }
 
-type SlackNtfnSetting struct {
+type SlackNotifSetting struct {
 	Webhook ObjectID `json:"webhook"`
 }
 
-func (s *SlackNtfnSetting) GetRefSettingIDs() (res []string) {
+func (s *SlackNotifSetting) GetRefSettingIDs() (res []string) {
 	if s == nil {
 		return res
 	}
@@ -91,11 +95,11 @@ func (s *SlackNtfnSetting) GetRefSettingIDs() (res []string) {
 	return res
 }
 
-type DiscordNtfnSetting struct {
+type DiscordNotifSetting struct {
 	Webhook ObjectID `json:"webhook"`
 }
 
-func (s *DiscordNtfnSetting) GetRefSettingIDs() (res []string) {
+func (s *DiscordNotifSetting) GetRefSettingIDs() (res []string) {
 	if s == nil {
 		return res
 	}

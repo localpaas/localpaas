@@ -15,6 +15,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/rediscache"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
+	"github.com/localpaas/localpaas/localpaas_app/repository/cacherepository"
 	"github.com/localpaas/localpaas/localpaas_app/service/appservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
@@ -27,6 +28,7 @@ type Executor struct {
 	db                  *database.DB
 	redisClient         rediscache.Client
 	settingRepo         repository.SettingRepo
+	notifEventRepo      cacherepository.HealthcheckNotifEventRepo
 	appService          appservice.AppService
 	settingService      settingservice.SettingService
 	userService         userservice.UserService
@@ -39,6 +41,7 @@ func NewExecutor(
 	taskQueue queue.TaskQueue,
 	redisClient rediscache.Client,
 	settingRepo repository.SettingRepo,
+	notifEventRepo cacherepository.HealthcheckNotifEventRepo,
 	appService appservice.AppService,
 	settingService settingservice.SettingService,
 	userService userservice.UserService,
@@ -49,66 +52,56 @@ func NewExecutor(
 		db:                  db,
 		redisClient:         redisClient,
 		settingRepo:         settingRepo,
+		notifEventRepo:      notifEventRepo,
 		appService:          appService,
 		settingService:      settingService,
 		userService:         userService,
 		notificationService: notificationService,
 	}
-	taskQueue.RegisterExecutor(base.TaskTypeHealthcheck, p.execute)
+	taskQueue.RegisterHealthcheckExecutor(p.execute)
 	return p
 }
 
 type taskData struct {
-	*queue.TaskExecData
-	HealthcheckSetting *entity.Setting
-	Healthcheck        *entity.Healthcheck
-	Output             *entity.TaskHealthcheckOutput
-	Project            *entity.Project
-	App                *entity.App
-	NtfnMsgData        *notificationservice.BaseMsgDataHealthcheckNotification
+	*queue.HealthcheckExecData
+	Output       *entity.TaskHealthcheckOutput
+	NotifMsgData *notificationservice.BaseMsgDataHealthcheckNotification
 }
 
 func (e *Executor) execute(
 	ctx context.Context,
-	db database.Tx,
-	execData *queue.TaskExecData,
+	execData *queue.HealthcheckExecData,
 ) (err error) {
 	task := execData.Task
 	data := &taskData{
-		TaskExecData: execData,
+		HealthcheckExecData: execData,
 	}
-	data.HealthcheckSetting = data.ObjectMap[task.TargetID].(*entity.Setting) //nolint
-	data.Healthcheck = data.HealthcheckSetting.MustAsHealthcheck()
 	data.Output = &entity.TaskHealthcheckOutput{}
-	data.Project = data.HealthcheckSetting.BelongToProject
-	data.App = data.HealthcheckSetting.BelongToApp
-	if data.App != nil {
-		data.Project = data.App.Project
-	}
 
+	var testErr error
 	defer func() {
 		r := recover()
 		if err == nil && r != nil {
 			err = apperrors.NewPanic(fmt.Sprintf("%v", r))
 		}
 
-		task.Status = gofn.If(err == nil, base.TaskStatusDone, base.TaskStatusFailed)
+		task.Status = gofn.If(testErr == nil, base.TaskStatusDone, base.TaskStatusFailed)
 		task.EndedAt = timeutil.NowUTC()
 		task.MustSetOutput(data.Output)
 
-		err = e.sendNotification(ctx, db, data)
+		err = e.sendNotification(ctx, e.db, data)
 	}()
 
 	retries := 0
 	startTime := time.Now()
 	for {
-		switch data.Healthcheck.Type { //nolint
+		switch data.Healthcheck.HealthcheckType { //nolint
 		case base.HealthcheckTypeREST:
-			err = e.doHealthcheckREST(ctx, data)
+			testErr = e.doHealthcheckREST(ctx, data)
 		case base.HealthcheckTypeGRPC:
-			err = e.doHealthcheckGRPC(ctx, data)
+			testErr = e.doHealthcheckGRPC(ctx, data)
 		}
-		if err != nil {
+		if testErr != nil {
 			retries++
 			if retries > task.Config.MaxRetry {
 				break
@@ -125,5 +118,5 @@ func (e *Executor) execute(
 		}
 	}
 
-	return nil
+	return err
 }

@@ -17,24 +17,24 @@ func (e *Executor) sendNotification(
 	db database.IDB,
 	data *taskData,
 ) error {
-	ntfnSettings := data.CronJob.Notification
-	if ntfnSettings == nil {
+	notifSettings := data.CronJob.Notification
+	if notifSettings == nil {
 		return nil
 	}
 
 	var execFuncs []func(ctx context.Context) error
 
-	if ntfnSettings.HasViaEmailNtfnSetting() {
+	if notifSettings.HasViaEmailNotifSetting() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
 			return e.sendNotificationViaEmail(ctx, db, data)
 		})
 	}
-	if ntfnSettings.HasViaSlackNtfnSetting() {
+	if notifSettings.HasViaSlackNotifSetting() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
 			return e.sendNotificationViaSlack(ctx, db, data)
 		})
 	}
-	if ntfnSettings.HasViaDiscordNtfnSetting() {
+	if notifSettings.HasViaDiscordNotifSetting() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
 			return e.sendNotificationViaDiscord(ctx, db, data)
 		})
@@ -72,7 +72,7 @@ func (e *Executor) buildNotificationMsgData(
 	if data.App != nil {
 		msgData.AppName = data.App.Name
 	}
-	data.NtfnMsgData = msgData
+	data.NotifMsgData = msgData
 }
 
 func (e *Executor) sendNotificationViaEmail(
@@ -121,7 +121,7 @@ func (e *Executor) sendNotificationViaEmail(
 
 	err = e.notificationService.EmailSendCronTaskNotification(ctx, db,
 		&notificationservice.EmailMsgDataCronTaskNotification{
-			BaseMsgDataCronTaskNotification: data.NtfnMsgData,
+			BaseMsgDataCronTaskNotification: data.NotifMsgData,
 			Email:                           emailAcc,
 			Recipients:                      userEmails,
 			Subject:                         subject,
@@ -155,7 +155,7 @@ func (e *Executor) sendNotificationViaSlack(
 
 	err := e.notificationService.SlackSendCronTaskNotification(ctx, db,
 		&notificationservice.SlackMsgDataCronTaskNotification{
-			BaseMsgDataCronTaskNotification: data.NtfnMsgData,
+			BaseMsgDataCronTaskNotification: data.NotifMsgData,
 			Setting:                         imService.Slack,
 		})
 	if err != nil {
@@ -187,7 +187,7 @@ func (e *Executor) sendNotificationViaDiscord(
 
 	err := e.notificationService.DiscordSendCronTaskNotification(ctx, db,
 		&notificationservice.DiscordMsgDataCronTaskNotification{
-			BaseMsgDataCronTaskNotification: data.NtfnMsgData,
+			BaseMsgDataCronTaskNotification: data.NotifMsgData,
 			Setting:                         imService.Discord,
 		})
 	if err != nil {

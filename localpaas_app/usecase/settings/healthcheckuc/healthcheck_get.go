@@ -1,0 +1,40 @@
+package healthcheckuc
+
+import (
+	"context"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/healthcheckuc/healthcheckdto"
+)
+
+func (uc *HealthcheckUC) GetHealthcheck(
+	ctx context.Context,
+	auth *basedto.Auth,
+	req *healthcheckdto.GetHealthcheckReq,
+) (*healthcheckdto.GetHealthcheckResp, error) {
+	req.Type = currentSettingType
+	setting, err := settings.GetSetting(ctx, uc.db, auth, &req.GetSettingReq, &settings.GetSettingData{
+		SettingRepo: uc.settingRepo,
+	})
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	input := &healthcheckdto.HealthcheckTransformInput{}
+	err = uc.loadReferenceData(ctx, uc.db, []*entity.Setting{setting}, input)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	resp, err := healthcheckdto.TransformHealthcheck(setting, input)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	return &healthcheckdto.GetHealthcheckResp{
+		Data: resp,
+	}, nil
+}

@@ -11,7 +11,7 @@ const (
 )
 
 type AppNotificationSettings struct {
-	Deployment *DefaultResultNtfnSetting `json:"deployment,omitempty"`
+	Deployment *DefaultResultNotifSetting `json:"deployment,omitempty"`
 }
 
 func (s *AppNotificationSettings) GetType() base.SettingType {
@@ -23,7 +23,7 @@ func (s *AppNotificationSettings) GetRefSettingIDs() (res []string) {
 	return res
 }
 
-func (s *AppNotificationSettings) HasDeploymentNtfnSetting() bool {
+func (s *AppNotificationSettings) HasDeploymentNotifSetting() bool {
 	return s.Deployment != nil && (s.Deployment.Success != nil || s.Deployment.Failure != nil)
 }
 

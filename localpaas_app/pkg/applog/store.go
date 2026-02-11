@@ -35,7 +35,7 @@ func (s *Store) Add(ctx context.Context, frames ...*LogFrame) error {
 
 	if s.storeRemote {
 		// Store log data in redis
-		err := redishelper.RPush(ctx, s.redisClient, s.Key, redishelper.NewJSONValues(frames)...)
+		err := redishelper.RPush(ctx, s.redisClient, s.Key, frames...)
 		if err != nil {
 			return apperrors.New(err).WithMsgLog("failed to push log frames to redis")
 		}
@@ -75,8 +75,7 @@ func (s *Store) GetLocalData(ctx context.Context, fromIndex int64) ([]*LogFrame,
 }
 
 func (s *Store) GetRemoteData(ctx context.Context, fromIndex int64) ([]*LogFrame, error) {
-	frames, err := redishelper.LRange(ctx, s.redisClient, s.Key, fromIndex, -1,
-		redishelper.JSONValueCreator[*LogFrame])
+	frames, err := redishelper.LRange[*LogFrame](ctx, s.redisClient, s.Key, fromIndex, -1)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

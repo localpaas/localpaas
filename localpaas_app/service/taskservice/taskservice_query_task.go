@@ -64,10 +64,11 @@ func (s *taskService) GetTask(
 }
 
 type ListTaskReq struct {
-	JobID  []string
-	Status []base.TaskStatus
-	Search string
-	Paging basedto.Paging
+	JobID    []string
+	TargetID []string
+	Status   []base.TaskStatus
+	Search   string
+	Paging   basedto.Paging
 
 	SkipQueryCache bool
 }
@@ -102,6 +103,9 @@ func (s *taskService) ListTask(
 	var listOpts []bunex.SelectQueryOption
 	if len(req.JobID) > 0 {
 		listOpts = append(listOpts, bunex.SelectWhereIn("task.job_id IN (?)", req.JobID...))
+	}
+	if len(req.TargetID) > 0 {
+		listOpts = append(listOpts, bunex.SelectWhereIn("task.target_id IN (?)", req.TargetID...))
 	}
 	if len(req.Status) > 0 { //nolint:nestif
 		statuses := req.Status

@@ -185,8 +185,8 @@ func (q *taskQueue) taskControlCheck(
 		default:
 		}
 
-		taskControls, err := redishelper.BLPop(ctx, q.redisClient, []string{key}, taskControlCheckTimeout,
-			redishelper.JSONValueCreator[*cacheentity.TaskControl])
+		taskControls, err := redishelper.BLPop[*cacheentity.TaskControl](ctx, q.redisClient,
+			[]string{key}, taskControlCheckTimeout)
 		if err != nil || len(taskControls) == 0 {
 			continue
 		}

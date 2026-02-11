@@ -3543,6 +3543,531 @@
         "x-codegen-request-body-name" : "body"
       }
     },
+    "/projects/{projectID}/apps/{appID}/healthchecks" : {
+      "get" : {
+        "description" : "Lists healthchecks",
+        "operationId" : "listAppHealthcheck",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "app ID",
+          "in" : "path",
+          "name" : "appID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`search=<target> (support *)`",
+          "in" : "query",
+          "name" : "search",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`pageOffset=offset`",
+          "in" : "query",
+          "name" : "pageOffset",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`pageLimit=limit`",
+          "in" : "query",
+          "name" : "pageLimit",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`sort=[-]field1|field2...`",
+          "in" : "query",
+          "name" : "sort",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.ListHealthcheckResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Lists healthchecks",
+        "tags" : [ "apps" ]
+      },
+      "post" : {
+        "description" : "Creates a new healthcheck",
+        "operationId" : "createAppHealthcheck",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "app ID",
+          "in" : "path",
+          "name" : "appID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.CreateHealthcheckReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.CreateHealthcheckResp"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Creates a new healthcheck",
+        "tags" : [ "apps" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/projects/{projectID}/apps/{appID}/healthchecks/{itemID}" : {
+      "delete" : {
+        "description" : "Deletes healthcheck",
+        "operationId" : "deleteAppHealthcheck",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "app ID",
+          "in" : "path",
+          "name" : "appID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.DeleteHealthcheckResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Deletes healthcheck",
+        "tags" : [ "apps" ]
+      },
+      "get" : {
+        "description" : "Gets healthcheck details",
+        "operationId" : "getAppHealthcheck",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "app ID",
+          "in" : "path",
+          "name" : "appID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.GetHealthcheckResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Gets healthcheck details",
+        "tags" : [ "apps" ]
+      },
+      "put" : {
+        "description" : "Updates a healthcheck",
+        "operationId" : "updateAppHealthcheck",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "app ID",
+          "in" : "path",
+          "name" : "appID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.UpdateHealthcheckReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.UpdateHealthcheckResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates a healthcheck",
+        "tags" : [ "apps" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/projects/{projectID}/apps/{appID}/healthchecks/{itemID}/meta" : {
+      "put" : {
+        "description" : "Updates healthcheck meta",
+        "operationId" : "updateAppHealthcheckMeta",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "app ID",
+          "in" : "path",
+          "name" : "appID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.UpdateHealthcheckMetaReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.UpdateHealthcheckMetaResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates healthcheck meta",
+        "tags" : [ "apps" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/projects/{projectID}/apps/{appID}/healthchecks/{itemID}/tasks" : {
+      "get" : {
+        "description" : "Lists healthcheck tasks",
+        "operationId" : "listAppHealthcheckTask",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "app ID",
+          "in" : "path",
+          "name" : "appID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`search=<target> (support *)`",
+          "in" : "query",
+          "name" : "search",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`pageOffset=offset`",
+          "in" : "query",
+          "name" : "pageOffset",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`pageLimit=limit`",
+          "in" : "query",
+          "name" : "pageLimit",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`sort=[-]field1|field2...`",
+          "in" : "query",
+          "name" : "sort",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.ListHealthcheckTaskResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Lists healthcheck tasks",
+        "tags" : [ "apps" ]
+      }
+    },
     "/projects/{projectID}/apps/{appID}/http-settings" : {
       "get" : {
         "description" : "Gets app HTTP settings",
@@ -16516,6 +17041,22 @@
         "type" : "string",
         "x-enum-varnames" : [ "EmailKindSMTP", "EmailKindHTTP" ]
       },
+      "github_com_localpaas_localpaas_localpaas_app_base.HealthcheckGRPCStatus" : {
+        "enum" : [ 0, 1, 2, 3 ],
+        "format" : "int32",
+        "type" : "integer",
+        "x-enum-varnames" : [ "HealthcheckGRPCV1StatusUnknown", "HealthcheckGRPCV1StatusServing", "HealthcheckGRPCV1StatusNotServing", "HealthcheckGRPCV1StatusServiceUnknown" ]
+      },
+      "github_com_localpaas_localpaas_localpaas_app_base.HealthcheckGRPCVersion" : {
+        "enum" : [ "v1" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "HealthcheckGRPCV1" ]
+      },
+      "github_com_localpaas_localpaas_localpaas_app_base.HealthcheckType" : {
+        "enum" : [ "REST", "gRPC" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "HealthcheckTypeREST", "HealthcheckTypeGRPC" ]
+      },
       "github_com_localpaas_localpaas_localpaas_app_base.IMServiceKind" : {
         "enum" : [ "slack", "discord" ],
         "type" : "string",
@@ -16567,9 +17108,9 @@
         "x-enum-varnames" : [ "SettingStatusActive", "SettingStatusPending", "SettingStatusDisabled", "SettingStatusExpired" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.SettingType" : {
-        "enum" : [ "project", "app", "app-deployment", "app-http", "app-notification", "env-var", "secret", "aws", "aws-s3", "oauth", "ssh-key", "api-key", "im-service", "registry-auth", "basic-auth", "ssl", "github-app", "access-token", "cron-job", "email", "repo-webhook", "healthcheck" ],
+        "enum" : [ "project", "app", "app-deployment", "app-http", "app-notification", "env-var", "secret", "aws", "aws-s3", "oauth", "ssh-key", "api-key", "im-service", "registry-auth", "basic-auth", "ssl", "github-app", "access-token", "cron-job", "healthcheck", "email", "repo-webhook" ],
         "type" : "string",
-        "x-enum-varnames" : [ "SettingTypeProject", "SettingTypeApp", "SettingTypeAppDeployment", "SettingTypeAppHttp", "SettingTypeAppNotification", "SettingTypeEnvVar", "SettingTypeSecret", "SettingTypeAWS", "SettingTypeAWSS3", "SettingTypeOAuth", "SettingTypeSSHKey", "SettingTypeAPIKey", "SettingTypeIMService", "SettingTypeRegistryAuth", "SettingTypeBasicAuth", "SettingTypeSSL", "SettingTypeGithubApp", "SettingTypeAccessToken", "SettingTypeCronJob", "SettingTypeEmail", "SettingTypeRepoWebhook", "SettingTypeHealthcheck" ]
+        "x-enum-varnames" : [ "SettingTypeProject", "SettingTypeApp", "SettingTypeAppDeployment", "SettingTypeAppHttp", "SettingTypeAppNotification", "SettingTypeEnvVar", "SettingTypeSecret", "SettingTypeAWS", "SettingTypeAWSS3", "SettingTypeOAuth", "SettingTypeSSHKey", "SettingTypeAPIKey", "SettingTypeIMService", "SettingTypeRegistryAuth", "SettingTypeBasicAuth", "SettingTypeSSL", "SettingTypeGithubApp", "SettingTypeAccessToken", "SettingTypeCronJob", "SettingTypeHealthcheck", "SettingTypeEmail", "SettingTypeRepoWebhook" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.TaskPriority" : {
         "enum" : [ "low", "default", "critical" ],
@@ -16970,10 +17511,10 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
         "format" : "int64",
         "type" : "integer",
-        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
+        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentReq" : {
         "type" : "object"
@@ -18590,61 +19131,67 @@
         "required" : [ "cloneURL", "defaultBranch", "fullName", "gitURL", "id", "name" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultResultNtfnSettingReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultResultNotifSettingReq" : {
         "properties" : {
           "failure" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultTargetNtfnSettingReq"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultTargetNotifSettingReq"
           },
           "success" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultTargetNtfnSettingReq"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultTargetNotifSettingReq"
           }
         },
         "required" : [ "failure", "success" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultResultNtfnSettingResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultResultNotifSettingResp" : {
         "properties" : {
           "failure" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultTargetNtfnSettingResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultTargetNotifSettingResp"
           },
           "success" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultTargetNtfnSettingResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultTargetNotifSettingResp"
           }
         },
         "required" : [ "failure", "success" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultTargetNtfnSettingReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultTargetNotifSettingReq" : {
         "properties" : {
+          "minSendInterval" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
+          },
           "viaDiscord" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DiscordNtfnSettingReq"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DiscordNotifSettingReq"
           },
           "viaEmail" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.EmailNtfnSettingReq"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.EmailNotifSettingReq"
           },
           "viaSlack" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.SlackNtfnSettingReq"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.SlackNotifSettingReq"
           }
         },
-        "required" : [ "viaDiscord", "viaEmail", "viaSlack" ],
+        "required" : [ "minSendInterval", "viaDiscord", "viaEmail", "viaSlack" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultTargetNtfnSettingResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultTargetNotifSettingResp" : {
         "properties" : {
+          "minSendInterval" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
+          },
           "viaDiscord" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DiscordNtfnSettingResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DiscordNotifSettingResp"
           },
           "viaEmail" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.EmailNtfnSettingResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.EmailNotifSettingResp"
           },
           "viaSlack" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.SlackNtfnSettingResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.SlackNotifSettingResp"
           }
         },
-        "required" : [ "viaDiscord", "viaEmail", "viaSlack" ],
+        "required" : [ "minSendInterval", "viaDiscord", "viaEmail", "viaSlack" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DiscordNtfnSettingReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DiscordNotifSettingReq" : {
         "properties" : {
           "webhook" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
@@ -18653,7 +19200,7 @@
         "required" : [ "webhook" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DiscordNtfnSettingResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DiscordNotifSettingResp" : {
         "properties" : {
           "webhook" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
@@ -18662,7 +19209,7 @@
         "required" : [ "webhook" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.EmailNtfnSettingReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.EmailNotifSettingReq" : {
         "properties" : {
           "sender" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
@@ -18686,7 +19233,7 @@
         "required" : [ "sender", "toAddresses", "toAllAdmins", "toProjectMembers", "toProjectOwners" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.EmailNtfnSettingResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.EmailNotifSettingResp" : {
         "properties" : {
           "sender" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
@@ -18710,7 +19257,7 @@
         "required" : [ "sender", "toAddresses", "toAllAdmins", "toProjectMembers", "toProjectOwners" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.SlackNtfnSettingReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.SlackNotifSettingReq" : {
         "properties" : {
           "webhook" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
@@ -18719,7 +19266,7 @@
         "required" : [ "webhook" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.SlackNtfnSettingResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.SlackNotifSettingResp" : {
         "properties" : {
           "webhook" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
@@ -20328,7 +20875,7 @@
             "type" : "string"
           },
           "notification" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultResultNtfnSettingReq"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultResultNotifSettingReq"
           },
           "priority" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.TaskPriority"
@@ -20520,7 +21067,7 @@
             "type" : "string"
           },
           "notification" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultResultNtfnSettingResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultResultNotifSettingResp"
           },
           "priority" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.TaskPriority"
@@ -20715,7 +21262,7 @@
             "type" : "string"
           },
           "notification" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultResultNtfnSettingReq"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultResultNotifSettingReq"
           },
           "priority" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.TaskPriority"
@@ -21452,6 +21999,300 @@
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.UpdateGithubAppResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.CreateHealthcheckReq" : {
+        "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
+          "default" : {
+            "type" : "boolean"
+          },
+          "grpc" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.HealthcheckGRPCReq"
+          },
+          "healthcheckType" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.HealthcheckType"
+          },
+          "interval" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
+          },
+          "maxRetry" : {
+            "type" : "integer"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "notification" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultResultNotifSettingReq"
+          },
+          "rest" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.HealthcheckRESTReq"
+          },
+          "retryDelay" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
+          },
+          "timeout" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
+          }
+        },
+        "required" : [ "availableInProjects", "default", "grpc", "healthcheckType", "interval", "maxRetry", "name", "notification", "rest", "retryDelay", "timeout" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.CreateHealthcheckResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.DeleteHealthcheckResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.GetHealthcheckResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.HealthcheckResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.HealthcheckGRPCReq" : {
+        "properties" : {
+          "addr" : {
+            "type" : "string"
+          },
+          "returnStatus" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.HealthcheckGRPCStatus"
+          },
+          "service" : {
+            "type" : "string"
+          },
+          "version" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.HealthcheckGRPCVersion"
+          }
+        },
+        "required" : [ "addr", "returnStatus", "service", "version" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.HealthcheckRESTReq" : {
+        "properties" : {
+          "body" : {
+            "type" : "string"
+          },
+          "contentType" : {
+            "type" : "string"
+          },
+          "method" : {
+            "type" : "string"
+          },
+          "returnCode" : {
+            "type" : "integer"
+          },
+          "returnJSON" : {
+            "type" : "string"
+          },
+          "returnText" : {
+            "type" : "string"
+          },
+          "url" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "body", "contentType", "method", "returnCode", "returnJSON", "returnText", "url" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.HealthcheckResp" : {
+        "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
+          "createdAt" : {
+            "type" : "string"
+          },
+          "default" : {
+            "type" : "boolean"
+          },
+          "expireAt" : {
+            "type" : "string"
+          },
+          "grpc" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.HealthcheckGRPCReq"
+          },
+          "healthcheckType" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.HealthcheckType"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "inherited" : {
+            "type" : "boolean"
+          },
+          "interval" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
+          },
+          "kind" : {
+            "type" : "string"
+          },
+          "maxRetry" : {
+            "type" : "integer"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "notification" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultResultNotifSettingResp"
+          },
+          "rest" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.HealthcheckRESTReq"
+          },
+          "retryDelay" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          },
+          "timeout" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingType"
+          },
+          "updateVer" : {
+            "type" : "integer"
+          },
+          "updatedAt" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "createdAt", "grpc", "healthcheckType", "id", "interval", "maxRetry", "name", "notification", "rest", "retryDelay", "status", "timeout", "type", "updateVer", "updatedAt" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.ListHealthcheckResp" : {
+        "properties" : {
+          "data" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.HealthcheckResp"
+            },
+            "type" : "array"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.ListHealthcheckTaskResp" : {
+        "properties" : {
+          "data" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_taskuc_taskdto.TaskResp"
+            },
+            "type" : "array"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.UpdateHealthcheckMetaReq" : {
+        "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
+          "default" : {
+            "type" : "boolean"
+          },
+          "expireAt" : {
+            "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          },
+          "updateVer" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "availableInProjects", "default", "expireAt", "status", "updateVer" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.UpdateHealthcheckMetaResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.UpdateHealthcheckReq" : {
+        "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
+          "default" : {
+            "type" : "boolean"
+          },
+          "grpc" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.HealthcheckGRPCReq"
+          },
+          "healthcheckType" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.HealthcheckType"
+          },
+          "interval" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
+          },
+          "maxRetry" : {
+            "type" : "integer"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "notification" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_notification_notificationdto.DefaultResultNotifSettingReq"
+          },
+          "rest" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.HealthcheckRESTReq"
+          },
+          "retryDelay" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
+          },
+          "timeout" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
+          },
+          "updateVer" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "availableInProjects", "default", "grpc", "healthcheckType", "interval", "maxRetry", "name", "notification", "rest", "retryDelay", "timeout", "updateVer" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.UpdateHealthcheckResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"

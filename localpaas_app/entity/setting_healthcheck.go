@@ -12,14 +12,14 @@ const (
 )
 
 type Healthcheck struct {
-	Type         base.HealthcheckType      `json:"type"`
-	Interval     timeutil.Duration         `json:"interval"`
-	MaxRetry     int                       `json:"maxRetry,omitempty"`
-	RetryDelay   timeutil.Duration         `json:"retryDelay,omitempty"`
-	Timeout      timeutil.Duration         `json:"timeout,omitempty"`
-	REST         *HealthcheckREST          `json:"rest,omitempty"`
-	GRPC         *HealthcheckGRPC          `json:"grpc,omitempty"`
-	Notification *DefaultResultNtfnSetting `json:"notification,omitempty"`
+	HealthcheckType base.HealthcheckType       `json:"healthcheckType"`
+	Interval        timeutil.Duration          `json:"interval"`
+	MaxRetry        int                        `json:"maxRetry,omitempty"`
+	RetryDelay      timeutil.Duration          `json:"retryDelay,omitempty"`
+	Timeout         timeutil.Duration          `json:"timeout,omitempty"`
+	REST            *HealthcheckREST           `json:"rest,omitempty"`
+	GRPC            *HealthcheckGRPC           `json:"grpc,omitempty"`
+	Notification    *DefaultResultNotifSetting `json:"notification,omitempty"`
 }
 
 type HealthcheckREST struct {

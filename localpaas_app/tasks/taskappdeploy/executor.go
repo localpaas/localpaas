@@ -95,8 +95,8 @@ type taskData struct {
 	Step             string
 	LogStore         *applog.Store
 	RefSettingMap    map[string]*entity.Setting
-	NtfnSettings     *entity.AppNotificationSettings
-	NtfnMsgData      *notificationservice.BaseMsgDataAppDeploymentNotification
+	NotifSettings    *entity.AppNotificationSettings
+	NotifMsgData     *notificationservice.BaseMsgDataAppDeploymentNotification
 }
 
 func (e *Executor) execute(
@@ -205,15 +205,15 @@ func (e *Executor) loadDeploymentData(
 	data.LogStore = applog.NewRemoteStore(logStoreKey, true, e.redisClient)
 
 	// Load notification settings for the deployment
-	ntfnSetting, err := e.settingRepo.GetSingleByAppObject(ctx, db, base.SettingTypeAppNotification, data.App, true)
+	notifSetting, err := e.settingRepo.GetSingleByAppObject(ctx, db, base.SettingTypeAppNotification, data.App, true)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	data.NtfnSettings = ntfnSetting.MustAsAppNotificationSettings()
+	data.NotifSettings = notifSetting.MustAsAppNotificationSettings()
 	// Load reference settings
-	if data.NtfnSettings.HasDeploymentNtfnSetting() {
-		ntfnSetting.RefIDs = data.NtfnSettings.GetRefSettingIDs()
-		refSettingMap, err := e.settingService.LoadReferenceSettings(ctx, db, nil, data.App, true, ntfnSetting)
+	if data.NotifSettings.HasDeploymentNotifSetting() {
+		notifSetting.RefIDs = data.NotifSettings.GetRefSettingIDs()
+		refSettingMap, err := e.settingService.LoadReferenceSettings(ctx, db, nil, data.App, true, notifSetting)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}

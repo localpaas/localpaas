@@ -15,14 +15,14 @@ func RPush[T any](
 	ctx context.Context,
 	cmder Cmdable,
 	key string,
-	values ...Value[T],
+	values ...T,
 ) error {
 	if len(values) == 0 {
 		return nil
 	}
 	data := make([]any, 0, len(values))
 	for _, v := range values {
-		item, err := v.RedisMarshal()
+		item, err := jsonMarshal(v)
 		if err != nil {
 			return apperrors.New(err).WithMsgLog("failed to marshal value")
 		}
@@ -40,9 +40,8 @@ func LRange[T any](
 	cmder Cmdable,
 	key string,
 	start, stop int64,
-	valueCreator ValueCreator[T],
 ) (values []T, err error) {
-	strSlice, err := cmder.LRange(ctx, key, start, stop).Result()
+	data, err := cmder.LRange(ctx, key, start, stop).Result()
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
 			return nil, nil
@@ -50,21 +49,7 @@ func LRange[T any](
 		return nil, apperrors.Wrap(err)
 	}
 
-	var valDefault T
-	for _, item := range strSlice {
-		model := valueCreator(valDefault)
-		if len(item) == 0 {
-			values = append(values, model.GetData())
-			continue
-		}
-		err = model.RedisUnmarshal(reflectutil.UnsafeStrToBytes(item))
-		if err != nil {
-			return nil, apperrors.New(err).WithMsgLog("failed to unmarshal value")
-		}
-		values = append(values, model.GetData())
-	}
-
-	return values, nil
+	return unmarshalStrSlice[T](data...)
 }
 
 func BLPop[T any](
@@ -72,7 +57,6 @@ func BLPop[T any](
 	cmder Cmdable,
 	keys []string,
 	timeout time.Duration,
-	valueCreator ValueCreator[T],
 ) (values map[string]T, err error) {
 	strSlice, err := cmder.BLPop(ctx, timeout, keys...).Result()
 	if err != nil {
@@ -83,24 +67,19 @@ func BLPop[T any](
 	}
 
 	values = make(map[string]T)
-	var valDefault T
 	i := 0
 	for i < len(strSlice) {
 		key := strSlice[i]
 		i++
-		val := strSlice[i]
+		valStr := strSlice[i]
 		i++
 
-		model := valueCreator(valDefault)
-		if len(val) == 0 {
-			values[key] = model.GetData()
-			continue
-		}
-		err = model.RedisUnmarshal(reflectutil.UnsafeStrToBytes(val))
+		var val T
+		err := jsonUnmarshal(reflectutil.UnsafeStrToBytes(valStr), &val)
 		if err != nil {
 			return nil, apperrors.New(err).WithMsgLog("failed to unmarshal value")
 		}
-		values[key] = model.GetData()
+		values[key] = val
 	}
 
 	return values, nil

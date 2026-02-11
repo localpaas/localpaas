@@ -49,4 +49,4 @@ app_path = "/var/lib/localpaas"
     task_create_interval = "1m"
 
 [tasks.healthcheck]
-    interval = "5s"
+    base_interval = "30s"

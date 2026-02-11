@@ -75,8 +75,7 @@ func (c *Consumer) getData(
 	ctx context.Context,
 	frameIndex *int64,
 ) (frames []*LogFrame, err error) {
-	frames, err = redishelper.LRange(ctx, c.redisClient, c.key, *frameIndex, -1,
-		redishelper.JSONValueCreator[*LogFrame])
+	frames, err = redishelper.LRange[*LogFrame](ctx, c.redisClient, c.key, *frameIndex, -1)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

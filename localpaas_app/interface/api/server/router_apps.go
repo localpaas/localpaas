@@ -61,6 +61,19 @@ func (s *HTTPServer) registerAppRoutes(projectGroup *gin.RouterGroup) *gin.Route
 		})
 	}
 
+	healthcheckGroup := appGroup.Group("/:appID/healthchecks")
+	{ // healthcheck group
+		healthcheckGroup.GET("", s.handlerRegistry.appHandler.ListAppHealthcheck)
+		healthcheckGroup.GET("/:itemID", s.handlerRegistry.appHandler.GetAppHealthcheck)
+		healthcheckGroup.POST("", s.handlerRegistry.appHandler.CreateAppHealthcheck)
+		healthcheckGroup.PUT("/:itemID", s.handlerRegistry.appHandler.UpdateAppHealthcheck)
+		healthcheckGroup.PUT("/:itemID/meta", s.handlerRegistry.appHandler.UpdateAppHealthcheckMeta)
+		healthcheckGroup.DELETE("/:itemID", s.handlerRegistry.appHandler.DeleteAppHealthcheck)
+
+		// Healthcheck task group
+		healthcheckGroup.GET("/:itemID/tasks", s.handlerRegistry.appHandler.ListAppHealthcheckTask)
+	}
+
 	appDeploymentGroup := appGroup.Group("/:appID/deployments")
 	{ // app deployment group
 		// Info

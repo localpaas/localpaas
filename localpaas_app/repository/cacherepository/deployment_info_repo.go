@@ -32,8 +32,7 @@ func (repo *deploymentInfoRepo) Get(
 	ctx context.Context,
 	deploymentID string,
 ) (*cacheentity.DeploymentInfo, error) {
-	resp, err := redishelper.Get(ctx, repo.client, repo.formatKey(deploymentID),
-		redishelper.JSONValueCreator[*cacheentity.DeploymentInfo])
+	resp, err := redishelper.Get[*cacheentity.DeploymentInfo](ctx, repo.client, repo.formatKey(deploymentID))
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -94,8 +93,7 @@ func (repo *deploymentInfoRepo) GetAll(
 
 func (repo *deploymentInfoRepo) mGet(ctx context.Context, keys []string) (
 	map[string]*cacheentity.DeploymentInfo, error) {
-	resp, err := redishelper.MGet(ctx, repo.client, keys,
-		redishelper.JSONValueCreator[*cacheentity.DeploymentInfo])
+	resp, err := redishelper.MGet[*cacheentity.DeploymentInfo](ctx, repo.client, keys...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -114,8 +112,7 @@ func (repo *deploymentInfoRepo) Set(
 	deploymentInfo *cacheentity.DeploymentInfo,
 	exp time.Duration,
 ) error {
-	err := redishelper.Set(ctx, repo.client, repo.formatKey(deploymentID),
-		redishelper.NewJSONValue(deploymentInfo), exp)
+	err := redishelper.Set(ctx, repo.client, repo.formatKey(deploymentID), deploymentInfo, exp)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

@@ -1,7 +1,11 @@
 package redishelper
 
 import (
+	"encoding/json"
 	"fmt"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
 )
 
 func ParseString(val any) string {
@@ -32,4 +36,78 @@ func ParseBytes(val any) []byte {
 		return []byte(str)
 	}
 	return []byte(fmt.Sprintf("%v", val))
+}
+
+var jsonMarshal = json.Marshal
+var jsonUnmarshal = json.Unmarshal
+
+//nolint:unused
+func marshalSlice[T any](values []T) ([]any, error) {
+	result := make([]any, 0, len(values))
+	for i := range values {
+		value, err := jsonMarshal(values[i])
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		result = append(result, reflectutil.UnsafeBytesToStr(value))
+	}
+	return result, nil
+}
+
+func unmarshalStr[T any](data string) (value T, err error) {
+	if data == "" {
+		return value, nil
+	}
+	err = jsonUnmarshal(reflectutil.UnsafeStrToBytes(data), &value)
+	if err != nil {
+		return value, apperrors.Wrap(err)
+	}
+	return value, nil
+}
+
+func unmarshalSlice[T any](data ...any) ([]T, error) {
+	result := make([]T, 0, len(data))
+	for _, item := range data {
+		var value T
+		if item == nil {
+			result = append(result, value)
+			continue
+		}
+		err := jsonUnmarshal(ParseBytes(item), &value)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		result = append(result, value)
+	}
+	return result, nil
+}
+
+func unmarshalStrSlice[T any](data ...string) ([]T, error) {
+	result := make([]T, 0, len(data))
+	for _, item := range data {
+		var value T
+		if item == "" {
+			result = append(result, value)
+			continue
+		}
+		err := jsonUnmarshal(reflectutil.UnsafeStrToBytes(item), &value)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		result = append(result, value)
+	}
+	return result, nil
+}
+
+func unmarshalStrMap[T any](data map[string]string) (map[string]T, error) {
+	result := make(map[string]T, len(data))
+	for k, item := range data {
+		var value T
+		err := jsonUnmarshal(reflectutil.UnsafeStrToBytes(item), &value)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		result[k] = value
+	}
+	return result, nil
 }

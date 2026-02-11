@@ -1,0 +1,48 @@
+package healthcheckdto
+
+import (
+	vld "github.com/tiendc/go-validator"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
+)
+
+type ListHealthcheckReq struct {
+	settings.ListSettingReq
+}
+
+func NewListHealthcheckReq() *ListHealthcheckReq {
+	return &ListHealthcheckReq{
+		ListSettingReq: settings.ListSettingReq{
+			Paging: basedto.Paging{
+				// Default paging if unset by client
+				Sort: basedto.Orders{{Direction: basedto.DirectionAsc, ColumnName: "name"}},
+			},
+		},
+	}
+}
+
+func (req *ListHealthcheckReq) Validate() apperrors.ValidationErrors {
+	var validators []vld.Validator
+	validators = append(validators, req.ListSettingReq.Validate()...)
+	return apperrors.NewValidationErrors(vld.Validate(validators...))
+}
+
+type ListHealthcheckResp struct {
+	Meta *basedto.ListMeta  `json:"meta"`
+	Data []*HealthcheckResp `json:"data"`
+}
+
+func TransformHealthchecks(settings []*entity.Setting, input *HealthcheckTransformInput) ([]*HealthcheckResp, error) {
+	resp := make([]*HealthcheckResp, 0, len(settings))
+	for _, setting := range settings {
+		item, err := TransformHealthcheck(setting, input)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		resp = append(resp, item)
+	}
+	return resp, nil
+}

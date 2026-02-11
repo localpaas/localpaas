@@ -10,6 +10,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/healthcheckuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/registryauthuc"
@@ -34,6 +35,7 @@ type BaseSettingHandler struct {
 	GithubAppUC    *githubappuc.GithubAppUC
 	AccessTokenUC  *accesstokenuc.AccessTokenUC
 	CronJobUC      *cronjobuc.CronJobUC
+	HealthcheckUC  *healthcheckuc.HealthcheckUC
 	SecretUC       *secretuc.SecretUC
 	EmailUC        *emailuc.EmailUC
 	APIKeyUC       *apikeyuc.APIKeyUC
@@ -54,6 +56,7 @@ func NewBaseSettingHandler(
 	githubAppUC *githubappuc.GithubAppUC,
 	accessTokenUC *accesstokenuc.AccessTokenUC,
 	cronJobUC *cronjobuc.CronJobUC,
+	healthcheckUC *healthcheckuc.HealthcheckUC,
 	secretUC *secretuc.SecretUC,
 	emailUC *emailuc.EmailUC,
 	apiKeyUC *apikeyuc.APIKeyUC,
@@ -73,6 +76,7 @@ func NewBaseSettingHandler(
 		GithubAppUC:    githubAppUC,
 		AccessTokenUC:  accessTokenUC,
 		CronJobUC:      cronJobUC,
+		HealthcheckUC:  healthcheckUC,
 		SecretUC:       secretUC,
 		EmailUC:        emailUC,
 		APIKeyUC:       apiKeyUC,

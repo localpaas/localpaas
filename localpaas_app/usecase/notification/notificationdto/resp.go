@@ -4,21 +4,23 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
-type DefaultResultNtfnSettingResp struct {
-	Success *DefaultTargetNtfnSettingResp `json:"success"`
-	Failure *DefaultTargetNtfnSettingResp `json:"failure"`
+type DefaultResultNotifSettingResp struct {
+	Success *DefaultTargetNotifSettingResp `json:"success"`
+	Failure *DefaultTargetNotifSettingResp `json:"failure"`
 }
 
-type DefaultTargetNtfnSettingResp struct {
-	ViaEmail   *EmailNtfnSettingResp   `json:"viaEmail"`
-	ViaSlack   *SlackNtfnSettingResp   `json:"viaSlack"`
-	ViaDiscord *DiscordNtfnSettingResp `json:"viaDiscord"`
+type DefaultTargetNotifSettingResp struct {
+	ViaEmail        *EmailNotifSettingResp   `json:"viaEmail"`
+	ViaSlack        *SlackNotifSettingResp   `json:"viaSlack"`
+	ViaDiscord      *DiscordNotifSettingResp `json:"viaDiscord"`
+	MinSendInterval timeutil.Duration        `json:"minSendInterval"`
 }
 
-type EmailNtfnSettingResp struct {
+type EmailNotifSettingResp struct {
 	Sender           *settings.BaseSettingResp `json:"sender"`
 	ToProjectMembers bool                      `json:"toProjectMembers"`
 	ToProjectOwners  bool                      `json:"toProjectOwners"`
@@ -26,18 +28,18 @@ type EmailNtfnSettingResp struct {
 	ToAddresses      []string                  `json:"toAddresses"`
 }
 
-type SlackNtfnSettingResp struct {
+type SlackNotifSettingResp struct {
 	Webhook *settings.BaseSettingResp `json:"webhook"`
 }
 
-type DiscordNtfnSettingResp struct {
+type DiscordNotifSettingResp struct {
 	Webhook *settings.BaseSettingResp `json:"webhook"`
 }
 
-func TransformDefaultTargetNtfnSetting(
-	setting *entity.DefaultTargetNtfnSetting,
+func TransformDefaultTargetNotifSetting(
+	setting *entity.DefaultTargetNotifSetting,
 	refSettingMap map[string]*entity.Setting,
-) (resp *DefaultTargetNtfnSettingResp, err error) {
+) (resp *DefaultTargetNotifSettingResp, err error) {
 	if setting == nil {
 		return nil, nil
 	}
@@ -59,19 +61,19 @@ func TransformDefaultTargetNtfnSetting(
 	return resp, nil
 }
 
-func TransformDefaultResultNtfnSetting(
-	setting *entity.DefaultResultNtfnSetting,
+func TransformDefaultResultNotifSetting(
+	setting *entity.DefaultResultNotifSetting,
 	refSettingMap map[string]*entity.Setting,
-) (resp *DefaultResultNtfnSettingResp, err error) {
+) (resp *DefaultResultNotifSettingResp, err error) {
 	if setting == nil {
 		return nil, nil
 	}
-	resp = &DefaultResultNtfnSettingResp{}
-	resp.Success, err = TransformDefaultTargetNtfnSetting(setting.Success, refSettingMap)
+	resp = &DefaultResultNotifSettingResp{}
+	resp.Success, err = TransformDefaultTargetNotifSetting(setting.Success, refSettingMap)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	resp.Failure, err = TransformDefaultTargetNtfnSetting(setting.Failure, refSettingMap)
+	resp.Failure, err = TransformDefaultTargetNotifSetting(setting.Failure, refSettingMap)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

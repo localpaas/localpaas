@@ -38,8 +38,7 @@ func (repo *userTokenRepo) Exist(ctx context.Context, userID, uid string) error 
 }
 
 func (repo *userTokenRepo) Set(ctx context.Context, userID, uid string, exp time.Duration) error {
-	err := redishelper.Set(ctx, repo.client, repo.formatKey(userID, uid),
-		redishelper.NewJSONValue(""), exp)
+	err := redishelper.Set(ctx, repo.client, repo.formatKey(userID, uid), "", exp)
 	if err != nil {
 		return apperrors.New(err)
 	}

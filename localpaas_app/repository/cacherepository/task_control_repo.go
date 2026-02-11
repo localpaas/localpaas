@@ -28,7 +28,7 @@ func (repo *taskControlRepo) Push(
 	taskControl *cacheentity.TaskControl,
 ) error {
 	key := repo.formatKey(taskID)
-	err := redishelper.RPush(ctx, repo.client, key, redishelper.NewJSONValue(taskControl))
+	err := redishelper.RPush(ctx, repo.client, key, taskControl)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

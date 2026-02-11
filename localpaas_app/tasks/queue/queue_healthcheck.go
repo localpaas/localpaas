@@ -10,10 +10,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/entity/cacheentity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
 )
 
@@ -21,6 +21,27 @@ const (
 	taskKeyHealthcheck = "task:healthcheck:lock"
 	taskLockMaxRetry   = 3
 )
+
+type HealthcheckExecData struct {
+	HealthcheckSetting *entity.Setting
+	Healthcheck        *entity.Healthcheck
+	Task               *entity.Task
+	Project            *entity.Project
+	App                *entity.App
+
+	// ObjectMap can be used as a cache to store objects
+	ObjectMap     map[string]any
+	NotifEventMap map[string]*cacheentity.HealthcheckNotifEvent
+}
+
+type HealthcheckExecFunc func(context.Context, *HealthcheckExecData) error
+
+func (q *taskQueue) RegisterHealthcheckExecutor(execFunc HealthcheckExecFunc) {
+	if !q.isWorkerMode() {
+		return
+	}
+	q.healthcheckExecutor = execFunc
+}
 
 func (q *taskQueue) doHealthcheck(
 	ctx context.Context,
@@ -35,60 +56,64 @@ func (q *taskQueue) doHealthcheck(
 	}
 	defer releaser()
 
-	executorFunc := q.taskExecutorMap[base.TaskTypeHealthcheck]
+	executorFunc := q.healthcheckExecutor
 	if executorFunc == nil {
 		return apperrors.NewUnavailable("Task executor function for healthcheck")
 	}
 
-	objectMap := make(map[string]any, 10) //nolint:mnd
-	jobSettings, err := q.loadHealthcheckData(ctx, q.db, objectMap)
+	baseData := &HealthcheckExecData{
+		ObjectMap: make(map[string]any, 10), //nolint:mnd
+	}
+	jobSettings, err := q.loadHealthcheckData(ctx, q.db, baseData)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	err = transaction.Execute(ctx, q.db, func(db database.Tx) (err error) {
-		timeNow := timeutil.NowUTC()
-		allTasks := make([]*entity.Task, 0, len(jobSettings))
-		execFuncs := make([]func(ctx context.Context) error, 0, len(jobSettings))
+	timeNow := timeutil.NowUTC()
+	allTasks := make([]*entity.Task, 0, len(jobSettings))
+	execFuncs := make([]func(ctx context.Context) error, 0, len(jobSettings))
 
-		for _, jobSetting := range jobSettings {
-			healthcheck := jobSetting.MustAsHealthcheck()
-			taskData := &TaskExecData{
-				Task: &entity.Task{
-					ID:       gofn.Must(ulid.NewStringULID()),
-					TargetID: jobSetting.ID,
-					Type:     base.TaskTypeHealthcheck,
-					Status:   base.TaskStatusNotStarted,
-					Config: entity.TaskConfig{
-						MaxRetry:   healthcheck.MaxRetry,
-						RetryDelay: healthcheck.RetryDelay,
-						Timeout:    healthcheck.Timeout,
-					},
-					Version:   entity.CurrentTaskVersion,
-					StartedAt: timeNow,
-					CreatedAt: timeNow,
-					UpdatedAt: timeNow,
+	for _, jobSetting := range jobSettings {
+		healthcheck := jobSetting.MustAsHealthcheck()
+		healthcheckData := &HealthcheckExecData{
+			HealthcheckSetting: jobSetting,
+			Healthcheck:        healthcheck,
+			Task: &entity.Task{
+				ID:       gofn.Must(ulid.NewStringULID()),
+				TargetID: jobSetting.ID,
+				Type:     base.TaskTypeHealthcheck,
+				Status:   base.TaskStatusNotStarted,
+				Config: entity.TaskConfig{
+					MaxRetry:   healthcheck.MaxRetry,
+					RetryDelay: healthcheck.RetryDelay,
+					Timeout:    healthcheck.Timeout,
 				},
-				ObjectMap: objectMap,
-			}
-			allTasks = append(allTasks, taskData.Task)
-			execFuncs = append(execFuncs, func(ctx context.Context) error {
-				return executorFunc(ctx, db, taskData) //nolint:wrapcheck
-			})
+				Version:   entity.CurrentTaskVersion,
+				StartedAt: timeNow,
+				CreatedAt: timeNow,
+				UpdatedAt: timeNow,
+			},
+			ObjectMap:     baseData.ObjectMap,
+			NotifEventMap: baseData.NotifEventMap,
+		}
+		healthcheckData.Project = healthcheckData.HealthcheckSetting.BelongToProject
+		healthcheckData.App = healthcheckData.HealthcheckSetting.BelongToApp
+		if healthcheckData.App != nil {
+			healthcheckData.Project = healthcheckData.App.Project
 		}
 
-		// Execute all health check tasks concurrently
-		_ = gofn.ExecTasksEx(ctx, 20, false, execFuncs...) //nolint:mnd
+		allTasks = append(allTasks, healthcheckData.Task)
+		execFuncs = append(execFuncs, func(ctx context.Context) error {
+			return executorFunc(ctx, healthcheckData) //nolint:wrapcheck
+		})
+	}
 
-		// Save tasks in DB
-		err = q.taskRepo.UpsertMulti(ctx, db, allTasks,
-			entity.TaskUpsertingConflictCols, entity.TaskUpsertingUpdateCols)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
+	// Execute all health check tasks concurrently
+	_ = gofn.ExecTasksEx(ctx, 20, false, execFuncs...) //nolint:mnd
 
-		return nil
-	})
+	// Save tasks in DB
+	err = q.taskRepo.UpsertMulti(ctx, q.db, allTasks,
+		entity.TaskUpsertingConflictCols, entity.TaskUpsertingUpdateCols)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -97,7 +122,7 @@ func (q *taskQueue) doHealthcheck(
 }
 
 func (q *taskQueue) healthcheckTaskLock(ctx context.Context) (bool, func(), error) {
-	interval := config.Current.Tasks.Healthcheck.Interval
+	interval := config.Current.Tasks.Healthcheck.BaseInterval
 	retries := 0
 	wait := time.Duration(0)
 	for {
@@ -118,13 +143,20 @@ func (q *taskQueue) healthcheckTaskLock(ctx context.Context) (bool, func(), erro
 func (q *taskQueue) loadHealthcheckData(
 	ctx context.Context,
 	db database.IDB,
-	objectMap map[string]any,
+	taskData *HealthcheckExecData,
 ) ([]*entity.Setting, error) {
 	allJobSettings, _, err := q.settingRepo.List(ctx, db, nil,
 		bunex.SelectWhere("setting.type = ?", base.SettingTypeHealthcheck),
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
-		bunex.SelectRelation("BelongToProject"),
-		bunex.SelectRelation("BelongToApp.Project"),
+		bunex.SelectRelation("BelongToProject",
+			bunex.SelectExcludeColumns(entity.ProjectDefaultExcludeColumns...),
+		),
+		bunex.SelectRelation("BelongToApp",
+			bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
+		),
+		bunex.SelectRelation("BelongToApp.Project",
+			bunex.SelectExcludeColumns(entity.ProjectDefaultExcludeColumns...),
+		),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -151,10 +183,11 @@ func (q *taskQueue) loadHealthcheckData(
 			continue
 		}
 		validJobSettings = append(validJobSettings, jobSetting)
-		objectMap[jobSetting.ID] = jobSetting
+		taskData.ObjectMap[jobSetting.ID] = jobSetting
 		refSettingIDs = append(refSettingIDs, healthcheck.GetRefSettingIDs()...)
 	}
 
+	// Load reference settings
 	refSettings, err := q.settingRepo.ListByIDs(ctx, db, gofn.ToSet(refSettingIDs), true,
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
 	)
@@ -162,7 +195,13 @@ func (q *taskQueue) loadHealthcheckData(
 		return nil, apperrors.Wrap(err)
 	}
 	for _, refSetting := range refSettings {
-		objectMap[refSetting.ID] = refSetting
+		taskData.ObjectMap[refSetting.ID] = refSetting
+	}
+
+	// Load history notification events
+	taskData.NotifEventMap, err = q.healthcheckNotifEventRepo.GetAll(ctx)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
 	}
 
 	return validJobSettings, nil
