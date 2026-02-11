@@ -1,5 +1,7 @@
 package entity
 
+import "github.com/localpaas/localpaas/localpaas_app/base"
+
 type TaskHealthcheckArgs struct {
 }
 
@@ -15,7 +17,7 @@ type TaskHealthcheckOutputREST struct {
 }
 
 type TaskHealthcheckOutputGRPC struct {
-	// TODO: implement this
+	ReturnStatus base.HealthcheckGRPCStatus `json:"returnStatus,omitempty"`
 }
 
 func (t *Task) ArgsAsHealthcheck() (*TaskHealthcheckArgs, error) {

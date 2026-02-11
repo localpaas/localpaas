@@ -24,15 +24,19 @@ type Healthcheck struct {
 
 type HealthcheckREST struct {
 	URL         string `json:"url"`
-	Method      string `json:"method"`
-	ContentType string `json:"contentType"`
-	ReturnCode  int    `json:"returnCode"`
-	ReturnText  string `json:"returnText"`
-	ReturnJSON  string `json:"returnJSON"`
+	Method      string `json:"method,omitempty"`
+	ContentType string `json:"contentType,omitempty"`
+	Body        string `json:"body,omitempty"`
+	ReturnCode  int    `json:"returnCode,omitempty"`
+	ReturnText  string `json:"returnText,omitempty"`
+	ReturnJSON  string `json:"returnJSON,omitempty"`
 }
 
 type HealthcheckGRPC struct {
-	// TODO: implement this
+	Version      base.HealthcheckGRPCVersion `json:"version"`
+	Addr         string                      `json:"addr"`
+	Service      string                      `json:"service"`
+	ReturnStatus base.HealthcheckGRPCStatus  `json:"returnStatus"`
 }
 
 func (s *Healthcheck) GetType() base.SettingType {

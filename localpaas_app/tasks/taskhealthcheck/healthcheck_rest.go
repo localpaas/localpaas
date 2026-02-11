@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"reflect"
+	"strings"
 
 	"github.com/tiendc/gofn"
 
@@ -13,6 +14,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/httpclient"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
+)
+
+const (
+	defaultRESTContentType = "application/json"
 )
 
 func (e *Executor) doHealthcheckREST(
@@ -32,11 +37,15 @@ func (e *Executor) doHealthcheckREST(
 	}
 
 	method := gofn.Coalesce(healthchk.Method, "GET")
-	req, err := http.NewRequestWithContext(reqCtx, method, healthchk.URL, nil)
+	var input io.Reader
+	if healthchk.Body != "" {
+		input = strings.NewReader(healthchk.Body)
+	}
+	req, err := http.NewRequestWithContext(reqCtx, method, healthchk.URL, input)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	req.Header.Set("Content-Type", gofn.Coalesce(healthchk.ContentType, "application/json"))
+	req.Header.Set("Content-Type", gofn.Coalesce(healthchk.ContentType, defaultRESTContentType))
 
 	resp, err := httpclient.DefaultClient.Do(req)
 	if err != nil {
