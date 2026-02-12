@@ -23,7 +23,7 @@ func (s *settingService) LoadReferenceSettings(
 ) (settingMap map[string]*entity.Setting, err error) {
 	settingIDMap := make(map[string]struct{}, 10) //nolint
 	for _, setting := range inSettings {
-		for _, settingID := range setting.RefIDs {
+		for _, settingID := range setting.MustGetRefSettingIDs() {
 			settingIDMap[settingID] = struct{}{}
 		}
 	}

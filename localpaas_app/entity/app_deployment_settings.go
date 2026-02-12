@@ -10,6 +10,15 @@ const (
 	CurrentAppDeploymentSettingsVersion = 1
 )
 
+var _ = registerSettingParser(base.SettingTypeAppDeployment, &appDeploymentSettingsParser{})
+
+type appDeploymentSettingsParser struct {
+}
+
+func (s *appDeploymentSettingsParser) New() SettingData {
+	return &AppDeploymentSettings{}
+}
+
 type AppDeploymentSettings struct {
 	ImageSource   *DeploymentImageSource   `json:"imageSource"`
 	RepoSource    *DeploymentRepoSource    `json:"repoSource"`
@@ -77,7 +86,7 @@ func (s *AppDeploymentSettings) GetInUseGitCredentialIDs() (res []string) {
 }
 
 func (s *Setting) AsAppDeploymentSettings() (*AppDeploymentSettings, error) {
-	return parseSettingAs(s, func() *AppDeploymentSettings { return &AppDeploymentSettings{} })
+	return parseSettingAs[*AppDeploymentSettings](s)
 }
 
 func (s *Setting) MustAsAppDeploymentSettings() *AppDeploymentSettings {

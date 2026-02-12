@@ -11,6 +11,15 @@ const (
 	CurrentHealthcheckVersion = 1
 )
 
+var _ = registerSettingParser(base.SettingTypeHealthcheck, &healthcheckParser{})
+
+type healthcheckParser struct {
+}
+
+func (s *healthcheckParser) New() SettingData {
+	return &Healthcheck{}
+}
+
 type Healthcheck struct {
 	HealthcheckType base.HealthcheckType       `json:"healthcheckType"`
 	Interval        timeutil.Duration          `json:"interval"`
@@ -50,7 +59,7 @@ func (s *Healthcheck) GetRefSettingIDs() []string {
 }
 
 func (s *Setting) AsHealthcheck() (*Healthcheck, error) {
-	return parseSettingAs(s, func() *Healthcheck { return &Healthcheck{} })
+	return parseSettingAs[*Healthcheck](s)
 }
 
 func (s *Setting) MustAsHealthcheck() *Healthcheck {

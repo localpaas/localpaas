@@ -10,6 +10,15 @@ const (
 	CurrentIMServiceVersion = 1
 )
 
+var _ = registerSettingParser(base.SettingTypeIMService, &imServiceParser{})
+
+type imServiceParser struct {
+}
+
+func (s *imServiceParser) New() SettingData {
+	return &IMService{}
+}
+
 type IMService struct {
 	Slack   *Slack   `json:"slack,omitempty"`
 	Discord *Discord `json:"discord,omitempty"`
@@ -42,7 +51,7 @@ func (s *IMService) MustDecrypt() *IMService {
 }
 
 func (s *Setting) AsIMService() (*IMService, error) {
-	return parseSettingAs(s, func() *IMService { return &IMService{} })
+	return parseSettingAs[*IMService](s)
 }
 
 func (s *Setting) MustAsIMService() *IMService {

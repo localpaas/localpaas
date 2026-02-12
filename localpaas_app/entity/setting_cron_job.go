@@ -15,6 +15,15 @@ const (
 	CurrentCronJobVersion = 1
 )
 
+var _ = registerSettingParser(base.SettingTypeCronJob, &cronJobParser{})
+
+type cronJobParser struct {
+}
+
+func (s *cronJobParser) New() SettingData {
+	return &CronJob{}
+}
+
 var (
 	parser = cron.NewParser(cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow | cron.Descriptor)
 )
@@ -71,7 +80,7 @@ func (s *CronJob) ParseCronExpr() (cron.Schedule, error) {
 }
 
 func (s *Setting) AsCronJob() (*CronJob, error) {
-	return parseSettingAs(s, func() *CronJob { return &CronJob{} })
+	return parseSettingAs[*CronJob](s)
 }
 
 func (s *Setting) MustAsCronJob() *CronJob {

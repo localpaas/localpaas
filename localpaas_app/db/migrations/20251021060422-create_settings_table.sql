@@ -12,7 +12,6 @@ CREATE TABLE IF NOT EXISTS settings
     data              JSONB NULL,
     avail_in_projects BOOL NOT NULL DEFAULT FALSE,
     is_default        BOOL NOT NULL DEFAULT FALSE,
-    ref_ids           VARCHAR [] NULL,
     update_ver        INT4 NOT NULL DEFAULT 1,
 
     created_at   TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,

@@ -12,6 +12,15 @@ const (
 	CurrentAppHttpSettingsVersion = 1
 )
 
+var _ = registerSettingParser(base.SettingTypeAppHttp, &appHttpSettingsParser{})
+
+type appHttpSettingsParser struct {
+}
+
+func (s *appHttpSettingsParser) New() SettingData {
+	return &AppHttpSettings{}
+}
+
 type AppHttpSettings struct {
 	Enabled bool         `json:"enabled"`
 	Domains []*AppDomain `json:"domains,omitempty"`
@@ -103,7 +112,7 @@ func (s *AppHttpSettings) GetInUseBasicAuthIDs() (res []string) {
 }
 
 func (s *Setting) AsAppHttpSettings() (*AppHttpSettings, error) {
-	return parseSettingAs(s, func() *AppHttpSettings { return &AppHttpSettings{} })
+	return parseSettingAs[*AppHttpSettings](s)
 }
 
 func (s *Setting) MustAsAppHttpSettings() *AppHttpSettings {

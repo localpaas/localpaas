@@ -10,6 +10,15 @@ const (
 	CurrentAWSS3Version = 1
 )
 
+var _ = registerSettingParser(base.SettingTypeAWSS3, &awsS3Parser{})
+
+type awsS3Parser struct {
+}
+
+func (s *awsS3Parser) New() SettingData {
+	return &AWSS3{}
+}
+
 type AWSS3 struct {
 	Cred     ObjectID `json:"cred"`
 	Region   string   `json:"region,omitempty"`
@@ -33,7 +42,7 @@ func (s *AWSS3) MustDecrypt() *AWSS3 {
 }
 
 func (s *Setting) AsAWSS3() (*AWSS3, error) {
-	return parseSettingAs(s, func() *AWSS3 { return &AWSS3{} })
+	return parseSettingAs[*AWSS3](s)
 }
 
 func (s *Setting) MustAsAWSS3() *AWSS3 {

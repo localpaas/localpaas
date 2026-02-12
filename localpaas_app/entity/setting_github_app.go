@@ -10,6 +10,15 @@ const (
 	CurrentGithubAppVersion = 1
 )
 
+var _ = registerSettingParser(base.SettingTypeGithubApp, &githubAppParser{})
+
+type githubAppParser struct {
+}
+
+func (s *githubAppParser) New() SettingData {
+	return &GithubApp{}
+}
+
 type GithubApp struct {
 	ClientID       string         `json:"clientId"`
 	ClientSecret   EncryptedField `json:"clientSecret"`
@@ -48,7 +57,7 @@ func (s *GithubApp) ConvertAsOAuth() *OAuth {
 }
 
 func (s *Setting) AsGithubApp() (*GithubApp, error) {
-	return parseSettingAs(s, func() *GithubApp { return &GithubApp{} })
+	return parseSettingAs[*GithubApp](s)
 }
 
 func (s *Setting) MustAsGithubApp() *GithubApp {

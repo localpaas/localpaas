@@ -10,6 +10,15 @@ const (
 	CurrentAWSVersion = 1
 )
 
+var _ = registerSettingParser(base.SettingTypeAWS, &awsParser{})
+
+type awsParser struct {
+}
+
+func (s *awsParser) New() SettingData {
+	return &AWS{}
+}
+
 type AWS struct {
 	AccessKeyID string         `json:"accessKeyId"`
 	SecretKey   EncryptedField `json:"secretKey"`
@@ -30,7 +39,7 @@ func (s *AWS) MustDecrypt() *AWS {
 }
 
 func (s *Setting) AsAWS() (*AWS, error) {
-	return parseSettingAs(s, func() *AWS { return &AWS{} })
+	return parseSettingAs[*AWS](s)
 }
 
 func (s *Setting) MustAsAWS() *AWS {

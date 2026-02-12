@@ -10,6 +10,15 @@ const (
 	CurrentAppNotificationSettingsVersion = 1
 )
 
+var _ = registerSettingParser(base.SettingTypeAppNotification, &appNotificationSettingsParser{})
+
+type appNotificationSettingsParser struct {
+}
+
+func (s *appNotificationSettingsParser) New() SettingData {
+	return &AppNotificationSettings{}
+}
+
 type AppNotificationSettings struct {
 	Deployment *DefaultResultNotifSetting `json:"deployment,omitempty"`
 }
@@ -28,7 +37,7 @@ func (s *AppNotificationSettings) HasDeploymentNotifSetting() bool {
 }
 
 func (s *Setting) AsAppNotificationSettings() (*AppNotificationSettings, error) {
-	return parseSettingAs(s, func() *AppNotificationSettings { return &AppNotificationSettings{} })
+	return parseSettingAs[*AppNotificationSettings](s)
 }
 
 func (s *Setting) MustAsAppNotificationSettings() *AppNotificationSettings {

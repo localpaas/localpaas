@@ -10,6 +10,15 @@ const (
 	CurrentSSHKeyVersion = 1
 )
 
+var _ = registerSettingParser(base.SettingTypeSSHKey, &sshKeyParser{})
+
+type sshKeyParser struct {
+}
+
+func (s *sshKeyParser) New() SettingData {
+	return &SSHKey{}
+}
+
 type SSHKey struct {
 	PrivateKey EncryptedField `json:"privateKey"`
 	Passphrase EncryptedField `json:"passphrase,omitzero"`
@@ -30,7 +39,7 @@ func (s *SSHKey) MustDecrypt() *SSHKey {
 }
 
 func (s *Setting) AsSSHKey() (*SSHKey, error) {
-	return parseSettingAs(s, func() *SSHKey { return &SSHKey{} })
+	return parseSettingAs[*SSHKey](s)
 }
 
 func (s *Setting) MustAsSSHKey() *SSHKey {

@@ -10,6 +10,15 @@ const (
 	CurrentBasicAuthVersion = 1
 )
 
+var _ = registerSettingParser(base.SettingTypeBasicAuth, &basicAuthParser{})
+
+type basicAuthParser struct {
+}
+
+func (s *basicAuthParser) New() SettingData {
+	return &BasicAuth{}
+}
+
 type BasicAuth struct {
 	Username string         `json:"username"`
 	Password EncryptedField `json:"password"`
@@ -29,7 +38,7 @@ func (s *BasicAuth) MustDecrypt() *BasicAuth {
 }
 
 func (s *Setting) AsBasicAuth() (*BasicAuth, error) {
-	return parseSettingAs(s, func() *BasicAuth { return &BasicAuth{} })
+	return parseSettingAs[*BasicAuth](s)
 }
 
 func (s *Setting) MustAsBasicAuth() *BasicAuth {

@@ -10,6 +10,15 @@ const (
 	CurrentAccessTokenVersion = 1
 )
 
+var _ = registerSettingParser(base.SettingTypeAccessToken, &accessTokenParser{})
+
+type accessTokenParser struct {
+}
+
+func (s *accessTokenParser) New() SettingData {
+	return &AccessToken{}
+}
+
 type AccessToken struct {
 	User    string         `json:"user"`
 	Token   EncryptedField `json:"token"`
@@ -30,7 +39,7 @@ func (s *AccessToken) MustDecrypt() *AccessToken {
 }
 
 func (s *Setting) AsAccessToken() (*AccessToken, error) {
-	return parseSettingAs(s, func() *AccessToken { return &AccessToken{} })
+	return parseSettingAs[*AccessToken](s)
 }
 
 func (s *Setting) MustAsAccessToken() *AccessToken {

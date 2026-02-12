@@ -212,7 +212,6 @@ func (e *Executor) loadDeploymentData(
 	data.NotifSettings = notifSetting.MustAsAppNotificationSettings()
 	// Load reference settings
 	if data.NotifSettings.HasDeploymentNotifSetting() {
-		notifSetting.RefIDs = data.NotifSettings.GetRefSettingIDs()
 		refSettingMap, err := e.settingService.LoadReferenceSettings(ctx, db, nil, data.App, true, notifSetting)
 		if err != nil {
 			return apperrors.Wrap(err)

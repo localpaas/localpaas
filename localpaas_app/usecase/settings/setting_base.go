@@ -68,8 +68,9 @@ func loadSettingByID(
 		return nil, apperrors.Wrap(err)
 	}
 
-	if loadRefSettings && setting != nil && len(setting.RefIDs) > 0 {
-		setting.RefSettings, err = loadSettingByIDs(ctx, db, settingRepo, req, setting.RefIDs, requireActive)
+	if loadRefSettings && setting != nil {
+		setting.RefSettings, err = loadSettingByIDs(ctx, db, settingRepo, req,
+			setting.MustGetRefSettingIDs(), requireActive)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

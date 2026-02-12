@@ -12,6 +12,15 @@ const (
 	CurrentRegistryAuthVersion = 1
 )
 
+var _ = registerSettingParser(base.SettingTypeRegistryAuth, &registryAuthParser{})
+
+type registryAuthParser struct {
+}
+
+func (s *registryAuthParser) New() SettingData {
+	return &RegistryAuth{}
+}
+
 type RegistryAuth struct {
 	Username string         `json:"username"`
 	Password EncryptedField `json:"password"`
@@ -48,7 +57,7 @@ func (s *RegistryAuth) GenerateAuthHeader() (string, error) {
 }
 
 func (s *Setting) AsRegistryAuth() (*RegistryAuth, error) {
-	return parseSettingAs(s, func() *RegistryAuth { return &RegistryAuth{} })
+	return parseSettingAs[*RegistryAuth](s)
 }
 
 func (s *Setting) MustAsRegistryAuth() *RegistryAuth {

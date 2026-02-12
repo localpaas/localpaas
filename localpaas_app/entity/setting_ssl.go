@@ -10,6 +10,15 @@ const (
 	CurrentSSLVersion = 1
 )
 
+var _ = registerSettingParser(base.SettingTypeSSL, &sslParser{})
+
+type sslParser struct {
+}
+
+func (s *sslParser) New() SettingData {
+	return &SSL{}
+}
+
 type SSL struct {
 	Certificate string           `json:"certificate"`
 	PrivateKey  EncryptedField   `json:"privateKey"`
@@ -32,7 +41,7 @@ func (s *SSL) MustDecrypt() *SSL {
 }
 
 func (s *Setting) AsSSL() (*SSL, error) {
-	return parseSettingAs(s, func() *SSL { return &SSL{} })
+	return parseSettingAs[*SSL](s)
 }
 
 func (s *Setting) MustAsSSL() *SSL {

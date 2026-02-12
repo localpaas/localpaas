@@ -10,6 +10,15 @@ const (
 	CurrentEmailVersion = 1
 )
 
+var _ = registerSettingParser(base.SettingTypeEmail, &emailParser{})
+
+type emailParser struct {
+}
+
+func (s *emailParser) New() SettingData {
+	return &Email{}
+}
+
 type Email struct {
 	SMTP *EmailSMTP `json:"smtp,omitempty"`
 	HTTP *EmailHTTP `json:"http,omitempty"`
@@ -64,7 +73,7 @@ func (s *Email) MustDecrypt() *Email {
 }
 
 func (s *Setting) AsEmail() (*Email, error) {
-	return parseSettingAs(s, func() *Email { return &Email{} })
+	return parseSettingAs[*Email](s)
 }
 
 func (s *Setting) MustAsEmail() *Email {

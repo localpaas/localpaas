@@ -14,9 +14,23 @@ import (
 var (
 	SettingUpsertingConflictCols = []string{"id"}
 	SettingUpsertingUpdateCols   = []string{"object_id", "type", "kind", "status", "name", "data",
-		"avail_in_projects", "is_default", "ref_ids", "version", "update_ver",
+		"avail_in_projects", "is_default", "version", "update_ver",
 		"updated_at", "expire_at", "deleted_at"}
 )
+
+type SettingParser interface {
+	New() SettingData
+}
+
+var (
+	settingParserMap = make(map[base.SettingType]SettingParser, 20) //nolint
+)
+
+//nolint:unparam
+func registerSettingParser(typ base.SettingType, parser SettingParser) bool {
+	settingParserMap[typ] = parser
+	return true
+}
 
 type Setting struct {
 	ID              string `bun:",pk"`
@@ -27,8 +41,7 @@ type Setting struct {
 	Name            string `bun:",nullzero"`
 	Data            string `bun:",nullzero"`
 	AvailInProjects bool
-	Default         bool     `bun:"is_default"`
-	RefIDs          []string `bun:"ref_ids,array,nullzero"`
+	Default         bool `bun:"is_default"`
 	Version         int
 	UpdateVer       int
 
@@ -98,7 +111,6 @@ func (s *Setting) SetData(data SettingData) error {
 	}
 	s.Data = reflectutil.UnsafeBytesToStr(b)
 	s.parsedData = data
-	s.RefIDs = s.parsedData.GetRefSettingIDs()
 	return nil
 }
 
@@ -106,7 +118,23 @@ func (s *Setting) MustSetData(data SettingData) {
 	gofn.Must1(s.SetData(data))
 }
 
-func parseSettingAs[T SettingData](s *Setting, newFn func() T) (res T, error error) {
+func (s *Setting) Parse() (SettingData, error) {
+	return parseSettingAs[SettingData](s)
+}
+
+func (s *Setting) GetRefSettingIDs() ([]string, error) {
+	settingData, err := s.Parse()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return settingData.GetRefSettingIDs(), nil
+}
+
+func (s *Setting) MustGetRefSettingIDs() []string {
+	return gofn.Must(s.GetRefSettingIDs())
+}
+
+func parseSettingAs[T SettingData](s *Setting) (res T, err error) {
 	if s.parsedData != nil {
 		res, ok := s.parsedData.(T)
 		if !ok {
@@ -115,7 +143,7 @@ func parseSettingAs[T SettingData](s *Setting, newFn func() T) (res T, error err
 		return res, nil
 	}
 	if s.Data != "" {
-		res = newFn()
+		res = settingParserMap[s.Type].New().(T) //nolint:forcetypeassert
 		if res.GetType() != s.Type {
 			return res, apperrors.NewTypeInvalid()
 		}

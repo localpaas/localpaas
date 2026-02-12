@@ -90,7 +90,7 @@ func ListSetting(
 	refIDs := make([]string, 0)
 	for _, setting := range settings {
 		setting.CurrentObjectID = req.ObjectID
-		refIDs = append(refIDs, setting.RefIDs...)
+		refIDs = append(refIDs, setting.MustGetRefSettingIDs()...)
 	}
 
 	if len(refIDs) > 0 {
@@ -100,7 +100,7 @@ func ListSetting(
 		}
 		settingMap := entityutil.SliceToIDMap(refSettings)
 		for _, setting := range settings {
-			for _, refID := range setting.RefIDs {
+			for _, refID := range setting.MustGetRefSettingIDs() {
 				if s := settingMap[refID]; s != nil {
 					setting.RefSettings = append(setting.RefSettings, s)
 				}

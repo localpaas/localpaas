@@ -28,6 +28,7 @@ func (uc *AccessTokenUC) ListAccessToken(
 	}
 
 	return &accesstokendto.ListAccessTokenResp{
+		Meta: resp.Meta,
 		Data: respData,
 	}, nil
 }

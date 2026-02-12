@@ -12,6 +12,15 @@ const (
 	CurrentSecretVersion = 1
 )
 
+var _ = registerSettingParser(base.SettingTypeSecret, &secretParser{})
+
+type secretParser struct {
+}
+
+func (s *secretParser) New() SettingData {
+	return &Secret{}
+}
+
 type Secret struct {
 	Key    string         `json:"k"`
 	Value  EncryptedField `json:"v"`
@@ -40,7 +49,7 @@ func (s *Secret) ValueAsBytes() []byte {
 }
 
 func (s *Setting) AsSecret() (*Secret, error) {
-	return parseSettingAs(s, func() *Secret { return &Secret{} })
+	return parseSettingAs[*Secret](s)
 }
 
 func (s *Setting) MustAsSecret() *Secret {

@@ -10,6 +10,15 @@ const (
 	CurrentEnvVarsVersion = 1
 )
 
+var _ = registerSettingParser(base.SettingTypeEnvVar, &envVarsParser{})
+
+type envVarsParser struct {
+}
+
+func (s *envVarsParser) New() SettingData {
+	return &EnvVars{}
+}
+
 type EnvVars struct {
 	Data []*EnvVar `json:"data"`
 }
@@ -30,7 +39,7 @@ func (s *EnvVars) GetRefSettingIDs() []string {
 }
 
 func (s *Setting) AsEnvVars() (*EnvVars, error) {
-	return parseSettingAs(s, func() *EnvVars { return &EnvVars{} })
+	return parseSettingAs[*EnvVars](s)
 }
 
 func (s *Setting) MustAsEnvVars() *EnvVars {

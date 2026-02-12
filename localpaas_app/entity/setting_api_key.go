@@ -10,6 +10,15 @@ const (
 	CurrentAPIKeyVersion = 1
 )
 
+var _ = registerSettingParser(base.SettingTypeAPIKey, &apiKeyParser{})
+
+type apiKeyParser struct {
+}
+
+func (s *apiKeyParser) New() SettingData {
+	return &APIKey{}
+}
+
 type APIKey struct {
 	KeyID        string              `json:"keyId"`
 	SecretKey    HashField           `json:"secretKey"`
@@ -25,7 +34,7 @@ func (s *APIKey) GetRefSettingIDs() []string {
 }
 
 func (s *Setting) AsAPIKey() (*APIKey, error) {
-	return parseSettingAs(s, func() *APIKey { return &APIKey{} })
+	return parseSettingAs[*APIKey](s)
 }
 
 func (s *Setting) MustAsAPIKey() *APIKey {

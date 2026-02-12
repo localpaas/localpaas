@@ -144,7 +144,6 @@ func (e *Executor) loadCronJobData(
 	}
 
 	// Load reference settings
-	data.CronJobSetting.RefIDs = data.CronJob.GetRefSettingIDs()
 	refSettingMap, err := e.settingService.LoadReferenceSettings(ctx, db, data.Project, data.App, true,
 		data.CronJobSetting)
 	if err != nil {

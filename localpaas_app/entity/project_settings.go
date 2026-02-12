@@ -10,6 +10,15 @@ const (
 	CurrentProjectSettingsVersion = 1
 )
 
+var _ = registerSettingParser(base.SettingTypeProject, &projectSettingsParser{})
+
+type projectSettingsParser struct {
+}
+
+func (s *projectSettingsParser) New() SettingData {
+	return &ProjectSettings{}
+}
+
 type ProjectSettings struct {
 	Test string `json:"test"`
 }
@@ -23,7 +32,7 @@ func (s *ProjectSettings) GetRefSettingIDs() []string {
 }
 
 func (s *Setting) AsProjectSettings() (*ProjectSettings, error) {
-	return parseSettingAs(s, func() *ProjectSettings { return &ProjectSettings{} })
+	return parseSettingAs[*ProjectSettings](s)
 }
 
 func (s *Setting) MustAsProjectSettings() *ProjectSettings {

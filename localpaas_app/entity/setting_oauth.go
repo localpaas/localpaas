@@ -11,6 +11,15 @@ const (
 	CurrentOAuthVersion = 1
 )
 
+var _ = registerSettingParser(base.SettingTypeOAuth, &oauthParser{})
+
+type oauthParser struct {
+}
+
+func (s *oauthParser) New() SettingData {
+	return &OAuth{}
+}
+
 type OAuth struct {
 	ClientID     string         `json:"clientId"`
 	ClientSecret EncryptedField `json:"clientSecret"`
@@ -43,7 +52,7 @@ func (s *Setting) AsOAuth() (*OAuth, error) {
 		}
 		return ghApp.ConvertAsOAuth(), nil
 	}
-	return parseSettingAs(s, func() *OAuth { return &OAuth{} })
+	return parseSettingAs[*OAuth](s)
 }
 
 func (s *Setting) MustAsOAuth() *OAuth {

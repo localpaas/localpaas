@@ -10,6 +10,15 @@ const (
 	CurrentRepoWebhookVersion = 1
 )
 
+var _ = registerSettingParser(base.SettingTypeRepoWebhook, &repoWebhookParser{})
+
+type repoWebhookParser struct {
+}
+
+func (s *repoWebhookParser) New() SettingData {
+	return &RepoWebhook{}
+}
+
 type RepoWebhook struct {
 	Kind   base.WebhookKind `json:"kind"`
 	Secret string           `json:"secret"`
@@ -28,7 +37,7 @@ func (s *RepoWebhook) MustDecrypt() *RepoWebhook {
 }
 
 func (s *Setting) AsRepoWebhook() (*RepoWebhook, error) {
-	return parseSettingAs(s, func() *RepoWebhook { return &RepoWebhook{} })
+	return parseSettingAs[*RepoWebhook](s)
 }
 
 func (s *Setting) MustAsRepoWebhook() *RepoWebhook {
