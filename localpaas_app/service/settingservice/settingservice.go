@@ -7,6 +7,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
+	"github.com/localpaas/localpaas/localpaas_app/repository/cacherepository"
 )
 
 type SettingService interface {
@@ -23,15 +24,18 @@ type SettingService interface {
 
 func NewSettingService(
 	settingRepo repository.SettingRepo,
+	healthcheckSettingsRepo cacherepository.HealthcheckSettingsRepo,
 	permissionManager permission.Manager,
 ) SettingService {
 	return &settingService{
-		settingRepo:       settingRepo,
-		permissionManager: permissionManager,
+		settingRepo:             settingRepo,
+		healthcheckSettingsRepo: healthcheckSettingsRepo,
+		permissionManager:       permissionManager,
 	}
 }
 
 type settingService struct {
-	settingRepo       repository.SettingRepo
-	permissionManager permission.Manager
+	settingRepo             repository.SettingRepo
+	healthcheckSettingsRepo cacherepository.HealthcheckSettingsRepo
+	permissionManager       permission.Manager
 }

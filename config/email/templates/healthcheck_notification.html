@@ -118,7 +118,7 @@
 
 				<tr class="text_default">
 					<td class="col_left">
-						<b>Healthcheck name:</b>
+						<b>Name:</b>
 					</td>
 					<td class="col_main">
 						{{.HealthcheckName}}
@@ -126,7 +126,7 @@
 				</tr>
 				<tr class="text_default">
 					<td class="col_left">
-						<b>Healthcheck type:</b>
+						<b>Type:</b>
 					</td>
 					<td class="col_main">
 						{{.HealthcheckType}}
@@ -157,6 +157,26 @@
 						{{.Retries}}
 					</td>
 				</tr>
+
+				{{if not .Succeeded}}
+				<tr class="text_default">
+					<td class="col_left">
+						<b>Expect:</b>
+					</td>
+					<td class="col_main">
+						{{.Expect}}
+					</td>
+				</tr>
+				<tr class="text_default">
+					<td class="col_left">
+						<b>Actual:</b>
+					</td>
+					<td class="col_main">
+						{{.Actual}}
+					</td>
+				</tr>
+				{{end}}
+
 				</tbody>
 			</table>
 

@@ -23,6 +23,8 @@ type BaseMsgDataHealthcheckNotification struct {
 	StartedAt       time.Time
 	Duration        time.Duration
 	Retries         int
+	Expect          string
+	Actual          string
 	DashboardLink   string
 }
 

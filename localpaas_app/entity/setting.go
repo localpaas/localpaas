@@ -89,6 +89,15 @@ func (s *Setting) IsStatusDirty() bool {
 	return s.Status == base.SettingStatusActive && s.IsExpired()
 }
 
+func (s *Setting) IsTypeIn(types ...base.SettingType) bool {
+	for _, typ := range types {
+		if s.Type == typ {
+			return true
+		}
+	}
+	return false
+}
+
 func (s *Setting) parseData(structPtr SettingData) error {
 	if s == nil || s.Data == "" {
 		return nil

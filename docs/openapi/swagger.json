@@ -22039,11 +22039,14 @@
           "retryDelay" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
           },
+          "saveResultTasks" : {
+            "type" : "boolean"
+          },
           "timeout" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
           }
         },
-        "required" : [ "availableInProjects", "default", "grpc", "healthcheckType", "interval", "maxRetry", "name", "notification", "rest", "retryDelay", "timeout" ],
+        "required" : [ "availableInProjects", "default", "grpc", "healthcheckType", "interval", "maxRetry", "name", "notification", "rest", "retryDelay", "saveResultTasks", "timeout" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.CreateHealthcheckResp" : {
@@ -22171,6 +22174,9 @@
           "retryDelay" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
           },
+          "saveResultTasks" : {
+            "type" : "boolean"
+          },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
           },
@@ -22187,7 +22193,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "grpc", "healthcheckType", "id", "interval", "maxRetry", "name", "notification", "rest", "retryDelay", "status", "timeout", "type", "updateVer", "updatedAt" ],
+        "required" : [ "createdAt", "grpc", "healthcheckType", "id", "interval", "maxRetry", "name", "notification", "rest", "retryDelay", "saveResultTasks", "status", "timeout", "type", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.ListHealthcheckResp" : {
@@ -22282,6 +22288,9 @@
           "retryDelay" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
           },
+          "saveResultTasks" : {
+            "type" : "boolean"
+          },
           "timeout" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
           },
@@ -22289,7 +22298,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "availableInProjects", "default", "grpc", "healthcheckType", "interval", "maxRetry", "name", "notification", "rest", "retryDelay", "timeout", "updateVer" ],
+        "required" : [ "availableInProjects", "default", "grpc", "healthcheckType", "interval", "maxRetry", "name", "notification", "rest", "retryDelay", "saveResultTasks", "timeout", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.UpdateHealthcheckResp" : {

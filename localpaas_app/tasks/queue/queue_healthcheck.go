@@ -2,6 +2,7 @@ package queue
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/tiendc/gofn"
@@ -18,8 +19,9 @@ import (
 )
 
 const (
-	taskKeyHealthcheck = "task:healthcheck:lock"
-	taskLockMaxRetry   = 3
+	taskKeyHealthcheck          = "task:healthcheck:lock"
+	taskLockMaxRetry            = 3
+	cacheHealthcheckSettingsExp = 5 * time.Minute
 )
 
 type HealthcheckExecData struct {
@@ -61,16 +63,14 @@ func (q *taskQueue) doHealthcheck(
 		return apperrors.NewUnavailable("Task executor function for healthcheck")
 	}
 
-	baseData := &HealthcheckExecData{
-		ObjectMap: make(map[string]any, 10), //nolint:mnd
-	}
+	baseData := &HealthcheckExecData{}
 	jobSettings, err := q.loadHealthcheckData(ctx, q.db, baseData)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
 	timeNow := timeutil.NowUTC()
-	allTasks := make([]*entity.Task, 0, len(jobSettings))
+	savingTasks := make([]*entity.Task, 0, len(jobSettings))
 	execFuncs := make([]func(ctx context.Context) error, 0, len(jobSettings))
 
 	for _, jobSetting := range jobSettings {
@@ -78,6 +78,8 @@ func (q *taskQueue) doHealthcheck(
 		healthcheckData := &HealthcheckExecData{
 			HealthcheckSetting: jobSetting,
 			Healthcheck:        healthcheck,
+			Project:            jobSetting.BelongToProject,
+			App:                jobSetting.BelongToApp,
 			Task: &entity.Task{
 				ID:       gofn.Must(ulid.NewStringULID()),
 				TargetID: jobSetting.ID,
@@ -96,13 +98,9 @@ func (q *taskQueue) doHealthcheck(
 			ObjectMap:     baseData.ObjectMap,
 			NotifEventMap: baseData.NotifEventMap,
 		}
-		healthcheckData.Project = healthcheckData.HealthcheckSetting.BelongToProject
-		healthcheckData.App = healthcheckData.HealthcheckSetting.BelongToApp
-		if healthcheckData.App != nil {
-			healthcheckData.Project = healthcheckData.App.Project
+		if healthcheck.SaveResultTasks {
+			savingTasks = append(savingTasks, healthcheckData.Task)
 		}
-
-		allTasks = append(allTasks, healthcheckData.Task)
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
 			return executorFunc(ctx, healthcheckData) //nolint:wrapcheck
 		})
@@ -112,7 +110,7 @@ func (q *taskQueue) doHealthcheck(
 	_ = gofn.ExecTasksEx(ctx, 20, false, execFuncs...) //nolint:mnd
 
 	// Save tasks in DB
-	err = q.taskRepo.UpsertMulti(ctx, q.db, allTasks,
+	err = q.taskRepo.UpsertMulti(ctx, q.db, savingTasks,
 		entity.TaskUpsertingConflictCols, entity.TaskUpsertingUpdateCols)
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -145,7 +143,56 @@ func (q *taskQueue) loadHealthcheckData(
 	db database.IDB,
 	taskData *HealthcheckExecData,
 ) ([]*entity.Setting, error) {
-	allJobSettings, _, err := q.settingRepo.List(ctx, db, nil,
+	// Query items from cache first
+	queryDB := false
+	healthcheckSettings, err := q.healthcheckSettingsRepo.Get(ctx)
+	if err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) {
+			queryDB = true
+		} else {
+			return nil, apperrors.Wrap(err)
+		}
+	}
+
+	if queryDB {
+		healthcheckSettings, err = q.loadHealthcheckDataFromDB(ctx, db)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	}
+	if healthcheckSettings == nil {
+		return nil, nil
+	}
+
+	timeNowSecs := timeutil.NowUTC().Unix()
+	validJobSettings := make([]*entity.Setting, 0, len(healthcheckSettings.Settings))
+	for _, jobSetting := range healthcheckSettings.Settings {
+		healthcheck := jobSetting.MustAsHealthcheck()
+		if timeNowSecs%int64(healthcheck.Interval.ToDuration().Seconds()) > 5 { //nolint:mnd
+			continue
+		}
+		validJobSettings = append(validJobSettings, jobSetting)
+	}
+	if len(validJobSettings) == 0 {
+		return nil, nil
+	}
+
+	// Load history notification events
+	taskData.NotifEventMap, err = q.healthcheckNotifEventRepo.GetAll(ctx)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	taskData.ObjectMap = healthcheckSettings.ObjectMap
+
+	return validJobSettings, nil
+}
+
+func (q *taskQueue) loadHealthcheckDataFromDB(
+	ctx context.Context,
+	db database.IDB,
+) (*cacheentity.HealthcheckSettings, error) {
+	dbSettings, _, err := q.settingRepo.List(ctx, db, nil,
 		bunex.SelectWhere("setting.type = ?", base.SettingTypeHealthcheck),
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
 		bunex.SelectRelation("BelongToProject",
@@ -162,47 +209,45 @@ func (q *taskQueue) loadHealthcheckData(
 		return nil, apperrors.Wrap(err)
 	}
 
-	timeNowSecs := timeutil.NowUTC().Unix()
-	refSettingIDs := make([]string, 0, len(allJobSettings))
-	validJobSettings := make([]*entity.Setting, 0, len(allJobSettings))
-	for _, jobSetting := range allJobSettings {
-		project := jobSetting.BelongToProject
-		app := jobSetting.BelongToApp
-		if app != nil {
-			project = app.Project
+	refSettingIDs := make([]string, 0, 10) //nolint:mnd
+	for _, healthcheck := range dbSettings {
+		if healthcheck.BelongToApp != nil {
+			healthcheck.BelongToProject = healthcheck.BelongToApp.Project
+			healthcheck.BelongToApp.Project = nil
 		}
+		project := healthcheck.BelongToProject
+		app := healthcheck.BelongToApp
 		if app != nil && app.Status != base.AppStatusActive {
 			continue
 		}
 		if project != nil && project.Status != base.ProjectStatusActive {
 			continue
 		}
-
-		healthcheck := jobSetting.MustAsHealthcheck()
-		if timeNowSecs%int64(healthcheck.Interval.ToDuration().Seconds()) > 5 { //nolint:mnd
-			continue
-		}
-		validJobSettings = append(validJobSettings, jobSetting)
-		taskData.ObjectMap[jobSetting.ID] = jobSetting
-		refSettingIDs = append(refSettingIDs, healthcheck.GetRefSettingIDs()...)
+		refSettingIDs = append(refSettingIDs, healthcheck.MustGetRefSettingIDs()...)
 	}
 
 	// Load reference settings
-	refSettings, err := q.settingRepo.ListByIDs(ctx, db, gofn.ToSet(refSettingIDs), true,
+	refSettings, err := q.settingRepo.ListByIDsAsMap(ctx, db, gofn.ToSet(refSettingIDs), true,
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+	objectMap := make(map[string]any, len(refSettingIDs))
 	for _, refSetting := range refSettings {
-		taskData.ObjectMap[refSetting.ID] = refSetting
+		objectMap[refSetting.ID] = refSetting
 	}
 
-	// Load history notification events
-	taskData.NotifEventMap, err = q.healthcheckNotifEventRepo.GetAll(ctx)
+	healthcheckSettings := &cacheentity.HealthcheckSettings{
+		Settings:  dbSettings,
+		ObjectMap: objectMap,
+	}
+
+	// Put data in cache
+	err = q.healthcheckSettingsRepo.Set(ctx, healthcheckSettings, cacheHealthcheckSettingsExp)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	return validJobSettings, nil
+	return healthcheckSettings, nil
 }

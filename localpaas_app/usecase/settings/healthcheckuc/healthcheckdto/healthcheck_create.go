@@ -24,6 +24,7 @@ type HealthcheckBaseReq struct {
 	MaxRetry        int                                           `json:"maxRetry"`
 	RetryDelay      timeutil.Duration                             `json:"retryDelay"`
 	Timeout         timeutil.Duration                             `json:"timeout"`
+	SaveResultTasks bool                                          `json:"saveResultTasks"`
 	REST            *HealthcheckRESTReq                           `json:"rest"`
 	GRPC            *HealthcheckGRPCReq                           `json:"grpc"`
 	Notification    *notificationdto.DefaultResultNotifSettingReq `json:"notification"`
@@ -36,6 +37,7 @@ func (req *HealthcheckBaseReq) ToEntity() *entity.Healthcheck {
 		MaxRetry:        req.MaxRetry,
 		RetryDelay:      req.RetryDelay,
 		Timeout:         req.Timeout,
+		SaveResultTasks: req.SaveResultTasks,
 		REST:            req.REST.ToEntity(),
 		GRPC:            req.GRPC.ToEntity(),
 		Notification:    req.Notification.ToEntity(),

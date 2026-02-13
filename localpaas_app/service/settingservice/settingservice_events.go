@@ -3,6 +3,7 @@ package settingservice
 import (
 	"context"
 
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
@@ -16,7 +17,7 @@ func (s *settingService) OnCreate(
 	ctx context.Context,
 	db database.IDB,
 	event *CreateEvent,
-) error {
+) (err error) {
 	return nil
 }
 
@@ -33,7 +34,15 @@ func (s *settingService) OnUpdate(
 	ctx context.Context,
 	db database.IDB,
 	event *UpdateEvent,
-) error {
+) (err error) {
+	// Remove healthcheck cache if the update may relate
+	if event.Setting.IsTypeIn(base.SettingTypeHealthcheck, base.SettingTypeIMService, base.SettingTypeEmail) {
+		err = s.healthcheckSettingsRepo.Del(ctx)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+	}
+
 	return nil
 }
 
@@ -45,6 +54,14 @@ func (s *settingService) OnDelete(
 	ctx context.Context,
 	db database.IDB,
 	event *DeleteEvent,
-) error {
+) (err error) {
+	// Remove healthcheck cache if the update may relate
+	if event.Setting.IsTypeIn(base.SettingTypeHealthcheck, base.SettingTypeIMService, base.SettingTypeEmail) {
+		err = s.healthcheckSettingsRepo.Del(ctx)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+	}
+
 	return nil
 }

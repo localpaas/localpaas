@@ -26,6 +26,7 @@ type Healthcheck struct {
 	MaxRetry        int                        `json:"maxRetry,omitempty"`
 	RetryDelay      timeutil.Duration          `json:"retryDelay,omitempty"`
 	Timeout         timeutil.Duration          `json:"timeout,omitempty"`
+	SaveResultTasks bool                       `json:"saveResultTasks,omitempty"`
 	REST            *HealthcheckREST           `json:"rest,omitempty"`
 	GRPC            *HealthcheckGRPC           `json:"grpc,omitempty"`
 	Notification    *DefaultResultNotifSetting `json:"notification,omitempty"`

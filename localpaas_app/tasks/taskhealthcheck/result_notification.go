@@ -11,6 +11,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/entity/cacheentity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/strutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
 )
@@ -118,6 +119,32 @@ func (e *Executor) buildNotificationMsgData(
 	if data.App != nil {
 		msgData.AppName = data.App.Name
 	}
+
+	output, _ := data.Task.OutputAsHealthcheck()
+	if output.REST != nil && data.Healthcheck.REST != nil {
+		input := data.Healthcheck.REST
+		maxLen := 100
+		pad := "..."
+		if output.REST.ReturnCode != 0 {
+			msgData.Expect = fmt.Sprintf("Status code = %v", input.ReturnCode)
+			msgData.Actual = fmt.Sprintf("Status code = %v", output.REST.ReturnCode)
+		}
+		if output.REST.ReturnText != "" {
+			msgData.Expect = fmt.Sprintf("Text = %v", strutil.CutShort(input.ReturnText, maxLen, pad))
+			msgData.Actual = fmt.Sprintf("Text = %v", strutil.CutShort(output.REST.ReturnText, maxLen, pad))
+		}
+		if output.REST.ReturnJSON != "" {
+			msgData.Expect = fmt.Sprintf("JSON = %v", strutil.CutShort(input.ReturnJSON, maxLen, pad))
+			msgData.Actual = fmt.Sprintf("JSON = %v", strutil.CutShort(output.REST.ReturnJSON, maxLen, pad))
+		}
+	}
+	if output.GRPC != nil && data.Healthcheck.GRPC != nil {
+		if output.GRPC.ReturnStatus != 0 {
+			msgData.Expect = fmt.Sprintf("Status = %v", data.Healthcheck.GRPC.ReturnStatus)
+			msgData.Actual = fmt.Sprintf("Status = %v", output.GRPC.ReturnStatus)
+		}
+	}
+
 	data.NotifMsgData = msgData
 }
 

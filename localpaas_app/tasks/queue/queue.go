@@ -40,6 +40,7 @@ type taskQueue struct {
 	settingRepo               repository.SettingRepo
 	taskRepo                  repository.TaskRepo
 	taskInfoRepo              cacherepository.TaskInfoRepo
+	healthcheckSettingsRepo   cacherepository.HealthcheckSettingsRepo
 	healthcheckNotifEventRepo cacherepository.HealthcheckNotifEventRepo
 	cronJobService            cronjobservice.CronJobService
 	taskService               taskservice.TaskService
@@ -57,6 +58,7 @@ func NewTaskQueue(
 	settingRepo repository.SettingRepo,
 	taskRepo repository.TaskRepo,
 	cacheTaskInfoRepo cacherepository.TaskInfoRepo,
+	healthcheckSettingsRepo cacherepository.HealthcheckSettingsRepo,
 	healthcheckNotifEventRepo cacherepository.HealthcheckNotifEventRepo,
 	cronJobService cronjobservice.CronJobService,
 	taskService taskservice.TaskService,
@@ -70,6 +72,7 @@ func NewTaskQueue(
 		settingRepo:               settingRepo,
 		taskRepo:                  taskRepo,
 		taskInfoRepo:              cacheTaskInfoRepo,
+		healthcheckSettingsRepo:   healthcheckSettingsRepo,
 		healthcheckNotifEventRepo: healthcheckNotifEventRepo,
 		cronJobService:            cronJobService,
 		taskService:               taskService,
