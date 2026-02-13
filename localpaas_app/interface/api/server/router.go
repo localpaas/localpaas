@@ -108,7 +108,7 @@ func (s *HTTPServer) registerRoutes() {
 	{ // git source group
 		gitSourceGroup := apiGroup.Group("/git-source")
 		// Repo
-		gitSourceGroup.GET("/:settingID/repositories", s.handlerRegistry.gitSourceHandler.ListGitRepo)
+		gitSourceGroup.GET("/:itemID/repositories", s.handlerRegistry.gitSourceHandler.ListGitRepo)
 	}
 }
 

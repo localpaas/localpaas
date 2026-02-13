@@ -17,7 +17,7 @@ import (
 // @Tags    git_source
 // @Produce json
 // @Id      listGitRepo
-// @Param   settingID path string true "github-app ID or access-token ID"
+// @Param   itemID path string true "github-app ID or access-token ID"
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
@@ -25,9 +25,9 @@ import (
 // @Success 200 {object} gitsourcedto.ListRepoResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /git-source/{settingID}/repositories [get]
+// @Router  /git-source/{itemID}/repositories [get]
 func (h *GitSourceHandler) ListGitRepo(ctx *gin.Context) {
-	settingID, err := h.ParseStringParam(ctx, "settingID")
+	itemID, err := h.ParseStringParam(ctx, "itemID")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -44,7 +44,7 @@ func (h *GitSourceHandler) ListGitRepo(ctx *gin.Context) {
 	}
 
 	req := gitsourcedto.NewListRepoReq()
-	req.SettingID = settingID
+	req.SettingID = itemID
 	if err := h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return

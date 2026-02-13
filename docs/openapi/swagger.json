@@ -1321,14 +1321,14 @@
         "tags" : [ "cluster_volumes" ]
       }
     },
-    "/git-source/{settingID}/repositories" : {
+    "/git-source/{itemID}/repositories" : {
       "get" : {
         "description" : "Lists repo",
         "operationId" : "listGitRepo",
         "parameters" : [ {
           "description" : "github-app ID or access-token ID",
           "in" : "path",
-          "name" : "settingID",
+          "name" : "itemID",
           "required" : true,
           "schema" : {
             "type" : "string"
