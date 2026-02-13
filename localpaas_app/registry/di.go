@@ -12,7 +12,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/clusterhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/gitsourcehandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projecthandler"
-	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/providershandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/settinghandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/systemhandler"
@@ -113,7 +112,6 @@ var Provides = []any{
 	userhandler.NewUserHandler,
 	projecthandler.NewProjectHandler,
 	apphandler.NewAppHandler,
-	providershandler.NewProvidersHandler,
 	settinghandler.NewSettingHandler,
 	usersettingshandler.NewUserSettingsHandler,
 	systemhandler.NewSystemHandler,

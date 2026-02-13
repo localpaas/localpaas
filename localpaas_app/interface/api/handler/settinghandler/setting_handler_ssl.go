@@ -1,4 +1,4 @@
-package providershandler
+package settinghandler
 
 import (
 	"github.com/gin-gonic/gin"
@@ -8,12 +8,12 @@ import (
 	_ "github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc/ssldto"
 )
 
-// ListSSL Lists SSL providers
-// @Summary Lists SSL providers
-// @Description Lists SSL providers
-// @Tags    global_providers
+// ListSSL Lists SSL settings
+// @Summary Lists SSL settings
+// @Description Lists SSL settings
+// @Tags    settings
 // @Produce json
-// @Id      listProviderSSL
+// @Id      listSettingSSL
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
@@ -21,84 +21,84 @@ import (
 // @Success 200 {object} ssldto.ListSSLResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssls [get]
-func (h *ProvidersHandler) ListSSL(ctx *gin.Context) {
+// @Router  /settings/ssls [get]
+func (h *SettingHandler) ListSSL(ctx *gin.Context) {
 	h.ListSetting(ctx, base.ResourceTypeSSL, base.SettingScopeGlobal)
 }
 
-// GetSSL Gets SSL provider details
-// @Summary Gets SSL provider details
-// @Description Gets SSL provider details
-// @Tags    global_providers
+// GetSSL Gets SSL setting details
+// @Summary Gets SSL setting details
+// @Description Gets SSL setting details
+// @Tags    settings
 // @Produce json
-// @Id      getProviderSSL
+// @Id      getSettingSSL
 // @Param   itemID path string true "setting ID"
 // @Success 200 {object} ssldto.GetSSLResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssls/{itemID} [get]
-func (h *ProvidersHandler) GetSSL(ctx *gin.Context) {
+// @Router  /settings/ssls/{itemID} [get]
+func (h *SettingHandler) GetSSL(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeSSL, base.SettingScopeGlobal)
 }
 
-// CreateSSL Creates a new SSL provider
-// @Summary Creates a new SSL provider
-// @Description Creates a new SSL provider
-// @Tags    global_providers
+// CreateSSL Creates a new SSL setting
+// @Summary Creates a new SSL setting
+// @Description Creates a new SSL setting
+// @Tags    settings
 // @Produce json
-// @Id      createProviderSSL
+// @Id      createSettingSSL
 // @Param   body body ssldto.CreateSSLReq true "request data"
 // @Success 201 {object} ssldto.CreateSSLResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssls [post]
-func (h *ProvidersHandler) CreateSSL(ctx *gin.Context) {
+// @Router  /settings/ssls [post]
+func (h *SettingHandler) CreateSSL(ctx *gin.Context) {
 	h.CreateSetting(ctx, base.ResourceTypeSSL, base.SettingScopeGlobal)
 }
 
 // UpdateSSL Updates SSL
 // @Summary Updates SSL
 // @Description Updates SSL
-// @Tags    global_providers
+// @Tags    settings
 // @Produce json
-// @Id      updateProviderSSL
+// @Id      updateSettingSSL
 // @Param   itemID path string true "setting ID"
 // @Param   body body ssldto.UpdateSSLReq true "request data"
 // @Success 200 {object} ssldto.UpdateSSLResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssls/{itemID} [put]
-func (h *ProvidersHandler) UpdateSSL(ctx *gin.Context) {
+// @Router  /settings/ssls/{itemID} [put]
+func (h *SettingHandler) UpdateSSL(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeSSL, base.SettingScopeGlobal)
 }
 
 // UpdateSSLMeta Updates SSL meta
 // @Summary Updates SSL meta
 // @Description Updates SSL meta
-// @Tags    global_providers
+// @Tags    settings
 // @Produce json
-// @Id      updateProviderSSLMeta
+// @Id      updateSettingSSLMeta
 // @Param   itemID path string true "setting ID"
 // @Param   body body ssldto.UpdateSSLMetaReq true "request data"
 // @Success 200 {object} ssldto.UpdateSSLMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssls/{itemID}/meta [put]
-func (h *ProvidersHandler) UpdateSSLMeta(ctx *gin.Context) {
+// @Router  /settings/ssls/{itemID}/meta [put]
+func (h *SettingHandler) UpdateSSLMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeSSL, base.SettingScopeGlobal)
 }
 
-// DeleteSSL Deletes SSL provider
-// @Summary Deletes SSL provider
-// @Description Deletes SSL provider
-// @Tags    global_providers
+// DeleteSSL Deletes SSL setting
+// @Summary Deletes SSL setting
+// @Description Deletes SSL setting
+// @Tags    settings
 // @Produce json
-// @Id      deleteProviderSSL
+// @Id      deleteSettingSSL
 // @Param   itemID path string true "setting ID"
 // @Success 200 {object} ssldto.DeleteSSLResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssls/{itemID} [delete]
-func (h *ProvidersHandler) DeleteSSL(ctx *gin.Context) {
+// @Router  /settings/ssls/{itemID} [delete]
+func (h *SettingHandler) DeleteSSL(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeSSL, base.SettingScopeGlobal)
 }

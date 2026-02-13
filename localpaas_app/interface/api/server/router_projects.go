@@ -17,36 +17,41 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 	projectGroup.PUT("/:projectID/photo", s.handlerRegistry.projectHandler.UpdateProjectPhoto)
 	projectGroup.DELETE("/:projectID", s.handlerRegistry.projectHandler.DeleteProject)
 
-	// Tags
-	projectGroup.POST("/:projectID/tags", s.handlerRegistry.projectHandler.CreateProjectTag)
-	projectGroup.POST("/:projectID/tags/delete", s.handlerRegistry.projectHandler.DeleteProjectTags)
-
-	// Env vars
-	projectGroup.GET("/:projectID/env-vars", s.handlerRegistry.projectHandler.GetProjectEnvVars)
-	projectGroup.PUT("/:projectID/env-vars", s.handlerRegistry.projectHandler.UpdateProjectEnvVars)
-
-	// Secrets
-	projectGroup.GET("/:projectID/secrets", s.handlerRegistry.projectHandler.ListProjectSecrets)
-	projectGroup.POST("/:projectID/secrets", s.handlerRegistry.projectHandler.CreateProjectSecret)
-	projectGroup.PUT("/:projectID/secrets/:itemID", s.handlerRegistry.projectHandler.UpdateProjectSecret)
-	projectGroup.DELETE("/:projectID/secrets/:itemID", s.handlerRegistry.projectHandler.DeleteProjectSecret)
-
-	// Cron jobs
-	projectGroup.GET("/:projectID/cron-jobs", s.handlerRegistry.projectHandler.ListCronJob)
-	projectGroup.GET("/:projectID/cron-jobs/:itemID", s.handlerRegistry.projectHandler.GetCronJob)
-	projectGroup.POST("/:projectID/cron-jobs", s.handlerRegistry.projectHandler.CreateCronJob)
-	projectGroup.PUT("/:projectID/cron-jobs/:itemID", s.handlerRegistry.projectHandler.UpdateCronJob)
-	projectGroup.PUT("/:projectID/cron-jobs/:itemID/meta", s.handlerRegistry.projectHandler.UpdateCronJobMeta)
-	projectGroup.DELETE("/:projectID/cron-jobs/:itemID", s.handlerRegistry.projectHandler.DeleteCronJob)
-
 	// Settings import
 	projectGroup.POST("/:projectID/settings-import", s.handlerRegistry.projectHandler.ImportSettings)
 
-	// PROVIDERS
-	projectProviderGroup := projectGroup.Group("/:projectID/providers")
+	{ // Tags
+		tagGroup := projectGroup.Group("/:projectID/tags")
+		tagGroup.POST("", s.handlerRegistry.projectHandler.CreateProjectTag)
+		tagGroup.POST("/delete", s.handlerRegistry.projectHandler.DeleteProjectTags)
+	}
 
-	{ // github-app group
-		githubAppGroup := projectProviderGroup.Group("/github-apps")
+	{ // Env vars
+		envVarGroup := projectGroup.Group("/:projectID/env-vars")
+		envVarGroup.GET("", s.handlerRegistry.projectHandler.GetProjectEnvVars)
+		envVarGroup.PUT("", s.handlerRegistry.projectHandler.UpdateProjectEnvVars)
+	}
+
+	{ // Secrets
+		secretGroup := projectGroup.Group("/:projectID/secrets")
+		secretGroup.GET("", s.handlerRegistry.projectHandler.ListProjectSecrets)
+		secretGroup.POST("", s.handlerRegistry.projectHandler.CreateProjectSecret)
+		secretGroup.PUT("/:itemID", s.handlerRegistry.projectHandler.UpdateProjectSecret)
+		secretGroup.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteProjectSecret)
+	}
+
+	{ // Cron jobs
+		cronJobGroup := projectGroup.Group("/:projectID/cron-jobs")
+		cronJobGroup.GET("", s.handlerRegistry.projectHandler.ListCronJob)
+		cronJobGroup.GET("/:itemID", s.handlerRegistry.projectHandler.GetCronJob)
+		cronJobGroup.POST("", s.handlerRegistry.projectHandler.CreateCronJob)
+		cronJobGroup.PUT("/:itemID", s.handlerRegistry.projectHandler.UpdateCronJob)
+		cronJobGroup.PUT("/:itemID/meta", s.handlerRegistry.projectHandler.UpdateCronJobMeta)
+		cronJobGroup.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteCronJob)
+	}
+
+	{ // Github-app group
+		githubAppGroup := projectGroup.Group("/github-apps")
 		githubAppGroup.GET("/:itemID", s.handlerRegistry.projectHandler.GetGithubApp)
 		githubAppGroup.GET("", s.handlerRegistry.projectHandler.ListGithubApp)
 		githubAppGroup.POST("", s.handlerRegistry.projectHandler.CreateGithubApp)
@@ -55,8 +60,8 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		githubAppGroup.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteGithubApp)
 	}
 
-	{ // access-token group
-		accessTokenGroup := projectProviderGroup.Group("/access-tokens")
+	{ // Access-token group
+		accessTokenGroup := projectGroup.Group("/access-tokens")
 		accessTokenGroup.GET("/:itemID", s.handlerRegistry.projectHandler.GetAccessToken)
 		accessTokenGroup.GET("", s.handlerRegistry.projectHandler.ListAccessToken)
 		accessTokenGroup.POST("", s.handlerRegistry.projectHandler.CreateAccessToken)
@@ -65,8 +70,8 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		accessTokenGroup.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteAccessToken)
 	}
 
-	{ // aws group
-		awsGroup := projectProviderGroup.Group("/aws")
+	{ // AWS group
+		awsGroup := projectGroup.Group("/aws")
 		awsGroup.GET("/:itemID", s.handlerRegistry.projectHandler.GetAWS)
 		awsGroup.GET("", s.handlerRegistry.projectHandler.ListAWS)
 		awsGroup.POST("", s.handlerRegistry.projectHandler.CreateAWS)
@@ -75,8 +80,8 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		awsGroup.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteAWS)
 	}
 
-	{ // aws s3 group
-		awsS3Group := projectProviderGroup.Group("/aws-s3")
+	{ // AWS S3 group
+		awsS3Group := projectGroup.Group("/aws-s3")
 		awsS3Group.GET("/:itemID", s.handlerRegistry.projectHandler.GetAWSS3)
 		awsS3Group.GET("", s.handlerRegistry.projectHandler.ListAWSS3)
 		awsS3Group.POST("", s.handlerRegistry.projectHandler.CreateAWSS3)
@@ -85,8 +90,8 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		awsS3Group.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteAWSS3)
 	}
 
-	{ // ssh key group
-		sshKeyGroup := projectProviderGroup.Group("/ssh-keys")
+	{ // SSH key group
+		sshKeyGroup := projectGroup.Group("/ssh-keys")
 		sshKeyGroup.GET("/:itemID", s.handlerRegistry.projectHandler.GetSSHKey)
 		sshKeyGroup.GET("", s.handlerRegistry.projectHandler.ListSSHKey)
 		sshKeyGroup.POST("", s.handlerRegistry.projectHandler.CreateSSHKey)
@@ -96,7 +101,7 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 	}
 
 	{ // IM service group
-		imServiceGroup := projectProviderGroup.Group("/im-services")
+		imServiceGroup := projectGroup.Group("/im-services")
 		imServiceGroup.GET("/:itemID", s.handlerRegistry.projectHandler.GetIMService)
 		imServiceGroup.GET("", s.handlerRegistry.projectHandler.ListIMService)
 		imServiceGroup.POST("", s.handlerRegistry.projectHandler.CreateIMService)
@@ -105,8 +110,8 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		imServiceGroup.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteIMService)
 	}
 
-	{ // registry auth group
-		registryAuthGroup := projectProviderGroup.Group("/registry-auth")
+	{ // Registry auth group
+		registryAuthGroup := projectGroup.Group("/registry-auth")
 		registryAuthGroup.GET("/:itemID", s.handlerRegistry.projectHandler.GetRegistryAuth)
 		registryAuthGroup.GET("", s.handlerRegistry.projectHandler.ListRegistryAuth)
 		registryAuthGroup.POST("", s.handlerRegistry.projectHandler.CreateRegistryAuth)
@@ -115,8 +120,8 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		registryAuthGroup.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteRegistryAuth)
 	}
 
-	{ // basic auth group
-		basicAuthGroup := projectProviderGroup.Group("/basic-auth")
+	{ // Basic auth group
+		basicAuthGroup := projectGroup.Group("/basic-auth")
 		basicAuthGroup.GET("/:itemID", s.handlerRegistry.projectHandler.GetBasicAuth)
 		basicAuthGroup.GET("", s.handlerRegistry.projectHandler.ListBasicAuth)
 		basicAuthGroup.POST("", s.handlerRegistry.projectHandler.CreateBasicAuth)
@@ -125,8 +130,8 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		basicAuthGroup.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteBasicAuth)
 	}
 
-	{ // ssl group
-		sslGroup := projectProviderGroup.Group("/ssls")
+	{ // SSL group
+		sslGroup := projectGroup.Group("/ssls")
 		sslGroup.GET("/:itemID", s.handlerRegistry.projectHandler.GetSSL)
 		sslGroup.GET("", s.handlerRegistry.projectHandler.ListSSL)
 		sslGroup.POST("", s.handlerRegistry.projectHandler.CreateSSL)
@@ -135,8 +140,8 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		sslGroup.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteSSL)
 	}
 
-	{ // email group
-		emailGroup := projectProviderGroup.Group("/emails")
+	{ // Email group
+		emailGroup := projectGroup.Group("/emails")
 		emailGroup.GET("/:itemID", s.handlerRegistry.projectHandler.GetEmail)
 		emailGroup.GET("", s.handlerRegistry.projectHandler.ListEmail)
 		emailGroup.POST("", s.handlerRegistry.projectHandler.CreateEmail)
@@ -145,8 +150,8 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		emailGroup.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteEmail)
 	}
 
-	{ // repo webhook group
-		repoWebhookGroup := projectProviderGroup.Group("/repo-webhooks")
+	{ // Repo webhook group
+		repoWebhookGroup := projectGroup.Group("/repo-webhooks")
 		repoWebhookGroup.GET("/:itemID", s.handlerRegistry.projectHandler.GetRepoWebhook)
 		repoWebhookGroup.GET("", s.handlerRegistry.projectHandler.ListRepoWebhook)
 		repoWebhookGroup.POST("", s.handlerRegistry.projectHandler.CreateRepoWebhook)

@@ -8,10 +8,10 @@ import (
 	_ "github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc/sshkeydto"
 )
 
-// ListSSHKey Lists ssh-key providers
-// @Summary Lists ssh-key providers
-// @Description Lists ssh-key providers
-// @Tags    project_providers
+// ListSSHKey Lists ssh-key settings
+// @Summary Lists ssh-key settings
+// @Description Lists ssh-key settings
+// @Tags    project_settings
 // @Produce json
 // @Id      listProjectSSHKey
 // @Param   projectID path string true "project ID"
@@ -22,15 +22,15 @@ import (
 // @Success 200 {object} sshkeydto.ListSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/ssh-keys [get]
+// @Router  /projects/{projectID}/ssh-keys [get]
 func (h *ProjectHandler) ListSSHKey(ctx *gin.Context) {
 	h.ListSetting(ctx, base.ResourceTypeSSHKey, base.SettingScopeProject)
 }
 
-// GetSSHKey Gets ssh-key provider details
-// @Summary Gets ssh-key provider details
-// @Description Gets ssh-key provider details
-// @Tags    project_providers
+// GetSSHKey Gets ssh-key setting details
+// @Summary Gets ssh-key setting details
+// @Description Gets ssh-key setting details
+// @Tags    project_settings
 // @Produce json
 // @Id      getProjectSSHKey
 // @Param   projectID path string true "project ID"
@@ -38,15 +38,15 @@ func (h *ProjectHandler) ListSSHKey(ctx *gin.Context) {
 // @Success 200 {object} sshkeydto.GetSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/ssh-keys/{itemID} [get]
+// @Router  /projects/{projectID}/ssh-keys/{itemID} [get]
 func (h *ProjectHandler) GetSSHKey(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeSSHKey, base.SettingScopeProject)
 }
 
-// CreateSSHKey Creates a new ssh-key provider
-// @Summary Creates a new ssh-key provider
-// @Description Creates a new ssh-key provider
-// @Tags    project_providers
+// CreateSSHKey Creates a new ssh-key setting
+// @Summary Creates a new ssh-key setting
+// @Description Creates a new ssh-key setting
+// @Tags    project_settings
 // @Produce json
 // @Id      createProjectSSHKey
 // @Param   projectID path string true "project ID"
@@ -54,7 +54,7 @@ func (h *ProjectHandler) GetSSHKey(ctx *gin.Context) {
 // @Success 201 {object} sshkeydto.CreateSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/ssh-keys [post]
+// @Router  /projects/{projectID}/ssh-keys [post]
 func (h *ProjectHandler) CreateSSHKey(ctx *gin.Context) {
 	h.CreateSetting(ctx, base.ResourceTypeSSHKey, base.SettingScopeProject)
 }
@@ -62,7 +62,7 @@ func (h *ProjectHandler) CreateSSHKey(ctx *gin.Context) {
 // UpdateSSHKey Updates ssh-key
 // @Summary Updates ssh-key
 // @Description Updates ssh-key
-// @Tags    project_providers
+// @Tags    project_settings
 // @Produce json
 // @Id      updateProjectSSHKey
 // @Param   projectID path string true "project ID"
@@ -71,7 +71,7 @@ func (h *ProjectHandler) CreateSSHKey(ctx *gin.Context) {
 // @Success 200 {object} sshkeydto.UpdateSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/ssh-keys/{itemID} [put]
+// @Router  /projects/{projectID}/ssh-keys/{itemID} [put]
 func (h *ProjectHandler) UpdateSSHKey(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeSSHKey, base.SettingScopeProject)
 }
@@ -79,7 +79,7 @@ func (h *ProjectHandler) UpdateSSHKey(ctx *gin.Context) {
 // UpdateSSHKeyMeta Updates ssh-key meta
 // @Summary Updates ssh-key meta
 // @Description Updates ssh-key meta
-// @Tags    project_providers
+// @Tags    project_settings
 // @Produce json
 // @Id      updateProjectSSHKeyMeta
 // @Param   projectID path string true "project ID"
@@ -88,15 +88,15 @@ func (h *ProjectHandler) UpdateSSHKey(ctx *gin.Context) {
 // @Success 200 {object} sshkeydto.UpdateSSHKeyMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/ssh-keys/{itemID}/meta [put]
+// @Router  /projects/{projectID}/ssh-keys/{itemID}/meta [put]
 func (h *ProjectHandler) UpdateSSHKeyMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeSSHKey, base.SettingScopeProject)
 }
 
-// DeleteSSHKey Deletes ssh-key provider
-// @Summary Deletes ssh-key provider
-// @Description Deletes ssh-key provider
-// @Tags    project_providers
+// DeleteSSHKey Deletes ssh-key setting
+// @Summary Deletes ssh-key setting
+// @Description Deletes ssh-key setting
+// @Tags    project_settings
 // @Produce json
 // @Id      deleteProjectSSHKey
 // @Param   projectID path string true "project ID"
@@ -104,7 +104,7 @@ func (h *ProjectHandler) UpdateSSHKeyMeta(ctx *gin.Context) {
 // @Success 200 {object} sshkeydto.DeleteSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/ssh-keys/{itemID} [delete]
+// @Router  /projects/{projectID}/ssh-keys/{itemID} [delete]
 func (h *ProjectHandler) DeleteSSHKey(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeSSHKey, base.SettingScopeProject)
 }

@@ -39,6 +39,7 @@ func (uc *CronJobUC) CreateCronJob(
 			if err != nil {
 				return apperrors.Wrap(err)
 			}
+			pData.Setting.Kind = string(cronJob.CronType)
 			if err = pData.Setting.SetData(cronJob); err != nil {
 				return apperrors.Wrap(err)
 			}

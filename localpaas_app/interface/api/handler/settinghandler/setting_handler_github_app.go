@@ -1,4 +1,4 @@
-package providershandler
+package settinghandler
 
 import (
 	"net/http"
@@ -11,12 +11,12 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc/githubappdto"
 )
 
-// ListGithubApp Lists github-app providers
-// @Summary Lists github-app providers
-// @Description Lists github-app providers
-// @Tags    global_providers
+// ListGithubApp Lists github-app settings
+// @Summary Lists github-app settings
+// @Description Lists github-app settings
+// @Tags    settings
 // @Produce json
-// @Id      listProviderGithubApp
+// @Id      listSettingGithubApp
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
@@ -24,100 +24,100 @@ import (
 // @Success 200 {object} githubappdto.ListGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/github-apps [get]
-func (h *ProvidersHandler) ListGithubApp(ctx *gin.Context) {
+// @Router  /settings/github-apps [get]
+func (h *SettingHandler) ListGithubApp(ctx *gin.Context) {
 	h.ListSetting(ctx, base.ResourceTypeGithubApp, base.SettingScopeGlobal)
 }
 
-// GetGithubApp Gets github-app provider details
-// @Summary Gets github-app provider details
-// @Description Gets github-app provider details
-// @Tags    global_providers
+// GetGithubApp Gets github-app setting details
+// @Summary Gets github-app setting details
+// @Description Gets github-app setting details
+// @Tags    settings
 // @Produce json
-// @Id      getProviderGithubApp
+// @Id      getSettingGithubApp
 // @Param   itemID path string true "setting ID"
 // @Success 200 {object} githubappdto.GetGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/github-apps/{itemID} [get]
-func (h *ProvidersHandler) GetGithubApp(ctx *gin.Context) {
+// @Router  /settings/github-apps/{itemID} [get]
+func (h *SettingHandler) GetGithubApp(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeGithubApp, base.SettingScopeGlobal)
 }
 
-// CreateGithubApp Creates a new github-app provider
-// @Summary Creates a new github-app provider
-// @Description Creates a new github-app provider
-// @Tags    global_providers
+// CreateGithubApp Creates a new github-app setting
+// @Summary Creates a new github-app setting
+// @Description Creates a new github-app setting
+// @Tags    settings
 // @Produce json
-// @Id      createProviderGithubApp
+// @Id      createSettingGithubApp
 // @Param   body body githubappdto.CreateGithubAppReq true "request data"
 // @Success 201 {object} githubappdto.CreateGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/github-apps [post]
-func (h *ProvidersHandler) CreateGithubApp(ctx *gin.Context) {
+// @Router  /settings/github-apps [post]
+func (h *SettingHandler) CreateGithubApp(ctx *gin.Context) {
 	h.CreateSetting(ctx, base.ResourceTypeGithubApp, base.SettingScopeGlobal)
 }
 
 // UpdateGithubApp Updates github-app
 // @Summary Updates github-app
 // @Description Updates github-app
-// @Tags    global_providers
+// @Tags    settings
 // @Produce json
-// @Id      updateProviderGithubApp
+// @Id      updateSettingGithubApp
 // @Param   itemID path string true "setting ID"
 // @Param   body body githubappdto.UpdateGithubAppReq true "request data"
 // @Success 200 {object} githubappdto.UpdateGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/github-apps/{itemID} [put]
-func (h *ProvidersHandler) UpdateGithubApp(ctx *gin.Context) {
+// @Router  /settings/github-apps/{itemID} [put]
+func (h *SettingHandler) UpdateGithubApp(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeGithubApp, base.SettingScopeGlobal)
 }
 
 // UpdateGithubAppMeta Updates github-app meta
 // @Summary Updates github-app meta
 // @Description Updates github-app meta
-// @Tags    global_providers
+// @Tags    settings
 // @Produce json
-// @Id      updateProviderGithubAppMeta
+// @Id      updateSettingGithubAppMeta
 // @Param   itemID path string true "setting ID"
 // @Param   body body githubappdto.UpdateGithubAppMetaReq true "request data"
 // @Success 200 {object} githubappdto.UpdateGithubAppMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/github-apps/{itemID}/meta [put]
-func (h *ProvidersHandler) UpdateGithubAppMeta(ctx *gin.Context) {
+// @Router  /settings/github-apps/{itemID}/meta [put]
+func (h *SettingHandler) UpdateGithubAppMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeGithubApp, base.SettingScopeGlobal)
 }
 
-// DeleteGithubApp Deletes github-app provider
-// @Summary Deletes github-app provider
-// @Description Deletes github-app provider
-// @Tags    global_providers
+// DeleteGithubApp Deletes github-app setting
+// @Summary Deletes github-app setting
+// @Description Deletes github-app setting
+// @Tags    settings
 // @Produce json
-// @Id      deleteProviderGithubApp
+// @Id      deleteSettingGithubApp
 // @Param   itemID path string true "setting ID"
 // @Success 200 {object} githubappdto.DeleteGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/github-apps/{itemID} [delete]
-func (h *ProvidersHandler) DeleteGithubApp(ctx *gin.Context) {
+// @Router  /settings/github-apps/{itemID} [delete]
+func (h *SettingHandler) DeleteGithubApp(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeGithubApp, base.SettingScopeGlobal)
 }
 
 // TestGithubAppConn Test github app connection
 // @Summary Test github app connection
 // @Description Test github app connection
-// @Tags    global_providers
+// @Tags    settings
 // @Produce json
 // @Id      testGithubAppConn
 // @Param   body body githubappdto.TestGithubAppConnReq true "request data"
 // @Success 200 {object} githubappdto.TestGithubAppConnResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/github-apps/test-conn [post]
-func (h *ProvidersHandler) TestGithubAppConn(ctx *gin.Context) {
+// @Router  /settings/github-apps/test-conn [post]
+func (h *SettingHandler) TestGithubAppConn(ctx *gin.Context) {
 	auth, err := h.AuthHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -142,15 +142,15 @@ func (h *ProvidersHandler) TestGithubAppConn(ctx *gin.Context) {
 // ListAppInstallation List github app installation
 // @Summary List github app installation
 // @Description List github app installation
-// @Tags    global_providers
+// @Tags    settings
 // @Produce json
 // @Id      listAppInstallation
 // @Param   body body githubappdto.ListAppInstallationReq true "request data"
 // @Success 200 {object} githubappdto.ListAppInstallationResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/github-apps/installations/list [post]
-func (h *ProvidersHandler) ListAppInstallation(ctx *gin.Context) {
+// @Router  /settings/github-apps/installations/list [post]
+func (h *SettingHandler) ListAppInstallation(ctx *gin.Context) {
 	auth, err := h.AuthHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
 	if err != nil {
 		h.RenderError(ctx, err)

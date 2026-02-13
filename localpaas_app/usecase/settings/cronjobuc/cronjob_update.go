@@ -34,7 +34,9 @@ func (uc *CronJobUC) UpdateCronJob(
 			data *settings.UpdateSettingData,
 			pData *settings.PersistingSettingData,
 		) error {
-			err := pData.Setting.SetData(req.ToEntity())
+			cronJob := req.ToEntity()
+			pData.Setting.Kind = string(cronJob.CronType)
+			err := pData.Setting.SetData(cronJob)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

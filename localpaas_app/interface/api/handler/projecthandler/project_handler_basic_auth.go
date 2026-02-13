@@ -8,10 +8,10 @@ import (
 	_ "github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc/basicauthdto"
 )
 
-// ListBasicAuth Lists basic auth providers
-// @Summary Lists basic auth providers
-// @Description Lists basic auth providers
-// @Tags    project_providers
+// ListBasicAuth Lists basic auth settings
+// @Summary Lists basic auth settings
+// @Description Lists basic auth settings
+// @Tags    project_settings
 // @Produce json
 // @Id      listProjectBasicAuth
 // @Param   projectID path string true "project ID"
@@ -22,15 +22,15 @@ import (
 // @Success 200 {object} basicauthdto.ListBasicAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/basic-auth [get]
+// @Router  /projects/{projectID}/basic-auth [get]
 func (h *ProjectHandler) ListBasicAuth(ctx *gin.Context) {
 	h.ListSetting(ctx, base.ResourceTypeBasicAuth, base.SettingScopeProject)
 }
 
-// GetBasicAuth Gets basic auth provider details
-// @Summary Gets basic auth provider details
-// @Description Gets basic auth provider details
-// @Tags    project_providers
+// GetBasicAuth Gets basic auth setting details
+// @Summary Gets basic auth setting details
+// @Description Gets basic auth setting details
+// @Tags    project_settings
 // @Produce json
 // @Id      getProjectBasicAuth
 // @Param   projectID path string true "project ID"
@@ -38,15 +38,15 @@ func (h *ProjectHandler) ListBasicAuth(ctx *gin.Context) {
 // @Success 200 {object} basicauthdto.GetBasicAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/basic-auth/{itemID} [get]
+// @Router  /projects/{projectID}/basic-auth/{itemID} [get]
 func (h *ProjectHandler) GetBasicAuth(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeBasicAuth, base.SettingScopeProject)
 }
 
-// CreateBasicAuth Creates a new basic auth provider
-// @Summary Creates a new basic auth provider
-// @Description Creates a new basic auth provider
-// @Tags    project_providers
+// CreateBasicAuth Creates a new basic auth setting
+// @Summary Creates a new basic auth setting
+// @Description Creates a new basic auth setting
+// @Tags    project_settings
 // @Produce json
 // @Id      createProjectBasicAuth
 // @Param   projectID path string true "project ID"
@@ -54,7 +54,7 @@ func (h *ProjectHandler) GetBasicAuth(ctx *gin.Context) {
 // @Success 201 {object} basicauthdto.CreateBasicAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/basic-auth [post]
+// @Router  /projects/{projectID}/basic-auth [post]
 func (h *ProjectHandler) CreateBasicAuth(ctx *gin.Context) {
 	h.CreateSetting(ctx, base.ResourceTypeBasicAuth, base.SettingScopeProject)
 }
@@ -62,7 +62,7 @@ func (h *ProjectHandler) CreateBasicAuth(ctx *gin.Context) {
 // UpdateBasicAuth Updates basic auth
 // @Summary Updates basic auth
 // @Description Updates basic auth
-// @Tags    project_providers
+// @Tags    project_settings
 // @Produce json
 // @Id      updateProjectBasicAuth
 // @Param   projectID path string true "project ID"
@@ -71,7 +71,7 @@ func (h *ProjectHandler) CreateBasicAuth(ctx *gin.Context) {
 // @Success 200 {object} basicauthdto.UpdateBasicAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/basic-auth/{itemID} [put]
+// @Router  /projects/{projectID}/basic-auth/{itemID} [put]
 func (h *ProjectHandler) UpdateBasicAuth(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeBasicAuth, base.SettingScopeProject)
 }
@@ -79,7 +79,7 @@ func (h *ProjectHandler) UpdateBasicAuth(ctx *gin.Context) {
 // UpdateBasicAuthMeta Updates basic auth meta
 // @Summary Updates basic auth meta
 // @Description Updates basic auth meta
-// @Tags    project_providers
+// @Tags    project_settings
 // @Produce json
 // @Id      updateProjectBasicAuthMeta
 // @Param   projectID path string true "project ID"
@@ -88,15 +88,15 @@ func (h *ProjectHandler) UpdateBasicAuth(ctx *gin.Context) {
 // @Success 200 {object} basicauthdto.UpdateBasicAuthMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/basic-auth/{itemID}/meta [put]
+// @Router  /projects/{projectID}/basic-auth/{itemID}/meta [put]
 func (h *ProjectHandler) UpdateBasicAuthMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeBasicAuth, base.SettingScopeProject)
 }
 
-// DeleteBasicAuth Deletes basic auth provider
-// @Summary Deletes basic auth provider
-// @Description Deletes basic auth provider
-// @Tags    project_providers
+// DeleteBasicAuth Deletes basic auth setting
+// @Summary Deletes basic auth setting
+// @Description Deletes basic auth setting
+// @Tags    project_settings
 // @Produce json
 // @Id      deleteProjectBasicAuth
 // @Param   projectID path string true "project ID"
@@ -104,7 +104,7 @@ func (h *ProjectHandler) UpdateBasicAuthMeta(ctx *gin.Context) {
 // @Success 200 {object} basicauthdto.DeleteBasicAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/basic-auth/{itemID} [delete]
+// @Router  /projects/{projectID}/basic-auth/{itemID} [delete]
 func (h *ProjectHandler) DeleteBasicAuth(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeBasicAuth, base.SettingScopeProject)
 }

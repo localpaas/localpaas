@@ -1,4 +1,4 @@
-package providershandler
+package settinghandler
 
 import (
 	"net/http"
@@ -11,12 +11,12 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/registryauthuc/registryauthdto"
 )
 
-// ListRegistryAuth Lists registry auth providers
-// @Summary Lists registry auth providers
-// @Description Lists registry auth providers
-// @Tags    global_providers
+// ListRegistryAuth Lists registry auth settings
+// @Summary Lists registry auth settings
+// @Description Lists registry auth settings
+// @Tags    settings
 // @Produce json
-// @Id      listProviderRegistryAuth
+// @Id      listSettingRegistryAuth
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
@@ -24,100 +24,100 @@ import (
 // @Success 200 {object} registryauthdto.ListRegistryAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/registry-auth [get]
-func (h *ProvidersHandler) ListRegistryAuth(ctx *gin.Context) {
+// @Router  /settings/registry-auth [get]
+func (h *SettingHandler) ListRegistryAuth(ctx *gin.Context) {
 	h.ListSetting(ctx, base.ResourceTypeRegistryAuth, base.SettingScopeGlobal)
 }
 
-// GetRegistryAuth Gets registry auth provider details
-// @Summary Gets registry auth provider details
-// @Description Gets registry auth provider details
-// @Tags    global_providers
+// GetRegistryAuth Gets registry auth setting details
+// @Summary Gets registry auth setting details
+// @Description Gets registry auth setting details
+// @Tags    settings
 // @Produce json
-// @Id      getProviderRegistryAuth
+// @Id      getSettingRegistryAuth
 // @Param   itemID path string true "setting ID"
 // @Success 200 {object} registryauthdto.GetRegistryAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/registry-auth/{itemID} [get]
-func (h *ProvidersHandler) GetRegistryAuth(ctx *gin.Context) {
+// @Router  /settings/registry-auth/{itemID} [get]
+func (h *SettingHandler) GetRegistryAuth(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeRegistryAuth, base.SettingScopeGlobal)
 }
 
-// CreateRegistryAuth Creates a new registry auth provider
-// @Summary Creates a new registry auth provider
-// @Description Creates a new registry auth provider
-// @Tags    global_providers
+// CreateRegistryAuth Creates a new registry auth setting
+// @Summary Creates a new registry auth setting
+// @Description Creates a new registry auth setting
+// @Tags    settings
 // @Produce json
-// @Id      createProviderRegistryAuth
+// @Id      createSettingRegistryAuth
 // @Param   body body registryauthdto.CreateRegistryAuthReq true "request data"
 // @Success 201 {object} registryauthdto.CreateRegistryAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/registry-auth [post]
-func (h *ProvidersHandler) CreateRegistryAuth(ctx *gin.Context) {
+// @Router  /settings/registry-auth [post]
+func (h *SettingHandler) CreateRegistryAuth(ctx *gin.Context) {
 	h.CreateSetting(ctx, base.ResourceTypeRegistryAuth, base.SettingScopeGlobal)
 }
 
 // UpdateRegistryAuth Updates registry auth
 // @Summary Updates registry auth
 // @Description Updates registry auth
-// @Tags    global_providers
+// @Tags    settings
 // @Produce json
-// @Id      updateProviderRegistryAuth
+// @Id      updateSettingRegistryAuth
 // @Param   itemID path string true "setting ID"
 // @Param   body body registryauthdto.UpdateRegistryAuthReq true "request data"
 // @Success 200 {object} registryauthdto.UpdateRegistryAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/registry-auth/{itemID} [put]
-func (h *ProvidersHandler) UpdateRegistryAuth(ctx *gin.Context) {
+// @Router  /settings/registry-auth/{itemID} [put]
+func (h *SettingHandler) UpdateRegistryAuth(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeRegistryAuth, base.SettingScopeGlobal)
 }
 
 // UpdateRegistryAuthMeta Updates registry auth meta
 // @Summary Updates registry auth meta
 // @Description Updates registry auth meta
-// @Tags    global_providers
+// @Tags    settings
 // @Produce json
-// @Id      updateProviderRegistryAuthMeta
+// @Id      updateSettingRegistryAuthMeta
 // @Param   itemID path string true "setting ID"
 // @Param   body body registryauthdto.UpdateRegistryAuthMetaReq true "request data"
 // @Success 200 {object} registryauthdto.UpdateRegistryAuthMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/registry-auth/{itemID}/meta [put]
-func (h *ProvidersHandler) UpdateRegistryAuthMeta(ctx *gin.Context) {
+// @Router  /settings/registry-auth/{itemID}/meta [put]
+func (h *SettingHandler) UpdateRegistryAuthMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeRegistryAuth, base.SettingScopeGlobal)
 }
 
-// DeleteRegistryAuth Deletes registry auth provider
-// @Summary Deletes registry auth provider
-// @Description Deletes registry auth provider
-// @Tags    global_providers
+// DeleteRegistryAuth Deletes registry auth setting
+// @Summary Deletes registry auth setting
+// @Description Deletes registry auth setting
+// @Tags    settings
 // @Produce json
-// @Id      deleteProviderRegistryAuth
+// @Id      deleteSettingRegistryAuth
 // @Param   itemID path string true "setting ID"
 // @Success 200 {object} registryauthdto.DeleteRegistryAuthResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/registry-auth/{itemID} [delete]
-func (h *ProvidersHandler) DeleteRegistryAuth(ctx *gin.Context) {
+// @Router  /settings/registry-auth/{itemID} [delete]
+func (h *SettingHandler) DeleteRegistryAuth(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeRegistryAuth, base.SettingScopeGlobal)
 }
 
 // TestRegistryAuthConn Tests registry auth connection
 // @Summary Tests registry auth connection
 // @Description Tests registry auth connection
-// @Tags    global_providers
+// @Tags    settings
 // @Produce json
 // @Id      testRegistryAuthConn
 // @Param   body body registryauthdto.TestRegistryAuthConnReq true "request data"
 // @Success 200 {object} registryauthdto.TestRegistryAuthConnResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/registry-auth/test-conn [post]
-func (h *ProvidersHandler) TestRegistryAuthConn(ctx *gin.Context) {
+// @Router  /settings/registry-auth/test-conn [post]
+func (h *SettingHandler) TestRegistryAuthConn(ctx *gin.Context) {
 	auth, err := h.AuthHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
 	if err != nil {
 		h.RenderError(ctx, err)

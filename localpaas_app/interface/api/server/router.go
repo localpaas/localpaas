@@ -12,7 +12,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/clusterhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/gitsourcehandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projecthandler"
-	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/providershandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/settinghandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/systemhandler"
@@ -28,7 +27,6 @@ type HandlerRegistry struct {
 	userHandler         *userhandler.UserHandler
 	projectHandler      *projecthandler.ProjectHandler
 	appHandler          *apphandler.AppHandler
-	providersHandler    *providershandler.ProvidersHandler
 	settingHandler      *settinghandler.SettingHandler
 	userSettingsHandler *usersettingshandler.UserSettingsHandler
 	systemHandler       *systemhandler.SystemHandler
@@ -43,7 +41,6 @@ func NewHandlerRegistry(
 	userHandler *userhandler.UserHandler,
 	projectHandler *projecthandler.ProjectHandler,
 	appHandler *apphandler.AppHandler,
-	providersHandler *providershandler.ProvidersHandler,
 	settingHandler *settinghandler.SettingHandler,
 	userSettingsHandler *usersettingshandler.UserSettingsHandler,
 	systemHandler *systemhandler.SystemHandler,
@@ -57,7 +54,6 @@ func NewHandlerRegistry(
 		userHandler:         userHandler,
 		projectHandler:      projectHandler,
 		appHandler:          appHandler,
-		providersHandler:    providersHandler,
 		settingHandler:      settingHandler,
 		userSettingsHandler: userSettingsHandler,
 		systemHandler:       systemHandler,
@@ -103,7 +99,6 @@ func (s *HTTPServer) registerRoutes() {
 	_, _ = s.registerUserRoutes(apiGroup)
 	projectGroup := s.registerProjectRoutes(apiGroup)
 	_ = s.registerAppRoutes(projectGroup)
-	_ = s.registerProviderRoutes(apiGroup)
 	_ = s.registerSettingRoutes(apiGroup)
 	_ = s.registerSystemRoutes(apiGroup)
 	_ = s.registerClusterRoutes(apiGroup)

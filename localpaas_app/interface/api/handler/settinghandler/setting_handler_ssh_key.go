@@ -1,4 +1,4 @@
-package providershandler
+package settinghandler
 
 import (
 	"github.com/gin-gonic/gin"
@@ -8,12 +8,12 @@ import (
 	_ "github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc/sshkeydto"
 )
 
-// ListSSHKey Lists ssh-key providers
-// @Summary Lists ssh-key providers
-// @Description Lists ssh-key providers
-// @Tags    global_providers
+// ListSSHKey Lists ssh-key settings
+// @Summary Lists ssh-key settings
+// @Description Lists ssh-key settings
+// @Tags    settings
 // @Produce json
-// @Id      listProviderSSHKey
+// @Id      listSettingSSHKey
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
@@ -21,84 +21,84 @@ import (
 // @Success 200 {object} sshkeydto.ListSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssh-keys [get]
-func (h *ProvidersHandler) ListSSHKey(ctx *gin.Context) {
+// @Router  /settings/ssh-keys [get]
+func (h *SettingHandler) ListSSHKey(ctx *gin.Context) {
 	h.ListSetting(ctx, base.ResourceTypeSSHKey, base.SettingScopeGlobal)
 }
 
-// GetSSHKey Gets ssh-key provider details
-// @Summary Gets ssh-key provider details
-// @Description Gets ssh-key provider details
-// @Tags    global_providers
+// GetSSHKey Gets ssh-key setting details
+// @Summary Gets ssh-key setting details
+// @Description Gets ssh-key setting details
+// @Tags    settings
 // @Produce json
-// @Id      getProviderSSHKey
+// @Id      getSettingSSHKey
 // @Param   itemID path string true "setting ID"
 // @Success 200 {object} sshkeydto.GetSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssh-keys/{itemID} [get]
-func (h *ProvidersHandler) GetSSHKey(ctx *gin.Context) {
+// @Router  /settings/ssh-keys/{itemID} [get]
+func (h *SettingHandler) GetSSHKey(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeSSHKey, base.SettingScopeGlobal)
 }
 
-// CreateSSHKey Creates a new ssh-key provider
-// @Summary Creates a new ssh-key provider
-// @Description Creates a new ssh-key provider
-// @Tags    global_providers
+// CreateSSHKey Creates a new ssh-key setting
+// @Summary Creates a new ssh-key setting
+// @Description Creates a new ssh-key setting
+// @Tags    settings
 // @Produce json
-// @Id      createProviderSSHKey
+// @Id      createSettingSSHKey
 // @Param   body body sshkeydto.CreateSSHKeyReq true "request data"
 // @Success 201 {object} sshkeydto.CreateSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssh-keys [post]
-func (h *ProvidersHandler) CreateSSHKey(ctx *gin.Context) {
+// @Router  /settings/ssh-keys [post]
+func (h *SettingHandler) CreateSSHKey(ctx *gin.Context) {
 	h.CreateSetting(ctx, base.ResourceTypeSSHKey, base.SettingScopeGlobal)
 }
 
 // UpdateSSHKey Updates ssh-key
 // @Summary Updates ssh-key
 // @Description Updates ssh-key
-// @Tags    global_providers
+// @Tags    settings
 // @Produce json
-// @Id      updateProviderSSHKey
+// @Id      updateSettingSSHKey
 // @Param   itemID path string true "setting ID"
 // @Param   body body sshkeydto.UpdateSSHKeyReq true "request data"
 // @Success 200 {object} sshkeydto.UpdateSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssh-keys/{itemID} [put]
-func (h *ProvidersHandler) UpdateSSHKey(ctx *gin.Context) {
+// @Router  /settings/ssh-keys/{itemID} [put]
+func (h *SettingHandler) UpdateSSHKey(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeSSHKey, base.SettingScopeGlobal)
 }
 
 // UpdateSSHKeyMeta Updates ssh-key meta
 // @Summary Updates ssh-key meta
 // @Description Updates ssh-key meta
-// @Tags    global_providers
+// @Tags    settings
 // @Produce json
-// @Id      updateProviderSSHKeyMeta
+// @Id      updateSettingSSHKeyMeta
 // @Param   itemID path string true "setting ID"
 // @Param   body body sshkeydto.UpdateSSHKeyMetaReq true "request data"
 // @Success 200 {object} sshkeydto.UpdateSSHKeyMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssh-keys/{itemID}/meta [put]
-func (h *ProvidersHandler) UpdateSSHKeyMeta(ctx *gin.Context) {
+// @Router  /settings/ssh-keys/{itemID}/meta [put]
+func (h *SettingHandler) UpdateSSHKeyMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeSSHKey, base.SettingScopeGlobal)
 }
 
-// DeleteSSHKey Deletes sshkey provider
-// @Summary Deletes sshkey provider
-// @Description Deletes sshkey provider
-// @Tags    global_providers
+// DeleteSSHKey Deletes sshkey setting
+// @Summary Deletes sshkey setting
+// @Description Deletes sshkey setting
+// @Tags    settings
 // @Produce json
-// @Id      deleteProviderSSHKey
+// @Id      deleteSettingSSHKey
 // @Param   itemID path string true "setting ID"
 // @Success 200 {object} sshkeydto.DeleteSSHKeyResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/ssh-keys/{itemID} [delete]
-func (h *ProvidersHandler) DeleteSSHKey(ctx *gin.Context) {
+// @Router  /settings/ssh-keys/{itemID} [delete]
+func (h *SettingHandler) DeleteSSHKey(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeSSHKey, base.SettingScopeGlobal)
 }

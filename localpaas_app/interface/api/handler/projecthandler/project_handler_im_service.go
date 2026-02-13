@@ -11,7 +11,7 @@ import (
 // ListIMService Lists IM services
 // @Summary Lists IM services
 // @Description Lists IM services
-// @Tags    project_providers
+// @Tags    project_settings
 // @Produce json
 // @Id      listProjectIMService
 // @Param   projectID path string true "project ID"
@@ -22,7 +22,7 @@ import (
 // @Success 200 {object} imservicedto.ListIMServiceResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/im-services [get]
+// @Router  /projects/{projectID}/im-services [get]
 func (h *ProjectHandler) ListIMService(ctx *gin.Context) {
 	h.ListSetting(ctx, base.ResourceTypeIMService, base.SettingScopeProject)
 }
@@ -30,7 +30,7 @@ func (h *ProjectHandler) ListIMService(ctx *gin.Context) {
 // GetIMService Gets IM service details
 // @Summary Gets IM service details
 // @Description Gets IM service details
-// @Tags    project_providers
+// @Tags    project_settings
 // @Produce json
 // @Id      getProjectIMService
 // @Param   projectID path string true "project ID"
@@ -38,7 +38,7 @@ func (h *ProjectHandler) ListIMService(ctx *gin.Context) {
 // @Success 200 {object} imservicedto.GetIMServiceResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/im-services/{itemID} [get]
+// @Router  /projects/{projectID}/im-services/{itemID} [get]
 func (h *ProjectHandler) GetIMService(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeIMService, base.SettingScopeProject)
 }
@@ -46,7 +46,7 @@ func (h *ProjectHandler) GetIMService(ctx *gin.Context) {
 // CreateIMService Creates a new IM service
 // @Summary Creates a new IM service
 // @Description Creates a new IM service
-// @Tags    project_providers
+// @Tags    project_settings
 // @Produce json
 // @Id      createProjectIMService
 // @Param   projectID path string true "project ID"
@@ -54,7 +54,7 @@ func (h *ProjectHandler) GetIMService(ctx *gin.Context) {
 // @Success 201 {object} imservicedto.CreateIMServiceResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/im-services [post]
+// @Router  /projects/{projectID}/im-services [post]
 func (h *ProjectHandler) CreateIMService(ctx *gin.Context) {
 	h.CreateSetting(ctx, base.ResourceTypeIMService, base.SettingScopeProject)
 }
@@ -62,7 +62,7 @@ func (h *ProjectHandler) CreateIMService(ctx *gin.Context) {
 // UpdateIMService Updates IM service
 // @Summary Updates IM service
 // @Description Updates IM service
-// @Tags    project_providers
+// @Tags    project_settings
 // @Produce json
 // @Id      updateProjectIMService
 // @Param   projectID path string true "project ID"
@@ -71,7 +71,7 @@ func (h *ProjectHandler) CreateIMService(ctx *gin.Context) {
 // @Success 200 {object} imservicedto.UpdateIMServiceResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/im-services/{itemID} [put]
+// @Router  /projects/{projectID}/im-services/{itemID} [put]
 func (h *ProjectHandler) UpdateIMService(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeIMService, base.SettingScopeProject)
 }
@@ -79,7 +79,7 @@ func (h *ProjectHandler) UpdateIMService(ctx *gin.Context) {
 // UpdateIMServiceMeta Updates IM service meta
 // @Summary Updates IM service meta
 // @Description Updates IM service meta
-// @Tags    project_providers
+// @Tags    project_settings
 // @Produce json
 // @Id      updateProjectIMServiceMeta
 // @Param   projectID path string true "project ID"
@@ -88,7 +88,7 @@ func (h *ProjectHandler) UpdateIMService(ctx *gin.Context) {
 // @Success 200 {object} imservicedto.UpdateIMServiceMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/im-services/{itemID}/meta [put]
+// @Router  /projects/{projectID}/im-services/{itemID}/meta [put]
 func (h *ProjectHandler) UpdateIMServiceMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeIMService, base.SettingScopeProject)
 }
@@ -96,7 +96,7 @@ func (h *ProjectHandler) UpdateIMServiceMeta(ctx *gin.Context) {
 // DeleteIMService Deletes IM service
 // @Summary Deletes IM service
 // @Description Deletes IM service
-// @Tags    project_providers
+// @Tags    project_settings
 // @Produce json
 // @Id      deleteProjectIMService
 // @Param   projectID path string true "project ID"
@@ -104,7 +104,7 @@ func (h *ProjectHandler) UpdateIMServiceMeta(ctx *gin.Context) {
 // @Success 200 {object} imservicedto.DeleteIMServiceResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/im-services/{itemID} [delete]
+// @Router  /projects/{projectID}/im-services/{itemID} [delete]
 func (h *ProjectHandler) DeleteIMService(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeIMService, base.SettingScopeProject)
 }

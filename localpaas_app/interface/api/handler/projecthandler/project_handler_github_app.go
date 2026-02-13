@@ -8,10 +8,10 @@ import (
 	_ "github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc/githubappdto"
 )
 
-// ListGithubApp Lists github-app providers
-// @Summary Lists github-app providers
-// @Description Lists github-app providers
-// @Tags    project_providers
+// ListGithubApp Lists github-app settings
+// @Summary Lists github-app settings
+// @Description Lists github-app settings
+// @Tags    project_settings
 // @Produce json
 // @Id      listProjectGithubApp
 // @Param   projectID path string true "project ID"
@@ -22,15 +22,15 @@ import (
 // @Success 200 {object} githubappdto.ListGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/github-apps [get]
+// @Router  /projects/{projectID}/github-apps [get]
 func (h *ProjectHandler) ListGithubApp(ctx *gin.Context) {
 	h.ListSetting(ctx, base.ResourceTypeGithubApp, base.SettingScopeProject)
 }
 
-// GetGithubApp Gets github-app provider details
-// @Summary Gets github-app provider details
-// @Description Gets github-app provider details
-// @Tags    project_providers
+// GetGithubApp Gets github-app setting details
+// @Summary Gets github-app setting details
+// @Description Gets github-app setting details
+// @Tags    project_settings
 // @Produce json
 // @Id      getProjectGithubApp
 // @Param   projectID path string true "project ID"
@@ -38,15 +38,15 @@ func (h *ProjectHandler) ListGithubApp(ctx *gin.Context) {
 // @Success 200 {object} githubappdto.GetGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/github-apps/{itemID} [get]
+// @Router  /projects/{projectID}/github-apps/{itemID} [get]
 func (h *ProjectHandler) GetGithubApp(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeGithubApp, base.SettingScopeProject)
 }
 
-// CreateGithubApp Creates a new github-app provider
-// @Summary Creates a new github-app provider
-// @Description Creates a new github-app provider
-// @Tags    project_providers
+// CreateGithubApp Creates a new github-app setting
+// @Summary Creates a new github-app setting
+// @Description Creates a new github-app setting
+// @Tags    project_settings
 // @Produce json
 // @Id      createProjectGithubApp
 // @Param   projectID path string true "project ID"
@@ -54,7 +54,7 @@ func (h *ProjectHandler) GetGithubApp(ctx *gin.Context) {
 // @Success 201 {object} githubappdto.CreateGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/github-apps [post]
+// @Router  /projects/{projectID}/github-apps [post]
 func (h *ProjectHandler) CreateGithubApp(ctx *gin.Context) {
 	h.CreateSetting(ctx, base.ResourceTypeGithubApp, base.SettingScopeProject)
 }
@@ -62,7 +62,7 @@ func (h *ProjectHandler) CreateGithubApp(ctx *gin.Context) {
 // UpdateGithubApp Updates github-app
 // @Summary Updates github-app
 // @Description Updates github-app
-// @Tags    project_providers
+// @Tags    project_settings
 // @Produce json
 // @Id      updateProjectGithubApp
 // @Param   projectID path string true "project ID"
@@ -71,7 +71,7 @@ func (h *ProjectHandler) CreateGithubApp(ctx *gin.Context) {
 // @Success 200 {object} githubappdto.UpdateGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/github-apps/{itemID} [put]
+// @Router  /projects/{projectID}/github-apps/{itemID} [put]
 func (h *ProjectHandler) UpdateGithubApp(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeGithubApp, base.SettingScopeProject)
 }
@@ -79,7 +79,7 @@ func (h *ProjectHandler) UpdateGithubApp(ctx *gin.Context) {
 // UpdateGithubAppMeta Updates github-app meta
 // @Summary Updates github-app meta
 // @Description Updates github-app meta
-// @Tags    project_providers
+// @Tags    project_settings
 // @Produce json
 // @Id      updateProjectGithubAppMeta
 // @Param   projectID path string true "project ID"
@@ -88,15 +88,15 @@ func (h *ProjectHandler) UpdateGithubApp(ctx *gin.Context) {
 // @Success 200 {object} githubappdto.UpdateGithubAppMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/github-apps/{itemID}/meta [put]
+// @Router  /projects/{projectID}/github-apps/{itemID}/meta [put]
 func (h *ProjectHandler) UpdateGithubAppMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeGithubApp, base.SettingScopeProject)
 }
 
-// DeleteGithubApp Deletes github-app provider
-// @Summary Deletes github-app provider
-// @Description Deletes github-app provider
-// @Tags    project_providers
+// DeleteGithubApp Deletes github-app setting
+// @Summary Deletes github-app setting
+// @Description Deletes github-app setting
+// @Tags    project_settings
 // @Produce json
 // @Id      deleteProjectGithubApp
 // @Param   projectID path string true "project ID"
@@ -104,7 +104,7 @@ func (h *ProjectHandler) UpdateGithubAppMeta(ctx *gin.Context) {
 // @Success 200 {object} githubappdto.DeleteGithubAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/providers/github-apps/{itemID} [delete]
+// @Router  /projects/{projectID}/github-apps/{itemID} [delete]
 func (h *ProjectHandler) DeleteGithubApp(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeGithubApp, base.SettingScopeProject)
 }

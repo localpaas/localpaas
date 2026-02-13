@@ -1,4 +1,4 @@
-package providershandler
+package settinghandler
 
 import (
 	"net/http"
@@ -11,12 +11,12 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accesstokenuc/accesstokendto"
 )
 
-// ListAccessToken Lists access-token providers
-// @Summary Lists access-token providers
-// @Description Lists access-token providers
-// @Tags    global_providers
+// ListAccessToken Lists access-token settings
+// @Summary Lists access-token settings
+// @Description Lists access-token settings
+// @Tags    settings
 // @Produce json
-// @Id      listProviderAccessToken
+// @Id      listSettingAccessToken
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
@@ -24,100 +24,100 @@ import (
 // @Success 200 {object} accesstokendto.ListAccessTokenResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/access-tokens [get]
-func (h *ProvidersHandler) ListAccessToken(ctx *gin.Context) {
+// @Router  /settings/access-tokens [get]
+func (h *SettingHandler) ListAccessToken(ctx *gin.Context) {
 	h.ListSetting(ctx, base.ResourceTypeAccessToken, base.SettingScopeGlobal)
 }
 
-// GetAccessToken Gets access-token provider details
-// @Summary Gets access-token provider details
-// @Description Gets access-token provider details
-// @Tags    global_providers
+// GetAccessToken Gets access-token setting details
+// @Summary Gets access-token setting details
+// @Description Gets access-token setting details
+// @Tags    settings
 // @Produce json
-// @Id      getProviderAccessToken
+// @Id      getSettingAccessToken
 // @Param   itemID path string true "setting ID"
 // @Success 200 {object} accesstokendto.GetAccessTokenResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/access-tokens/{itemID} [get]
-func (h *ProvidersHandler) GetAccessToken(ctx *gin.Context) {
+// @Router  /settings/access-tokens/{itemID} [get]
+func (h *SettingHandler) GetAccessToken(ctx *gin.Context) {
 	h.GetSetting(ctx, base.ResourceTypeAccessToken, base.SettingScopeGlobal)
 }
 
-// CreateAccessToken Creates a new access-token provider
-// @Summary Creates a new access-token provider
-// @Description Creates a new access-token provider
-// @Tags    global_providers
+// CreateAccessToken Creates a new access-token setting
+// @Summary Creates a new access-token setting
+// @Description Creates a new access-token setting
+// @Tags    settings
 // @Produce json
-// @Id      createProviderAccessToken
+// @Id      createSettingAccessToken
 // @Param   body body accesstokendto.CreateAccessTokenReq true "request data"
 // @Success 201 {object} accesstokendto.CreateAccessTokenResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/access-tokens [post]
-func (h *ProvidersHandler) CreateAccessToken(ctx *gin.Context) {
+// @Router  /settings/access-tokens [post]
+func (h *SettingHandler) CreateAccessToken(ctx *gin.Context) {
 	h.CreateSetting(ctx, base.ResourceTypeAccessToken, base.SettingScopeGlobal)
 }
 
 // UpdateAccessToken Updates access-token
 // @Summary Updates access-token
 // @Description Updates access-token
-// @Tags    global_providers
+// @Tags    settings
 // @Produce json
-// @Id      updateProviderAccessToken
+// @Id      updateSettingAccessToken
 // @Param   itemID path string true "setting ID"
 // @Param   body body accesstokendto.UpdateAccessTokenReq true "request data"
 // @Success 200 {object} accesstokendto.UpdateAccessTokenResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/access-tokens/{itemID} [put]
-func (h *ProvidersHandler) UpdateAccessToken(ctx *gin.Context) {
+// @Router  /settings/access-tokens/{itemID} [put]
+func (h *SettingHandler) UpdateAccessToken(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeAccessToken, base.SettingScopeGlobal)
 }
 
 // UpdateAccessTokenMeta Updates access-token meta
 // @Summary Updates access-token meta
 // @Description Updates access-token meta
-// @Tags    global_providers
+// @Tags    settings
 // @Produce json
-// @Id      updateProviderAccessTokenMeta
+// @Id      updateSettingAccessTokenMeta
 // @Param   itemID path string true "setting ID"
 // @Param   body body accesstokendto.UpdateAccessTokenMetaReq true "request data"
 // @Success 200 {object} accesstokendto.UpdateAccessTokenMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/access-tokens/{itemID}/meta [put]
-func (h *ProvidersHandler) UpdateAccessTokenMeta(ctx *gin.Context) {
+// @Router  /settings/access-tokens/{itemID}/meta [put]
+func (h *SettingHandler) UpdateAccessTokenMeta(ctx *gin.Context) {
 	h.UpdateSettingMeta(ctx, base.ResourceTypeAccessToken, base.SettingScopeGlobal)
 }
 
-// DeleteAccessToken Deletes access-token provider
-// @Summary Deletes access-token provider
-// @Description Deletes access-token provider
-// @Tags    global_providers
+// DeleteAccessToken Deletes access-token setting
+// @Summary Deletes access-token setting
+// @Description Deletes access-token setting
+// @Tags    settings
 // @Produce json
-// @Id      deleteProviderAccessToken
+// @Id      deleteSettingAccessToken
 // @Param   itemID path string true "setting ID"
 // @Success 200 {object} accesstokendto.DeleteAccessTokenResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/access-tokens/{itemID} [delete]
-func (h *ProvidersHandler) DeleteAccessToken(ctx *gin.Context) {
+// @Router  /settings/access-tokens/{itemID} [delete]
+func (h *SettingHandler) DeleteAccessToken(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeAccessToken, base.SettingScopeGlobal)
 }
 
 // TestAccessTokenConn Test access-token connection
 // @Summary Test access-token connection
 // @Description Test access-token connection
-// @Tags    global_providers
+// @Tags    settings
 // @Produce json
 // @Id      testAccessTokenConn
 // @Param   body body accesstokendto.TestAccessTokenConnReq true "request data"
 // @Success 200 {object} accesstokendto.TestAccessTokenConnResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /providers/access-tokens/test-conn [post]
-func (h *ProvidersHandler) TestAccessTokenConn(ctx *gin.Context) {
+// @Router  /settings/access-tokens/test-conn [post]
+func (h *SettingHandler) TestAccessTokenConn(ctx *gin.Context) {
 	auth, err := h.AuthHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
 	if err != nil {
 		h.RenderError(ctx, err)
