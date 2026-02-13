@@ -14,7 +14,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
-	"github.com/localpaas/localpaas/localpaas_app/repository"
+	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
 )
 
 type UpdateSettingMetaReq struct {
@@ -34,7 +34,6 @@ type UpdateSettingMetaResp struct {
 type UpdateSettingMetaData struct {
 	Setting *entity.Setting
 
-	SettingRepo       repository.SettingRepo
 	DefaultMustUnique bool
 	ExtraLoadOpts     []bunex.SelectQueryOption
 
@@ -43,20 +42,20 @@ type UpdateSettingMetaData struct {
 	AfterPersisting  func(context.Context, database.Tx, *UpdateSettingMetaData, *PersistingSettingMetaData) error
 
 	oldDefaultFlag bool
+	updateEvent    *settingservice.UpdateEvent
 }
 
 type PersistingSettingMetaData struct {
 	Setting *entity.Setting
 }
 
-func UpdateSettingMeta(
+func (uc *BaseSettingUC) UpdateSettingMeta(
 	ctx context.Context,
-	db database.IDB,
 	req *UpdateSettingMetaReq,
 	data *UpdateSettingMetaData,
 ) (*UpdateSettingMetaResp, error) {
-	err := transaction.Execute(ctx, db, func(db database.Tx) error {
-		err := loadSettingForUpdateMeta(ctx, db, req, data)
+	err := transaction.Execute(ctx, uc.DB, func(db database.Tx) error {
+		err := uc.loadSettingForUpdateMeta(ctx, db, req, data)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -68,14 +67,14 @@ func UpdateSettingMeta(
 		}
 
 		persistingData := &PersistingSettingMetaData{}
-		prepareSettingMetaUpdate(req, data, persistingData)
+		uc.prepareSettingMetaUpdate(req, data, persistingData)
 		if data.BeforePersisting != nil {
 			if err := data.BeforePersisting(ctx, db, data, persistingData); err != nil {
 				return apperrors.Wrap(err)
 			}
 		}
 
-		err = persistSettingMetaUpdate(ctx, db, req, data, persistingData)
+		err = uc.persistSettingMetaUpdate(ctx, db, req, data, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -85,6 +84,15 @@ func UpdateSettingMeta(
 				return apperrors.Wrap(err)
 			}
 		}
+
+		// Fire update event
+		data.updateEvent.NewStatus = persistingData.Setting.Status
+		data.updateEvent.NewKind = persistingData.Setting.Kind
+		err = uc.SettingService.OnUpdate(ctx, db, data.updateEvent)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+
 		return nil
 	})
 	if err != nil {
@@ -94,7 +102,7 @@ func UpdateSettingMeta(
 	return &UpdateSettingMetaResp{}, nil
 }
 
-func loadSettingForUpdateMeta(
+func (uc *BaseSettingUC) loadSettingForUpdateMeta(
 	ctx context.Context,
 	db database.IDB,
 	req *UpdateSettingMetaReq,
@@ -105,7 +113,7 @@ func loadSettingForUpdateMeta(
 	}
 	loadOpts = append(loadOpts, data.ExtraLoadOpts...)
 
-	setting, err := loadSettingByID(ctx, db, data.SettingRepo, &req.BaseSettingReq, req.ID,
+	setting, err := uc.loadSettingByID(ctx, db, &req.BaseSettingReq, req.ID,
 		false, false, loadOpts...)
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -121,10 +129,18 @@ func loadSettingForUpdateMeta(
 	}
 
 	data.oldDefaultFlag = setting.Default
+
+	// Create update event data to fire later
+	data.updateEvent = &settingservice.UpdateEvent{
+		Setting:   setting,
+		OldStatus: setting.Status,
+		OldKind:   setting.Kind,
+	}
+
 	return nil
 }
 
-func prepareSettingMetaUpdate(
+func (uc *BaseSettingUC) prepareSettingMetaUpdate(
 	req *UpdateSettingMetaReq,
 	data *UpdateSettingMetaData,
 	persistingData *PersistingSettingMetaData,
@@ -150,14 +166,14 @@ func prepareSettingMetaUpdate(
 	persistingData.Setting = setting
 }
 
-func persistSettingMetaUpdate(
+func (uc *BaseSettingUC) persistSettingMetaUpdate(
 	ctx context.Context,
 	db database.IDB,
 	req *UpdateSettingMetaReq,
 	data *UpdateSettingMetaData,
 	persistingData *PersistingSettingMetaData,
 ) error {
-	err := data.SettingRepo.Update(ctx, db, persistingData.Setting,
+	err := uc.SettingRepo.Update(ctx, db, persistingData.Setting,
 		bunex.UpdateColumns("update_ver", "updated_at", "status", "expire_at", "avail_in_projects", "is_default"),
 	)
 	if err != nil {
@@ -166,7 +182,7 @@ func persistSettingMetaUpdate(
 
 	if data.DefaultMustUnique && !data.oldDefaultFlag && persistingData.Setting.Default {
 		if data.DefaultMustUnique && persistingData.Setting.Default {
-			err = ensureSettingDefaultUniqueness(ctx, db, data.SettingRepo, &req.BaseSettingReq, persistingData.Setting)
+			err = uc.ensureSettingDefaultUniqueness(ctx, db, &req.BaseSettingReq, persistingData.Setting)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

@@ -48,6 +48,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/gitsourceuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accesstokenuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/awss3uc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/awsuc"
@@ -128,6 +129,7 @@ var Provides = []any{
 	projectuc.NewProjectUC,
 	appuc.NewAppUC,
 	appdeploymentuc.NewAppDeploymentUC,
+	settings.NewBaseSettingUC,
 	awsuc.NewAWSUC,
 	awss3uc.NewAWSS3UC,
 	sshkeyuc.NewSSHKeyUC,

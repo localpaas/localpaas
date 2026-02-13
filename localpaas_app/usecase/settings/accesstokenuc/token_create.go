@@ -23,8 +23,7 @@ func (uc *AccessTokenUC) CreateAccessToken(
 	req *accesstokendto.CreateAccessTokenReq,
 ) (*accesstokendto.CreateAccessTokenResp, error) {
 	req.Type = currentSettingType
-	resp, err := settings.CreateSetting(ctx, uc.db, &req.CreateSettingReq, &settings.CreateSettingData{
-		SettingRepo:   uc.settingRepo,
+	resp, err := uc.CreateSetting(ctx, &req.CreateSettingReq, &settings.CreateSettingData{
 		VerifyingName: req.Name,
 		Version:       currentSettingVersion,
 		PrepareCreation: func(

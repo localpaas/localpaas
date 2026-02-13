@@ -15,9 +15,7 @@ func (uc *APIKeyUC) ListAPIKey(
 	req *apikeydto.ListAPIKeyReq,
 ) (*apikeydto.ListAPIKeyResp, error) {
 	req.Type = currentSettingType
-	resp, err := settings.ListSetting(ctx, uc.db, auth, &req.ListSettingReq, &settings.ListSettingData{
-		SettingRepo: uc.settingRepo,
-	})
+	resp, err := uc.ListSetting(ctx, auth, &req.ListSettingReq, &settings.ListSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

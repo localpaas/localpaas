@@ -15,9 +15,7 @@ func (uc *SSHKeyUC) UpdateSSHKeyMeta(
 	req *sshkeydto.UpdateSSHKeyMetaReq,
 ) (*sshkeydto.UpdateSSHKeyMetaResp, error) {
 	req.Type = currentSettingType
-	_, err := settings.UpdateSettingMeta(ctx, uc.db, &req.UpdateSettingMetaReq, &settings.UpdateSettingMetaData{
-		SettingRepo: uc.settingRepo,
-	})
+	_, err := uc.UpdateSettingMeta(ctx, &req.UpdateSettingMetaReq, &settings.UpdateSettingMetaData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

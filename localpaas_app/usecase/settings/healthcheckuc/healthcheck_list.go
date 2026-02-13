@@ -20,15 +20,13 @@ func (uc *HealthcheckUC) ListHealthcheck(
 	req *healthcheckdto.ListHealthcheckReq,
 ) (*healthcheckdto.ListHealthcheckResp, error) {
 	req.Type = currentSettingType
-	resp, err := settings.ListSetting(ctx, uc.db, auth, &req.ListSettingReq, &settings.ListSettingData{
-		SettingRepo: uc.settingRepo,
-	})
+	resp, err := uc.ListSetting(ctx, auth, &req.ListSettingReq, &settings.ListSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
 	input := &healthcheckdto.HealthcheckTransformInput{}
-	err = uc.loadReferenceData(ctx, uc.db, resp.Data, input)
+	err = uc.loadReferenceData(ctx, uc.DB, resp.Data, input)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -57,7 +55,7 @@ func (uc *HealthcheckUC) loadReferenceData(
 	}
 
 	// Load reference settings
-	refSettings, err := uc.settingRepo.ListByIDs(ctx, db, gofn.ToSet(settingIDs), true)
+	refSettings, err := uc.SettingRepo.ListByIDs(ctx, db, gofn.ToSet(settingIDs), true)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

@@ -16,8 +16,7 @@ func (uc *SecretUC) UpdateSecret(
 	req *secretdto.UpdateSecretReq,
 ) (*secretdto.UpdateSecretResp, error) {
 	req.Type = currentSettingType
-	_, err := settings.UpdateSetting(ctx, uc.db, &req.UpdateSettingReq, &settings.UpdateSettingData{
-		SettingRepo: uc.settingRepo,
+	_, err := uc.UpdateSetting(ctx, &req.UpdateSettingReq, &settings.UpdateSettingData{
 		PrepareUpdate: func(
 			ctx context.Context,
 			db database.Tx,

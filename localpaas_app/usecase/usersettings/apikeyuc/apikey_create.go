@@ -34,8 +34,7 @@ func (uc *APIKeyUC) CreateAPIKey(
 	keyID, secretKey := gofn.RandTokenAsHex(keyLen), gofn.RandTokenAsHex(secretLen)
 
 	req.Type = currentSettingType
-	resp, err := settings.CreateSetting(ctx, uc.db, &req.CreateSettingReq, &settings.CreateSettingData{
-		SettingRepo:   uc.settingRepo,
+	resp, err := uc.CreateSetting(ctx, &req.CreateSettingReq, &settings.CreateSettingData{
 		VerifyingName: req.Name,
 		Version:       currentSettingVersion,
 		PrepareCreation: func(

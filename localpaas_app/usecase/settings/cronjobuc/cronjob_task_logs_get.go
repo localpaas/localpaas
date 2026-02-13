@@ -10,7 +10,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/service/taskservice"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc/cronjobdto"
 )
 
@@ -26,7 +25,7 @@ func (uc *CronJobUC) GetCronJobTaskLogs(
 	req *cronjobdto.GetCronJobTaskLogsReq,
 ) (*cronjobdto.GetCronJobTaskLogsResp, error) {
 	req.Type = currentSettingType
-	jobSetting, err := settings.GetSettingByID(ctx, uc.db, uc.settingRepo, &req.BaseSettingReq, req.JobID,
+	jobSetting, err := uc.GetSettingByID(ctx, uc.DB, &req.BaseSettingReq, req.JobID,
 		false, false,
 		bunex.SelectRelation("Tasks", bunex.SelectWhere("task.id = ?", req.TaskID)),
 	)
@@ -39,7 +38,7 @@ func (uc *CronJobUC) GetCronJobTaskLogs(
 		return nil, apperrors.NewNotFound("Task")
 	}
 
-	resp, err := uc.taskService.GetTaskLogs(ctx, uc.db, &taskservice.GetTaskLogsReq{
+	resp, err := uc.taskService.GetTaskLogs(ctx, uc.DB, &taskservice.GetTaskLogsReq{
 		TaskID:                  task.ID,
 		Follow:                  req.Follow,
 		Since:                   req.Since,

@@ -23,8 +23,7 @@ func (uc *AWSS3UC) CreateAWSS3(
 	req *awss3dto.CreateAWSS3Req,
 ) (*awss3dto.CreateAWSS3Resp, error) {
 	req.Type = currentSettingType
-	resp, err := settings.CreateSetting(ctx, uc.db, &req.CreateSettingReq, &settings.CreateSettingData{
-		SettingRepo:     uc.settingRepo,
+	resp, err := uc.CreateSetting(ctx, &req.CreateSettingReq, &settings.CreateSettingData{
 		VerifyingName:   req.Name,
 		VerifyingRefIDs: []string{req.Cred.ID},
 		Version:         currentSettingVersion,

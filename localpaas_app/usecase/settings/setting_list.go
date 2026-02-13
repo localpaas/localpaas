@@ -9,10 +9,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
-	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/entityutil"
-	"github.com/localpaas/localpaas/localpaas_app/repository"
 )
 
 type ListSettingReq struct {
@@ -34,17 +32,16 @@ type ListSettingResp struct {
 }
 
 type ListSettingData struct {
-	SettingRepo   repository.SettingRepo
 	ExtraLoadOpts []bunex.SelectQueryOption
 }
 
-func ListSetting(
+func (uc *BaseSettingUC) ListSetting(
 	ctx context.Context,
-	db database.IDB,
 	auth *basedto.Auth,
 	req *ListSettingReq,
 	data *ListSettingData,
 ) (_ *ListSettingResp, err error) {
+	db := uc.DB
 	listOpts := []bunex.SelectQueryOption{
 		bunex.SelectWhere("setting.type = ?", req.Type),
 	}
@@ -72,15 +69,15 @@ func ListSetting(
 	switch req.Scope {
 	case base.SettingScopeGlobal:
 		listOpts = append(listOpts, bunex.SelectWhere("setting.object_id IS NULL"))
-		settings, paging, err = data.SettingRepo.List(ctx, db, &req.Paging, listOpts...)
+		settings, paging, err = uc.SettingRepo.List(ctx, db, &req.Paging, listOpts...)
 	case base.SettingScopeProject:
-		settings, paging, err = data.SettingRepo.ListByProject(ctx, db, req.ObjectID,
+		settings, paging, err = uc.SettingRepo.ListByProject(ctx, db, req.ObjectID,
 			&req.Paging, listOpts...)
 	case base.SettingScopeApp:
-		settings, paging, err = data.SettingRepo.ListByApp(ctx, db, req.ParentObjectID, req.ObjectID,
+		settings, paging, err = uc.SettingRepo.ListByApp(ctx, db, req.ParentObjectID, req.ObjectID,
 			&req.Paging, listOpts...)
 	case base.SettingScopeUser:
-		settings, paging, err = data.SettingRepo.ListByUser(ctx, db, req.ObjectID,
+		settings, paging, err = uc.SettingRepo.ListByUser(ctx, db, req.ObjectID,
 			&req.Paging, listOpts...)
 	}
 	if err != nil {
@@ -94,7 +91,7 @@ func ListSetting(
 	}
 
 	if len(refIDs) > 0 {
-		refSettings, err := loadSettingByIDs(ctx, db, data.SettingRepo, &req.BaseSettingReq, refIDs, false)
+		refSettings, err := uc.loadSettingByIDs(ctx, db, &req.BaseSettingReq, refIDs, false)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

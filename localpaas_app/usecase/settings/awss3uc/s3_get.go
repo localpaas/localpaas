@@ -15,9 +15,7 @@ func (uc *AWSS3UC) GetAWSS3(
 	req *awss3dto.GetAWSS3Req,
 ) (*awss3dto.GetAWSS3Resp, error) {
 	req.Type = currentSettingType
-	setting, err := settings.GetSetting(ctx, uc.db, auth, &req.GetSettingReq, &settings.GetSettingData{
-		SettingRepo: uc.settingRepo,
-	})
+	setting, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

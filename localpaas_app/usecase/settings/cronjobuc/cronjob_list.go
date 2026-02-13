@@ -21,15 +21,13 @@ func (uc *CronJobUC) ListCronJob(
 	req *cronjobdto.ListCronJobReq,
 ) (*cronjobdto.ListCronJobResp, error) {
 	req.Type = currentSettingType
-	resp, err := settings.ListSetting(ctx, uc.db, auth, &req.ListSettingReq, &settings.ListSettingData{
-		SettingRepo: uc.settingRepo,
-	})
+	resp, err := uc.ListSetting(ctx, auth, &req.ListSettingReq, &settings.ListSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
 	input := &cronjobdto.CronJobTransformInput{}
-	err = uc.loadReferenceData(ctx, uc.db, resp.Data, input)
+	err = uc.loadReferenceData(ctx, uc.DB, resp.Data, input)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -71,7 +69,7 @@ func (uc *CronJobUC) loadReferenceData(
 	input.AppMap = entityutil.SliceToIDMap(apps)
 
 	// Load reference settings
-	refSettings, err := uc.settingRepo.ListByIDs(ctx, db, gofn.ToSet(settingIDs), true)
+	refSettings, err := uc.SettingRepo.ListByIDs(ctx, db, gofn.ToSet(settingIDs), true)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

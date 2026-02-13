@@ -16,8 +16,7 @@ func (uc *APIKeyUC) DeleteAPIKey(
 	req *apikeydto.DeleteAPIKeyReq,
 ) (*apikeydto.DeleteAPIKeyResp, error) {
 	req.Type = currentSettingType
-	_, err := settings.DeleteSetting(ctx, uc.db, &req.DeleteSettingReq, &settings.DeleteSettingData{
-		SettingRepo: uc.settingRepo,
+	_, err := uc.DeleteSetting(ctx, &req.DeleteSettingReq, &settings.DeleteSettingData{
 		ExtraLoadOpts: []bunex.SelectQueryOption{
 			bunex.SelectWhere("setting.object_id = ?", auth.User.ID),
 		},

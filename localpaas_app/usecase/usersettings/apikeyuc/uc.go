@@ -1,25 +1,17 @@
 package apikeyuc
 
 import (
-	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/repository"
-	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
 type APIKeyUC struct {
-	db             *database.DB
-	settingRepo    repository.SettingRepo
-	settingService settingservice.SettingService
+	*settings.BaseSettingUC
 }
 
 func NewAPIKeyUC(
-	db *database.DB,
-	settingRepo repository.SettingRepo,
-	settingService settingservice.SettingService,
+	baseSettingUC *settings.BaseSettingUC,
 ) *APIKeyUC {
 	return &APIKeyUC{
-		db:             db,
-		settingRepo:    settingRepo,
-		settingService: settingService,
+		BaseSettingUC: baseSettingUC,
 	}
 }

@@ -15,8 +15,7 @@ func (uc *EmailUC) UpdateEmailMeta(
 	req *emaildto.UpdateEmailMetaReq,
 ) (*emaildto.UpdateEmailMetaResp, error) {
 	req.Type = currentSettingType
-	_, err := settings.UpdateSettingMeta(ctx, uc.db, &req.UpdateSettingMetaReq, &settings.UpdateSettingMetaData{
-		SettingRepo:       uc.settingRepo,
+	_, err := uc.UpdateSettingMeta(ctx, &req.UpdateSettingMetaReq, &settings.UpdateSettingMetaData{
 		DefaultMustUnique: true,
 	})
 	if err != nil {

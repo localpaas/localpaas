@@ -15,9 +15,7 @@ func (uc *RepoWebhookUC) ListRepoWebhook(
 	req *repowebhookdto.ListRepoWebhookReq,
 ) (*repowebhookdto.ListRepoWebhookResp, error) {
 	req.Type = currentSettingType
-	resp, err := settings.ListSetting(ctx, uc.db, auth, &req.ListSettingReq, &settings.ListSettingData{
-		SettingRepo: uc.settingRepo,
-	})
+	resp, err := uc.ListSetting(ctx, auth, &req.ListSettingReq, &settings.ListSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

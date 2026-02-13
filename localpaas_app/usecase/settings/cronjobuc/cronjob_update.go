@@ -17,8 +17,7 @@ func (uc *CronJobUC) UpdateCronJob(
 ) (*cronjobdto.UpdateCronJobResp, error) {
 	req.Type = currentSettingType
 	unscheduleCurrentTasks := false
-	_, err := settings.UpdateSetting(ctx, uc.db, &req.UpdateSettingReq, &settings.UpdateSettingData{
-		SettingRepo:   uc.settingRepo,
+	_, err := uc.UpdateSetting(ctx, &req.UpdateSettingReq, &settings.UpdateSettingData{
 		VerifyingName: req.Name,
 		AfterLoading: func(ctx context.Context, db database.Tx, data *settings.UpdateSettingData) error {
 			job, err := data.Setting.AsCronJob()

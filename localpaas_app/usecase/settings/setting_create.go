@@ -13,7 +13,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
-	"github.com/localpaas/localpaas/localpaas_app/repository"
+	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
 )
 
 type CreateSettingReq struct {
@@ -28,7 +28,6 @@ type CreateSettingResp struct {
 }
 
 type CreateSettingData struct {
-	SettingRepo       repository.SettingRepo
 	VerifyingName     string
 	VerifyingRefIDs   []string
 	DefaultMustUnique bool
@@ -44,15 +43,14 @@ type PersistingSettingCreationData struct {
 	Setting *entity.Setting
 }
 
-func CreateSetting(
+func (uc *BaseSettingUC) CreateSetting(
 	ctx context.Context,
-	db database.IDB,
 	req *CreateSettingReq,
 	data *CreateSettingData,
 ) (*CreateSettingResp, error) {
 	var persistingData *PersistingSettingCreationData
-	err := transaction.Execute(ctx, db, func(db database.Tx) error {
-		err := loadSettingForCreation(ctx, db, req, data)
+	err := transaction.Execute(ctx, uc.DB, func(db database.Tx) error {
+		err := uc.loadSettingForCreation(ctx, db, req, data)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -64,7 +62,7 @@ func CreateSetting(
 		}
 
 		persistingData = &PersistingSettingCreationData{}
-		prepareSettingCreation(req, data, persistingData)
+		uc.prepareSettingCreation(req, data, persistingData)
 
 		if data.PrepareCreation != nil {
 			if err := data.PrepareCreation(ctx, db, data, persistingData); err != nil {
@@ -78,7 +76,7 @@ func CreateSetting(
 			}
 		}
 
-		err = persistSettingCreation(ctx, db, req, data, persistingData)
+		err = uc.persistSettingCreation(ctx, db, req, data, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -88,6 +86,13 @@ func CreateSetting(
 				return apperrors.Wrap(err)
 			}
 		}
+
+		// Fire create event
+		err = uc.SettingService.OnCreate(ctx, db, &settingservice.CreateEvent{Setting: persistingData.Setting})
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+
 		return nil
 	})
 	if err != nil {
@@ -99,7 +104,7 @@ func CreateSetting(
 	}, nil
 }
 
-func loadSettingForCreation(
+func (uc *BaseSettingUC) loadSettingForCreation(
 	ctx context.Context,
 	db database.IDB,
 	req *CreateSettingReq,
@@ -107,7 +112,7 @@ func loadSettingForCreation(
 ) error {
 	// Verify that the name is available to use
 	if data.VerifyingName != "" {
-		err := checkNameConflict(ctx, db, data.SettingRepo, &req.BaseSettingReq, data.VerifyingName)
+		err := uc.checkNameConflict(ctx, db, &req.BaseSettingReq, data.VerifyingName)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -115,8 +120,7 @@ func loadSettingForCreation(
 
 	// Verify that the referenced settings exist
 	if len(data.VerifyingRefIDs) > 0 {
-		err := checkRefSettingsExistence(ctx, db, data.SettingRepo, &req.BaseSettingReq,
-			data.VerifyingRefIDs, true)
+		err := uc.checkRefSettingsExistence(ctx, db, &req.BaseSettingReq, data.VerifyingRefIDs, true)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -125,7 +129,7 @@ func loadSettingForCreation(
 	return nil
 }
 
-func prepareSettingCreation(
+func (uc *BaseSettingUC) prepareSettingCreation(
 	req *CreateSettingReq,
 	data *CreateSettingData,
 	persistingData *PersistingSettingCreationData,
@@ -146,21 +150,21 @@ func prepareSettingCreation(
 	persistingData.Setting = setting
 }
 
-func persistSettingCreation(
+func (uc *BaseSettingUC) persistSettingCreation(
 	ctx context.Context,
 	db database.IDB,
 	req *CreateSettingReq,
 	data *CreateSettingData,
 	persistingData *PersistingSettingCreationData,
 ) error {
-	err := data.SettingRepo.Upsert(ctx, db, persistingData.Setting,
+	err := uc.SettingRepo.Upsert(ctx, db, persistingData.Setting,
 		entity.SettingUpsertingConflictCols, entity.SettingUpsertingUpdateCols)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
 	if data.DefaultMustUnique && persistingData.Setting.Default {
-		err = ensureSettingDefaultUniqueness(ctx, db, data.SettingRepo, &req.BaseSettingReq, persistingData.Setting)
+		err = uc.ensureSettingDefaultUniqueness(ctx, db, &req.BaseSettingReq, persistingData.Setting)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}

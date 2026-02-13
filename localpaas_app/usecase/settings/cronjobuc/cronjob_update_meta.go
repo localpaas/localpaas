@@ -16,8 +16,7 @@ func (uc *CronJobUC) UpdateCronJobMeta(
 	req *cronjobdto.UpdateCronJobMetaReq,
 ) (*cronjobdto.UpdateCronJobMetaResp, error) {
 	req.Type = currentSettingType
-	_, err := settings.UpdateSettingMeta(ctx, uc.db, &req.UpdateSettingMetaReq, &settings.UpdateSettingMetaData{
-		SettingRepo: uc.settingRepo,
+	_, err := uc.UpdateSettingMeta(ctx, &req.UpdateSettingMetaReq, &settings.UpdateSettingMetaData{
 		AfterPersisting: func(ctx context.Context, db database.Tx, data *settings.UpdateSettingMetaData,
 			_ *settings.PersistingSettingMetaData) error {
 			err := uc.taskQueue.ScheduleTasksForCronJob(ctx, db, data.Setting, true)

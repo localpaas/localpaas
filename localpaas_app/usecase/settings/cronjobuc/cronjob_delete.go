@@ -16,9 +16,7 @@ func (uc *CronJobUC) DeleteCronJob(
 	req *cronjobdto.DeleteCronJobReq,
 ) (*cronjobdto.DeleteCronJobResp, error) {
 	req.Type = currentSettingType
-	_, err := settings.DeleteSetting(ctx, uc.db, &req.DeleteSettingReq, &settings.DeleteSettingData{
-		SettingRepo:              uc.settingRepo,
-		ProjectSharedSettingRepo: uc.projectSharedSettingRepo,
+	_, err := uc.DeleteSetting(ctx, &req.DeleteSettingReq, &settings.DeleteSettingData{
 		AfterPersisting: func(ctx context.Context, db database.Tx, data *settings.DeleteSettingData,
 			_ *settings.PersistingSettingDeletionData) error {
 			err := uc.taskQueue.ScheduleTasksForCronJob(ctx, db, data.Setting, true)

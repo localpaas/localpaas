@@ -14,7 +14,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
-	"github.com/localpaas/localpaas/localpaas_app/repository"
+	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
 )
 
 type UpdateSettingReq struct {
@@ -32,7 +32,6 @@ type UpdateSettingResp struct {
 type UpdateSettingData struct {
 	Setting *entity.Setting
 
-	SettingRepo       repository.SettingRepo
 	VerifyingName     string
 	VerifyingRefIDs   []string
 	DefaultMustUnique bool
@@ -44,20 +43,20 @@ type UpdateSettingData struct {
 	AfterPersisting  func(context.Context, database.Tx, *UpdateSettingData, *PersistingSettingData) error
 
 	oldDefaultFlag bool
+	updateEvent    *settingservice.UpdateEvent
 }
 
 type PersistingSettingData struct {
 	Setting *entity.Setting
 }
 
-func UpdateSetting(
+func (uc *BaseSettingUC) UpdateSetting(
 	ctx context.Context,
-	db database.IDB,
 	req *UpdateSettingReq,
 	data *UpdateSettingData,
 ) (*UpdateSettingResp, error) {
-	err := transaction.Execute(ctx, db, func(db database.Tx) error {
-		err := loadSettingForUpdate(ctx, db, req, data)
+	err := transaction.Execute(ctx, uc.DB, func(db database.Tx) error {
+		err := uc.loadSettingForUpdate(ctx, db, req, data)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -69,7 +68,7 @@ func UpdateSetting(
 		}
 
 		persistingData := &PersistingSettingData{}
-		prepareSettingUpdate(req, data, persistingData)
+		uc.prepareSettingUpdate(req, data, persistingData)
 
 		if data.PrepareUpdate != nil {
 			if err := data.PrepareUpdate(ctx, db, data, persistingData); err != nil {
@@ -83,7 +82,7 @@ func UpdateSetting(
 			}
 		}
 
-		err = persistSettingUpdate(ctx, db, req, data, persistingData)
+		err = uc.persistSettingUpdate(ctx, db, req, data, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -93,6 +92,15 @@ func UpdateSetting(
 				return apperrors.Wrap(err)
 			}
 		}
+
+		// Fire update event
+		data.updateEvent.NewStatus = persistingData.Setting.Status
+		data.updateEvent.NewKind = persistingData.Setting.Kind
+		err = uc.SettingService.OnUpdate(ctx, db, data.updateEvent)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+
 		return nil
 	})
 	if err != nil {
@@ -102,7 +110,7 @@ func UpdateSetting(
 	return &UpdateSettingResp{}, nil
 }
 
-func loadSettingForUpdate(
+func (uc *BaseSettingUC) loadSettingForUpdate(
 	ctx context.Context,
 	db database.IDB,
 	req *UpdateSettingReq,
@@ -113,7 +121,7 @@ func loadSettingForUpdate(
 	}
 	loadOpts = append(loadOpts, data.ExtraLoadOpts...)
 
-	setting, err := loadSettingByID(ctx, db, data.SettingRepo, &req.BaseSettingReq, req.ID,
+	setting, err := uc.loadSettingByID(ctx, db, &req.BaseSettingReq, req.ID,
 		false, false, loadOpts...)
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -130,7 +138,7 @@ func loadSettingForUpdate(
 
 	// If name changes, validate the new one
 	if data.VerifyingName != "" && !strings.EqualFold(setting.Name, data.VerifyingName) {
-		err = checkNameConflict(ctx, db, data.SettingRepo, &req.BaseSettingReq, data.VerifyingName)
+		err = uc.checkNameConflict(ctx, db, &req.BaseSettingReq, data.VerifyingName)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -138,18 +146,25 @@ func loadSettingForUpdate(
 
 	// Verify that the referenced settings exist
 	if len(data.VerifyingRefIDs) > 0 {
-		err := checkRefSettingsExistence(ctx, db, data.SettingRepo, &req.BaseSettingReq,
-			data.VerifyingRefIDs, true)
+		err := uc.checkRefSettingsExistence(ctx, db, &req.BaseSettingReq, data.VerifyingRefIDs, true)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
 	}
 
 	data.oldDefaultFlag = setting.Default
+
+	// Create update event data to fire later
+	data.updateEvent = &settingservice.UpdateEvent{
+		Setting:   setting,
+		OldStatus: setting.Status,
+		OldKind:   setting.Kind,
+	}
+
 	return nil
 }
 
-func prepareSettingUpdate(
+func (uc *BaseSettingUC) prepareSettingUpdate(
 	req *UpdateSettingReq,
 	data *UpdateSettingData,
 	persistingData *PersistingSettingData,
@@ -165,21 +180,21 @@ func prepareSettingUpdate(
 	persistingData.Setting = setting
 }
 
-func persistSettingUpdate(
+func (uc *BaseSettingUC) persistSettingUpdate(
 	ctx context.Context,
 	db database.IDB,
 	req *UpdateSettingReq,
 	data *UpdateSettingData,
 	persistingData *PersistingSettingData,
 ) error {
-	err := data.SettingRepo.Update(ctx, db, persistingData.Setting)
+	err := uc.SettingRepo.Update(ctx, db, persistingData.Setting)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
 	if data.DefaultMustUnique && !data.oldDefaultFlag && persistingData.Setting.Default {
 		if data.DefaultMustUnique && persistingData.Setting.Default {
-			err = ensureSettingDefaultUniqueness(ctx, db, data.SettingRepo, &req.BaseSettingReq, persistingData.Setting)
+			err = uc.ensureSettingDefaultUniqueness(ctx, db, &req.BaseSettingReq, persistingData.Setting)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

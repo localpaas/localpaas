@@ -15,9 +15,7 @@ func (uc *AWSS3UC) ListAWSS3(
 	req *awss3dto.ListAWSS3Req,
 ) (*awss3dto.ListAWSS3Resp, error) {
 	req.Type = currentSettingType
-	resp, err := settings.ListSetting(ctx, uc.db, auth, &req.ListSettingReq, &settings.ListSettingData{
-		SettingRepo: uc.settingRepo,
-	})
+	resp, err := uc.ListSetting(ctx, auth, &req.ListSettingReq, &settings.ListSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

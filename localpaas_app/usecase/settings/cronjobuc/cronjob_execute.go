@@ -7,7 +7,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc/cronjobdto"
 )
 
@@ -17,7 +16,7 @@ func (uc *CronJobUC) ExecuteCronJob(
 	req *cronjobdto.ExecuteCronJobReq,
 ) (*cronjobdto.ExecuteCronJobResp, error) {
 	req.Type = currentSettingType
-	setting, err := settings.GetSettingByID(ctx, uc.db, uc.settingRepo, &req.BaseSettingReq, req.ID,
+	setting, err := uc.GetSettingByID(ctx, uc.DB, &req.BaseSettingReq, req.ID,
 		true, false)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -28,7 +27,7 @@ func (uc *CronJobUC) ExecuteCronJob(
 		return nil, apperrors.Wrap(err)
 	}
 
-	err = uc.taskRepo.Insert(ctx, uc.db, task)
+	err = uc.taskRepo.Insert(ctx, uc.DB, task)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

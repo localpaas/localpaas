@@ -23,8 +23,7 @@ func (uc *SecretUC) CreateSecret(
 	req *secretdto.CreateSecretReq,
 ) (*secretdto.CreateSecretResp, error) {
 	req.Type = currentSettingType
-	resp, err := settings.CreateSetting(ctx, uc.db, &req.CreateSettingReq, &settings.CreateSettingData{
-		SettingRepo:   uc.settingRepo,
+	resp, err := uc.CreateSetting(ctx, &req.CreateSettingReq, &settings.CreateSettingData{
 		VerifyingName: req.Key,
 		Version:       currentSettingVersion,
 		PrepareCreation: func(

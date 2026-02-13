@@ -15,10 +15,7 @@ func (uc *AccessTokenUC) DeleteAccessToken(
 	req *accesstokendto.DeleteAccessTokenReq,
 ) (*accesstokendto.DeleteAccessTokenResp, error) {
 	req.Type = currentSettingType
-	_, err := settings.DeleteSetting(ctx, uc.db, &req.DeleteSettingReq, &settings.DeleteSettingData{
-		SettingRepo:              uc.settingRepo,
-		ProjectSharedSettingRepo: uc.projectSharedSettingRepo,
-	})
+	_, err := uc.DeleteSetting(ctx, &req.DeleteSettingReq, &settings.DeleteSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

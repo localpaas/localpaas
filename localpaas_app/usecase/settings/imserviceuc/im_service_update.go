@@ -16,8 +16,7 @@ func (uc *IMServiceUC) UpdateIMService(
 	req *imservicedto.UpdateIMServiceReq,
 ) (*imservicedto.UpdateIMServiceResp, error) {
 	req.Type = currentSettingType
-	_, err := settings.UpdateSetting(ctx, uc.db, &req.UpdateSettingReq, &settings.UpdateSettingData{
-		SettingRepo:   uc.settingRepo,
+	_, err := uc.UpdateSetting(ctx, &req.UpdateSettingReq, &settings.UpdateSettingData{
 		VerifyingName: req.Name,
 		PrepareUpdate: func(
 			ctx context.Context,

@@ -17,7 +17,7 @@ func (uc *AWSS3UC) TestAWSS3Conn(
 	auth *basedto.Auth,
 	req *awss3dto.TestAWSS3ConnReq,
 ) (*awss3dto.TestAWSS3ConnResp, error) {
-	awsSetting, err := uc.settingRepo.GetByID(ctx, uc.db, base.SettingTypeAWS, req.Cred.ID, true)
+	awsSetting, err := uc.SettingRepo.GetByID(ctx, uc.DB, base.SettingTypeAWS, req.Cred.ID, true)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

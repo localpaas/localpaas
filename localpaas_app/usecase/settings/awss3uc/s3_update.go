@@ -16,8 +16,7 @@ func (uc *AWSS3UC) UpdateAWSS3(
 	req *awss3dto.UpdateAWSS3Req,
 ) (*awss3dto.UpdateAWSS3Resp, error) {
 	req.Type = currentSettingType
-	_, err := settings.UpdateSetting(ctx, uc.db, &req.UpdateSettingReq, &settings.UpdateSettingData{
-		SettingRepo:     uc.settingRepo,
+	_, err := uc.UpdateSetting(ctx, &req.UpdateSettingReq, &settings.UpdateSettingData{
 		VerifyingName:   req.Name,
 		VerifyingRefIDs: []string{req.Cred.ID},
 		PrepareUpdate: func(

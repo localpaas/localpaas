@@ -10,7 +10,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/repository"
 )
 
 type GetSettingReq struct {
@@ -23,18 +22,16 @@ func (req *GetSettingReq) Validate() (validators []vld.Validator) {
 }
 
 type GetSettingData struct {
-	SettingRepo   repository.SettingRepo
 	ExtraLoadOpts []bunex.SelectQueryOption
 }
 
-func GetSetting(
+func (uc *BaseSettingUC) GetSetting(
 	ctx context.Context,
-	db database.IDB,
 	auth *basedto.Auth,
 	req *GetSettingReq,
 	data *GetSettingData,
 ) (*entity.Setting, error) {
-	setting, err := loadSettingByID(ctx, db, data.SettingRepo, &req.BaseSettingReq, req.ID,
+	setting, err := uc.loadSettingByID(ctx, uc.DB, &req.BaseSettingReq, req.ID,
 		false, true, data.ExtraLoadOpts...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -45,17 +42,16 @@ func GetSetting(
 	return setting, nil
 }
 
-func GetSettingByID(
+func (uc *BaseSettingUC) GetSettingByID(
 	ctx context.Context,
 	db database.IDB,
-	settingRepo repository.SettingRepo,
 	req *BaseSettingReq,
 	id string,
 	requireActive bool,
 	loadRefSettings bool,
 	extraLoadOpts ...bunex.SelectQueryOption,
 ) (*entity.Setting, error) {
-	setting, err := loadSettingByID(ctx, db, settingRepo, req, id, requireActive,
+	setting, err := uc.loadSettingByID(ctx, db, req, id, requireActive,
 		loadRefSettings, extraLoadOpts...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)

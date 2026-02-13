@@ -13,7 +13,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
-	"github.com/localpaas/localpaas/localpaas_app/repository"
+	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
 )
 
 type DeleteSettingReq struct {
@@ -33,10 +33,7 @@ type DeleteSettingResp struct {
 type DeleteSettingData struct {
 	Setting              *entity.Setting
 	ProjectSharedSetting *entity.ProjectSharedSetting
-
-	SettingRepo              repository.SettingRepo
-	ProjectSharedSettingRepo repository.ProjectSharedSettingRepo
-	ExtraLoadOpts            []bunex.SelectQueryOption
+	ExtraLoadOpts        []bunex.SelectQueryOption
 
 	AfterLoading     func(context.Context, database.Tx, *DeleteSettingData) error
 	BeforePersisting func(context.Context, database.Tx, *DeleteSettingData, *PersistingSettingDeletionData) error
@@ -48,14 +45,13 @@ type PersistingSettingDeletionData struct {
 	ProjectSharedSetting *entity.ProjectSharedSetting
 }
 
-func DeleteSetting(
+func (uc *BaseSettingUC) DeleteSetting(
 	ctx context.Context,
-	db database.IDB,
 	req *DeleteSettingReq,
 	data *DeleteSettingData,
 ) (*DeleteSettingResp, error) {
-	err := transaction.Execute(ctx, db, func(db database.Tx) error {
-		err := loadSettingForDeletion(ctx, db, req, data)
+	err := transaction.Execute(ctx, uc.DB, func(db database.Tx) error {
+		err := uc.loadSettingForDeletion(ctx, db, req, data)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -67,14 +63,14 @@ func DeleteSetting(
 		}
 
 		persistingData := &PersistingSettingDeletionData{}
-		prepareSettingDeletion(req, data, persistingData)
+		uc.prepareSettingDeletion(req, data, persistingData)
 		if data.BeforePersisting != nil {
 			if err := data.BeforePersisting(ctx, db, data, persistingData); err != nil {
 				return apperrors.Wrap(err)
 			}
 		}
 
-		err = persistSettingDeletion(ctx, db, data, persistingData)
+		err = uc.persistSettingDeletion(ctx, db, data, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -84,6 +80,13 @@ func DeleteSetting(
 				return apperrors.Wrap(err)
 			}
 		}
+
+		// Fire delete event
+		err = uc.SettingService.OnDelete(ctx, db, &settingservice.DeleteEvent{Setting: persistingData.Setting})
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+
 		return nil
 	})
 	if err != nil {
@@ -93,7 +96,7 @@ func DeleteSetting(
 	return &DeleteSettingResp{}, nil
 }
 
-func loadSettingForDeletion(
+func (uc *BaseSettingUC) loadSettingForDeletion(
 	ctx context.Context,
 	db database.IDB,
 	req *DeleteSettingReq,
@@ -104,7 +107,7 @@ func loadSettingForDeletion(
 	}
 	loadOpts = append(loadOpts, data.ExtraLoadOpts...)
 
-	setting, err := loadSettingByID(ctx, db, data.SettingRepo, &req.BaseSettingReq, req.ID,
+	setting, err := uc.loadSettingByID(ctx, db, &req.BaseSettingReq, req.ID,
 		false, false, loadOpts...)
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -112,7 +115,7 @@ func loadSettingForDeletion(
 	data.Setting = setting
 
 	if setting.ObjectID == "" && req.Scope == base.SettingScopeProject {
-		data.ProjectSharedSetting, err = data.ProjectSharedSettingRepo.Get(ctx, db, req.ObjectID, req.ID)
+		data.ProjectSharedSetting, err = uc.ProjectSharedSettingRepo.Get(ctx, db, req.ObjectID, req.ID)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -121,7 +124,7 @@ func loadSettingForDeletion(
 	return nil
 }
 
-func prepareSettingDeletion(
+func (uc *BaseSettingUC) prepareSettingDeletion(
 	_ *DeleteSettingReq,
 	data *DeleteSettingData,
 	persistingData *PersistingSettingDeletionData,
@@ -137,14 +140,14 @@ func prepareSettingDeletion(
 	}
 }
 
-func persistSettingDeletion(
+func (uc *BaseSettingUC) persistSettingDeletion(
 	ctx context.Context,
 	db database.IDB,
 	data *DeleteSettingData,
 	persistingData *PersistingSettingDeletionData,
 ) (err error) {
 	if data.ProjectSharedSetting != nil {
-		err = data.ProjectSharedSettingRepo.Update(ctx, db, persistingData.ProjectSharedSetting,
+		err = uc.ProjectSharedSettingRepo.Update(ctx, db, persistingData.ProjectSharedSetting,
 			bunex.UpdateColumns("deleted_at"),
 		)
 		if err != nil {
@@ -153,7 +156,7 @@ func persistSettingDeletion(
 		return nil
 	}
 
-	err = data.SettingRepo.Update(ctx, db, persistingData.Setting,
+	err = uc.SettingRepo.Update(ctx, db, persistingData.Setting,
 		bunex.UpdateColumns("deleted_at"),
 	)
 	if err != nil {
@@ -162,7 +165,7 @@ func persistSettingDeletion(
 
 	// If deleted item is global, delete all references from projects
 	if persistingData.Setting.ObjectID == "" {
-		err = data.ProjectSharedSettingRepo.DeleteAllBySetting(ctx, db, persistingData.Setting.ID)
+		err = uc.ProjectSharedSettingRepo.DeleteAllBySetting(ctx, db, persistingData.Setting.ID)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}

@@ -14,6 +14,11 @@ type SettingService interface {
 
 	LoadReferenceSettings(ctx context.Context, db database.IDB, project *entity.Project, app *entity.App,
 		requireActive bool, inSettings ...*entity.Setting) (settingMap map[string]*entity.Setting, err error)
+
+	// Events
+	OnCreate(ctx context.Context, db database.IDB, event *CreateEvent) error
+	OnUpdate(ctx context.Context, db database.IDB, event *UpdateEvent) error
+	OnDelete(ctx context.Context, db database.IDB, event *DeleteEvent) error
 }
 
 func NewSettingService(

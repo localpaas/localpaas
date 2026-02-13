@@ -16,9 +16,7 @@ func (uc *GithubAppUC) ListGithubApp(
 	req *githubappdto.ListGithubAppReq,
 ) (*githubappdto.ListGithubAppResp, error) {
 	req.Type = currentSettingType
-	resp, err := settings.ListSetting(ctx, uc.db, auth, &req.ListSettingReq, &settings.ListSettingData{
-		SettingRepo: uc.settingRepo,
-	})
+	resp, err := uc.ListSetting(ctx, auth, &req.ListSettingReq, &settings.ListSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

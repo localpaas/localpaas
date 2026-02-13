@@ -15,10 +15,7 @@ func (uc *IMServiceUC) DeleteIMService(
 	req *imservicedto.DeleteIMServiceReq,
 ) (*imservicedto.DeleteIMServiceResp, error) {
 	req.Type = currentSettingType
-	_, err := settings.DeleteSetting(ctx, uc.db, &req.DeleteSettingReq, &settings.DeleteSettingData{
-		SettingRepo:              uc.settingRepo,
-		ProjectSharedSettingRepo: uc.projectSharedSettingRepo,
-	})
+	_, err := uc.DeleteSetting(ctx, &req.DeleteSettingReq, &settings.DeleteSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

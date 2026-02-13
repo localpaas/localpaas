@@ -16,9 +16,7 @@ func (uc *OAuthUC) GetOAuth(
 	req *oauthdto.GetOAuthReq,
 ) (*oauthdto.GetOAuthResp, error) {
 	req.Type = currentSettingType
-	setting, err := settings.GetSetting(ctx, uc.db, auth, &req.GetSettingReq, &settings.GetSettingData{
-		SettingRepo: uc.settingRepo,
-	})
+	setting, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

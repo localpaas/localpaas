@@ -15,9 +15,7 @@ func (uc *AWSUC) GetAWS(
 	req *awsdto.GetAWSReq,
 ) (*awsdto.GetAWSResp, error) {
 	req.Type = currentSettingType
-	setting, err := settings.GetSetting(ctx, uc.db, auth, &req.GetSettingReq, &settings.GetSettingData{
-		SettingRepo: uc.settingRepo,
-	})
+	setting, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
