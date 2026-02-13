@@ -13,9 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go: ["1.25.x"]
+        go: ["1.26.x"]
         include:
-          - go: 1.25.x
+          - go: 1.26.x
             latest: true
 
     steps:
@@ -25,10 +25,10 @@ jobs:
           go-version: ${{ matrix.go }}
 
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Load cached dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
@@ -37,7 +37,7 @@ jobs:
 
       - name: Setup Dependencies
         run: |
-          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.6.0
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.9.0
 
       - name: Lint
         run: make lint-local

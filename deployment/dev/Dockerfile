@@ -13,7 +13,7 @@ RUN git clone --depth=1 https://github.com/localpaas/localpaas-dashboard.git && 
 
 ############################################################
 # Build backend
-FROM golang:1.25-alpine AS builder
+FROM golang:1.26-alpine AS builder
 
 RUN apk update && \
     apk add --no-cache -U tzdata make git build-base ca-certificates && \

@@ -48,7 +48,7 @@ func (uc *VolumeUC) CreateVolume(
 
 		default:
 			return nil, apperrors.New(apperrors.ErrUnsupported).
-				WithMsgLog("driver '' does not support volume type '%s'", req.Driver, req.Type)
+				WithMsgLog("driver '%s' does not support volume type '%s'", req.Driver, req.Type)
 		}
 
 	case base.VolumeDriverSeaweedFs:

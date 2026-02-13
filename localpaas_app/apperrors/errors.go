@@ -24,8 +24,7 @@ const (
 // If the given error is a single one, the returned slice will contain only one item.
 func ParseError(err error, lang translation.Lang) (*ErrorInfo, ErrLevel) {
 	// err is ValidationErrors
-	validationErrs := ValidationErrors{}
-	if errors.As(err, &validationErrs) {
+	if validationErrs, ok := errors.AsType[ValidationErrors](err); ok {
 		return validationErrs.Build(lang), ErrLevelInfo
 	}
 

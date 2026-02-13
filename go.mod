@@ -1,8 +1,6 @@
 module github.com/localpaas/localpaas
 
-go 1.25.0
-
-toolchain go1.25.6
+go 1.26.0
 
 require (
 	code.gitea.io/sdk/gitea v0.22.1
@@ -23,9 +21,9 @@ require (
 	github.com/gin-gonic/gin v1.11.0
 	github.com/gitsight/go-vcsurl v1.0.1
 	github.com/go-acme/lego/v4 v4.31.0
-	github.com/go-co-op/gocron/v2 v2.19.0
+	github.com/go-co-op/gocron/v2 v2.19.1
 	github.com/go-errors/errors v1.5.1
-	github.com/go-git/go-git/v6 v6.0.0-20260127175347-b5117ad1603d
+	github.com/go-git/go-git/v6 v6.0.0-20260210102253-e4d10f0e569a
 	github.com/go-playground/webhooks/v6 v6.4.0
 	github.com/gogits/go-gogs-client v0.0.0-20200905025246-8bb8a50cb355
 	github.com/golang-jwt/jwt/v5 v5.3.0
@@ -39,7 +37,7 @@ require (
 	github.com/markbates/goth v1.82.0
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/moby/go-archive v0.2.0
-	github.com/moby/moby/api v1.52.0
+	github.com/moby/moby/api v1.53.0
 	github.com/mozillazg/go-slugify v0.2.0
 	github.com/nicksnyder/go-i18n/v2 v2.6.1
 	github.com/oklog/ulid/v2 v2.1.1
@@ -62,8 +60,8 @@ require (
 	gitlab.com/gitlab-org/api/client-go v1.20.0
 	go.uber.org/fx v1.24.0
 	go.uber.org/zap v1.27.1
-	golang.org/x/crypto v0.47.0
-	golang.org/x/text v0.33.0
+	golang.org/x/crypto v0.48.0
+	golang.org/x/text v0.34.0
 	google.golang.org/grpc v1.78.0
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 )
@@ -202,13 +200,13 @@ require (
 	go.uber.org/dig v1.19.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/arch v0.20.0 // indirect
-	golang.org/x/mod v0.31.0 // indirect
-	golang.org/x/net v0.49.0 // indirect
+	golang.org/x/mod v0.32.0 // indirect
+	golang.org/x/net v0.50.0 // indirect
 	golang.org/x/oauth2 v0.34.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect
-	golang.org/x/sys v0.40.0 // indirect
+	golang.org/x/sys v0.41.0 // indirect
 	golang.org/x/time v0.14.0 // indirect
-	golang.org/x/tools v0.40.0 // indirect
+	golang.org/x/tools v0.41.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251222181119-0a764e51fe1b // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
