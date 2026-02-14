@@ -78,7 +78,11 @@ func (s *Setting) GetName() string {
 
 // IsActive returns true if setting has status `active` and does not expire
 func (s *Setting) IsActive() bool {
-	return s.Status == base.SettingStatusActive && !s.IsExpired()
+	return s.Status == base.SettingStatusActive && !s.IsDeleted() && !s.IsExpired()
+}
+
+func (s *Setting) IsDeleted() bool {
+	return !s.DeletedAt.IsZero()
 }
 
 func (s *Setting) IsExpired() bool {

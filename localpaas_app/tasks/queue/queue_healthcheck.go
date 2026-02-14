@@ -19,8 +19,8 @@ import (
 )
 
 const (
-	taskKeyHealthcheck          = "task:healthcheck:lock"
-	taskLockMaxRetry            = 3
+	taskHealthcheckLockKey      = "task:healthcheck:lock"
+	taskHealthcheckLockMaxRetry = 3
 	cacheHealthcheckSettingsExp = 5 * time.Minute
 )
 
@@ -49,14 +49,13 @@ func (q *taskQueue) doHealthcheck(
 	ctx context.Context,
 ) error {
 	// Make sure only one worker processes this task at a time
-	success, releaser, err := q.healthcheckTaskLock(ctx)
+	success, _, err := q.healthcheckTaskLock(ctx)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 	if !success { // another worker is doing this task
 		return nil
 	}
-	defer releaser()
 
 	executorFunc := q.healthcheckExecutor
 	if executorFunc == nil {
@@ -124,9 +123,9 @@ func (q *taskQueue) healthcheckTaskLock(ctx context.Context) (bool, func(), erro
 	retries := 0
 	wait := time.Duration(0)
 	for {
-		success, releaser, err := q.taskService.CreateLock(ctx, taskKeyHealthcheck, interval-time.Second)
+		success, releaser, err := q.taskService.CreateLock(ctx, taskHealthcheckLockKey, interval-time.Second)
 		if err != nil {
-			if retries >= taskLockMaxRetry {
+			if retries >= taskHealthcheckLockMaxRetry {
 				return false, nil, apperrors.Wrap(err)
 			}
 			retries++

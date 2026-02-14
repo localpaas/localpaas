@@ -8,7 +8,6 @@ import (
 	"github.com/redis/go-redis/v9"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
 )
 
 func HGet[T any](
@@ -75,17 +74,12 @@ func HMSet[T any](
 	values []T,
 	expiration time.Duration,
 ) error {
-	length := len(fields)
-	if length == 0 || length != len(values) {
+	if len(fields) == 0 {
 		return nil
 	}
-	data := make([]any, 0, length*2) //nolint:mnd
-	for i := range length {
-		value, err := jsonMarshal(values[i])
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
-		data = append(data, fields[i], reflectutil.UnsafeBytesToStr(value))
+	data, err := marshalKVSlices(fields, values)
+	if err != nil {
+		return apperrors.Wrap(err)
 	}
 
 	if _, err := cmder.HSet(ctx, key, data...).Result(); err != nil {

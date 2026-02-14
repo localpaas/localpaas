@@ -15,6 +15,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/entity/cacheentity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
+	"github.com/localpaas/localpaas/localpaas_app/infra/gocronqueue"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/redishelper"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
@@ -25,38 +26,59 @@ const (
 	taskDefaultTimeout      = 3 * time.Hour
 	taskInfoCacheExp        = 24 * time.Hour
 	taskRetryMaxBackoff     = 24 * time.Hour
-	taskControlCheckTimeout = 5 * time.Second
+	taskControlCheckTimeout = 10 * time.Second
 )
 
-func (q *taskQueue) loadTask(
-	ctx context.Context,
-	db database.IDB,
-	taskID string,
-) (*entity.Task, error) {
-	task, err := q.taskRepo.GetByID(ctx, db, "", taskID,
-		bunex.SelectWhereIn("task.status IN (?)", base.TaskStatusNotStarted, base.TaskStatusFailed),
-		bunex.SelectFor("UPDATE OF task SKIP LOCKED"),
-		bunex.SelectRelation("Job"),
-	)
-	if err != nil {
-		if errors.Is(err, apperrors.ErrNotFound) { // task not found, it's not error
-			return nil, nil
-		}
-		return nil, apperrors.Wrap(err)
+type TaskExecData struct {
+	Task *entity.Task
+
+	// ObjectMap can be used as a cache to store objects
+	ObjectMap map[string]any
+
+	NonCancelable bool
+	NonRetryable  bool
+	Canceled      bool
+	Done          bool
+
+	// Callback functions
+	onCommand         func(base.TaskCommand, ...any)
+	onPostExec        func()
+	onPostTransaction func()
+}
+
+func (t *TaskExecData) IsCanceled() bool {
+	return t.Canceled
+}
+
+func (t *TaskExecData) IsDone() bool {
+	return t.Done
+}
+
+func (t *TaskExecData) OnCommand(fn func(base.TaskCommand, ...any)) {
+	// NOTE: do we need to use mutex?
+	t.onCommand = fn
+}
+
+func (t *TaskExecData) OnPostExec(fn func()) {
+	t.onPostExec = fn
+}
+
+func (t *TaskExecData) OnPostTransaction(fn func()) {
+	t.onPostTransaction = fn
+}
+
+type TaskExecFunc func(context.Context, database.Tx, *TaskExecData) error
+
+func (q *taskQueue) RegisterExecutor(typ base.TaskType, execFunc TaskExecFunc) {
+	if !q.isWorkerMode() {
+		return
 	}
-	// Task's job is not active, mark the task as canceled
-	if task.JobID != "" && (task.Job == nil || !task.Job.IsActive()) {
-		task.Status = base.TaskStatusCanceled
-		task.UpdatedAt = timeutil.NowUTC()
-		_ = q.taskRepo.Update(ctx, db, task, bunex.UpdateColumns("status", "updated_at"))
-		// No task to continue
-		return nil, nil
+	if q.taskExecutorMap == nil {
+		q.taskExecutorMap = make(map[base.TaskType]gocronqueue.TaskExecFunc, 5) //nolint:mnd
 	}
-	// Task not allow retrying
-	if task.Status == base.TaskStatusFailed && !task.CanRetry() {
-		return nil, nil
+	q.taskExecutorMap[typ] = func(taskID string, payload string) *time.Time {
+		return q.executeTask(context.Background(), taskID, payload, execFunc)
 	}
-	return task, nil
 }
 
 //nolint:gocognit
@@ -105,6 +127,7 @@ func (q *taskQueue) executeTask(
 
 		var execErr error
 		defer func() {
+			taskData.Done = true
 			if err == nil {
 				if r := recover(); r != nil { // recover from panic
 					err = apperrors.NewPanic(fmt.Sprintf("%v", r))
@@ -141,8 +164,7 @@ func (q *taskQueue) executeTask(
 			// Delete data in cache
 			_ = q.taskInfoRepo.Del(ctx, task.ID)
 			// Save tasks in DB
-			err = q.taskRepo.UpsertMulti(ctx, db, append([]*entity.Task{task}, taskData.NextTasks...),
-				entity.TaskUpsertingConflictCols, entity.TaskUpsertingUpdateCols)
+			err = q.taskRepo.Update(ctx, db, task)
 		}()
 
 		execErr = executorFunc(ctx, db, taskData)
@@ -157,12 +179,47 @@ func (q *taskQueue) executeTask(
 		taskData.onPostTransaction()
 	}
 
-	// If next tasks are set, schedule them
-	if taskData != nil && len(taskData.NextTasks) > 0 {
-		_ = q.ScheduleTask(ctx, taskData.NextTasks...)
+	return rescheduleAt
+}
+
+func (q *taskQueue) loadTask(
+	ctx context.Context,
+	db database.IDB,
+	taskID string,
+) (*entity.Task, error) {
+	task, err := q.taskRepo.GetByID(ctx, db, "", taskID,
+		bunex.SelectWhereIn("task.status IN (?)", base.TaskStatusNotStarted, base.TaskStatusFailed),
+		bunex.SelectFor("UPDATE OF task SKIP LOCKED"),
+		bunex.SelectRelation("TargetJob"),
+		bunex.SelectRelation("TargetDeployment"),
+	)
+	if err != nil {
+		if errors.Is(err, apperrors.ErrNotFound) { // task not found, it's not error
+			return nil, nil
+		}
+		return nil, apperrors.Wrap(err)
 	}
 
-	return rescheduleAt
+	// Task's target object must be active
+	shouldCancelTask := false
+	switch task.Type { //nolint:exhaustive
+	case base.TaskTypeAppDeploy:
+		shouldCancelTask = task.TargetDeployment == nil
+	case base.TaskTypeCronJobExec:
+		shouldCancelTask = task.TargetJob == nil || !task.TargetJob.IsActive()
+	}
+	if shouldCancelTask {
+		task.Status = base.TaskStatusCanceled
+		task.UpdatedAt = timeutil.NowUTC()
+		_ = q.taskRepo.Update(ctx, db, task, bunex.UpdateColumns("status", "updated_at"))
+		return nil, nil
+	}
+
+	// Task not allow retrying
+	if task.Status == base.TaskStatusFailed && !task.CanRetry() {
+		return nil, nil
+	}
+	return task, nil
 }
 
 func (q *taskQueue) taskControlCheck(
@@ -185,16 +242,16 @@ func (q *taskQueue) taskControlCheck(
 		default:
 		}
 
-		taskControls, err := redishelper.BLPop[*cacheentity.TaskControl](ctx, q.redisClient,
-			[]string{key}, taskControlCheckTimeout)
-		if err != nil || len(taskControls) == 0 {
+		taskControl, err := redishelper.BLPopOne[*cacheentity.TaskControl](ctx, q.redisClient,
+			key, taskControlCheckTimeout)
+		if err != nil {
 			continue
 		}
-		cmd := taskControls[key].Cmd
+		cmd := taskControl.Cmd
 		if taskData.onCommand != nil {
 			taskData.onCommand(cmd)
 		}
-		if taskData.Uncancelable && cmd == base.TaskCommandCancel {
+		if taskData.NonCancelable && cmd == base.TaskCommandCancel {
 			taskData.Canceled = true
 			return
 		}

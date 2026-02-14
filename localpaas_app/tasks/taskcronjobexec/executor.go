@@ -55,7 +55,7 @@ func NewExecutor(
 	notificationService notificationservice.NotificationService,
 	dockerManager *docker.Manager,
 ) *Executor {
-	p := &Executor{
+	e := &Executor{
 		logger:              logger,
 		db:                  db,
 		redisClient:         redisClient,
@@ -69,8 +69,8 @@ func NewExecutor(
 		notificationService: notificationService,
 		dockerManager:       dockerManager,
 	}
-	taskQueue.RegisterExecutor(base.TaskTypeCronJobExec, p.execute)
-	return p
+	taskQueue.RegisterExecutor(base.TaskTypeCronJobExec, e.execute)
+	return e
 }
 
 type taskData struct {
@@ -91,8 +91,8 @@ func (e *Executor) execute(
 ) (err error) {
 	data := &taskData{
 		TaskExecData:   task,
-		CronJobSetting: task.Task.Job,
-		CronJob:        task.Task.Job.MustAsCronJob(),
+		CronJobSetting: task.Task.TargetJob,
+		CronJob:        task.Task.TargetJob.MustAsCronJob(),
 	}
 	data.OnPostTransaction(func() { e.onPostTransaction(data) }) //nolint
 

@@ -41,7 +41,6 @@ func ParseBytes(val any) []byte {
 var jsonMarshal = json.Marshal
 var jsonUnmarshal = json.Unmarshal
 
-//nolint:unused
 func marshalSlice[T any](values []T) ([]any, error) {
 	result := make([]any, 0, len(values))
 	for i := range values {
@@ -52,6 +51,22 @@ func marshalSlice[T any](values []T) ([]any, error) {
 		result = append(result, reflectutil.UnsafeBytesToStr(value))
 	}
 	return result, nil
+}
+
+func marshalKVSlices[T any](keys []string, values []T) ([]any, error) {
+	length := len(keys)
+	if length != len(values) {
+		return nil, apperrors.Wrap(apperrors.ErrParamInvalid)
+	}
+	data := make([]any, 0, length*2) //nolint:mnd
+	for i := range length {
+		value, err := jsonMarshal(values[i])
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		data = append(data, keys[i], reflectutil.UnsafeBytesToStr(value))
+	}
+	return data, nil
 }
 
 func unmarshalStr[T any](data string) (value T, err error) {

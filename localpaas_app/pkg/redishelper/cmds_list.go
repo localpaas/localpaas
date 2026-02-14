@@ -8,7 +8,6 @@ import (
 	"github.com/redis/go-redis/v9"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
 )
 
 func RPush[T any](
@@ -20,15 +19,11 @@ func RPush[T any](
 	if len(values) == 0 {
 		return nil
 	}
-	data := make([]any, 0, len(values))
-	for _, v := range values {
-		item, err := jsonMarshal(v)
-		if err != nil {
-			return apperrors.New(err).WithMsgLog("failed to marshal value")
-		}
-		data = append(data, item)
+	data, err := marshalSlice(values)
+	if err != nil {
+		return apperrors.New(err).WithMsgLog("failed to marshal value")
 	}
-	_, err := cmder.RPush(ctx, key, data...).Result()
+	_, err = cmder.RPush(ctx, key, data...).Result()
 	if err != nil {
 		return apperrors.New(err).WithMsgLog("failed to push values to a list")
 	}
@@ -48,16 +43,15 @@ func LRange[T any](
 		}
 		return nil, apperrors.Wrap(err)
 	}
-
 	return unmarshalStrSlice[T](data...)
 }
 
-func BLPop[T any](
+func BLPop(
 	ctx context.Context,
 	cmder Cmdable,
 	keys []string,
 	timeout time.Duration,
-) (values map[string]T, err error) {
+) (values map[string]string, err error) {
 	strSlice, err := cmder.BLPop(ctx, timeout, keys...).Result()
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
@@ -65,22 +59,27 @@ func BLPop[T any](
 		}
 		return nil, apperrors.Wrap(err)
 	}
-
-	values = make(map[string]T)
+	result := make(map[string]string, len(strSlice)/2) //nolint:mnd
 	i := 0
 	for i < len(strSlice) {
-		key := strSlice[i]
-		i++
-		valStr := strSlice[i]
-		i++
-
-		var val T
-		err := jsonUnmarshal(reflectutil.UnsafeStrToBytes(valStr), &val)
-		if err != nil {
-			return nil, apperrors.New(err).WithMsgLog("failed to unmarshal value")
-		}
-		values[key] = val
+		result[strSlice[i]] = strSlice[i+1]
+		i += 2
 	}
+	return result, nil
+}
 
-	return values, nil
+func BLPopOne[T any](
+	ctx context.Context,
+	cmder Cmdable,
+	key string,
+	timeout time.Duration,
+) (val T, err error) {
+	strSlice, err := cmder.BLPop(ctx, timeout, key).Result()
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			return val, apperrors.NewNotFoundNT(key)
+		}
+		return val, apperrors.Wrap(err)
+	}
+	return unmarshalStr[T](strSlice[1])
 }

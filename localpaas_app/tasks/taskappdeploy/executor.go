@@ -66,7 +66,7 @@ func NewExecutor(
 	userService userservice.UserService,
 	notificationService notificationservice.NotificationService,
 ) *Executor {
-	p := &Executor{
+	e := &Executor{
 		logger:              logger,
 		db:                  db,
 		redisClient:         redisClient,
@@ -82,8 +82,8 @@ func NewExecutor(
 		userService:         userService,
 		notificationService: notificationService,
 	}
-	taskQueue.RegisterExecutor(base.TaskTypeAppDeploy, p.execute)
-	return p
+	taskQueue.RegisterExecutor(base.TaskTypeAppDeploy, e.execute)
+	return e
 }
 
 type taskData struct {

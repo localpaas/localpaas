@@ -1,12 +1,14 @@
 package gocronqueue
 
 import (
-	"time"
+	"context"
 
 	"github.com/redis/go-redis/v9"
 
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/logging"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/redishelper"
 )
 
 type Client struct {
@@ -14,7 +16,10 @@ type Client struct {
 	logger      logging.Logger
 }
 
-func NewClient(redisClient redis.UniversalClient, logger logging.Logger) (*Client, error) {
+func NewClient(
+	redisClient redis.UniversalClient,
+	logger logging.Logger,
+) (*Client, error) {
 	return &Client{
 		redisClient: redisClient,
 		logger:      logger,
@@ -26,12 +31,22 @@ func (c *Client) Close() error {
 	return nil
 }
 
-func (c *Client) ScheduleTask(task *entity.Task, runAt time.Time) error {
-	// TODO
+func (c *Client) ScheduleTask(ctx context.Context, tasks ...*entity.Task) error {
+	err := redishelper.RPush(ctx, c.redisClient, taskQueueSchedKey, &SchedMessage{
+		SchedTasks: tasks,
+	})
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
 	return nil
 }
 
-func (c *Client) UnscheduleTask(task *entity.Task) error {
-	// TODO
+func (c *Client) UnscheduleTask(ctx context.Context, taskIDs ...string) error {
+	err := redishelper.RPush(ctx, c.redisClient, taskQueueSchedKey, &SchedMessage{
+		UnschedTaskIDs: taskIDs,
+	})
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
 	return nil
 }

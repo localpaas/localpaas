@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/tiendc/gofn"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
@@ -20,20 +22,104 @@ const (
 func (q *taskQueue) doCreateTasks(
 	ctx context.Context,
 ) error {
-	err := transaction.Execute(ctx, q.db, func(db database.Tx) error {
-		_, err := q.createTasks(ctx, db, nil, q.config.Tasks.Queue.TaskCreateInterval)
+	var newTasks []*entity.Task
+	err := transaction.Execute(ctx, q.db, func(db database.Tx) (err error) {
+		newTasks, err = q.createTasks(ctx, db, nil, q.config.Tasks.Queue.TaskCreateInterval)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
 		return nil
-	})
+	}, transaction.NoRetry())
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+
+	// Ignore error as tasks were inserted into DB, the next scan will schedule them again
+	_ = q.ScheduleTask(ctx, newTasks...)
 	return nil
 }
 
-func (q *taskQueue) doScheduleTasks(
+func (q *taskQueue) createTasks(
+	ctx context.Context,
+	db database.Tx,
+	jobIDs []string,
+	withinDuration time.Duration,
+) ([]*entity.Task, error) {
+	opts := []bunex.SelectQueryOption{
+		bunex.SelectWhere("setting.type = ?", base.SettingTypeCronJob),
+		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
+		bunex.SelectFor("UPDATE OF setting"),
+	}
+	if len(jobIDs) > 0 {
+		opts = append(opts, bunex.SelectWhereIn("setting.id IN (?)", jobIDs...))
+	}
+
+	jobSettings, _, err := q.settingRepo.List(ctx, db, nil, opts...)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	if len(jobSettings) == 0 {
+		return nil, nil
+	}
+
+	timeNow := timeutil.NowUTC()
+	allNewTasks := make([]*entity.Task, 0, 20) //nolint:mnd
+	updatingJobSettings := make([]*entity.Setting, 0, len(jobSettings))
+
+	for _, jobSetting := range jobSettings {
+		cronJob, err := jobSetting.AsCronJob()
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		cronSched, err := cronJob.ParseCronExpr()
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+
+		nextRunAt := gofn.Coalesce(cronJob.LastSchedTime, cronJob.InitialTime)
+		farthestRunAt := timeNow.Add(withinDuration)
+		var lastSchedTime time.Time
+
+		for {
+			nextRunAt = cronSched.Next(nextRunAt)
+			if nextRunAt.Before(timeNow) {
+				continue
+			}
+			if nextRunAt.After(farthestRunAt) {
+				break
+			}
+
+			lastSchedTime = nextRunAt
+			task, err := q.cronJobService.CreateCronJobTask(jobSetting, nextRunAt, timeNow)
+			if err != nil {
+				return nil, apperrors.Wrap(err)
+			}
+			allNewTasks = append(allNewTasks, task)
+		}
+
+		if !lastSchedTime.Equal(cronJob.LastSchedTime) {
+			cronJob.LastSchedTime = lastSchedTime
+			jobSetting.MustSetData(cronJob)
+			updatingJobSettings = append(updatingJobSettings, jobSetting)
+		}
+	}
+
+	err = q.taskRepo.UpsertMulti(ctx, db, allNewTasks,
+		entity.TaskUpsertingConflictCols, entity.TaskUpsertingUpdateCols)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	err = q.settingRepo.UpsertMulti(ctx, db, updatingJobSettings,
+		entity.SettingUpsertingConflictCols, entity.SettingUpsertingUpdateCols)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	return allNewTasks, nil
+}
+
+func (q *taskQueue) findSchedulingTasks(
 	ctx context.Context,
 ) ([]*entity.Task, error) {
 	timeNow := timeutil.NowUTC()
@@ -81,11 +167,11 @@ func (q *taskQueue) shouldRunMissedTask(
 	allTasks []*entity.Task,
 	timeNow time.Time,
 ) bool {
-	if missedTask.JobID == "" { // This is a solo task
+	if missedTask.TargetID == "" { // This is a solo task
 		return true
 	}
 	for _, task := range allTasks {
-		if task.JobID != missedTask.JobID || task.ID == missedTask.ID {
+		if task.TargetID != missedTask.TargetID || task.ID == missedTask.ID {
 			continue
 		}
 		runAt := task.ShouldRunAt()

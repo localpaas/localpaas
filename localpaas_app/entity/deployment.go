@@ -70,6 +70,10 @@ func (d *Deployment) CanCancel() bool {
 	return true
 }
 
+func (d *Deployment) IsDeleted() bool {
+	return !d.DeletedAt.IsZero()
+}
+
 func (d *Deployment) GetDuration() time.Duration {
 	return d.EndedAt.Sub(d.StartedAt)
 }

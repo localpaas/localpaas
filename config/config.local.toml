@@ -45,8 +45,8 @@ app_path = ".appdata/localpaas"
 
 [tasks.queue]
     concurrency = 5
-    task_check_interval = "1m"
-    task_create_interval = "1m"
+    task_check_interval = "1h"
+    task_create_interval = "1h"
 
 [tasks.healthcheck]
     base_interval = "15s"

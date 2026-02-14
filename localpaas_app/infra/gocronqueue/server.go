@@ -14,6 +14,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/logging"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/redishelper"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
@@ -78,6 +79,13 @@ func NewServer(config *Config) (*Server, error) {
 func (s *Server) Start() error {
 	s.scheduler.Start()
 
+	// Start a job to periodically check scheduling messages in redis
+	go func() {
+		for {
+			s.listenToSchedMessages(context.Background())
+		}
+	}()
+
 	// Start a job to periodically create new tasks from cron jobs
 	go func() {
 		for range time.Tick(s.config.TaskCreateInterval) {
@@ -117,6 +125,34 @@ func (s *Server) Start() error {
 	return nil
 }
 
+func (s *Server) listenToSchedMessages(ctx context.Context) {
+	defer func() {
+		_ = recover()
+	}()
+
+	// TODO: use BLMOVE to handle the case we fail to process the msg?
+	schedMsg, err := redishelper.BLPopOne[*SchedMessage](ctx, s.config.RedisClient,
+		taskQueueSchedKey, taskQueueSchedReadTimeout)
+	if err != nil {
+		time.Sleep(10 * time.Second) //nolint:mnd
+		return
+	}
+	if len(schedMsg.SchedTasks) > 0 {
+		err := s.ScheduleTask(ctx, schedMsg.SchedTasks...)
+		if err != nil {
+			s.config.Logger.Errorf("failed to schedule tasks from redis message: %v", err)
+		}
+		return
+	}
+	if len(schedMsg.UnschedTaskIDs) > 0 {
+		err := s.UnscheduleTask(ctx, schedMsg.UnschedTaskIDs...)
+		if err != nil {
+			s.config.Logger.Errorf("failed to unschedule tasks from redis message: %v", err)
+		}
+		return
+	}
+}
+
 func (s *Server) createTasks() {
 	defer func() {
 		if r := recover(); r != nil {
@@ -142,7 +178,7 @@ func (s *Server) scanTasks() {
 		return
 	}
 	for _, task := range tasks {
-		err = s.ScheduleTask(task, task.ShouldRunAt())
+		err = s.scheduleTask(task, task.ShouldRunAt())
 		if err != nil {
 			s.config.Logger.Errorf("failed to schedule new tasks: %v", err)
 			return
@@ -150,7 +186,17 @@ func (s *Server) scanTasks() {
 	}
 }
 
-func (s *Server) ScheduleTask(task *entity.Task, runAt time.Time) error {
+func (s *Server) ScheduleTask(ctx context.Context, tasks ...*entity.Task) error {
+	for _, task := range tasks {
+		err := s.scheduleTask(task, task.ShouldRunAt())
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+	}
+	return nil
+}
+
+func (s *Server) scheduleTask(task *entity.Task, runAt time.Time) error {
 	if !s.shouldSchedule(task, runAt) {
 		return nil
 	}
@@ -177,14 +223,16 @@ func (s *Server) ScheduleTask(task *entity.Task, runAt time.Time) error {
 	return nil
 }
 
-func (s *Server) UnscheduleTask(task *entity.Task) error {
-	s.removeJob(task, true)
+func (s *Server) UnscheduleTask(ctx context.Context, taskIDs ...string) error {
+	for _, taskID := range taskIDs {
+		s.removeJob(taskID, true)
+	}
 	return nil
 }
 
 func (s *Server) shouldSchedule(task *entity.Task, runAt time.Time) bool {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	s.mu.RLock()
+	defer s.mu.RUnlock()
 	existingJob := s.jobMap[task.ID]
 	if existingJob != nil && existingJob.RunAt.Equal(runAt) { // NOTE: zero time values equal
 		return false
@@ -197,7 +245,7 @@ func (s *Server) executeTask(task *entity.Task, priorityCheck bool) error {
 	if priorityCheck && task.Config.Priority != base.TaskPriorityCritical {
 		priorityJob := s.findPriorityJob(task, timeutil.NowUTC())
 		if priorityJob != nil {
-			err := s.ScheduleTask(task, priorityJob.RunAt.Add(taskLowPriorityDelay))
+			err := s.scheduleTask(task, priorityJob.RunAt.Add(taskLowPriorityDelay))
 			if err != nil {
 				return apperrors.Wrap(err)
 			}
@@ -206,7 +254,7 @@ func (s *Server) executeTask(task *entity.Task, priorityCheck bool) error {
 	}
 
 	defer func() {
-		s.removeJob(task, false)
+		s.removeJob(task.ID, false)
 	}()
 
 	execFunc := s.config.TaskMap[task.Type]
@@ -216,7 +264,7 @@ func (s *Server) executeTask(task *entity.Task, priorityCheck bool) error {
 	}
 	rescheduleAt := execFunc(task.ID, task.Args)
 	if rescheduleAt != nil {
-		err := s.ScheduleTask(task, *rescheduleAt)
+		err := s.scheduleTask(task, *rescheduleAt)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -240,20 +288,20 @@ func (s *Server) addJob(task *entity.Task, job gocron.Job, runAt time.Time) {
 	}
 }
 
-func (s *Server) removeJob(task *entity.Task, unschedule bool) {
+func (s *Server) removeJob(taskID string, unschedule bool) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if currJob := s.jobMap[task.ID]; currJob != nil {
+	if currJob := s.jobMap[taskID]; currJob != nil {
 		if unschedule {
 			_ = s.scheduler.RemoveJob(currJob.Job.ID())
 		}
-		delete(s.jobMap, task.ID)
+		delete(s.jobMap, taskID)
 	}
 }
 
 func (s *Server) findPriorityJob(currentTask *entity.Task, runAt time.Time) *jobData {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	s.mu.RLock()
+	defer s.mu.RUnlock()
 	for taskID, job := range s.jobMap {
 		if taskID == currentTask.ID {
 			continue

@@ -2,7 +2,6 @@
 CREATE TABLE IF NOT EXISTS tasks
 (
     id               VARCHAR(100) PRIMARY KEY,
-    job_id           VARCHAR(100) NULL,
     target_id        VARCHAR(100) NULL,
     type             VARCHAR(100) NOT NULL,
     status           VARCHAR NOT NULL CONSTRAINT chk_status CHECK
@@ -21,12 +20,9 @@ CREATE TABLE IF NOT EXISTS tasks
 
     created_at       TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at       TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted_at       TIMESTAMPTZ NULL,
-
-    CONSTRAINT fk_tasks_job_id FOREIGN KEY (job_id) REFERENCES settings (id)
+    deleted_at       TIMESTAMPTZ NULL
 );
 
-CREATE INDEX idx_tasks_job_id ON tasks(job_id);
 CREATE INDEX idx_tasks_target_id ON tasks(target_id);
 CREATE INDEX idx_tasks_type ON tasks(type);
 CREATE INDEX idx_tasks_status ON tasks(status);

@@ -22,10 +22,10 @@ func (s *cronJobService) CreateCronJobTask(
 	}
 
 	return &entity.Task{
-		ID:     gofn.Must(ulid.NewStringULID()),
-		JobID:  jobSetting.ID,
-		Type:   base.TaskTypeCronJobExec,
-		Status: base.TaskStatusNotStarted,
+		ID:       gofn.Must(ulid.NewStringULID()),
+		TargetID: jobSetting.ID,
+		Type:     base.TaskTypeCronJobExec,
+		Status:   base.TaskStatusNotStarted,
 		Config: entity.TaskConfig{
 			Priority:   cronJob.Priority,
 			MaxRetry:   cronJob.MaxRetry,
