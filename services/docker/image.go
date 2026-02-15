@@ -90,3 +90,21 @@ func (m *Manager) ImagePull(
 	}
 	return resp, nil
 }
+
+type ImagePushOption func(options *image.PushOptions)
+
+func (m *Manager) ImagePush(
+	ctx context.Context,
+	imageTag string,
+	options ...ImagePushOption,
+) (io.ReadCloser, error) {
+	opts := image.PushOptions{}
+	for _, opt := range options {
+		opt(&opts)
+	}
+	resp, err := m.client.ImagePush(ctx, imageTag, opts)
+	if err != nil {
+		return nil, apperrors.NewInfra(err)
+	}
+	return resp, nil
+}

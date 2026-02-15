@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"strings"
 	"time"
 
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -61,4 +62,12 @@ func (app *App) GetSettingByType(typ base.SettingType) *Setting {
 		}
 	}
 	return nil
+}
+
+func (app *App) GetAutoImageName() string {
+	name := strings.NewReplacer("__", "_", "--", "-").Replace(app.Key)
+	if len(name) > base.ImageNameMaxLen {
+		name = name[:base.ImageNameMaxLen]
+	}
+	return name
 }

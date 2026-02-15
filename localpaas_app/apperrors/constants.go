@@ -83,7 +83,8 @@ var (
 
 // Errors for apps
 var (
-	ErrAppInactive = errors.New("ERR_APP_INACTIVE")
+	ErrAppInactive                              = errors.New("ERR_APP_INACTIVE")
+	ErrMultiNodeClusterRequireRegistryForImages = errors.New("ERR_MULTI_NODE_CLUSTER_REQUIRE_REGISTRY_FOR_IMAGES")
 )
 
 // nolint Errors from infrastructure
@@ -181,6 +182,7 @@ var errorStatusMap = map[error]int{
 
 	// App errors
 	ErrAppInactive: http.StatusNotAcceptable,
+	ErrMultiNodeClusterRequireRegistryForImages: http.StatusForbidden,
 
 	// Errors from infrastructure
 	ErrInfra:                   http.StatusInternalServerError,

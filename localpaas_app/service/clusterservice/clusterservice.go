@@ -11,6 +11,8 @@ import (
 
 type ClusterService interface {
 	PersistClusterData(ctx context.Context, db database.IDB, data *PersistingClusterData) error
+
+	IsMultiNode(ctx context.Context) (bool, error)
 }
 
 func NewClusterService(

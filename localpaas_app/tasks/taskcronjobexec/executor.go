@@ -144,7 +144,7 @@ func (e *Executor) loadCronJobData(
 	}
 
 	// Load reference settings
-	refSettingMap, err := e.settingService.LoadReferenceSettings(ctx, db, data.Project, data.App, true,
+	refSettingMap, err := e.settingService.LoadReferenceSettingsFor(ctx, db, data.Project, data.App, true,
 		data.CronJobSetting)
 	if err != nil {
 		return apperrors.Wrap(err)

@@ -17,10 +17,9 @@ type UpdateAppDeploymentSettingsReq struct {
 	ProjectID string `json:"-"`
 	AppID     string `json:"-"`
 
-	ImageSource   *DeploymentImageSourceReq   `json:"imageSource"`
-	RepoSource    *DeploymentRepoSourceReq    `json:"repoSource"`
-	TarballSource *DeploymentTarballSourceReq `json:"tarballSource"`
-	ActiveMethod  base.DeploymentMethod       `json:"activeMethod"`
+	ImageSource  *DeploymentImageSourceReq `json:"imageSource"`
+	RepoSource   *DeploymentRepoSourceReq  `json:"repoSource"`
+	ActiveMethod base.DeploymentMethod     `json:"activeMethod"`
 
 	Command               *string `json:"command"`
 	WorkingDir            *string `json:"workingDir"`
@@ -56,11 +55,11 @@ type DeploymentRepoSourceReq struct {
 	RepoRef        string              `json:"repoRef"` // can be branch name, tag...
 	Credentials    basedto.ObjectIDReq `json:"credentials"`
 	DockerfilePath string              `json:"dockerfilePath"` // for BuildToolDockerfile only
+	ImageName      string              `json:"imageName"`
 	ImageTags      []string            `json:"imageTags"`
-	RegistryAuth   basedto.ObjectIDReq `json:"registryAuth"`
+	PushToRegistry basedto.ObjectIDReq `json:"pushToRegistry"`
 }
 
-// nolint
 func (req *DeploymentRepoSourceReq) validate(field string) (res []vld.Validator) {
 	if req == nil {
 		return
@@ -73,23 +72,8 @@ func (req *DeploymentRepoSourceReq) validate(field string) (res []vld.Validator)
 	res = append(res, basedto.ValidateRepoURL(&req.RepoURL, true, field+"repoURL")...)
 	res = append(res, basedto.ValidateStr(&req.RepoRef, false, 1, repoRefMaxLen, field+"repoRef")...)
 	res = append(res, basedto.ValidateObjectIDReq(&req.Credentials, false, field+"credentials")...)
-	res = append(res, basedto.ValidateObjectIDReq(&req.RegistryAuth, false, field+"registryAuth")...)
-	return res
-}
-
-type DeploymentTarballSourceReq struct {
-	Enabled bool `json:"enabled"`
-	// TODO: add implementation
-}
-
-// nolint
-func (req *DeploymentTarballSourceReq) validate(field string) (res []vld.Validator) {
-	if req == nil {
-		return
-	}
-	if field != "" {
-		field += "."
-	}
+	res = append(res, basedto.ValidateStr(&req.ImageName, false, 1, base.ImageNameMaxLen, field+"imageName")...)
+	res = append(res, basedto.ValidateObjectIDReq(&req.PushToRegistry, false, field+"pushToRegistry")...)
 	return res
 }
 
@@ -104,7 +88,6 @@ func (req *UpdateAppDeploymentSettingsReq) Validate() apperrors.ValidationErrors
 	validators = append(validators, basedto.ValidateID(&req.AppID, true, "appId")...)
 	validators = append(validators, req.ImageSource.validate("imageSource")...)
 	validators = append(validators, req.RepoSource.validate("repoSource")...)
-	validators = append(validators, req.TarballSource.validate("tarballSource")...)
 	validators = append(validators, basedto.ValidateStrIn(&req.ActiveMethod, true,
 		base.AllDeploymentMethods, "activeMethod")...)
 	// TODO: add validation for deployment settings input

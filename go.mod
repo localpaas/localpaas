@@ -1,6 +1,8 @@
 module github.com/localpaas/localpaas
 
-go 1.26.0
+go 1.26
+
+toolchain go1.26.0
 
 require (
 	code.gitea.io/sdk/gitea v0.22.1

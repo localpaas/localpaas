@@ -14,6 +14,8 @@ type SettingService interface {
 	PersistSettingData(ctx context.Context, db database.IDB, data *PersistingSettingData) error
 
 	LoadReferenceSettings(ctx context.Context, db database.IDB, project *entity.Project, app *entity.App,
+		requireActive bool, settingIDs []string) (settingMap map[string]*entity.Setting, err error)
+	LoadReferenceSettingsFor(ctx context.Context, db database.IDB, project *entity.Project, app *entity.App,
 		requireActive bool, inSettings ...*entity.Setting) (settingMap map[string]*entity.Setting, err error)
 
 	// Events

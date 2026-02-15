@@ -28,7 +28,6 @@ type BaseMsgDataAppDeploymentNotification struct {
 	RepoRef       string
 	CommitMsg     string
 	Image         string
-	SourceArchive string
 	StartedAt     time.Time
 	Duration      time.Duration
 	DashboardLink string

@@ -19,17 +19,11 @@ func (s *settingService) LoadReferenceSettings(
 	project *entity.Project,
 	app *entity.App,
 	requireActive bool,
-	inSettings ...*entity.Setting,
+	settingIDs []string,
 ) (settingMap map[string]*entity.Setting, err error) {
-	settingIDMap := make(map[string]struct{}, 10) //nolint
-	for _, setting := range inSettings {
-		for _, settingID := range setting.MustGetRefSettingIDs() {
-			settingIDMap[settingID] = struct{}{}
-		}
-	}
-
+	settingIDs = gofn.ToSet(settingIDs)
 	opts := []bunex.SelectQueryOption{
-		bunex.SelectWhere("setting.id IN (?)", bunex.In(gofn.MapKeys(settingIDMap))),
+		bunex.SelectWhereIn("setting.id IN (?)", settingIDs...),
 	}
 	if requireActive {
 		opts = append(opts, bunex.SelectWhere("setting.status = ?", base.SettingStatusActive))
@@ -50,7 +44,7 @@ func (s *settingService) LoadReferenceSettings(
 	settingMap = entityutil.SliceToIDMap(settings)
 
 	// Check setting existence
-	for id := range settingIDMap {
+	for _, id := range settingIDs {
 		if _, exists := settingMap[id]; !exists {
 			return nil, apperrors.NewNotFound("Setting").
 				WithMsgLog("setting %s not found or expired", id)
@@ -58,4 +52,21 @@ func (s *settingService) LoadReferenceSettings(
 	}
 
 	return settingMap, nil
+}
+
+func (s *settingService) LoadReferenceSettingsFor(
+	ctx context.Context,
+	db database.IDB,
+	project *entity.Project,
+	app *entity.App,
+	requireActive bool,
+	inSettings ...*entity.Setting,
+) (settingMap map[string]*entity.Setting, err error) {
+	settingIDMap := make(map[string]struct{}, 10) //nolint
+	for _, setting := range inSettings {
+		for _, settingID := range setting.MustGetRefSettingIDs() {
+			settingIDMap[settingID] = struct{}{}
+		}
+	}
+	return s.LoadReferenceSettings(ctx, db, project, app, requireActive, gofn.MapKeys(settingIDMap))
 }

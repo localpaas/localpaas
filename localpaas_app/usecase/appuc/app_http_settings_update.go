@@ -127,7 +127,7 @@ func (uc *AppUC) prepareUpdatingAppHttpSettings(
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 
 	// Make sure all reference settings used in this deployment settings exist actively
-	_, err = uc.settingService.LoadReferenceSettings(ctx, db, nil, app, true, setting)
+	_, err = uc.settingService.LoadReferenceSettingsFor(ctx, db, nil, app, true, setting)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -158,7 +158,7 @@ func (uc *AppUC) applyAppHttpSettings(
 	db database.IDB,
 	data *updateAppHttpSettingsData,
 ) error {
-	refSettingMap, err := uc.settingService.LoadReferenceSettings(ctx, db, nil, data.App, true,
+	refSettingMap, err := uc.settingService.LoadReferenceSettingsFor(ctx, db, nil, data.App, true,
 		data.HttpSettings)
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -169,13 +169,13 @@ func (uc *AppUC) applyAppHttpSettings(
 		return apperrors.Wrap(err)
 	}
 
-	allSSLIDs := appHttpSettings.GetInUseSSLCertIDs()
+	allSSLIDs := appHttpSettings.GetSSLCertIDs()
 	err = uc.appService.EnsureSSLConfigFiles(allSSLIDs, false, refSettingMap)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	allBasicAuthIDs := appHttpSettings.GetInUseBasicAuthIDs()
+	allBasicAuthIDs := appHttpSettings.GetBasicAuthIDs()
 	err = uc.appService.EnsureBasicAuthConfigFiles(allBasicAuthIDs, false, refSettingMap)
 	if err != nil {
 		return apperrors.Wrap(err)

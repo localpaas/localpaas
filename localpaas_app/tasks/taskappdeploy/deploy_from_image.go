@@ -8,8 +8,7 @@ import (
 	"github.com/docker/docker/api/types/swarm"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/infra/database"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/batchrecvchan"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/services/docker"
@@ -21,19 +20,18 @@ const (
 
 type imageDeployTaskData struct {
 	*taskData
-	RegistryAuthHeader string
-	Step               string
+	RegAuthHeader string
+	Step          string
 }
 
 func (e *Executor) deployFromImage(
 	ctx context.Context,
-	db database.Tx,
 	taskData *taskData,
 ) error {
 	data := &imageDeployTaskData{taskData: taskData}
 
 	// 1. Pull image from the registry
-	err := e.imageDeployStepImagePull(ctx, db, data)
+	err := e.imageDeployStepImagePull(ctx, data)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -49,7 +47,7 @@ func (e *Executor) deployFromImage(
 	}
 
 	// 3. Apply image to service
-	err = e.imageDeployStepServiceApply(ctx, db, data)
+	err = e.imageDeployStepServiceApply(ctx, data)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -65,7 +63,6 @@ func (e *Executor) deployFromImage(
 
 func (e *Executor) imageDeployStepImagePull(
 	ctx context.Context,
-	db database.Tx,
 	data *imageDeployTaskData,
 ) (err error) {
 	data.Step = stepImagePull
@@ -74,13 +71,16 @@ func (e *Executor) imageDeployStepImagePull(
 	e.addStepStartLog(ctx, data.taskData, "Start pulling image...")
 	defer e.addStepEndLog(ctx, data.taskData, timeutil.NowUTC(), err)
 
-	regAuthHeader, err := e.calcRegistryAuthHeader(ctx, db, data)
-	if err != nil {
-		return apperrors.Wrap(err)
+	if imageSource.RegistryAuth.ID != "" {
+		regAuth := data.RefSettingMap[imageSource.RegistryAuth.ID]
+		data.RegAuthHeader, err = regAuth.MustAsRegistryAuth().GenerateAuthHeader()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
 
 	logsReader, err := e.dockerManager.ImagePull(ctx, imageSource.Image, func(options *image.PullOptions) {
-		options.RegistryAuth = regAuthHeader
+		options.RegistryAuth = data.RegAuthHeader
 	})
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -89,9 +89,13 @@ func (e *Executor) imageDeployStepImagePull(
 	logsChan, _ := docker.StartScanningJSONMsg(ctx, logsReader, batchrecvchan.Options{})
 	for msgs := range logsChan {
 		for _, msg := range msgs {
-			// print(" >>>>>>>>>>> ", msg.String())
+			frameCreator := applog.NewOutFrame
 			if msg.Error != nil {
 				err = errors.Join(err, msg.Error)
+				frameCreator = applog.NewErrFrame
+			}
+			if msg.String() != "" {
+				_ = data.LogStore.Add(ctx, frameCreator(msg.String(), applog.TsNow))
 			}
 		}
 	}
@@ -104,7 +108,6 @@ func (e *Executor) imageDeployStepImagePull(
 
 func (e *Executor) imageDeployStepServiceApply(
 	ctx context.Context,
-	db database.Tx,
 	data *imageDeployTaskData,
 ) (err error) {
 	data.Step = stepServiceApply
@@ -113,11 +116,6 @@ func (e *Executor) imageDeployStepServiceApply(
 
 	e.addStepStartLog(ctx, data.taskData, "Applying changes to service...")
 	defer e.addStepEndLog(ctx, data.taskData, timeutil.NowUTC(), err)
-
-	regAuthHeader, err := e.calcRegistryAuthHeader(ctx, db, data)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
 
 	service, err := e.dockerManager.ServiceInspect(ctx, data.App.ServiceID)
 	if err != nil {
@@ -136,39 +134,11 @@ func (e *Executor) imageDeployStepServiceApply(
 
 	_, err = e.dockerManager.ServiceUpdate(ctx, data.App.ServiceID, &service.Version, spec,
 		func(options *swarm.ServiceUpdateOptions) {
-			options.EncodedRegistryAuth = regAuthHeader
+			options.EncodedRegistryAuth = data.RegAuthHeader
 		})
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
 	return nil
-}
-
-func (e *Executor) calcRegistryAuthHeader(
-	ctx context.Context,
-	db database.Tx,
-	data *imageDeployTaskData,
-) (string, error) {
-	if data.RegistryAuthHeader != "" {
-		return data.RegistryAuthHeader, nil
-	}
-	regAuthID := data.Deployment.Settings.ImageSource.RegistryAuth.ID
-	if regAuthID == "" {
-		return "", nil
-	}
-	setting, err := e.settingRepo.GetByID(ctx, db, base.SettingTypeRegistryAuth, regAuthID, true)
-	if err != nil {
-		return "", apperrors.Wrap(err)
-	}
-	regAuth, err := setting.AsRegistryAuth()
-	if err != nil {
-		return "", apperrors.Wrap(err)
-	}
-	regAuthHeader, err := regAuth.GenerateAuthHeader()
-	if err != nil {
-		return "", apperrors.Wrap(err)
-	}
-	data.RegistryAuthHeader = regAuthHeader
-	return regAuthHeader, nil
 }

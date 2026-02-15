@@ -20,10 +20,9 @@ func (s *appDeploymentSettingsParser) New() SettingData {
 }
 
 type AppDeploymentSettings struct {
-	ImageSource   *DeploymentImageSource   `json:"imageSource"`
-	RepoSource    *DeploymentRepoSource    `json:"repoSource"`
-	TarballSource *DeploymentTarballSource `json:"tarballSource"`
-	ActiveMethod  base.DeploymentMethod    `json:"activeMethod"`
+	ImageSource  *DeploymentImageSource `json:"imageSource"`
+	RepoSource   *DeploymentRepoSource  `json:"repoSource"`
+	ActiveMethod base.DeploymentMethod  `json:"activeMethod"`
 
 	Command               *string `json:"command,omitempty"`
 	WorkingDir            *string `json:"workingDir,omitempty"`
@@ -43,16 +42,14 @@ type DeploymentRepoSource struct {
 	RepoRef        string          `json:"repoRef"`              // can be branch name, tag...
 	Credentials    RepoCredentials `json:"credentials,omitzero"` // contains setting id of github app/git token/ssh key
 	DockerfilePath string          `json:"dockerfilePath"`       // for BuildToolDockerfile only
+	ImageName      string          `json:"imageName"`
 	ImageTags      []string        `json:"imageTags"`
-	RegistryAuth   ObjectID        `json:"registryAuth,omitzero"`
+	PushToRegistry ObjectID        `json:"pushToRegistry,omitzero"`
 }
 
 type RepoCredentials struct {
 	ID   string           `json:"id"`
 	Type base.SettingType `json:"type"`
-}
-
-type DeploymentTarballSource struct {
 }
 
 func (s *AppDeploymentSettings) GetType() base.SettingType {
@@ -61,23 +58,23 @@ func (s *AppDeploymentSettings) GetType() base.SettingType {
 
 func (s *AppDeploymentSettings) GetRefSettingIDs() []string {
 	res := make([]string, 0, 5) //nolint
-	res = append(res, s.GetInUseRegistryAuthIDs()...)
-	res = append(res, s.GetInUseGitCredentialIDs()...)
+	res = append(res, s.GetRegistryAuthIDs()...)
+	res = append(res, s.GetGitCredentialIDs()...)
 	return res
 }
 
-func (s *AppDeploymentSettings) GetInUseRegistryAuthIDs() (res []string) {
+func (s *AppDeploymentSettings) GetRegistryAuthIDs() (res []string) {
 	if s.ImageSource != nil && s.ImageSource.RegistryAuth.ID != "" {
 		res = append(res, s.ImageSource.RegistryAuth.ID)
 	}
-	if s.RepoSource != nil && s.RepoSource.RegistryAuth.ID != "" {
-		res = append(res, s.RepoSource.RegistryAuth.ID)
+	if s.RepoSource != nil && s.RepoSource.PushToRegistry.ID != "" {
+		res = append(res, s.RepoSource.PushToRegistry.ID)
 	}
 	res = gofn.ToSet(res)
 	return
 }
 
-func (s *AppDeploymentSettings) GetInUseGitCredentialIDs() (res []string) {
+func (s *AppDeploymentSettings) GetGitCredentialIDs() (res []string) {
 	if s.RepoSource != nil && s.RepoSource.Credentials.ID != "" {
 		res = append(res, s.RepoSource.Credentials.ID)
 	}

@@ -35,10 +35,9 @@ type GetAppDeploymentSettingsResp struct {
 }
 
 type DeploymentSettingsResp struct {
-	ImageSource   *DeploymentImageSourceResp   `json:"imageSource,omitempty"`
-	RepoSource    *DeploymentRepoSourceResp    `json:"repoSource,omitempty"`
-	TarballSource *DeploymentTarballSourceResp `json:"tarballSource,omitempty"`
-	ActiveMethod  base.DeploymentMethod        `json:"activeMethod"`
+	ImageSource  *DeploymentImageSourceResp `json:"imageSource,omitempty"`
+	RepoSource   *DeploymentRepoSourceResp  `json:"repoSource,omitempty"`
+	ActiveMethod base.DeploymentMethod      `json:"activeMethod"`
 
 	Command               string `json:"command,omitempty"`
 	WorkingDir            string `json:"workingDir,omitempty"`
@@ -60,12 +59,9 @@ type DeploymentRepoSourceResp struct {
 	RepoRef        string                    `json:"repoRef"` // can be branch name, tag...
 	Credentials    *settings.BaseSettingResp `json:"credentials"`
 	DockerfilePath string                    `json:"dockerfilePath"` // for BuildToolDockerfile only
+	ImageName      string                    `json:"imageName"`
 	ImageTags      []string                  `json:"imageTags"`
-	RegistryAuth   *settings.BaseSettingResp `json:"registryAuth"`
-}
-
-type DeploymentTarballSourceResp struct {
-	// TODO: implement this
+	PushToRegistry *settings.BaseSettingResp `json:"pushToRegistry"`
 }
 
 type AppDeploymentSettingsTransformInput struct {
@@ -105,9 +101,9 @@ func TransformDeploymentSettings(input *AppDeploymentSettingsTransformInput) (re
 			settingResp, _ := settings.TransformSettingBase(input.RefSettingMap[resp.RepoSource.Credentials.ID])
 			resp.RepoSource.Credentials = settingResp
 		}
-		if resp.RepoSource.RegistryAuth != nil && resp.RepoSource.RegistryAuth.ID != "" {
-			settingResp, _ := settings.TransformSettingBase(input.RefSettingMap[resp.RepoSource.RegistryAuth.ID])
-			resp.RepoSource.RegistryAuth = settingResp
+		if resp.RepoSource.PushToRegistry != nil && resp.RepoSource.PushToRegistry.ID != "" {
+			settingResp, _ := settings.TransformSettingBase(input.RefSettingMap[resp.RepoSource.PushToRegistry.ID])
+			resp.RepoSource.PushToRegistry = settingResp
 		}
 	}
 

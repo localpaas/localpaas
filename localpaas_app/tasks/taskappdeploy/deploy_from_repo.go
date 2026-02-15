@@ -5,8 +5,11 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/docker/docker/api/types/build"
+	"github.com/docker/docker/api/types/image"
+	"github.com/docker/docker/api/types/swarm"
 	"github.com/gitsight/go-vcsurl"
 	"github.com/go-git/go-git/v6"
 	"github.com/go-git/go-git/v6/plumbing"
@@ -27,14 +30,16 @@ import (
 const (
 	stepCodeCheckout = "code-checkout"
 	stepImageBuild   = "image-build"
+	stepImagePush    = "image-push"
 	stepServiceApply = "service-apply"
 )
 
 type repoDeployTaskData struct {
 	*taskData
-	CredSetting  *entity.Setting
-	CheckoutPath string
-	RepoURLInfo  *vcsurl.VCS
+	CredSetting   *entity.Setting
+	CheckoutPath  string
+	RepoURLInfo   *vcsurl.VCS
+	RegAuthHeader string
 }
 
 func (e *Executor) deployFromRepo(
@@ -46,7 +51,7 @@ func (e *Executor) deployFromRepo(
 	data.OnCommand(func(cmd base.TaskCommand, args ...any) { e.onRepoDeployCommand(ctx, data, cmd, args...) })
 
 	// 0. Prepare
-	err := e.repoDeployStepPrepare(ctx, db, data)
+	err := e.repoDeployStepPrepare(ctx, data)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -76,19 +81,29 @@ func (e *Executor) deployFromRepo(
 		return nil
 	}
 
-	// 3. Pre-deployment command execution
+	// 3. Push image to a registry if configured
+	err = e.repoDeployStepImagePush(ctx, data)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	if data.IsCanceled() {
+		return nil
+	}
+
+	// 4. Pre-deployment command execution
 	err = e.deployStepExecCmd(ctx, data.taskData, true)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	// 4. Apply image to service
+	// 5. Apply image to service
 	err = e.repoDeployStepServiceApply(ctx, data)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	// 5. Post-deployment command execution
+	// 6. Post-deployment command execution
 	err = e.deployStepExecCmd(ctx, data.taskData, false)
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -168,7 +183,10 @@ func (e *Executor) repoDeployStepImageBuild(
 	// TODO: check dockerfile existence
 	dockerfile := gofn.Coalesce(repoSource.DockerfilePath, "Dockerfile")
 
-	imageTags := e.calcBuildImageTags(repoSource.ImageTags, data)
+	imageTags, err := e.calcBuildImageTags(repoSource.ImageTags, data)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
 	data.DeploymentOutput.ImageTags = imageTags
 
 	envVars, err := e.calcBuildEnvVars(ctx, db, data)
@@ -204,16 +222,70 @@ func (e *Executor) repoDeployStepImageBuild(
 	logsChan, _ := docker.StartScanningJSONMsg(ctx, resp.Body, batchrecvchan.Options{})
 	for msgs := range logsChan {
 		for _, msg := range msgs {
+			frameCreator := applog.NewOutFrame
 			if msg.Error != nil {
 				err = errors.Join(err, msg.Error)
-				_ = data.LogStore.Add(ctx, applog.NewErrFrame(msg.String(), applog.TsNow))
-			} else {
-				_ = data.LogStore.Add(ctx, applog.NewOutFrame(msg.String(), applog.TsNow))
+				frameCreator = applog.NewErrFrame
+			}
+			if msg.String() != "" {
+				_ = data.LogStore.Add(ctx, frameCreator(msg.String(), applog.TsNow))
 			}
 		}
 	}
 	if err != nil {
 		return apperrors.Wrap(err)
+	}
+
+	return nil
+}
+
+func (e *Executor) repoDeployStepImagePush(
+	ctx context.Context,
+	data *repoDeployTaskData,
+) (err error) {
+	deployment := data.Deployment
+	repoSource := deployment.Settings.RepoSource
+	if repoSource.PushToRegistry.ID == "" {
+		return nil
+	}
+	data.Step = stepImagePush
+
+	e.addStepStartLog(ctx, data.taskData, "Start pushing image to registry...")
+	defer e.addStepEndLog(ctx, data.taskData, timeutil.NowUTC(), err)
+
+	regAuth := data.RefSettingMap[repoSource.PushToRegistry.ID]
+	data.RegAuthHeader, err = regAuth.MustAsRegistryAuth().GenerateAuthHeader()
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	for _, tag := range data.DeploymentOutput.ImageTags {
+		if !strings.Contains(tag, "/") { // only push tag containing `/` in it
+			continue
+		}
+		logsReader, err := e.dockerManager.ImagePush(ctx, tag, func(options *image.PushOptions) {
+			options.RegistryAuth = data.RegAuthHeader
+		})
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+
+		logsChan, _ := docker.StartScanningJSONMsg(ctx, logsReader, batchrecvchan.Options{})
+		for msgs := range logsChan {
+			for _, msg := range msgs {
+				frameCreator := applog.NewOutFrame
+				if msg.Error != nil {
+					err = errors.Join(err, msg.Error)
+					frameCreator = applog.NewErrFrame
+				}
+				if msg.String() != "" {
+					_ = data.LogStore.Add(ctx, frameCreator(msg.String(), applog.TsNow))
+				}
+			}
+		}
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
 
 	return nil
@@ -244,7 +316,10 @@ func (e *Executor) repoDeployStepServiceApply(
 		docker.ApplyServiceCommand(contSpec, *deployment.Settings.Command)
 	}
 
-	_, err = e.dockerManager.ServiceUpdate(ctx, data.App.ServiceID, &service.Version, spec)
+	_, err = e.dockerManager.ServiceUpdate(ctx, data.App.ServiceID, &service.Version, spec,
+		func(options *swarm.ServiceUpdateOptions) {
+			options.EncodedRegistryAuth = data.RegAuthHeader
+		})
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -253,21 +328,15 @@ func (e *Executor) repoDeployStepServiceApply(
 }
 
 func (e *Executor) repoDeployStepPrepare(
-	ctx context.Context,
-	db database.Tx,
+	_ context.Context,
 	data *repoDeployTaskData,
 ) (err error) {
 	deployment := data.Deployment
 	repoSource := deployment.Settings.RepoSource
 
 	// Loads repo credentials (github app, git token, ssh key) if configured
-	settingID := repoSource.Credentials.ID
-	if settingID != "" {
-		setting, err := e.settingRepo.GetByID(ctx, db, "", settingID, true)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
-		data.CredSetting = setting
+	if repoSource.Credentials.ID != "" {
+		data.CredSetting = data.RefSettingMap[repoSource.Credentials.ID]
 	}
 
 	// Creates checkout dir

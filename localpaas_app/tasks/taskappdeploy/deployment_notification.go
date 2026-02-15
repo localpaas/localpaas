@@ -78,8 +78,6 @@ func (e *Executor) buildDeploymentNotifMsgData(
 		}
 	case base.DeploymentMethodImage:
 		msgData.Image = deployment.Settings.ImageSource.Image
-	case base.DeploymentMethodTarball:
-		msgData.SourceArchive = "source tarball" // TODO: update this
 	}
 }
 

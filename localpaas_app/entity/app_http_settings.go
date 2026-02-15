@@ -72,12 +72,12 @@ func (s *AppHttpSettings) GetType() base.SettingType {
 
 func (s *AppHttpSettings) GetRefSettingIDs() []string {
 	res := make([]string, 0, 5) //nolint
-	res = append(res, s.GetInUseSSLCertIDs()...)
-	res = append(res, s.GetInUseBasicAuthIDs()...)
+	res = append(res, s.GetSSLCertIDs()...)
+	res = append(res, s.GetBasicAuthIDs()...)
 	return res
 }
 
-func (s *AppHttpSettings) GetInUseSSLCertIDs() (res []string) {
+func (s *AppHttpSettings) GetSSLCertIDs() (res []string) {
 	for _, domain := range s.Domains {
 		if !domain.Enabled {
 			continue
@@ -90,7 +90,7 @@ func (s *AppHttpSettings) GetInUseSSLCertIDs() (res []string) {
 	return
 }
 
-func (s *AppHttpSettings) GetInUseBasicAuthIDs() (res []string) {
+func (s *AppHttpSettings) GetBasicAuthIDs() (res []string) {
 	for _, domain := range s.Domains {
 		if !domain.Enabled {
 			continue

@@ -53,7 +53,7 @@ type Setting struct {
 	BelongToUser    *User    `bun:"rel:belongs-to,join:object_id=id"`
 	BelongToProject *Project `bun:"rel:belongs-to,join:object_id=id"`
 	BelongToApp     *App     `bun:"rel:belongs-to,join:object_id=id"`
-	Tasks           []*Task  `bun:"rel:has-many,join:id=job_id"`
+	Tasks           []*Task  `bun:"rel:has-many,join:id=target_id"`
 
 	// NOTE: temporary fields
 	parsedData      SettingData
@@ -139,6 +139,9 @@ func (s *Setting) GetRefSettingIDs() ([]string, error) {
 	settingData, err := s.Parse()
 	if err != nil {
 		return nil, apperrors.Wrap(err)
+	}
+	if settingData == nil {
+		return nil, nil
 	}
 	return settingData.GetRefSettingIDs(), nil
 }

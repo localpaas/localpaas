@@ -18,10 +18,6 @@ import (
 	"github.com/localpaas/localpaas/services/git/github"
 )
 
-const (
-	maxImageNameLen = 200
-)
-
 func (e *Executor) calcGitAuthMethod(
 	ctx context.Context,
 	data *repoDeployTaskData,
@@ -76,21 +72,35 @@ func (e *Executor) calcGitAuthMethod(
 func (e *Executor) calcBuildImageTags(
 	imageTags []string,
 	data *repoDeployTaskData,
-) []string {
+) ([]string, error) {
 	if len(imageTags) > 0 {
-		return imageTags
+		return imageTags, nil
 	}
 
-	appKey := data.App.Key
-	if len(appKey) > maxImageNameLen {
-		appKey = appKey[:maxImageNameLen]
+	imageName := data.Deployment.Settings.RepoSource.ImageName
+	if imageName == "" || imageName == "auto" {
+		imageName = data.App.GetAutoImageName()
 	}
 
 	commitHashPortion := data.DeploymentOutput.CommitHash[:7]
-	imageTags = append(imageTags, fmt.Sprintf("%s:latest", appKey),
-		fmt.Sprintf("%s:%s", appKey, commitHashPortion))
+	tagCurrent := fmt.Sprintf("%s:%s", imageName, commitHashPortion)
 
-	return imageTags
+	// If `pushToRegistry` is set in the settings, need to prepend the registry domain and
+	// username to the tags.
+	// E.g. `app_name:latest` will likely become `docker.io/username/app_name:latest`
+	repoSource := data.Deployment.Settings.RepoSource
+	if repoSource.PushToRegistry.ID != "" {
+		regAuthSetting := data.RefSettingMap[repoSource.PushToRegistry.ID]
+		if regAuthSetting == nil {
+			return nil, apperrors.NewMissing("Registry auth to push image")
+		}
+		regAuth := regAuthSetting.MustAsRegistryAuth()
+		tagCurrentWithReg := regAuth.Address + "/" + regAuth.Username + "/" + tagCurrent
+		imageTags = append(imageTags, tagCurrentWithReg)
+	}
+
+	imageTags = append(imageTags, tagCurrent)
+	return imageTags, nil
 }
 
 func (e *Executor) calcBuildEnvVars(

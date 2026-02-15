@@ -17027,9 +17027,9 @@
         "x-enum-varnames" : [ "CronJobTypeContainerCommand" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.DeploymentMethod" : {
-        "enum" : [ "image", "repo", "tarball" ],
+        "enum" : [ "image", "repo" ],
         "type" : "string",
-        "x-enum-varnames" : [ "DeploymentMethodImage", "DeploymentMethodRepo", "DeploymentMethodTarball" ]
+        "x-enum-varnames" : [ "DeploymentMethodImage", "DeploymentMethodRepo" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.DeploymentStatus" : {
         "enum" : [ "not-started", "in-progress", "canceled", "done", "failed" ],
@@ -17366,14 +17366,11 @@
           "repoSource" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.DeploymentRepoSource"
           },
-          "tarballSource" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.DeploymentTarballSource"
-          },
           "workingDir" : {
             "type" : "string"
           }
         },
-        "required" : [ "activeMethod", "imageSource", "repoSource", "tarballSource" ],
+        "required" : [ "activeMethod", "imageSource", "repoSource" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_entity.DeploymentImageSource" : {
@@ -17404,13 +17401,16 @@
             "description" : "for BuildToolDockerfile only",
             "type" : "string"
           },
+          "imageName" : {
+            "type" : "string"
+          },
           "imageTags" : {
             "items" : {
               "type" : "string"
             },
             "type" : "array"
           },
-          "registryAuth" : {
+          "pushToRegistry" : {
             "type" : "string"
           },
           "repoRef" : {
@@ -17424,10 +17424,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "buildTool", "credentials", "dockerfilePath", "imageTags", "registryAuth", "repoRef", "repoType", "repoURL" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_entity.DeploymentTarballSource" : {
+        "required" : [ "buildTool", "credentials", "dockerfilePath", "imageName", "imageTags", "pushToRegistry", "repoRef", "repoType", "repoURL" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_entity.EmailHTTPFieldMapping" : {
@@ -17839,13 +17836,16 @@
           "enabled" : {
             "type" : "boolean"
           },
+          "imageName" : {
+            "type" : "string"
+          },
           "imageTags" : {
             "items" : {
               "type" : "string"
             },
             "type" : "array"
           },
-          "registryAuth" : {
+          "pushToRegistry" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
           },
           "repoRef" : {
@@ -17859,7 +17859,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "buildTool", "credentials", "dockerfilePath", "enabled", "imageTags", "registryAuth", "repoRef", "repoType", "repoURL" ],
+        "required" : [ "buildTool", "credentials", "dockerfilePath", "enabled", "imageName", "imageTags", "pushToRegistry", "repoRef", "repoType", "repoURL" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentRepoSourceResp" : {
@@ -17874,13 +17874,16 @@
             "description" : "for BuildToolDockerfile only",
             "type" : "string"
           },
+          "imageName" : {
+            "type" : "string"
+          },
           "imageTags" : {
             "items" : {
               "type" : "string"
             },
             "type" : "array"
           },
-          "registryAuth" : {
+          "pushToRegistry" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
           },
           "repoRef" : {
@@ -17894,7 +17897,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "buildTool", "credentials", "dockerfilePath", "imageTags", "registryAuth", "repoRef", "repoType", "repoURL" ],
+        "required" : [ "buildTool", "credentials", "dockerfilePath", "imageName", "imageTags", "pushToRegistry", "repoRef", "repoType", "repoURL" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentSettingsResp" : {
@@ -17917,9 +17920,6 @@
           "repoSource" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentRepoSourceResp"
           },
-          "tarballSource" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentTarballSourceResp"
-          },
           "updateVer" : {
             "type" : "integer"
           },
@@ -17928,18 +17928,6 @@
           }
         },
         "required" : [ "activeMethod", "updateVer" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentTarballSourceReq" : {
-        "properties" : {
-          "enabled" : {
-            "type" : "boolean"
-          }
-        },
-        "required" : [ "enabled" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentTarballSourceResp" : {
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DomainReq" : {
@@ -18344,9 +18332,6 @@
           "repoSource" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentRepoSourceReq"
           },
-          "tarballSource" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentTarballSourceReq"
-          },
           "updateVer" : {
             "type" : "integer"
           },
@@ -18354,7 +18339,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "activeMethod", "command", "imageSource", "postDeploymentCommand", "preDeploymentCommand", "repoSource", "tarballSource", "updateVer", "workingDir" ],
+        "required" : [ "activeMethod", "command", "imageSource", "postDeploymentCommand", "preDeploymentCommand", "repoSource", "updateVer", "workingDir" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.UpdateAppDeploymentSettingsResp" : {
@@ -22840,11 +22825,14 @@
           "password" : {
             "type" : "string"
           },
+          "readonly" : {
+            "type" : "boolean"
+          },
           "username" : {
             "type" : "string"
           }
         },
-        "required" : [ "address", "availableInProjects", "default", "name", "password", "username" ],
+        "required" : [ "address", "availableInProjects", "default", "name", "password", "readonly", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.CreateRegistryAuthResp" : {
@@ -22927,6 +22915,9 @@
           "password" : {
             "type" : "string"
           },
+          "readonly" : {
+            "type" : "boolean"
+          },
           "secretMasked" : {
             "type" : "boolean"
           },
@@ -22946,7 +22937,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "address", "createdAt", "id", "name", "password", "status", "type", "updateVer", "updatedAt", "username" ],
+        "required" : [ "address", "createdAt", "id", "name", "password", "readonly", "status", "type", "updateVer", "updatedAt", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.TestRegistryAuthConnReq" : {
@@ -22960,11 +22951,14 @@
           "password" : {
             "type" : "string"
           },
+          "readonly" : {
+            "type" : "boolean"
+          },
           "username" : {
             "type" : "string"
           }
         },
-        "required" : [ "address", "name", "password", "username" ],
+        "required" : [ "address", "name", "password", "readonly", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.TestRegistryAuthConnResp" : {
@@ -23023,6 +23017,9 @@
           "password" : {
             "type" : "string"
           },
+          "readonly" : {
+            "type" : "boolean"
+          },
           "updateVer" : {
             "type" : "integer"
           },
@@ -23030,7 +23027,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "address", "availableInProjects", "default", "name", "password", "updateVer", "username" ],
+        "required" : [ "address", "availableInProjects", "default", "name", "password", "readonly", "updateVer", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_registryauthuc_registryauthdto.UpdateRegistryAuthResp" : {
@@ -24776,12 +24773,9 @@
           },
           "repoSource" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.DeploymentRepoSourceReq"
-          },
-          "tarballSource" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.DeploymentTarballSourceReq"
           }
         },
-        "required" : [ "activeMethod", "deploymentTriggerID", "imageSource", "repoSource", "tarballSource" ],
+        "required" : [ "activeMethod", "deploymentTriggerID", "imageSource", "repoSource" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.DeployAppResp" : {
@@ -24823,9 +24817,6 @@
           }
         },
         "required" : [ "dockerfilePath", "imageTags", "repoRef" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.DeploymentTarballSourceReq" : {
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.HandleRepoWebhookReq" : {

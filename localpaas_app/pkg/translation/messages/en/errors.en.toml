@@ -65,6 +65,7 @@ ERR_PROJECT_INACTIVE = "Project '{{.Name}}' is inactive"
 
 # App errors
 ERR_APP_INACTIVE = "App '{{.Name}}' is inactive"
+ERR_MULTI_NODE_CLUSTER_REQUIRE_REGISTRY_FOR_IMAGES = "Multi-node cluster reuquires an accessible registry for the built images"
 
 # Infra errors
 ERR_INFRA = "{{.Error}}"

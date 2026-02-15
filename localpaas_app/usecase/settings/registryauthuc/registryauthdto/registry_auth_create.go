@@ -25,6 +25,7 @@ type RegistryAuthBaseReq struct {
 	Address  string `json:"address"`
 	Username string `json:"username"`
 	Password string `json:"password"`
+	Readonly bool   `json:"readonly"`
 }
 
 func (req *RegistryAuthBaseReq) ToEntity() *entity.RegistryAuth {
@@ -32,6 +33,7 @@ func (req *RegistryAuthBaseReq) ToEntity() *entity.RegistryAuth {
 		Username: req.Username,
 		Password: entity.NewEncryptedField(req.Password),
 		Address:  req.Address,
+		Readonly: req.Readonly,
 	}
 }
 

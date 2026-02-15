@@ -101,11 +101,20 @@ func (uc *AppUC) loadAppDeploymentSettingsForUpdate(
 		data.CurrDeploymentSettings = settingData
 	}
 
-	// Normalize repo ref
 	if req.RepoSource != nil {
 		// Normalize repo type (currently supports git type only)
 		if req.RepoSource.RepoType == base.RepoTypeGit {
 			req.RepoSource.RepoRef = string(githelper.NormalizeRepoRef(req.RepoSource.RepoRef))
+		}
+
+		// When the cluster has multiple nodes, the result image must be pushed to a registry
+		// that can be accessed by all the nodes in the cluster.
+		isMultiNode, err := uc.clusterService.IsMultiNode(ctx)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+		if isMultiNode && req.RepoSource.PushToRegistry.ID == "" {
+			return apperrors.Wrap(apperrors.ErrMultiNodeClusterRequireRegistryForImages)
 		}
 	}
 
@@ -144,7 +153,7 @@ func (uc *AppUC) prepareUpdatingAppDeploymentSettings(
 	}
 
 	// Validation: Make sure all reference settings used in this deployment settings exist actively
-	_, err = uc.settingService.LoadReferenceSettings(ctx, db, nil, app, true, setting)
+	_, err = uc.settingService.LoadReferenceSettingsFor(ctx, db, nil, app, true, setting)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -186,12 +195,6 @@ func (uc *AppUC) buildNewAppDeploymentSettings(
 	}
 	if req.RepoSource != nil {
 		err := copier.Copy(&newDeploymentSettings.RepoSource, req.RepoSource)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-	}
-	if req.TarballSource != nil {
-		err := copier.Copy(&newDeploymentSettings.TarballSource, req.TarballSource)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

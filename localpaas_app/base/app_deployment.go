@@ -14,11 +14,10 @@ var (
 type DeploymentMethod string
 
 const (
-	DeploymentMethodImage   DeploymentMethod = `image`
-	DeploymentMethodRepo    DeploymentMethod = "repo"
-	DeploymentMethodTarball DeploymentMethod = "tarball"
+	DeploymentMethodImage DeploymentMethod = `image`
+	DeploymentMethodRepo  DeploymentMethod = "repo"
 )
 
 var (
-	AllDeploymentMethods = []DeploymentMethod{DeploymentMethodImage, DeploymentMethodRepo, DeploymentMethodTarball}
+	AllDeploymentMethods = []DeploymentMethod{DeploymentMethodImage, DeploymentMethodRepo}
 )

@@ -126,11 +126,9 @@ func (e *Executor) execute(
 	depSettings := data.Deployment.Settings
 	switch depSettings.ActiveMethod {
 	case base.DeploymentMethodImage:
-		depErr = e.deployFromImage(ctx, db, data)
+		depErr = e.deployFromImage(ctx, data)
 	case base.DeploymentMethodRepo:
 		depErr = e.deployFromRepo(ctx, db, data)
-	case base.DeploymentMethodTarball:
-		depErr = e.deployFromTarball(ctx, db, data)
 	}
 
 	data.Deployment.EndedAt = timeutil.NowUTC()
@@ -204,20 +202,27 @@ func (e *Executor) loadDeploymentData(
 	logStoreKey := fmt.Sprintf("task:%s:log", task.ID)
 	data.LogStore = applog.NewRemoteStore(logStoreKey, true, e.redisClient)
 
+	// Reference setting IDs to load
+	refSettingIDs := data.Deployment.Settings.GetRefSettingIDs()
+
 	// Load notification settings for the deployment
 	notifSetting, err := e.settingRepo.GetSingleByAppObject(ctx, db, base.SettingTypeAppNotification, data.App, true)
+	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
+		return apperrors.Wrap(err)
+	}
+	if notifSetting != nil {
+		data.NotifSettings = notifSetting.MustAsAppNotificationSettings()
+		if data.NotifSettings.HasDeploymentNotifSetting() {
+			refSettingIDs = append(refSettingIDs, data.NotifSettings.GetRefSettingIDs()...)
+		}
+	}
+
+	// Load reference settings
+	refSettingMap, err := e.settingService.LoadReferenceSettings(ctx, db, nil, data.App, true, refSettingIDs)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	data.NotifSettings = notifSetting.MustAsAppNotificationSettings()
-	// Load reference settings
-	if data.NotifSettings.HasDeploymentNotifSetting() {
-		refSettingMap, err := e.settingService.LoadReferenceSettings(ctx, db, nil, data.App, true, notifSetting)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
-		data.RefSettingMap = refSettingMap
-	}
+	data.RefSettingMap = refSettingMap
 
 	return nil
 }

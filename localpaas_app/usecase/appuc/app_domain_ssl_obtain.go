@@ -170,19 +170,19 @@ func (uc *AppUC) applyDomainSSL(
 		return apperrors.Wrap(err)
 	}
 
-	refSettingMap, err := uc.settingService.LoadReferenceSettings(ctx, db, nil, data.App, true,
+	refSettingMap, err := uc.settingService.LoadReferenceSettingsFor(ctx, db, nil, data.App, true,
 		data.HttpSettings)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	allSSLIDs := appHttpSettings.GetInUseSSLCertIDs()
+	allSSLIDs := appHttpSettings.GetSSLCertIDs()
 	err = uc.appService.EnsureSSLConfigFiles(allSSLIDs, false, refSettingMap)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	allBasicAuthIDs := appHttpSettings.GetInUseBasicAuthIDs()
+	allBasicAuthIDs := appHttpSettings.GetBasicAuthIDs()
 	err = uc.appService.EnsureBasicAuthConfigFiles(allBasicAuthIDs, false, refSettingMap)
 	if err != nil {
 		return apperrors.Wrap(err)

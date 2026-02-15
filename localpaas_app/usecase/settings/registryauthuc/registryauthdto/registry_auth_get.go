@@ -38,6 +38,7 @@ type RegistryAuthResp struct {
 	Address      string `json:"address"`
 	Username     string `json:"username"`
 	Password     string `json:"password"`
+	Readonly     bool   `json:"readonly"`
 	SecretMasked bool   `json:"secretMasked,omitempty"`
 }
 

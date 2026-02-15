@@ -18,11 +18,10 @@ const (
 type DeployAppReq struct {
 	AppToken string `json:"-"`
 
-	ImageSource         *DeploymentImageSourceReq   `json:"imageSource"`
-	RepoSource          *DeploymentRepoSourceReq    `json:"repoSource"`
-	TarballSource       *DeploymentTarballSourceReq `json:"tarballSource"`
-	ActiveMethod        base.DeploymentMethod       `json:"activeMethod"`
-	DeploymentTriggerID string                      `json:"deploymentTriggerID"`
+	ImageSource         *DeploymentImageSourceReq `json:"imageSource"`
+	RepoSource          *DeploymentRepoSourceReq  `json:"repoSource"`
+	ActiveMethod        base.DeploymentMethod     `json:"activeMethod"`
+	DeploymentTriggerID string                    `json:"deploymentTriggerID"`
 }
 
 func (req *DeployAppReq) ApplyTo(setting *entity.AppDeploymentSettings) error {
@@ -31,9 +30,6 @@ func (req *DeployAppReq) ApplyTo(setting *entity.AppDeploymentSettings) error {
 		return apperrors.Wrap(err)
 	}
 	if err := req.RepoSource.ApplyTo(setting.RepoSource); err != nil {
-		return apperrors.Wrap(err)
-	}
-	if err := req.TarballSource.ApplyTo(setting.TarballSource); err != nil {
 		return apperrors.Wrap(err)
 	}
 	return nil
@@ -95,26 +91,6 @@ func (req *DeploymentRepoSourceReq) validate(field string) (res []vld.Validator)
 	return res
 }
 
-type DeploymentTarballSourceReq struct {
-	// TODO: add implementation
-}
-
-func (req *DeploymentTarballSourceReq) ApplyTo(setting *entity.DeploymentTarballSource) error {
-	// TODO: add implementation
-	return nil
-}
-
-// nolint
-func (req *DeploymentTarballSourceReq) validate(field string) (res []vld.Validator) {
-	if req == nil {
-		return
-	}
-	if field != "" {
-		field += "."
-	}
-	return res
-}
-
 func NewDeployAppReq() *DeployAppReq {
 	return &DeployAppReq{}
 }
@@ -128,7 +104,6 @@ func (req *DeployAppReq) Validate() apperrors.ValidationErrors {
 		base.AllDeploymentMethods, "activeMethod")...)
 	validators = append(validators, req.ImageSource.validate("imageSource")...)
 	validators = append(validators, req.RepoSource.validate("repoSource")...)
-	validators = append(validators, req.TarballSource.validate("tarballSource")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 

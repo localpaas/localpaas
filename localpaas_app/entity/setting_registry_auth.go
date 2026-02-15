@@ -25,6 +25,7 @@ type RegistryAuth struct {
 	Username string         `json:"username"`
 	Password EncryptedField `json:"password"`
 	Address  string         `json:"address"`
+	Readonly bool           `json:"readonly,omitempty"`
 }
 
 func (s *RegistryAuth) GetType() base.SettingType {
