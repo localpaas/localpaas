@@ -84,8 +84,7 @@ func (req *NotificationBaseReq) validate(field string) (res []vld.Validator) {
 	if field != "" {
 		field += "."
 	}
-	res = append(res, basedto.ValidateStr(&req.Name, true, 1,
-		base.SettingNameMaxLen, field+"name")...)
+	res = append(res, basedto.ValidateStr(&req.Name, true, 1, base.SettingNameMaxLen, field+"name")...)
 	return res
 }
 

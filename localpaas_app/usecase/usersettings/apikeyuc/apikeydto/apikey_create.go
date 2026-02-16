@@ -13,7 +13,6 @@ import (
 )
 
 const (
-	nameMaxLength     = 50
 	expirationYearMax = 1
 )
 
@@ -32,8 +31,8 @@ func NewCreateAPIKeyReq() *CreateAPIKeyReq {
 func (req *CreateAPIKeyReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	timeNow := timeutil.NowUTC()
-	validators = append(validators, basedto.ValidateStr(&req.Name, true, 1, nameMaxLength,
-		"name")...)
+	validators = append(validators, basedto.ValidateStr(&req.Name, true, 1,
+		base.SettingNameMaxLen, "name")...)
 	validators = append(validators, basedto.ValidateTime(&req.ExpireAt, false, timeNow,
 		timeNow.AddDate(expirationYearMax, 0, 0), "expireAt")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))

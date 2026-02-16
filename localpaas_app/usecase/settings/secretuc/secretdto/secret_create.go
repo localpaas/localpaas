@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	secretKeyMaxLen   = 1000
+	secretKeyMaxLen   = 200
 	secretValueMaxLen = 10 * 1024 * 1024 // 10MB
 )
 

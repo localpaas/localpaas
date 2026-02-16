@@ -4,9 +4,14 @@ import (
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
+)
+
+const (
+	maxKeyLen = 100
 )
 
 type CreateAWSS3Req struct {
@@ -35,11 +40,11 @@ func (req *AWSS3BaseReq) validate(field string) (res []vld.Validator) {
 	if field != "" {
 		field += "."
 	}
-	res = append(res, validateAWSS3Name(&req.Name, true, field+"name")...)
-	res = append(res, basedto.ValidateObjectIDReq(&req.Cred, true, "cred")...)
-	res = append(res, basedto.ValidateStr(&req.Region, false, 1, maxKeyLen, "region")...)
-	res = append(res, basedto.ValidateStr(&req.Bucket, false, 1, maxKeyLen, "bucket")...)
-	res = append(res, basedto.ValidateStr(&req.Endpoint, false, 1, maxKeyLen, "endpoint")...)
+	res = append(res, basedto.ValidateStr(&req.Name, true, 1, base.SettingNameMaxLen, field+"name")...)
+	res = append(res, basedto.ValidateObjectIDReq(&req.Cred, true, field+"cred")...)
+	res = append(res, basedto.ValidateStr(&req.Region, false, 1, maxKeyLen, field+"region")...)
+	res = append(res, basedto.ValidateStr(&req.Bucket, false, 1, maxKeyLen, field+"bucket")...)
+	res = append(res, basedto.ValidateStr(&req.Endpoint, false, 1, maxKeyLen, field+"endpoint")...)
 	return res
 }
 

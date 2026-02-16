@@ -6,13 +6,16 @@ import (
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
 const (
-	nameMaxLen = 100
+	addressMaxLen  = 100
+	usernameMaxLen = 100
+	passwordMaxLen = 64
 )
 
 type CreateRegistryAuthReq struct {
@@ -48,10 +51,10 @@ func (req *RegistryAuthBaseReq) validate(field string) (res []vld.Validator) {
 	if field != "" {
 		field += "."
 	}
-	res = append(res, basedto.ValidateStr(&req.Name, true, 1, nameMaxLen, field+"name")...)
-	res = append(res, basedto.ValidateStr(&req.Address, true, 1, nameMaxLen, field+"address")...)
-	res = append(res, basedto.ValidateStr(&req.Username, true, 1, nameMaxLen, field+"username")...)
-	res = append(res, basedto.ValidateStr(&req.Password, true, 1, nameMaxLen, field+"password")...)
+	res = append(res, basedto.ValidateStr(&req.Name, true, 1, base.SettingNameMaxLen, field+"name")...)
+	res = append(res, basedto.ValidateStr(&req.Address, true, 1, addressMaxLen, field+"address")...)
+	res = append(res, basedto.ValidateStr(&req.Username, true, 1, usernameMaxLen, field+"username")...)
+	res = append(res, basedto.ValidateStr(&req.Password, true, 1, passwordMaxLen, field+"password")...)
 	return res
 }
 

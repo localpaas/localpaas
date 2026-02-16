@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	nameMaxLen = 100
-	keyMaxLen  = 10000
+	keyMaxLen      = 10000
+	providerMaxLen = 100
 )
 
 type CreateSSLReq struct {
@@ -52,10 +52,10 @@ func (req *SSLBaseReq) validate(field string) (res []vld.Validator) {
 	if field != "" {
 		field += "."
 	}
-	res = append(res, basedto.ValidateStr(&req.Name, true, 1, nameMaxLen, field+"name")...)
+	res = append(res, basedto.ValidateStr(&req.Name, true, 1, base.SettingNameMaxLen, field+"name")...)
 	res = append(res, basedto.ValidateStr(&req.Certificate, true, 1, keyMaxLen, field+"certificate")...)
 	res = append(res, basedto.ValidateStr(&req.PrivateKey, true, 1, keyMaxLen, field+"privateKey")...)
-	res = append(res, basedto.ValidateStr(&req.Provider, false, 1, nameMaxLen, field+"provider")...)
+	res = append(res, basedto.ValidateStr(&req.Provider, false, 1, providerMaxLen, field+"provider")...)
 	res = append(res, basedto.ValidateEmail(&req.Email, false, field+"email")...)
 	return res
 }

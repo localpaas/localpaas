@@ -4,9 +4,15 @@ import (
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
+)
+
+const (
+	maxKeyLen        = 1000
+	maxPassphraseLen = 200
 )
 
 type CreateSSHKeyReq struct {
@@ -31,9 +37,9 @@ func (req *SSHKeyBaseReq) validate(field string) (res []vld.Validator) {
 	if field != "" {
 		field += "."
 	}
-	res = append(res, validateSSHKeyName(&req.Name, true, field+"name")...)
-	res = append(res, basedto.ValidateStr(&req.PrivateKey, true, 1, maxKeyLen, "privateKey")...)
-	res = append(res, basedto.ValidateStr(&req.Passphrase, false, 1, maxNameLen, "passphrase")...)
+	res = append(res, basedto.ValidateStr(&req.Name, true, 1, base.SettingNameMaxLen, field+"privateKey")...)
+	res = append(res, basedto.ValidateStr(&req.PrivateKey, true, 1, maxKeyLen, field+"privateKey")...)
+	res = append(res, basedto.ValidateStr(&req.Passphrase, false, 1, maxPassphraseLen, field+"passphrase")...)
 	return res
 }
 

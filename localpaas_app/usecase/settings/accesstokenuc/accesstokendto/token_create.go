@@ -14,7 +14,6 @@ import (
 )
 
 const (
-	nameMaxLen  = 100
 	tokenMaxLen = 500
 	urlMaxLen   = 200
 )
@@ -54,9 +53,9 @@ func (req *AccessTokenBaseReq) validate(field string) (res []vld.Validator) {
 		field += "."
 	}
 	res = append(res, basedto.ValidateStrIn(&req.Kind, true, base.AllTokenKinds, field+"kind")...)
-	res = append(res, basedto.ValidateStr(&req.Name, true, 1, nameMaxLen, field+"name")...)
+	res = append(res, basedto.ValidateStr(&req.Name, true, 1, base.SettingNameMaxLen, field+"name")...)
 	res = append(res, basedto.ValidateStr(&req.Token, true, 1, tokenMaxLen, field+"token")...)
-	res = append(res, basedto.ValidateStr(&req.User, false, 1, nameMaxLen, field+"user")...)
+	res = append(res, basedto.ValidateStr(&req.User, false, 1, base.SettingNameMaxLen, field+"user")...)
 	res = append(res, basedto.ValidateStr(&req.BaseURL, false, 1, urlMaxLen, field+"baseURL")...)
 	return res
 }

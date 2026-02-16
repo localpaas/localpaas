@@ -11,8 +11,7 @@ import (
 )
 
 const (
-	webhookNameMaxLen   = 100
-	webhookSecretMaxLen = 200
+	webhookSecretMaxLen = 100
 )
 
 type CreateRepoWebhookReq struct {
@@ -37,7 +36,7 @@ func (req *RepoWebhookBaseReq) validate(field string) (res []vld.Validator) {
 	if field != "" {
 		field += "."
 	}
-	res = append(res, basedto.ValidateStr(&req.Name, true, 1, webhookNameMaxLen, field+"name")...)
+	res = append(res, basedto.ValidateStr(&req.Name, true, 1, base.SettingNameMaxLen, field+"name")...)
 	res = append(res, basedto.ValidateStrIn(&req.Kind, true, base.AllWebhookKinds, field+"kind")...)
 	res = append(res, basedto.ValidateStr(&req.Secret, true, 1, webhookSecretMaxLen, field+"secret")...)
 	return res
