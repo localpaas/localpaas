@@ -9,8 +9,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/entityutil"
 )
 
 type ListSettingReq struct {
@@ -27,8 +27,9 @@ func (req *ListSettingReq) Validate() (validators []vld.Validator) {
 }
 
 type ListSettingResp struct {
-	Meta *basedto.ListMeta `json:"meta"`
-	Data []*entity.Setting `json:"data"`
+	Meta       *basedto.ListMeta
+	Data       []*entity.Setting
+	RefObjects *entity.RefObjects
 }
 
 type ListSettingData struct {
@@ -84,29 +85,47 @@ func (uc *BaseSettingUC) ListSetting(
 		return nil, apperrors.Wrap(err)
 	}
 
-	refIDs := make([]string, 0)
 	for _, setting := range settings {
 		setting.CurrentObjectID = req.ObjectID
+	}
+
+	refObjects := &entity.RefObjects{}
+	err = uc.loadRefObjects(ctx, uc.DB, &req.BaseSettingReq, settings, refObjects)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	return &ListSettingResp{
+		Meta:       &basedto.ListMeta{Page: paging},
+		Data:       settings,
+		RefObjects: refObjects,
+	}, nil
+}
+
+func (uc *BaseSettingUC) loadRefObjects(
+	ctx context.Context,
+	db database.IDB,
+	req *BaseSettingReq,
+	settings []*entity.Setting,
+	ref *entity.RefObjects,
+) (err error) {
+	refIDs := make([]string, 0)
+	for _, setting := range settings {
 		refIDs = append(refIDs, setting.MustGetRefSettingIDs()...)
 	}
 
 	if len(refIDs) > 0 {
-		refSettings, err := uc.loadSettingByIDs(ctx, db, &req.BaseSettingReq, refIDs, false)
+		refSettings, err := uc.loadSettingByIDs(ctx, db, req, refIDs, false)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return apperrors.Wrap(err)
 		}
-		settingMap := entityutil.SliceToIDMap(refSettings)
-		for _, setting := range settings {
-			for _, refID := range setting.MustGetRefSettingIDs() {
-				if s := settingMap[refID]; s != nil {
-					setting.RefSettings = append(setting.RefSettings, s)
-				}
-			}
+		if ref.RefSettings == nil {
+			ref.RefSettings = make(map[string]*entity.Setting, len(refSettings))
+		}
+		for _, refSetting := range refSettings {
+			ref.RefSettings[refSetting.ID] = refSetting
 		}
 	}
 
-	return &ListSettingResp{
-		Meta: &basedto.ListMeta{Page: paging},
-		Data: settings,
-	}, nil
+	return nil
 }

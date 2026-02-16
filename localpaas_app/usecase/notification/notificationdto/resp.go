@@ -38,7 +38,7 @@ type DiscordNotifSettingResp struct {
 
 func TransformDefaultTargetNotifSetting(
 	setting *entity.DefaultTargetNotifSetting,
-	refSettingMap map[string]*entity.Setting,
+	refObjects *entity.RefObjects,
 ) (resp *DefaultTargetNotifSettingResp, err error) {
 	if setting == nil {
 		return nil, nil
@@ -47,15 +47,15 @@ func TransformDefaultTargetNotifSetting(
 		return nil, apperrors.Wrap(err)
 	}
 	if setting.ViaEmail != nil {
-		itemResp, _ := settings.TransformSettingBase(refSettingMap[setting.ViaEmail.Sender.ID])
+		itemResp, _ := settings.TransformSettingBase(refObjects.RefSettings[setting.ViaEmail.Sender.ID])
 		resp.ViaEmail.Sender = itemResp
 	}
 	if setting.ViaSlack != nil {
-		itemResp, _ := settings.TransformSettingBase(refSettingMap[setting.ViaSlack.Webhook.ID])
+		itemResp, _ := settings.TransformSettingBase(refObjects.RefSettings[setting.ViaSlack.Webhook.ID])
 		resp.ViaSlack.Webhook = itemResp
 	}
 	if setting.ViaDiscord != nil {
-		itemResp, _ := settings.TransformSettingBase(refSettingMap[setting.ViaDiscord.Webhook.ID])
+		itemResp, _ := settings.TransformSettingBase(refObjects.RefSettings[setting.ViaDiscord.Webhook.ID])
 		resp.ViaDiscord.Webhook = itemResp
 	}
 	return resp, nil
@@ -63,17 +63,17 @@ func TransformDefaultTargetNotifSetting(
 
 func TransformDefaultResultNotifSetting(
 	setting *entity.DefaultResultNotifSetting,
-	refSettingMap map[string]*entity.Setting,
+	refObjects *entity.RefObjects,
 ) (resp *DefaultResultNotifSettingResp, err error) {
 	if setting == nil {
 		return nil, nil
 	}
 	resp = &DefaultResultNotifSettingResp{}
-	resp.Success, err = TransformDefaultTargetNotifSetting(setting.Success, refSettingMap)
+	resp.Success, err = TransformDefaultTargetNotifSetting(setting.Success, refObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	resp.Failure, err = TransformDefaultTargetNotifSetting(setting.Failure, refSettingMap)
+	resp.Failure, err = TransformDefaultTargetNotifSetting(setting.Failure, refObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

@@ -20,7 +20,7 @@ func (uc *BasicAuthUC) ListBasicAuth(
 		return nil, apperrors.Wrap(err)
 	}
 
-	respData, err := basicauthdto.TransformBasicAuths(resp.Data)
+	respData, err := basicauthdto.TransformBasicAuths(resp.Data, resp.RefObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

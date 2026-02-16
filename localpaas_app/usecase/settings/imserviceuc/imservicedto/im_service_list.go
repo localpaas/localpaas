@@ -35,10 +35,13 @@ type ListIMServiceResp struct {
 	Data []*IMServiceResp  `json:"data"`
 }
 
-func TransformIMServices(settings []*entity.Setting) (resp []*IMServiceResp, err error) {
+func TransformIMServices(
+	settings []*entity.Setting,
+	refObjects *entity.RefObjects,
+) (resp []*IMServiceResp, err error) {
 	resp = make([]*IMServiceResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformIMService(setting)
+		item, err := TransformIMService(setting, refObjects)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

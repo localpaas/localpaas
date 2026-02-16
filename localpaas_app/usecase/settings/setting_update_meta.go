@@ -114,7 +114,7 @@ func (uc *BaseSettingUC) loadSettingForUpdateMeta(
 	loadOpts = append(loadOpts, data.ExtraLoadOpts...)
 
 	setting, err := uc.loadSettingByID(ctx, db, &req.BaseSettingReq, req.ID,
-		false, false, loadOpts...)
+		false, loadOpts...)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

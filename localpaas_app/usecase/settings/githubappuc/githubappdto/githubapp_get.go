@@ -58,15 +58,22 @@ func (resp *GithubAppResp) CopyPrivateKey(field entity.EncryptedField) error {
 	return nil
 }
 
-func TransformGithubApp(setting *entity.Setting, baseCallbackURL string, objectID string) (
-	resp *GithubAppResp, err error) {
+type GithubAppTransformInput struct {
+	RefObjects      *entity.RefObjects
+	BaseCallbackURL string
+}
+
+func TransformGithubApp(
+	setting *entity.Setting,
+	input *GithubAppTransformInput,
+) (resp *GithubAppResp, err error) {
 	config := setting.MustAsGithubApp()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
 	// Recalculate callbackURL for the github-app as it depends on the actual server address
-	resp.CallbackURL = baseCallbackURL + "/" + setting.ID
+	resp.CallbackURL = input.BaseCallbackURL + "/" + setting.ID
 	resp.SecretMasked = config.ClientSecret.IsEncrypted()
 	if resp.SecretMasked {
 		resp.ClientSecret = maskedSecret

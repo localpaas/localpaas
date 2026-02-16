@@ -45,7 +45,10 @@ func (resp *BasicAuthResp) CopyPassword(field entity.EncryptedField) error {
 	return nil
 }
 
-func TransformBasicAuth(setting *entity.Setting) (resp *BasicAuthResp, err error) {
+func TransformBasicAuth(
+	setting *entity.Setting,
+	_ *entity.RefObjects,
+) (resp *BasicAuthResp, err error) {
 	config := setting.MustAsBasicAuth()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)

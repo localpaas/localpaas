@@ -25,8 +25,7 @@ func (uc *CronJobUC) GetCronJobTaskLogs(
 	req *cronjobdto.GetCronJobTaskLogsReq,
 ) (*cronjobdto.GetCronJobTaskLogsResp, error) {
 	req.Type = currentSettingType
-	jobSetting, err := uc.GetSettingByID(ctx, uc.DB, &req.BaseSettingReq, req.JobID,
-		false, false,
+	jobSetting, err := uc.GetSettingByID(ctx, uc.DB, &req.BaseSettingReq, req.JobID, false,
 		bunex.SelectRelation("Tasks", bunex.SelectWhere("task.id = ?", req.TaskID)),
 	)
 	if err != nil {

@@ -41,7 +41,10 @@ type SecretResp struct {
 	Key string `json:"key"`
 }
 
-func TransformSecret(setting *entity.Setting) (resp *SecretResp, err error) {
+func TransformSecret(
+	setting *entity.Setting,
+	_ *entity.RefObjects,
+) (resp *SecretResp, err error) {
 	secret := setting.MustAsSecret()
 	if err = copier.Copy(&resp, &secret); err != nil {
 		return nil, apperrors.Wrap(err)
@@ -55,10 +58,13 @@ func TransformSecret(setting *entity.Setting) (resp *SecretResp, err error) {
 	return resp, nil
 }
 
-func TransformSecrets(settings []*entity.Setting) (resp []*SecretResp, err error) {
+func TransformSecrets(
+	settings []*entity.Setting,
+	refObjects *entity.RefObjects,
+) (resp []*SecretResp, err error) {
 	resp = make([]*SecretResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformSecret(setting)
+		item, err := TransformSecret(setting, refObjects)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

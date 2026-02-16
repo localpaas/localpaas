@@ -43,6 +43,7 @@ const (
 	ResourceTypeRepoWebhook  ResourceType = "repo-webhook"
 	ResourceTypeSysError     ResourceType = "sys-error"
 	ResourceTypeTask         ResourceType = "task"
+	ResourceTypeNotification ResourceType = "notification"
 )
 
 type ResourceModule string

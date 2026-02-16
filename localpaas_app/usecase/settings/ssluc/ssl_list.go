@@ -20,7 +20,7 @@ func (uc *SSLUC) ListSSL(
 		return nil, apperrors.Wrap(err)
 	}
 
-	respData, err := ssldto.TransformSSLs(resp.Data)
+	respData, err := ssldto.TransformSSLs(resp.Data, resp.RefObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

@@ -15,18 +15,18 @@ func (uc *SSLUC) GetSSL(
 	req *ssldto.GetSSLReq,
 ) (*ssldto.GetSSLResp, error) {
 	req.Type = currentSettingType
-	setting, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
+	resp, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	setting.MustAsSSL().MustDecrypt()
-	resp, err := ssldto.TransformSSL(setting)
+	resp.Data.MustAsSSL().MustDecrypt()
+	respData, err := ssldto.TransformSSL(resp.Data, resp.RefObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
 	return &ssldto.GetSSLResp{
-		Data: resp,
+		Data: respData,
 	}, nil
 }

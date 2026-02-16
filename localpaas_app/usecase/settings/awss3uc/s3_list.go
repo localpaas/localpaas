@@ -20,7 +20,7 @@ func (uc *AWSS3UC) ListAWSS3(
 		return nil, apperrors.Wrap(err)
 	}
 
-	respData, err := awss3dto.TransformAWSS3s(resp.Data)
+	respData, err := awss3dto.TransformAWSS3s(resp.Data, resp.RefObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

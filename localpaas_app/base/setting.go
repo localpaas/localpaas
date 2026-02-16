@@ -27,6 +27,7 @@ const (
 	SettingTypeHealthcheck     SettingType = "healthcheck"
 	SettingTypeEmail           SettingType = "email"
 	SettingTypeRepoWebhook     SettingType = "repo-webhook"
+	SettingTypeNotification    SettingType = "notification"
 )
 
 var (
@@ -58,4 +59,8 @@ const (
 	SettingScopeUser
 	SettingScopeProject
 	SettingScopeApp
+)
+
+const (
+	SettingNameMaxLen = 100
 )

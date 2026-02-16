@@ -46,7 +46,10 @@ func (resp *AccessTokenResp) CopyToken(field entity.EncryptedField) error {
 	return nil
 }
 
-func TransformAccessToken(setting *entity.Setting) (resp *AccessTokenResp, err error) {
+func TransformAccessToken(
+	setting *entity.Setting,
+	_ *entity.RefObjects,
+) (resp *AccessTokenResp, err error) {
 	config := setting.MustAsAccessToken()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)

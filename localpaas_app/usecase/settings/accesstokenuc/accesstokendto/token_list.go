@@ -35,10 +35,13 @@ type ListAccessTokenResp struct {
 	Data []*AccessTokenResp `json:"data"`
 }
 
-func TransformAccessTokens(settings []*entity.Setting) (resp []*AccessTokenResp, err error) {
+func TransformAccessTokens(
+	settings []*entity.Setting,
+	refObjects *entity.RefObjects,
+) (resp []*AccessTokenResp, err error) {
 	resp = make([]*AccessTokenResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformAccessToken(setting)
+		item, err := TransformAccessToken(setting, refObjects)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

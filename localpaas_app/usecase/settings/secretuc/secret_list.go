@@ -20,7 +20,7 @@ func (uc *SecretUC) ListSecret(
 		return nil, apperrors.Wrap(err)
 	}
 
-	respData, err := secretdto.TransformSecrets(resp.Data)
+	respData, err := secretdto.TransformSecrets(resp.Data, resp.RefObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

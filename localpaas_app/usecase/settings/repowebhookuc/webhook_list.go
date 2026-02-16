@@ -20,7 +20,7 @@ func (uc *RepoWebhookUC) ListRepoWebhook(
 		return nil, apperrors.Wrap(err)
 	}
 
-	respData, err := repowebhookdto.TransformRepoWebhooks(resp.Data)
+	respData, err := repowebhookdto.TransformRepoWebhooks(resp.Data, resp.RefObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

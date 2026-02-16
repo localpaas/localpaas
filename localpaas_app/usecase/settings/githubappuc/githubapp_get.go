@@ -16,18 +16,22 @@ func (uc *GithubAppUC) GetGithubApp(
 	req *githubappdto.GetGithubAppReq,
 ) (*githubappdto.GetGithubAppResp, error) {
 	req.Type = currentSettingType
-	setting, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
+	resp, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	setting.MustAsGithubApp().MustDecrypt()
-	resp, err := githubappdto.TransformGithubApp(setting, config.Current.SsoBaseCallbackURL(), req.ObjectID)
+	resp.Data.MustAsGithubApp().MustDecrypt()
+	input := &githubappdto.GithubAppTransformInput{
+		RefObjects:      resp.RefObjects,
+		BaseCallbackURL: config.Current.SsoBaseCallbackURL(),
+	}
+	respData, err := githubappdto.TransformGithubApp(resp.Data, input)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
 	return &githubappdto.GetGithubAppResp{
-		Data: resp,
+		Data: respData,
 	}, nil
 }

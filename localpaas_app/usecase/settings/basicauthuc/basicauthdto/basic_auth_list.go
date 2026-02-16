@@ -35,10 +35,13 @@ type ListBasicAuthResp struct {
 	Data []*BasicAuthResp  `json:"data"`
 }
 
-func TransformBasicAuths(settings []*entity.Setting) (resp []*BasicAuthResp, err error) {
+func TransformBasicAuths(
+	settings []*entity.Setting,
+	refObjects *entity.RefObjects,
+) (resp []*BasicAuthResp, err error) {
 	resp = make([]*BasicAuthResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformBasicAuth(setting)
+		item, err := TransformBasicAuth(setting, refObjects)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

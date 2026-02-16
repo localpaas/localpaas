@@ -35,10 +35,13 @@ type ListEmailResp struct {
 	Data []*EmailResp      `json:"data"`
 }
 
-func TransformEmails(settings []*entity.Setting) (resp []*EmailResp, err error) {
+func TransformEmails(
+	settings []*entity.Setting,
+	refObjects *entity.RefObjects,
+) (resp []*EmailResp, err error) {
 	resp = make([]*EmailResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformEmail(setting)
+		item, err := TransformEmail(setting, refObjects)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

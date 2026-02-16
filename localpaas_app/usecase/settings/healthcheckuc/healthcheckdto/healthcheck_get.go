@@ -62,13 +62,9 @@ type HealthcheckGRPCResp struct {
 	ReturnStatus base.HealthcheckGRPCStatus  `json:"returnStatus"`
 }
 
-type HealthcheckTransformInput struct {
-	RefSettingMap map[string]*entity.Setting
-}
-
 func TransformHealthcheck(
 	setting *entity.Setting,
-	input *HealthcheckTransformInput,
+	refObjects *entity.RefObjects,
 ) (resp *HealthcheckResp, err error) {
 	config := setting.MustAsHealthcheck()
 	if err = copier.Copy(&resp, config); err != nil {
@@ -81,7 +77,7 @@ func TransformHealthcheck(
 	}
 
 	resp.Notification, err = notificationdto.TransformDefaultResultNotifSetting(
-		config.Notification, input.RefSettingMap)
+		config.Notification, refObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

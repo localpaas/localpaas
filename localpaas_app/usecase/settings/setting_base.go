@@ -44,7 +44,6 @@ func (uc *BaseSettingUC) loadSettingByID(
 	req *BaseSettingReq,
 	id string,
 	requireActive bool, //nolint:unparam
-	loadRefSettings bool,
 	opts ...bunex.SelectQueryOption,
 ) (setting *entity.Setting, err error) {
 	loadOpts := append([]bunex.SelectQueryOption{}, opts...)
@@ -64,13 +63,6 @@ func (uc *BaseSettingUC) loadSettingByID(
 	}
 	if err != nil {
 		return nil, apperrors.Wrap(err)
-	}
-
-	if loadRefSettings && setting != nil {
-		setting.RefSettings, err = uc.loadSettingByIDs(ctx, db, req, setting.MustGetRefSettingIDs(), requireActive)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
 	}
 
 	return setting, nil

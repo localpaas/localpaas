@@ -15,18 +15,18 @@ func (uc *RepoWebhookUC) GetRepoWebhook(
 	req *repowebhookdto.GetRepoWebhookReq,
 ) (*repowebhookdto.GetRepoWebhookResp, error) {
 	req.Type = currentSettingType
-	setting, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
+	resp, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	setting.MustAsRepoWebhook().MustDecrypt()
-	resp, err := repowebhookdto.TransformRepoWebhook(setting)
+	resp.Data.MustAsRepoWebhook().MustDecrypt()
+	respData, err := repowebhookdto.TransformRepoWebhook(resp.Data, resp.RefObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
 	return &repowebhookdto.GetRepoWebhookResp{
-		Data: resp,
+		Data: respData,
 	}, nil
 }

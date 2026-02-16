@@ -151,5 +151,15 @@ func (s *HTTPServer) registerSettingRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		cronJobGroup.DELETE("/:itemID", s.handlerRegistry.settingHandler.DeleteCronJob)
 	}
 
+	{ // notification group
+		notificationGroup := settingGroup.Group("/notifications")
+		notificationGroup.GET("/:itemID", s.handlerRegistry.settingHandler.GetNotification)
+		notificationGroup.GET("", s.handlerRegistry.settingHandler.ListNotification)
+		notificationGroup.POST("", s.handlerRegistry.settingHandler.CreateNotification)
+		notificationGroup.PUT("/:itemID", s.handlerRegistry.settingHandler.UpdateNotification)
+		notificationGroup.PUT("/:itemID/meta", s.handlerRegistry.settingHandler.UpdateNotificationMeta)
+		notificationGroup.DELETE("/:itemID", s.handlerRegistry.settingHandler.DeleteNotification)
+	}
+
 	return settingGroup
 }

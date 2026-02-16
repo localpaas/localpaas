@@ -160,5 +160,15 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		repoWebhookGroup.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteRepoWebhook)
 	}
 
+	{ // Notification group
+		notificationGroup := projectGroup.Group("/notifications")
+		notificationGroup.GET("/:itemID", s.handlerRegistry.projectHandler.GetNotification)
+		notificationGroup.GET("", s.handlerRegistry.projectHandler.ListNotification)
+		notificationGroup.POST("", s.handlerRegistry.projectHandler.CreateNotification)
+		notificationGroup.PUT("/:itemID", s.handlerRegistry.projectHandler.UpdateNotification)
+		notificationGroup.PUT("/:itemID/meta", s.handlerRegistry.projectHandler.UpdateNotificationMeta)
+		notificationGroup.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteNotification)
+	}
+
 	return projectGroup
 }

@@ -20,7 +20,7 @@ func (uc *IMServiceUC) ListIMService(
 		return nil, apperrors.Wrap(err)
 	}
 
-	respData, err := imservicedto.TransformIMServices(resp.Data)
+	respData, err := imservicedto.TransformIMServices(resp.Data, resp.RefObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

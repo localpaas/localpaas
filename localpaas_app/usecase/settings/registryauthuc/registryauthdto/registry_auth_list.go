@@ -35,10 +35,13 @@ type ListRegistryAuthResp struct {
 	Data []*RegistryAuthResp `json:"data"`
 }
 
-func TransformRegistryAuths(settings []*entity.Setting) (resp []*RegistryAuthResp, err error) {
+func TransformRegistryAuths(
+	settings []*entity.Setting,
+	refObjects *entity.RefObjects,
+) (resp []*RegistryAuthResp, err error) {
 	resp = make([]*RegistryAuthResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformRegistryAuth(setting)
+		item, err := TransformRegistryAuth(setting, refObjects)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

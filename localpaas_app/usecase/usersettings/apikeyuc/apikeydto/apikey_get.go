@@ -36,7 +36,10 @@ type APIKeyResp struct {
 	AccessAction base.AccessActions `json:"accessAction"`
 }
 
-func TransformAPIKey(setting *entity.Setting) (resp *APIKeyResp, err error) {
+func TransformAPIKey(
+	setting *entity.Setting,
+	_ *entity.RefObjects,
+) (resp *APIKeyResp, err error) {
 	apiKey := setting.MustAsAPIKey()
 	if err = copier.Copy(&resp, apiKey); err != nil {
 		return nil, apperrors.Wrap(err)

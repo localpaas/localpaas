@@ -20,7 +20,7 @@ func (uc *EmailUC) ListEmail(
 		return nil, apperrors.Wrap(err)
 	}
 
-	respData, err := emaildto.TransformEmails(resp.Data)
+	respData, err := emaildto.TransformEmails(resp.Data, resp.RefObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

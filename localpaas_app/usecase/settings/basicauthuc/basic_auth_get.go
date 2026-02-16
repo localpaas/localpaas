@@ -15,18 +15,18 @@ func (uc *BasicAuthUC) GetBasicAuth(
 	req *basicauthdto.GetBasicAuthReq,
 ) (*basicauthdto.GetBasicAuthResp, error) {
 	req.Type = currentSettingType
-	setting, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
+	resp, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	setting.MustAsBasicAuth().MustDecrypt()
-	resp, err := basicauthdto.TransformBasicAuth(setting)
+	resp.Data.MustAsBasicAuth().MustDecrypt()
+	respData, err := basicauthdto.TransformBasicAuth(resp.Data, resp.RefObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
 	return &basicauthdto.GetBasicAuthResp{
-		Data: resp,
+		Data: respData,
 	}, nil
 }

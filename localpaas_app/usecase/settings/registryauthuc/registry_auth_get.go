@@ -15,18 +15,18 @@ func (uc *RegistryAuthUC) GetRegistryAuth(
 	req *registryauthdto.GetRegistryAuthReq,
 ) (*registryauthdto.GetRegistryAuthResp, error) {
 	req.Type = currentSettingType
-	setting, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
+	resp, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	setting.MustAsRegistryAuth().MustDecrypt()
-	resp, err := registryauthdto.TransformRegistryAuth(setting)
+	resp.Data.MustAsRegistryAuth().MustDecrypt()
+	respData, err := registryauthdto.TransformRegistryAuth(resp.Data, resp.RefObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
 	return &registryauthdto.GetRegistryAuthResp{
-		Data: resp,
+		Data: respData,
 	}, nil
 }

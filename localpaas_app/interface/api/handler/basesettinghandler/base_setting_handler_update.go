@@ -17,6 +17,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc/githubappdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/healthcheckuc/healthcheckdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc/imservicedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/notificationuc/notificationdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc/oauthdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/registryauthuc/registryauthdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/repowebhookuc/repowebhookdto"
@@ -151,6 +152,11 @@ func (h *BaseSettingHandler) UpdateSetting(
 		r := repowebhookdto.NewUpdateRepoWebhookReq()
 		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.RepoWebhookUC.UpdateRepoWebhook(reqCtx, auth, r) }
+
+	case base.ResourceTypeNotification:
+		r := notificationdto.NewUpdateNotificationReq()
+		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
+		req, ucFunc = r, func() (any, error) { return h.NotificationUC.UpdateNotification(reqCtx, auth, r) }
 	}
 	if err != nil {
 		h.RenderError(ctx, err)

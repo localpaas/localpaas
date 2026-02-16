@@ -82,7 +82,10 @@ func (resp *EmailGmailAPIKeyResp) CopyPassword(field entity.EncryptedField) erro
 	return nil
 }
 
-func TransformEmail(setting *entity.Setting) (resp *EmailResp, err error) {
+func TransformEmail(
+	setting *entity.Setting,
+	_ *entity.RefObjects,
+) (resp *EmailResp, err error) {
 	config := setting.MustAsEmail()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)

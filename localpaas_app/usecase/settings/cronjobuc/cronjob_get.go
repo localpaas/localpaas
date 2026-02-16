@@ -16,23 +16,25 @@ func (uc *CronJobUC) GetCronJob(
 	req *cronjobdto.GetCronJobReq,
 ) (*cronjobdto.GetCronJobResp, error) {
 	req.Type = currentSettingType
-	setting, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
+	resp, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	input := &cronjobdto.CronJobTransformInput{}
-	err = uc.loadReferenceData(ctx, uc.DB, []*entity.Setting{setting}, input)
+	input := &cronjobdto.CronJobTransformInput{
+		RefObjects: resp.RefObjects,
+	}
+	err = uc.loadReferenceData(ctx, uc.DB, []*entity.Setting{resp.Data}, input)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := cronjobdto.TransformCronJob(setting, input)
+	respData, err := cronjobdto.TransformCronJob(resp.Data, input)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
 	return &cronjobdto.GetCronJobResp{
-		Data: resp,
+		Data: respData,
 	}, nil
 }

@@ -36,7 +36,10 @@ type RepoWebhookResp struct {
 	Secret string           `json:"secret"`
 }
 
-func TransformRepoWebhook(setting *entity.Setting) (resp *RepoWebhookResp, err error) {
+func TransformRepoWebhook(
+	setting *entity.Setting,
+	_ *entity.RefObjects,
+) (resp *RepoWebhookResp, err error) {
 	config := setting.MustAsRepoWebhook()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)

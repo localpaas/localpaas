@@ -50,7 +50,10 @@ func (resp *SSHKeyResp) CopyPassphrase(field entity.EncryptedField) error {
 	return nil
 }
 
-func TransformSSHKey(setting *entity.Setting) (resp *SSHKeyResp, err error) {
+func TransformSSHKey(
+	setting *entity.Setting,
+	_ *entity.RefObjects,
+) (resp *SSHKeyResp, err error) {
 	sshKey := setting.MustAsSSHKey()
 	if err = copier.Copy(&resp, &sshKey); err != nil {
 		return nil, apperrors.Wrap(err)

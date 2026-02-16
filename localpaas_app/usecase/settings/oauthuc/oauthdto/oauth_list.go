@@ -38,10 +38,13 @@ type ListOAuthResp struct {
 	Data []*OAuthResp      `json:"data"`
 }
 
-func TransformOAuths(settings []*entity.Setting, baseCallbackURL string, objectID string) ([]*OAuthResp, error) {
+func TransformOAuths(
+	settings []*entity.Setting,
+	input *OAuthTransformInput,
+) ([]*OAuthResp, error) {
 	resp := make([]*OAuthResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformOAuth(setting, baseCallbackURL, objectID)
+		item, err := TransformOAuth(setting, input)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

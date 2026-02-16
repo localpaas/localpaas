@@ -7,7 +7,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/entityutil"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/awsuc/awsdto"
 )
@@ -41,18 +40,18 @@ type AWSS3Resp struct {
 	SecretMasked bool            `json:"secretMasked,omitempty"`
 }
 
-func TransformAWSS3(setting *entity.Setting) (resp *AWSS3Resp, err error) {
+func TransformAWSS3(
+	setting *entity.Setting,
+	refObjects *entity.RefObjects,
+) (resp *AWSS3Resp, err error) {
 	config := setting.MustAsAWSS3()
 	if err = copier.Copy(&resp, &config); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	refAWS := entityutil.FindByID(setting.RefSettings, config.Cred.ID)
-	if refAWS != nil {
-		resp.Cred, err = awsdto.TransformAWS(refAWS)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
+	resp.Cred, err = awsdto.TransformAWS(refObjects.RefSettings[config.Cred.ID], refObjects)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
 	}
 	resp.SecretMasked = resp.Cred.SecretMasked
 

@@ -20,7 +20,7 @@ func (uc *AccessTokenUC) ListAccessToken(
 		return nil, apperrors.Wrap(err)
 	}
 
-	respData, err := accesstokendto.TransformAccessTokens(resp.Data)
+	respData, err := accesstokendto.TransformAccessTokens(resp.Data, resp.RefObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

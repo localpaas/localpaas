@@ -57,8 +57,7 @@ type Setting struct {
 
 	// NOTE: temporary fields
 	parsedData      SettingData
-	CurrentObjectID string     `bun:"-"`
-	RefSettings     []*Setting `bun:"-"`
+	CurrentObjectID string `bun:"-"`
 }
 
 type SettingData interface {

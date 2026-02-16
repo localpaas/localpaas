@@ -15,18 +15,18 @@ func (uc *AWSUC) GetAWS(
 	req *awsdto.GetAWSReq,
 ) (*awsdto.GetAWSResp, error) {
 	req.Type = currentSettingType
-	setting, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
+	resp, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	setting.MustAsAWS().MustDecrypt()
-	resp, err := awsdto.TransformAWS(setting)
+	resp.Data.MustAsAWS().MustDecrypt()
+	respData, err := awsdto.TransformAWS(resp.Data, resp.RefObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
 	return &awsdto.GetAWSResp{
-		Data: resp,
+		Data: respData,
 	}, nil
 }

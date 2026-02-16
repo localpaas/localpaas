@@ -15,18 +15,18 @@ func (uc *IMServiceUC) GetIMService(
 	req *imservicedto.GetIMServiceReq,
 ) (*imservicedto.GetIMServiceResp, error) {
 	req.Type = currentSettingType
-	setting, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
+	resp, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	setting.MustAsIMService().MustDecrypt()
-	resp, err := imservicedto.TransformIMService(setting)
+	resp.Data.MustAsIMService().MustDecrypt()
+	respData, err := imservicedto.TransformIMService(resp.Data, resp.RefObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
 	return &imservicedto.GetIMServiceResp{
-		Data: resp,
+		Data: respData,
 	}, nil
 }

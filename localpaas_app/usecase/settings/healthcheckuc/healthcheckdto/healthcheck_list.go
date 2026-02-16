@@ -35,10 +35,13 @@ type ListHealthcheckResp struct {
 	Data []*HealthcheckResp `json:"data"`
 }
 
-func TransformHealthchecks(settings []*entity.Setting, input *HealthcheckTransformInput) ([]*HealthcheckResp, error) {
+func TransformHealthchecks(
+	settings []*entity.Setting,
+	refObjects *entity.RefObjects,
+) ([]*HealthcheckResp, error) {
 	resp := make([]*HealthcheckResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformHealthcheck(setting, input)
+		item, err := TransformHealthcheck(setting, refObjects)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

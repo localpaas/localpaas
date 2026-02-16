@@ -35,10 +35,13 @@ type ListSSLResp struct {
 	Data []*SSLResp        `json:"data"`
 }
 
-func TransformSSLs(settings []*entity.Setting) (resp []*SSLResp, err error) {
+func TransformSSLs(
+	settings []*entity.Setting,
+	refObjects *entity.RefObjects,
+) (resp []*SSLResp, err error) {
 	resp = make([]*SSLResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformSSL(setting)
+		item, err := TransformSSL(setting, refObjects)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

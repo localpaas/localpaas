@@ -15,18 +15,18 @@ func (uc *AWSS3UC) GetAWSS3(
 	req *awss3dto.GetAWSS3Req,
 ) (*awss3dto.GetAWSS3Resp, error) {
 	req.Type = currentSettingType
-	setting, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
+	resp, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	setting.MustAsAWSS3().MustDecrypt()
-	resp, err := awss3dto.TransformAWSS3(setting)
+	resp.Data.MustAsAWSS3().MustDecrypt()
+	respData, err := awss3dto.TransformAWSS3(resp.Data, resp.RefObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
 	return &awss3dto.GetAWSS3Resp{
-		Data: resp,
+		Data: respData,
 	}, nil
 }

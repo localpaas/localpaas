@@ -35,10 +35,13 @@ type ListRepoWebhookResp struct {
 	Data []*RepoWebhookResp `json:"data"`
 }
 
-func TransformRepoWebhooks(settings []*entity.Setting) (resp []*RepoWebhookResp, err error) {
+func TransformRepoWebhooks(
+	settings []*entity.Setting,
+	refObjects *entity.RefObjects,
+) (resp []*RepoWebhookResp, err error) {
 	resp = make([]*RepoWebhookResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformRepoWebhook(setting)
+		item, err := TransformRepoWebhook(setting, refObjects)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

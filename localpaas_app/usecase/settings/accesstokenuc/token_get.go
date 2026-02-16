@@ -15,18 +15,18 @@ func (uc *AccessTokenUC) GetAccessToken(
 	req *accesstokendto.GetAccessTokenReq,
 ) (*accesstokendto.GetAccessTokenResp, error) {
 	req.Type = currentSettingType
-	setting, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
+	resp, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	setting.MustAsAccessToken().MustDecrypt()
-	resp, err := accesstokendto.TransformAccessToken(setting)
+	resp.Data.MustAsAccessToken().MustDecrypt()
+	respData, err := accesstokendto.TransformAccessToken(resp.Data, resp.RefObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
 	return &accesstokendto.GetAccessTokenResp{
-		Data: resp,
+		Data: respData,
 	}, nil
 }

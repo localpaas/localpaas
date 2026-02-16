@@ -35,10 +35,13 @@ type ListAWSS3Resp struct {
 	Data []*AWSS3Resp      `json:"data"`
 }
 
-func TransformAWSS3s(settings []*entity.Setting) (resp []*AWSS3Resp, err error) {
+func TransformAWSS3s(
+	settings []*entity.Setting,
+	refObjects *entity.RefObjects,
+) (resp []*AWSS3Resp, err error) {
 	resp = make([]*AWSS3Resp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformAWSS3(setting)
+		item, err := TransformAWSS3(setting, refObjects)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

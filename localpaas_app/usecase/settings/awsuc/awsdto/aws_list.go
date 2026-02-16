@@ -35,10 +35,13 @@ type ListAWSResp struct {
 	Data []*AWSResp        `json:"data"`
 }
 
-func TransformAWSs(settings []*entity.Setting) (resp []*AWSResp, err error) {
+func TransformAWSs(
+	settings []*entity.Setting,
+	refObjects *entity.RefObjects,
+) (resp []*AWSResp, err error) {
 	resp = make([]*AWSResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformAWS(setting)
+		item, err := TransformAWS(setting, refObjects)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

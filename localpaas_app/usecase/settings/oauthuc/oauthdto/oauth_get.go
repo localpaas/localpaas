@@ -51,14 +51,22 @@ func (resp *OAuthResp) CopyClientSecret(field entity.EncryptedField) error {
 	return nil
 }
 
-func TransformOAuth(setting *entity.Setting, baseCallbackURL string, objectID string) (resp *OAuthResp, err error) {
+type OAuthTransformInput struct {
+	RefObjects      *entity.RefObjects
+	BaseCallbackURL string
+}
+
+func TransformOAuth(
+	setting *entity.Setting,
+	input *OAuthTransformInput,
+) (resp *OAuthResp, err error) {
 	config := setting.MustAsOAuth()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
 	// Recalculate callbackURL for the oauth as it depends on the actual server address
-	resp.CallbackURL = baseCallbackURL + "/" + setting.ID
+	resp.CallbackURL = input.BaseCallbackURL + "/" + setting.ID
 	resp.SecretMasked = config.ClientSecret.IsEncrypted()
 	if resp.SecretMasked {
 		resp.ClientSecret = maskedSecret

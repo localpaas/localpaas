@@ -60,7 +60,10 @@ func (resp *DiscordResp) CopyWebhook(field entity.EncryptedField) error {
 	return nil
 }
 
-func TransformIMService(setting *entity.Setting) (resp *IMServiceResp, err error) {
+func TransformIMService(
+	setting *entity.Setting,
+	_ *entity.RefObjects,
+) (resp *IMServiceResp, err error) {
 	config := setting.MustAsIMService()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)

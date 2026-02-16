@@ -20,7 +20,7 @@ func (uc *APIKeyUC) ListAPIKey(
 		return nil, apperrors.Wrap(err)
 	}
 
-	respData, err := apikeydto.TransformAPIKeys(resp.Data)
+	respData, err := apikeydto.TransformAPIKeys(resp.Data, resp.RefObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

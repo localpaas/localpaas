@@ -16,18 +16,22 @@ func (uc *OAuthUC) GetOAuth(
 	req *oauthdto.GetOAuthReq,
 ) (*oauthdto.GetOAuthResp, error) {
 	req.Type = currentSettingType
-	setting, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
+	resp, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	setting.MustAsOAuth().MustDecrypt()
-	resp, err := oauthdto.TransformOAuth(setting, config.Current.SsoBaseCallbackURL(), req.ObjectID)
+	resp.Data.MustAsOAuth().MustDecrypt()
+	input := &oauthdto.OAuthTransformInput{
+		RefObjects:      resp.RefObjects,
+		BaseCallbackURL: config.Current.SsoBaseCallbackURL(),
+	}
+	respData, err := oauthdto.TransformOAuth(resp.Data, input)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
 	return &oauthdto.GetOAuthResp{
-		Data: resp,
+		Data: respData,
 	}, nil
 }

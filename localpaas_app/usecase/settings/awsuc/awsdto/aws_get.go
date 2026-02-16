@@ -47,7 +47,14 @@ func (resp *AWSResp) CopySecretKey(field entity.EncryptedField) error {
 	return nil
 }
 
-func TransformAWS(setting *entity.Setting) (resp *AWSResp, err error) {
+func TransformAWS(
+	setting *entity.Setting,
+	_ *entity.RefObjects,
+) (resp *AWSResp, err error) {
+	if setting == nil {
+		return nil, nil
+	}
+
 	config := setting.MustAsAWS()
 	if err = copier.Copy(&resp, &config); err != nil {
 		return nil, apperrors.Wrap(err)

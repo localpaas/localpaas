@@ -20,7 +20,7 @@ func (uc *AWSUC) ListAWS(
 		return nil, apperrors.Wrap(err)
 	}
 
-	respData, err := awsdto.TransformAWSs(resp.Data)
+	respData, err := awsdto.TransformAWSs(resp.Data, resp.RefObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

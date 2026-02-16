@@ -26,7 +26,9 @@ func (uc *CronJobUC) ListCronJob(
 		return nil, apperrors.Wrap(err)
 	}
 
-	input := &cronjobdto.CronJobTransformInput{}
+	input := &cronjobdto.CronJobTransformInput{
+		RefObjects: resp.RefObjects,
+	}
 	err = uc.loadReferenceData(ctx, uc.DB, resp.Data, input)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -50,13 +52,11 @@ func (uc *CronJobUC) loadReferenceData(
 	input *cronjobdto.CronJobTransformInput,
 ) error {
 	appIDs := make([]string, 0)
-	settingIDs := make([]string, 0, 10) //nolint:mnd
 	for _, setting := range cronJobs {
 		cronJob := setting.MustAsCronJob()
 		if cronJob.App.ID != "" {
 			appIDs = append(appIDs, cronJob.App.ID)
 		}
-		settingIDs = append(settingIDs, cronJob.GetRefSettingIDs()...)
 	}
 
 	// Load reference apps
@@ -67,13 +67,6 @@ func (uc *CronJobUC) loadReferenceData(
 		return apperrors.Wrap(err)
 	}
 	input.AppMap = entityutil.SliceToIDMap(apps)
-
-	// Load reference settings
-	refSettings, err := uc.SettingRepo.ListByIDs(ctx, db, gofn.ToSet(settingIDs), true)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	input.RefSettingMap = entityutil.SliceToIDMap(refSettings)
 
 	return nil
 }

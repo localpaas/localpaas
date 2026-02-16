@@ -16,8 +16,7 @@ func (uc *CronJobUC) ExecuteCronJob(
 	req *cronjobdto.ExecuteCronJobReq,
 ) (*cronjobdto.ExecuteCronJobResp, error) {
 	req.Type = currentSettingType
-	setting, err := uc.GetSettingByID(ctx, uc.DB, &req.BaseSettingReq, req.ID,
-		true, false)
+	setting, err := uc.GetSettingByID(ctx, uc.DB, &req.BaseSettingReq, req.ID, true)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

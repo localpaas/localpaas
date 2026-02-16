@@ -16,8 +16,7 @@ func (uc *HealthcheckUC) ListHealthcheckTask(
 	req *healthcheckdto.ListHealthcheckTaskReq,
 ) (*healthcheckdto.ListHealthcheckTaskResp, error) {
 	req.Type = currentSettingType
-	jobSetting, err := uc.GetSettingByID(ctx, uc.DB, &req.BaseSettingReq, req.JobID,
-		false, false)
+	jobSetting, err := uc.GetSettingByID(ctx, uc.DB, &req.BaseSettingReq, req.JobID, false)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

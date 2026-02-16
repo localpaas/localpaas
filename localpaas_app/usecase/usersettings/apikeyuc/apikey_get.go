@@ -15,17 +15,17 @@ func (uc *APIKeyUC) GetAPIKey(
 	req *apikeydto.GetAPIKeyReq,
 ) (*apikeydto.GetAPIKeyResp, error) {
 	req.Type = currentSettingType
-	setting, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
+	resp, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := apikeydto.TransformAPIKey(setting)
+	respData, err := apikeydto.TransformAPIKey(resp.Data, resp.RefObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
 	return &apikeydto.GetAPIKeyResp{
-		Data: resp,
+		Data: respData,
 	}, nil
 }
