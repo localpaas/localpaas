@@ -7,12 +7,12 @@ type DefaultResultNotifSetting struct {
 	Failure *DefaultTargetNotifSetting `json:"failure,omitempty"`
 }
 
-func (s *DefaultResultNotifSetting) GetRefSettingIDs() (res []string) {
-	if s == nil {
-		return res
+func (s *DefaultResultNotifSetting) GetRefObjectIDs() *RefObjectIDs {
+	res := &RefObjectIDs{}
+	if s != nil {
+		res.AddRefIDs(s.Success.GetRefObjectIDs())
+		res.AddRefIDs(s.Failure.GetRefObjectIDs())
 	}
-	res = append(res, s.Success.GetRefSettingIDs()...)
-	res = append(res, s.Failure.GetRefSettingIDs()...)
 	return res
 }
 
@@ -45,13 +45,13 @@ type DefaultTargetNotifSetting struct {
 	MinSendInterval timeutil.Duration `json:"minSendInterval,omitempty"`
 }
 
-func (s *DefaultTargetNotifSetting) GetRefSettingIDs() (res []string) {
-	if s == nil {
-		return res
+func (s *DefaultTargetNotifSetting) GetRefObjectIDs() *RefObjectIDs {
+	res := &RefObjectIDs{}
+	if s != nil {
+		res.RefSettingIDs = append(res.RefSettingIDs, s.ViaEmail.GetRefSettingIDs()...)
+		res.RefSettingIDs = append(res.RefSettingIDs, s.ViaSlack.GetRefSettingIDs()...)
+		res.RefSettingIDs = append(res.RefSettingIDs, s.ViaDiscord.GetRefSettingIDs()...)
 	}
-	res = append(res, s.ViaEmail.GetRefSettingIDs()...)
-	res = append(res, s.ViaSlack.GetRefSettingIDs()...)
-	res = append(res, s.ViaDiscord.GetRefSettingIDs()...)
 	return res
 }
 

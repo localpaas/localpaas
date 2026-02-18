@@ -3,14 +3,8 @@ package cronjobuc
 import (
 	"context"
 
-	"github.com/tiendc/gofn"
-
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
-	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/entityutil"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc/cronjobdto"
 )
@@ -26,15 +20,7 @@ func (uc *CronJobUC) ListCronJob(
 		return nil, apperrors.Wrap(err)
 	}
 
-	input := &cronjobdto.CronJobTransformInput{
-		RefObjects: resp.RefObjects,
-	}
-	err = uc.loadReferenceData(ctx, uc.DB, resp.Data, input)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-
-	respData, err := cronjobdto.TransformCronJobs(resp.Data, input)
+	respData, err := cronjobdto.TransformCronJobs(resp.Data, resp.RefObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -43,30 +29,4 @@ func (uc *CronJobUC) ListCronJob(
 		Meta: resp.Meta,
 		Data: respData,
 	}, nil
-}
-
-func (uc *CronJobUC) loadReferenceData(
-	ctx context.Context,
-	db database.IDB,
-	cronJobs []*entity.Setting,
-	input *cronjobdto.CronJobTransformInput,
-) error {
-	appIDs := make([]string, 0)
-	for _, setting := range cronJobs {
-		cronJob := setting.MustAsCronJob()
-		if cronJob.App.ID != "" {
-			appIDs = append(appIDs, cronJob.App.ID)
-		}
-	}
-
-	// Load reference apps
-	apps, err := uc.appRepo.ListByIDs(ctx, db, "", gofn.ToSet(appIDs),
-		bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
-	)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	input.AppMap = entityutil.SliceToIDMap(apps)
-
-	return nil
 }

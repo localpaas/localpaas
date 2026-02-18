@@ -8,7 +8,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/notification/notificationdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
@@ -18,16 +17,16 @@ type CreateHealthcheckReq struct {
 }
 
 type HealthcheckBaseReq struct {
-	Name            string                                        `json:"name"`
-	HealthcheckType base.HealthcheckType                          `json:"healthcheckType"`
-	Interval        timeutil.Duration                             `json:"interval"`
-	MaxRetry        int                                           `json:"maxRetry"`
-	RetryDelay      timeutil.Duration                             `json:"retryDelay"`
-	Timeout         timeutil.Duration                             `json:"timeout"`
-	SaveResultTasks bool                                          `json:"saveResultTasks"`
-	REST            *HealthcheckRESTReq                           `json:"rest"`
-	GRPC            *HealthcheckGRPCReq                           `json:"grpc"`
-	Notification    *notificationdto.DefaultResultNotifSettingReq `json:"notification"`
+	Name            string                      `json:"name"`
+	HealthcheckType base.HealthcheckType        `json:"healthcheckType"`
+	Interval        timeutil.Duration           `json:"interval"`
+	MaxRetry        int                         `json:"maxRetry"`
+	RetryDelay      timeutil.Duration           `json:"retryDelay"`
+	Timeout         timeutil.Duration           `json:"timeout"`
+	SaveResultTasks bool                        `json:"saveResultTasks"`
+	REST            *HealthcheckRESTReq         `json:"rest"`
+	GRPC            *HealthcheckGRPCReq         `json:"grpc"`
+	Notification    *HealthcheckNotificationReq `json:"notification"`
 }
 
 func (req *HealthcheckBaseReq) ToEntity() *entity.Healthcheck {
@@ -85,6 +84,21 @@ func (req *HealthcheckGRPCReq) ToEntity() *entity.HealthcheckGRPC {
 		Addr:         req.Addr,
 		Service:      req.Service,
 		ReturnStatus: req.ReturnStatus,
+	}
+}
+
+type HealthcheckNotificationReq struct {
+	Success basedto.ObjectIDReq `json:"success"`
+	Failure basedto.ObjectIDReq `json:"failure"`
+}
+
+func (req *HealthcheckNotificationReq) ToEntity() *entity.HealthcheckNotification {
+	if req == nil {
+		return nil
+	}
+	return &entity.HealthcheckNotification{
+		Success: entity.ObjectID{ID: req.Success.ID},
+		Failure: entity.ObjectID{ID: req.Failure.ID},
 	}
 }
 

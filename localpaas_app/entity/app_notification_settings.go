@@ -27,9 +27,8 @@ func (s *AppNotificationSettings) GetType() base.SettingType {
 	return base.SettingTypeAppNotification
 }
 
-func (s *AppNotificationSettings) GetRefSettingIDs() (res []string) {
-	res = append(res, s.Deployment.GetRefSettingIDs()...)
-	return res
+func (s *AppNotificationSettings) GetRefObjectIDs() *RefObjectIDs {
+	return s.Deployment.GetRefObjectIDs()
 }
 
 func (s *AppNotificationSettings) HasDeploymentNotifSetting() bool {

@@ -36,8 +36,8 @@ func (s *IMService) GetType() base.SettingType {
 	return base.SettingTypeIMService
 }
 
-func (s *IMService) GetRefSettingIDs() []string {
-	return nil
+func (s *IMService) GetRefObjectIDs() *RefObjectIDs {
+	return &RefObjectIDs{}
 }
 
 func (s *IMService) MustDecrypt() *IMService {

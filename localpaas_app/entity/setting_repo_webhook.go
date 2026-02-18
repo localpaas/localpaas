@@ -28,8 +28,8 @@ func (s *RepoWebhook) GetType() base.SettingType {
 	return base.SettingTypeRepoWebhook
 }
 
-func (s *RepoWebhook) GetRefSettingIDs() []string {
-	return nil
+func (s *RepoWebhook) GetRefObjectIDs() *RefObjectIDs {
+	return &RefObjectIDs{}
 }
 
 func (s *RepoWebhook) MustDecrypt() *RepoWebhook {

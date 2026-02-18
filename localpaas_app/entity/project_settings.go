@@ -27,8 +27,8 @@ func (s *ProjectSettings) GetType() base.SettingType {
 	return base.SettingTypeProject
 }
 
-func (s *ProjectSettings) GetRefSettingIDs() []string {
-	return nil
+func (s *ProjectSettings) GetRefObjectIDs() *RefObjectIDs {
+	return &RefObjectIDs{}
 }
 
 func (s *Setting) AsProjectSettings() (*ProjectSettings, error) {

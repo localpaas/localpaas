@@ -31,8 +31,8 @@ func (s *SSL) GetType() base.SettingType {
 	return base.SettingTypeSSL
 }
 
-func (s *SSL) GetRefSettingIDs() []string {
-	return nil
+func (s *SSL) GetRefObjectIDs() *RefObjectIDs {
+	return &RefObjectIDs{}
 }
 
 func (s *SSL) MustDecrypt() *SSL {

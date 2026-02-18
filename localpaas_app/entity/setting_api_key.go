@@ -29,8 +29,8 @@ func (s *APIKey) GetType() base.SettingType {
 	return base.SettingTypeAPIKey
 }
 
-func (s *APIKey) GetRefSettingIDs() []string {
-	return nil
+func (s *APIKey) GetRefObjectIDs() *RefObjectIDs {
+	return &RefObjectIDs{}
 }
 
 func (s *Setting) AsAPIKey() (*APIKey, error) {

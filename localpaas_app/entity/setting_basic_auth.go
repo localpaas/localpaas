@@ -28,8 +28,8 @@ func (s *BasicAuth) GetType() base.SettingType {
 	return base.SettingTypeBasicAuth
 }
 
-func (s *BasicAuth) GetRefSettingIDs() []string {
-	return nil
+func (s *BasicAuth) GetRefObjectIDs() *RefObjectIDs {
+	return &RefObjectIDs{}
 }
 
 func (s *BasicAuth) MustDecrypt() *BasicAuth {

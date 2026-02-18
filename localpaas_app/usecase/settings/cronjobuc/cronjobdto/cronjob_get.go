@@ -68,14 +68,9 @@ type CronJobCommandArgResp struct {
 	Value string `json:"value"`
 }
 
-type CronJobTransformInput struct {
-	AppMap     map[string]*entity.App
-	RefObjects *entity.RefObjects
-}
-
 func TransformCronJob(
 	setting *entity.Setting,
-	input *CronJobTransformInput,
+	refObjects *entity.RefObjects,
 ) (resp *CronJobResp, err error) {
 	config := setting.MustAsCronJob()
 	if err = copier.Copy(&resp, config); err != nil {
@@ -88,14 +83,14 @@ func TransformCronJob(
 	}
 
 	if config.App.ID != "" {
-		refApp := input.AppMap[config.App.ID]
+		refApp := refObjects.RefApps[config.App.ID]
 		if err = copier.Copy(&resp.App, refApp); err != nil {
 			return nil, apperrors.Wrap(err)
 		}
 	}
 
 	resp.Notification, err = notificationdto.TransformDefaultResultNotifSetting(
-		config.Notification, input.RefObjects)
+		config.Notification, refObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

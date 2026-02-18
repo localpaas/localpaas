@@ -70,11 +70,10 @@ func (s *AppHttpSettings) GetType() base.SettingType {
 	return base.SettingTypeAppHttp
 }
 
-func (s *AppHttpSettings) GetRefSettingIDs() []string {
-	res := make([]string, 0, 5) //nolint
-	res = append(res, s.GetSSLCertIDs()...)
-	res = append(res, s.GetBasicAuthIDs()...)
-	return res
+func (s *AppHttpSettings) GetRefObjectIDs() *RefObjectIDs {
+	return &RefObjectIDs{
+		RefSettingIDs: gofn.Flatten(s.GetSSLCertIDs(), s.GetBasicAuthIDs()),
+	}
 }
 
 func (s *AppHttpSettings) GetSSLCertIDs() (res []string) {

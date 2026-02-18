@@ -34,8 +34,8 @@ func (s *EnvVars) GetType() base.SettingType {
 	return base.SettingTypeEnvVar
 }
 
-func (s *EnvVars) GetRefSettingIDs() []string {
-	return nil
+func (s *EnvVars) GetRefObjectIDs() *RefObjectIDs {
+	return &RefObjectIDs{}
 }
 
 func (s *Setting) AsEnvVars() (*EnvVars, error) {

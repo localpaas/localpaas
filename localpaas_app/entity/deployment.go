@@ -78,8 +78,8 @@ func (d *Deployment) GetDuration() time.Duration {
 	return d.EndedAt.Sub(d.StartedAt)
 }
 
-func (d *Deployment) GetRefSettingIDs() []string {
-	return d.Settings.GetRefSettingIDs()
+func (d *Deployment) GetRefObjectIDs() *RefObjectIDs {
+	return d.Settings.GetRefObjectIDs()
 }
 
 type AppDeploymentTrigger struct {

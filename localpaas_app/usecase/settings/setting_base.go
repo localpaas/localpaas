@@ -43,7 +43,7 @@ func (uc *BaseSettingUC) loadSettingByID(
 	db database.IDB,
 	req *BaseSettingReq,
 	id string,
-	requireActive bool, //nolint:unparam
+	requireActive bool,
 	opts ...bunex.SelectQueryOption,
 ) (setting *entity.Setting, err error) {
 	loadOpts := append([]bunex.SelectQueryOption{}, opts...)
@@ -60,48 +60,13 @@ func (uc *BaseSettingUC) loadSettingByID(
 	case base.SettingScopeUser:
 		setting, err = uc.SettingRepo.GetByIDAndUser(ctx, db, req.Type, id, req.ObjectID,
 			requireActive, loadOpts...)
+	case base.SettingScopeNone:
 	}
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
 	return setting, nil
-}
-
-func (uc *BaseSettingUC) loadSettingByIDs(
-	ctx context.Context,
-	db database.IDB,
-	req *BaseSettingReq,
-	ids []string,
-	requireActive bool, //nolint:unparam
-	opts ...bunex.SelectQueryOption,
-) (settings []*entity.Setting, err error) {
-	if len(ids) == 0 {
-		return nil, nil
-	}
-	loadOpts := []bunex.SelectQueryOption{
-		bunex.SelectWhere("setting.id IN (?)", bunex.In(ids)),
-	}
-	if requireActive {
-		loadOpts = append(loadOpts, bunex.SelectWhere("setting.status = ?", base.SettingStatusActive))
-	}
-	loadOpts = append(loadOpts, opts...)
-	switch req.Scope {
-	case base.SettingScopeGlobal:
-		loadOpts = append(loadOpts, bunex.SelectWhere("setting.object_id IS NULL"))
-		settings, _, err = uc.SettingRepo.List(ctx, db, nil, loadOpts...)
-	case base.SettingScopeProject:
-		settings, _, err = uc.SettingRepo.ListByProject(ctx, db, req.ObjectID, nil, loadOpts...)
-	case base.SettingScopeApp:
-		settings, _, err = uc.SettingRepo.ListByApp(ctx, db, req.ParentObjectID, req.ObjectID, nil, loadOpts...)
-	case base.SettingScopeUser:
-		settings, _, err = uc.SettingRepo.ListByUser(ctx, db, req.ObjectID, nil, loadOpts...)
-	}
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-
-	return settings, nil
 }
 
 func (uc *BaseSettingUC) checkNameConflict(
@@ -125,6 +90,7 @@ func (uc *BaseSettingUC) checkNameConflict(
 		setting, err = uc.SettingRepo.GetByNameAndApp(ctx, db, req.Type, name, req.ParentObjectID, req.ObjectID, false)
 	case base.SettingScopeUser:
 		setting, err = uc.SettingRepo.GetByNameAndUser(ctx, db, req.Type, name, req.ObjectID, false)
+	case base.SettingScopeNone:
 	}
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
@@ -163,6 +129,7 @@ func (uc *BaseSettingUC) checkRefSettingsExistence(
 		settings, _, err = uc.SettingRepo.ListByApp(ctx, db, req.ParentObjectID, req.ObjectID, nil, listOpts...)
 	case base.SettingScopeUser:
 		settings, _, err = uc.SettingRepo.ListByUser(ctx, db, req.ObjectID, nil, listOpts...)
+	case base.SettingScopeNone:
 	}
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -194,6 +161,7 @@ func (uc *BaseSettingUC) ensureSettingDefaultUniqueness(
 		opts = append(opts, bunex.UpdateWhere("setting.object_id = ?", req.ObjectID))
 	case base.SettingScopeUser:
 		opts = append(opts, bunex.UpdateWhere("setting.object_id = ?", req.ObjectID))
+	case base.SettingScopeNone:
 	}
 
 	err := uc.SettingRepo.UpdateClearDefaultFlag(ctx, db, req.Type, setting.ID, opts...)

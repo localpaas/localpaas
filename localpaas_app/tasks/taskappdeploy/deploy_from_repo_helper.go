@@ -90,7 +90,7 @@ func (e *Executor) calcBuildImageTags(
 	// E.g. `app_name:latest` will likely become `docker.io/username/app_name:latest`
 	repoSource := data.Deployment.Settings.RepoSource
 	if repoSource.PushToRegistry.ID != "" {
-		regAuthSetting := data.RefSettingMap[repoSource.PushToRegistry.ID]
+		regAuthSetting := data.RefObjects.RefSettings[repoSource.PushToRegistry.ID]
 		if regAuthSetting == nil {
 			return nil, apperrors.NewMissing("Registry auth to push image")
 		}

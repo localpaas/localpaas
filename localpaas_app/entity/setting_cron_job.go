@@ -66,10 +66,12 @@ func (s *CronJob) GetType() base.SettingType {
 	return base.SettingTypeCronJob
 }
 
-func (s *CronJob) GetRefSettingIDs() []string {
-	res := make([]string, 0, 5) //nolint
-	res = append(res, s.Notification.GetRefSettingIDs()...)
-	return res
+func (s *CronJob) GetRefObjectIDs() *RefObjectIDs {
+	refIDs := s.Notification.GetRefObjectIDs()
+	if s.App.ID != "" {
+		refIDs.RefAppIDs = append(refIDs.RefAppIDs, s.App.ID)
+	}
+	return refIDs
 }
 
 func (s *CronJob) ParseCronExpr() (cron.Schedule, error) {

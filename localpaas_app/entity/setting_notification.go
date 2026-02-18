@@ -27,25 +27,22 @@ type Notification struct {
 	MinSendInterval timeutil.Duration       `json:"minSendInterval,omitempty"`
 }
 
-func (s *Notification) GetRefSettingIDs() (res []string) {
-	if s == nil {
-		return res
+func (s *Notification) GetRefObjectIDs() *RefObjectIDs {
+	return &RefObjectIDs{
+		RefSettingIDs: gofn.Flatten(s.ViaEmail.GetRefSettingIDs(), s.ViaSlack.GetRefSettingIDs(),
+			s.ViaDiscord.GetRefSettingIDs()),
 	}
-	res = append(res, s.ViaEmail.GetRefSettingIDs()...)
-	res = append(res, s.ViaSlack.GetRefSettingIDs()...)
-	res = append(res, s.ViaDiscord.GetRefSettingIDs()...)
-	return res
 }
 
-func (s *Notification) HasViaNotificationViaEmails() bool {
+func (s *Notification) HasNotificationViaEmails() bool {
 	return s.ViaEmail != nil
 }
 
-func (s *Notification) HasViaNotificationViaSlacks() bool {
+func (s *Notification) HasNotificationViaSlack() bool {
 	return s.ViaSlack != nil
 }
 
-func (s *Notification) HasViaNotificationViaDiscords() bool {
+func (s *Notification) HasNotificationViaDiscord() bool {
 	return s.ViaDiscord != nil
 }
 

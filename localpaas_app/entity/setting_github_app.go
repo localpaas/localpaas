@@ -35,8 +35,8 @@ func (s *GithubApp) GetType() base.SettingType {
 	return base.SettingTypeGithubApp
 }
 
-func (s *GithubApp) GetRefSettingIDs() []string {
-	return nil
+func (s *GithubApp) GetRefObjectIDs() *RefObjectIDs {
+	return &RefObjectIDs{}
 }
 
 func (s *GithubApp) MustDecrypt() *GithubApp {

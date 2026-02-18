@@ -159,6 +159,12 @@ VALUES ('01JAB9XED0GTXBSQDFVYAJ8WE1', 'oauth', 'github', 'Github', 'active', tru
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WO1', 'webhook', 'git', 'webhook git 1', 'active', true, true,
         '{"kind": "git", "secret": "abc123"}',
+        '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
+       ('01JAB9XED0GTXBSQDFVYAJ8WP1', 'notification', NULL, 'notification 1', 'active', true, true,
+        '{"viaEmail": {"sender": {"id": "01JAB9XED0GTXBSQDFVYAJ8WN1"}, "toAllAdmins": true}, "viaSlack": {"webhook": {"id": "01JAB9XED0GTXBSQDFVYAJ8WH1"}}, "viaDiscord": {"webhook": {"id": "01JAB9XED0GTXBSQDFVYAJ8WI1"}}, "minSendInterval": "30s"}',
+        '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
+       ('01JAB9XED0GTXBSQDFVYAJ8WP2', 'notification', NULL, 'notification tiendc@ only', 'active', true, true,
+        '{"viaEmail": {"sender": {"id": "01JAB9XED0GTXBSQDFVYAJ8WN1"}, "toAddresses": ["tiendc@gmail.com"]}, "viaSlack": {"webhook": {"id": "01JAB9XED0GTXBSQDFVYAJ8WH1"}}, "viaDiscord": {"webhook": {"id": "01JAB9XED0GTXBSQDFVYAJ8WI1"}}, "minSendInterval": "30s"}',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00')
 ON CONFLICT DO NOTHING;
 

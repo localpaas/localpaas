@@ -29,8 +29,8 @@ func (s *AWS) GetType() base.SettingType {
 	return base.SettingTypeAWS
 }
 
-func (s *AWS) GetRefSettingIDs() []string {
-	return nil
+func (s *AWS) GetRefObjectIDs() *RefObjectIDs {
+	return &RefObjectIDs{}
 }
 
 func (s *AWS) MustDecrypt() *AWS {

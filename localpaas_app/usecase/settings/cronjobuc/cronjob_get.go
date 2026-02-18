@@ -5,7 +5,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc/cronjobdto"
 )
@@ -21,15 +20,7 @@ func (uc *CronJobUC) GetCronJob(
 		return nil, apperrors.Wrap(err)
 	}
 
-	input := &cronjobdto.CronJobTransformInput{
-		RefObjects: resp.RefObjects,
-	}
-	err = uc.loadReferenceData(ctx, uc.DB, []*entity.Setting{resp.Data}, input)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-
-	respData, err := cronjobdto.TransformCronJob(resp.Data, input)
+	respData, err := cronjobdto.TransformCronJob(resp.Data, resp.RefObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

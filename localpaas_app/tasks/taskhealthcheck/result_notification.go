@@ -8,7 +8,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/config"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/entity/cacheentity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/strutil"
@@ -27,16 +26,17 @@ func (e *Executor) sendNotification(
 	db database.IDB,
 	data *taskData,
 ) error {
-	notifSettings := data.Healthcheck.Notification
-	if notifSettings == nil {
+	if data.Healthcheck.Notification == nil {
 		return nil
 	}
-	notifEventSettings := gofn.If(data.Task.IsDone(), data.Healthcheck.Notification.Success,
-		data.Healthcheck.Notification.Failure)
-	if notifEventSettings == nil {
+	notifSettingID := gofn.If(data.Task.IsDone(), data.Healthcheck.Notification.Success.ID,
+		data.Healthcheck.Notification.Failure.ID)
+	notifSetting := data.RefObjects.RefSettings[notifSettingID]
+	if notifSetting == nil {
 		return nil
 	}
-	minSendingInterval := notifEventSettings.MinSendInterval.ToDuration()
+	notification := notifSetting.MustAsNotification()
+	minSendingInterval := notification.MinSendInterval.ToDuration()
 
 	currEvent := gofn.If(data.Task.IsDone(), eventSuccess, eventFailure)
 	lastNotifEvent := data.NotifEventMap[data.HealthcheckSetting.ID]
@@ -58,21 +58,21 @@ func (e *Executor) sendNotification(
 	slackSent := false
 	discordSent := false
 
-	if !shouldSkipNotifEmail && notifSettings.HasViaEmailNotifSetting() {
+	if !shouldSkipNotifEmail && notification.HasNotificationViaEmails() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
 			err := e.sendNotificationViaEmail(ctx, db, data)
 			emailSent = err == nil
 			return err
 		})
 	}
-	if !shouldSkipNotifSlack && notifSettings.HasViaSlackNotifSetting() {
+	if !shouldSkipNotifSlack && notification.HasNotificationViaSlack() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
 			err := e.sendNotificationViaSlack(ctx, db, data)
 			slackSent = err == nil
 			return err
 		})
 	}
-	if !shouldSkipNotifDiscord && notifSettings.HasViaDiscordNotifSetting() {
+	if !shouldSkipNotifDiscord && notification.HasNotificationViaDiscord() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
 			err := e.sendNotificationViaDiscord(ctx, db, data)
 			discordSent = err == nil
@@ -153,17 +153,18 @@ func (e *Executor) sendNotificationViaEmail(
 	db database.IDB,
 	data *taskData,
 ) error {
-	settings := gofn.If(data.Task.IsDone(), data.Healthcheck.Notification.Success,
-		data.Healthcheck.Notification.Failure)
+	settingID := gofn.If(data.Task.IsDone(), data.Healthcheck.Notification.Success.ID,
+		data.Healthcheck.Notification.Failure.ID)
+	settings := data.RefObjects.RefSettings[settingID].MustAsNotification()
 	if settings == nil || settings.ViaEmail == nil {
 		return nil
 	}
 
-	emailSetting := data.ObjectMap[settings.ViaEmail.Sender.ID]
+	emailSetting := data.RefObjects.RefSettings[settings.ViaEmail.Sender.ID]
 	if emailSetting == nil {
 		return apperrors.NewMissing("Sender email account")
 	}
-	emailAcc := emailSetting.(*entity.Setting).MustAsEmail() //nolint
+	emailAcc := emailSetting.MustAsEmail() //nolint
 	if emailAcc == nil {
 		return apperrors.NewMissing("Sender email account")
 	}
@@ -207,17 +208,18 @@ func (e *Executor) sendNotificationViaSlack(
 	db database.IDB,
 	data *taskData,
 ) error {
-	settings := gofn.If(data.Task.IsDone(), data.Healthcheck.Notification.Success,
-		data.Healthcheck.Notification.Failure)
+	settingID := gofn.If(data.Task.IsDone(), data.Healthcheck.Notification.Success.ID,
+		data.Healthcheck.Notification.Failure.ID)
+	settings := data.RefObjects.RefSettings[settingID].MustAsNotification()
 	if settings == nil || settings.ViaSlack == nil {
 		return nil
 	}
 
-	imSetting := data.ObjectMap[settings.ViaSlack.Webhook.ID]
+	imSetting := data.RefObjects.RefSettings[settings.ViaSlack.Webhook.ID]
 	if imSetting == nil {
 		return apperrors.NewMissing("Slack webhook")
 	}
-	imService := imSetting.(*entity.Setting).MustAsIMService() //nolint
+	imService := imSetting.MustAsIMService() //nolint
 	if imService == nil || imService.Slack == nil {
 		return apperrors.NewMissing("Slack webhook")
 	}
@@ -239,17 +241,18 @@ func (e *Executor) sendNotificationViaDiscord(
 	db database.IDB,
 	data *taskData,
 ) error {
-	settings := gofn.If(data.Task.IsDone(), data.Healthcheck.Notification.Success,
-		data.Healthcheck.Notification.Failure)
+	settingID := gofn.If(data.Task.IsDone(), data.Healthcheck.Notification.Success.ID,
+		data.Healthcheck.Notification.Failure.ID)
+	settings := data.RefObjects.RefSettings[settingID].MustAsNotification()
 	if settings == nil || settings.ViaDiscord == nil {
 		return nil
 	}
 
-	imSetting := data.ObjectMap[settings.ViaDiscord.Webhook.ID]
+	imSetting := data.RefObjects.RefSettings[settings.ViaDiscord.Webhook.ID]
 	if imSetting == nil {
 		return apperrors.NewMissing("Discord webhook")
 	}
-	imService := imSetting.(*entity.Setting).MustAsIMService() //nolint
+	imService := imSetting.MustAsIMService() //nolint
 	if imService == nil || imService.Discord == nil {
 		return apperrors.NewMissing("Discord webhook")
 	}

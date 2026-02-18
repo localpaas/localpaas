@@ -9,7 +9,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/notification/notificationdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
@@ -34,15 +33,15 @@ type GetHealthcheckResp struct {
 
 type HealthcheckResp struct {
 	*settings.BaseSettingResp
-	HealthcheckType base.HealthcheckType                           `json:"healthcheckType"`
-	Interval        timeutil.Duration                              `json:"interval"`
-	MaxRetry        int                                            `json:"maxRetry"`
-	RetryDelay      timeutil.Duration                              `json:"retryDelay"`
-	Timeout         timeutil.Duration                              `json:"timeout"`
-	SaveResultTasks bool                                           `json:"saveResultTasks"`
-	REST            *HealthcheckRESTReq                            `json:"rest"`
-	GRPC            *HealthcheckGRPCReq                            `json:"grpc"`
-	Notification    *notificationdto.DefaultResultNotifSettingResp `json:"notification"`
+	HealthcheckType base.HealthcheckType         `json:"healthcheckType"`
+	Interval        timeutil.Duration            `json:"interval"`
+	MaxRetry        int                          `json:"maxRetry"`
+	RetryDelay      timeutil.Duration            `json:"retryDelay"`
+	Timeout         timeutil.Duration            `json:"timeout"`
+	SaveResultTasks bool                         `json:"saveResultTasks"`
+	REST            *HealthcheckRESTReq          `json:"rest"`
+	GRPC            *HealthcheckGRPCReq          `json:"grpc"`
+	Notification    *HealthcheckNotificationResp `json:"notification"`
 }
 
 type HealthcheckRESTResp struct {
@@ -62,6 +61,11 @@ type HealthcheckGRPCResp struct {
 	ReturnStatus base.HealthcheckGRPCStatus  `json:"returnStatus"`
 }
 
+type HealthcheckNotificationResp struct {
+	Success *settings.BaseSettingResp `json:"success"`
+	Failure *settings.BaseSettingResp `json:"failure"`
+}
+
 func TransformHealthcheck(
 	setting *entity.Setting,
 	refObjects *entity.RefObjects,
@@ -76,10 +80,13 @@ func TransformHealthcheck(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp.Notification, err = notificationdto.TransformDefaultResultNotifSetting(
-		config.Notification, refObjects)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
+	if resp.Notification.Success != nil {
+		itemResp, _ := settings.TransformSettingBase(refObjects.RefSettings[resp.Notification.Success.ID])
+		resp.Notification.Success = itemResp
+	}
+	if resp.Notification.Failure != nil {
+		itemResp, _ := settings.TransformSettingBase(refObjects.RefSettings[resp.Notification.Failure.ID])
+		resp.Notification.Failure = itemResp
 	}
 
 	return resp, nil

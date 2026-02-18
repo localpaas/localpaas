@@ -58,6 +58,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/healthcheckuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/notificationuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/registryauthuc"
 	repowebhooksettingsuc "github.com/localpaas/localpaas/localpaas_app/usecase/settings/repowebhookuc"
@@ -151,6 +152,7 @@ var Provides = []any{
 	emailuc.NewEmailUC,
 	webhookuc.NewWebhookUC,
 	repowebhooksettingsuc.NewRepoWebhookUC,
+	notificationuc.NewNotificationUC,
 
 	// Service
 	clusterservice.NewClusterService,

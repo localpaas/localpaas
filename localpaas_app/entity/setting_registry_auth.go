@@ -32,8 +32,8 @@ func (s *RegistryAuth) GetType() base.SettingType {
 	return base.SettingTypeRegistryAuth
 }
 
-func (s *RegistryAuth) GetRefSettingIDs() []string {
-	return nil
+func (s *RegistryAuth) GetRefObjectIDs() *RefObjectIDs {
+	return &RefObjectIDs{}
 }
 
 func (s *RegistryAuth) MustDecrypt() *RegistryAuth {

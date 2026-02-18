@@ -58,8 +58,8 @@ func (s *Email) GetType() base.SettingType {
 	return base.SettingTypeEmail
 }
 
-func (s *Email) GetRefSettingIDs() []string {
-	return nil
+func (s *Email) GetRefObjectIDs() *RefObjectIDs {
+	return &RefObjectIDs{}
 }
 
 func (s *Email) MustDecrypt() *Email {

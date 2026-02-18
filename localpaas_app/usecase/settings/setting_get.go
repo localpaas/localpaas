@@ -45,8 +45,8 @@ func (uc *BaseSettingUC) GetSetting(
 		setting.CurrentObjectID = req.ObjectID
 	}
 
-	refObjects := &entity.RefObjects{}
-	err = uc.loadRefObjects(ctx, uc.DB, &req.BaseSettingReq, []*entity.Setting{setting}, refObjects)
+	refObjects, err := uc.SettingService.LoadReferenceObjects(ctx, uc.DB, req.Scope, req.ObjectID,
+		req.ParentObjectID, true, false, setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

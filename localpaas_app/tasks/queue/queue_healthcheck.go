@@ -32,7 +32,7 @@ type HealthcheckExecData struct {
 	App                *entity.App
 
 	// ObjectMap can be used as a cache to store objects
-	ObjectMap     map[string]any
+	RefObjects    *entity.RefObjects
 	NotifEventMap map[string]*cacheentity.HealthcheckNotifEvent
 }
 
@@ -94,7 +94,7 @@ func (q *taskQueue) doHealthcheck(
 				CreatedAt: timeNow,
 				UpdatedAt: timeNow,
 			},
-			ObjectMap:     baseData.ObjectMap,
+			RefObjects:    baseData.RefObjects,
 			NotifEventMap: baseData.NotifEventMap,
 		}
 		if healthcheck.SaveResultTasks {
@@ -182,7 +182,7 @@ func (q *taskQueue) loadHealthcheckData(
 		return nil, apperrors.Wrap(err)
 	}
 
-	taskData.ObjectMap = healthcheckSettings.ObjectMap
+	taskData.RefObjects = healthcheckSettings.RefObjects
 
 	return validJobSettings, nil
 }
@@ -208,7 +208,7 @@ func (q *taskQueue) loadHealthcheckDataFromDB(
 		return nil, apperrors.Wrap(err)
 	}
 
-	refSettingIDs := make([]string, 0, 10) //nolint:mnd
+	var validHealthchecks []*entity.Setting
 	for _, healthcheck := range dbSettings {
 		if healthcheck.BelongToApp != nil {
 			healthcheck.BelongToProject = healthcheck.BelongToApp.Project
@@ -222,24 +222,19 @@ func (q *taskQueue) loadHealthcheckDataFromDB(
 		if project != nil && project.Status != base.ProjectStatusActive {
 			continue
 		}
-		refSettingIDs = append(refSettingIDs, healthcheck.MustGetRefSettingIDs()...)
+		validHealthchecks = append(validHealthchecks, healthcheck)
 	}
 
-	// Load reference settings
-	refSettings, err := q.settingRepo.ListByIDsAsMap(ctx, db, gofn.ToSet(refSettingIDs), true,
-		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
-	)
+	// Load reference objects
+	refObjects, err := q.settingService.LoadReferenceObjects(ctx, db, base.SettingScopeNone,
+		"", "", true, false, validHealthchecks...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	objectMap := make(map[string]any, len(refSettingIDs))
-	for _, refSetting := range refSettings {
-		objectMap[refSetting.ID] = refSetting
-	}
 
 	healthcheckSettings := &cacheentity.HealthcheckSettings{
-		Settings:  dbSettings,
-		ObjectMap: objectMap,
+		Settings:   validHealthchecks,
+		RefObjects: refObjects,
 	}
 
 	// Put data in cache

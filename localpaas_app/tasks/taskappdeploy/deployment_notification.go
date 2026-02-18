@@ -92,7 +92,7 @@ func (e *Executor) notifyForDeploymentViaEmail(
 		return nil
 	}
 
-	emailSetting := data.RefSettingMap[settings.ViaEmail.Sender.ID]
+	emailSetting := data.RefObjects.RefSettings[settings.ViaEmail.Sender.ID]
 	if emailSetting == nil {
 		return apperrors.NewMissing("Sender email account")
 	}
@@ -150,7 +150,7 @@ func (e *Executor) notifyForDeploymentViaSlack(
 		return nil
 	}
 
-	imSetting := data.RefSettingMap[settings.ViaSlack.Webhook.ID]
+	imSetting := data.RefObjects.RefSettings[settings.ViaSlack.Webhook.ID]
 	if imSetting == nil {
 		return apperrors.NewMissing("Slack webhook")
 	}
@@ -182,7 +182,7 @@ func (e *Executor) notifyForDeploymentViaDiscord(
 		return nil
 	}
 
-	imSetting := data.RefSettingMap[settings.ViaDiscord.Webhook.ID]
+	imSetting := data.RefObjects.RefSettings[settings.ViaDiscord.Webhook.ID]
 	if imSetting == nil {
 		return apperrors.NewMissing("Discord webhook")
 	}

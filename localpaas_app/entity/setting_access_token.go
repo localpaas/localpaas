@@ -29,8 +29,8 @@ func (s *AccessToken) GetType() base.SettingType {
 	return base.SettingTypeAccessToken
 }
 
-func (s *AccessToken) GetRefSettingIDs() []string {
-	return nil
+func (s *AccessToken) GetRefObjectIDs() *RefObjectIDs {
+	return &RefObjectIDs{}
 }
 
 func (s *AccessToken) MustDecrypt() *AccessToken {

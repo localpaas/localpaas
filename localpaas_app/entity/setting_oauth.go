@@ -34,8 +34,8 @@ func (s *OAuth) GetType() base.SettingType {
 	return base.SettingTypeOAuth
 }
 
-func (s *OAuth) GetRefSettingIDs() []string {
-	return nil
+func (s *OAuth) GetRefObjectIDs() *RefObjectIDs {
+	return &RefObjectIDs{}
 }
 
 func (s *OAuth) MustDecrypt() *OAuth {

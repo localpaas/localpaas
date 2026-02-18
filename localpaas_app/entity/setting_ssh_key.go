@@ -28,8 +28,8 @@ func (s *SSHKey) GetType() base.SettingType {
 	return base.SettingTypeSSHKey
 }
 
-func (s *SSHKey) GetRefSettingIDs() []string {
-	return nil
+func (s *SSHKey) GetRefObjectIDs() *RefObjectIDs {
+	return &RefObjectIDs{}
 }
 
 func (s *SSHKey) MustDecrypt() *SSHKey {

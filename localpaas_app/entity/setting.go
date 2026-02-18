@@ -62,7 +62,7 @@ type Setting struct {
 
 type SettingData interface {
 	GetType() base.SettingType
-	GetRefSettingIDs() []string
+	GetRefObjectIDs() *RefObjectIDs
 }
 
 // GetID implements IDEntity interface
@@ -134,7 +134,7 @@ func (s *Setting) Parse() (SettingData, error) {
 	return parseSettingAs[SettingData](s)
 }
 
-func (s *Setting) GetRefSettingIDs() ([]string, error) {
+func (s *Setting) GetRefObjectIDs() (*RefObjectIDs, error) {
 	settingData, err := s.Parse()
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -142,11 +142,11 @@ func (s *Setting) GetRefSettingIDs() ([]string, error) {
 	if settingData == nil {
 		return nil, nil
 	}
-	return settingData.GetRefSettingIDs(), nil
+	return settingData.GetRefObjectIDs(), nil
 }
 
-func (s *Setting) MustGetRefSettingIDs() []string {
-	return gofn.Must(s.GetRefSettingIDs())
+func (s *Setting) MustGetRefObjectIDs() *RefObjectIDs {
+	return gofn.Must(s.GetRefObjectIDs())
 }
 
 func parseSettingAs[T SettingData](s *Setting) (res T, err error) {

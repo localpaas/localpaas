@@ -170,27 +170,27 @@ func (uc *AppUC) applyDomainSSL(
 		return apperrors.Wrap(err)
 	}
 
-	refSettingMap, err := uc.settingService.LoadReferenceSettingsFor(ctx, db, nil, data.App, true,
-		data.HttpSettings)
+	refObjects, err := uc.settingService.LoadReferenceObjects(ctx, db, base.SettingScopeApp, data.App.ID,
+		data.App.ProjectID, true, true, data.HttpSettings)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
 	allSSLIDs := appHttpSettings.GetSSLCertIDs()
-	err = uc.appService.EnsureSSLConfigFiles(allSSLIDs, false, refSettingMap)
+	err = uc.appService.EnsureSSLConfigFiles(allSSLIDs, false, refObjects.RefSettings)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
 	allBasicAuthIDs := appHttpSettings.GetBasicAuthIDs()
-	err = uc.appService.EnsureBasicAuthConfigFiles(allBasicAuthIDs, false, refSettingMap)
+	err = uc.appService.EnsureBasicAuthConfigFiles(allBasicAuthIDs, false, refObjects.RefSettings)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
 	err = uc.nginxService.ApplyAppConfig(ctx, data.App, &nginxservice.AppConfigData{
 		HttpSettings:  appHttpSettings,
-		RefSettingMap: refSettingMap,
+		RefSettingMap: refObjects.RefSettings,
 	})
 	if err != nil {
 		return apperrors.Wrap(err)

@@ -72,7 +72,7 @@ func (e *Executor) imageDeployStepImagePull(
 	defer e.addStepEndLog(ctx, data.taskData, timeutil.NowUTC(), err)
 
 	if imageSource.RegistryAuth.ID != "" {
-		regAuth := data.RefSettingMap[imageSource.RegistryAuth.ID]
+		regAuth := data.RefObjects.RefSettings[imageSource.RegistryAuth.ID]
 		data.RegAuthHeader, err = regAuth.MustAsRegistryAuth().GenerateAuthHeader()
 		if err != nil {
 			return apperrors.Wrap(err)

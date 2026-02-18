@@ -31,8 +31,8 @@ func (s *Secret) GetType() base.SettingType {
 	return base.SettingTypeSecret
 }
 
-func (s *Secret) GetRefSettingIDs() []string {
-	return nil
+func (s *Secret) GetRefObjectIDs() *RefObjectIDs {
+	return &RefObjectIDs{}
 }
 
 func (s *Secret) MustDecrypt() *Secret {

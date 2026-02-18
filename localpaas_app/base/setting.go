@@ -55,7 +55,8 @@ var (
 type SettingScope int8
 
 const (
-	SettingScopeGlobal SettingScope = iota
+	SettingScopeNone SettingScope = iota
+	SettingScopeGlobal
 	SettingScopeUser
 	SettingScopeProject
 	SettingScopeApp

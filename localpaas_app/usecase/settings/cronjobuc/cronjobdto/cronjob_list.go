@@ -37,11 +37,11 @@ type ListCronJobResp struct {
 
 func TransformCronJobs(
 	settings []*entity.Setting,
-	input *CronJobTransformInput,
+	refObjects *entity.RefObjects,
 ) ([]*CronJobResp, error) {
 	resp := make([]*CronJobResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformCronJob(setting, input)
+		item, err := TransformCronJob(setting, refObjects)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

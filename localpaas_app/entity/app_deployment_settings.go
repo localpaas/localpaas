@@ -56,11 +56,10 @@ func (s *AppDeploymentSettings) GetType() base.SettingType {
 	return base.SettingTypeAppDeployment
 }
 
-func (s *AppDeploymentSettings) GetRefSettingIDs() []string {
-	res := make([]string, 0, 5) //nolint
-	res = append(res, s.GetRegistryAuthIDs()...)
-	res = append(res, s.GetGitCredentialIDs()...)
-	return res
+func (s *AppDeploymentSettings) GetRefObjectIDs() *RefObjectIDs {
+	return &RefObjectIDs{
+		RefSettingIDs: gofn.Flatten(s.GetRegistryAuthIDs(), s.GetGitCredentialIDs()),
+	}
 }
 
 func (s *AppDeploymentSettings) GetRegistryAuthIDs() (res []string) {

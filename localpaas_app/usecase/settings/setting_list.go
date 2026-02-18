@@ -9,7 +9,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
-	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 )
 
@@ -69,8 +68,7 @@ func (uc *BaseSettingUC) ListSetting(
 
 	switch req.Scope {
 	case base.SettingScopeGlobal:
-		listOpts = append(listOpts, bunex.SelectWhere("setting.object_id IS NULL"))
-		settings, paging, err = uc.SettingRepo.List(ctx, db, &req.Paging, listOpts...)
+		settings, paging, err = uc.SettingRepo.ListGlobally(ctx, db, &req.Paging, listOpts...)
 	case base.SettingScopeProject:
 		settings, paging, err = uc.SettingRepo.ListByProject(ctx, db, req.ObjectID,
 			&req.Paging, listOpts...)
@@ -80,6 +78,7 @@ func (uc *BaseSettingUC) ListSetting(
 	case base.SettingScopeUser:
 		settings, paging, err = uc.SettingRepo.ListByUser(ctx, db, req.ObjectID,
 			&req.Paging, listOpts...)
+	case base.SettingScopeNone:
 	}
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -89,8 +88,8 @@ func (uc *BaseSettingUC) ListSetting(
 		setting.CurrentObjectID = req.ObjectID
 	}
 
-	refObjects := &entity.RefObjects{}
-	err = uc.loadRefObjects(ctx, uc.DB, &req.BaseSettingReq, settings, refObjects)
+	refObjects, err := uc.SettingService.LoadReferenceObjects(ctx, uc.DB, req.Scope, req.ObjectID,
+		req.ParentObjectID, true, false, settings...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -100,32 +99,4 @@ func (uc *BaseSettingUC) ListSetting(
 		Data:       settings,
 		RefObjects: refObjects,
 	}, nil
-}
-
-func (uc *BaseSettingUC) loadRefObjects(
-	ctx context.Context,
-	db database.IDB,
-	req *BaseSettingReq,
-	settings []*entity.Setting,
-	ref *entity.RefObjects,
-) (err error) {
-	refIDs := make([]string, 0)
-	for _, setting := range settings {
-		refIDs = append(refIDs, setting.MustGetRefSettingIDs()...)
-	}
-
-	if len(refIDs) > 0 {
-		refSettings, err := uc.loadSettingByIDs(ctx, db, req, refIDs, false)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
-		if ref.RefSettings == nil {
-			ref.RefSettings = make(map[string]*entity.Setting, len(refSettings))
-		}
-		for _, refSetting := range refSettings {
-			ref.RefSettings[refSetting.ID] = refSetting
-		}
-	}
-
-	return nil
 }

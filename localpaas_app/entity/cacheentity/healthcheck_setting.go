@@ -5,6 +5,6 @@ import (
 )
 
 type HealthcheckSettings struct {
-	Settings  []*entity.Setting `json:"settings"`
-	ObjectMap map[string]any    `json:"objectMap"`
+	Settings   []*entity.Setting  `json:"settings"`
+	RefObjects *entity.RefObjects `json:"refObjects"`
 }

@@ -30,11 +30,12 @@ func (s *AWSS3) GetType() base.SettingType {
 	return base.SettingTypeAWSS3
 }
 
-func (s *AWSS3) GetRefSettingIDs() []string {
-	if s == nil {
-		return nil
+func (s *AWSS3) GetRefObjectIDs() *RefObjectIDs {
+	refIDs := &RefObjectIDs{}
+	if s != nil {
+		refIDs.RefSettingIDs = append(refIDs.RefSettingIDs, s.Cred.ID)
 	}
-	return []string{s.Cred.ID}
+	return refIDs
 }
 
 func (s *AWSS3) MustDecrypt() *AWSS3 {

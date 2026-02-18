@@ -80,7 +80,7 @@ type taskData struct {
 	Project        *entity.Project
 	App            *entity.App
 	LogStore       *applog.Store
-	RefSettingMap  map[string]*entity.Setting
+	RefObjects     *entity.RefObjects
 	NotifMsgData   *notificationservice.BaseMsgDataCronTaskNotification
 }
 
@@ -125,7 +125,7 @@ func (e *Executor) loadCronJobData(
 	ctx context.Context,
 	db database.Tx,
 	data *taskData,
-) error {
+) (err error) {
 	logStoreKey := fmt.Sprintf("cron:%s:exec", data.CronJobSetting.ID)
 	data.LogStore = applog.NewLocalStore(logStoreKey)
 
@@ -143,13 +143,12 @@ func (e *Executor) loadCronJobData(
 		data.Project = app.Project
 	}
 
-	// Load reference settings
-	refSettingMap, err := e.settingService.LoadReferenceSettingsFor(ctx, db, data.Project, data.App, true,
-		data.CronJobSetting)
+	// Load reference objects
+	data.RefObjects, err = e.settingService.LoadReferenceObjects(ctx, db, base.SettingScopeApp, data.App.ID,
+		data.App.ProjectID, true, true, data.CronJobSetting)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	data.RefSettingMap = refSettingMap
 
 	return nil
 }

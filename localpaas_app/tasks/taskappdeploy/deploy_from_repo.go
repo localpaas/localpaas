@@ -253,7 +253,7 @@ func (e *Executor) repoDeployStepImagePush(
 	e.addStepStartLog(ctx, data.taskData, "Start pushing image to registry...")
 	defer e.addStepEndLog(ctx, data.taskData, timeutil.NowUTC(), err)
 
-	regAuth := data.RefSettingMap[repoSource.PushToRegistry.ID]
+	regAuth := data.RefObjects.RefSettings[repoSource.PushToRegistry.ID]
 	data.RegAuthHeader, err = regAuth.MustAsRegistryAuth().GenerateAuthHeader()
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -336,7 +336,7 @@ func (e *Executor) repoDeployStepPrepare(
 
 	// Loads repo credentials (github app, git token, ssh key) if configured
 	if repoSource.Credentials.ID != "" {
-		data.CredSetting = data.RefSettingMap[repoSource.Credentials.ID]
+		data.CredSetting = data.RefObjects.RefSettings[repoSource.Credentials.ID]
 	}
 
 	// Creates checkout dir

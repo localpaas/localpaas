@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accesstokenuc/accesstokendto"
@@ -51,6 +52,8 @@ func (h *BaseSettingHandler) UpdateSettingMeta(
 		auth, parentObjectID, objectID, itemID, err = h.GetAuthAppSettings(ctx, base.ActionTypeWrite, "itemID")
 	case base.SettingScopeUser:
 		auth, objectID, itemID, err = h.GetAuthUserSettings(ctx, base.ActionTypeWrite, "itemID")
+	case base.SettingScopeNone:
+		err = apperrors.NewUnsupported().WithMsgLog("Setting scope 'none' is not supported")
 	}
 	if err != nil {
 		h.RenderError(ctx, err)
