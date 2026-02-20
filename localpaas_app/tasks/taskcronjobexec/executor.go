@@ -36,7 +36,7 @@ type Executor struct {
 	settingService      settingservice.SettingService
 	userService         userservice.UserService
 	notificationService notificationservice.NotificationService
-	dockerManager       *docker.Manager
+	dockerManager       docker.Manager
 }
 
 func NewExecutor(
@@ -52,7 +52,7 @@ func NewExecutor(
 	settingService settingservice.SettingService,
 	userService userservice.UserService,
 	notificationService notificationservice.NotificationService,
-	dockerManager *docker.Manager,
+	dockerManager docker.Manager,
 ) *Executor {
 	e := &Executor{
 		logger:              logger,

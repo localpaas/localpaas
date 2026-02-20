@@ -11,7 +11,7 @@ import (
 
 type ImageListOption func(*image.ListOptions)
 
-func (m *Manager) ImageList(
+func (m *manager) ImageList(
 	ctx context.Context,
 	options ...ImageListOption,
 ) ([]image.Summary, error) {
@@ -28,7 +28,7 @@ func (m *Manager) ImageList(
 
 type ImageCreateOption func(*image.CreateOptions)
 
-func (m *Manager) ImageCreate(
+func (m *manager) ImageCreate(
 	ctx context.Context,
 	name string,
 	options ...ImageCreateOption,
@@ -46,7 +46,7 @@ func (m *Manager) ImageCreate(
 
 type ImageRemoveOption func(options *image.RemoveOptions)
 
-func (m *Manager) ImageRemove(
+func (m *manager) ImageRemove(
 	ctx context.Context,
 	imageID string,
 	options ...ImageRemoveOption,
@@ -62,7 +62,7 @@ func (m *Manager) ImageRemove(
 	return resp, nil
 }
 
-func (m *Manager) ImageInspect(
+func (m *manager) ImageInspect(
 	ctx context.Context,
 	imageID string,
 ) (*image.InspectResponse, error) {
@@ -75,7 +75,7 @@ func (m *Manager) ImageInspect(
 
 type ImagePullOption func(options *image.PullOptions)
 
-func (m *Manager) ImagePull(
+func (m *manager) ImagePull(
 	ctx context.Context,
 	refStr string,
 	options ...ImagePullOption,
@@ -93,7 +93,7 @@ func (m *Manager) ImagePull(
 
 type ImagePushOption func(options *image.PushOptions)
 
-func (m *Manager) ImagePush(
+func (m *manager) ImagePush(
 	ctx context.Context,
 	imageTag string,
 	options ...ImagePushOption,

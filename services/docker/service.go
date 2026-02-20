@@ -12,7 +12,7 @@ import (
 
 type ServiceListOption func(options *swarm.ServiceListOptions)
 
-func (m *Manager) ServiceList(
+func (m *manager) ServiceList(
 	ctx context.Context,
 	options ...ServiceListOption,
 ) ([]swarm.Service, error) {
@@ -27,7 +27,7 @@ func (m *Manager) ServiceList(
 	return resp, nil
 }
 
-func (m *Manager) ServiceListByStack(
+func (m *manager) ServiceListByStack(
 	ctx context.Context,
 	namespace string,
 	options ...ServiceListOption,
@@ -42,7 +42,7 @@ func (m *Manager) ServiceListByStack(
 	return resp, nil
 }
 
-func (m *Manager) ServiceGetByName(
+func (m *manager) ServiceGetByName(
 	ctx context.Context,
 	serviceName string,
 	options ...ServiceListOption,
@@ -63,7 +63,7 @@ func (m *Manager) ServiceGetByName(
 
 type ServiceCreateOption func(options *swarm.ServiceCreateOptions)
 
-func (m *Manager) ServiceCreate(
+func (m *manager) ServiceCreate(
 	ctx context.Context,
 	service *swarm.ServiceSpec,
 	options ...ServiceCreateOption,
@@ -84,7 +84,7 @@ func (m *Manager) ServiceCreate(
 
 type ServiceUpdateOption func(options *swarm.ServiceUpdateOptions)
 
-func (m *Manager) ServiceUpdate(
+func (m *manager) ServiceUpdate(
 	ctx context.Context,
 	serviceID string,
 	version *swarm.Version,
@@ -114,7 +114,7 @@ func (m *Manager) ServiceUpdate(
 	return &resp, nil
 }
 
-func (m *Manager) ServiceForceUpdate(ctx context.Context, serviceID string) error {
+func (m *manager) ServiceForceUpdate(ctx context.Context, serviceID string) error {
 	service, _, err := m.client.ServiceInspectWithRaw(ctx, serviceID, swarm.ServiceInspectOptions{})
 	if err != nil {
 		return apperrors.NewInfra(err)
@@ -128,7 +128,7 @@ func (m *Manager) ServiceForceUpdate(ctx context.Context, serviceID string) erro
 	return nil
 }
 
-func (m *Manager) ServiceRemove(ctx context.Context, serviceID string) error {
+func (m *manager) ServiceRemove(ctx context.Context, serviceID string) error {
 	if serviceID == "" {
 		return nil
 	}
@@ -141,7 +141,7 @@ func (m *Manager) ServiceRemove(ctx context.Context, serviceID string) error {
 
 type ServiceInspectOption func(*swarm.ServiceInspectOptions)
 
-func (m *Manager) ServiceInspect(
+func (m *manager) ServiceInspect(
 	ctx context.Context,
 	serviceID string,
 	options ...ServiceInspectOption,
@@ -161,7 +161,7 @@ func (m *Manager) ServiceInspect(
 	return &resp, nil
 }
 
-func (m *Manager) ServiceExists(ctx context.Context, serviceID string) bool {
+func (m *manager) ServiceExists(ctx context.Context, serviceID string) bool {
 	if serviceID == "" {
 		return false
 	}
@@ -171,7 +171,7 @@ func (m *Manager) ServiceExists(ctx context.Context, serviceID string) bool {
 
 type ContainerLogsOption func(*container.LogsOptions)
 
-func (m *Manager) ServiceLogs(
+func (m *manager) ServiceLogs(
 	ctx context.Context,
 	serviceID string,
 	options ...ContainerLogsOption,

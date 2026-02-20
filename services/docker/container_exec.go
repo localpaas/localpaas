@@ -15,7 +15,7 @@ var (
 	DefaultConsoleSize = [2]uint{40, 120}
 )
 
-func (m *Manager) ContainerExec(
+func (m *manager) ContainerExec(
 	ctx context.Context,
 	containerID string,
 	options *container.ExecOptions,
@@ -59,7 +59,7 @@ func (m *Manager) ContainerExec(
 	return execID, &hijackResp, nil
 }
 
-func (m *Manager) ContainerExecWait(
+func (m *manager) ContainerExecWait(
 	ctx context.Context,
 	containerID string,
 	options *container.ExecOptions,
@@ -85,7 +85,7 @@ func (m *Manager) ContainerExecWait(
 	return execInfo, logs, nil
 }
 
-func (m *Manager) ContainerExecInspect(
+func (m *manager) ContainerExecInspect(
 	ctx context.Context,
 	execID string,
 ) (*container.ExecInspect, error) {

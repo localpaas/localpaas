@@ -8,7 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
-func (m *Manager) SwarmInspect(ctx context.Context) (*swarm.Swarm, error) {
+func (m *manager) SwarmInspect(ctx context.Context) (*swarm.Swarm, error) {
 	resp, err := m.client.SwarmInspect(ctx)
 	if err != nil {
 		return nil, apperrors.NewInfra(err)

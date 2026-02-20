@@ -11,14 +11,14 @@ type VolumeUC struct {
 	db             *database.DB
 	settingRepo    repository.SettingRepo
 	clusterService clusterservice.ClusterService
-	dockerManager  *docker.Manager
+	dockerManager  docker.Manager
 }
 
 func NewVolumeUC(
 	db *database.DB,
 	settingRepo repository.SettingRepo,
 	clusterService clusterservice.ClusterService,
-	dockerManager *docker.Manager,
+	dockerManager docker.Manager,
 ) *VolumeUC {
 	return &VolumeUC{
 		db:             db,

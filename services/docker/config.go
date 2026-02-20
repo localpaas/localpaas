@@ -10,7 +10,7 @@ import (
 
 type ConfigListOption func(*swarm.ConfigListOptions)
 
-func (m *Manager) ConfigList(ctx context.Context, options ...ConfigListOption) ([]swarm.Config, error) {
+func (m *manager) ConfigList(ctx context.Context, options ...ConfigListOption) ([]swarm.Config, error) {
 	opts := swarm.ConfigListOptions{}
 	for _, opt := range options {
 		opt(&opts)
@@ -22,7 +22,7 @@ func (m *Manager) ConfigList(ctx context.Context, options ...ConfigListOption) (
 	return resp, nil
 }
 
-func (m *Manager) ConfigInspect(ctx context.Context, configId string) (*swarm.Config, error) {
+func (m *manager) ConfigInspect(ctx context.Context, configId string) (*swarm.Config, error) {
 	resp, _, err := m.client.ConfigInspectWithRaw(ctx, configId)
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
@@ -32,7 +32,7 @@ func (m *Manager) ConfigInspect(ctx context.Context, configId string) (*swarm.Co
 
 type ConfigSpecOption func(*swarm.ConfigSpec)
 
-func (m *Manager) ConfigCreate(
+func (m *manager) ConfigCreate(
 	ctx context.Context,
 	name string,
 	data []byte,

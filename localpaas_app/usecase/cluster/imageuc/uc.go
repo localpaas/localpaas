@@ -11,14 +11,14 @@ type ImageUC struct {
 	db             *database.DB
 	settingRepo    repository.SettingRepo
 	clusterService clusterservice.ClusterService
-	dockerManager  *docker.Manager
+	dockerManager  docker.Manager
 }
 
 func NewImageUC(
 	db *database.DB,
 	settingRepo repository.SettingRepo,
 	clusterService clusterservice.ClusterService,
-	dockerManager *docker.Manager,
+	dockerManager docker.Manager,
 ) *ImageUC {
 	return &ImageUC{
 		db:             db,

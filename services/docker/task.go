@@ -10,7 +10,7 @@ import (
 
 type TaskListOption func(*swarm.TaskListOptions)
 
-func (m *Manager) TaskList(
+func (m *manager) TaskList(
 	ctx context.Context,
 	options ...TaskListOption,
 ) ([]swarm.Task, error) {
@@ -25,7 +25,7 @@ func (m *Manager) TaskList(
 	return tasks, nil
 }
 
-func (m *Manager) ServiceTaskList(
+func (m *manager) ServiceTaskList(
 	ctx context.Context,
 	serviceID string,
 	options ...TaskListOption,

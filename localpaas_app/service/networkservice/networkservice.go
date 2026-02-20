@@ -20,7 +20,7 @@ type NetworkService interface {
 
 func NewNetworkService(
 	settingRepo repository.SettingRepo,
-	dockerManager *docker.Manager,
+	dockerManager docker.Manager,
 ) NetworkService {
 	return &networkService{
 		settingRepo:   settingRepo,
@@ -30,5 +30,5 @@ func NewNetworkService(
 
 type networkService struct {
 	settingRepo   repository.SettingRepo
-	dockerManager *docker.Manager
+	dockerManager docker.Manager
 }

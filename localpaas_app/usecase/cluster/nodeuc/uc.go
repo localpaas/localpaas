@@ -13,7 +13,7 @@ type NodeUC struct {
 	settingRepo    repository.SettingRepo
 	clusterService clusterservice.ClusterService
 	lpAppService   lpappservice.LpAppService
-	dockerManager  *docker.Manager
+	dockerManager  docker.Manager
 }
 
 func NewNodeUC(
@@ -21,7 +21,7 @@ func NewNodeUC(
 	settingRepo repository.SettingRepo,
 	clusterService clusterservice.ClusterService,
 	lpAppService lpappservice.LpAppService,
-	dockerManager *docker.Manager,
+	dockerManager docker.Manager,
 ) *NodeUC {
 	return &NodeUC{
 		db:             db,

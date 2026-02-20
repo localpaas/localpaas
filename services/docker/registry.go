@@ -8,7 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
-func (m *Manager) RegistryLogin(
+func (m *manager) RegistryLogin(
 	ctx context.Context,
 	auth *registry.AuthConfig,
 ) (*registry.AuthenticateOKBody, error) {

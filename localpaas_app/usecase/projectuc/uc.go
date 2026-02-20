@@ -19,7 +19,7 @@ type ProjectUC struct {
 	userService              userservice.UserService
 	projectService           projectservice.ProjectService
 	networkService           networkservice.NetworkService
-	dockerManager            *docker.Manager
+	dockerManager            docker.Manager
 }
 
 func NewProjectUC(
@@ -31,7 +31,7 @@ func NewProjectUC(
 	userService userservice.UserService,
 	projectService projectservice.ProjectService,
 	networkService networkservice.NetworkService,
-	dockerManager *docker.Manager,
+	dockerManager docker.Manager,
 ) *ProjectUC {
 	return &ProjectUC{
 		db:                       db,

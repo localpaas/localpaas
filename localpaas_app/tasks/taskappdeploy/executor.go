@@ -42,7 +42,7 @@ type Executor struct {
 	taskRepo            repository.TaskRepo
 	taskInfoRepo        cacherepository.TaskInfoRepo
 	deploymentInfoRepo  cacherepository.DeploymentInfoRepo
-	dockerManager       *docker.Manager
+	dockerManager       docker.Manager
 	envVarService       envvarservice.EnvVarService
 	settingService      settingservice.SettingService
 	userService         userservice.UserService
@@ -60,7 +60,7 @@ func NewExecutor(
 	taskRepo repository.TaskRepo,
 	taskInfoRepo cacherepository.TaskInfoRepo,
 	deploymentInfoRepo cacherepository.DeploymentInfoRepo,
-	dockerManager *docker.Manager,
+	dockerManager docker.Manager,
 	envVarService envvarservice.EnvVarService,
 	settingService settingservice.SettingService,
 	userService userservice.UserService,

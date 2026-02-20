@@ -24,7 +24,7 @@ type LpAppService interface {
 
 func NewLpAppService(
 	settingRepo repository.SettingRepo,
-	dockerManager *docker.Manager,
+	dockerManager docker.Manager,
 ) LpAppService {
 	return &lpAppService{
 		settingRepo:   settingRepo,
@@ -34,5 +34,5 @@ func NewLpAppService(
 
 type lpAppService struct {
 	settingRepo   repository.SettingRepo
-	dockerManager *docker.Manager
+	dockerManager docker.Manager
 }

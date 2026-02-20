@@ -29,7 +29,7 @@ func NewProjectService(
 	userService userservice.UserService,
 	appService appservice.AppService,
 	networkService networkservice.NetworkService,
-	dockerManager *docker.Manager,
+	dockerManager docker.Manager,
 ) ProjectService {
 	return &projectService{
 		projectRepo:       projectRepo,
@@ -53,5 +53,5 @@ type projectService struct {
 	userService       userservice.UserService
 	appService        appservice.AppService
 	networkService    networkservice.NetworkService
-	dockerManager     *docker.Manager
+	dockerManager     docker.Manager
 }

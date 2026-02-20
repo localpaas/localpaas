@@ -10,7 +10,7 @@ import (
 
 type NetworkListOption func(*network.ListOptions)
 
-func (m *Manager) NetworkList(
+func (m *manager) NetworkList(
 	ctx context.Context,
 	options ...NetworkListOption,
 ) ([]network.Summary, error) {
@@ -27,7 +27,7 @@ func (m *Manager) NetworkList(
 
 type NetworkCreateOption func(*network.CreateOptions)
 
-func (m *Manager) NetworkCreate(
+func (m *manager) NetworkCreate(
 	ctx context.Context,
 	name string,
 	options ...NetworkCreateOption,
@@ -43,7 +43,7 @@ func (m *Manager) NetworkCreate(
 	return &resp, nil
 }
 
-func (m *Manager) NetworkRemove(ctx context.Context, idOrName string) error {
+func (m *manager) NetworkRemove(ctx context.Context, idOrName string) error {
 	err := m.client.NetworkRemove(ctx, idOrName)
 	if err != nil {
 		return apperrors.NewInfra(err)
@@ -53,7 +53,7 @@ func (m *Manager) NetworkRemove(ctx context.Context, idOrName string) error {
 
 type NetworkInspectOption func(*network.InspectOptions)
 
-func (m *Manager) NetworkInspect(
+func (m *manager) NetworkInspect(
 	ctx context.Context,
 	name string,
 	options ...NetworkInspectOption,
@@ -69,7 +69,7 @@ func (m *Manager) NetworkInspect(
 	return &resp, nil
 }
 
-func (m *Manager) NetworkExists(ctx context.Context, name string) bool {
+func (m *manager) NetworkExists(ctx context.Context, name string) bool {
 	_, err := m.NetworkInspect(ctx, name)
 	return err == nil
 }

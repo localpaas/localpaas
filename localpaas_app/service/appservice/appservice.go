@@ -50,7 +50,7 @@ func NewAppService(
 	permissionManager permission.Manager,
 	userService userservice.UserService,
 	nginxService nginxservice.NginxService,
-	dockerManager *docker.Manager,
+	dockerManager docker.Manager,
 ) AppService {
 	return &appService{
 		appRepo:            appRepo,
@@ -76,5 +76,5 @@ type appService struct {
 	permissionManager  permission.Manager
 	userService        userservice.UserService
 	nginxService       nginxservice.NginxService
-	dockerManager      *docker.Manager
+	dockerManager      docker.Manager
 }

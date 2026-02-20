@@ -7,12 +7,12 @@ import (
 
 type NotificationUC struct {
 	*settings.BaseSettingUC
-	dockerManager *docker.Manager
+	dockerManager docker.Manager
 }
 
 func NewNotificationUC(
 	baseSettingUC *settings.BaseSettingUC,
-	dockerManager *docker.Manager,
+	dockerManager docker.Manager,
 ) *NotificationUC {
 	return &NotificationUC{
 		BaseSettingUC: baseSettingUC,

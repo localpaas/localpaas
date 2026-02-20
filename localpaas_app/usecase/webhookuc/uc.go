@@ -25,7 +25,7 @@ type WebhookUC struct {
 	networkService networkservice.NetworkService
 	envVarService  envvarservice.EnvVarService
 	nginxService   nginxservice.NginxService
-	dockerManager  *docker.Manager
+	dockerManager  docker.Manager
 	taskQueue      queue.TaskQueue
 }
 
@@ -41,7 +41,7 @@ func NewWebhookUC(
 	networkService networkservice.NetworkService,
 	envVarService envvarservice.EnvVarService,
 	nginxService nginxservice.NginxService,
-	dockerManager *docker.Manager,
+	dockerManager docker.Manager,
 	taskQueue queue.TaskQueue,
 ) *WebhookUC {
 	return &WebhookUC{

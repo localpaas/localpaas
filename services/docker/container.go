@@ -12,7 +12,7 @@ import (
 
 type ContainerListOption func(*container.ListOptions)
 
-func (m *Manager) ContainerList(
+func (m *manager) ContainerList(
 	ctx context.Context,
 	options ...ContainerListOption,
 ) ([]container.Summary, error) {
@@ -27,7 +27,7 @@ func (m *Manager) ContainerList(
 	return containers, nil
 }
 
-func (m *Manager) ServiceContainerList(
+func (m *manager) ServiceContainerList(
 	ctx context.Context,
 	serviceID string,
 	options ...ContainerListOption,
@@ -39,7 +39,7 @@ func (m *Manager) ServiceContainerList(
 	return m.ContainerList(ctx, options...)
 }
 
-func (m *Manager) ServiceContainerGetActive(
+func (m *manager) ServiceContainerGetActive(
 	ctx context.Context,
 	serviceID string,
 	maxRetry int,
@@ -48,7 +48,7 @@ func (m *Manager) ServiceContainerGetActive(
 	return m.serviceContainerGetActive(ctx, serviceID, -1, maxRetry, retryDelay)
 }
 
-func (m *Manager) serviceContainerGetActive(
+func (m *manager) serviceContainerGetActive(
 	ctx context.Context,
 	serviceID string,
 	retry int,
@@ -74,7 +74,7 @@ func (m *Manager) serviceContainerGetActive(
 	return m.serviceContainerGetActive(ctx, serviceID, retry+1, maxRetry, retryDelay)
 }
 
-func (m *Manager) ContainerInspect(
+func (m *manager) ContainerInspect(
 	ctx context.Context,
 	containerID string,
 ) (*container.InspectResponse, error) {
@@ -82,7 +82,7 @@ func (m *Manager) ContainerInspect(
 	return respMap[containerID], errMap[containerID]
 }
 
-func (m *Manager) ContainerInspectMulti(
+func (m *manager) ContainerInspectMulti(
 	ctx context.Context,
 	containerIDs []string,
 ) (map[string]*container.InspectResponse, map[string]error) {
@@ -118,7 +118,7 @@ func (m *Manager) ContainerInspectMulti(
 
 type ContainerStopOption func(options *container.StopOptions)
 
-func (m *Manager) ContainerRestart(
+func (m *manager) ContainerRestart(
 	ctx context.Context,
 	containerID string,
 	options ...ContainerStopOption,
@@ -130,7 +130,7 @@ func (m *Manager) ContainerRestart(
 	return nil
 }
 
-func (m *Manager) ContainerRestartMulti(
+func (m *manager) ContainerRestartMulti(
 	ctx context.Context,
 	containerIDs []string,
 	options ...ContainerStopOption,
@@ -167,7 +167,7 @@ func (m *Manager) ContainerRestartMulti(
 	return allErrors
 }
 
-func (m *Manager) ContainerKill(
+func (m *manager) ContainerKill(
 	ctx context.Context,
 	containerID string,
 	signal string,
@@ -179,7 +179,7 @@ func (m *Manager) ContainerKill(
 	return nil
 }
 
-func (m *Manager) ContainerKillMulti(
+func (m *manager) ContainerKillMulti(
 	ctx context.Context,
 	containerIDs []string,
 	signal string,

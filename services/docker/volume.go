@@ -11,7 +11,7 @@ import (
 
 type VolumeListOption func(*volume.ListOptions)
 
-func (m *Manager) VolumeList(
+func (m *manager) VolumeList(
 	ctx context.Context,
 	options ...VolumeListOption,
 ) (*volume.ListResponse, error) {
@@ -26,7 +26,7 @@ func (m *Manager) VolumeList(
 	return &resp, nil
 }
 
-func (m *Manager) VolumeCreate(
+func (m *manager) VolumeCreate(
 	ctx context.Context,
 	options *volume.CreateOptions,
 ) (*volume.Volume, error) {
@@ -37,7 +37,7 @@ func (m *Manager) VolumeCreate(
 	return &resp, nil
 }
 
-func (m *Manager) VolumeUpdate(
+func (m *manager) VolumeUpdate(
 	ctx context.Context,
 	volumeID string,
 	version *swarm.Version,
@@ -60,7 +60,7 @@ func (m *Manager) VolumeUpdate(
 	return nil
 }
 
-func (m *Manager) VolumeRemove(
+func (m *manager) VolumeRemove(
 	ctx context.Context,
 	volumeID string,
 	force bool,
@@ -72,7 +72,7 @@ func (m *Manager) VolumeRemove(
 	return nil
 }
 
-func (m *Manager) VolumeInspect(
+func (m *manager) VolumeInspect(
 	ctx context.Context,
 	volumeID string,
 ) (*volume.Volume, []byte, error) {

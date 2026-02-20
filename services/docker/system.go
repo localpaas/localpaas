@@ -8,7 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
-func (m *Manager) SystemInfo(ctx context.Context) (*system.Info, error) {
+func (m *manager) SystemInfo(ctx context.Context) (*system.Info, error) {
 	resp, err := m.client.Info(ctx)
 	if err != nil {
 		return nil, apperrors.NewInfra(err)

@@ -10,7 +10,7 @@ import (
 
 type NodeListOption func(*swarm.NodeListOptions)
 
-func (m *Manager) NodeList(
+func (m *manager) NodeList(
 	ctx context.Context,
 	options ...NodeListOption,
 ) ([]swarm.Node, error) {
@@ -25,7 +25,7 @@ func (m *Manager) NodeList(
 	return resp, nil
 }
 
-func (m *Manager) NodeInspect(
+func (m *manager) NodeInspect(
 	ctx context.Context,
 	nodeID string,
 ) (*swarm.Node, []byte, error) {
@@ -36,7 +36,7 @@ func (m *Manager) NodeInspect(
 	return &resp, data, nil
 }
 
-func (m *Manager) NodeUpdate(
+func (m *manager) NodeUpdate(
 	ctx context.Context,
 	nodeID string,
 	version *swarm.Version,
@@ -67,7 +67,7 @@ func NodeRemoveForce(force bool) NodeRemoveOption {
 	}
 }
 
-func (m *Manager) NodeRemove(
+func (m *manager) NodeRemove(
 	ctx context.Context,
 	nodeID string,
 	options ...NodeRemoveOption,

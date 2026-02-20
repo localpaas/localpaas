@@ -29,7 +29,7 @@ type AppUC struct {
 	envVarService  envvarservice.EnvVarService
 	nginxService   nginxservice.NginxService
 	clusterService clusterservice.ClusterService
-	dockerManager  *docker.Manager
+	dockerManager  docker.Manager
 	taskQueue      queue.TaskQueue
 }
 
@@ -47,7 +47,7 @@ func NewAppUC(
 	envVarService envvarservice.EnvVarService,
 	nginxService nginxservice.NginxService,
 	clusterService clusterservice.ClusterService,
-	dockerManager *docker.Manager,
+	dockerManager docker.Manager,
 	taskQueue queue.TaskQueue,
 ) *AppUC {
 	return &AppUC{

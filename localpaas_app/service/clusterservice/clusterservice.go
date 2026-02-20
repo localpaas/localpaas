@@ -18,7 +18,7 @@ type ClusterService interface {
 func NewClusterService(
 	settingRepo repository.SettingRepo,
 	permissionManager permission.Manager,
-	dockerManager *docker.Manager,
+	dockerManager docker.Manager,
 ) ClusterService {
 	return &clusterService{
 		settingRepo:       settingRepo,
@@ -30,5 +30,5 @@ func NewClusterService(
 type clusterService struct {
 	settingRepo       repository.SettingRepo
 	permissionManager permission.Manager
-	dockerManager     *docker.Manager
+	dockerManager     docker.Manager
 }

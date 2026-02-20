@@ -7,12 +7,12 @@ import (
 
 type RegistryAuthUC struct {
 	*settings.BaseSettingUC
-	dockerManager *docker.Manager
+	dockerManager docker.Manager
 }
 
 func NewRegistryAuthUC(
 	baseSettingUC *settings.BaseSettingUC,
-	dockerManager *docker.Manager,
+	dockerManager docker.Manager,
 ) *RegistryAuthUC {
 	return &RegistryAuthUC{
 		BaseSettingUC: baseSettingUC,

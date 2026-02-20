@@ -21,7 +21,7 @@ type AppDeploymentUC struct {
 	taskControlRepo    cacherepository.TaskControlRepo
 	appService         appservice.AppService
 	taskService        taskservice.TaskService
-	dockerManager      *docker.Manager
+	dockerManager      docker.Manager
 }
 
 func NewAppDeploymentUC(
@@ -35,7 +35,7 @@ func NewAppDeploymentUC(
 	taskControlRepo cacherepository.TaskControlRepo,
 	appService appservice.AppService,
 	taskService taskservice.TaskService,
-	dockerManager *docker.Manager,
+	dockerManager docker.Manager,
 ) *AppDeploymentUC {
 	return &AppDeploymentUC{
 		db:                 db,

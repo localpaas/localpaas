@@ -11,7 +11,7 @@ import (
 
 type ImageBuildOption func(options *build.ImageBuildOptions)
 
-func (m *Manager) ImageBuild(
+func (m *manager) ImageBuild(
 	ctx context.Context,
 	buildContext io.Reader,
 	options ...ImageBuildOption,
@@ -27,7 +27,7 @@ func (m *Manager) ImageBuild(
 	return &resp, nil
 }
 
-func (m *Manager) ImageBuildCancel(
+func (m *manager) ImageBuildCancel(
 	ctx context.Context,
 	buildID string,
 ) error {

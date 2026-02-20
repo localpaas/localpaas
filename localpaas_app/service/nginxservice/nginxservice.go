@@ -23,7 +23,7 @@ type NginxService interface {
 
 func NewNginxService(
 	settingRepo repository.SettingRepo,
-	dockerManager *docker.Manager,
+	dockerManager docker.Manager,
 ) NginxService {
 	return &nginxService{
 		settingRepo:   settingRepo,
@@ -33,5 +33,5 @@ func NewNginxService(
 
 type nginxService struct {
 	settingRepo   repository.SettingRepo
-	dockerManager *docker.Manager
+	dockerManager docker.Manager
 }

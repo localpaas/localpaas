@@ -9,7 +9,7 @@ import (
 	"github.com/localpaas/localpaas/services/docker"
 )
 
-func InitDockerManager(lc fx.Lifecycle, manager *docker.Manager, logger logging.Logger) error {
+func InitDockerManager(lc fx.Lifecycle, manager docker.Manager, logger logging.Logger) error {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			logger.Info("initializing docker manager ...")
