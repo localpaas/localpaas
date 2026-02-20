@@ -121,8 +121,8 @@ const (
 )
 
 type AppConfigData struct {
-	HttpSettings  *entity.AppHttpSettings
-	RefSettingMap map[string]*entity.Setting
+	HttpSettings *entity.AppHttpSettings
+	RefObjects   *entity.RefObjects
 
 	confPath string
 	confData map[string]*domainConfig

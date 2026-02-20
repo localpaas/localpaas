@@ -20,7 +20,7 @@ const (
 func (s *appService) EnsureSSLConfigFiles(
 	sslIDs []string,
 	forceRecreate bool,
-	refSettingMap map[string]*entity.Setting,
+	refObjects *entity.RefObjects,
 ) error {
 	certDir := config.Current.DataPathCerts()
 	err := os.MkdirAll(certDir, certDirFileMode)
@@ -38,7 +38,7 @@ func (s *appService) EnsureSSLConfigFiles(
 			continue
 		}
 
-		dbSSL := refSettingMap[sslID]
+		dbSSL := refObjects.RefSettings[sslID]
 		if dbSSL == nil {
 			return apperrors.NewNotFound("SSL").WithMsgLog("ssl %s not found", sslID)
 		}
@@ -58,7 +58,7 @@ func (s *appService) EnsureSSLConfigFiles(
 func (s *appService) EnsureBasicAuthConfigFiles(
 	basicAuthIDs []string,
 	forceRecreate bool,
-	refSettingMap map[string]*entity.Setting,
+	refObjects *entity.RefObjects,
 ) error {
 	basicAuthDir := config.Current.DataPathNginxShareBasicAuth()
 	err := os.MkdirAll(basicAuthDir, basicAuthDirFileMode)
@@ -74,7 +74,7 @@ func (s *appService) EnsureBasicAuthConfigFiles(
 			continue
 		}
 
-		dbBasicAuth := refSettingMap[authID]
+		dbBasicAuth := refObjects.RefSettings[authID]
 		if dbBasicAuth == nil {
 			return apperrors.NewNotFound("BasicAuth").WithMsgLog("basic-auth %s not found", authID)
 		}

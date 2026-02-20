@@ -17,6 +17,15 @@ type UpdateAppHttpSettingsReq struct {
 	UpdateVer int          `json:"updateVer"`
 }
 
+func (req *UpdateAppHttpSettingsReq) ToEntity() *entity.AppHttpSettings {
+	return &entity.AppHttpSettings{
+		Enabled: req.Enabled,
+		Domains: gofn.MapSlice(req.Domains, func(r *DomainReq) *entity.AppDomain {
+			return r.ToEntity()
+		}),
+	}
+}
+
 type DomainReq struct {
 	Enabled         bool                `json:"enabled"`
 	Domain          string              `json:"domain"`
@@ -43,7 +52,7 @@ func (req *DomainReq) ToEntity() *entity.AppDomain {
 	}
 }
 
-//nolint
+// nolint
 func (req *DomainReq) validate(field string) (res []vld.Validator) {
 	if req == nil {
 		return

@@ -24,27 +24,22 @@ func (uc *AppUC) UpdateAppHttpSettings(
 	auth *basedto.Auth,
 	req *appdto.UpdateAppHttpSettingsReq,
 ) (*appdto.UpdateAppHttpSettingsResp, error) {
-	var data *updateAppHttpSettingsData
-	var persistingData *persistingAppData
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
-		data = &updateAppHttpSettingsData{}
+		data := &updateAppHttpSettingsData{}
 		err := uc.loadAppHttpSettingsForUpdate(ctx, db, req, data)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
 
-		persistingData = &persistingAppData{}
-		err = uc.prepareUpdatingAppHttpSettings(ctx, db, req, data, persistingData)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
+		persistingData := &persistingAppData{}
+		uc.prepareUpdatingAppHttpSettings(ctx, data, persistingData)
 
 		err = uc.persistData(ctx, db, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
 
-		err = uc.applyAppHttpSettings(ctx, db, data)
+		err = uc.applyAppHttpSettings(ctx, data)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -58,11 +53,10 @@ func (uc *AppUC) UpdateAppHttpSettings(
 }
 
 type updateAppHttpSettingsData struct {
-	App              *entity.App
-	HttpSettings     *entity.Setting
-	CurrHttpSettings *entity.AppHttpSettings
-	Errors           []string // stores errors
-	Warnings         []string // stores warnings
+	App             *entity.App
+	HttpSettings    *entity.Setting
+	NewHttpSettings *entity.AppHttpSettings
+	RefObjects      *entity.RefObjects
 }
 
 func (uc *AppUC) loadAppHttpSettingsForUpdate(
@@ -89,16 +83,24 @@ func (uc *AppUC) loadAppHttpSettingsForUpdate(
 		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
 	}
 
+	newHttpSettings := req.ToEntity()
+	data.NewHttpSettings = newHttpSettings
+
+	// Make sure all reference settings used in this settings exist actively
+	data.RefObjects, err = uc.settingService.LoadReferenceObjectsByIDs(ctx, db, base.SettingScopeApp,
+		app.ID, app.ProjectID, true, true, newHttpSettings.GetRefObjectIDs())
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
 	return nil
 }
 
 func (uc *AppUC) prepareUpdatingAppHttpSettings(
-	ctx context.Context,
-	db database.IDB,
-	req *appdto.UpdateAppHttpSettingsReq,
+	_ context.Context,
 	data *updateAppHttpSettingsData,
 	persistingData *persistingAppData,
-) error {
+) {
 	app := data.App
 	setting := data.HttpSettings
 	timeNow := timeutil.NowUTC()
@@ -117,74 +119,34 @@ func (uc *AppUC) prepareUpdatingAppHttpSettings(
 	setting.UpdatedAt = timeNow
 	setting.Status = base.SettingStatusActive
 	setting.ExpireAt = time.Time{}
-
-	newHttpSettings, err := uc.buildNewAppHttpSettings(req, data)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	setting.MustSetData(newHttpSettings)
+	setting.MustSetData(data.NewHttpSettings)
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
-
-	// Make sure all reference settings used in this deployment settings exist actively
-	_, err = uc.settingService.LoadReferenceObjects(ctx, db, base.SettingScopeApp, app.ID, app.ProjectID,
-		true, true, setting)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	return nil
-}
-
-//nolint:unparam
-func (uc *AppUC) buildNewAppHttpSettings(
-	req *appdto.UpdateAppHttpSettingsReq,
-	data *updateAppHttpSettingsData,
-) (*entity.AppHttpSettings, error) {
-	newHttpSettings := data.CurrHttpSettings
-	if newHttpSettings == nil {
-		newHttpSettings = &entity.AppHttpSettings{}
-	}
-
-	newHttpSettings.Enabled = req.Enabled
-	newHttpSettings.Domains = gofn.MapSlice(req.Domains, func(r *appdto.DomainReq) *entity.AppDomain {
-		return r.ToEntity()
-	})
-
-	return newHttpSettings, nil
 }
 
 func (uc *AppUC) applyAppHttpSettings(
 	ctx context.Context,
-	db database.IDB,
 	data *updateAppHttpSettingsData,
 ) error {
-	refObjects, err := uc.settingService.LoadReferenceObjects(ctx, db, base.SettingScopeApp, data.App.ID,
-		data.App.ProjectID, true, true, data.HttpSettings)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
 	appHttpSettings, err := data.HttpSettings.AsAppHttpSettings()
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
 	allSSLIDs := appHttpSettings.GetSSLCertIDs()
-	err = uc.appService.EnsureSSLConfigFiles(allSSLIDs, false, refObjects.RefSettings)
+	err = uc.appService.EnsureSSLConfigFiles(allSSLIDs, false, data.RefObjects)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
 	allBasicAuthIDs := appHttpSettings.GetBasicAuthIDs()
-	err = uc.appService.EnsureBasicAuthConfigFiles(allBasicAuthIDs, false, refObjects.RefSettings)
+	err = uc.appService.EnsureBasicAuthConfigFiles(allBasicAuthIDs, false, data.RefObjects)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
 	err = uc.nginxService.ApplyAppConfig(ctx, data.App, &nginxservice.AppConfigData{
-		HttpSettings:  appHttpSettings,
-		RefSettingMap: refObjects.RefSettings,
+		HttpSettings: appHttpSettings,
+		RefObjects:   data.RefObjects,
 	})
 	if err != nil {
 		return apperrors.Wrap(err)
