@@ -34,7 +34,7 @@ func (s *Notification) GetRefObjectIDs() *RefObjectIDs {
 	}
 }
 
-func (s *Notification) HasNotificationViaEmails() bool {
+func (s *Notification) HasNotificationViaEmail() bool {
 	return s.ViaEmail != nil
 }
 

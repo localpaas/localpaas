@@ -11,7 +11,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/notification/notificationdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
@@ -36,16 +35,16 @@ type GetCronJobResp struct {
 
 type CronJobResp struct {
 	*settings.BaseSettingResp
-	CronType     base.CronJobType                               `json:"cronType"`
-	CronExpr     string                                         `json:"cronExpr"`
-	App          *basedto.NamedObjectResp                       `json:"app"`
-	InitialTime  time.Time                                      `json:"initialTime"`
-	Priority     base.TaskPriority                              `json:"priority"`
-	MaxRetry     int                                            `json:"maxRetry"`
-	RetryDelay   timeutil.Duration                              `json:"retryDelay"`
-	Timeout      timeutil.Duration                              `json:"timeout"`
-	Command      *CronJobContainerCommandResp                   `json:"command"`
-	Notification *notificationdto.DefaultResultNotifSettingResp `json:"notification"`
+	CronType     base.CronJobType             `json:"cronType"`
+	CronExpr     string                       `json:"cronExpr"`
+	App          *basedto.NamedObjectResp     `json:"app"`
+	InitialTime  time.Time                    `json:"initialTime"`
+	Priority     base.TaskPriority            `json:"priority"`
+	MaxRetry     int                          `json:"maxRetry"`
+	RetryDelay   timeutil.Duration            `json:"retryDelay"`
+	Timeout      timeutil.Duration            `json:"timeout"`
+	Command      *CronJobContainerCommandResp `json:"command"`
+	Notification *CronJobNotificationResp     `json:"notification"`
 }
 
 type CronJobContainerCommandResp struct {
@@ -66,6 +65,11 @@ type CronJobCommandArgResp struct {
 	Use   bool   `json:"use"`
 	Name  string `json:"name"`
 	Value string `json:"value"`
+}
+
+type CronJobNotificationResp struct {
+	Success *settings.BaseSettingResp `json:"success"`
+	Failure *settings.BaseSettingResp `json:"failure"`
 }
 
 func TransformCronJob(
@@ -89,10 +93,15 @@ func TransformCronJob(
 		}
 	}
 
-	resp.Notification, err = notificationdto.TransformDefaultResultNotifSetting(
-		config.Notification, refObjects)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
+	if resp.Notification != nil {
+		if resp.Notification.Success != nil {
+			itemResp, _ := settings.TransformSettingBase(refObjects.RefSettings[resp.Notification.Success.ID])
+			resp.Notification.Success = itemResp
+		}
+		if resp.Notification.Failure != nil {
+			itemResp, _ := settings.TransformSettingBase(refObjects.RefSettings[resp.Notification.Failure.ID])
+			resp.Notification.Failure = itemResp
+		}
 	}
 
 	return resp, nil

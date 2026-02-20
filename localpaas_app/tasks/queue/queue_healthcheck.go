@@ -31,7 +31,7 @@ type HealthcheckExecData struct {
 	Project            *entity.Project
 	App                *entity.App
 
-	// ObjectMap can be used as a cache to store objects
+	// RefObjects can be used as a cache to store objects
 	RefObjects    *entity.RefObjects
 	NotifEventMap map[string]*cacheentity.HealthcheckNotifEvent
 }

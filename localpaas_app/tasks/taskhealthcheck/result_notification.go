@@ -58,7 +58,7 @@ func (e *Executor) sendNotification(
 	slackSent := false
 	discordSent := false
 
-	if !shouldSkipNotifEmail && notification.HasNotificationViaEmails() {
+	if !shouldSkipNotifEmail && notification.HasNotificationViaEmail() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
 			err := e.sendNotificationViaEmail(ctx, db, data)
 			emailSent = err == nil

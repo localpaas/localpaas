@@ -29,17 +29,17 @@ var (
 )
 
 type CronJob struct {
-	CronType      base.CronJobType           `json:"cronType"`
-	CronExpr      string                     `json:"cronExpr"`
-	App           ObjectID                   `json:"app,omitzero"`
-	InitialTime   time.Time                  `json:"initialTime"`
-	LastSchedTime time.Time                  `json:"lastSchedTime"`
-	Priority      base.TaskPriority          `json:"priority,omitempty"`
-	MaxRetry      int                        `json:"maxRetry,omitempty"`
-	RetryDelay    timeutil.Duration          `json:"retryDelay,omitempty"`
-	Timeout       timeutil.Duration          `json:"timeout,omitempty"`
-	Command       *CronJobContainerCommand   `json:"command,omitempty"`
-	Notification  *DefaultResultNotifSetting `json:"notification,omitempty"`
+	CronType      base.CronJobType         `json:"cronType"`
+	CronExpr      string                   `json:"cronExpr"`
+	App           ObjectID                 `json:"app,omitzero"`
+	InitialTime   time.Time                `json:"initialTime"`
+	LastSchedTime time.Time                `json:"lastSchedTime"`
+	Priority      base.TaskPriority        `json:"priority,omitempty"`
+	MaxRetry      int                      `json:"maxRetry,omitempty"`
+	RetryDelay    timeutil.Duration        `json:"retryDelay,omitempty"`
+	Timeout       timeutil.Duration        `json:"timeout,omitempty"`
+	Command       *CronJobContainerCommand `json:"command,omitempty"`
+	Notification  *CronJobNotification     `json:"notification,omitempty"`
 }
 
 type CronJobContainerCommand struct {
@@ -62,14 +62,27 @@ type CronJobCommandArg struct {
 	Value string `json:"value"`
 }
 
+type CronJobNotification struct {
+	Success ObjectID `json:"success"`
+	Failure ObjectID `json:"failure"`
+}
+
 func (s *CronJob) GetType() base.SettingType {
 	return base.SettingTypeCronJob
 }
 
 func (s *CronJob) GetRefObjectIDs() *RefObjectIDs {
-	refIDs := s.Notification.GetRefObjectIDs()
+	refIDs := &RefObjectIDs{}
 	if s.App.ID != "" {
 		refIDs.RefAppIDs = append(refIDs.RefAppIDs, s.App.ID)
+	}
+	if s.Notification != nil {
+		if s.Notification.Success.ID != "" {
+			refIDs.RefSettingIDs = append(refIDs.RefSettingIDs, s.Notification.Success.ID)
+		}
+		if s.Notification.Failure.ID != "" {
+			refIDs.RefSettingIDs = append(refIDs.RefSettingIDs, s.Notification.Failure.ID)
+		}
 	}
 	return refIDs
 }

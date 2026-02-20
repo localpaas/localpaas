@@ -32,8 +32,8 @@ const (
 type TaskExecData struct {
 	Task *entity.Task
 
-	// ObjectMap can be used as a cache to store objects
-	ObjectMap map[string]any
+	// RefObjects can be used as a cache to store objects
+	RefObjects *entity.RefObjects
 
 	NonCancelable bool
 	NonRetryable  bool

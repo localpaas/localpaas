@@ -17,24 +17,31 @@ func (e *Executor) sendNotification(
 	db database.IDB,
 	data *taskData,
 ) error {
-	notifSettings := data.CronJob.Notification
-	if notifSettings == nil {
+	if data.CronJob.Notification == nil {
 		return nil
 	}
 
+	notifSettingID := gofn.If(data.Task.IsDone(), data.CronJob.Notification.Success.ID,
+		data.CronJob.Notification.Failure.ID)
+	notifSetting := data.RefObjects.RefSettings[notifSettingID]
+	if notifSetting == nil {
+		return nil
+	}
+	notification := notifSetting.MustAsNotification()
+
 	var execFuncs []func(ctx context.Context) error
 
-	if notifSettings.HasViaEmailNotifSetting() {
+	if notification.HasNotificationViaEmail() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
 			return e.sendNotificationViaEmail(ctx, db, data)
 		})
 	}
-	if notifSettings.HasViaSlackNotifSetting() {
+	if notification.HasNotificationViaSlack() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
 			return e.sendNotificationViaSlack(ctx, db, data)
 		})
 	}
-	if notifSettings.HasViaDiscordNotifSetting() {
+	if notification.HasNotificationViaDiscord() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
 			return e.sendNotificationViaDiscord(ctx, db, data)
 		})
@@ -80,8 +87,9 @@ func (e *Executor) sendNotificationViaEmail(
 	db database.IDB,
 	data *taskData,
 ) error {
-	settings := gofn.If(data.Task.IsDone(), data.CronJob.Notification.Success,
-		data.CronJob.Notification.Failure)
+	settingID := gofn.If(data.Task.IsDone(), data.CronJob.Notification.Success.ID,
+		data.CronJob.Notification.Failure.ID)
+	settings := data.RefObjects.RefSettings[settingID].MustAsNotification()
 	if settings == nil || settings.ViaEmail == nil {
 		return nil
 	}
@@ -138,8 +146,9 @@ func (e *Executor) sendNotificationViaSlack(
 	db database.IDB,
 	data *taskData,
 ) error {
-	settings := gofn.If(data.Task.IsDone(), data.CronJob.Notification.Success,
-		data.CronJob.Notification.Failure)
+	settingID := gofn.If(data.Task.IsDone(), data.CronJob.Notification.Success.ID,
+		data.CronJob.Notification.Failure.ID)
+	settings := data.RefObjects.RefSettings[settingID].MustAsNotification()
 	if settings == nil || settings.ViaSlack == nil {
 		return nil
 	}
@@ -170,8 +179,9 @@ func (e *Executor) sendNotificationViaDiscord(
 	db database.IDB,
 	data *taskData,
 ) error {
-	settings := gofn.If(data.Task.IsDone(), data.CronJob.Notification.Success,
-		data.CronJob.Notification.Failure)
+	settingID := gofn.If(data.Task.IsDone(), data.CronJob.Notification.Success.ID,
+		data.CronJob.Notification.Failure.ID)
+	settings := data.RefObjects.RefSettings[settingID].MustAsNotification()
 	if settings == nil || settings.ViaDiscord == nil {
 		return nil
 	}

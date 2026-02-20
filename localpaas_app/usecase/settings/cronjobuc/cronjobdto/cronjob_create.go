@@ -11,7 +11,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/notification/notificationdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
@@ -21,16 +20,16 @@ type CreateCronJobReq struct {
 }
 
 type CronJobBaseReq struct {
-	Name         string                                        `json:"name"`
-	CronType     base.CronJobType                              `json:"cronType"`
-	CronExpr     string                                        `json:"cronExpr"`
-	App          basedto.ObjectIDReq                           `json:"app"`
-	Priority     base.TaskPriority                             `json:"priority"`
-	MaxRetry     int                                           `json:"maxRetry"`
-	RetryDelay   timeutil.Duration                             `json:"retryDelay"`
-	Timeout      timeutil.Duration                             `json:"timeout"`
-	Command      *CronJobContainerCommandReq                   `json:"command"`
-	Notification *notificationdto.DefaultResultNotifSettingReq `json:"notification"`
+	Name         string                      `json:"name"`
+	CronType     base.CronJobType            `json:"cronType"`
+	CronExpr     string                      `json:"cronExpr"`
+	App          basedto.ObjectIDReq         `json:"app"`
+	Priority     base.TaskPriority           `json:"priority"`
+	MaxRetry     int                         `json:"maxRetry"`
+	RetryDelay   timeutil.Duration           `json:"retryDelay"`
+	Timeout      timeutil.Duration           `json:"timeout"`
+	Command      *CronJobContainerCommandReq `json:"command"`
+	Notification *CronJobNotificationReq     `json:"notification"`
 }
 
 func (req *CronJobBaseReq) ToEntity() *entity.CronJob {
@@ -102,6 +101,21 @@ func (req *CronJobCommandArgReq) ToEntity() *entity.CronJobCommandArg {
 		Use:   req.Use,
 		Name:  req.Name,
 		Value: req.Value,
+	}
+}
+
+type CronJobNotificationReq struct {
+	Success basedto.ObjectIDReq `json:"success"`
+	Failure basedto.ObjectIDReq `json:"failure"`
+}
+
+func (req *CronJobNotificationReq) ToEntity() *entity.CronJobNotification {
+	if req == nil {
+		return nil
+	}
+	return &entity.CronJobNotification{
+		Success: entity.ObjectID{ID: req.Success.ID},
+		Failure: entity.ObjectID{ID: req.Failure.ID},
 	}
 }
 

@@ -47,16 +47,18 @@ func (s *settingService) LoadReferenceObjectsByIDs(
 		return refObjects, nil
 	}
 
-	// Load ref settings
-	if len(refIDs.RefSettingIDs) > 0 {
-		refSettings, err := s.LoadReferenceSettings(ctx, db, scope, objectID, parentObjectID,
-			requireActive, errorIfUnavail, refIDs.RefSettingIDs)
+	// Load ref users
+	if len(refIDs.RefUserIDs) > 0 {
+		refObjects.RefUsers, err = s.userService.LoadUsers(ctx, db, refIDs.RefUserIDs, errorIfUnavail)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}
-		refObjects.RefSettings = refSettings
 	}
 
+	// Make sure the current app id is in the list
+	if scope == base.SettingScopeApp && !gofn.Contain(refIDs.RefAppIDs, objectID) {
+		refIDs.RefAppIDs = append(refIDs.RefAppIDs, objectID)
+	}
 	// Load ref apps
 	if len(refIDs.RefAppIDs) > 0 {
 		var projectID string
@@ -66,20 +68,26 @@ func (s *settingService) LoadReferenceObjectsByIDs(
 		case base.SettingScopeApp:
 			projectID = parentObjectID
 		}
-		refApps, err := s.LoadReferenceApps(ctx, db, projectID, requireActive, errorIfUnavail, refIDs.RefAppIDs)
+		refObjects.RefApps, err = s.LoadReferenceApps(ctx, db, projectID, requireActive,
+			errorIfUnavail, refIDs.RefAppIDs)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}
-		refObjects.RefApps = refApps
 	}
 
-	// Load ref users
-	if len(refIDs.RefUserIDs) > 0 {
-		userMap, err := s.userService.LoadUsers(ctx, db, refIDs.RefUserIDs, errorIfUnavail)
+	// Load ref settings
+	if len(refIDs.RefSettingIDs) > 0 {
+		if scope == base.SettingScopeApp && parentObjectID == "" {
+			app := refObjects.RefApps[objectID]
+			if app != nil && app.Project != nil {
+				parentObjectID = app.Project.ID
+			}
+		}
+		refObjects.RefSettings, err = s.LoadReferenceSettings(ctx, db, scope, objectID, parentObjectID,
+			requireActive, errorIfUnavail, refIDs.RefSettingIDs)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}
-		refObjects.RefUsers = userMap
 	}
 
 	// Calculate recursive ref IDs to load
@@ -125,7 +133,7 @@ func (s *settingService) LoadReferenceSettings(
 	case base.SettingScopeProject:
 		settings, _, err = s.settingRepo.ListByProject(ctx, db, objectID, nil, listOpts...)
 	case base.SettingScopeApp:
-		settings, _, err = s.settingRepo.ListByApp(ctx, db, parentObjectID, objectID, nil, listOpts...)
+		settings, _, err = s.settingRepo.ListByApp(ctx, db, objectID, parentObjectID, nil, listOpts...)
 	case base.SettingScopeUser:
 		settings, _, err = s.settingRepo.ListByUser(ctx, db, objectID, nil, listOpts...)
 	}
@@ -157,28 +165,36 @@ func (s *settingService) LoadReferenceApps(
 ) (appMap map[string]*entity.App, err error) {
 	appIDs = gofn.ToSet(appIDs)
 	opts := []bunex.SelectQueryOption{
-		bunex.SelectWhereIn("app.id IN (?)", appIDs...),
+		bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
+		bunex.SelectRelation("Project",
+			bunex.SelectExcludeColumns(entity.ProjectDefaultExcludeColumns...),
+		),
 	}
 	if projectID != "" {
 		opts = append(opts, bunex.SelectWhere("app.project_id = ?", projectID))
 	}
 	if requireActive {
-		opts = append(opts, bunex.SelectWhere("app.status = ?", base.SettingStatusActive))
+		opts = append(opts, bunex.SelectWhere("app.status = ?", base.AppStatusActive))
 	}
 
-	apps, err := s.appRepo.ListByIDs(ctx, db, "", nil, opts...)
+	apps, err := s.appRepo.ListByIDs(ctx, db, "", appIDs, opts...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 	appMap = entityutil.SliceToIDMap(apps)
 
-	// Check setting existence
-	if errorIfUnavail {
-		for _, id := range appIDs {
-			if _, exists := appMap[id]; !exists {
-				return nil, apperrors.NewNotFound("App").
-					WithMsgLog("app %s not found or inactive", id)
-			}
+	for _, id := range appIDs {
+		app, exists := appMap[id]
+		if errorIfUnavail && !exists {
+			return nil, apperrors.NewNotFound("App").
+				WithMsgLog("app %s not found or inactive", id)
+		}
+		if requireActive && app.Project != nil && app.Project.Status != base.ProjectStatusActive {
+			app.Project = nil
+		}
+		if errorIfUnavail && app.Project == nil {
+			return nil, apperrors.NewNotFound("Project").
+				WithMsgLog("project %s not found", app.ProjectID)
 		}
 	}
 

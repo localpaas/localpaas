@@ -80,13 +80,15 @@ func TransformHealthcheck(
 		return nil, apperrors.Wrap(err)
 	}
 
-	if resp.Notification.Success != nil {
-		itemResp, _ := settings.TransformSettingBase(refObjects.RefSettings[resp.Notification.Success.ID])
-		resp.Notification.Success = itemResp
-	}
-	if resp.Notification.Failure != nil {
-		itemResp, _ := settings.TransformSettingBase(refObjects.RefSettings[resp.Notification.Failure.ID])
-		resp.Notification.Failure = itemResp
+	if resp.Notification != nil {
+		if resp.Notification.Success != nil {
+			itemResp, _ := settings.TransformSettingBase(refObjects.RefSettings[resp.Notification.Success.ID])
+			resp.Notification.Success = itemResp
+		}
+		if resp.Notification.Failure != nil {
+			itemResp, _ := settings.TransformSettingBase(refObjects.RefSettings[resp.Notification.Failure.ID])
+			resp.Notification.Failure = itemResp
+		}
 	}
 
 	return resp, nil

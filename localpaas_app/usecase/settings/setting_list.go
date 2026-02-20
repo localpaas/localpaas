@@ -73,7 +73,7 @@ func (uc *BaseSettingUC) ListSetting(
 		settings, paging, err = uc.SettingRepo.ListByProject(ctx, db, req.ObjectID,
 			&req.Paging, listOpts...)
 	case base.SettingScopeApp:
-		settings, paging, err = uc.SettingRepo.ListByApp(ctx, db, req.ParentObjectID, req.ObjectID,
+		settings, paging, err = uc.SettingRepo.ListByApp(ctx, db, req.ObjectID, req.ParentObjectID,
 			&req.Paging, listOpts...)
 	case base.SettingScopeUser:
 		settings, paging, err = uc.SettingRepo.ListByUser(ctx, db, req.ObjectID,

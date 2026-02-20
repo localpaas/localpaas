@@ -55,7 +55,7 @@ func (uc *BaseSettingUC) loadSettingByID(
 		setting, err = uc.SettingRepo.GetByIDAndProject(ctx, db, req.Type, id, req.ObjectID,
 			requireActive, loadOpts...)
 	case base.SettingScopeApp:
-		setting, err = uc.SettingRepo.GetByIDAndApp(ctx, db, req.Type, id, req.ParentObjectID, req.ObjectID,
+		setting, err = uc.SettingRepo.GetByIDAndApp(ctx, db, req.Type, id, req.ObjectID, req.ParentObjectID,
 			requireActive, loadOpts...)
 	case base.SettingScopeUser:
 		setting, err = uc.SettingRepo.GetByIDAndUser(ctx, db, req.Type, id, req.ObjectID,
@@ -87,7 +87,7 @@ func (uc *BaseSettingUC) checkNameConflict(
 	case base.SettingScopeProject:
 		setting, err = uc.SettingRepo.GetByNameAndProject(ctx, db, req.Type, name, req.ObjectID, false)
 	case base.SettingScopeApp:
-		setting, err = uc.SettingRepo.GetByNameAndApp(ctx, db, req.Type, name, req.ParentObjectID, req.ObjectID, false)
+		setting, err = uc.SettingRepo.GetByNameAndApp(ctx, db, req.Type, name, req.ObjectID, req.ParentObjectID, false)
 	case base.SettingScopeUser:
 		setting, err = uc.SettingRepo.GetByNameAndUser(ctx, db, req.Type, name, req.ObjectID, false)
 	case base.SettingScopeNone:
@@ -126,7 +126,7 @@ func (uc *BaseSettingUC) checkRefSettingsExistence(
 	case base.SettingScopeProject:
 		settings, _, err = uc.SettingRepo.ListByProject(ctx, db, req.ObjectID, nil, listOpts...)
 	case base.SettingScopeApp:
-		settings, _, err = uc.SettingRepo.ListByApp(ctx, db, req.ParentObjectID, req.ObjectID, nil, listOpts...)
+		settings, _, err = uc.SettingRepo.ListByApp(ctx, db, req.ObjectID, req.ParentObjectID, nil, listOpts...)
 	case base.SettingScopeUser:
 		settings, _, err = uc.SettingRepo.ListByUser(ctx, db, req.ObjectID, nil, listOpts...)
 	case base.SettingScopeNone:

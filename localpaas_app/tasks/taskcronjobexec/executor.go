@@ -13,7 +13,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/logging"
 	"github.com/localpaas/localpaas/localpaas_app/infra/rediscache"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 	"github.com/localpaas/localpaas/localpaas_app/service/appservice"
@@ -129,25 +128,16 @@ func (e *Executor) loadCronJobData(
 	logStoreKey := fmt.Sprintf("cron:%s:exec", data.CronJobSetting.ID)
 	data.LogStore = applog.NewLocalStore(logStoreKey)
 
-	if data.CronJob.App.ID != "" {
-		app, err := e.appService.LoadApp(ctx, db, "", data.CronJob.App.ID, true, true,
-			bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
-			bunex.SelectRelation("Project",
-				bunex.SelectExcludeColumns(entity.ProjectDefaultExcludeColumns...),
-			),
-		)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
-		data.App = app
-		data.Project = app.Project
-	}
-
 	// Load reference objects
-	data.RefObjects, err = e.settingService.LoadReferenceObjects(ctx, db, base.SettingScopeApp, data.App.ID,
-		data.App.ProjectID, true, true, data.CronJobSetting)
+	data.RefObjects, err = e.settingService.LoadReferenceObjects(ctx, db, base.SettingScopeApp, data.CronJob.App.ID,
+		"", true, false, data.CronJobSetting)
 	if err != nil {
 		return apperrors.Wrap(err)
+	}
+
+	if data.CronJob.App.ID != "" {
+		data.App = data.RefObjects.RefApps[data.CronJob.App.ID]
+		data.Project = data.App.Project
 	}
 
 	return nil
