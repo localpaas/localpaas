@@ -11,7 +11,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/entityutil"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
 )
 
@@ -40,7 +39,6 @@ func (uc *AppUC) GetAppDeploymentSettings(
 		App:                app,
 		DeploymentSettings: gofn.FirstOr(settings, nil),
 	}
-
 	err = uc.loadAppDeploymentSettingsRefData(ctx, uc.db, input)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -68,25 +66,20 @@ func (uc *AppUC) loadAppDeploymentSettingsRefData(
 	}
 	input.ServiceSpec = &service.Spec
 
-	if input.DeploymentSettings == nil {
-		return nil
+	refIDs := &entity.RefObjectIDs{}
+	if input.DeploymentSettings != nil {
+		refIDs = input.DeploymentSettings.MustAsAppDeploymentSettings().GetRefObjectIDs()
 	}
-	appDeplSettings, err := input.DeploymentSettings.AsAppDeploymentSettings()
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	settingIDs := appDeplSettings.GetRefObjectIDs().RefSettingIDs
 
-	settings, _, err := uc.settingRepo.ListByApp(ctx, db, app.ID, app.ProjectID, nil,
-		bunex.SelectWhere("setting.id IN (?)", bunex.In(settingIDs)),
-	)
+	refObjects, err := uc.settingService.LoadReferenceObjectsByIDs(ctx, db, base.SettingScopeApp,
+		app.ID, app.ProjectID, true, false, refIDs)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	for _, setting := range settings {
+	for _, setting := range refObjects.RefSettings {
 		setting.CurrentObjectID = app.ID
 	}
-	input.RefSettingMap = entityutil.SliceToIDMap(settings)
+	input.RefObjects = refObjects
 
 	return nil
 }

@@ -43,7 +43,7 @@ func (req *DomainReq) ToEntity() *entity.AppDomain {
 	}
 }
 
-// nolint
+//nolint
 func (req *DomainReq) validate(field string) (res []vld.Validator) {
 	if req == nil {
 		return

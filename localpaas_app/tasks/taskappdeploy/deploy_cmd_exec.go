@@ -32,14 +32,12 @@ func (e *Executor) deployStepExecCmd(
 	preDeployment bool,
 ) (err error) {
 	deployment := data.Deployment
-	if preDeployment && (deployment.Settings.PreDeploymentCommand == nil ||
-		*deployment.Settings.PreDeploymentCommand == "") {
+	if preDeployment && deployment.Settings.PreDeploymentCommand == "" {
 		return nil
 	} else {
 		data.Step = stepPreDeployCmd
 	}
-	if !preDeployment && (deployment.Settings.PostDeploymentCommand == nil ||
-		*deployment.Settings.PostDeploymentCommand == "") {
+	if !preDeployment && deployment.Settings.PostDeploymentCommand == "" {
 		return nil
 	} else {
 		data.Step = stepPostDeployCmd
@@ -72,16 +70,16 @@ func (e *Executor) deployStepExecCmd(
 
 	var cmdStr string
 	if preDeployment {
-		cmdStr = *deployment.Settings.PreDeploymentCommand
+		cmdStr = deployment.Settings.PreDeploymentCommand
 	} else {
-		cmdStr = *deployment.Settings.PostDeploymentCommand
+		cmdStr = deployment.Settings.PostDeploymentCommand
 	}
 
 	execOptions := &container.ExecOptions{
 		AttachStdout: true,
 		AttachStderr: true,
 		Cmd:          gofn.Must(shellutil.CmdSplit(cmdStr)),
-		WorkingDir:   gofn.PtrValueOrEmpty(deployment.Settings.WorkingDir),
+		WorkingDir:   deployment.Settings.WorkingDir,
 		Tty:          true,
 		ConsoleSize:  &docker.DefaultConsoleSize,
 	}

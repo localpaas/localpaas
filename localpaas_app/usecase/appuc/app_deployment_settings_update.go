@@ -12,7 +12,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/githelper"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
@@ -25,17 +24,16 @@ func (uc *AppUC) UpdateAppDeploymentSettings(
 	auth *basedto.Auth,
 	req *appdto.UpdateAppDeploymentSettingsReq,
 ) (*appdto.UpdateAppDeploymentSettingsResp, error) {
-	var data *updateAppDeploymentSettingsData
 	var persistingData *persistingAppData
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
-		data = &updateAppDeploymentSettingsData{}
+		data := &updateAppDeploymentSettingsData{}
 		err := uc.loadAppDeploymentSettingsForUpdate(ctx, db, req, data)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
 
 		persistingData = &persistingAppData{}
-		err = uc.prepareUpdatingAppDeploymentSettings(ctx, db, req, data, persistingData)
+		err = uc.prepareUpdatingAppDeploymentSettings(ctx, data, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -59,12 +57,12 @@ func (uc *AppUC) UpdateAppDeploymentSettings(
 }
 
 type updateAppDeploymentSettingsData struct {
-	App                    *entity.App
-	DeploymentSettings     *entity.Setting
-	CurrDeploymentSettings *entity.AppDeploymentSettings
-	RegistryAuth           *entity.Setting
-	Errors                 []string // stores errors
-	Warnings               []string // stores warnings
+	App                   *entity.App
+	DeploymentSettings    *entity.Setting
+	NewDeploymentSettings *entity.AppDeploymentSettings
+	RegistryAuth          *entity.Setting
+	Errors                []string // stores errors
+	Warnings              []string // stores warnings
 }
 
 func (uc *AppUC) loadAppDeploymentSettingsForUpdate(
@@ -92,19 +90,21 @@ func (uc *AppUC) loadAppDeploymentSettingsForUpdate(
 		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
 	}
 
-	// Parse the current deployment settings
-	if deploymentSettings != nil && deploymentSettings.IsActive() {
-		settingData, err := deploymentSettings.AsAppDeploymentSettings()
-		if err != nil {
-			return apperrors.New(err).WithMsgLog("failed to parse app deployment settings")
-		}
-		data.CurrDeploymentSettings = settingData
+	newDeploymentSettings := req.ToEntity()
+	data.NewDeploymentSettings = newDeploymentSettings
+
+	// Make sure all reference settings used in this settings exist actively
+	_, err = uc.settingService.LoadReferenceObjectsByIDs(ctx, db, base.SettingScopeApp, app.ID, app.ProjectID,
+		true, true, newDeploymentSettings.GetRefObjectIDs())
+	if err != nil {
+		return apperrors.Wrap(err)
 	}
 
-	if req.RepoSource != nil {
+	repoSource := newDeploymentSettings.RepoSource
+	if repoSource != nil {
 		// Normalize repo type (currently supports git type only)
-		if req.RepoSource.RepoType == base.RepoTypeGit {
-			req.RepoSource.RepoRef = string(githelper.NormalizeRepoRef(req.RepoSource.RepoRef))
+		if repoSource.RepoType == base.RepoTypeGit {
+			repoSource.RepoRef = string(githelper.NormalizeRepoRef(repoSource.RepoRef))
 		}
 
 		// When the cluster has multiple nodes, the result image must be pushed to a registry
@@ -113,7 +113,7 @@ func (uc *AppUC) loadAppDeploymentSettingsForUpdate(
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
-		if isMultiNode && req.RepoSource.PushToRegistry.ID == "" {
+		if isMultiNode && repoSource.PushToRegistry.ID == "" {
 			return apperrors.Wrap(apperrors.ErrMultiNodeClusterRequireRegistryForImages)
 		}
 	}
@@ -122,9 +122,7 @@ func (uc *AppUC) loadAppDeploymentSettingsForUpdate(
 }
 
 func (uc *AppUC) prepareUpdatingAppDeploymentSettings(
-	ctx context.Context,
-	db database.IDB,
-	req *appdto.UpdateAppDeploymentSettingsReq,
+	_ context.Context,
 	data *updateAppDeploymentSettingsData,
 	persistingData *persistingAppData,
 ) error {
@@ -146,24 +144,11 @@ func (uc *AppUC) prepareUpdatingAppDeploymentSettings(
 	setting.UpdatedAt = timeNow
 	setting.ExpireAt = time.Time{}
 	setting.Status = base.SettingStatusActive
-
-	newDeploymentSettings, err := uc.buildNewAppDeploymentSettings(req, data)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	// Validation: Make sure all reference settings used in this deployment settings exist actively
-	_, err = uc.settingService.LoadReferenceObjects(ctx, db, base.SettingScopeApp, app.ID, app.ProjectID,
-		true, true, setting)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	setting.MustSetData(newDeploymentSettings)
+	setting.MustSetData(data.NewDeploymentSettings)
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 
 	// Create a deployment and a task for it
-	deployment, deploymentTask, err := uc.appService.CreateDeployment(app, newDeploymentSettings)
+	deployment, deploymentTask, err := uc.appService.CreateDeployment(app, data.NewDeploymentSettings)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -176,39 +161,6 @@ func (uc *AppUC) prepareUpdatingAppDeploymentSettings(
 	persistingData.UpsertingTasks = append(persistingData.UpsertingTasks, deploymentTask)
 
 	return nil
-}
-
-func (uc *AppUC) buildNewAppDeploymentSettings(
-	req *appdto.UpdateAppDeploymentSettingsReq,
-	data *updateAppDeploymentSettingsData,
-) (*entity.AppDeploymentSettings, error) {
-	newDeploymentSettings := data.CurrDeploymentSettings
-	if newDeploymentSettings == nil {
-		newDeploymentSettings = &entity.AppDeploymentSettings{}
-	}
-
-	newDeploymentSettings.ActiveMethod = req.ActiveMethod
-	if req.ImageSource != nil {
-		err := copier.Copy(&newDeploymentSettings.ImageSource, req.ImageSource)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-	}
-	if req.RepoSource != nil {
-		err := copier.Copy(&newDeploymentSettings.RepoSource, req.RepoSource)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-	}
-
-	if req.PreDeploymentCommand != nil {
-		newDeploymentSettings.PreDeploymentCommand = req.PreDeploymentCommand
-	}
-	if req.PostDeploymentCommand != nil {
-		newDeploymentSettings.PostDeploymentCommand = req.PostDeploymentCommand
-	}
-
-	return newDeploymentSettings, nil
 }
 
 func (uc *AppUC) postTransactionAppDeploymentSettings(

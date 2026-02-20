@@ -9,6 +9,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/config"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
 )
@@ -18,25 +19,32 @@ func (e *Executor) notifyForDeployment(
 	db database.IDB,
 	data *taskData,
 ) error {
-	if data.NotifSettings == nil || !data.NotifSettings.HasDeploymentNotifSetting() {
+	if data.Deployment.Settings.Notification == nil {
 		return nil
 	}
-	notifSettings := data.NotifSettings.Deployment
+	notifSettingID := gofn.If(data.Task.IsDone(), data.Deployment.Settings.Notification.Success.ID,
+		data.Deployment.Settings.Notification.Failure.ID)
+	notifSetting := data.RefObjects.RefSettings[notifSettingID]
+	if notifSetting == nil {
+		return nil
+	}
+	notification := notifSetting.MustAsNotification()
+
 	var execFuncs []func(ctx context.Context) error
 
-	if notifSettings.HasViaEmailNotifSetting() {
+	if notification.HasNotificationViaEmail() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
-			return e.notifyForDeploymentViaEmail(ctx, db, data)
+			return e.notifyForDeploymentViaEmail(ctx, db, notification, data)
 		})
 	}
-	if notifSettings.HasViaSlackNotifSetting() {
+	if notification.HasNotificationViaSlack() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
-			return e.notifyForDeploymentViaSlack(ctx, db, data)
+			return e.notifyForDeploymentViaSlack(ctx, db, notification, data)
 		})
 	}
-	if notifSettings.HasViaDiscordNotifSetting() {
+	if notification.HasNotificationViaDiscord() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
-			return e.notifyForDeploymentViaDiscord(ctx, db, data)
+			return e.notifyForDeploymentViaDiscord(ctx, db, notification, data)
 		})
 	}
 	if len(execFuncs) == 0 {
@@ -84,15 +92,14 @@ func (e *Executor) buildDeploymentNotifMsgData(
 func (e *Executor) notifyForDeploymentViaEmail(
 	ctx context.Context,
 	db database.IDB,
+	notification *entity.Notification,
 	data *taskData,
 ) error {
-	settings := gofn.If(data.Deployment.IsDone(), data.NotifSettings.Deployment.Success,
-		data.NotifSettings.Deployment.Failure)
-	if settings == nil || settings.ViaEmail == nil {
+	if notification == nil || notification.ViaEmail == nil {
 		return nil
 	}
 
-	emailSetting := data.RefObjects.RefSettings[settings.ViaEmail.Sender.ID]
+	emailSetting := data.RefObjects.RefSettings[notification.ViaEmail.Sender.ID]
 	if emailSetting == nil {
 		return apperrors.NewMissing("Sender email account")
 	}
@@ -101,8 +108,8 @@ func (e *Executor) notifyForDeploymentViaEmail(
 		return apperrors.NewMissing("Sender email account")
 	}
 
-	userMap, err := e.userService.LoadProjectUsers(ctx, db, data.Project, settings.ViaEmail.ToProjectMembers,
-		settings.ViaEmail.ToProjectOwners, settings.ViaEmail.ToAllAdmins)
+	userMap, err := e.userService.LoadProjectUsers(ctx, db, data.Project, notification.ViaEmail.ToProjectMembers,
+		notification.ViaEmail.ToProjectOwners, notification.ViaEmail.ToAllAdmins)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -111,8 +118,8 @@ func (e *Executor) notifyForDeploymentViaEmail(
 	for _, user := range userMap {
 		userEmails = append(userEmails, user.Email)
 	}
-	if len(settings.ViaEmail.ToAddresses) > 0 {
-		userEmails = gofn.ToSet(append(userEmails, settings.ViaEmail.ToAddresses...))
+	if len(notification.ViaEmail.ToAddresses) > 0 {
+		userEmails = gofn.ToSet(append(userEmails, notification.ViaEmail.ToAddresses...))
 	}
 	if len(userEmails) == 0 {
 		return nil
@@ -142,15 +149,14 @@ func (e *Executor) notifyForDeploymentViaEmail(
 func (e *Executor) notifyForDeploymentViaSlack(
 	ctx context.Context,
 	db database.IDB,
+	notification *entity.Notification,
 	data *taskData,
 ) error {
-	settings := gofn.If(data.Deployment.IsDone(), data.NotifSettings.Deployment.Success,
-		data.NotifSettings.Deployment.Failure)
-	if settings == nil || settings.ViaSlack == nil {
+	if notification == nil || notification.ViaSlack == nil {
 		return nil
 	}
 
-	imSetting := data.RefObjects.RefSettings[settings.ViaSlack.Webhook.ID]
+	imSetting := data.RefObjects.RefSettings[notification.ViaSlack.Webhook.ID]
 	if imSetting == nil {
 		return apperrors.NewMissing("Slack webhook")
 	}
@@ -174,15 +180,14 @@ func (e *Executor) notifyForDeploymentViaSlack(
 func (e *Executor) notifyForDeploymentViaDiscord(
 	ctx context.Context,
 	db database.IDB,
+	notification *entity.Notification,
 	data *taskData,
 ) error {
-	settings := gofn.If(data.Deployment.IsDone(), data.NotifSettings.Deployment.Success,
-		data.NotifSettings.Deployment.Failure)
-	if settings == nil || settings.ViaDiscord == nil {
+	if notification == nil || notification.ViaDiscord == nil {
 		return nil
 	}
 
-	imSetting := data.RefObjects.RefSettings[settings.ViaDiscord.Webhook.ID]
+	imSetting := data.RefObjects.RefSettings[notification.ViaDiscord.Webhook.ID]
 	if imSetting == nil {
 		return apperrors.NewMissing("Discord webhook")
 	}

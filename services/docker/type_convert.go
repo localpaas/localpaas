@@ -168,7 +168,11 @@ func ConvertFromServiceCommand(cmd []string, args []string) string {
 }
 
 func ApplyServiceCommand(contSpec *swarm.ContainerSpec, cmd string) {
-	contSpec.Command = gofn.Must(shellutil.CmdSplit(cmd))
+	if cmd == "" {
+		contSpec.Command = nil
+	} else {
+		contSpec.Command = gofn.Must(shellutil.CmdSplit(cmd))
+	}
 }
 
 func ConvertFromServicePrivileges(privileges *swarm.Privileges) (res *Privileges) {

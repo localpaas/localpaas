@@ -1,7 +1,7 @@
 package base
 
 var (
-	//nolint
+	//nolint:mnd
 	mapRoleValue = map[UserRole]int{
 		UserRoleAdmin:  100,
 		UserRoleMember: 10,

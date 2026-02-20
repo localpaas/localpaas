@@ -44,6 +44,8 @@ type DeploymentSettingsResp struct {
 	PreDeploymentCommand  string `json:"preDeploymentCommand,omitempty"`
 	PostDeploymentCommand string `json:"postDeploymentCommand,omitempty"`
 
+	Notification *DeploymentNotificationResp `json:"notification,omitempty"`
+
 	UpdateVer int `json:"updateVer"`
 }
 
@@ -64,15 +66,21 @@ type DeploymentRepoSourceResp struct {
 	PushToRegistry *settings.BaseSettingResp `json:"pushToRegistry"`
 }
 
+type DeploymentNotificationResp struct {
+	Success *settings.BaseSettingResp `json:"success"`
+	Failure *settings.BaseSettingResp `json:"failure"`
+}
+
 type AppDeploymentSettingsTransformInput struct {
 	App                *entity.App
 	DeploymentSettings *entity.Setting
 	ServiceSpec        *swarm.ServiceSpec
-	RefSettingMap      map[string]*entity.Setting
+	RefObjects         *entity.RefObjects
 }
 
 func TransformDeploymentSettings(input *AppDeploymentSettingsTransformInput) (resp *DeploymentSettingsResp, err error) {
 	resp = &DeploymentSettingsResp{}
+	refObjects := input.RefObjects
 
 	if input.ServiceSpec != nil && input.ServiceSpec.TaskTemplate.ContainerSpec != nil {
 		resp.WorkingDir = input.ServiceSpec.TaskTemplate.ContainerSpec.Dir
@@ -92,18 +100,29 @@ func TransformDeploymentSettings(input *AppDeploymentSettingsTransformInput) (re
 
 	if resp.ImageSource != nil { //nolint:nestif
 		if resp.ImageSource.RegistryAuth != nil && resp.ImageSource.RegistryAuth.ID != "" {
-			settingResp, _ := settings.TransformSettingBase(input.RefSettingMap[resp.ImageSource.RegistryAuth.ID])
-			resp.ImageSource.RegistryAuth = settingResp
+			itemResp, _ := settings.TransformSettingBase(refObjects.RefSettings[resp.ImageSource.RegistryAuth.ID])
+			resp.ImageSource.RegistryAuth = itemResp
 		}
 	}
 	if resp.RepoSource != nil { //nolint:nestif
 		if resp.RepoSource.Credentials != nil && resp.RepoSource.Credentials.ID != "" {
-			settingResp, _ := settings.TransformSettingBase(input.RefSettingMap[resp.RepoSource.Credentials.ID])
-			resp.RepoSource.Credentials = settingResp
+			itemResp, _ := settings.TransformSettingBase(refObjects.RefSettings[resp.RepoSource.Credentials.ID])
+			resp.RepoSource.Credentials = itemResp
 		}
 		if resp.RepoSource.PushToRegistry != nil && resp.RepoSource.PushToRegistry.ID != "" {
-			settingResp, _ := settings.TransformSettingBase(input.RefSettingMap[resp.RepoSource.PushToRegistry.ID])
-			resp.RepoSource.PushToRegistry = settingResp
+			itemResp, _ := settings.TransformSettingBase(refObjects.RefSettings[resp.RepoSource.PushToRegistry.ID])
+			resp.RepoSource.PushToRegistry = itemResp
+		}
+	}
+
+	if resp.Notification != nil {
+		if resp.Notification.Success != nil {
+			itemResp, _ := settings.TransformSettingBase(refObjects.RefSettings[resp.Notification.Success.ID])
+			resp.Notification.Success = itemResp
+		}
+		if resp.Notification.Failure != nil {
+			itemResp, _ := settings.TransformSettingBase(refObjects.RefSettings[resp.Notification.Failure.ID])
+			resp.Notification.Failure = itemResp
 		}
 	}
 

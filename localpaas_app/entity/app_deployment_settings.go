@@ -24,10 +24,12 @@ type AppDeploymentSettings struct {
 	RepoSource   *DeploymentRepoSource  `json:"repoSource"`
 	ActiveMethod base.DeploymentMethod  `json:"activeMethod"`
 
-	Command               *string `json:"command,omitempty"`
-	WorkingDir            *string `json:"workingDir,omitempty"`
-	PreDeploymentCommand  *string `json:"preDeploymentCommand,omitempty"`
-	PostDeploymentCommand *string `json:"postDeploymentCommand,omitempty"`
+	Command               string `json:"command,omitempty"`
+	WorkingDir            string `json:"workingDir,omitempty"`
+	PreDeploymentCommand  string `json:"preDeploymentCommand,omitempty"`
+	PostDeploymentCommand string `json:"postDeploymentCommand,omitempty"`
+
+	Notification *AppDeploymentNotification `json:"notification,omitempty"`
 }
 
 type DeploymentImageSource struct {
@@ -52,14 +54,28 @@ type RepoCredentials struct {
 	Type base.SettingType `json:"type"`
 }
 
+type AppDeploymentNotification struct {
+	Success ObjectID `json:"success"`
+	Failure ObjectID `json:"failure"`
+}
+
 func (s *AppDeploymentSettings) GetType() base.SettingType {
 	return base.SettingTypeAppDeployment
 }
 
 func (s *AppDeploymentSettings) GetRefObjectIDs() *RefObjectIDs {
-	return &RefObjectIDs{
+	refIDs := &RefObjectIDs{
 		RefSettingIDs: gofn.Flatten(s.GetRegistryAuthIDs(), s.GetGitCredentialIDs()),
 	}
+	if s.Notification != nil {
+		if s.Notification.Success.ID != "" {
+			refIDs.RefSettingIDs = append(refIDs.RefSettingIDs, s.Notification.Success.ID)
+		}
+		if s.Notification.Failure.ID != "" {
+			refIDs.RefSettingIDs = append(refIDs.RefSettingIDs, s.Notification.Failure.ID)
+		}
+	}
+	return refIDs
 }
 
 func (s *AppDeploymentSettings) GetRegistryAuthIDs() (res []string) {

@@ -23,7 +23,7 @@ type SettingParser interface {
 }
 
 var (
-	settingParserMap = make(map[base.SettingType]SettingParser, 20) //nolint
+	settingParserMap = make(map[base.SettingType]SettingParser, 20) //nolint:mnd
 )
 
 //nolint:unparam

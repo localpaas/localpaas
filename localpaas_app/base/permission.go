@@ -71,13 +71,6 @@ const (
 
 var (
 	AllActionTypes = []ActionType{ActionTypeRead, ActionTypeWrite, ActionTypeDelete}
-
-	//nolint
-	mapActionValues = map[ActionType]int{
-		ActionTypeRead:   1,
-		ActionTypeWrite:  2,
-		ActionTypeDelete: 3,
-	}
 )
 
 type AccessActions struct {

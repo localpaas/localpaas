@@ -167,10 +167,3 @@ VALUES ('01JAB9XED0GTXBSQDFVYAJ8WE1', 'oauth', 'github', 'Github', 'active', tru
         '{"viaEmail": {"sender": {"id": "01JAB9XED0GTXBSQDFVYAJ8WN1"}, "toAddresses": ["tiendc@gmail.com"]}, "viaSlack": {"webhook": {"id": "01JAB9XED0GTXBSQDFVYAJ8WH1"}}, "viaDiscord": {"webhook": {"id": "01JAB9XED0GTXBSQDFVYAJ8WI1"}}, "minSendInterval": "30s"}',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00')
 ON CONFLICT DO NOTHING;
-
--- Settings: Projects/Apps
-INSERT INTO settings (id, object_id, type, kind, name, status, is_default, data, created_at, updated_at)
-VALUES ('01JAB9XED0GTXBSQDFVYAJ8AA1', '01JAB9XED0GTXBSQDFVYAJ8AA1', 'app-notification', '', 'default', 'active', true,
-        '{"deployment": {"success": {"viaEmail": {"toProjectMembers": true, "toAllAdmins": true}}}}',
-        '2025-10-01 00:00:00', '2025-10-01 00:00:00')
-ON CONFLICT DO NOTHING;

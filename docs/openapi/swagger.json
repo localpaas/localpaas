@@ -18048,6 +18048,18 @@
         "required" : [ "email", "fullName", "id", "photo", "username" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_entity.AppDeploymentNotification" : {
+        "properties" : {
+          "failure" : {
+            "type" : "string"
+          },
+          "success" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "failure", "success" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_entity.AppDeploymentOutput" : {
         "properties" : {
           "commitHash" : {
@@ -18075,6 +18087,9 @@
           },
           "imageSource" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.DeploymentImageSource"
+          },
+          "notification" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.AppDeploymentNotification"
           },
           "postDeploymentCommand" : {
             "type" : "string"
@@ -18540,6 +18555,30 @@
         "required" : [ "image", "registryAuth" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentNotificationReq" : {
+        "properties" : {
+          "failure" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
+          },
+          "success" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
+          }
+        },
+        "required" : [ "failure", "success" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentNotificationResp" : {
+        "properties" : {
+          "failure" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
+          },
+          "success" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
+          }
+        },
+        "required" : [ "failure", "success" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentRepoSourceReq" : {
         "properties" : {
           "buildTool" : {
@@ -18629,6 +18668,9 @@
           },
           "imageSource" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentImageSourceResp"
+          },
+          "notification" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentNotificationResp"
           },
           "postDeploymentCommand" : {
             "type" : "string"
@@ -19042,6 +19084,9 @@
           "imageSource" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentImageSourceReq"
           },
+          "notification" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentNotificationReq"
+          },
           "postDeploymentCommand" : {
             "type" : "string"
           },
@@ -19058,7 +19103,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "activeMethod", "command", "imageSource", "postDeploymentCommand", "preDeploymentCommand", "repoSource", "updateVer", "workingDir" ],
+        "required" : [ "activeMethod", "command", "imageSource", "notification", "postDeploymentCommand", "preDeploymentCommand", "repoSource", "updateVer", "workingDir" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.UpdateAppDeploymentSettingsResp" : {

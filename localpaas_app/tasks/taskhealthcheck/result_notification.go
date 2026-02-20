@@ -8,6 +8,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/config"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/entity/cacheentity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/strutil"
@@ -60,21 +61,21 @@ func (e *Executor) sendNotification(
 
 	if !shouldSkipNotifEmail && notification.HasNotificationViaEmail() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
-			err := e.sendNotificationViaEmail(ctx, db, data)
+			err := e.sendNotificationViaEmail(ctx, db, notification, data)
 			emailSent = err == nil
 			return err
 		})
 	}
 	if !shouldSkipNotifSlack && notification.HasNotificationViaSlack() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
-			err := e.sendNotificationViaSlack(ctx, db, data)
+			err := e.sendNotificationViaSlack(ctx, db, notification, data)
 			slackSent = err == nil
 			return err
 		})
 	}
 	if !shouldSkipNotifDiscord && notification.HasNotificationViaDiscord() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
-			err := e.sendNotificationViaDiscord(ctx, db, data)
+			err := e.sendNotificationViaDiscord(ctx, db, notification, data)
 			discordSent = err == nil
 			return err
 		})
@@ -151,16 +152,14 @@ func (e *Executor) buildNotificationMsgData(
 func (e *Executor) sendNotificationViaEmail(
 	ctx context.Context,
 	db database.IDB,
+	notification *entity.Notification,
 	data *taskData,
 ) error {
-	settingID := gofn.If(data.Task.IsDone(), data.Healthcheck.Notification.Success.ID,
-		data.Healthcheck.Notification.Failure.ID)
-	settings := data.RefObjects.RefSettings[settingID].MustAsNotification()
-	if settings == nil || settings.ViaEmail == nil {
+	if notification == nil || notification.ViaEmail == nil {
 		return nil
 	}
 
-	emailSetting := data.RefObjects.RefSettings[settings.ViaEmail.Sender.ID]
+	emailSetting := data.RefObjects.RefSettings[notification.ViaEmail.Sender.ID]
 	if emailSetting == nil {
 		return apperrors.NewMissing("Sender email account")
 	}
@@ -169,8 +168,8 @@ func (e *Executor) sendNotificationViaEmail(
 		return apperrors.NewMissing("Sender email account")
 	}
 
-	userMap, err := e.userService.LoadProjectUsers(ctx, db, data.Project, settings.ViaEmail.ToProjectMembers,
-		settings.ViaEmail.ToProjectOwners, settings.ViaEmail.ToAllAdmins)
+	userMap, err := e.userService.LoadProjectUsers(ctx, db, data.Project, notification.ViaEmail.ToProjectMembers,
+		notification.ViaEmail.ToProjectOwners, notification.ViaEmail.ToAllAdmins)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -179,8 +178,8 @@ func (e *Executor) sendNotificationViaEmail(
 	for _, user := range userMap {
 		userEmails = append(userEmails, user.Email)
 	}
-	if len(settings.ViaEmail.ToAddresses) > 0 {
-		userEmails = gofn.ToSet(append(userEmails, settings.ViaEmail.ToAddresses...))
+	if len(notification.ViaEmail.ToAddresses) > 0 {
+		userEmails = gofn.ToSet(append(userEmails, notification.ViaEmail.ToAddresses...))
 	}
 	if len(userEmails) == 0 {
 		return nil
@@ -206,16 +205,14 @@ func (e *Executor) sendNotificationViaEmail(
 func (e *Executor) sendNotificationViaSlack(
 	ctx context.Context,
 	db database.IDB,
+	notification *entity.Notification,
 	data *taskData,
 ) error {
-	settingID := gofn.If(data.Task.IsDone(), data.Healthcheck.Notification.Success.ID,
-		data.Healthcheck.Notification.Failure.ID)
-	settings := data.RefObjects.RefSettings[settingID].MustAsNotification()
-	if settings == nil || settings.ViaSlack == nil {
+	if notification == nil || notification.ViaSlack == nil {
 		return nil
 	}
 
-	imSetting := data.RefObjects.RefSettings[settings.ViaSlack.Webhook.ID]
+	imSetting := data.RefObjects.RefSettings[notification.ViaSlack.Webhook.ID]
 	if imSetting == nil {
 		return apperrors.NewMissing("Slack webhook")
 	}
@@ -239,16 +236,14 @@ func (e *Executor) sendNotificationViaSlack(
 func (e *Executor) sendNotificationViaDiscord(
 	ctx context.Context,
 	db database.IDB,
+	notification *entity.Notification,
 	data *taskData,
 ) error {
-	settingID := gofn.If(data.Task.IsDone(), data.Healthcheck.Notification.Success.ID,
-		data.Healthcheck.Notification.Failure.ID)
-	settings := data.RefObjects.RefSettings[settingID].MustAsNotification()
-	if settings == nil || settings.ViaDiscord == nil {
+	if notification == nil || notification.ViaDiscord == nil {
 		return nil
 	}
 
-	imSetting := data.RefObjects.RefSettings[settings.ViaDiscord.Webhook.ID]
+	imSetting := data.RefObjects.RefSettings[notification.ViaDiscord.Webhook.ID]
 	if imSetting == nil {
 		return apperrors.NewMissing("Discord webhook")
 	}

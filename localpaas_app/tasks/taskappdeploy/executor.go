@@ -95,7 +95,6 @@ type taskData struct {
 	Step             string
 	LogStore         *applog.Store
 	RefObjects       *entity.RefObjects
-	NotifSettings    *entity.AppNotificationSettings
 	NotifMsgData     *notificationservice.BaseMsgDataAppDeploymentNotification
 }
 
@@ -204,18 +203,6 @@ func (e *Executor) loadDeploymentData(
 
 	// Reference setting IDs to load
 	refObjectIDs := data.Deployment.Settings.GetRefObjectIDs()
-
-	// Load notification settings for the deployment
-	notifSetting, err := e.settingRepo.GetSingleByAppObject(ctx, db, base.SettingTypeAppNotification, data.App, true)
-	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-		return apperrors.Wrap(err)
-	}
-	if notifSetting != nil {
-		data.NotifSettings = notifSetting.MustAsAppNotificationSettings()
-		if data.NotifSettings.HasDeploymentNotifSetting() {
-			refObjectIDs.AddRefIDs(data.NotifSettings.GetRefObjectIDs())
-		}
-	}
 
 	// Load reference objects
 	data.RefObjects, err = e.settingService.LoadReferenceObjectsByIDs(ctx, db, base.SettingScopeApp, data.App.ID,

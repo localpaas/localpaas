@@ -87,7 +87,7 @@ var (
 	ErrMultiNodeClusterRequireRegistryForImages = errors.New("ERR_MULTI_NODE_CLUSTER_REQUIRE_REGISTRY_FOR_IMAGES")
 )
 
-// nolint Errors from infrastructure
+//nolint Errors from infrastructure
 var (
 	ErrInfra                   = errors.New("ERR_INFRA")
 	ErrInfraActionFailed       = errors.New("ERR_INFRA_ACTION_FAILED")
