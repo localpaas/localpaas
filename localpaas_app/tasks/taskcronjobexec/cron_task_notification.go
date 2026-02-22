@@ -65,20 +65,30 @@ func (e *Executor) buildNotificationMsgData(
 	data *taskData,
 ) {
 	msgData := &notificationservice.BaseMsgDataCronTaskNotification{
-		Succeeded:     data.Task.IsDone(),
-		CronJobName:   data.CronJobSetting.Name,
-		CronJobExpr:   data.CronJob.CronExpr,
-		CreatedAt:     data.CronJob.InitialTime,
-		StartedAt:     data.Task.StartedAt,
-		Duration:      data.Task.GetDuration(),
-		Retries:       data.Task.Config.Retry,
-		DashboardLink: config.Current.DashboardCronTaskDetailsURL(data.CronJobSetting.ID, data.Task.ID),
+		Succeeded:   data.Task.IsDone(),
+		CronJobName: data.CronJobSetting.Name,
+		CronJobExpr: data.CronJob.CronExpr,
+		CreatedAt:   data.CronJob.InitialTime,
+		StartedAt:   data.Task.StartedAt,
+		Duration:    data.Task.GetDuration(),
+		Retries:     data.Task.Config.Retry,
 	}
 	if data.Project != nil {
 		msgData.ProjectName = data.Project.Name
 	}
 	if data.App != nil {
 		msgData.AppName = data.App.Name
+	}
+	switch {
+	case data.App != nil:
+		msgData.DashboardLink = config.Current.DashboardAppCronTaskDetailsURL(data.App.ID, data.App.ProjectID,
+			data.CronJobSetting.ID, data.Task.ID)
+	case data.Project != nil:
+		msgData.DashboardLink = config.Current.DashboardProjectCronTaskDetailsURL(data.Project.ID,
+			data.CronJobSetting.ID, data.Task.ID)
+	default:
+		msgData.DashboardLink = config.Current.DashboardGlobalCronTaskDetailsURL(
+			data.CronJobSetting.ID, data.Task.ID)
 	}
 	data.NotifMsgData = msgData
 }

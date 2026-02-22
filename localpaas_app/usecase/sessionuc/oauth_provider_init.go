@@ -26,7 +26,7 @@ func (uc *SessionUC) InitOAuthProvider(
 
 	oauth := setting.MustAsOAuth()
 	clientSecret := oauth.ClientSecret.MustGetPlain()
-	callbackURL := config.Current.SsoBaseCallbackURL() + "/" + req.Name
+	callbackURL := config.Current.SsoCallbackURL(req.Name)
 
 	var provider goth.Provider
 	switch base.OAuthKind(setting.Kind) {

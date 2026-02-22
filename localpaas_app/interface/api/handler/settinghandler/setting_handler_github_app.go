@@ -8,7 +8,12 @@ import (
 	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc/githubappdto"
+)
+
+const (
+	htmlSuccess = "<html><body><h3>Success</h3></body></html>"
 )
 
 // ListGithubApp Lists github-app settings
@@ -174,4 +179,111 @@ func (h *SettingHandler) ListAppInstallation(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, resp)
+}
+
+// BeginGithubAppManifestFlow Begins a github-app manifest flow
+// @Summary Begins a github-app manifest flow
+// @Description Begins a github-app manifest flow
+// @Tags    settings
+// @Produce json
+// @Id      beginGithubAppManifestFlow
+// @Param   body body githubappdto.BeginGithubAppManifestFlowReq true "request data"
+// @Success 200 {object} githubappdto.BeginGithubAppManifestFlowResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /settings/github-apps/manifest-flow/begin [post]
+func (h *SettingHandler) BeginGithubAppManifestFlow(ctx *gin.Context) {
+	auth, _, err := h.GetAuthGlobalSettings(ctx, base.ResourceTypeGithubApp, base.ActionTypeWrite, "")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := githubappdto.NewBeginGithubAppManifestFlowReq()
+	req.Scope = base.SettingScopeGlobal
+	req.Type = base.SettingTypeGithubApp
+	if err = h.ParseJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.GithubAppUC.BeginGithubAppManifestFlow(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
+// BeginGithubAppManifestFlowCreation Begins a github-app manifest flow of creation
+// @Summary Begins a github-app manifest flow of creation
+// @Description Begins a github-app manifest flow of creation
+// @Tags    settings
+// @Produce json
+// @Id      beginGithubAppManifestFlowCreation
+// @Param   itemID path string true "setting ID"
+// @Success 200 "html page to redirect to github app creation page"
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /settings/github-apps/{itemID}/manifest-flow/begin [get]
+func (h *SettingHandler) BeginGithubAppManifestFlowCreation(ctx *gin.Context) {
+	itemID, err := h.ParseStringParam(ctx, "itemID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := githubappdto.NewBeginGithubAppManifestFlowCreationReq()
+	req.SettingID = itemID
+	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.GithubAppUC.BeginGithubAppManifestFlowCreation(h.RequestCtx(ctx), req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.Data(http.StatusOK, "text/html", reflectutil.UnsafeStrToBytes(resp.Data.PageContent))
+}
+
+// SetupGithubAppManifestFlow Sets up a github-app manifest flow
+// @Summary Sets up a github-app manifest flow
+// @Description Sets up a github-app manifest flow
+// @Tags    settings
+// @Produce json
+// @Id      setupGithubAppManifestFlow
+// @Param   itemID path string true "setting ID"
+// @Success 200 "html page to redirect to github app creation page"
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /settings/github-apps/{itemID}/manifest-flow/setup [get]
+func (h *SettingHandler) SetupGithubAppManifestFlow(ctx *gin.Context) {
+	itemID, err := h.ParseStringParam(ctx, "itemID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := githubappdto.NewSetupGithubAppManifestFlowReq()
+	req.SettingID = itemID
+	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.GithubAppUC.SetupGithubAppManifestFlow(h.RequestCtx(ctx), req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	if resp.Data.RedirectURL != "" {
+		ctx.Redirect(http.StatusFound, resp.Data.RedirectURL)
+	}
+
+	ctx.Data(http.StatusOK, "text/html", []byte(htmlSuccess))
 }

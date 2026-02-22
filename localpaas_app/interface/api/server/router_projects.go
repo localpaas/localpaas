@@ -7,167 +7,172 @@ import (
 //nolint:funlen
 func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.RouterGroup {
 	projectGroup := apiGroup.Group("/projects")
+	projectHandler := s.handlerRegistry.projectHandler
 
 	// Projects
-	projectGroup.GET("/base", s.handlerRegistry.projectHandler.ListProjectBase)
-	projectGroup.GET("/:projectID", s.handlerRegistry.projectHandler.GetProject)
-	projectGroup.GET("", s.handlerRegistry.projectHandler.ListProject)
-	projectGroup.POST("", s.handlerRegistry.projectHandler.CreateProject)
-	projectGroup.PUT("/:projectID", s.handlerRegistry.projectHandler.UpdateProject)
-	projectGroup.PUT("/:projectID/photo", s.handlerRegistry.projectHandler.UpdateProjectPhoto)
-	projectGroup.DELETE("/:projectID", s.handlerRegistry.projectHandler.DeleteProject)
+	projectGroup.GET("/base", projectHandler.ListProjectBase)
+	projectGroup.GET("/:projectID", projectHandler.GetProject)
+	projectGroup.GET("", projectHandler.ListProject)
+	projectGroup.POST("", projectHandler.CreateProject)
+	projectGroup.PUT("/:projectID", projectHandler.UpdateProject)
+	projectGroup.PUT("/:projectID/photo", projectHandler.UpdateProjectPhoto)
+	projectGroup.DELETE("/:projectID", projectHandler.DeleteProject)
 
 	// Settings import
-	projectGroup.POST("/:projectID/settings-import", s.handlerRegistry.projectHandler.ImportSettings)
+	projectGroup.POST("/:projectID/settings-import", projectHandler.ImportSettings)
 
 	{ // Tags
 		tagGroup := projectGroup.Group("/:projectID/tags")
-		tagGroup.POST("", s.handlerRegistry.projectHandler.CreateProjectTag)
-		tagGroup.POST("/delete", s.handlerRegistry.projectHandler.DeleteProjectTags)
+		tagGroup.POST("", projectHandler.CreateProjectTag)
+		tagGroup.POST("/delete", projectHandler.DeleteProjectTags)
 	}
 
 	{ // Env vars
 		envVarGroup := projectGroup.Group("/:projectID/env-vars")
-		envVarGroup.GET("", s.handlerRegistry.projectHandler.GetProjectEnvVars)
-		envVarGroup.PUT("", s.handlerRegistry.projectHandler.UpdateProjectEnvVars)
+		envVarGroup.GET("", projectHandler.GetProjectEnvVars)
+		envVarGroup.PUT("", projectHandler.UpdateProjectEnvVars)
 	}
 
 	{ // Secrets
 		secretGroup := projectGroup.Group("/:projectID/secrets")
-		secretGroup.GET("", s.handlerRegistry.projectHandler.ListProjectSecrets)
-		secretGroup.POST("", s.handlerRegistry.projectHandler.CreateProjectSecret)
-		secretGroup.PUT("/:itemID", s.handlerRegistry.projectHandler.UpdateProjectSecret)
-		secretGroup.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteProjectSecret)
+		secretGroup.GET("", projectHandler.ListProjectSecrets)
+		secretGroup.POST("", projectHandler.CreateProjectSecret)
+		secretGroup.PUT("/:itemID", projectHandler.UpdateProjectSecret)
+		secretGroup.DELETE("/:itemID", projectHandler.DeleteProjectSecret)
 	}
 
 	{ // Cron jobs
 		cronJobGroup := projectGroup.Group("/:projectID/cron-jobs")
-		cronJobGroup.GET("", s.handlerRegistry.projectHandler.ListCronJob)
-		cronJobGroup.GET("/:itemID", s.handlerRegistry.projectHandler.GetCronJob)
-		cronJobGroup.POST("", s.handlerRegistry.projectHandler.CreateCronJob)
-		cronJobGroup.PUT("/:itemID", s.handlerRegistry.projectHandler.UpdateCronJob)
-		cronJobGroup.PUT("/:itemID/meta", s.handlerRegistry.projectHandler.UpdateCronJobMeta)
-		cronJobGroup.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteCronJob)
+		cronJobGroup.GET("", projectHandler.ListCronJob)
+		cronJobGroup.GET("/:itemID", projectHandler.GetCronJob)
+		cronJobGroup.POST("", projectHandler.CreateCronJob)
+		cronJobGroup.PUT("/:itemID", projectHandler.UpdateCronJob)
+		cronJobGroup.PUT("/:itemID/meta", projectHandler.UpdateCronJobMeta)
+		cronJobGroup.DELETE("/:itemID", projectHandler.DeleteCronJob)
 	}
 
 	{ // Github-app group
-		githubAppGroup := projectGroup.Group("/github-apps")
-		githubAppGroup.GET("/:itemID", s.handlerRegistry.projectHandler.GetGithubApp)
-		githubAppGroup.GET("", s.handlerRegistry.projectHandler.ListGithubApp)
-		githubAppGroup.POST("", s.handlerRegistry.projectHandler.CreateGithubApp)
-		githubAppGroup.PUT("/:itemID", s.handlerRegistry.projectHandler.UpdateGithubApp)
-		githubAppGroup.PUT("/:itemID/meta", s.handlerRegistry.projectHandler.UpdateGithubAppMeta)
-		githubAppGroup.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteGithubApp)
+		githubAppGroup := projectGroup.Group("/:projectID/github-apps")
+		githubAppGroup.GET("/:itemID", projectHandler.GetGithubApp)
+		githubAppGroup.GET("", projectHandler.ListGithubApp)
+		githubAppGroup.POST("", projectHandler.CreateGithubApp)
+		githubAppGroup.PUT("/:itemID", projectHandler.UpdateGithubApp)
+		githubAppGroup.PUT("/:itemID/meta", projectHandler.UpdateGithubAppMeta)
+		githubAppGroup.DELETE("/:itemID", projectHandler.DeleteGithubApp)
+		// Manifest flow
+		githubAppGroup.POST("/manifest-flow/begin", projectHandler.BeginProjectGithubAppManifestFlow)
+		githubAppGroup.GET("/:itemID/manifest-flow/begin", projectHandler.BeginProjectGithubAppManifestFlowCreation)
+		githubAppGroup.GET("/:itemID/manifest-flow/setup", projectHandler.SetupProjectGithubAppManifestFlow)
 	}
 
 	{ // Access-token group
-		accessTokenGroup := projectGroup.Group("/access-tokens")
-		accessTokenGroup.GET("/:itemID", s.handlerRegistry.projectHandler.GetAccessToken)
-		accessTokenGroup.GET("", s.handlerRegistry.projectHandler.ListAccessToken)
-		accessTokenGroup.POST("", s.handlerRegistry.projectHandler.CreateAccessToken)
-		accessTokenGroup.PUT("/:itemID", s.handlerRegistry.projectHandler.UpdateAccessToken)
-		accessTokenGroup.PUT("/:itemID/meta", s.handlerRegistry.projectHandler.UpdateAccessTokenMeta)
-		accessTokenGroup.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteAccessToken)
+		accessTokenGroup := projectGroup.Group("/:projectID/access-tokens")
+		accessTokenGroup.GET("/:itemID", projectHandler.GetAccessToken)
+		accessTokenGroup.GET("", projectHandler.ListAccessToken)
+		accessTokenGroup.POST("", projectHandler.CreateAccessToken)
+		accessTokenGroup.PUT("/:itemID", projectHandler.UpdateAccessToken)
+		accessTokenGroup.PUT("/:itemID/meta", projectHandler.UpdateAccessTokenMeta)
+		accessTokenGroup.DELETE("/:itemID", projectHandler.DeleteAccessToken)
 	}
 
 	{ // AWS group
-		awsGroup := projectGroup.Group("/aws")
-		awsGroup.GET("/:itemID", s.handlerRegistry.projectHandler.GetAWS)
-		awsGroup.GET("", s.handlerRegistry.projectHandler.ListAWS)
-		awsGroup.POST("", s.handlerRegistry.projectHandler.CreateAWS)
-		awsGroup.PUT("/:itemID", s.handlerRegistry.projectHandler.UpdateAWS)
-		awsGroup.PUT("/:itemID/meta", s.handlerRegistry.projectHandler.UpdateAWSMeta)
-		awsGroup.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteAWS)
+		awsGroup := projectGroup.Group("/:projectID/aws")
+		awsGroup.GET("/:itemID", projectHandler.GetAWS)
+		awsGroup.GET("", projectHandler.ListAWS)
+		awsGroup.POST("", projectHandler.CreateAWS)
+		awsGroup.PUT("/:itemID", projectHandler.UpdateAWS)
+		awsGroup.PUT("/:itemID/meta", projectHandler.UpdateAWSMeta)
+		awsGroup.DELETE("/:itemID", projectHandler.DeleteAWS)
 	}
 
 	{ // AWS S3 group
-		awsS3Group := projectGroup.Group("/aws-s3")
-		awsS3Group.GET("/:itemID", s.handlerRegistry.projectHandler.GetAWSS3)
-		awsS3Group.GET("", s.handlerRegistry.projectHandler.ListAWSS3)
-		awsS3Group.POST("", s.handlerRegistry.projectHandler.CreateAWSS3)
-		awsS3Group.PUT("/:itemID", s.handlerRegistry.projectHandler.UpdateAWSS3)
-		awsS3Group.PUT("/:itemID/meta", s.handlerRegistry.projectHandler.UpdateAWSS3Meta)
-		awsS3Group.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteAWSS3)
+		awsS3Group := projectGroup.Group("/:projectID/aws-s3")
+		awsS3Group.GET("/:itemID", projectHandler.GetAWSS3)
+		awsS3Group.GET("", projectHandler.ListAWSS3)
+		awsS3Group.POST("", projectHandler.CreateAWSS3)
+		awsS3Group.PUT("/:itemID", projectHandler.UpdateAWSS3)
+		awsS3Group.PUT("/:itemID/meta", projectHandler.UpdateAWSS3Meta)
+		awsS3Group.DELETE("/:itemID", projectHandler.DeleteAWSS3)
 	}
 
 	{ // SSH key group
-		sshKeyGroup := projectGroup.Group("/ssh-keys")
-		sshKeyGroup.GET("/:itemID", s.handlerRegistry.projectHandler.GetSSHKey)
-		sshKeyGroup.GET("", s.handlerRegistry.projectHandler.ListSSHKey)
-		sshKeyGroup.POST("", s.handlerRegistry.projectHandler.CreateSSHKey)
-		sshKeyGroup.PUT("/:itemID", s.handlerRegistry.projectHandler.UpdateSSHKey)
-		sshKeyGroup.PUT("/:itemID/meta", s.handlerRegistry.projectHandler.UpdateSSHKeyMeta)
-		sshKeyGroup.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteSSHKey)
+		sshKeyGroup := projectGroup.Group("/:projectID/ssh-keys")
+		sshKeyGroup.GET("/:itemID", projectHandler.GetSSHKey)
+		sshKeyGroup.GET("", projectHandler.ListSSHKey)
+		sshKeyGroup.POST("", projectHandler.CreateSSHKey)
+		sshKeyGroup.PUT("/:itemID", projectHandler.UpdateSSHKey)
+		sshKeyGroup.PUT("/:itemID/meta", projectHandler.UpdateSSHKeyMeta)
+		sshKeyGroup.DELETE("/:itemID", projectHandler.DeleteSSHKey)
 	}
 
 	{ // IM service group
-		imServiceGroup := projectGroup.Group("/im-services")
-		imServiceGroup.GET("/:itemID", s.handlerRegistry.projectHandler.GetIMService)
-		imServiceGroup.GET("", s.handlerRegistry.projectHandler.ListIMService)
-		imServiceGroup.POST("", s.handlerRegistry.projectHandler.CreateIMService)
-		imServiceGroup.PUT("/:itemID", s.handlerRegistry.projectHandler.UpdateIMService)
-		imServiceGroup.PUT("/:itemID/meta", s.handlerRegistry.projectHandler.UpdateIMServiceMeta)
-		imServiceGroup.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteIMService)
+		imServiceGroup := projectGroup.Group("/:projectID/im-services")
+		imServiceGroup.GET("/:itemID", projectHandler.GetIMService)
+		imServiceGroup.GET("", projectHandler.ListIMService)
+		imServiceGroup.POST("", projectHandler.CreateIMService)
+		imServiceGroup.PUT("/:itemID", projectHandler.UpdateIMService)
+		imServiceGroup.PUT("/:itemID/meta", projectHandler.UpdateIMServiceMeta)
+		imServiceGroup.DELETE("/:itemID", projectHandler.DeleteIMService)
 	}
 
 	{ // Registry auth group
-		registryAuthGroup := projectGroup.Group("/registry-auth")
-		registryAuthGroup.GET("/:itemID", s.handlerRegistry.projectHandler.GetRegistryAuth)
-		registryAuthGroup.GET("", s.handlerRegistry.projectHandler.ListRegistryAuth)
-		registryAuthGroup.POST("", s.handlerRegistry.projectHandler.CreateRegistryAuth)
-		registryAuthGroup.PUT("/:itemID", s.handlerRegistry.projectHandler.UpdateRegistryAuth)
-		registryAuthGroup.PUT("/:itemID/meta", s.handlerRegistry.projectHandler.UpdateRegistryAuthMeta)
-		registryAuthGroup.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteRegistryAuth)
+		registryAuthGroup := projectGroup.Group("/:projectID/registry-auth")
+		registryAuthGroup.GET("/:itemID", projectHandler.GetRegistryAuth)
+		registryAuthGroup.GET("", projectHandler.ListRegistryAuth)
+		registryAuthGroup.POST("", projectHandler.CreateRegistryAuth)
+		registryAuthGroup.PUT("/:itemID", projectHandler.UpdateRegistryAuth)
+		registryAuthGroup.PUT("/:itemID/meta", projectHandler.UpdateRegistryAuthMeta)
+		registryAuthGroup.DELETE("/:itemID", projectHandler.DeleteRegistryAuth)
 	}
 
 	{ // Basic auth group
-		basicAuthGroup := projectGroup.Group("/basic-auth")
-		basicAuthGroup.GET("/:itemID", s.handlerRegistry.projectHandler.GetBasicAuth)
-		basicAuthGroup.GET("", s.handlerRegistry.projectHandler.ListBasicAuth)
-		basicAuthGroup.POST("", s.handlerRegistry.projectHandler.CreateBasicAuth)
-		basicAuthGroup.PUT("/:itemID", s.handlerRegistry.projectHandler.UpdateBasicAuth)
-		basicAuthGroup.PUT("/:itemID/meta", s.handlerRegistry.projectHandler.UpdateBasicAuthMeta)
-		basicAuthGroup.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteBasicAuth)
+		basicAuthGroup := projectGroup.Group("/:projectID/basic-auth")
+		basicAuthGroup.GET("/:itemID", projectHandler.GetBasicAuth)
+		basicAuthGroup.GET("", projectHandler.ListBasicAuth)
+		basicAuthGroup.POST("", projectHandler.CreateBasicAuth)
+		basicAuthGroup.PUT("/:itemID", projectHandler.UpdateBasicAuth)
+		basicAuthGroup.PUT("/:itemID/meta", projectHandler.UpdateBasicAuthMeta)
+		basicAuthGroup.DELETE("/:itemID", projectHandler.DeleteBasicAuth)
 	}
 
 	{ // SSL group
-		sslGroup := projectGroup.Group("/ssls")
-		sslGroup.GET("/:itemID", s.handlerRegistry.projectHandler.GetSSL)
-		sslGroup.GET("", s.handlerRegistry.projectHandler.ListSSL)
-		sslGroup.POST("", s.handlerRegistry.projectHandler.CreateSSL)
-		sslGroup.PUT("/:itemID", s.handlerRegistry.projectHandler.UpdateSSL)
-		sslGroup.PUT("/:itemID/meta", s.handlerRegistry.projectHandler.UpdateSSLMeta)
-		sslGroup.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteSSL)
+		sslGroup := projectGroup.Group("/:projectID/ssls")
+		sslGroup.GET("/:itemID", projectHandler.GetSSL)
+		sslGroup.GET("", projectHandler.ListSSL)
+		sslGroup.POST("", projectHandler.CreateSSL)
+		sslGroup.PUT("/:itemID", projectHandler.UpdateSSL)
+		sslGroup.PUT("/:itemID/meta", projectHandler.UpdateSSLMeta)
+		sslGroup.DELETE("/:itemID", projectHandler.DeleteSSL)
 	}
 
 	{ // Email group
-		emailGroup := projectGroup.Group("/emails")
-		emailGroup.GET("/:itemID", s.handlerRegistry.projectHandler.GetEmail)
-		emailGroup.GET("", s.handlerRegistry.projectHandler.ListEmail)
-		emailGroup.POST("", s.handlerRegistry.projectHandler.CreateEmail)
-		emailGroup.PUT("/:itemID", s.handlerRegistry.projectHandler.UpdateEmail)
-		emailGroup.PUT("/:itemID/meta", s.handlerRegistry.projectHandler.UpdateEmailMeta)
-		emailGroup.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteEmail)
+		emailGroup := projectGroup.Group("/:projectID/emails")
+		emailGroup.GET("/:itemID", projectHandler.GetEmail)
+		emailGroup.GET("", projectHandler.ListEmail)
+		emailGroup.POST("", projectHandler.CreateEmail)
+		emailGroup.PUT("/:itemID", projectHandler.UpdateEmail)
+		emailGroup.PUT("/:itemID/meta", projectHandler.UpdateEmailMeta)
+		emailGroup.DELETE("/:itemID", projectHandler.DeleteEmail)
 	}
 
 	{ // Repo webhook group
-		repoWebhookGroup := projectGroup.Group("/repo-webhooks")
-		repoWebhookGroup.GET("/:itemID", s.handlerRegistry.projectHandler.GetRepoWebhook)
-		repoWebhookGroup.GET("", s.handlerRegistry.projectHandler.ListRepoWebhook)
-		repoWebhookGroup.POST("", s.handlerRegistry.projectHandler.CreateRepoWebhook)
-		repoWebhookGroup.PUT("/:itemID", s.handlerRegistry.projectHandler.UpdateRepoWebhook)
-		repoWebhookGroup.PUT("/:itemID/meta", s.handlerRegistry.projectHandler.UpdateRepoWebhookMeta)
-		repoWebhookGroup.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteRepoWebhook)
+		repoWebhookGroup := projectGroup.Group("/:projectID/repo-webhooks")
+		repoWebhookGroup.GET("/:itemID", projectHandler.GetRepoWebhook)
+		repoWebhookGroup.GET("", projectHandler.ListRepoWebhook)
+		repoWebhookGroup.POST("", projectHandler.CreateRepoWebhook)
+		repoWebhookGroup.PUT("/:itemID", projectHandler.UpdateRepoWebhook)
+		repoWebhookGroup.PUT("/:itemID/meta", projectHandler.UpdateRepoWebhookMeta)
+		repoWebhookGroup.DELETE("/:itemID", projectHandler.DeleteRepoWebhook)
 	}
 
 	{ // Notification group
-		notificationGroup := projectGroup.Group("/notifications")
-		notificationGroup.GET("/:itemID", s.handlerRegistry.projectHandler.GetNotification)
-		notificationGroup.GET("", s.handlerRegistry.projectHandler.ListNotification)
-		notificationGroup.POST("", s.handlerRegistry.projectHandler.CreateNotification)
-		notificationGroup.PUT("/:itemID", s.handlerRegistry.projectHandler.UpdateNotification)
-		notificationGroup.PUT("/:itemID/meta", s.handlerRegistry.projectHandler.UpdateNotificationMeta)
-		notificationGroup.DELETE("/:itemID", s.handlerRegistry.projectHandler.DeleteNotification)
+		notificationGroup := projectGroup.Group("/:projectID/notifications")
+		notificationGroup.GET("/:itemID", projectHandler.GetNotification)
+		notificationGroup.GET("", projectHandler.ListNotification)
+		notificationGroup.POST("", projectHandler.CreateNotification)
+		notificationGroup.PUT("/:itemID", projectHandler.UpdateNotification)
+		notificationGroup.PUT("/:itemID/meta", projectHandler.UpdateNotificationMeta)
+		notificationGroup.DELETE("/:itemID", projectHandler.DeleteNotification)
 	}
 
 	return projectGroup

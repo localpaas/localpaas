@@ -50,7 +50,7 @@ func (uc *OAuthUC) CreateOAuth(
 	return &oauthdto.CreateOAuthResp{
 		Data: &oauthdto.OAuthCreationResp{
 			ID:          resp.Data.ID,
-			CallbackURL: config.Current.SsoBaseCallbackURL() + "/" + resp.Data.ID,
+			CallbackURL: config.Current.SsoCallbackURL(resp.Data.ID),
 		},
 	}, nil
 }

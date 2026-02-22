@@ -3,7 +3,7 @@ platform = "local"
 name = "LocalPaaS"
 version = 1
 run_mode = "embedded-worker"
-base_url = "http://localhost" # dashboard base URL
+base_url = "http://localhost:10000" # dashboard base URL
 secret = "abc123"
 app_path = ".appdata/localpaas"
 

@@ -112,13 +112,20 @@ func (e *Executor) buildNotificationMsgData(
 		StartedAt:       data.Task.StartedAt,
 		Duration:        data.Task.GetDuration(),
 		Retries:         data.Task.Config.Retry,
-		DashboardLink:   config.Current.DashboardHealthcheckDetailsURL(data.HealthcheckSetting.ID, data.Task.ID),
 	}
 	if data.Project != nil {
 		msgData.ProjectName = data.Project.Name
 	}
 	if data.App != nil {
 		msgData.AppName = data.App.Name
+	}
+	switch {
+	case data.App != nil:
+		msgData.DashboardLink = config.Current.DashboardAppHealthcheckDetailsURL(data.App.ID, data.App.ProjectID,
+			data.HealthcheckSetting.ID, data.Task.ID)
+	case data.Project != nil:
+		msgData.DashboardLink = config.Current.DashboardProjectHealthcheckDetailsURL(data.Project.ID,
+			data.HealthcheckSetting.ID, data.Task.ID)
 	}
 
 	output, _ := data.Task.OutputAsHealthcheck()

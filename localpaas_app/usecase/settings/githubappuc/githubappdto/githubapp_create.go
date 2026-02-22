@@ -21,8 +21,6 @@ type GithubAppBaseReq struct {
 	ClientID         string `json:"clientId"`
 	ClientSecret     string `json:"clientSecret"`
 	Organization     string `json:"organization"`
-	WebhookURL       string `json:"webhookURL"`
-	WebhookSecret    string `json:"webhookSecret"`
 	GhAppID          int64  `json:"appId"`
 	GhInstallationID int64  `json:"installationId"`
 	PrivateKey       string `json:"privateKey"`
@@ -34,8 +32,6 @@ func (req *GithubAppBaseReq) ToEntity() *entity.GithubApp {
 		ClientID:       req.ClientID,
 		ClientSecret:   entity.NewEncryptedField(req.ClientSecret),
 		Organization:   req.Organization,
-		WebhookURL:     req.WebhookURL,
-		WebhookSecret:  req.WebhookSecret,
 		AppID:          req.GhAppID,
 		InstallationID: req.GhInstallationID,
 		PrivateKey:     entity.NewEncryptedField(req.PrivateKey),
@@ -48,7 +44,6 @@ func (req *GithubAppBaseReq) modifyRequest() error {
 	req.ClientID = strings.TrimSpace(req.ClientID)
 	req.ClientSecret = strings.TrimSpace(req.ClientSecret)
 	req.Organization = strings.TrimSpace(req.Organization)
-	req.WebhookSecret = strings.TrimSpace(req.WebhookSecret)
 	req.PrivateKey = strings.TrimSpace(req.PrivateKey)
 	return nil
 }

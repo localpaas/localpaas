@@ -24,7 +24,12 @@ func (uc *GithubAppUC) UpdateGithubApp(
 			data *settings.UpdateSettingData,
 			pData *settings.PersistingSettingData,
 		) error {
-			err := pData.Setting.SetData(req.ToEntity())
+			githubApp := req.ToEntity()
+			err := uc.installGithubAppWebhook(ctx, githubApp, true)
+			if err != nil {
+				return apperrors.Wrap(err)
+			}
+			err = pData.Setting.SetData(githubApp)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

@@ -90,6 +90,8 @@ type SettingRepo interface {
 	EnsureSingleByUser(ctx context.Context, db database.IDB, typ base.SettingType, userID string,
 		opts ...bunex.SelectQueryOption) error
 
+	Insert(ctx context.Context, db database.IDB, setting *entity.Setting,
+		opts ...bunex.InsertQueryOption) error
 	Upsert(ctx context.Context, db database.IDB, setting *entity.Setting,
 		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
 	UpsertMulti(ctx context.Context, db database.IDB, settings []*entity.Setting,
@@ -624,6 +626,18 @@ func (repo *settingRepo) EnsureSingleByUser(ctx context.Context, db database.IDB
 	}
 	if count > 1 {
 		return apperrors.Wrap(apperrors.ErrConflict)
+	}
+	return nil
+}
+
+func (repo *settingRepo) Insert(ctx context.Context, db database.IDB, setting *entity.Setting,
+	opts ...bunex.InsertQueryOption) error {
+	query := db.NewInsert().Model(setting)
+	query = bunex.ApplyInsert(query, opts...)
+
+	_, err := query.Exec(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
 	}
 	return nil
 }

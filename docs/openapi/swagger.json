@@ -7489,6 +7489,118 @@
         "x-codegen-request-body-name" : "body"
       }
     },
+    "/projects/{projectID}/github-apps/itemID}/manifest-flow/setup" : {
+      "get" : {
+        "description" : "Sets up a github-app manifest flow",
+        "operationId" : "setupProjectGithubAppManifestFlow",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : { },
+            "description" : "html page to redirect to github app creation page"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Sets up a github-app manifest flow",
+        "tags" : [ "project_settings" ]
+      }
+    },
+    "/projects/{projectID}/github-apps/manifest-flow/begin" : {
+      "post" : {
+        "description" : "Begins a github-app manifest flow",
+        "operationId" : "beginProjectGithubAppManifestFlow",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.BeginGithubAppManifestFlowReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.BeginGithubAppManifestFlowResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Begins a github-app manifest flow",
+        "tags" : [ "project_settings" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
     "/projects/{projectID}/github-apps/{itemID}" : {
       "delete" : {
         "description" : "Deletes github-app setting",
@@ -7666,6 +7778,57 @@
         "summary" : "Updates github-app",
         "tags" : [ "project_settings" ],
         "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/projects/{projectID}/github-apps/{itemID}/manifest-flow/begin" : {
+      "get" : {
+        "description" : "Begins a github-app manifest flow creation",
+        "operationId" : "beginProjectGithubAppManifestFlowCreation",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : { },
+            "description" : "html page to redirect to github app creation page"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Begins a github-app manifest flow creation",
+        "tags" : [ "project_settings" ]
       }
     },
     "/projects/{projectID}/github-apps/{itemID}/meta" : {
@@ -13029,6 +13192,58 @@
         "x-codegen-request-body-name" : "body"
       }
     },
+    "/settings/github-apps/manifest-flow/begin" : {
+      "post" : {
+        "description" : "Begins a github-app manifest flow",
+        "operationId" : "beginGithubAppManifestFlow",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.BeginGithubAppManifestFlowReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.BeginGithubAppManifestFlowResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Begins a github-app manifest flow",
+        "tags" : [ "settings" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
     "/settings/github-apps/test-conn" : {
       "post" : {
         "description" : "Test github app connection",
@@ -13234,6 +13449,92 @@
         "summary" : "Updates github-app",
         "tags" : [ "settings" ],
         "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/settings/github-apps/{itemID}/manifest-flow/begin" : {
+      "get" : {
+        "description" : "Begins a github-app manifest flow of creation",
+        "operationId" : "beginGithubAppManifestFlowCreation",
+        "parameters" : [ {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : { },
+            "description" : "html page to redirect to github app creation page"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Begins a github-app manifest flow of creation",
+        "tags" : [ "settings" ]
+      }
+    },
+    "/settings/github-apps/{itemID}/manifest-flow/setup" : {
+      "get" : {
+        "description" : "Sets up a github-app manifest flow",
+        "operationId" : "setupGithubAppManifestFlow",
+        "parameters" : [ {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : { },
+            "description" : "html page to redirect to github app creation page"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Sets up a github-app manifest flow",
+        "tags" : [ "settings" ]
       }
     },
     "/settings/github-apps/{itemID}/meta" : {
@@ -18242,10 +18543,10 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
         "format" : "int64",
         "type" : "integer",
-        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
+        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentReq" : {
         "type" : "object"
@@ -22279,6 +22580,45 @@
         "required" : [ "appId", "appSlug", "id", "nodeId" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.BeginGithubAppManifestFlowDataResp" : {
+        "properties" : {
+          "redirectURL" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "redirectURL" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.BeginGithubAppManifestFlowReq" : {
+        "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
+          "default" : {
+            "type" : "boolean"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "org" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "availableInProjects", "default", "name", "org" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.BeginGithubAppManifestFlowResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.BeginGithubAppManifestFlowDataResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.CreateGithubAppReq" : {
         "properties" : {
           "appId" : {
@@ -22310,15 +22650,9 @@
           },
           "ssoEnabled" : {
             "type" : "boolean"
-          },
-          "webhookSecret" : {
-            "type" : "string"
-          },
-          "webhookURL" : {
-            "type" : "string"
           }
         },
-        "required" : [ "appId", "availableInProjects", "clientId", "clientSecret", "default", "installationId", "name", "organization", "privateKey", "ssoEnabled", "webhookSecret", "webhookURL" ],
+        "required" : [ "appId", "availableInProjects", "clientId", "clientSecret", "default", "installationId", "name", "organization", "privateKey", "ssoEnabled" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.CreateGithubAppResp" : {
@@ -22466,15 +22800,9 @@
           },
           "ssoEnabled" : {
             "type" : "boolean"
-          },
-          "webhookSecret" : {
-            "type" : "string"
-          },
-          "webhookURL" : {
-            "type" : "string"
           }
         },
-        "required" : [ "appId", "clientId", "clientSecret", "installationId", "name", "organization", "privateKey", "ssoEnabled", "webhookSecret", "webhookURL" ],
+        "required" : [ "appId", "clientId", "clientSecret", "installationId", "name", "organization", "privateKey", "ssoEnabled" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.ListAppInstallationResp" : {
@@ -22532,15 +22860,9 @@
           },
           "ssoEnabled" : {
             "type" : "boolean"
-          },
-          "webhookSecret" : {
-            "type" : "string"
-          },
-          "webhookURL" : {
-            "type" : "string"
           }
         },
-        "required" : [ "appId", "clientId", "clientSecret", "installationId", "name", "organization", "privateKey", "ssoEnabled", "webhookSecret", "webhookURL" ],
+        "required" : [ "appId", "clientId", "clientSecret", "installationId", "name", "organization", "privateKey", "ssoEnabled" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.TestGithubAppConnResp" : {
@@ -22616,15 +22938,9 @@
           },
           "updateVer" : {
             "type" : "integer"
-          },
-          "webhookSecret" : {
-            "type" : "string"
-          },
-          "webhookURL" : {
-            "type" : "string"
           }
         },
-        "required" : [ "appId", "availableInProjects", "clientId", "clientSecret", "default", "installationId", "name", "organization", "privateKey", "ssoEnabled", "updateVer", "webhookSecret", "webhookURL" ],
+        "required" : [ "appId", "availableInProjects", "clientId", "clientSecret", "default", "installationId", "name", "organization", "privateKey", "ssoEnabled", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.UpdateGithubAppResp" : {

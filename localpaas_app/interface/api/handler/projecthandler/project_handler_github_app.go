@@ -1,11 +1,18 @@
 package projecthandler
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 
 	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	_ "github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc/githubappdto"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc/githubappdto"
+)
+
+const (
+	htmlSuccess = "<html><body><h3>Success</h3></body></html>"
 )
 
 // ListGithubApp Lists github-app settings
@@ -107,4 +114,115 @@ func (h *ProjectHandler) UpdateGithubAppMeta(ctx *gin.Context) {
 // @Router  /projects/{projectID}/github-apps/{itemID} [delete]
 func (h *ProjectHandler) DeleteGithubApp(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeGithubApp, base.SettingScopeProject)
+}
+
+// BeginProjectGithubAppManifestFlow Begins a github-app manifest flow
+// @Summary Begins a github-app manifest flow
+// @Description Begins a github-app manifest flow
+// @Tags    project_settings
+// @Produce json
+// @Id      beginProjectGithubAppManifestFlow
+// @Param   projectID path string true "project ID"
+// @Param   body body githubappdto.BeginGithubAppManifestFlowReq true "request data"
+// @Success 200 {object} githubappdto.BeginGithubAppManifestFlowResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /projects/{projectID}/github-apps/manifest-flow/begin [post]
+func (h *ProjectHandler) BeginProjectGithubAppManifestFlow(ctx *gin.Context) {
+	auth, projectID, _, err := h.GetAuthProjectSettings(ctx, base.ActionTypeWrite, "")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := githubappdto.NewBeginGithubAppManifestFlowReq()
+	req.Scope = base.SettingScopeProject
+	req.Type = base.SettingTypeGithubApp
+	req.ObjectID = projectID
+	if err = h.ParseJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.GithubAppUC.BeginGithubAppManifestFlow(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
+// BeginProjectGithubAppManifestFlowCreation Begins a github-app manifest flow creation
+// @Summary Begins a github-app manifest flow creation
+// @Description Begins a github-app manifest flow creation
+// @Tags    project_settings
+// @Produce json
+// @Id      beginProjectGithubAppManifestFlowCreation
+// @Param   projectID path string true "project ID"
+// @Param   itemID path string true "setting ID"
+// @Success 200 "html page to redirect to github app creation page"
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /projects/{projectID}/github-apps/{itemID}/manifest-flow/begin [get]
+func (h *ProjectHandler) BeginProjectGithubAppManifestFlowCreation(ctx *gin.Context) {
+	itemID, err := h.ParseStringParam(ctx, "itemID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := githubappdto.NewBeginGithubAppManifestFlowCreationReq()
+	req.SettingID = itemID
+	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.GithubAppUC.BeginGithubAppManifestFlowCreation(h.RequestCtx(ctx), req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.Data(http.StatusOK, "text/html", reflectutil.UnsafeStrToBytes(resp.Data.PageContent))
+}
+
+// SetupProjectGithubAppManifestFlow Sets up a github-app manifest flow
+// @Summary Sets up a github-app manifest flow
+// @Description Sets up a github-app manifest flow
+// @Tags    project_settings
+// @Produce json
+// @Id      setupProjectGithubAppManifestFlow
+// @Param   projectID path string true "project ID"
+// @Param   itemID path string true "setting ID"
+// @Success 200 "html page to redirect to github app creation page"
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /projects/{projectID}/github-apps/itemID}/manifest-flow/setup [get]
+func (h *ProjectHandler) SetupProjectGithubAppManifestFlow(ctx *gin.Context) {
+	itemID, err := h.ParseStringParam(ctx, "itemID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := githubappdto.NewSetupGithubAppManifestFlowReq()
+	req.SettingID = itemID
+	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.GithubAppUC.SetupGithubAppManifestFlow(h.RequestCtx(ctx), req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	if resp.Data.RedirectURL != "" {
+		ctx.Redirect(http.StatusFound, resp.Data.RedirectURL)
+	}
+
+	ctx.Data(http.StatusOK, "text/html", []byte(htmlSuccess))
 }

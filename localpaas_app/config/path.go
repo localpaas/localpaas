@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 
 	"github.com/tiendc/gofn"
+
+	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
 func (cfg *Config) BaseAPIURL() string {
@@ -13,6 +15,8 @@ func (cfg *Config) BaseAPIURL() string {
 }
 
 /// FRONT-END DASHBOARD
+
+// Users
 
 func (cfg *Config) DashboardSsoSuccessURL() string {
 	return gofn.Must(url.JoinPath(cfg.BaseURL, "auth/sso/success"))
@@ -28,22 +32,83 @@ func (cfg *Config) DashboardPasswordResetURL(userID, token string) string {
 		fmt.Sprintf("?userId=%s&token=%s", userID, token)
 }
 
+// Deployments
+
 func (cfg *Config) DashboardDeploymentDetailsURL(deploymentID string) string {
 	return gofn.Must(url.JoinPath(cfg.BaseURL, "deployments", deploymentID)) // TODO: update this
 }
 
-func (cfg *Config) DashboardCronTaskDetailsURL(cronJobID, taskID string) string {
-	return gofn.Must(url.JoinPath(cfg.BaseURL, "cron-jobs", cronJobID, "tasks", taskID)) // TODO: update this
+// Cron jobs
+
+func (cfg *Config) DashboardGlobalCronTaskDetailsURL(cronJobID, taskID string) string {
+	return gofn.Must(url.JoinPath(cfg.BaseURL, "settings", "cron-jobs", cronJobID,
+		"tasks", taskID)) // TODO: update this
 }
 
-func (cfg *Config) DashboardHealthcheckDetailsURL(settingID, taskID string) string {
-	return gofn.Must(url.JoinPath(cfg.BaseURL, "healthcheck", settingID, "tasks", taskID)) // TODO: update this
+func (cfg *Config) DashboardAppCronTaskDetailsURL(appID, projectID, cronJobID, taskID string) string {
+	return gofn.Must(url.JoinPath(cfg.BaseURL, "projects", projectID, "apps", appID,
+		"cron-jobs", cronJobID, "tasks", taskID)) // TODO: update this
+}
+
+func (cfg *Config) DashboardProjectCronTaskDetailsURL(projectID, cronJobID, taskID string) string {
+	return gofn.Must(url.JoinPath(cfg.BaseURL, "projects", projectID, "cron-jobs", cronJobID,
+		"tasks", taskID)) // TODO: update this
+}
+
+// Github Apps
+
+func (cfg *Config) DashboardGlobalGithubAppsURL() string {
+	return gofn.Must(url.JoinPath(cfg.BaseURL, "settings/github-apps"))
+}
+
+func (cfg *Config) DashboardProjectGithubAppsURL(projectID string) string {
+	return gofn.Must(url.JoinPath(cfg.BaseURL, "projects", projectID, "github-apps"))
+}
+
+// Health checks
+
+func (cfg *Config) DashboardAppHealthcheckDetailsURL(appID, projectID, healthcheckID, taskID string) string {
+	return gofn.Must(url.JoinPath(cfg.BaseURL, "projects", projectID, "apps", appID,
+		"healthcheck", healthcheckID, "tasks", taskID)) // TODO: update this
+}
+
+func (cfg *Config) DashboardProjectHealthcheckDetailsURL(projectID, healthcheckID, taskID string) string {
+	return gofn.Must(url.JoinPath(cfg.BaseURL, "projects", projectID, "healthcheck", healthcheckID,
+		"tasks", taskID)) // TODO: update this
 }
 
 /// BACK-END
 
 func (cfg *Config) SsoBaseCallbackURL() string {
 	return gofn.Must(url.JoinPath(cfg.BaseAPIURL(), "auth/sso/callback"))
+}
+
+func (cfg *Config) SsoCallbackURL(id string) string {
+	return gofn.Must(url.JoinPath(cfg.SsoBaseCallbackURL(), id))
+}
+
+func (cfg *Config) RepoWebhookURL(kind base.WebhookKind, secret string) string {
+	return gofn.Must(url.JoinPath(cfg.BaseAPIURL(), "webhooks", string(kind), secret))
+}
+
+func (cfg *Config) GlobalGithubAppManifestFlowCreationURL(settingID, state string) string {
+	return gofn.Must(url.JoinPath(cfg.BaseAPIURL(), "settings/github-apps", settingID,
+		"manifest-flow/begin")) + "?state=" + state
+}
+
+func (cfg *Config) GlobalGithubAppManifestFlowSetupURL(settingID string) string {
+	return gofn.Must(url.JoinPath(cfg.BaseAPIURL(), "settings/github-apps", settingID,
+		"manifest-flow/setup"))
+}
+
+func (cfg *Config) ProjectGithubAppManifestFlowCreationURL(projectID, settingID, state string) string {
+	return gofn.Must(url.JoinPath(cfg.BaseAPIURL(), "projects", projectID,
+		"github-apps", settingID, "manifest-flow/begin")) + "?state=" + state
+}
+
+func (cfg *Config) ProjectGithubAppManifestFlowSetupURL(projectID, settingID string) string {
+	return gofn.Must(url.JoinPath(cfg.BaseAPIURL(), "projects", projectID,
+		"github-apps", settingID, "manifest-flow/setup"))
 }
 
 /// OBJECT PHOTOS

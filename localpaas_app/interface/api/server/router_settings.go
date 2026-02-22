@@ -7,158 +7,163 @@ import (
 //nolint:funlen
 func (s *HTTPServer) registerSettingRoutes(apiGroup *gin.RouterGroup) *gin.RouterGroup {
 	settingGroup := apiGroup.Group("/settings")
+	settingHandler := s.handlerRegistry.settingHandler
 
 	{ // oauth group
 		oauthGroup := settingGroup.Group("/oauth")
-		oauthGroup.GET("/:itemID", s.handlerRegistry.settingHandler.GetOAuth)
-		oauthGroup.GET("", s.handlerRegistry.settingHandler.ListOAuth)
-		oauthGroup.POST("", s.handlerRegistry.settingHandler.CreateOAuth)
-		oauthGroup.PUT("/:itemID", s.handlerRegistry.settingHandler.UpdateOAuth)
-		oauthGroup.PUT("/:itemID/meta", s.handlerRegistry.settingHandler.UpdateOAuthMeta)
-		oauthGroup.DELETE("/:itemID", s.handlerRegistry.settingHandler.DeleteOAuth)
+		oauthGroup.GET("/:itemID", settingHandler.GetOAuth)
+		oauthGroup.GET("", settingHandler.ListOAuth)
+		oauthGroup.POST("", settingHandler.CreateOAuth)
+		oauthGroup.PUT("/:itemID", settingHandler.UpdateOAuth)
+		oauthGroup.PUT("/:itemID/meta", settingHandler.UpdateOAuthMeta)
+		oauthGroup.DELETE("/:itemID", settingHandler.DeleteOAuth)
 	}
 
 	{ // github-app group
 		githubAppGroup := settingGroup.Group("/github-apps")
-		githubAppGroup.GET("/:itemID", s.handlerRegistry.settingHandler.GetGithubApp)
-		githubAppGroup.GET("", s.handlerRegistry.settingHandler.ListGithubApp)
-		githubAppGroup.POST("", s.handlerRegistry.settingHandler.CreateGithubApp)
-		githubAppGroup.PUT("/:itemID", s.handlerRegistry.settingHandler.UpdateGithubApp)
-		githubAppGroup.PUT("/:itemID/meta", s.handlerRegistry.settingHandler.UpdateGithubAppMeta)
-		githubAppGroup.DELETE("/:itemID", s.handlerRegistry.settingHandler.DeleteGithubApp)
+		githubAppGroup.GET("/:itemID", settingHandler.GetGithubApp)
+		githubAppGroup.GET("", settingHandler.ListGithubApp)
+		githubAppGroup.POST("", settingHandler.CreateGithubApp)
+		githubAppGroup.PUT("/:itemID", settingHandler.UpdateGithubApp)
+		githubAppGroup.PUT("/:itemID/meta", settingHandler.UpdateGithubAppMeta)
+		githubAppGroup.DELETE("/:itemID", settingHandler.DeleteGithubApp)
 		// Test connection
-		githubAppGroup.POST("/test-conn", s.handlerRegistry.settingHandler.TestGithubAppConn)
+		githubAppGroup.POST("/test-conn", settingHandler.TestGithubAppConn)
 		// Installation
-		githubAppGroup.POST("/installations/list", s.handlerRegistry.settingHandler.ListAppInstallation)
+		githubAppGroup.POST("/installations/list", settingHandler.ListAppInstallation)
+		// Manifest flow
+		githubAppGroup.POST("/manifest-flow/begin", settingHandler.BeginGithubAppManifestFlow)
+		githubAppGroup.GET("/:itemID/manifest-flow/begin", settingHandler.BeginGithubAppManifestFlowCreation)
+		githubAppGroup.GET("/:itemID/manifest-flow/setup", settingHandler.SetupGithubAppManifestFlow)
 	}
 
 	{ // access-token group
 		accessTokenGroup := settingGroup.Group("/access-tokens")
-		accessTokenGroup.GET("/:itemID", s.handlerRegistry.settingHandler.GetAccessToken)
-		accessTokenGroup.GET("", s.handlerRegistry.settingHandler.ListAccessToken)
-		accessTokenGroup.POST("", s.handlerRegistry.settingHandler.CreateAccessToken)
-		accessTokenGroup.PUT("/:itemID", s.handlerRegistry.settingHandler.UpdateAccessToken)
-		accessTokenGroup.PUT("/:itemID/meta", s.handlerRegistry.settingHandler.UpdateAccessTokenMeta)
-		accessTokenGroup.DELETE("/:itemID", s.handlerRegistry.settingHandler.DeleteAccessToken)
+		accessTokenGroup.GET("/:itemID", settingHandler.GetAccessToken)
+		accessTokenGroup.GET("", settingHandler.ListAccessToken)
+		accessTokenGroup.POST("", settingHandler.CreateAccessToken)
+		accessTokenGroup.PUT("/:itemID", settingHandler.UpdateAccessToken)
+		accessTokenGroup.PUT("/:itemID/meta", settingHandler.UpdateAccessTokenMeta)
+		accessTokenGroup.DELETE("/:itemID", settingHandler.DeleteAccessToken)
 		// Test connection
-		accessTokenGroup.POST("/test-conn", s.handlerRegistry.settingHandler.TestAccessTokenConn)
+		accessTokenGroup.POST("/test-conn", settingHandler.TestAccessTokenConn)
 	}
 
 	{ // aws group
 		awsGroup := settingGroup.Group("/aws")
-		awsGroup.GET("/:itemID", s.handlerRegistry.settingHandler.GetAWS)
-		awsGroup.GET("", s.handlerRegistry.settingHandler.ListAWS)
-		awsGroup.POST("", s.handlerRegistry.settingHandler.CreateAWS)
-		awsGroup.PUT("/:itemID", s.handlerRegistry.settingHandler.UpdateAWS)
-		awsGroup.PUT("/:itemID/meta", s.handlerRegistry.settingHandler.UpdateAWSMeta)
-		awsGroup.DELETE("/:itemID", s.handlerRegistry.settingHandler.DeleteAWS)
+		awsGroup.GET("/:itemID", settingHandler.GetAWS)
+		awsGroup.GET("", settingHandler.ListAWS)
+		awsGroup.POST("", settingHandler.CreateAWS)
+		awsGroup.PUT("/:itemID", settingHandler.UpdateAWS)
+		awsGroup.PUT("/:itemID/meta", settingHandler.UpdateAWSMeta)
+		awsGroup.DELETE("/:itemID", settingHandler.DeleteAWS)
 	}
 
 	{ // aws s3 group
 		awsS3Group := settingGroup.Group("/aws-s3")
-		awsS3Group.GET("/:itemID", s.handlerRegistry.settingHandler.GetAWSS3)
-		awsS3Group.GET("", s.handlerRegistry.settingHandler.ListAWSS3)
-		awsS3Group.POST("", s.handlerRegistry.settingHandler.CreateAWSS3)
-		awsS3Group.PUT("/:itemID", s.handlerRegistry.settingHandler.UpdateAWSS3)
-		awsS3Group.PUT("/:itemID/meta", s.handlerRegistry.settingHandler.UpdateAWSS3Meta)
-		awsS3Group.DELETE("/:itemID", s.handlerRegistry.settingHandler.DeleteAWSS3)
+		awsS3Group.GET("/:itemID", settingHandler.GetAWSS3)
+		awsS3Group.GET("", settingHandler.ListAWSS3)
+		awsS3Group.POST("", settingHandler.CreateAWSS3)
+		awsS3Group.PUT("/:itemID", settingHandler.UpdateAWSS3)
+		awsS3Group.PUT("/:itemID/meta", settingHandler.UpdateAWSS3Meta)
+		awsS3Group.DELETE("/:itemID", settingHandler.DeleteAWSS3)
 		// Test connection
-		awsS3Group.POST("/test-conn", s.handlerRegistry.settingHandler.TestAWSS3Conn)
+		awsS3Group.POST("/test-conn", settingHandler.TestAWSS3Conn)
 	}
 
 	{ // ssh key group
 		sshKeyGroup := settingGroup.Group("/ssh-keys")
-		sshKeyGroup.GET("/:itemID", s.handlerRegistry.settingHandler.GetSSHKey)
-		sshKeyGroup.GET("", s.handlerRegistry.settingHandler.ListSSHKey)
-		sshKeyGroup.POST("", s.handlerRegistry.settingHandler.CreateSSHKey)
-		sshKeyGroup.PUT("/:itemID", s.handlerRegistry.settingHandler.UpdateSSHKey)
-		sshKeyGroup.PUT("/:itemID/meta", s.handlerRegistry.settingHandler.UpdateSSHKeyMeta)
-		sshKeyGroup.DELETE("/:itemID", s.handlerRegistry.settingHandler.DeleteSSHKey)
+		sshKeyGroup.GET("/:itemID", settingHandler.GetSSHKey)
+		sshKeyGroup.GET("", settingHandler.ListSSHKey)
+		sshKeyGroup.POST("", settingHandler.CreateSSHKey)
+		sshKeyGroup.PUT("/:itemID", settingHandler.UpdateSSHKey)
+		sshKeyGroup.PUT("/:itemID/meta", settingHandler.UpdateSSHKeyMeta)
+		sshKeyGroup.DELETE("/:itemID", settingHandler.DeleteSSHKey)
 	}
 
 	{ // IM service group
 		imServiceGroup := settingGroup.Group("/im-services")
-		imServiceGroup.GET("/:itemID", s.handlerRegistry.settingHandler.GetIMService)
-		imServiceGroup.GET("", s.handlerRegistry.settingHandler.ListIMService)
-		imServiceGroup.POST("", s.handlerRegistry.settingHandler.CreateIMService)
-		imServiceGroup.PUT("/:itemID", s.handlerRegistry.settingHandler.UpdateIMService)
-		imServiceGroup.PUT("/:itemID/meta", s.handlerRegistry.settingHandler.UpdateIMServiceMeta)
-		imServiceGroup.DELETE("/:itemID", s.handlerRegistry.settingHandler.DeleteIMService)
+		imServiceGroup.GET("/:itemID", settingHandler.GetIMService)
+		imServiceGroup.GET("", settingHandler.ListIMService)
+		imServiceGroup.POST("", settingHandler.CreateIMService)
+		imServiceGroup.PUT("/:itemID", settingHandler.UpdateIMService)
+		imServiceGroup.PUT("/:itemID/meta", settingHandler.UpdateIMServiceMeta)
+		imServiceGroup.DELETE("/:itemID", settingHandler.DeleteIMService)
 		// Test connection
-		imServiceGroup.POST("/test-send-msg", s.handlerRegistry.settingHandler.TestSendInstantMsg)
+		imServiceGroup.POST("/test-send-msg", settingHandler.TestSendInstantMsg)
 	}
 
 	{ // registry auth group
 		registryAuthGroup := settingGroup.Group("/registry-auth")
-		registryAuthGroup.GET("/:itemID", s.handlerRegistry.settingHandler.GetRegistryAuth)
-		registryAuthGroup.GET("", s.handlerRegistry.settingHandler.ListRegistryAuth)
-		registryAuthGroup.POST("", s.handlerRegistry.settingHandler.CreateRegistryAuth)
-		registryAuthGroup.PUT("/:itemID", s.handlerRegistry.settingHandler.UpdateRegistryAuth)
-		registryAuthGroup.PUT("/:itemID/meta", s.handlerRegistry.settingHandler.UpdateRegistryAuthMeta)
-		registryAuthGroup.DELETE("/:itemID", s.handlerRegistry.settingHandler.DeleteRegistryAuth)
+		registryAuthGroup.GET("/:itemID", settingHandler.GetRegistryAuth)
+		registryAuthGroup.GET("", settingHandler.ListRegistryAuth)
+		registryAuthGroup.POST("", settingHandler.CreateRegistryAuth)
+		registryAuthGroup.PUT("/:itemID", settingHandler.UpdateRegistryAuth)
+		registryAuthGroup.PUT("/:itemID/meta", settingHandler.UpdateRegistryAuthMeta)
+		registryAuthGroup.DELETE("/:itemID", settingHandler.DeleteRegistryAuth)
 		// Test connection
-		registryAuthGroup.POST("/test-conn", s.handlerRegistry.settingHandler.TestRegistryAuthConn)
+		registryAuthGroup.POST("/test-conn", settingHandler.TestRegistryAuthConn)
 	}
 
 	{ // basic auth group
 		basicAuthGroup := settingGroup.Group("/basic-auth")
-		basicAuthGroup.GET("/:itemID", s.handlerRegistry.settingHandler.GetBasicAuth)
-		basicAuthGroup.GET("", s.handlerRegistry.settingHandler.ListBasicAuth)
-		basicAuthGroup.POST("", s.handlerRegistry.settingHandler.CreateBasicAuth)
-		basicAuthGroup.PUT("/:itemID", s.handlerRegistry.settingHandler.UpdateBasicAuth)
-		basicAuthGroup.PUT("/:itemID/meta", s.handlerRegistry.settingHandler.UpdateBasicAuthMeta)
-		basicAuthGroup.DELETE("/:itemID", s.handlerRegistry.settingHandler.DeleteBasicAuth)
+		basicAuthGroup.GET("/:itemID", settingHandler.GetBasicAuth)
+		basicAuthGroup.GET("", settingHandler.ListBasicAuth)
+		basicAuthGroup.POST("", settingHandler.CreateBasicAuth)
+		basicAuthGroup.PUT("/:itemID", settingHandler.UpdateBasicAuth)
+		basicAuthGroup.PUT("/:itemID/meta", settingHandler.UpdateBasicAuthMeta)
+		basicAuthGroup.DELETE("/:itemID", settingHandler.DeleteBasicAuth)
 	}
 
 	{ // ssl group
 		sslGroup := settingGroup.Group("/ssls")
-		sslGroup.GET("/:itemID", s.handlerRegistry.settingHandler.GetSSL)
-		sslGroup.GET("", s.handlerRegistry.settingHandler.ListSSL)
-		sslGroup.POST("", s.handlerRegistry.settingHandler.CreateSSL)
-		sslGroup.PUT("/:itemID", s.handlerRegistry.settingHandler.UpdateSSL)
-		sslGroup.PUT("/:itemID/meta", s.handlerRegistry.settingHandler.UpdateSSLMeta)
-		sslGroup.DELETE("/:itemID", s.handlerRegistry.settingHandler.DeleteSSL)
+		sslGroup.GET("/:itemID", settingHandler.GetSSL)
+		sslGroup.GET("", settingHandler.ListSSL)
+		sslGroup.POST("", settingHandler.CreateSSL)
+		sslGroup.PUT("/:itemID", settingHandler.UpdateSSL)
+		sslGroup.PUT("/:itemID/meta", settingHandler.UpdateSSLMeta)
+		sslGroup.DELETE("/:itemID", settingHandler.DeleteSSL)
 	}
 
 	{ // email group
 		emailGroup := settingGroup.Group("/emails")
-		emailGroup.GET("/:itemID", s.handlerRegistry.settingHandler.GetEmail)
-		emailGroup.GET("", s.handlerRegistry.settingHandler.ListEmail)
-		emailGroup.POST("", s.handlerRegistry.settingHandler.CreateEmail)
-		emailGroup.PUT("/:itemID", s.handlerRegistry.settingHandler.UpdateEmail)
-		emailGroup.PUT("/:itemID/meta", s.handlerRegistry.settingHandler.UpdateEmailMeta)
-		emailGroup.DELETE("/:itemID", s.handlerRegistry.settingHandler.DeleteEmail)
+		emailGroup.GET("/:itemID", settingHandler.GetEmail)
+		emailGroup.GET("", settingHandler.ListEmail)
+		emailGroup.POST("", settingHandler.CreateEmail)
+		emailGroup.PUT("/:itemID", settingHandler.UpdateEmail)
+		emailGroup.PUT("/:itemID/meta", settingHandler.UpdateEmailMeta)
+		emailGroup.DELETE("/:itemID", settingHandler.DeleteEmail)
 		// Test connection
-		emailGroup.POST("/test-send-mail", s.handlerRegistry.settingHandler.TestSendMail)
+		emailGroup.POST("/test-send-mail", settingHandler.TestSendMail)
 	}
 
 	{ // secrets group
 		secretGroup := settingGroup.Group("/secrets")
-		secretGroup.GET("", s.handlerRegistry.settingHandler.ListSecret)
-		secretGroup.POST("", s.handlerRegistry.settingHandler.CreateSecret)
-		secretGroup.PUT("/:itemID", s.handlerRegistry.settingHandler.UpdateSecret)
-		secretGroup.PUT("/:itemID/meta", s.handlerRegistry.settingHandler.UpdateSecretMeta)
-		secretGroup.DELETE("/:itemID", s.handlerRegistry.settingHandler.DeleteSecret)
+		secretGroup.GET("", settingHandler.ListSecret)
+		secretGroup.POST("", settingHandler.CreateSecret)
+		secretGroup.PUT("/:itemID", settingHandler.UpdateSecret)
+		secretGroup.PUT("/:itemID/meta", settingHandler.UpdateSecretMeta)
+		secretGroup.DELETE("/:itemID", settingHandler.DeleteSecret)
 	}
 
 	{ // cron-job group
 		cronJobGroup := settingGroup.Group("/cron-jobs")
-		cronJobGroup.GET("/:itemID", s.handlerRegistry.settingHandler.GetCronJob)
-		cronJobGroup.GET("", s.handlerRegistry.settingHandler.ListCronJob)
-		cronJobGroup.POST("", s.handlerRegistry.settingHandler.CreateCronJob)
-		cronJobGroup.PUT("/:itemID", s.handlerRegistry.settingHandler.UpdateCronJob)
-		cronJobGroup.PUT("/:itemID/meta", s.handlerRegistry.settingHandler.UpdateCronJobMeta)
-		cronJobGroup.DELETE("/:itemID", s.handlerRegistry.settingHandler.DeleteCronJob)
+		cronJobGroup.GET("/:itemID", settingHandler.GetCronJob)
+		cronJobGroup.GET("", settingHandler.ListCronJob)
+		cronJobGroup.POST("", settingHandler.CreateCronJob)
+		cronJobGroup.PUT("/:itemID", settingHandler.UpdateCronJob)
+		cronJobGroup.PUT("/:itemID/meta", settingHandler.UpdateCronJobMeta)
+		cronJobGroup.DELETE("/:itemID", settingHandler.DeleteCronJob)
 	}
 
 	{ // notification group
 		notificationGroup := settingGroup.Group("/notifications")
-		notificationGroup.GET("/:itemID", s.handlerRegistry.settingHandler.GetNotification)
-		notificationGroup.GET("", s.handlerRegistry.settingHandler.ListNotification)
-		notificationGroup.POST("", s.handlerRegistry.settingHandler.CreateNotification)
-		notificationGroup.PUT("/:itemID", s.handlerRegistry.settingHandler.UpdateNotification)
-		notificationGroup.PUT("/:itemID/meta", s.handlerRegistry.settingHandler.UpdateNotificationMeta)
-		notificationGroup.DELETE("/:itemID", s.handlerRegistry.settingHandler.DeleteNotification)
+		notificationGroup.GET("/:itemID", settingHandler.GetNotification)
+		notificationGroup.GET("", settingHandler.ListNotification)
+		notificationGroup.POST("", settingHandler.CreateNotification)
+		notificationGroup.PUT("/:itemID", settingHandler.UpdateNotification)
+		notificationGroup.PUT("/:itemID/meta", settingHandler.UpdateNotificationMeta)
+		notificationGroup.DELETE("/:itemID", settingHandler.DeleteNotification)
 	}
 
 	return settingGroup
