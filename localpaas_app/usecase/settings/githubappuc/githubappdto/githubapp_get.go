@@ -72,18 +72,19 @@ func TransformGithubApp(
 		return nil, apperrors.Wrap(err)
 	}
 
+	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
 	// Recalculate callbackURL for the github-app as it depends on the actual server address
 	resp.CallbackURL = input.BaseCallbackURL + "/" + setting.ID
-	resp.SecretMasked = config.ClientSecret.IsEncrypted()
+	resp.SecretMasked = config.ClientSecret.IsEncrypted() || resp.Inherited
 	if resp.SecretMasked {
 		resp.ClientSecret = maskedSecret
 		resp.WebhookSecret = maskedSecret
 		resp.PrivateKey = maskedSecret
 	}
 
-	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
 	return resp, nil
 }

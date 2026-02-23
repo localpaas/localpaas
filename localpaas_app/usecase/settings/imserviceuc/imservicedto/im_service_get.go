@@ -70,22 +70,23 @@ func TransformIMService(
 	}
 	resp.Kind = base.IMServiceKind(setting.Kind)
 
+	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
 	switch {
 	case config.Slack != nil:
-		resp.SecretMasked = config.Slack.Webhook.IsEncrypted()
+		resp.SecretMasked = config.Slack.Webhook.IsEncrypted() || resp.Inherited
 		if resp.SecretMasked {
 			resp.Slack.Webhook = maskedWebhook
 		}
 	case config.Discord != nil:
-		resp.SecretMasked = config.Discord.Webhook.IsEncrypted()
+		resp.SecretMasked = config.Discord.Webhook.IsEncrypted() || resp.Inherited
 		if resp.SecretMasked {
 			resp.Discord.Webhook = maskedWebhook
 		}
 	}
 
-	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
 	return resp, nil
 }

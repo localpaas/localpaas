@@ -53,11 +53,13 @@ func TransformAWSS3(
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	resp.SecretMasked = resp.Cred.SecretMasked
 
 	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+
+	resp.SecretMasked = resp.Cred.SecretMasked
+
 	return resp, nil
 }

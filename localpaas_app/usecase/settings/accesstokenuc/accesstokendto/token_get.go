@@ -55,14 +55,15 @@ func TransformAccessToken(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp.SecretMasked = config.Token.IsEncrypted()
-	if resp.SecretMasked {
-		resp.Token = maskedSecret
-	}
-
 	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+
+	resp.SecretMasked = config.Token.IsEncrypted() || resp.Inherited
+	if resp.SecretMasked {
+		resp.Token = maskedSecret
+	}
+
 	return resp, nil
 }

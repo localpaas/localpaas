@@ -65,16 +65,17 @@ func TransformOAuth(
 		return nil, apperrors.Wrap(err)
 	}
 
-	// Recalculate callbackURL for the oauth as it depends on the actual server address
-	resp.CallbackURL = input.BaseCallbackURL + "/" + setting.ID
-	resp.SecretMasked = config.ClientSecret.IsEncrypted()
-	if resp.SecretMasked {
-		resp.ClientSecret = maskedSecret
-	}
-
 	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+
+	// Recalculate callbackURL for the oauth as it depends on the actual server address
+	resp.CallbackURL = input.BaseCallbackURL + "/" + setting.ID
+	resp.SecretMasked = config.ClientSecret.IsEncrypted() || resp.Inherited
+	if resp.SecretMasked {
+		resp.ClientSecret = maskedSecret
+	}
+
 	return resp, nil
 }

@@ -57,14 +57,15 @@ func TransformSSL(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp.SecretMasked = config.PrivateKey.IsEncrypted()
-	if resp.SecretMasked {
-		resp.PrivateKey = maskedSecret
-	}
-
 	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+
+	resp.SecretMasked = config.PrivateKey.IsEncrypted() || resp.Inherited
+	if resp.SecretMasked {
+		resp.PrivateKey = maskedSecret
+	}
+
 	return resp, nil
 }

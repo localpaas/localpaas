@@ -60,14 +60,15 @@ func TransformAWS(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp.SecretMasked = config.SecretKey.IsEncrypted()
-	if resp.SecretMasked {
-		resp.SecretKey = maskedSecret
-	}
-
 	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+
+	resp.SecretMasked = config.SecretKey.IsEncrypted() || resp.Inherited
+	if resp.SecretMasked {
+		resp.SecretKey = maskedSecret
+	}
+
 	return resp, nil
 }

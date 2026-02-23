@@ -38,8 +38,7 @@ type ListGithubAppResp struct {
 func TransformGithubApps(
 	settings []*entity.Setting,
 	input *GithubAppTransformInput,
-) (
-	resp []*GithubAppResp, err error) {
+) (resp []*GithubAppResp, err error) {
 	resp = make([]*GithubAppResp, 0, len(settings))
 	for _, setting := range settings {
 		item, err := TransformGithubApp(setting, input)

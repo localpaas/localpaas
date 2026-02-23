@@ -53,14 +53,16 @@ func TransformBasicAuth(
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	resp.SecretMasked = config.Password.IsEncrypted()
-	if resp.SecretMasked {
-		resp.Password = maskedPassword
-	}
 
 	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+
+	resp.SecretMasked = config.Password.IsEncrypted() || resp.Inherited
+	if resp.SecretMasked {
+		resp.Password = maskedPassword
+	}
+
 	return resp, nil
 }

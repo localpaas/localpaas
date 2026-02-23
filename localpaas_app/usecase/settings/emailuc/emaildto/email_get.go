@@ -92,22 +92,23 @@ func TransformEmail(
 	}
 	resp.Kind = base.EmailKind(setting.Kind)
 
+	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
 	switch {
 	case config.SMTP != nil:
-		resp.SecretMasked = config.SMTP.Password.IsEncrypted()
+		resp.SecretMasked = config.SMTP.Password.IsEncrypted() || resp.Inherited
 		if resp.SecretMasked {
 			resp.SMTP.Password = maskedSecret
 		}
 	case config.HTTP != nil:
-		resp.SecretMasked = config.HTTP.Password.IsEncrypted()
+		resp.SecretMasked = config.HTTP.Password.IsEncrypted() || resp.Inherited
 		if resp.SecretMasked {
 			resp.HTTP.Password = maskedSecret
 		}
 	}
 
-	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
 	return resp, nil
 }
