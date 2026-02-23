@@ -16,6 +16,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc/emaildto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc/githubappdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/healthcheckuc/healthcheckdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imagebuilduc/imagebuilddto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc/imservicedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/notificationuc/notificationdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc/oauthdto"
@@ -149,6 +150,11 @@ func (h *BaseSettingHandler) UpdateSettingMeta(
 		r := notificationdto.NewUpdateNotificationMetaReq()
 		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.NotificationUC.UpdateNotificationMeta(reqCtx, auth, r) }
+
+	case base.ResourceTypeImageBuild:
+		r := imagebuilddto.NewUpdateImageBuildMetaReq()
+		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
+		req, ucFunc = r, func() (any, error) { return h.ImageBuildUC.UpdateImageBuildMeta(reqCtx, auth, r) }
 	}
 
 	if err = h.ParseAndValidateJSONBody(ctx, req); err != nil {

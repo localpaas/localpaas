@@ -162,7 +162,7 @@ func (e *appError) Build(lang translation.Lang) *ErrorInfo {
 	if transErr != nil {
 		// This is not error, just notify dev team about missing translation
 		notifyTranslationMissing(transErr, lang)
-		if e.fallbackToErrorMsg {
+		if detail == "" && e.fallbackToErrorMsg {
 			detail = e.err.Error()
 		}
 	}

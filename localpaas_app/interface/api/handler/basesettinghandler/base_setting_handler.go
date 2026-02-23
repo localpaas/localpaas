@@ -11,6 +11,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/healthcheckuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imagebuilduc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/notificationuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc"
@@ -42,6 +43,7 @@ type BaseSettingHandler struct {
 	APIKeyUC       *apikeyuc.APIKeyUC
 	RepoWebhookUC  *repowebhookuc.RepoWebhookUC
 	NotificationUC *notificationuc.NotificationUC
+	ImageBuildUC   *imagebuilduc.ImageBuildUC
 }
 
 func NewBaseSettingHandler(
@@ -64,6 +66,7 @@ func NewBaseSettingHandler(
 	apiKeyUC *apikeyuc.APIKeyUC,
 	repoWebhookUC *repowebhookuc.RepoWebhookUC,
 	notificationUC *notificationuc.NotificationUC,
+	imageBuildUC *imagebuilduc.ImageBuildUC,
 ) *BaseSettingHandler {
 	return &BaseSettingHandler{
 		BaseHandler:    baseHandler,
@@ -85,5 +88,6 @@ func NewBaseSettingHandler(
 		APIKeyUC:       apiKeyUC,
 		RepoWebhookUC:  repoWebhookUC,
 		NotificationUC: notificationUC,
+		ImageBuildUC:   imageBuildUC,
 	}
 }

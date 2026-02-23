@@ -16,6 +16,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc/emaildto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc/githubappdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/healthcheckuc/healthcheckdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imagebuilduc/imagebuilddto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc/imservicedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/notificationuc/notificationdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc/oauthdto"
@@ -161,6 +162,11 @@ func (h *BaseSettingHandler) DeleteSetting(
 		r := notificationdto.NewDeleteNotificationReq()
 		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.NotificationUC.DeleteNotification(reqCtx, auth, r) }
+
+	case base.ResourceTypeImageBuild:
+		r := imagebuilddto.NewDeleteImageBuildReq()
+		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
+		req, ucFunc = r, func() (any, error) { return h.ImageBuildUC.DeleteImageBuild(reqCtx, auth, r) }
 	}
 
 	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {

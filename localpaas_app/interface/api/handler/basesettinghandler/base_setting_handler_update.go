@@ -16,6 +16,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc/emaildto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc/githubappdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/healthcheckuc/healthcheckdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imagebuilduc/imagebuilddto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc/imservicedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/notificationuc/notificationdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc/oauthdto"
@@ -38,7 +39,7 @@ func UpdateSettingPreRequestHandler(fn func(auth *basedto.Auth, req any) error) 
 	}
 }
 
-//nolint:funlen
+//nolint:funlen,gocyclo
 func (h *BaseSettingHandler) UpdateSetting(
 	ctx *gin.Context,
 	resType base.ResourceType,
@@ -159,6 +160,11 @@ func (h *BaseSettingHandler) UpdateSetting(
 		r := notificationdto.NewUpdateNotificationReq()
 		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
 		req, ucFunc = r, func() (any, error) { return h.NotificationUC.UpdateNotification(reqCtx, auth, r) }
+
+	case base.ResourceTypeImageBuild:
+		r := imagebuilddto.NewUpdateImageBuildReq()
+		r.ID, r.Scope, r.ObjectID, r.ParentObjectID = itemID, scope, objectID, parentObjectID
+		req, ucFunc = r, func() (any, error) { return h.ImageBuildUC.UpdateImageBuild(reqCtx, auth, r) }
 	}
 	if err != nil {
 		h.RenderError(ctx, err)

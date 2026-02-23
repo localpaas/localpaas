@@ -44,6 +44,7 @@ const (
 	ResourceTypeSysError     ResourceType = "sys-error"
 	ResourceTypeTask         ResourceType = "task"
 	ResourceTypeNotification ResourceType = "notification"
+	ResourceTypeImageBuild   ResourceType = "image-build"
 )
 
 type ResourceModule string

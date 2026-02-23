@@ -27,6 +27,7 @@ const (
 	SettingTypeEmail         SettingType = "email"
 	SettingTypeRepoWebhook   SettingType = "repo-webhook"
 	SettingTypeNotification  SettingType = "notification"
+	SettingTypeImageBuild    SettingType = "image-build"
 )
 
 var (

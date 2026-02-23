@@ -8353,6 +8353,390 @@
         "x-codegen-request-body-name" : "body"
       }
     },
+    "/projects/{projectID}/image-build" : {
+      "get" : {
+        "description" : "Lists image build settings",
+        "operationId" : "listProjectImageBuild",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`search=<target> (support *)`",
+          "in" : "query",
+          "name" : "search",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`pageOffset=offset`",
+          "in" : "query",
+          "name" : "pageOffset",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`pageLimit=limit`",
+          "in" : "query",
+          "name" : "pageLimit",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`sort=[-]field1|field2...`",
+          "in" : "query",
+          "name" : "sort",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.ListImageBuildResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Lists image build settings",
+        "tags" : [ "project_settings" ]
+      },
+      "post" : {
+        "description" : "Creates a new image build setting",
+        "operationId" : "createProjectImageBuild",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.CreateImageBuildReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.CreateImageBuildResp"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Creates a new image build setting",
+        "tags" : [ "project_settings" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/projects/{projectID}/image-build/{itemID}" : {
+      "delete" : {
+        "description" : "Deletes image build setting",
+        "operationId" : "deleteProjectImageBuild",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.DeleteImageBuildResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Deletes image build setting",
+        "tags" : [ "project_settings" ]
+      },
+      "get" : {
+        "description" : "Gets image build setting details",
+        "operationId" : "getProjectImageBuild",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.GetImageBuildResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Gets image build setting details",
+        "tags" : [ "project_settings" ]
+      },
+      "put" : {
+        "description" : "Updates image build",
+        "operationId" : "updateProjectImageBuild",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateImageBuildReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateImageBuildResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates image build",
+        "tags" : [ "project_settings" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/projects/{projectID}/image-build/{itemID}/meta" : {
+      "put" : {
+        "description" : "Updates image build meta",
+        "operationId" : "updateProjectImageBuildMeta",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateImageBuildMetaReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateImageBuildMetaResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates image build meta",
+        "tags" : [ "project_settings" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
     "/projects/{projectID}/notifications" : {
       "get" : {
         "description" : "Lists notification settings",
@@ -14115,6 +14499,341 @@
         "x-codegen-request-body-name" : "body"
       }
     },
+    "/settings/image-build" : {
+      "get" : {
+        "description" : "Lists image build settings",
+        "operationId" : "listSettingImageBuild",
+        "parameters" : [ {
+          "description" : "`search=<target> (support *)`",
+          "in" : "query",
+          "name" : "search",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`pageOffset=offset`",
+          "in" : "query",
+          "name" : "pageOffset",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`pageLimit=limit`",
+          "in" : "query",
+          "name" : "pageLimit",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`sort=[-]field1|field2...`",
+          "in" : "query",
+          "name" : "sort",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.ListImageBuildResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Lists image build settings",
+        "tags" : [ "settings" ]
+      },
+      "post" : {
+        "description" : "Creates a new image build setting",
+        "operationId" : "createSettingImageBuild",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.CreateImageBuildReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.CreateImageBuildResp"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Creates a new image build setting",
+        "tags" : [ "settings" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/settings/image-build/{itemID}" : {
+      "delete" : {
+        "description" : "Deletes image build setting",
+        "operationId" : "deleteSettingImageBuild",
+        "parameters" : [ {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.DeleteImageBuildResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Deletes image build setting",
+        "tags" : [ "settings" ]
+      },
+      "get" : {
+        "description" : "Gets image build setting details",
+        "operationId" : "getSettingImageBuild",
+        "parameters" : [ {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.GetImageBuildResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Gets image build setting details",
+        "tags" : [ "settings" ]
+      },
+      "put" : {
+        "description" : "Updates image build",
+        "operationId" : "updateSettingImageBuild",
+        "parameters" : [ {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateImageBuildReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateImageBuildResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates image build",
+        "tags" : [ "settings" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/settings/image-build/{itemID}/meta" : {
+      "put" : {
+        "description" : "Updates image build meta",
+        "operationId" : "updateSettingImageBuildMeta",
+        "parameters" : [ {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateImageBuildMetaReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateImageBuildMetaResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates image build meta",
+        "tags" : [ "settings" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
     "/settings/notifications" : {
       "get" : {
         "description" : "Lists notification settings",
@@ -18258,9 +18977,9 @@
         "x-enum-varnames" : [ "SettingStatusActive", "SettingStatusPending", "SettingStatusDisabled", "SettingStatusExpired" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.SettingType" : {
-        "enum" : [ "project", "app", "app-deployment", "app-http", "env-var", "secret", "aws", "aws-s3", "oauth", "ssh-key", "api-key", "im-service", "registry-auth", "basic-auth", "ssl", "github-app", "access-token", "cron-job", "healthcheck", "email", "repo-webhook", "notification" ],
+        "enum" : [ "project", "app", "app-deployment", "app-http", "env-var", "secret", "aws", "aws-s3", "oauth", "ssh-key", "api-key", "im-service", "registry-auth", "basic-auth", "ssl", "github-app", "access-token", "cron-job", "healthcheck", "email", "repo-webhook", "notification", "image-build" ],
         "type" : "string",
-        "x-enum-varnames" : [ "SettingTypeProject", "SettingTypeApp", "SettingTypeAppDeployment", "SettingTypeAppHttp", "SettingTypeEnvVar", "SettingTypeSecret", "SettingTypeAWS", "SettingTypeAWSS3", "SettingTypeOAuth", "SettingTypeSSHKey", "SettingTypeAPIKey", "SettingTypeIMService", "SettingTypeRegistryAuth", "SettingTypeBasicAuth", "SettingTypeSSL", "SettingTypeGithubApp", "SettingTypeAccessToken", "SettingTypeCronJob", "SettingTypeHealthcheck", "SettingTypeEmail", "SettingTypeRepoWebhook", "SettingTypeNotification" ]
+        "x-enum-varnames" : [ "SettingTypeProject", "SettingTypeApp", "SettingTypeAppDeployment", "SettingTypeAppHttp", "SettingTypeEnvVar", "SettingTypeSecret", "SettingTypeAWS", "SettingTypeAWSS3", "SettingTypeOAuth", "SettingTypeSSHKey", "SettingTypeAPIKey", "SettingTypeIMService", "SettingTypeRegistryAuth", "SettingTypeBasicAuth", "SettingTypeSSL", "SettingTypeGithubApp", "SettingTypeAccessToken", "SettingTypeCronJob", "SettingTypeHealthcheck", "SettingTypeEmail", "SettingTypeRepoWebhook", "SettingTypeNotification", "SettingTypeImageBuild" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.TaskPriority" : {
         "enum" : [ "low", "default", "critical" ],
@@ -23440,6 +24159,195 @@
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.UpdateHealthcheckResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.CreateImageBuildReq" : {
+        "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
+          "default" : {
+            "type" : "boolean"
+          },
+          "resources" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.ImageBuildResourcesReq"
+          }
+        },
+        "required" : [ "availableInProjects", "default", "resources" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.CreateImageBuildResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.DeleteImageBuildResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.GetImageBuildResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.ImageBuildResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.ImageBuildResourcesReq" : {
+        "properties" : {
+          "cpus" : {
+            "type" : "integer"
+          },
+          "memMB" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "cpus", "memMB" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.ImageBuildResourcesResp" : {
+        "properties" : {
+          "cpus" : {
+            "type" : "integer"
+          },
+          "memMB" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "cpus", "memMB" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.ImageBuildResp" : {
+        "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
+          "createdAt" : {
+            "type" : "string"
+          },
+          "default" : {
+            "type" : "boolean"
+          },
+          "expireAt" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "inherited" : {
+            "type" : "boolean"
+          },
+          "kind" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "resources" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.ImageBuildResourcesResp"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingType"
+          },
+          "updateVer" : {
+            "type" : "integer"
+          },
+          "updatedAt" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "createdAt", "id", "name", "resources", "status", "type", "updateVer", "updatedAt" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.ListImageBuildResp" : {
+        "properties" : {
+          "data" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.ImageBuildResp"
+            },
+            "type" : "array"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateImageBuildMetaReq" : {
+        "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
+          "default" : {
+            "type" : "boolean"
+          },
+          "expireAt" : {
+            "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          },
+          "updateVer" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "availableInProjects", "default", "expireAt", "status", "updateVer" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateImageBuildMetaResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateImageBuildReq" : {
+        "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
+          "default" : {
+            "type" : "boolean"
+          },
+          "resources" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.ImageBuildResourcesReq"
+          },
+          "updateVer" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "availableInProjects", "default", "resources", "updateVer" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateImageBuildResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"

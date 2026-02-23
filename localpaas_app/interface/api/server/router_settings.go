@@ -167,5 +167,15 @@ func (s *HTTPServer) registerSettingRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		notificationGroup.DELETE("/:itemID", settingHandler.DeleteNotification)
 	}
 
+	{ // image-build group
+		imageBuildGroup := settingGroup.Group("/image-build")
+		imageBuildGroup.GET("/:itemID", settingHandler.GetImageBuild)
+		imageBuildGroup.GET("", settingHandler.ListImageBuild)
+		imageBuildGroup.POST("", settingHandler.CreateImageBuild)
+		imageBuildGroup.PUT("/:itemID", settingHandler.UpdateImageBuild)
+		imageBuildGroup.PUT("/:itemID/meta", settingHandler.UpdateImageBuildMeta)
+		imageBuildGroup.DELETE("/:itemID", settingHandler.DeleteImageBuild)
+	}
+
 	return settingGroup
 }

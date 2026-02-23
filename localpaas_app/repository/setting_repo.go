@@ -80,14 +80,14 @@ type SettingRepo interface {
 		opts ...bunex.SelectQueryOption) (map[string]*entity.Setting, error)
 
 	// Make sure there is at most one active setting in the given scope.
-	// Inherited settings are still allowed.
-	EnsureSingleGlobally(ctx context.Context, db database.IDB, typ base.SettingType,
+	// Inherited/imported settings are still allowed.
+	EnsureUniqueGlobally(ctx context.Context, db database.IDB, typ base.SettingType,
 		opts ...bunex.SelectQueryOption) error
-	EnsureSingleByProject(ctx context.Context, db database.IDB, typ base.SettingType, projectID string,
+	EnsureUniqueInProject(ctx context.Context, db database.IDB, typ base.SettingType, projectID string,
 		opts ...bunex.SelectQueryOption) error
-	EnsureSingleByApp(ctx context.Context, db database.IDB, typ base.SettingType, appID string,
+	EnsureUniqueInApp(ctx context.Context, db database.IDB, typ base.SettingType, appID string,
 		opts ...bunex.SelectQueryOption) error
-	EnsureSingleByUser(ctx context.Context, db database.IDB, typ base.SettingType, userID string,
+	EnsureUniqueInUser(ctx context.Context, db database.IDB, typ base.SettingType, userID string,
 		opts ...bunex.SelectQueryOption) error
 
 	Insert(ctx context.Context, db database.IDB, setting *entity.Setting,
@@ -546,7 +546,7 @@ func (repo *settingRepo) applyUserFilter(opts []bunex.SelectQueryOption, userID 
 	return opts
 }
 
-func (repo *settingRepo) EnsureSingleGlobally(ctx context.Context, db database.IDB, typ base.SettingType,
+func (repo *settingRepo) EnsureUniqueGlobally(ctx context.Context, db database.IDB, typ base.SettingType,
 	opts ...bunex.SelectQueryOption) error {
 	query := db.NewSelect().Model((*entity.Setting)(nil)).
 		Where("setting.type = ?", typ).
@@ -562,12 +562,12 @@ func (repo *settingRepo) EnsureSingleGlobally(ctx context.Context, db database.I
 		return apperrors.Wrap(err)
 	}
 	if count > 1 {
-		return apperrors.Wrap(apperrors.ErrConflict)
+		return apperrors.NewAlreadyExist("Setting")
 	}
 	return nil
 }
 
-func (repo *settingRepo) EnsureSingleByProject(ctx context.Context, db database.IDB, typ base.SettingType,
+func (repo *settingRepo) EnsureUniqueInProject(ctx context.Context, db database.IDB, typ base.SettingType,
 	projectID string, opts ...bunex.SelectQueryOption) error {
 	query := db.NewSelect().Model((*entity.Setting)(nil)).
 		Where("setting.type = ?", typ).
@@ -583,12 +583,12 @@ func (repo *settingRepo) EnsureSingleByProject(ctx context.Context, db database.
 		return apperrors.Wrap(err)
 	}
 	if count > 1 {
-		return apperrors.Wrap(apperrors.ErrConflict)
+		return apperrors.NewAlreadyExist("Setting")
 	}
 	return nil
 }
 
-func (repo *settingRepo) EnsureSingleByApp(ctx context.Context, db database.IDB, typ base.SettingType,
+func (repo *settingRepo) EnsureUniqueInApp(ctx context.Context, db database.IDB, typ base.SettingType,
 	appID string, opts ...bunex.SelectQueryOption) error {
 	query := db.NewSelect().Model((*entity.Setting)(nil)).
 		Where("setting.type = ?", typ).
@@ -604,12 +604,12 @@ func (repo *settingRepo) EnsureSingleByApp(ctx context.Context, db database.IDB,
 		return apperrors.Wrap(err)
 	}
 	if count > 1 {
-		return apperrors.Wrap(apperrors.ErrConflict)
+		return apperrors.NewAlreadyExist("Setting")
 	}
 	return nil
 }
 
-func (repo *settingRepo) EnsureSingleByUser(ctx context.Context, db database.IDB, typ base.SettingType,
+func (repo *settingRepo) EnsureUniqueInUser(ctx context.Context, db database.IDB, typ base.SettingType,
 	userID string, opts ...bunex.SelectQueryOption) error {
 	query := db.NewSelect().Model((*entity.Setting)(nil)).
 		Where("setting.type = ?", typ).
@@ -625,7 +625,7 @@ func (repo *settingRepo) EnsureSingleByUser(ctx context.Context, db database.IDB
 		return apperrors.Wrap(err)
 	}
 	if count > 1 {
-		return apperrors.Wrap(apperrors.ErrConflict)
+		return apperrors.NewAlreadyExist("Setting")
 	}
 	return nil
 }
