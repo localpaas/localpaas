@@ -6,40 +6,43 @@ import (
 
 func (s *HTTPServer) registerUserRoutes(apiGroup *gin.RouterGroup) (*gin.RouterGroup, *gin.RouterGroup) {
 	userGroup := apiGroup.Group("/users")
+	userHandler := s.handlerRegistry.userHandler
+
 	{ // user group
 		// User info
-		userGroup.GET("/base", s.handlerRegistry.userHandler.ListUserBase)
-		userGroup.GET("/:userID", s.handlerRegistry.userHandler.GetUser)
-		userGroup.GET("", s.handlerRegistry.userHandler.ListUser)
+		userGroup.GET("/base", userHandler.ListUserBase)
+		userGroup.GET("/:userID", userHandler.GetUser)
+		userGroup.GET("", userHandler.ListUser)
 		// Password
-		userGroup.PUT("/current/password", s.handlerRegistry.userHandler.UpdateUserPassword)
-		userGroup.POST("/:userID/password/request-reset", s.handlerRegistry.userHandler.RequestResetPassword)
-		userGroup.POST("/:userID/password/reset", s.handlerRegistry.userHandler.ResetPassword)
+		userGroup.PUT("/current/password", userHandler.UpdateUserPassword)
+		userGroup.POST("/:userID/password/request-reset", userHandler.RequestResetPassword)
+		userGroup.POST("/:userID/password/reset", userHandler.ResetPassword)
 		// Profile
-		userGroup.PUT("/current/profile", s.handlerRegistry.userHandler.UpdateUserProfile)
+		userGroup.PUT("/current/profile", userHandler.UpdateUserProfile)
 		// Update (admin API)
-		userGroup.PUT("/:userID", s.handlerRegistry.userHandler.UpdateUser)
-		userGroup.DELETE("/:userID", s.handlerRegistry.userHandler.DeleteUser)
+		userGroup.PUT("/:userID", userHandler.UpdateUser)
+		userGroup.DELETE("/:userID", userHandler.DeleteUser)
 		// MFA TOTP setup
-		userGroup.POST("/current/mfa/totp-begin-setup", s.handlerRegistry.userHandler.BeginMFATotpSetup)
-		userGroup.POST("/current/mfa/totp-complete-setup", s.handlerRegistry.userHandler.CompleteMFATotpSetup)
-		userGroup.POST("/current/mfa/totp-remove", s.handlerRegistry.userHandler.RemoveMFATotp)
+		userGroup.POST("/current/mfa/totp-begin-setup", userHandler.BeginMFATotpSetup)
+		userGroup.POST("/current/mfa/totp-complete-setup", userHandler.CompleteMFATotpSetup)
+		userGroup.POST("/current/mfa/totp-remove", userHandler.RemoveMFATotp)
 		// Invite & SignUp
-		userGroup.POST("/invite", s.handlerRegistry.userHandler.InviteUser)
-		userGroup.POST("/signup-begin", s.handlerRegistry.userHandler.BeginUserSignup)
-		userGroup.POST("/signup-complete", s.handlerRegistry.userHandler.CompleteUserSignup)
+		userGroup.POST("/invite", userHandler.InviteUser)
+		userGroup.POST("/signup-begin", userHandler.BeginUserSignup)
+		userGroup.POST("/signup-complete", userHandler.CompleteUserSignup)
 	}
 
 	// User settings group
 	userSettingGroup := userGroup.Group("/current/settings")
+	userSettingsHandler := s.handlerRegistry.userSettingsHandler
 
 	{ // API key group
 		apiKeyGroup := userSettingGroup.Group("/api-keys")
-		apiKeyGroup.GET("/:itemID", s.handlerRegistry.userSettingsHandler.GetAPIKey)
-		apiKeyGroup.GET("", s.handlerRegistry.userSettingsHandler.ListAPIKey)
-		apiKeyGroup.POST("", s.handlerRegistry.userSettingsHandler.CreateAPIKey)
-		apiKeyGroup.PUT("/:itemID/meta", s.handlerRegistry.userSettingsHandler.UpdateAPIKeyMeta)
-		apiKeyGroup.DELETE("/:itemID", s.handlerRegistry.userSettingsHandler.DeleteAPIKey)
+		apiKeyGroup.GET("/:itemID", userSettingsHandler.GetAPIKey)
+		apiKeyGroup.GET("", userSettingsHandler.ListAPIKey)
+		apiKeyGroup.POST("", userSettingsHandler.CreateAPIKey)
+		apiKeyGroup.PUT("/:itemID/meta", userSettingsHandler.UpdateAPIKeyMeta)
+		apiKeyGroup.DELETE("/:itemID", userSettingsHandler.DeleteAPIKey)
 	}
 
 	return userGroup, userSettingGroup

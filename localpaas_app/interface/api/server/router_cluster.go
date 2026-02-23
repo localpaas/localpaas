@@ -6,36 +6,37 @@ import (
 
 func (s *HTTPServer) registerClusterRoutes(apiGroup *gin.RouterGroup) *gin.RouterGroup {
 	clusterGroup := apiGroup.Group("/cluster")
+	clusterHandler := s.handlerRegistry.clusterHandler
 
 	{ // node group
 		nodeGroup := clusterGroup.Group("/nodes")
 		// Nodes
-		nodeGroup.GET("", s.handlerRegistry.clusterHandler.ListNode)
-		nodeGroup.GET("/:nodeID", s.handlerRegistry.clusterHandler.GetNode)
-		nodeGroup.GET("/:nodeID/inspect", s.handlerRegistry.clusterHandler.GetNodeInspection)
-		nodeGroup.PUT("/:nodeID", s.handlerRegistry.clusterHandler.UpdateNode)
-		nodeGroup.DELETE("/:nodeID", s.handlerRegistry.clusterHandler.DeleteNode)
+		nodeGroup.GET("", clusterHandler.ListNode)
+		nodeGroup.GET("/:nodeID", clusterHandler.GetNode)
+		nodeGroup.GET("/:nodeID/inspect", clusterHandler.GetNodeInspection)
+		nodeGroup.PUT("/:nodeID", clusterHandler.UpdateNode)
+		nodeGroup.DELETE("/:nodeID", clusterHandler.DeleteNode)
 		// Node join
-		nodeGroup.POST("/join", s.handlerRegistry.clusterHandler.JoinNode)
-		nodeGroup.GET("/join-command", s.handlerRegistry.clusterHandler.GetNodeJoinCommand)
+		nodeGroup.POST("/join", clusterHandler.JoinNode)
+		nodeGroup.GET("/join-command", clusterHandler.GetNodeJoinCommand)
 	}
 	{ // volume group
 		volumeGroup := clusterGroup.Group("/volumes")
 		// Volumes
-		volumeGroup.GET("", s.handlerRegistry.clusterHandler.ListVolume)
-		volumeGroup.GET("/:volumeID", s.handlerRegistry.clusterHandler.GetVolume)
-		volumeGroup.GET("/:volumeID/inspect", s.handlerRegistry.clusterHandler.GetVolumeInspection)
-		volumeGroup.POST("", s.handlerRegistry.clusterHandler.CreateVolume)
-		volumeGroup.DELETE("/:volumeID", s.handlerRegistry.clusterHandler.DeleteVolume)
+		volumeGroup.GET("", clusterHandler.ListVolume)
+		volumeGroup.GET("/:volumeID", clusterHandler.GetVolume)
+		volumeGroup.GET("/:volumeID/inspect", clusterHandler.GetVolumeInspection)
+		volumeGroup.POST("", clusterHandler.CreateVolume)
+		volumeGroup.DELETE("/:volumeID", clusterHandler.DeleteVolume)
 	}
 	{ // image group
 		imageGroup := clusterGroup.Group("/images")
 		// Volumes
-		imageGroup.GET("", s.handlerRegistry.clusterHandler.ListImage)
-		imageGroup.GET("/:imageID", s.handlerRegistry.clusterHandler.GetImage)
-		imageGroup.GET("/:imageID/inspect", s.handlerRegistry.clusterHandler.GetImageInspection)
-		imageGroup.POST("", s.handlerRegistry.clusterHandler.CreateImage)
-		imageGroup.DELETE("/:imageID", s.handlerRegistry.clusterHandler.DeleteImage)
+		imageGroup.GET("", clusterHandler.ListImage)
+		imageGroup.GET("/:imageID", clusterHandler.GetImage)
+		imageGroup.GET("/:imageID/inspect", clusterHandler.GetImageInspection)
+		imageGroup.POST("", clusterHandler.CreateImage)
+		imageGroup.DELETE("/:imageID", clusterHandler.DeleteImage)
 	}
 
 	return clusterGroup

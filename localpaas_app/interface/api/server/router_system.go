@@ -6,37 +6,38 @@ import (
 
 func (s *HTTPServer) registerSystemRoutes(apiGroup *gin.RouterGroup) *gin.RouterGroup {
 	systemGroup := apiGroup.Group("/system")
+	systemHandler := s.handlerRegistry.systemHandler
 
 	{ // task group
 		taskGroup := systemGroup.Group("/tasks")
-		taskGroup.GET("", s.handlerRegistry.systemHandler.ListTask)
-		taskGroup.GET("/:taskID", s.handlerRegistry.systemHandler.GetTask)
-		taskGroup.PUT("/:taskID/meta", s.handlerRegistry.systemHandler.UpdateTaskMeta)
-		taskGroup.POST("/:taskID/cancel", s.handlerRegistry.systemHandler.CancelTask)
+		taskGroup.GET("", systemHandler.ListTask)
+		taskGroup.GET("/:taskID", systemHandler.GetTask)
+		taskGroup.PUT("/:taskID/meta", systemHandler.UpdateTaskMeta)
+		taskGroup.POST("/:taskID/cancel", systemHandler.CancelTask)
 	}
 
 	{ // error group
 		errorGroup := systemGroup.Group("/errors")
-		errorGroup.GET("", s.handlerRegistry.systemHandler.ListSysError)
-		errorGroup.GET("/:errorID", s.handlerRegistry.systemHandler.GetSysError)
-		errorGroup.DELETE("/:errorID", s.handlerRegistry.systemHandler.DeleteSysError)
+		errorGroup.GET("", systemHandler.ListSysError)
+		errorGroup.GET("/:errorID", systemHandler.GetSysError)
+		errorGroup.DELETE("/:errorID", systemHandler.DeleteSysError)
 	}
 
 	{ // nginx group
 		nginxGroup := systemGroup.Group("/nginx")
 		// Process
-		nginxGroup.POST("/restart", s.handlerRegistry.systemHandler.RestartNginx)
+		nginxGroup.POST("/restart", systemHandler.RestartNginx)
 		// Config
-		nginxGroup.POST("/config/reload", s.handlerRegistry.systemHandler.ReloadNginxConfig)
-		nginxGroup.POST("/config/reset", s.handlerRegistry.systemHandler.ResetNginxConfig)
+		nginxGroup.POST("/config/reload", systemHandler.ReloadNginxConfig)
+		nginxGroup.POST("/config/reset", systemHandler.ResetNginxConfig)
 	}
 
 	{ // localpaas app group
 		lpAppGroup := systemGroup.Group("/localpaas")
 		// Process
-		lpAppGroup.POST("/restart", s.handlerRegistry.systemHandler.RestartLocalPaasApp)
+		lpAppGroup.POST("/restart", systemHandler.RestartLocalPaasApp)
 		// Config
-		lpAppGroup.POST("/config/reload", s.handlerRegistry.systemHandler.ReloadLocalPaasAppConfig)
+		lpAppGroup.POST("/config/reload", systemHandler.ReloadLocalPaasAppConfig)
 	}
 
 	return systemGroup
