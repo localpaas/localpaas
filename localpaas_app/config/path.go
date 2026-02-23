@@ -91,24 +91,24 @@ func (cfg *Config) RepoWebhookURL(kind base.WebhookKind, secret string) string {
 	return gofn.Must(url.JoinPath(cfg.BaseAPIURL(), "webhooks", string(kind), secret))
 }
 
-func (cfg *Config) GlobalGithubAppManifestFlowCreationURL(settingID, state string) string {
+func (cfg *Config) GlobalGithubAppManifestFlowBeginURL(settingID, state string) string {
 	return gofn.Must(url.JoinPath(cfg.BaseAPIURL(), "settings/github-apps", settingID,
 		"manifest-flow/begin")) + "?state=" + state
 }
 
-func (cfg *Config) GlobalGithubAppManifestFlowSetupURL(settingID string) string {
+func (cfg *Config) GlobalGithubAppManifestFlowProgressURL(settingID string) string {
 	return gofn.Must(url.JoinPath(cfg.BaseAPIURL(), "settings/github-apps", settingID,
-		"manifest-flow/setup"))
+		"manifest-flow/progress"))
 }
 
-func (cfg *Config) ProjectGithubAppManifestFlowCreationURL(projectID, settingID, state string) string {
+func (cfg *Config) ProjectGithubAppManifestFlowBeginURL(projectID, settingID, state string) string {
 	return gofn.Must(url.JoinPath(cfg.BaseAPIURL(), "projects", projectID,
 		"github-apps", settingID, "manifest-flow/begin")) + "?state=" + state
 }
 
-func (cfg *Config) ProjectGithubAppManifestFlowSetupURL(projectID, settingID string) string {
+func (cfg *Config) ProjectGithubAppManifestFlowProgressURL(projectID, settingID string) string {
 	return gofn.Must(url.JoinPath(cfg.BaseAPIURL(), "projects", projectID,
-		"github-apps", settingID, "manifest-flow/setup"))
+		"github-apps", settingID, "manifest-flow/progress"))
 }
 
 /// OBJECT PHOTOS
