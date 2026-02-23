@@ -8,12 +8,7 @@ import (
 	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc/githubappdto"
-)
-
-const (
-	htmlSuccess = "<html><body><h3>Success</h3></body></html>"
 )
 
 // ListGithubApp Lists github-app settings
@@ -193,27 +188,7 @@ func (h *SettingHandler) ListAppInstallation(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /settings/github-apps/manifest-flow/begin [post]
 func (h *SettingHandler) BeginGithubAppManifestFlow(ctx *gin.Context) {
-	auth, _, err := h.GetAuthGlobalSettings(ctx, base.ResourceTypeGithubApp, base.ActionTypeWrite, "")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := githubappdto.NewBeginGithubAppManifestFlowReq()
-	req.Scope = base.SettingScopeGlobal
-	req.Type = base.SettingTypeGithubApp
-	if err = h.ParseJSONBody(ctx, req); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.GithubAppUC.BeginGithubAppManifestFlow(h.RequestCtx(ctx), auth, req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resp)
+	h.GithubAppManifestFlowBegin(ctx, base.SettingScopeGlobal)
 }
 
 // BeginGithubAppManifestFlowCreation Begins a github-app manifest flow of creation
@@ -228,62 +203,36 @@ func (h *SettingHandler) BeginGithubAppManifestFlow(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /settings/github-apps/{itemID}/manifest-flow/begin [get]
 func (h *SettingHandler) BeginGithubAppManifestFlowCreation(ctx *gin.Context) {
-	itemID, err := h.ParseStringParam(ctx, "itemID")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	req := githubappdto.NewBeginGithubAppManifestFlowCreationReq()
-	req.SettingID = itemID
-	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.GithubAppUC.BeginGithubAppManifestFlowCreation(h.RequestCtx(ctx), req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	ctx.Data(http.StatusOK, "text/html", reflectutil.UnsafeStrToBytes(resp.Data.PageContent))
+	h.GithubAppManifestFlowBeginCreation(ctx, base.SettingScopeGlobal)
 }
 
-// SetupGithubAppManifestFlow Sets up a github-app manifest flow
-// @Summary Sets up a github-app manifest flow
-// @Description Sets up a github-app manifest flow
+// HandleGithubAppManifestFlowProgress Handles progress of github-app manifest flow
+// @Summary Handles progress of github-app manifest flow
+// @Description Handles progress of github-app manifest flow
 // @Tags    settings
 // @Produce json
-// @Id      setupGithubAppManifestFlow
+// @Id      handleGithubAppManifestFlowProgress
 // @Param   itemID path string true "setting ID"
 // @Success 200 "html page to redirect to github app creation page"
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /settings/github-apps/{itemID}/manifest-flow/setup [get]
-func (h *SettingHandler) SetupGithubAppManifestFlow(ctx *gin.Context) {
-	itemID, err := h.ParseStringParam(ctx, "itemID")
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
+// @Router  /settings/github-apps/{itemID}/manifest-flow/progress [get]
+func (h *SettingHandler) HandleGithubAppManifestFlowProgress(ctx *gin.Context) {
+	h.GithubAppManifestFlowProgress(ctx, base.SettingScopeGlobal)
+}
 
-	req := githubappdto.NewSetupGithubAppManifestFlowReq()
-	req.SettingID = itemID
-	if err := h.ParseAndValidateRequest(ctx, req, nil); err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	resp, err := h.GithubAppUC.SetupGithubAppManifestFlow(h.RequestCtx(ctx), req)
-	if err != nil {
-		h.RenderError(ctx, err)
-		return
-	}
-
-	if resp.Data.RedirectURL != "" {
-		ctx.Redirect(http.StatusFound, resp.Data.RedirectURL)
-	}
-
-	ctx.Data(http.StatusOK, "text/html", []byte(htmlSuccess))
+// BeginReprovisionGithubApp Begins reprovisioning a github-app through manifest flow
+// @Summary Begins reprovisioning a github-app through manifest flow
+// @Description Begins reprovisioning a github-app through manifest flow
+// @Tags    settings
+// @Produce json
+// @Id      beginReprovisionGithubApp
+// @Param   itemID path string true "setting ID"
+// @Param   body body githubappdto.BeginReprovisionGithubAppReq true "request data"
+// @Success 200 {object} githubappdto.BeginReprovisionGithubAppResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /settings/github-apps/{itemID}/begin-reprovision [post]
+func (h *SettingHandler) BeginReprovisionGithubApp(ctx *gin.Context) {
+	h.GithubAppBeginReprovision(ctx, base.SettingScopeGlobal)
 }

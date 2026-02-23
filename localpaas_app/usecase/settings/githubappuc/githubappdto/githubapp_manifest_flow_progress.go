@@ -7,7 +7,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 )
 
-type SetupGithubAppManifestFlowReq struct {
+type HandleGithubAppManifestFlowProgressReq struct {
 	SettingID      string `json:"-" mapstructure:"-"`
 	Code           string `json:"-" mapstructure:"code"`
 	State          string `json:"-" mapstructure:"state"`
@@ -15,21 +15,21 @@ type SetupGithubAppManifestFlowReq struct {
 	SetupAction    string `json:"-" mapstructure:"setup_action"`
 }
 
-func NewSetupGithubAppManifestFlowReq() *SetupGithubAppManifestFlowReq {
-	return &SetupGithubAppManifestFlowReq{}
+func NewHandleGithubAppManifestFlowProgressReq() *HandleGithubAppManifestFlowProgressReq {
+	return &HandleGithubAppManifestFlowProgressReq{}
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *SetupGithubAppManifestFlowReq) Validate() apperrors.ValidationErrors {
+func (req *HandleGithubAppManifestFlowProgressReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type SetupGithubAppManifestFlowResp struct {
-	Meta *basedto.Meta                       `json:"meta"`
-	Data *SetupGithubAppManifestFlowDataResp `json:"data"`
+type HandleGithubAppManifestFlowProgressResp struct {
+	Meta *basedto.Meta                                `json:"meta"`
+	Data *HandleGithubAppManifestFlowProgressDataResp `json:"data"`
 }
 
-type SetupGithubAppManifestFlowDataResp struct {
+type HandleGithubAppManifestFlowProgressDataResp struct {
 	RedirectURL string `json:"redirectURL"`
 }

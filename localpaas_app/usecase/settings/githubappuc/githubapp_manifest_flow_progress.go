@@ -13,25 +13,25 @@ import (
 	"github.com/localpaas/localpaas/services/git/github"
 )
 
-func (uc *GithubAppUC) SetupGithubAppManifestFlow(
+func (uc *GithubAppUC) HandleGithubAppManifestFlowProgress(
 	ctx context.Context,
-	req *githubappdto.SetupGithubAppManifestFlowReq,
-) (*githubappdto.SetupGithubAppManifestFlowResp, error) {
+	req *githubappdto.HandleGithubAppManifestFlowProgressReq,
+) (*githubappdto.HandleGithubAppManifestFlowProgressResp, error) {
 	if req.InstallationID == 0 && req.Code != "" && req.State != "" {
-		return uc.setupGithubAppManifestFlowOnCreation(ctx, req)
+		return uc.handleGithubAppManifestFlowOnCreation(ctx, req)
 	}
 
 	if req.InstallationID > 0 {
-		return uc.setupGithubAppManifestFlowOnInstallation(ctx, req)
+		return uc.handleGithubAppManifestFlowOnInstallation(ctx, req)
 	}
 
 	return nil, apperrors.NewNotImplemented()
 }
 
-func (uc *GithubAppUC) setupGithubAppManifestFlowOnCreation(
+func (uc *GithubAppUC) handleGithubAppManifestFlowOnCreation(
 	ctx context.Context,
-	req *githubappdto.SetupGithubAppManifestFlowReq,
-) (*githubappdto.SetupGithubAppManifestFlowResp, error) {
+	req *githubappdto.HandleGithubAppManifestFlowProgressReq,
+) (*githubappdto.HandleGithubAppManifestFlowProgressResp, error) {
 	manifestCache, err := uc.cacheAppManifestRepo.Get(ctx, req.SettingID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -46,7 +46,7 @@ func (uc *GithubAppUC) setupGithubAppManifestFlowOnCreation(
 		return nil, apperrors.Wrap(err)
 	}
 
-	appSetting := manifestCache.CreatingApp
+	appSetting := manifestCache.GithubApp
 	appSetting.Name = *appConfig.Name
 	githubApp := appSetting.MustAsGithubApp()
 	githubApp.AppID = gofn.PtrValueOrEmpty(appConfig.ID)
@@ -70,30 +70,49 @@ func (uc *GithubAppUC) setupGithubAppManifestFlowOnCreation(
 			*appConfig.Slug)
 	}
 
-	return &githubappdto.SetupGithubAppManifestFlowResp{
-		Data: &githubappdto.SetupGithubAppManifestFlowDataResp{
+	return &githubappdto.HandleGithubAppManifestFlowProgressResp{
+		Data: &githubappdto.HandleGithubAppManifestFlowProgressDataResp{
 			RedirectURL: redirectURL,
 		},
 	}, nil
 }
 
-func (uc *GithubAppUC) setupGithubAppManifestFlowOnInstallation(
+func (uc *GithubAppUC) handleGithubAppManifestFlowOnInstallation(
 	ctx context.Context,
-	req *githubappdto.SetupGithubAppManifestFlowReq,
-) (*githubappdto.SetupGithubAppManifestFlowResp, error) {
+	req *githubappdto.HandleGithubAppManifestFlowProgressReq,
+) (*githubappdto.HandleGithubAppManifestFlowProgressResp, error) {
 	manifestCache, err := uc.cacheAppManifestRepo.Get(ctx, req.SettingID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	appSetting := manifestCache.CreatingApp
+	// TODO: query installation list of the app and validate this one
+
+	appSetting := manifestCache.GithubApp
 	githubApp := appSetting.MustAsGithubApp()
 	githubApp.InstallationID = req.InstallationID
 	appSetting.MustSetData(githubApp)
 
-	err = uc.SettingRepo.Insert(ctx, uc.DB, appSetting)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
+	if manifestCache.Reprovision { //nolint:nestif
+		// Loads the setting from DB to check update version matching
+		dbSetting, err := uc.SettingRepo.GetByID(ctx, uc.DB, "", appSetting.ID, false)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		if dbSetting.UpdateVer != appSetting.UpdateVer {
+			return nil, apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
+		}
+
+		appSetting.UpdateVer++
+		err = uc.SettingRepo.Update(ctx, uc.DB, appSetting)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	} else {
+		err = uc.SettingRepo.Insert(ctx, uc.DB, appSetting)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
 	}
 
 	_ = uc.cacheAppManifestRepo.Del(ctx, req.SettingID)
@@ -105,8 +124,8 @@ func (uc *GithubAppUC) setupGithubAppManifestFlowOnInstallation(
 		redirectURL = config.Current.DashboardProjectGithubAppsURL(appSetting.ObjectID)
 	}
 
-	return &githubappdto.SetupGithubAppManifestFlowResp{
-		Data: &githubappdto.SetupGithubAppManifestFlowDataResp{
+	return &githubappdto.HandleGithubAppManifestFlowProgressResp{
+		Data: &githubappdto.HandleGithubAppManifestFlowProgressDataResp{
 			RedirectURL: redirectURL,
 		},
 	}, nil

@@ -34,7 +34,8 @@ func (s *HTTPServer) registerSettingRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		// Manifest flow
 		githubAppGroup.POST("/manifest-flow/begin", settingHandler.BeginGithubAppManifestFlow)
 		githubAppGroup.GET("/:itemID/manifest-flow/begin", settingHandler.BeginGithubAppManifestFlowCreation)
-		githubAppGroup.GET("/:itemID/manifest-flow/setup", settingHandler.SetupGithubAppManifestFlow)
+		githubAppGroup.GET("/:itemID/manifest-flow/progress", settingHandler.HandleGithubAppManifestFlowProgress)
+		githubAppGroup.POST("/:itemID/begin-reprovision", settingHandler.BeginReprovisionGithubApp)
 	}
 
 	{ // access-token group

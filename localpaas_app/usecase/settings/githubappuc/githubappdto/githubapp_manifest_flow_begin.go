@@ -9,9 +9,12 @@ import (
 )
 
 type BeginGithubAppManifestFlowReq struct {
-	settings.CreateSettingReq
-	Name string `json:"name"`
-	Org  string `json:"org"`
+	settings.BaseSettingReq
+	Name            string `json:"name"`
+	Org             string `json:"org"`
+	SSOEnabled      bool   `json:"ssoEnabled"`
+	AvailInProjects bool   `json:"availableInProjects"`
+	Default         bool   `json:"default"`
 }
 
 func NewBeginGithubAppManifestFlowReq() *BeginGithubAppManifestFlowReq {
@@ -31,4 +34,5 @@ type BeginGithubAppManifestFlowResp struct {
 
 type BeginGithubAppManifestFlowDataResp struct {
 	RedirectURL string `json:"redirectURL"`
+	SettingID   string `json:"settingId"`
 }

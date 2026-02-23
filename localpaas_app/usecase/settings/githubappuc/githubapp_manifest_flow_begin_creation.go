@@ -40,7 +40,7 @@ func (uc *GithubAppUC) BeginGithubAppManifestFlowCreation(
 		return nil, apperrors.Wrap(err)
 	}
 
-	githubApp := manifestCache.CreatingApp.MustAsGithubApp()
+	githubApp := manifestCache.GithubApp.MustAsGithubApp()
 
 	var actionURL string
 	if githubApp.Organization != "" {

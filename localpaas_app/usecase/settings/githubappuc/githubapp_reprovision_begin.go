@@ -2,7 +2,6 @@ package githubappuc
 
 import (
 	"context"
-	"time"
 
 	"github.com/tiendc/gofn"
 
@@ -10,64 +9,33 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/config"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/entity/cacheentity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc/githubappdto"
 	"github.com/localpaas/localpaas/services/git/github"
 )
 
-const (
-	appManifestStateLen = 24
-	appManifestCacheExp = 10 * time.Minute
-)
-
-var (
-	defaultAppEvents = []string{
-		"push",
-		// "create",
-	}
-
-	defaultAppPermissions = map[string]string{
-		"contents": "read",
-		// "repository_hooks": "write",
-		// "organization_hooks": "write",
-		// "repository_projects": "read",
-		// "pull_requests": "read",
-		// "organization_personal_access_tokens": "read",
-	}
-
-	webhookSecretLocal = "abc123"
-	webhookURLLocal    = "https://smee.io/RBNiNjxieUIWZ6Ej"
-)
-
-func (uc *GithubAppUC) BeginGithubAppManifestFlow(
+func (uc *GithubAppUC) BeginReprovisionGithubApp(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *githubappdto.BeginGithubAppManifestFlowReq,
-) (*githubappdto.BeginGithubAppManifestFlowResp, error) {
+	req *githubappdto.BeginReprovisionGithubAppReq,
+) (*githubappdto.BeginReprovisionGithubAppResp, error) {
+	appSetting, err := uc.GetSettingByID(ctx, uc.DB, &req.BaseSettingReq, req.ID, true)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	if appSetting.UpdateVer != req.UpdateVer {
+		return nil, apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
+	}
+
 	cfg := config.Current
 	isLocalEnv := cfg.IsDevEnv() && cfg.Platform == config.PlatformLocal
 	timeNow := timeutil.NowUTC()
 
-	appSetting := &entity.Setting{
-		ID:              gofn.Must(ulid.NewStringULID()),
-		ObjectID:        req.ObjectID,
-		Type:            base.SettingTypeGithubApp,
-		Kind:            string(base.SettingTypeGithubApp),
-		Status:          base.SettingStatusActive,
-		Name:            gofn.Coalesce(req.Name, "my localpaas app"),
-		AvailInProjects: req.AvailInProjects,
-		Default:         req.Default,
-		Version:         entity.CurrentGithubAppVersion,
-		CreatedAt:       timeNow,
-		UpdatedAt:       timeNow,
-	}
-	githubApp := &entity.GithubApp{
-		Organization: req.Org,
-		SSOEnabled:   req.SSOEnabled,
-	}
+	appSetting.UpdatedAt = timeNow
+	appSetting.Name = req.Name
+
+	githubApp := appSetting.MustAsGithubApp()
 	if isLocalEnv {
 		githubApp.WebhookSecret = webhookSecretLocal
 		githubApp.WebhookURL = webhookURLLocal
@@ -107,20 +75,20 @@ func (uc *GithubAppUC) BeginGithubAppManifestFlow(
 	}
 
 	manifestCache := &cacheentity.GithubAppManifest{
-		Manifest:  manifest,
-		State:     state,
-		GithubApp: appSetting,
+		Manifest:    manifest,
+		State:       state,
+		Reprovision: true,
+		GithubApp:   appSetting,
 	}
 
-	err := uc.cacheAppManifestRepo.Set(ctx, appSetting.ID, manifestCache, appManifestCacheExp)
+	err = uc.cacheAppManifestRepo.Set(ctx, appSetting.ID, manifestCache, appManifestCacheExp)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &githubappdto.BeginGithubAppManifestFlowResp{
-		Data: &githubappdto.BeginGithubAppManifestFlowDataResp{
+	return &githubappdto.BeginReprovisionGithubAppResp{
+		Data: &githubappdto.BeginReprovisionGithubAppDataResp{
 			RedirectURL: beginFlowURL,
-			SettingID:   appSetting.ID,
 		},
 	}, nil
 }
