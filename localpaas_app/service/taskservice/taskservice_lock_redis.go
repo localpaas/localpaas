@@ -7,7 +7,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
-func (s *taskService) CreateLock(
+func (s *taskService) CreateRedisLock(
 	ctx context.Context,
 	key string,
 	exp time.Duration,

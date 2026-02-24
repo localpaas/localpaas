@@ -9,7 +9,9 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 	"github.com/localpaas/localpaas/localpaas_app/repository/cacherepository"
+	"github.com/localpaas/localpaas/localpaas_app/service/taskservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
+	"github.com/localpaas/localpaas/services/docker"
 )
 
 type SettingService interface {
@@ -22,6 +24,9 @@ type SettingService interface {
 		objectID string, parentObjectID string, requireActive bool, errorIfUnavail bool,
 		refIDs *entity.RefObjectIDs) (*entity.RefObjects, error)
 
+	// Default settings
+	InitDefaults(ctx context.Context, db database.IDB) error
+
 	// Events
 	OnCreate(ctx context.Context, db database.IDB, event *CreateEvent) error
 	OnUpdate(ctx context.Context, db database.IDB, event *UpdateEvent) error
@@ -29,25 +34,34 @@ type SettingService interface {
 }
 
 func NewSettingService(
+	db *database.DB,
 	settingRepo repository.SettingRepo,
 	appRepo repository.AppRepo,
 	healthcheckSettingsRepo cacherepository.HealthcheckSettingsRepo,
 	userService userservice.UserService,
+	taskService taskservice.TaskService,
 	permissionManager permission.Manager,
+	dockerManager docker.Manager,
 ) SettingService {
 	return &settingService{
+		db:                      db,
 		settingRepo:             settingRepo,
 		appRepo:                 appRepo,
 		healthcheckSettingsRepo: healthcheckSettingsRepo,
 		userService:             userService,
+		taskService:             taskService,
 		permissionManager:       permissionManager,
+		dockerManager:           dockerManager,
 	}
 }
 
 type settingService struct {
+	db                      *database.DB
 	settingRepo             repository.SettingRepo
 	appRepo                 repository.AppRepo
 	healthcheckSettingsRepo cacherepository.HealthcheckSettingsRepo
 	userService             userservice.UserService
+	taskService             taskservice.TaskService
 	permissionManager       permission.Manager
+	dockerManager           docker.Manager
 }

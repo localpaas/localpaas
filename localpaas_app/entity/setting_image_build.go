@@ -8,6 +8,8 @@ import (
 
 const (
 	CurrentImageBuildVersion = 1
+
+	defaultCPUPeriod = 100000
 )
 
 var _ = registerSettingParser(base.SettingTypeImageBuild, &imageBuildParser{})
@@ -21,11 +23,24 @@ func (s *imageBuildParser) New() SettingData {
 
 type ImageBuild struct {
 	Resources *ImageBuildResources `json:"resources"`
+	NoCache   bool                 `json:"noCache,omitempty"`
+	NoVerbose bool                 `json:"noVerbose,omitempty"`
 }
 
 type ImageBuildResources struct {
-	CPUs  uint32 `json:"cpus"`
-	MemMB uint64 `json:"memMB"`
+	CPUs      int32 `json:"cpus"`
+	MemMB     int64 `json:"memMB"`
+	MemSwapMB int64 `json:"memSwapMB,omitempty"`
+	ShmSizeMB int64 `json:"shmSizeMB,omitempty"`
+}
+
+// CPUsAsPeriodAndQuota calculates CPU period and quota from CPUs
+// Ref: https://docs.docker.com/engine/containers/resource_constraints
+func (s *ImageBuildResources) CPUsAsPeriodAndQuota() (int64, int64) {
+	if s.CPUs == 0 {
+		return 0, 0
+	}
+	return defaultCPUPeriod, int64(defaultCPUPeriod * s.CPUs)
 }
 
 func (s *ImageBuild) GetType() base.SettingType {

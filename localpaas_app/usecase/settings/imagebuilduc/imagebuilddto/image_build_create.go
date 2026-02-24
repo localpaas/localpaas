@@ -16,11 +16,15 @@ type CreateImageBuildReq struct {
 
 type ImageBuildBaseReq struct {
 	Resources *ImageBuildResourcesReq `json:"resources"`
+	NoCache   bool                    `json:"noCache"`
+	NoVerbose bool                    `json:"noVerbose"`
 }
 
 func (req *ImageBuildBaseReq) ToEntity() *entity.ImageBuild {
 	return &entity.ImageBuild{
 		Resources: req.Resources.ToEntity(),
+		NoCache:   req.NoCache,
+		NoVerbose: req.NoVerbose,
 	}
 }
 
@@ -29,14 +33,18 @@ func (req *ImageBuildBaseReq) validate(field string) []vld.Validator {
 }
 
 type ImageBuildResourcesReq struct {
-	CPUs  uint32 `json:"cpus"`
-	MemMB uint64 `json:"memMB"`
+	CPUs      int32 `json:"cpus"`
+	MemMB     int64 `json:"memMB"`
+	MemSwapMB int64 `json:"memSwapMB"`
+	ShmSizeMB int64 `json:"shmSizeMB"`
 }
 
 func (req *ImageBuildResourcesReq) ToEntity() *entity.ImageBuildResources {
 	return &entity.ImageBuildResources{
-		CPUs:  req.CPUs,
-		MemMB: req.MemMB,
+		CPUs:      req.CPUs,
+		MemMB:     req.MemMB,
+		MemSwapMB: req.MemSwapMB,
+		ShmSizeMB: req.ShmSizeMB,
 	}
 }
 

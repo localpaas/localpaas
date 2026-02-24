@@ -70,6 +70,7 @@ type Manager interface {
 
 	// Nodes
 	NodeList(ctx context.Context, options ...NodeListOption) ([]swarm.Node, error)
+	NodeManagerList(ctx context.Context, options ...NodeListOption) ([]swarm.Node, error)
 	NodeInspect(ctx context.Context, nodeID string) (*swarm.Node, []byte, error)
 	NodeUpdate(ctx context.Context, nodeID string, version *swarm.Version, spec *swarm.NodeSpec) error
 	NodeRemove(ctx context.Context, nodeID string, options ...NodeRemoveOption) error

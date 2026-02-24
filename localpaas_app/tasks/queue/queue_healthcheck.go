@@ -123,7 +123,7 @@ func (q *taskQueue) healthcheckTaskLock(ctx context.Context) (bool, func(), erro
 	retries := 0
 	wait := time.Duration(0)
 	for {
-		success, releaser, err := q.taskService.CreateLock(ctx, taskHealthcheckLockKey, interval-time.Second)
+		success, releaser, err := q.taskService.CreateRedisLock(ctx, taskHealthcheckLockKey, interval-time.Second)
 		if err != nil {
 			if retries >= taskHealthcheckLockMaxRetry {
 				return false, nil, apperrors.Wrap(err)

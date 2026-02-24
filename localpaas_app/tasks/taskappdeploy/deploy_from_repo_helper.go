@@ -2,6 +2,7 @@ package taskappdeploy
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/docker/docker/api/types/registry"
@@ -12,6 +13,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
@@ -154,4 +156,17 @@ func (e *Executor) calcBuildRegistryAuths(
 	}
 
 	return result, nil
+}
+
+func (e *Executor) getBuildSetting(
+	ctx context.Context,
+	db database.Tx,
+	data *repoDeployTaskData,
+) (*entity.Setting, error) {
+	setting, err := e.settingRepo.GetSingleByProject(ctx, db, base.SettingTypeImageBuild,
+		data.App.ProjectID, true)
+	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
+		return nil, apperrors.Wrap(err)
+	}
+	return setting, nil
 }

@@ -32,11 +32,15 @@ type GetImageBuildResp struct {
 type ImageBuildResp struct {
 	*settings.BaseSettingResp
 	Resources *ImageBuildResourcesResp `json:"resources"`
+	NoCache   bool                     `json:"noCache"`
+	NoVerbose bool                     `json:"noVerbose"`
 }
 
 type ImageBuildResourcesResp struct {
-	CPUs  int `json:"cpus"`
-	MemMB int `json:"memMB"`
+	CPUs      int32 `json:"cpus"`
+	MemMB     int64 `json:"memMB"`
+	MemSwapMB int64 `json:"memSwapMB"`
+	ShmSizeMB int64 `json:"shmSizeMB"`
 }
 
 func TransformImageBuild(

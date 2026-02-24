@@ -193,6 +193,7 @@ var Provides = []any{
 	repository.NewSysErrorRepo,
 	// Others
 	repository.NewLoginTrustedDeviceRepo,
+	repository.NewLockRepo,
 
 	// Cache Repo
 	cacherepository.NewUserTokenRepo,

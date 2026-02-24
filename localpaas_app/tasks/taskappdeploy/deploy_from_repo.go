@@ -168,6 +168,7 @@ func (e *Executor) repoDeployStepSourceCheckout(
 	return nil
 }
 
+//nolint:gocognit
 func (e *Executor) repoDeployStepImageBuild(
 	ctx context.Context,
 	db database.Tx,
@@ -182,6 +183,12 @@ func (e *Executor) repoDeployStepImageBuild(
 
 	// TODO: check dockerfile existence
 	dockerfile := gofn.Coalesce(repoSource.DockerfilePath, "Dockerfile")
+
+	dbBuildSetting, err := e.getBuildSetting(ctx, db, data)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	buildSetting := dbBuildSetting.MustAsImageBuild()
 
 	imageTags, err := e.calcBuildImageTags(repoSource.ImageTags, data)
 	if err != nil {
@@ -214,6 +221,26 @@ func (e *Executor) repoDeployStepImageBuild(
 		opts.Tags = imageTags
 		opts.BuildArgs = envVars
 		opts.AuthConfigs = authConfigs
+
+		if buildSetting != nil { //nolint:nestif
+			opts.NoCache = buildSetting.NoCache
+			opts.SuppressOutput = buildSetting.NoVerbose
+			if buildSetting.Resources != nil {
+				res := buildSetting.Resources
+				if res.CPUs > 0 {
+					opts.CPUPeriod, opts.CPUQuota = res.CPUsAsPeriodAndQuota()
+				}
+				if res.MemMB > 0 {
+					opts.Memory = res.MemMB * docker.UnitMemMB
+				}
+				if res.MemSwapMB > 0 {
+					opts.MemorySwap = res.MemSwapMB * docker.UnitMemMB
+				}
+				if res.ShmSizeMB > 0 {
+					opts.ShmSize = res.ShmSizeMB * docker.UnitMemMB
+				}
+			}
+		}
 	})
 	if err != nil {
 		return apperrors.Wrap(err)

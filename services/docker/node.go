@@ -25,6 +25,16 @@ func (m *manager) NodeList(
 	return resp, nil
 }
 
+func (m *manager) NodeManagerList(
+	ctx context.Context,
+	options ...NodeListOption,
+) ([]swarm.Node, error) {
+	options = append(options, func(opts *swarm.NodeListOptions) {
+		FilterAdd(&opts.Filters, "role", "manager")
+	})
+	return m.NodeList(ctx, options...)
+}
+
 func (m *manager) NodeInspect(
 	ctx context.Context,
 	nodeID string,
