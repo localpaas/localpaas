@@ -12,12 +12,10 @@ func (s *projectService) DeleteProject(ctx context.Context, project *entity.Proj
 	// Remove all apps
 	var wg sync.WaitGroup
 	for _, app := range project.Apps {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 			_ = s.appService.DeleteApp(ctx, app)
 			// NOTE: it's hard to rollback, maybe we only show the errors if there is any
-		}()
+		})
 	}
 	wg.Wait()
 

@@ -3,6 +3,7 @@ package volumeuc
 import (
 	"context"
 	"fmt"
+	"maps"
 
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/api/types/volume"
@@ -59,9 +60,7 @@ func (uc *VolumeUC) CreateVolume(
 			WithMsgLog("driver '%s' is not supported", req.Driver)
 	}
 	// Overwrite the driver opts with the extra values from the client
-	for k, v := range req.ExtraDriverOpts {
-		driverOpts[k] = v
-	}
+	maps.Copy(driverOpts, req.ExtraDriverOpts)
 
 	// Setup default labels
 	if req.Labels == nil {

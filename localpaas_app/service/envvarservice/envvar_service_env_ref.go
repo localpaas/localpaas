@@ -73,8 +73,8 @@ func processRefs(
 
 func parseEnvName(match string) (string, bool) {
 	envName := match[2 : len(match)-1]
-	if strings.HasPrefix(envName, "secrets.") {
-		return strings.TrimPrefix(envName, "secrets."), true
+	if after, ok := strings.CutPrefix(envName, "secrets."); ok {
+		return after, true
 	}
 	return envName, false
 }

@@ -93,12 +93,7 @@ func (s *Setting) IsStatusDirty() bool {
 }
 
 func (s *Setting) IsTypeIn(types ...base.SettingType) bool {
-	for _, typ := range types {
-		if s.Type == typ {
-			return true
-		}
-	}
-	return false
+	return gofn.Contain(types, s.Type)
 }
 
 func (s *Setting) parseData(structPtr SettingData) error {

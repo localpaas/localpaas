@@ -3,6 +3,7 @@ package apperrors
 import (
 	"errors"
 	"fmt"
+	"maps"
 	"net/http"
 	"strings"
 
@@ -87,9 +88,7 @@ func (e *appError) WithParam(k string, v any) AppError {
 }
 
 func (e *appError) WithParams(m map[string]any) AppError {
-	for k, v := range m {
-		e.params[k] = v
-	}
+	maps.Copy(e.params, m)
 	return e
 }
 
@@ -186,9 +185,7 @@ func (e *appError) Build(lang translation.Lang) *ErrorInfo {
 
 func (e *appError) Message(lang translation.Lang) (msg string, transErr error) {
 	params := make(map[string]any, len(e.params)+len(e.ntParams))
-	for k, v := range e.ntParams {
-		params[k] = v
-	}
+	maps.Copy(params, e.ntParams)
 	for k, v := range e.params {
 		vAsStr, ok := v.(string)
 		if !ok {

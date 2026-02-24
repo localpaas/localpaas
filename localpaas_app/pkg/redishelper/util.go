@@ -35,7 +35,7 @@ func ParseBytes(val any) []byte {
 	if ok {
 		return []byte(str)
 	}
-	return []byte(fmt.Sprintf("%v", val))
+	return fmt.Appendf(nil, "%v", val)
 }
 
 var jsonMarshal = json.Marshal

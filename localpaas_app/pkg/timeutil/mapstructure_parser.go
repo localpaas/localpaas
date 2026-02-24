@@ -10,7 +10,7 @@ import (
 // MapstructureParseDateFunc custom decoder hook for mapstructure
 func MapstructureParseDateFunc() mapstructure.DecodeHookFunc {
 	return func(f reflect.Type, t reflect.Type, data any) (any, error) {
-		if t != reflect.TypeOf(Date{}) {
+		if t != reflect.TypeFor[Date]() {
 			return data, nil
 		}
 		switch f.Kind() { //nolint:exhaustive
@@ -24,7 +24,7 @@ func MapstructureParseDateFunc() mapstructure.DecodeHookFunc {
 
 func MapstructureParseTimeFunc() mapstructure.DecodeHookFunc {
 	return func(f reflect.Type, t reflect.Type, data any) (any, error) {
-		if t != reflect.TypeOf(time.Time{}) {
+		if t != reflect.TypeFor[time.Time]() {
 			return data, nil
 		}
 		switch f.Kind() { //nolint:exhaustive
@@ -38,7 +38,7 @@ func MapstructureParseTimeFunc() mapstructure.DecodeHookFunc {
 
 func MapstructureParseDurationFunc() mapstructure.DecodeHookFunc {
 	return func(f reflect.Type, t reflect.Type, data any) (any, error) {
-		if t != reflect.TypeOf(time.Duration(0)) {
+		if t != reflect.TypeFor[time.Duration]() {
 			return data, nil
 		}
 		switch f.Kind() { //nolint:exhaustive

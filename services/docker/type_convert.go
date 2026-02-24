@@ -124,7 +124,7 @@ func ConvertFromServiceContainerSpec(contSpec *swarm.ContainerSpec) *ContainerSp
 		Mounts:           ConvertFromServiceMounts(contSpec.Mounts),
 	}
 	if contSpec.StopGracePeriod != nil {
-		res.StopGracePeriod = gofn.ToPtr(timeutil.Duration(*contSpec.StopGracePeriod))
+		res.StopGracePeriod = new(timeutil.Duration(*contSpec.StopGracePeriod))
 	}
 	return res
 }
@@ -142,7 +142,7 @@ func ApplyServiceContainerSpec(contSpec *swarm.ContainerSpec, req *ContainerSpec
 	contSpec.OpenStdin = req.OpenStdin
 	contSpec.ReadOnly = req.ReadOnly
 	if req.StopGracePeriod != nil {
-		contSpec.StopGracePeriod = gofn.ToPtr(time.Duration(*req.StopGracePeriod))
+		contSpec.StopGracePeriod = new(time.Duration(*req.StopGracePeriod))
 	}
 
 	ApplyServicePrivileges(contSpec, req.Privileges)
@@ -298,7 +298,7 @@ func ConvertFromServiceUlimits(ulimits []*container.Ulimit) (res []*Ulimit) {
 			continue
 		}
 		res = append(res, &Ulimit{
-			Index: gofn.ToPtr(i),
+			Index: new(i),
 			Name:  limit.Name,
 			Hard:  limit.Hard,
 			Soft:  limit.Soft,
@@ -331,7 +331,7 @@ func ConvertFromServiceMounts(mounts []mount.Mount) (res []*Mount) {
 	res = make([]*Mount, 0, len(mounts))
 	for i, mnt := range mounts {
 		res = append(res, &Mount{
-			Index:       gofn.ToPtr(i),
+			Index:       new(i),
 			Type:        mnt.Type,
 			Source:      mnt.Source,
 			Target:      mnt.Target,
@@ -404,7 +404,7 @@ func ConvertFromServiceNetworks(networks []swarm.NetworkAttachmentConfig) (res [
 	res = make([]*NetworkAttachment, 0, len(networks))
 	for i, net := range networks {
 		res = append(res, &NetworkAttachment{
-			Index:   gofn.ToPtr(i),
+			Index:   new(i),
 			Target:  net.Target,
 			Aliases: net.Aliases,
 		})
@@ -556,10 +556,10 @@ func ConvertFromServiceRestartPolicy(policy *swarm.RestartPolicy) *RestartPolicy
 		MaxAttempts: policy.MaxAttempts,
 	}
 	if policy.Delay != nil {
-		res.Delay = gofn.ToPtr(timeutil.Duration(*policy.Delay))
+		res.Delay = new(timeutil.Duration(*policy.Delay))
 	}
 	if policy.Window != nil {
-		res.Window = gofn.ToPtr(timeutil.Duration(*policy.Window))
+		res.Window = new(timeutil.Duration(*policy.Window))
 	}
 	return res
 }
@@ -574,10 +574,10 @@ func ApplyServiceRestartPolicy(taskSpec *swarm.TaskSpec, policy *RestartPolicy) 
 	taskSpec.RestartPolicy.Condition = policy.Condition
 	taskSpec.RestartPolicy.MaxAttempts = policy.MaxAttempts
 	if policy.Delay != nil {
-		taskSpec.RestartPolicy.Delay = gofn.ToPtr(time.Duration(*policy.Delay))
+		taskSpec.RestartPolicy.Delay = new(time.Duration(*policy.Delay))
 	}
 	if policy.Window != nil {
-		taskSpec.RestartPolicy.Window = gofn.ToPtr(time.Duration(*policy.Window))
+		taskSpec.RestartPolicy.Window = new(time.Duration(*policy.Window))
 	}
 }
 
@@ -591,7 +591,7 @@ func ConvertFromServiceEndpointSpec(endpointSpec *swarm.EndpointSpec) *EndpointS
 	}
 	for i, port := range endpointSpec.Ports {
 		res.Ports = append(res.Ports, &PortConfig{
-			Index:       gofn.ToPtr(i),
+			Index:       new(i),
 			Target:      port.TargetPort,
 			Published:   port.PublishedPort,
 			Protocol:    port.Protocol,

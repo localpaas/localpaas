@@ -378,7 +378,7 @@ func (s *nginxService) buildMainLocationConfig(
 func confSetServerName(serverBlock *nginx.Block, serverName string) {
 	lpServer := serverBlock.GetComment("@lp_server ", true)
 	if lpServer != nil {
-		lpServer.Comment = gofn.ToPtr(strings.Replace(*lpServer.Comment, "server_name", serverName, 1))
+		lpServer.Comment = new(strings.Replace(*lpServer.Comment, "server_name", serverName, 1))
 	}
 	serverBlock.SetDirectiveArgs("server_name", []string{serverName}, 1)
 }

@@ -2,6 +2,7 @@ package envvarservice
 
 import (
 	"context"
+	"maps"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -93,19 +94,11 @@ type AppEnvVars struct {
 }
 
 func (ev *AppEnvVars) FinalEnvVars() map[string]*entity.EnvVar {
-	res := make(map[string]*entity.EnvVar, 20) //nolint
-	for k, v := range ev.Global {
-		res[k] = v
-	}
-	for k, v := range ev.Project {
-		res[k] = v
-	}
-	for k, v := range ev.ParentApp {
-		res[k] = v
-	}
-	for k, v := range ev.App {
-		res[k] = v
-	}
+	res := make(map[string]*entity.EnvVar, len(ev.App)+10) //nolint
+	maps.Copy(res, ev.Global)
+	maps.Copy(res, ev.Project)
+	maps.Copy(res, ev.ParentApp)
+	maps.Copy(res, ev.Project)
 	return res
 }
 
@@ -117,19 +110,11 @@ type AppSecrets struct {
 }
 
 func (ev *AppSecrets) FinalSecrets() map[string]*entity.Secret {
-	res := make(map[string]*entity.Secret, 20) //nolint
-	for k, v := range ev.Global {
-		res[k] = v
-	}
-	for k, v := range ev.Project {
-		res[k] = v
-	}
-	for k, v := range ev.ParentApp {
-		res[k] = v
-	}
-	for k, v := range ev.App {
-		res[k] = v
-	}
+	res := make(map[string]*entity.Secret, len(ev.App)+10) //nolint
+	maps.Copy(res, ev.Global)
+	maps.Copy(res, ev.Project)
+	maps.Copy(res, ev.ParentApp)
+	maps.Copy(res, ev.App)
 	return res
 }
 

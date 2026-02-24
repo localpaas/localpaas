@@ -4,7 +4,6 @@ import (
 	"time"
 
 	vld "github.com/tiendc/go-validator"
-	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
@@ -37,7 +36,7 @@ func ValidateTime(t *time.Time, required bool, from, to time.Time, field string)
 func ValidateDate(date *timeutil.Date, required bool, from, to timeutil.Date, field string) (result []vld.Validator) {
 	var t *time.Time
 	if date != nil {
-		t = gofn.ToPtr(date.ToTime())
+		t = new(date.ToTime())
 	}
 	return ValidateTime(t, required, from.ToTime(), to.ToTime(), field)
 }

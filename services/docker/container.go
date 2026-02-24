@@ -99,9 +99,7 @@ func (m *manager) ContainerInspectMulti(
 	allResults := make(map[string]*container.InspectResponse, len(containerIDs))
 	allErrors := map[string]error{}
 	for _, containerID := range containerIDs {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 			resp, err := m.client.ContainerInspect(ctx, containerID)
 			mu.Lock()
 			if err != nil {
@@ -110,7 +108,7 @@ func (m *manager) ContainerInspectMulti(
 				allResults[containerID] = &resp
 			}
 			mu.Unlock()
-		}()
+		})
 	}
 	wg.Wait()
 	return allResults, allErrors
@@ -152,16 +150,14 @@ func (m *manager) ContainerRestartMulti(
 	var mu sync.Mutex
 	allErrors := map[string]error{}
 	for _, containerID := range containerIDs {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 			err := m.client.ContainerRestart(ctx, containerID, *opts)
 			if err != nil {
 				mu.Lock()
 				allErrors[containerID] = apperrors.NewInfra(err)
 				mu.Unlock()
 			}
-		}()
+		})
 	}
 	wg.Wait()
 	return allErrors
@@ -196,16 +192,14 @@ func (m *manager) ContainerKillMulti(
 	var mu sync.Mutex
 	allErrors := map[string]error{}
 	for _, containerID := range containerIDs {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 			err := m.client.ContainerKill(ctx, containerID, signal)
 			if err != nil {
 				mu.Lock()
 				allErrors[containerID] = apperrors.NewInfra(err)
 				mu.Unlock()
 			}
-		}()
+		})
 	}
 	wg.Wait()
 	return allErrors

@@ -3,7 +3,6 @@ package gitlab
 import (
 	"context"
 
-	"github.com/tiendc/gofn"
 	gogitlab "gitlab.com/gitlab-org/api/client-go"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -24,7 +23,7 @@ func (c *Client) ListProjects(
 
 	listOpts := &gogitlab.ListProjectsOptions{
 		ListOptions: *opts,
-		Membership:  gofn.ToPtr(true),
+		Membership:  new(true),
 	}
 	for _, option := range options {
 		option(listOpts)
@@ -48,7 +47,7 @@ func (c *Client) ListAllProjects(
 ) ([]*gogitlab.Project, *basedto.PagingMeta, error) {
 	opts, maxItems := createListOpts(paging)
 	projOpts := &gogitlab.ListProjectsOptions{
-		Membership:  gofn.ToPtr(true),
+		Membership:  new(true),
 		ListOptions: *opts,
 	}
 	for _, option := range options {

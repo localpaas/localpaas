@@ -15,14 +15,14 @@ func NormalizeRepoRef(ref string) plumbing.ReferenceName {
 	}
 
 	// Tags ref
-	if strings.HasPrefix(ref, "tags/") {
-		ref = strings.TrimPrefix(ref, "tags/")
+	if after, ok := strings.CutPrefix(ref, "tags/"); ok {
+		ref = after
 		return plumbing.NewTagReferenceName(ref)
 	}
 
 	// Heads ref
-	if strings.HasPrefix(ref, "heads/") {
-		ref = strings.TrimPrefix(ref, "heads/")
+	if after, ok := strings.CutPrefix(ref, "heads/"); ok {
+		ref = after
 		return plumbing.NewBranchReferenceName(ref)
 	}
 	return plumbing.NewBranchReferenceName(ref)

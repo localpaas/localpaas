@@ -98,7 +98,7 @@ func (uc *GithubAppUC) installGithubAppWebhook(
 
 	if shouldSet {
 		err = client.UpdateAppHookConfig(ctx, func(opts *gogithub.HookConfig) {
-			opts.ContentType = gofn.ToPtr("json")
+			opts.ContentType = new("json")
 			opts.URL = &githubApp.WebhookURL
 		})
 		if err != nil {

@@ -177,7 +177,7 @@ func (uc *AppUC) preparePersistingAppSettingsDefault(
 	serviceSpec := &swarm.ServiceSpec{
 		Mode: swarm.ServiceMode{
 			Replicated: &swarm.ReplicatedService{
-				Replicas: gofn.ToPtr(uint64(1)),
+				Replicas: new(uint64(1)),
 			},
 		},
 		Annotations: swarm.Annotations{
