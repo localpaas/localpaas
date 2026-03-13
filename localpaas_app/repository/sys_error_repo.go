@@ -27,6 +27,7 @@ type SysErrorRepo interface {
 		opts ...bunex.DeleteQueryOption) error
 	DeleteMulti(ctx context.Context, db database.IDB, sysErrors []*entity.SysError,
 		opts ...bunex.DeleteQueryOption) error
+	DeleteHard(ctx context.Context, db database.IDB, opts ...bunex.DeleteQueryOption) error
 }
 
 type sysErrorRepo struct {
@@ -111,6 +112,18 @@ func (repo *sysErrorRepo) DeleteMulti(ctx context.Context, db database.IDB, sysE
 		return nil
 	}
 	query := db.NewDelete().Model(&sysErrors).WherePK()
+	query = bunex.ApplyDelete(query, opts...)
+
+	_, err := query.Exec(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (repo *sysErrorRepo) DeleteHard(ctx context.Context, db database.IDB,
+	opts ...bunex.DeleteQueryOption) error {
+	query := db.NewDelete().Model((*entity.SysError)(nil)).ForceDelete()
 	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)

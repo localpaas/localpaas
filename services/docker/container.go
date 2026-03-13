@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/filters"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
@@ -203,4 +204,25 @@ func (m *manager) ContainerKillMulti(
 	}
 	wg.Wait()
 	return allErrors
+}
+
+type ContainersPruneOption func(options *filters.Args)
+
+func (m *manager) ContainersPrune(
+	ctx context.Context,
+	onlyObjectsOlderThan time.Duration,
+	options ...ContainersPruneOption,
+) (*container.PruneReport, error) {
+	opts := filters.Args{}
+	if onlyObjectsOlderThan > 0 {
+		FilterAdd(&opts, "until", onlyObjectsOlderThan.String())
+	}
+	for _, opt := range options {
+		opt(&opts)
+	}
+	resp, err := m.client.ContainersPrune(ctx, opts)
+	if err != nil {
+		return nil, apperrors.NewInfra(err)
+	}
+	return &resp, nil
 }

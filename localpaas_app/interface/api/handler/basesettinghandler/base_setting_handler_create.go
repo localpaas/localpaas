@@ -66,7 +66,7 @@ func (h *BaseSettingHandler) CreateSetting(
 	case base.SettingScopeUser:
 		auth, objectID, _, err = h.GetAuthUserSettings(ctx, base.ActionTypeWrite, "")
 	case base.SettingScopeNone:
-		err = apperrors.NewUnsupported().WithMsgLog("Setting scope 'none' is not supported")
+		err = apperrors.NewUnsupported("Setting scope 'none'")
 	}
 	if err != nil {
 		h.RenderError(ctx, err)

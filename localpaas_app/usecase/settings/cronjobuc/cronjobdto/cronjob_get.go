@@ -36,15 +36,20 @@ type GetCronJobResp struct {
 type CronJobResp struct {
 	*settings.BaseSettingResp
 	CronType     base.CronJobType             `json:"cronType"`
-	CronExpr     string                       `json:"cronExpr"`
+	Schedule     *CronJobScheduleResp         `json:"schedule"`
 	App          *basedto.NamedObjectResp     `json:"app"`
-	InitialTime  time.Time                    `json:"initialTime"`
 	Priority     base.TaskPriority            `json:"priority"`
 	MaxRetry     int                          `json:"maxRetry"`
 	RetryDelay   timeutil.Duration            `json:"retryDelay"`
 	Timeout      timeutil.Duration            `json:"timeout"`
 	Command      *CronJobContainerCommandResp `json:"command"`
 	Notification *CronJobNotificationResp     `json:"notification"`
+}
+
+type CronJobScheduleResp struct {
+	CronExpr    string            `json:"cronExpr,omitempty"` // cronExpr and interval are mutually exclusive
+	Interval    timeutil.Duration `json:"interval,omitempty"`
+	InitialTime time.Time         `json:"initialTime"`
 }
 
 type CronJobContainerCommandResp struct {

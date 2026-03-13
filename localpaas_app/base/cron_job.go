@@ -6,10 +6,11 @@ type CronJobType string
 
 const (
 	CronJobTypeContainerCommand CronJobType = "container-command"
+	CronJobTypeSystemCleanup    CronJobType = "system-cleanup"
 )
 
 var (
-	AllCronJobTypes = []CronJobType{CronJobTypeContainerCommand}
+	AllCronJobTypes = []CronJobType{CronJobTypeContainerCommand, CronJobTypeSystemCleanup}
 )
 
 const (

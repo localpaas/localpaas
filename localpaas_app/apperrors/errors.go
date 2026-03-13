@@ -143,12 +143,20 @@ func NewTypeInvalidNT() AppError { // NT: non translation param
 	return New(ErrTypeInvalid)
 }
 
-// NewUnsupported return AppError for error Unsupported
-func NewUnsupported() AppError {
-	return New(ErrUnsupported)
+// NewValueInvalid return AppError for error ValueInvalid
+func NewValueInvalid() AppError {
+	return New(ErrValueInvalid)
 }
-func NewUnsupportedNT() AppError { // NT: non translation param
-	return New(ErrUnsupported)
+func NewValueInvalidNT() AppError { // NT: non translation param
+	return New(ErrValueInvalid)
+}
+
+// NewUnsupported return AppError for error Unsupported
+func NewUnsupported(name string) AppError {
+	return New(ErrUnsupported).WithParam("Name", name)
+}
+func NewUnsupportedNT(name string) AppError { // NT: non translation param
+	return New(ErrUnsupported).WithNTParam("Name", name)
 }
 
 // NewNotImplemented return AppError for error NotImplemented

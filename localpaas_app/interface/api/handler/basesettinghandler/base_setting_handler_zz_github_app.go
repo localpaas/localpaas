@@ -1,6 +1,7 @@
 package basesettinghandler
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -27,7 +28,7 @@ func (h *BaseSettingHandler) GithubAppManifestFlowBegin(ctx *gin.Context, scope 
 	case base.SettingScopeProject:
 		auth, objectID, _, err = h.GetAuthProjectSettings(ctx, base.ActionTypeWrite, "")
 	default:
-		h.RenderError(ctx, apperrors.NewUnsupported().WithMsgLog("scope '%v' not supported'", scope))
+		h.RenderError(ctx, apperrors.NewUnsupported(fmt.Sprintf("Scope '%v'", scope)))
 		return
 	}
 	if err != nil {
@@ -130,7 +131,7 @@ func (h *BaseSettingHandler) GithubAppBeginReprovision(ctx *gin.Context, scope b
 	case base.SettingScopeProject:
 		auth, objectID, itemID, err = h.GetAuthProjectSettings(ctx, base.ActionTypeWrite, "itemID")
 	default:
-		h.RenderError(ctx, apperrors.NewUnsupported().WithMsgLog("scope '%v' not supported'", scope))
+		h.RenderError(ctx, apperrors.NewUnsupported(fmt.Sprintf("Scope '%v'", scope)))
 		return
 	}
 	if err != nil {

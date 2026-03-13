@@ -22,6 +22,8 @@ type TaskLogRepo interface {
 		opts ...bunex.InsertQueryOption) error
 	InsertMulti(ctx context.Context, db database.IDB, logs []*entity.TaskLog,
 		opts ...bunex.InsertQueryOption) error
+
+	DeleteHard(ctx context.Context, db database.IDB, opts ...bunex.DeleteQueryOption) error
 }
 
 type taskLogRepo struct {
@@ -93,6 +95,18 @@ func (repo *taskLogRepo) InsertMulti(ctx context.Context, db database.IDB, logs 
 	}
 	query := db.NewInsert().Model(&logs)
 	query = bunex.ApplyInsert(query, opts...)
+
+	_, err := query.Exec(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (repo *taskLogRepo) DeleteHard(ctx context.Context, db database.IDB,
+	opts ...bunex.DeleteQueryOption) error {
+	query := db.NewDelete().Model((*entity.TaskLog)(nil)).ForceDelete()
+	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)
 	if err != nil {

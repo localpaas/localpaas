@@ -54,7 +54,7 @@ func (h *BaseSettingHandler) UpdateSettingMeta(
 	case base.SettingScopeUser:
 		auth, objectID, itemID, err = h.GetAuthUserSettings(ctx, base.ActionTypeWrite, "itemID")
 	case base.SettingScopeNone:
-		err = apperrors.NewUnsupported().WithMsgLog("Setting scope 'none' is not supported")
+		err = apperrors.NewUnsupported("Setting scope 'none'")
 	}
 	if err != nil {
 		h.RenderError(ctx, err)

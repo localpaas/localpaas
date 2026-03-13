@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (s *HTTPServer) registerSystemRoutes(apiGroup *gin.RouterGroup) *gin.RouterGroup {
+func (s *HTTPServer) registerSystemRoutes(apiGroup *gin.RouterGroup) (*gin.RouterGroup, *gin.RouterGroup) {
 	systemGroup := apiGroup.Group("/system")
 	systemHandler := s.handlerRegistry.systemHandler
 
@@ -40,5 +40,15 @@ func (s *HTTPServer) registerSystemRoutes(apiGroup *gin.RouterGroup) *gin.Router
 		lpAppGroup.POST("/config/reload", systemHandler.ReloadLocalPaasAppConfig)
 	}
 
-	return systemGroup
+	// System settings group
+	systemSettingGroup := systemGroup.Group("/settings")
+	systemSettingsHandler := s.handlerRegistry.systemSettingsHandler
+
+	{ // Cleanup group
+		cleanupGroup := systemSettingGroup.Group("/cleanup")
+		cleanupGroup.GET("", systemSettingsHandler.GetCleanupSettings)
+		cleanupGroup.PUT("", systemSettingsHandler.UpdateCleanupSettings)
+	}
+
+	return systemGroup, systemSettingGroup
 }

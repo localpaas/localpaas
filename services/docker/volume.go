@@ -3,6 +3,7 @@ package docker
 import (
 	"context"
 
+	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/api/types/swarm"
 	"github.com/docker/docker/api/types/volume"
 
@@ -81,4 +82,25 @@ func (m *manager) VolumeInspect(
 		return nil, nil, apperrors.NewInfra(err)
 	}
 	return &resp, raw, nil
+}
+
+type VolumesPruneOption func(options *filters.Args)
+
+func (m *manager) VolumesPrune(
+	ctx context.Context,
+	anonymousOnly bool,
+	options ...VolumesPruneOption,
+) (*volume.PruneReport, error) {
+	opts := filters.Args{}
+	if !anonymousOnly {
+		FilterAdd(&opts, "all", "true")
+	}
+	for _, opt := range options {
+		opt(&opts)
+	}
+	resp, err := m.client.VolumesPrune(ctx, opts)
+	if err != nil {
+		return nil, apperrors.NewInfra(err)
+	}
+	return &resp, nil
 }

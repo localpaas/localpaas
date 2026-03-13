@@ -1,0 +1,73 @@
+package entity
+
+import (
+	"time"
+
+	"github.com/tiendc/gofn"
+
+	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
+)
+
+const (
+	CurrentSystemCleanupVersion = 1
+)
+
+var _ = registerSettingParser(base.SettingTypeSystemCleanup, &systemCleanupParser{})
+
+type systemCleanupParser struct {
+}
+
+func (s *systemCleanupParser) New() SettingData {
+	return &SystemCleanup{}
+}
+
+type SystemCleanup struct {
+	ScheduleInterval  timeutil.Duration    `json:"scheduleInterval"`
+	ScheduleFrom      time.Time            `json:"scheduleFrom"`
+	DBObjectRetention *DBObjectRetention   `json:"dbObjectRetention"`
+	ClusterCleanup    *ClusterCleanup      `json:"clusterCleanup"`
+	Notification      *CronJobNotification `json:"notification,omitempty"`
+}
+
+type DBObjectRetention struct {
+	Enabled        bool              `json:"enabled"`
+	Tasks          timeutil.Duration `json:"tasks"`
+	SysErrors      timeutil.Duration `json:"sysErrors"`
+	Deployments    timeutil.Duration `json:"deployments"`
+	DeletedObjects timeutil.Duration `json:"deletedObjects"`
+}
+
+type ClusterCleanup struct {
+	Enabled              bool              `json:"enabled"`
+	OnlyObjectsOlderThan timeutil.Duration `json:"onlyObjectsOlderThan"`
+	PruneImages          bool              `json:"pruneImages"`
+	PruneVolumes         bool              `json:"pruneVolumes"`
+	PruneNetworks        bool              `json:"pruneNetworks"`
+	PruneContainers      bool              `json:"pruneContainers"`
+}
+
+func (s *SystemCleanup) GetType() base.SettingType {
+	return base.SettingTypeSystemCleanup
+}
+
+func (s *SystemCleanup) GetRefObjectIDs() *RefObjectIDs {
+	refIDs := &RefObjectIDs{}
+	if s.Notification != nil {
+		if s.Notification.Success.ID != "" {
+			refIDs.RefSettingIDs = append(refIDs.RefSettingIDs, s.Notification.Success.ID)
+		}
+		if s.Notification.Failure.ID != "" {
+			refIDs.RefSettingIDs = append(refIDs.RefSettingIDs, s.Notification.Failure.ID)
+		}
+	}
+	return refIDs
+}
+
+func (s *Setting) AsSystemCleanup() (*SystemCleanup, error) {
+	return parseSettingAs[*SystemCleanup](s)
+}
+
+func (s *Setting) MustAsSystemCleanup() *SystemCleanup {
+	return gofn.Must(s.AsSystemCleanup())
+}

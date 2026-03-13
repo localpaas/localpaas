@@ -4,8 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/tiendc/gofn"
-
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
@@ -71,24 +69,13 @@ func (q *taskQueue) createTasks(
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}
-		cronSched, err := cronJob.ParseCronExpr()
+		nextRuns, err := cronJob.Schedule.CalcNextRuns(timeNow, timeNow.Add(withinDuration), 0)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}
 
-		nextRunAt := gofn.Coalesce(cronJob.LastSchedTime, cronJob.InitialTime)
-		farthestRunAt := timeNow.Add(withinDuration)
 		var lastSchedTime time.Time
-
-		for {
-			nextRunAt = cronSched.Next(nextRunAt)
-			if nextRunAt.Before(timeNow) {
-				continue
-			}
-			if nextRunAt.After(farthestRunAt) {
-				break
-			}
-
+		for _, nextRunAt := range nextRuns {
 			lastSchedTime = nextRunAt
 			task, err := q.cronJobService.CreateCronJobTask(jobSetting, nextRunAt, timeNow)
 			if err != nil {
@@ -97,8 +84,8 @@ func (q *taskQueue) createTasks(
 			allNewTasks = append(allNewTasks, task)
 		}
 
-		if !lastSchedTime.Equal(cronJob.LastSchedTime) {
-			cronJob.LastSchedTime = lastSchedTime
+		if !lastSchedTime.Equal(cronJob.Schedule.LastSchedTime) {
+			cronJob.Schedule.LastSchedTime = lastSchedTime
 			jobSetting.MustSetData(cronJob)
 			updatingJobSettings = append(updatingJobSettings, jobSetting)
 		}

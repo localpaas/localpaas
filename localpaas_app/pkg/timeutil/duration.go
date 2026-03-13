@@ -5,29 +5,49 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/xhit/go-str2duration/v2"
+
 	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/tracerr"
+)
+
+const (
+	dayDuration = 24 * time.Hour
 )
 
 type Duration time.Duration
 
 func ParseDuration(s string) (Duration, error) {
-	v, err := time.ParseDuration(s)
+	v, err := str2duration.ParseDuration(s)
 	if err != nil {
 		return 0, tracerr.Wrap(err)
 	}
 	return Duration(v), nil
 }
 
+//nolint:gosec
 func (dur Duration) String() string {
-	s := time.Duration(dur).String()
-	if len(s) > 3 { //nolint:mnd
-		suffix := s[len(s)-3:]
-		if suffix == "m0s" || suffix == "h0m" || suffix == "d0h" {
-			s = s[:len(s)-2]
-		}
+	u := uint64(dur)
+	if dur < 0 {
+		u = -u
 	}
-	return s
+
+	// Less than a day use the default format func
+	if u < uint64(dayDuration) {
+		return str2duration.String(time.Duration(dur))
+	}
+
+	// Bigger than a day, display at `day` fraction (not use `week`)
+	days := u / uint64(dayDuration)
+	u -= days * uint64(dayDuration)
+	res := strconv.FormatInt(int64(days), 10) + "d"
+	if u > 0 {
+		res += str2duration.String(time.Duration(u))
+	}
+	if dur < 0 {
+		return "-" + res
+	}
+	return res
 }
 
 func (dur Duration) ToDuration() time.Duration {
@@ -47,11 +67,11 @@ func (dur *Duration) UnmarshalJSON(in []byte) error {
 	// Remove double quotes covering the str
 	if len(in) > 1 && in[0] == '"' {
 		in = in[1 : len(in)-1]
-		d, err := time.ParseDuration(reflectutil.UnsafeBytesToStr(in))
+		d, err := ParseDuration(reflectutil.UnsafeBytesToStr(in))
 		if err != nil {
 			return tracerr.Wrap(err)
 		}
-		*dur = Duration(d)
+		*dur = d
 		return nil
 	}
 

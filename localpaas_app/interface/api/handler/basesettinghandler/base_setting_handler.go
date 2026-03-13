@@ -20,30 +20,32 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/systemsettings/systemcleanupuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc"
 )
 
 type BaseSettingHandler struct {
 	*handler.BaseHandler
-	AuthHandler    *authhandler.AuthHandler
-	OAuthUC        *oauthuc.OAuthUC
-	AWSUC          *awsuc.AWSUC
-	AWSS3UC        *awss3uc.AWSS3UC
-	SSHKeyUC       *sshkeyuc.SSHKeyUC
-	IMServiceUC    *imserviceuc.IMServiceUC
-	RegistryAuthUC *registryauthuc.RegistryAuthUC
-	BasicAuthUC    *basicauthuc.BasicAuthUC
-	SSLUC          *ssluc.SSLUC
-	GithubAppUC    *githubappuc.GithubAppUC
-	AccessTokenUC  *accesstokenuc.AccessTokenUC
-	CronJobUC      *cronjobuc.CronJobUC
-	HealthcheckUC  *healthcheckuc.HealthcheckUC
-	SecretUC       *secretuc.SecretUC
-	EmailUC        *emailuc.EmailUC
-	APIKeyUC       *apikeyuc.APIKeyUC
-	RepoWebhookUC  *repowebhookuc.RepoWebhookUC
-	NotificationUC *notificationuc.NotificationUC
-	ImageBuildUC   *imagebuilduc.ImageBuildUC
+	AuthHandler     *authhandler.AuthHandler
+	OAuthUC         *oauthuc.OAuthUC
+	AWSUC           *awsuc.AWSUC
+	AWSS3UC         *awss3uc.AWSS3UC
+	SSHKeyUC        *sshkeyuc.SSHKeyUC
+	IMServiceUC     *imserviceuc.IMServiceUC
+	RegistryAuthUC  *registryauthuc.RegistryAuthUC
+	BasicAuthUC     *basicauthuc.BasicAuthUC
+	SSLUC           *ssluc.SSLUC
+	GithubAppUC     *githubappuc.GithubAppUC
+	AccessTokenUC   *accesstokenuc.AccessTokenUC
+	CronJobUC       *cronjobuc.CronJobUC
+	HealthcheckUC   *healthcheckuc.HealthcheckUC
+	SecretUC        *secretuc.SecretUC
+	EmailUC         *emailuc.EmailUC
+	APIKeyUC        *apikeyuc.APIKeyUC
+	RepoWebhookUC   *repowebhookuc.RepoWebhookUC
+	NotificationUC  *notificationuc.NotificationUC
+	ImageBuildUC    *imagebuilduc.ImageBuildUC
+	SystemCleanupUC *systemcleanupuc.SystemCleanupUC
 }
 
 func NewBaseSettingHandler(
@@ -67,27 +69,29 @@ func NewBaseSettingHandler(
 	repoWebhookUC *repowebhookuc.RepoWebhookUC,
 	notificationUC *notificationuc.NotificationUC,
 	imageBuildUC *imagebuilduc.ImageBuildUC,
+	systemCleanupUC *systemcleanupuc.SystemCleanupUC,
 ) *BaseSettingHandler {
 	return &BaseSettingHandler{
-		BaseHandler:    baseHandler,
-		AuthHandler:    authHandler,
-		OAuthUC:        oauthUC,
-		AWSUC:          awsUC,
-		AWSS3UC:        awsS3UC,
-		SSHKeyUC:       sshKeyUC,
-		IMServiceUC:    imServiceUC,
-		RegistryAuthUC: registryAuthUC,
-		BasicAuthUC:    basicAuthUC,
-		SSLUC:          sslUC,
-		GithubAppUC:    githubAppUC,
-		AccessTokenUC:  accessTokenUC,
-		CronJobUC:      cronJobUC,
-		HealthcheckUC:  healthcheckUC,
-		SecretUC:       secretUC,
-		EmailUC:        emailUC,
-		APIKeyUC:       apiKeyUC,
-		RepoWebhookUC:  repoWebhookUC,
-		NotificationUC: notificationUC,
-		ImageBuildUC:   imageBuildUC,
+		BaseHandler:     baseHandler,
+		AuthHandler:     authHandler,
+		OAuthUC:         oauthUC,
+		AWSUC:           awsUC,
+		AWSS3UC:         awsS3UC,
+		SSHKeyUC:        sshKeyUC,
+		IMServiceUC:     imServiceUC,
+		RegistryAuthUC:  registryAuthUC,
+		BasicAuthUC:     basicAuthUC,
+		SSLUC:           sslUC,
+		GithubAppUC:     githubAppUC,
+		AccessTokenUC:   accessTokenUC,
+		CronJobUC:       cronJobUC,
+		HealthcheckUC:   healthcheckUC,
+		SecretUC:        secretUC,
+		EmailUC:         emailUC,
+		APIKeyUC:        apiKeyUC,
+		RepoWebhookUC:   repoWebhookUC,
+		NotificationUC:  notificationUC,
+		ImageBuildUC:    imageBuildUC,
+		SystemCleanupUC: systemCleanupUC,
 	}
 }

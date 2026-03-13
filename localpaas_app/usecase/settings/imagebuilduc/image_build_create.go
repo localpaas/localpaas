@@ -2,6 +2,7 @@ package imagebuilduc
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -69,7 +70,7 @@ func (uc *ImageBuildUC) ensureSettingIsUniqueInScope(
 	case base.SettingScopeProject:
 		err = uc.SettingRepo.EnsureUniqueInProject(ctx, db, req.Type, req.ObjectID)
 	default:
-		return apperrors.NewUnsupported().WithMsgLog("setting scope '%v' is not supported", req.Scope)
+		return apperrors.NewUnsupported(fmt.Sprintf("setting scope '%v'", req.Scope))
 	}
 	if err != nil {
 		return apperrors.Wrap(err)

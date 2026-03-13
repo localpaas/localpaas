@@ -38,8 +38,9 @@ type UserRepo interface {
 		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
 	UpsertMulti(ctx context.Context, db database.IDB, users []*entity.User,
 		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
-
 	Update(ctx context.Context, db database.IDB, user *entity.User, opts ...bunex.UpdateQueryOption) error
+
+	DeleteHard(ctx context.Context, db database.IDB, opts ...bunex.DeleteQueryOption) error
 }
 
 type userRepo struct {
@@ -224,6 +225,18 @@ func (repo *userRepo) Update(ctx context.Context, db database.IDB, user *entity.
 	opts ...bunex.UpdateQueryOption) error {
 	query := db.NewUpdate().Model(user).WherePK()
 	query = bunex.ApplyUpdate(query, opts...)
+
+	_, err := query.Exec(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (repo *userRepo) DeleteHard(ctx context.Context, db database.IDB,
+	opts ...bunex.DeleteQueryOption) error {
+	query := db.NewDelete().Model((*entity.User)(nil)).ForceDelete()
+	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)
 	if err != nil {

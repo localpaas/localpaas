@@ -49,6 +49,9 @@ type Manager interface {
 		*container.ExecInspect, []*applog.LogFrame, error)
 	ContainerExecInspect(ctx context.Context, execID string) (*container.ExecInspect, error)
 
+	ContainersPrune(ctx context.Context, onlyObjectsOlderThan time.Duration,
+		options ...ContainersPruneOption) (*container.PruneReport, error)
+
 	// Images
 	ImageList(ctx context.Context, options ...ImageListOption) ([]image.Summary, error)
 	ImageCreate(ctx context.Context, name string, options ...ImageCreateOption) (io.ReadCloser, error)
@@ -56,6 +59,8 @@ type Manager interface {
 	ImageInspect(ctx context.Context, imageID string) (*image.InspectResponse, error)
 	ImagePull(ctx context.Context, refStr string, options ...ImagePullOption) (io.ReadCloser, error)
 	ImagePush(ctx context.Context, imageTag string, options ...ImagePushOption) (io.ReadCloser, error)
+	ImagesPrune(ctx context.Context, danglingOnly bool, onlyObjectsOlderThan time.Duration,
+		options ...ImagesPruneOption) (*image.PruneReport, error)
 
 	ImageBuild(ctx context.Context, buildContext io.Reader, options ...ImageBuildOption) (
 		*build.ImageBuildResponse, error)
@@ -67,6 +72,8 @@ type Manager interface {
 	NetworkRemove(ctx context.Context, idOrName string) error
 	NetworkInspect(ctx context.Context, name string, options ...NetworkInspectOption) (*network.Inspect, error)
 	NetworkExists(ctx context.Context, name string) bool
+	NetworksPrune(ctx context.Context, onlyObjectsOlderThan time.Duration,
+		options ...NetworksPruneOption) (*network.PruneReport, error)
 
 	// Nodes
 	NodeList(ctx context.Context, options ...NodeListOption) ([]swarm.Node, error)
@@ -110,6 +117,7 @@ type Manager interface {
 	VolumeUpdate(ctx context.Context, volumeID string, version *swarm.Version, options *volume.UpdateOptions) error
 	VolumeRemove(ctx context.Context, volumeID string, force bool) error
 	VolumeInspect(ctx context.Context, volumeID string) (*volume.Volume, []byte, error)
+	VolumesPrune(ctx context.Context, anonymousOnly bool, options ...VolumesPruneOption) (*volume.PruneReport, error)
 
 	Close() error
 }

@@ -18,7 +18,6 @@ import (
 type GetTaskReq struct {
 	ID       string
 	Type     base.TaskType
-	JobID    string
 	TargetID string
 
 	SkipQueryCache bool
@@ -36,9 +35,6 @@ func (s *taskService) GetTask(
 	extraOpts ...bunex.SelectQueryOption,
 ) (*GetTaskResp, error) {
 	var getOpts []bunex.SelectQueryOption
-	if req.JobID != "" {
-		getOpts = append(getOpts, bunex.SelectWhere("task.job_id = ?", req.JobID))
-	}
 	if req.TargetID != "" {
 		getOpts = append(getOpts, bunex.SelectWhere("task.target_id = ?", req.TargetID))
 	}
@@ -64,7 +60,6 @@ func (s *taskService) GetTask(
 }
 
 type ListTaskReq struct {
-	JobID    []string
 	TargetID []string
 	Status   []base.TaskStatus
 	Search   string
@@ -101,9 +96,6 @@ func (s *taskService) ListTask(
 	}
 
 	var listOpts []bunex.SelectQueryOption
-	if len(req.JobID) > 0 {
-		listOpts = append(listOpts, bunex.SelectWhereIn("task.job_id IN (?)", req.JobID...))
-	}
 	if len(req.TargetID) > 0 {
 		listOpts = append(listOpts, bunex.SelectWhereIn("task.target_id IN (?)", req.TargetID...))
 	}

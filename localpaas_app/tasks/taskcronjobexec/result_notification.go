@@ -1,4 +1,4 @@
-package taskappdeploy
+package taskcronjobexec
 
 import (
 	"context"
@@ -7,23 +7,23 @@ import (
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
 )
 
-func (e *Executor) notifyForDeployment(
+func (e *Executor) sendNotification(
 	ctx context.Context,
 	db database.IDB,
 	data *taskData,
 ) error {
-	if data.Deployment.Settings.Notification == nil {
+	if data.CronJob.Notification == nil {
 		return nil
 	}
-	notifSettingID := gofn.If(data.Task.IsDone(), data.Deployment.Settings.Notification.Success.ID,
-		data.Deployment.Settings.Notification.Failure.ID)
+
+	notifSettingID := gofn.If(data.Task.IsDone(), data.CronJob.Notification.Success.ID,
+		data.CronJob.Notification.Failure.ID)
 	notifSetting := data.RefObjects.RefSettings[notifSettingID]
 	if notifSetting == nil {
 		return nil
@@ -34,24 +34,24 @@ func (e *Executor) notifyForDeployment(
 
 	if notification.HasNotificationViaEmail() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
-			return e.notifyForDeploymentViaEmail(ctx, db, notification, data)
+			return e.sendNotificationViaEmail(ctx, db, notification, data)
 		})
 	}
 	if notification.HasNotificationViaSlack() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
-			return e.notifyForDeploymentViaSlack(ctx, db, notification, data)
+			return e.sendNotificationViaSlack(ctx, db, notification, data)
 		})
 	}
 	if notification.HasNotificationViaDiscord() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
-			return e.notifyForDeploymentViaDiscord(ctx, db, notification, data)
+			return e.sendNotificationViaDiscord(ctx, db, notification, data)
 		})
 	}
 	if len(execFuncs) == 0 {
 		return nil
 	}
 
-	e.buildDeploymentNotifMsgData(data)
+	e.buildNotificationMsgData(data)
 
 	err := gofn.ExecTasks(ctx, 0, execFuncs...)
 	if err != nil {
@@ -61,35 +61,43 @@ func (e *Executor) notifyForDeployment(
 	return nil
 }
 
-func (e *Executor) buildDeploymentNotifMsgData(
+func (e *Executor) buildNotificationMsgData(
 	data *taskData,
 ) {
-	deployment := data.Deployment
-
-	msgData := &notificationservice.BaseMsgDataAppDeploymentNotification{
-		ProjectName:   data.Project.Name,
-		AppName:       data.App.Name,
-		Succeeded:     deployment.IsDone(),
-		Method:        deployment.Settings.ActiveMethod,
-		StartedAt:     deployment.StartedAt,
-		Duration:      deployment.GetDuration(),
-		DashboardLink: config.Current.DashboardDeploymentDetailsURL(deployment.ID),
+	msgData := &notificationservice.BaseMsgDataCronTaskNotification{
+		Succeeded:   data.Task.IsDone(),
+		CronJobName: data.CronJobSetting.Name,
+		CreatedAt:   data.CronJob.Schedule.InitialTime,
+		StartedAt:   data.Task.StartedAt,
+		Duration:    data.Task.GetDuration(),
+		Retries:     data.Task.Config.Retry,
+	}
+	if data.CronJob.Schedule.Interval > 0 {
+		msgData.Schedule = fmt.Sprintf("every %v", data.CronJob.Schedule.Interval.String())
+	} else {
+		msgData.Schedule = fmt.Sprintf("cron expression %v", data.CronJob.Schedule.CronExpr)
+	}
+	if data.Project != nil {
+		msgData.ProjectName = data.Project.Name
+	}
+	if data.App != nil {
+		msgData.AppName = data.App.Name
+	}
+	switch {
+	case data.App != nil:
+		msgData.DashboardLink = config.Current.DashboardAppCronTaskDetailsURL(data.App.ID, data.App.ProjectID,
+			data.CronJobSetting.ID, data.Task.ID)
+	case data.Project != nil:
+		msgData.DashboardLink = config.Current.DashboardProjectCronTaskDetailsURL(data.Project.ID,
+			data.CronJobSetting.ID, data.Task.ID)
+	default:
+		msgData.DashboardLink = config.Current.DashboardGlobalCronTaskDetailsURL(
+			data.CronJobSetting.ID, data.Task.ID)
 	}
 	data.NotifMsgData = msgData
-
-	switch deployment.Settings.ActiveMethod {
-	case base.DeploymentMethodRepo:
-		msgData.RepoURL = deployment.Settings.RepoSource.RepoURL
-		msgData.RepoRef = deployment.Settings.RepoSource.RepoRef
-		if deployment.Output != nil {
-			msgData.CommitMsg = deployment.Output.CommitMessage
-		}
-	case base.DeploymentMethodImage:
-		msgData.Image = deployment.Settings.ImageSource.Image
-	}
 }
 
-func (e *Executor) notifyForDeploymentViaEmail(
+func (e *Executor) sendNotificationViaEmail(
 	ctx context.Context,
 	db database.IDB,
 	notification *entity.Notification,
@@ -125,19 +133,21 @@ func (e *Executor) notifyForDeploymentViaEmail(
 		return nil
 	}
 
-	subject := fmt.Sprintf("[%s/%s]", data.Project.Name, data.App.Name)
-	if data.Deployment.IsDone() {
-		subject += " deployment succeeded"
-	} else {
-		subject += " deployment failed"
+	subject := "[System]"
+	if data.Project != nil {
+		subject = fmt.Sprintf("[%s]", data.Project.Name)
 	}
+	if data.App != nil {
+		subject += fmt.Sprintf("[%s]", data.App.Name)
+	}
+	subject += gofn.If(data.Task.IsDone(), " Scheduled task succeeded", " Scheduled task failed")
 
-	err = e.notificationService.EmailSendAppDeploymentNotification(ctx, db,
-		&notificationservice.EmailMsgDataAppDeploymentNotification{
-			BaseMsgDataAppDeploymentNotification: data.NotifMsgData,
-			Email:                                emailAcc,
-			Recipients:                           userEmails,
-			Subject:                              subject,
+	err = e.notificationService.EmailSendCronTaskNotification(ctx, db,
+		&notificationservice.EmailMsgDataCronTaskNotification{
+			BaseMsgDataCronTaskNotification: data.NotifMsgData,
+			Email:                           emailAcc,
+			Recipients:                      userEmails,
+			Subject:                         subject,
 		})
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -146,7 +156,7 @@ func (e *Executor) notifyForDeploymentViaEmail(
 	return nil
 }
 
-func (e *Executor) notifyForDeploymentViaSlack(
+func (e *Executor) sendNotificationViaSlack(
 	ctx context.Context,
 	db database.IDB,
 	notification *entity.Notification,
@@ -165,10 +175,10 @@ func (e *Executor) notifyForDeploymentViaSlack(
 		return apperrors.NewMissing("Slack webhook")
 	}
 
-	err := e.notificationService.SlackSendAppDeploymentNotification(ctx, db,
-		&notificationservice.SlackMsgDataAppDeploymentNotification{
-			BaseMsgDataAppDeploymentNotification: data.NotifMsgData,
-			Setting:                              imService.Slack,
+	err := e.notificationService.SlackSendCronTaskNotification(ctx, db,
+		&notificationservice.SlackMsgDataCronTaskNotification{
+			BaseMsgDataCronTaskNotification: data.NotifMsgData,
+			Setting:                         imService.Slack,
 		})
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -177,7 +187,7 @@ func (e *Executor) notifyForDeploymentViaSlack(
 	return nil
 }
 
-func (e *Executor) notifyForDeploymentViaDiscord(
+func (e *Executor) sendNotificationViaDiscord(
 	ctx context.Context,
 	db database.IDB,
 	notification *entity.Notification,
@@ -196,10 +206,10 @@ func (e *Executor) notifyForDeploymentViaDiscord(
 		return apperrors.NewMissing("Discord webhook")
 	}
 
-	err := e.notificationService.DiscordSendAppDeploymentNotification(ctx, db,
-		&notificationservice.DiscordMsgDataAppDeploymentNotification{
-			BaseMsgDataAppDeploymentNotification: data.NotifMsgData,
-			Setting:                              imService.Discord,
+	err := e.notificationService.DiscordSendCronTaskNotification(ctx, db,
+		&notificationservice.DiscordMsgDataCronTaskNotification{
+			BaseMsgDataCronTaskNotification: data.NotifMsgData,
+			Setting:                         imService.Discord,
 		})
 	if err != nil {
 		return apperrors.Wrap(err)

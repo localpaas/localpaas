@@ -28,6 +28,7 @@ const (
 	SettingTypeRepoWebhook   SettingType = "repo-webhook"
 	SettingTypeNotification  SettingType = "notification"
 	SettingTypeImageBuild    SettingType = "image-build"
+	SettingTypeSystemCleanup SettingType = "system-cleanup"
 )
 
 var (

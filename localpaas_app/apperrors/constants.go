@@ -30,6 +30,7 @@ var (
 	ErrUnsupported          = errors.New("ERR_UNSUPPORTED")
 	ErrTokenInvalid         = errors.New("ERR_TOKEN_INVALID")
 	ErrTypeInvalid          = errors.New("ERR_TYPE_INVALID")
+	ErrValueInvalid         = errors.New("ERR_VALUE_INVALID")
 	ErrValidation           = errors.New("ERR_VALIDATION")
 
 	ErrUpdateVerMismatched  = errors.New("ERR_UPDATE_VER_MISMATCHED")
@@ -139,7 +140,8 @@ var errorStatusMap = map[error]int{
 	ErrNotImplemented:       http.StatusNotImplemented,
 	ErrUnsupported:          http.StatusNotImplemented,
 	ErrTokenInvalid:         http.StatusUnauthorized,
-	ErrTypeInvalid:          http.StatusInternalServerError,
+	ErrTypeInvalid:          http.StatusUnprocessableEntity,
+	ErrValueInvalid:         http.StatusUnprocessableEntity,
 	ErrValidation:           http.StatusBadRequest,
 
 	ErrUpdateVerMismatched:  http.StatusConflict,

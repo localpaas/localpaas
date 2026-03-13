@@ -1,8 +1,4 @@
-{{if .Succeeded}}
-**[{{.ProjectName}}/{{.AppName}}] Deployment succeeded**
-{{else}}
-**[{{.ProjectName}}/{{.AppName}}] Deployment failed**
-{{end}}
+**[{{.ProjectName}}][{{.AppName}}] Deployment {{if .Succeeded}}succeeded{{else}}failed{{end}}**
 > Project: `{{.ProjectName}}`
 > App: `{{.AppName}}`
 > {{if .Method | eq "repo"}}

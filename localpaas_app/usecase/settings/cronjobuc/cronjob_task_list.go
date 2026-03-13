@@ -22,10 +22,10 @@ func (uc *CronJobUC) ListCronJobTask(
 	}
 
 	listResp, err := uc.taskService.ListTask(ctx, uc.DB, &taskservice.ListTaskReq{
-		JobID:  []string{jobSetting.ID},
-		Status: req.Status,
-		Search: req.Search,
-		Paging: req.Paging,
+		TargetID: []string{jobSetting.ID},
+		Status:   req.Status,
+		Search:   req.Search,
+		Paging:   req.Paging,
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)

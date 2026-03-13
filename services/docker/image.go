@@ -3,7 +3,9 @@ package docker
 import (
 	"context"
 	"io"
+	"time"
 
+	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/api/types/image"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -107,4 +109,29 @@ func (m *manager) ImagePush(
 		return nil, apperrors.NewInfra(err)
 	}
 	return resp, nil
+}
+
+type ImagesPruneOption func(options *filters.Args)
+
+func (m *manager) ImagesPrune(
+	ctx context.Context,
+	danglingOnly bool,
+	onlyObjectsOlderThan time.Duration,
+	options ...ImagesPruneOption,
+) (*image.PruneReport, error) {
+	opts := filters.Args{}
+	if danglingOnly {
+		FilterAdd(&opts, "dangling", "true")
+	}
+	if onlyObjectsOlderThan > 0 {
+		FilterAdd(&opts, "until", onlyObjectsOlderThan.String())
+	}
+	for _, opt := range options {
+		opt(&opts)
+	}
+	resp, err := m.client.ImagesPrune(ctx, opts)
+	if err != nil {
+		return nil, apperrors.NewInfra(err)
+	}
+	return &resp, nil
 }

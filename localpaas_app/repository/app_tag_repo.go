@@ -21,6 +21,7 @@ type AppTagRepo interface {
 
 	DeleteAllByApps(ctx context.Context, db database.IDB, appIDs []string,
 		opts ...bunex.DeleteQueryOption) error
+	DeleteHard(ctx context.Context, db database.IDB, opts ...bunex.DeleteQueryOption) error
 }
 
 type appTagRepo struct {
@@ -82,6 +83,18 @@ func (repo *appTagRepo) DeleteAllByApps(ctx context.Context, db database.IDB,
 	}
 	query := db.NewDelete().Model((*entity.AppTag)(nil)).
 		Where("app_id IN (?)", bun.In(appIDs))
+	query = bunex.ApplyDelete(query, opts...)
+
+	_, err := query.Exec(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (repo *appTagRepo) DeleteHard(ctx context.Context, db database.IDB,
+	opts ...bunex.DeleteQueryOption) error {
+	query := db.NewDelete().Model((*entity.AppTag)(nil)).ForceDelete()
 	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)

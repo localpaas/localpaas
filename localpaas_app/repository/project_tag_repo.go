@@ -21,6 +21,7 @@ type ProjectTagRepo interface {
 
 	DeleteAllByProjects(ctx context.Context, db database.IDB, projectIDs []string,
 		opts ...bunex.DeleteQueryOption) error
+	DeleteHard(ctx context.Context, db database.IDB, opts ...bunex.DeleteQueryOption) error
 }
 
 type projectTagRepo struct {
@@ -82,6 +83,18 @@ func (repo *projectTagRepo) DeleteAllByProjects(ctx context.Context, db database
 	}
 	query := db.NewDelete().Model((*entity.ProjectTag)(nil)).
 		Where("project_id IN (?)", bun.In(projectIDs))
+	query = bunex.ApplyDelete(query, opts...)
+
+	_, err := query.Exec(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (repo *projectTagRepo) DeleteHard(ctx context.Context, db database.IDB,
+	opts ...bunex.DeleteQueryOption) error {
+	query := db.NewDelete().Model((*entity.ProjectTag)(nil)).ForceDelete()
 	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)

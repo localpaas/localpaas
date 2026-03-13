@@ -28,6 +28,8 @@ type DeploymentRepo interface {
 		opts ...bunex.InsertQueryOption) error
 	Update(ctx context.Context, db database.IDB, deployment *entity.Deployment,
 		opts ...bunex.UpdateQueryOption) error
+
+	DeleteHard(ctx context.Context, db database.IDB, opts ...bunex.DeleteQueryOption) error
 }
 
 type deploymentRepo struct {
@@ -131,6 +133,18 @@ func (repo *deploymentRepo) Update(ctx context.Context, db database.IDB, deploym
 	opts ...bunex.UpdateQueryOption) error {
 	query := db.NewUpdate().Model(deployment).WherePK()
 	query = bunex.ApplyUpdate(query, opts...)
+
+	_, err := query.Exec(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (repo *deploymentRepo) DeleteHard(ctx context.Context, db database.IDB,
+	opts ...bunex.DeleteQueryOption) error {
+	query := db.NewDelete().Model((*entity.Deployment)(nil)).ForceDelete()
+	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)
 	if err != nil {

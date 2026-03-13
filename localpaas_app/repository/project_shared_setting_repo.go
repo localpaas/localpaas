@@ -25,6 +25,7 @@ type ProjectSharedSettingRepo interface {
 
 	DeleteAllBySetting(ctx context.Context, db database.IDB, settingID string,
 		opts ...bunex.DeleteQueryOption) error
+	DeleteHard(ctx context.Context, db database.IDB, opts ...bunex.DeleteQueryOption) error
 }
 
 type projectSharedSettingRepo struct {
@@ -114,6 +115,18 @@ func (repo *projectSharedSettingRepo) DeleteAllBySetting(ctx context.Context, db
 	settingID string, opts ...bunex.DeleteQueryOption) error {
 	query := db.NewDelete().Model((*entity.ProjectSharedSetting)(nil)).
 		Where("project_shared_setting.setting_id = ?", settingID)
+	query = bunex.ApplyDelete(query, opts...)
+
+	_, err := query.Exec(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (repo *projectSharedSettingRepo) DeleteHard(ctx context.Context, db database.IDB,
+	opts ...bunex.DeleteQueryOption) error {
+	query := db.NewDelete().Model((*entity.ProjectSharedSetting)(nil)).ForceDelete()
 	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)

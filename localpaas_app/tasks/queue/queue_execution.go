@@ -67,6 +67,14 @@ func (t *TaskExecData) OnPostTransaction(fn func()) {
 	t.onPostTransaction = fn
 }
 
+func (t *TaskExecData) AddRefObjects(refObjects *entity.RefObjects) {
+	if t.RefObjects == nil {
+		t.RefObjects = refObjects
+	} else {
+		t.RefObjects.AddRefObjects(refObjects)
+	}
+}
+
 type TaskExecFunc func(context.Context, database.Tx, *TaskExecData) error
 
 func (q *taskQueue) RegisterExecutor(typ base.TaskType, execFunc TaskExecFunc) {
@@ -202,11 +210,13 @@ func (q *taskQueue) loadTask(
 
 	// Task's target object must be active
 	shouldCancelTask := false
-	switch task.Type { //nolint:exhaustive
+	switch task.Type {
 	case base.TaskTypeAppDeploy:
 		shouldCancelTask = task.TargetDeployment == nil
 	case base.TaskTypeCronJobExec:
 		shouldCancelTask = task.TargetJob == nil || !task.TargetJob.IsActive()
+	case base.TaskTypeHealthcheck:
+		// Do nothing
 	}
 	if shouldCancelTask {
 		task.Status = base.TaskStatusCanceled

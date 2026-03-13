@@ -15,23 +15,25 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/settinghandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/systemhandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/systemsettingshandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/userhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/usersettingshandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/webhookhandler"
 )
 
 type HandlerRegistry struct {
-	authHandler         *authhandler.AuthHandler
-	clusterHandler      *clusterhandler.ClusterHandler
-	sessionHandler      *sessionhandler.SessionHandler
-	userHandler         *userhandler.UserHandler
-	projectHandler      *projecthandler.ProjectHandler
-	appHandler          *apphandler.AppHandler
-	settingHandler      *settinghandler.SettingHandler
-	userSettingsHandler *usersettingshandler.UserSettingsHandler
-	systemHandler       *systemhandler.SystemHandler
-	gitSourceHandler    *gitsourcehandler.GitSourceHandler
-	webhookHandler      *webhookhandler.WebhookHandler
+	authHandler           *authhandler.AuthHandler
+	clusterHandler        *clusterhandler.ClusterHandler
+	sessionHandler        *sessionhandler.SessionHandler
+	userHandler           *userhandler.UserHandler
+	projectHandler        *projecthandler.ProjectHandler
+	appHandler            *apphandler.AppHandler
+	settingHandler        *settinghandler.SettingHandler
+	userSettingsHandler   *usersettingshandler.UserSettingsHandler
+	systemHandler         *systemhandler.SystemHandler
+	systemSettingsHandler *systemsettingshandler.SystemSettingsHandler
+	gitSourceHandler      *gitsourcehandler.GitSourceHandler
+	webhookHandler        *webhookhandler.WebhookHandler
 }
 
 func NewHandlerRegistry(
@@ -44,21 +46,23 @@ func NewHandlerRegistry(
 	settingHandler *settinghandler.SettingHandler,
 	userSettingsHandler *usersettingshandler.UserSettingsHandler,
 	systemHandler *systemhandler.SystemHandler,
+	systemSettingsHandler *systemsettingshandler.SystemSettingsHandler,
 	gitSourceHandler *gitsourcehandler.GitSourceHandler,
 	webhookHandler *webhookhandler.WebhookHandler,
 ) *HandlerRegistry {
 	return &HandlerRegistry{
-		authHandler:         authHandler,
-		clusterHandler:      clusterHandler,
-		sessionHandler:      sessionHandler,
-		userHandler:         userHandler,
-		projectHandler:      projectHandler,
-		appHandler:          appHandler,
-		settingHandler:      settingHandler,
-		userSettingsHandler: userSettingsHandler,
-		systemHandler:       systemHandler,
-		gitSourceHandler:    gitSourceHandler,
-		webhookHandler:      webhookHandler,
+		authHandler:           authHandler,
+		clusterHandler:        clusterHandler,
+		sessionHandler:        sessionHandler,
+		userHandler:           userHandler,
+		projectHandler:        projectHandler,
+		appHandler:            appHandler,
+		settingHandler:        settingHandler,
+		userSettingsHandler:   userSettingsHandler,
+		systemHandler:         systemHandler,
+		systemSettingsHandler: systemSettingsHandler,
+		gitSourceHandler:      gitSourceHandler,
+		webhookHandler:        webhookHandler,
 	}
 }
 
@@ -100,7 +104,7 @@ func (s *HTTPServer) registerRoutes() {
 	projectGroup := s.registerProjectRoutes(apiGroup)
 	_ = s.registerAppRoutes(projectGroup)
 	_ = s.registerSettingRoutes(apiGroup)
-	_ = s.registerSystemRoutes(apiGroup)
+	_, _ = s.registerSystemRoutes(apiGroup)
 	_ = s.registerClusterRoutes(apiGroup)
 	_ = s.registerWebhookRoutes(apiGroup)
 

@@ -37,6 +37,7 @@ type UpdateSettingMetaData struct {
 	DefaultMustUnique bool
 	ExtraLoadOpts     []bunex.SelectQueryOption
 
+	Load             func(context.Context, database.Tx, *UpdateSettingMetaData) error
 	AfterLoading     func(context.Context, database.Tx, *UpdateSettingMetaData) error
 	BeforePersisting func(context.Context, database.Tx, *UpdateSettingMetaData, *PersistingSettingMetaData) error
 	AfterPersisting  func(context.Context, database.Tx, *UpdateSettingMetaData, *PersistingSettingMetaData) error
@@ -104,24 +105,33 @@ func (uc *BaseSettingUC) UpdateSettingMeta(
 
 func (uc *BaseSettingUC) loadSettingForUpdateMeta(
 	ctx context.Context,
-	db database.IDB,
+	db database.Tx,
 	req *UpdateSettingMetaReq,
 	data *UpdateSettingMetaData,
 ) (err error) {
-	loadOpts := []bunex.SelectQueryOption{
-		bunex.SelectFor("UPDATE OF setting"),
-	}
-	loadOpts = append(loadOpts, data.ExtraLoadOpts...)
+	if data.Load != nil {
+		err = data.Load(ctx, db, data)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+	} else {
+		loadOpts := []bunex.SelectQueryOption{
+			bunex.SelectFor("UPDATE OF setting"),
+		}
+		loadOpts = append(loadOpts, data.ExtraLoadOpts...)
 
-	setting, err := uc.loadSettingByID(ctx, db, &req.BaseSettingReq, req.ID,
-		false, loadOpts...)
-	if err != nil {
-		return apperrors.Wrap(err)
+		setting, err := uc.loadSettingByID(ctx, db, &req.BaseSettingReq, req.ID,
+			false, loadOpts...)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+		data.Setting = setting
 	}
+
+	setting := data.Setting
 	if req.UpdateVer != setting.UpdateVer {
 		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
 	}
-	data.Setting = setting
 
 	if req.Scope != base.SettingScopeGlobal && setting.ObjectID != req.ObjectID {
 		return apperrors.New(apperrors.ErrOwnSettingRequired).

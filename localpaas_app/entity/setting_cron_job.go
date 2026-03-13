@@ -30,16 +30,101 @@ var (
 
 type CronJob struct {
 	CronType      base.CronJobType         `json:"cronType"`
-	CronExpr      string                   `json:"cronExpr"`
+	Schedule      *CronJobSchedule         `json:"schedule"`
 	App           ObjectID                 `json:"app,omitzero"`
-	InitialTime   time.Time                `json:"initialTime"`
-	LastSchedTime time.Time                `json:"lastSchedTime"`
+	TargetSetting ObjectID                 `json:"targetSetting,omitzero"`
 	Priority      base.TaskPriority        `json:"priority,omitempty"`
 	MaxRetry      int                      `json:"maxRetry,omitempty"`
 	RetryDelay    timeutil.Duration        `json:"retryDelay,omitempty"`
 	Timeout       timeutil.Duration        `json:"timeout,omitempty"`
 	Command       *CronJobContainerCommand `json:"command,omitempty"`
 	Notification  *CronJobNotification     `json:"notification,omitempty"`
+}
+
+type CronJobSchedule struct {
+	CronExpr      string            `json:"cronExpr,omitempty"` // cronExpr and interval are mutually exclusive
+	Interval      timeutil.Duration `json:"interval,omitempty"`
+	InitialTime   time.Time         `json:"initialTime"`
+	LastSchedTime time.Time         `json:"lastSchedTime"`
+}
+
+func (s *CronJobSchedule) Changed(oldSched *CronJobSchedule) bool {
+	return s.CronExpr != oldSched.CronExpr || s.Interval != oldSched.Interval || s.InitialTime != oldSched.InitialTime
+}
+
+func (s *CronJobSchedule) IsValid() error {
+	if s.CronExpr != "" {
+		_, err := parser.Parse(s.CronExpr)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+		return nil
+	}
+	if s.Interval > 0 {
+		return nil
+	}
+	return apperrors.NewValueInvalid()
+}
+
+func (s *CronJobSchedule) ParseCronExpr() (cron.Schedule, error) {
+	if s.CronExpr == "" {
+		return nil, apperrors.NewInactive("Cron expression")
+	}
+	sched, err := parser.Parse(s.CronExpr)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return sched, nil
+}
+
+//nolint:gocognit
+func (s *CronJobSchedule) CalcNextRuns(fromTime, toTime time.Time, count int) (res []time.Time, err error) {
+	nextRunAt := gofn.Coalesce(s.LastSchedTime, s.InitialTime)
+	if toTime.IsZero() && count == 0 {
+		return nil, apperrors.NewValueInvalid()
+	}
+
+	if s.Interval > 0 {
+		interval := s.Interval.ToDuration()
+		for {
+			if nextRunAt.Before(fromTime) {
+				nextRunAt = nextRunAt.Add(interval)
+				continue
+			}
+			if !toTime.IsZero() && nextRunAt.After(toTime) {
+				break
+			}
+			res = append(res, nextRunAt)
+			if count > 0 && len(res) >= count {
+				break
+			}
+			nextRunAt = nextRunAt.Add(interval)
+		}
+		return res, nil
+	}
+
+	if s.CronExpr != "" {
+		cronSched, err := parser.Parse(s.CronExpr)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		for {
+			nextRunAt = cronSched.Next(nextRunAt)
+			if nextRunAt.Before(fromTime) {
+				continue
+			}
+			if !toTime.IsZero() && nextRunAt.After(toTime) {
+				break
+			}
+			res = append(res, nextRunAt)
+			if count > 0 && len(res) >= count {
+				break
+			}
+		}
+		return res, nil
+	}
+
+	return nil, apperrors.NewValueInvalid()
 }
 
 type CronJobContainerCommand struct {
@@ -76,6 +161,9 @@ func (s *CronJob) GetRefObjectIDs() *RefObjectIDs {
 	if s.App.ID != "" {
 		refIDs.RefAppIDs = append(refIDs.RefAppIDs, s.App.ID)
 	}
+	if s.TargetSetting.ID != "" {
+		refIDs.RefSettingIDs = append(refIDs.RefSettingIDs, s.TargetSetting.ID)
+	}
 	if s.Notification != nil {
 		if s.Notification.Success.ID != "" {
 			refIDs.RefSettingIDs = append(refIDs.RefSettingIDs, s.Notification.Success.ID)
@@ -85,14 +173,6 @@ func (s *CronJob) GetRefObjectIDs() *RefObjectIDs {
 		}
 	}
 	return refIDs
-}
-
-func (s *CronJob) ParseCronExpr() (cron.Schedule, error) {
-	sched, err := parser.Parse(s.CronExpr)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-	return sched, nil
 }
 
 func (s *Setting) AsCronJob() (*CronJob, error) {

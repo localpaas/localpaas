@@ -6,7 +6,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc/cronjobdto"
@@ -18,7 +17,8 @@ func (uc *CronJobUC) UpdateCronJob(
 	req *cronjobdto.UpdateCronJobReq,
 ) (*cronjobdto.UpdateCronJobResp, error) {
 	req.Type = currentSettingType
-	var oldJob *entity.CronJob
+	newJob := req.ToEntity()
+	scheduleChanges := false
 	_, err := uc.UpdateSetting(ctx, &req.UpdateSettingReq, &settings.UpdateSettingData{
 		VerifyingName: req.Name,
 		AfterLoading: func(ctx context.Context, db database.Tx, data *settings.UpdateSettingData) error {
@@ -26,7 +26,7 @@ func (uc *CronJobUC) UpdateCronJob(
 			if err != nil {
 				return apperrors.Wrap(err)
 			}
-			oldJob = job
+			scheduleChanges = job.Schedule.Changed(newJob.Schedule)
 			return nil
 		},
 		PrepareUpdate: func(
@@ -35,22 +35,24 @@ func (uc *CronJobUC) UpdateCronJob(
 			data *settings.UpdateSettingData,
 			pData *settings.PersistingSettingData,
 		) error {
-			cronJob := req.ToEntity()
-			pData.Setting.Kind = string(cronJob.CronType)
-			// Cron expression changes, reset the timestamp
-			if cronJob.CronExpr != oldJob.CronExpr {
-				cronJob.LastSchedTime = time.Time{}
+			pData.Setting.Kind = string(newJob.CronType)
+			// Schedule changes, reset the timestamp
+			if scheduleChanges {
+				newJob.Schedule.LastSchedTime = time.Time{}
 			}
-			err := pData.Setting.SetData(cronJob)
+			err := pData.Setting.SetData(newJob)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}
 			return nil
 		},
-		AfterPersisting: func(ctx context.Context, db database.Tx, data *settings.UpdateSettingData,
-			pData *settings.PersistingSettingData) error {
-			unscheduleCurrentTasks := req.CronExpr != oldJob.CronExpr
-			err := uc.taskQueue.ScheduleTasksForCronJob(ctx, db, data.Setting, unscheduleCurrentTasks)
+		AfterPersisting: func(
+			ctx context.Context,
+			db database.Tx,
+			data *settings.UpdateSettingData,
+			pData *settings.PersistingSettingData,
+		) error {
+			err := uc.taskQueue.ScheduleTasksForCronJob(ctx, db, data.Setting, scheduleChanges)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

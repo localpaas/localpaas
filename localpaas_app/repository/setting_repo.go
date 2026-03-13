@@ -92,6 +92,8 @@ type SettingRepo interface {
 
 	Insert(ctx context.Context, db database.IDB, setting *entity.Setting,
 		opts ...bunex.InsertQueryOption) error
+	InsertMulti(ctx context.Context, db database.IDB, settings []*entity.Setting,
+		opts ...bunex.InsertQueryOption) error
 	Upsert(ctx context.Context, db database.IDB, setting *entity.Setting,
 		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
 	UpsertMulti(ctx context.Context, db database.IDB, settings []*entity.Setting,
@@ -100,6 +102,8 @@ type SettingRepo interface {
 		opts ...bunex.UpdateQueryOption) error
 	UpdateClearDefaultFlag(ctx context.Context, db database.IDB, typ base.SettingType, exceptID string,
 		opts ...bunex.UpdateQueryOption) error
+
+	DeleteHard(ctx context.Context, db database.IDB, opts ...bunex.DeleteQueryOption) error
 }
 
 type settingRepo struct {
@@ -271,6 +275,7 @@ func (repo *settingRepo) get(ctx context.Context, db database.IDB,
 func (repo *settingRepo) GetSingleGlobally(ctx context.Context, db database.IDB, typ base.SettingType,
 	requireActive bool, opts ...bunex.SelectQueryOption) (*entity.Setting, error) {
 	opts = repo.applyFilter(opts, typ, "", requireActive)
+	opts = append(opts, bunex.SelectWhere("setting.object_id IS NULL"))
 	setting, err := repo.get(ctx, db, opts...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -632,7 +637,15 @@ func (repo *settingRepo) EnsureUniqueInUser(ctx context.Context, db database.IDB
 
 func (repo *settingRepo) Insert(ctx context.Context, db database.IDB, setting *entity.Setting,
 	opts ...bunex.InsertQueryOption) error {
-	query := db.NewInsert().Model(setting)
+	return repo.InsertMulti(ctx, db, []*entity.Setting{setting}, opts...)
+}
+
+func (repo *settingRepo) InsertMulti(ctx context.Context, db database.IDB, settings []*entity.Setting,
+	opts ...bunex.InsertQueryOption) error {
+	if len(settings) == 0 {
+		return nil
+	}
+	query := db.NewInsert().Model(&settings)
 	query = bunex.ApplyInsert(query, opts...)
 
 	_, err := query.Exec(ctx)
@@ -721,4 +734,16 @@ func (repo *settingRepo) updateExpiredSettings(ctx context.Context, db database.
 		return hasChange, apperrors.Wrap(err)
 	}
 	return hasChange, nil
+}
+
+func (repo *settingRepo) DeleteHard(ctx context.Context, db database.IDB,
+	opts ...bunex.DeleteQueryOption) error {
+	query := db.NewDelete().Model((*entity.Setting)(nil)).ForceDelete()
+	query = bunex.ApplyDelete(query, opts...)
+
+	_, err := query.Exec(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
 }

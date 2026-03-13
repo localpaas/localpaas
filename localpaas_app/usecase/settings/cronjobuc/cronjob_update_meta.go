@@ -17,8 +17,12 @@ func (uc *CronJobUC) UpdateCronJobMeta(
 ) (*cronjobdto.UpdateCronJobMetaResp, error) {
 	req.Type = currentSettingType
 	_, err := uc.UpdateSettingMeta(ctx, &req.UpdateSettingMetaReq, &settings.UpdateSettingMetaData{
-		AfterPersisting: func(ctx context.Context, db database.Tx, data *settings.UpdateSettingMetaData,
-			_ *settings.PersistingSettingMetaData) error {
+		AfterPersisting: func(
+			ctx context.Context,
+			db database.Tx,
+			data *settings.UpdateSettingMetaData,
+			_ *settings.PersistingSettingMetaData,
+		) error {
 			err := uc.taskQueue.ScheduleTasksForCronJob(ctx, db, data.Setting, true)
 			if err != nil {
 				return apperrors.Wrap(err)

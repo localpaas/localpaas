@@ -29,6 +29,7 @@ type ACLPermissionRepo interface {
 		opts ...bunex.DeleteQueryOption) error
 	DeleteByUsers(ctx context.Context, db database.IDB, userIDs []string,
 		opts ...bunex.DeleteQueryOption) error
+	DeleteHard(ctx context.Context, db database.IDB, opts ...bunex.DeleteQueryOption) error
 }
 
 type aclPermissionRepo struct {
@@ -186,6 +187,18 @@ func (repo *aclPermissionRepo) DeleteByUsers(ctx context.Context, db database.ID
 	}
 	query := db.NewDelete().Model((*entity.ACLPermission)(nil)).
 		Where("subject_id IN (?)", bun.In(userIDs))
+	query = bunex.ApplyDelete(query, opts...)
+
+	_, err := query.Exec(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (repo *aclPermissionRepo) DeleteHard(ctx context.Context, db database.IDB,
+	opts ...bunex.DeleteQueryOption) error {
+	query := db.NewDelete().Model((*entity.ACLPermission)(nil)).ForceDelete()
 	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)

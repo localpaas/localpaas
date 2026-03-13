@@ -95,11 +95,14 @@ func (e *Executor) execute(
 	retries := 0
 	startTime := time.Now()
 	for {
-		switch data.Healthcheck.HealthcheckType { //nolint
+		switch data.Healthcheck.HealthcheckType {
 		case base.HealthcheckTypeREST:
 			testErr = e.doHealthcheckREST(ctx, data)
 		case base.HealthcheckTypeGRPC:
 			testErr = e.doHealthcheckGRPC(ctx, data)
+		default:
+			testErr = apperrors.NewUnsupported(
+				fmt.Sprintf("Healthcheck type '%v'", data.Healthcheck.HealthcheckType))
 		}
 		if testErr != nil {
 			retries++

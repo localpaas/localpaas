@@ -94,7 +94,6 @@ type taskData struct {
 	DeploymentOutput *entity.AppDeploymentOutput
 	Step             string
 	LogStore         *applog.Store
-	RefObjects       *entity.RefObjects
 	NotifMsgData     *notificationservice.BaseMsgDataAppDeploymentNotification
 }
 
@@ -205,11 +204,12 @@ func (e *Executor) loadDeploymentData(
 	refObjectIDs := data.Deployment.Settings.GetRefObjectIDs()
 
 	// Load reference objects
-	data.RefObjects, err = e.settingService.LoadReferenceObjectsByIDs(ctx, db, base.SettingScopeApp, data.App.ID,
+	refObjects, err := e.settingService.LoadReferenceObjectsByIDs(ctx, db, base.SettingScopeApp, data.App.ID,
 		data.App.ProjectID, true, true, refObjectIDs)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+	data.AddRefObjects(refObjects)
 
 	return nil
 }

@@ -22,8 +22,8 @@ func (uc *CronJobUC) GetCronJobTask(
 	}
 
 	getResp, err := uc.taskService.GetTask(ctx, uc.DB, &taskservice.GetTaskReq{
-		ID:    req.TaskID,
-		JobID: jobSetting.ID,
+		ID:       req.TaskID,
+		TargetID: jobSetting.ID,
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)

@@ -35,6 +35,8 @@ type ProjectRepo interface {
 		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
 	Update(ctx context.Context, db database.IDB, project *entity.Project,
 		opts ...bunex.UpdateQueryOption) error
+
+	DeleteHard(ctx context.Context, db database.IDB, opts ...bunex.DeleteQueryOption) error
 }
 
 type projectRepo struct {
@@ -180,6 +182,18 @@ func (repo *projectRepo) Update(ctx context.Context, db database.IDB, project *e
 	opts ...bunex.UpdateQueryOption) error {
 	query := db.NewUpdate().Model(project).WherePK()
 	query = bunex.ApplyUpdate(query, opts...)
+
+	_, err := query.Exec(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (repo *projectRepo) DeleteHard(ctx context.Context, db database.IDB,
+	opts ...bunex.DeleteQueryOption) error {
+	query := db.NewDelete().Model((*entity.Project)(nil)).ForceDelete()
+	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)
 	if err != nil {

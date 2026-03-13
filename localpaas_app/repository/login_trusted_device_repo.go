@@ -19,6 +19,8 @@ type LoginTrustedDeviceRepo interface {
 		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
 	UpsertMulti(ctx context.Context, db database.IDB, loginTrustedDevices []*entity.LoginTrustedDevice,
 		conflictCols, updateCols []string, opts ...bunex.InsertQueryOption) error
+
+	DeleteHard(ctx context.Context, db database.IDB, opts ...bunex.DeleteQueryOption) error
 }
 
 type loginTrustedDeviceRepo struct {
@@ -67,6 +69,18 @@ func (repo *loginTrustedDeviceRepo) UpsertMulti(ctx context.Context, db database
 	query := db.NewInsert().Model(&loginTrustedDevices)
 	query = bunex.ApplyInsert(query, opts...)
 	query = bunex.ApplyUpsert(query, conflictCols, updateCols)
+
+	_, err := query.Exec(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (repo *loginTrustedDeviceRepo) DeleteHard(ctx context.Context, db database.IDB,
+	opts ...bunex.DeleteQueryOption) error {
+	query := db.NewDelete().Model((*entity.LoginTrustedDevice)(nil)).ForceDelete()
+	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)
 	if err != nil {

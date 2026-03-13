@@ -15,10 +15,10 @@ func (uc *TaskUC) ListTask(
 	req *taskdto.ListTaskReq,
 ) (*taskdto.ListTaskResp, error) {
 	listResp, err := uc.taskService.ListTask(ctx, uc.db, &taskservice.ListTaskReq{
-		JobID:  req.JobID,
-		Status: req.Status,
-		Search: req.Search,
-		Paging: req.Paging,
+		TargetID: req.TargetID,
+		Status:   req.Status,
+		Search:   req.Search,
+		Paging:   req.Paging,
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)

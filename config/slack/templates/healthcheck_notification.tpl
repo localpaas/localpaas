@@ -1,10 +1,6 @@
-{{if .Succeeded}}
-*[{{.ProjectName}}/{{.AppName}}] Healthcheck succeeded*
-{{else}}
-*[{{.ProjectName}}/{{.AppName}}] Healthcheck failed*
-{{end}}
-> {{if .ProjectName | ne ""}}Project: `{{.ProjectName}}`{{end}}
-> {{if .AppName | ne ""}}App: `{{.AppName}}`{{end}}
+*{{if .ProjectName | ne ""}}[{{.ProjectName}}]{{if .AppName | ne ""}}[{{.AppName}}]{{end}}{{else}}[System]{{end}} Healthcheck {{if .Succeeded}}succeeded{{else}}failed{{end}}*
+{{if .ProjectName | ne ""}}> Project: `{{.ProjectName}}`{{end}}
+{{if .AppName | ne ""}}> App: `{{.AppName}}`{{end}}
 > Name: `{{.HealthcheckName}}`
 > Type: `{{.HealthcheckType}}`
 > Started at: `{{.StartedAt}}`

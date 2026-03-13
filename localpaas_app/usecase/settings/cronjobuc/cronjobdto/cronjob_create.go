@@ -2,6 +2,7 @@ package cronjobdto
 
 import (
 	"strings"
+	"time"
 
 	vld "github.com/tiendc/go-validator"
 	"github.com/tiendc/gofn"
@@ -22,7 +23,7 @@ type CreateCronJobReq struct {
 type CronJobBaseReq struct {
 	Name         string                      `json:"name"`
 	CronType     base.CronJobType            `json:"cronType"`
-	CronExpr     string                      `json:"cronExpr"`
+	Schedule     *CronJobScheduleReq         `json:"schedule"`
 	App          basedto.ObjectIDReq         `json:"app"`
 	Priority     base.TaskPriority           `json:"priority"`
 	MaxRetry     int                         `json:"maxRetry"`
@@ -35,15 +36,31 @@ type CronJobBaseReq struct {
 func (req *CronJobBaseReq) ToEntity() *entity.CronJob {
 	return &entity.CronJob{
 		CronType:     req.CronType,
-		CronExpr:     req.CronExpr,
+		Schedule:     req.Schedule.ToEntity(),
 		App:          entity.ObjectID{ID: req.App.ID},
-		InitialTime:  timeutil.NowUTC(),
 		Priority:     req.Priority,
 		MaxRetry:     req.MaxRetry,
 		RetryDelay:   req.RetryDelay,
 		Timeout:      req.Timeout,
 		Command:      req.Command.ToEntity(),
 		Notification: req.Notification.ToEntity(),
+	}
+}
+
+type CronJobScheduleReq struct {
+	CronExpr    string            `json:"cronExpr"` // cronExpr and interval are mutually exclusive
+	Interval    timeutil.Duration `json:"interval"`
+	InitialTime time.Time         `json:"initialTime"`
+}
+
+func (req *CronJobScheduleReq) ToEntity() *entity.CronJobSchedule {
+	if req == nil {
+		return nil
+	}
+	return &entity.CronJobSchedule{
+		CronExpr:    req.CronExpr,
+		Interval:    req.Interval,
+		InitialTime: req.InitialTime,
 	}
 }
 
@@ -121,8 +138,10 @@ func (req *CronJobNotificationReq) ToEntity() *entity.CronJobNotification {
 
 func (req *CronJobBaseReq) modifyRequest() error {
 	req.Name = strings.TrimSpace(req.Name)
-	req.CronExpr = strings.TrimSpace(req.CronExpr)
 	req.Priority = gofn.Coalesce(req.Priority, base.TaskPriorityDefault)
+	if req.Schedule != nil {
+		req.Schedule.CronExpr = strings.TrimSpace(req.Schedule.CronExpr)
+	}
 	return nil
 }
 

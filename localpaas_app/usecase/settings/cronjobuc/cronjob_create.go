@@ -33,8 +33,8 @@ func (uc *CronJobUC) CreateCronJob(
 			pData *settings.PersistingSettingCreationData,
 		) error {
 			cronJob := req.ToEntity()
-			// Parse the cron expression to make sure it's valid
-			_, err := cronJob.ParseCronExpr()
+			// Check the schedule to be valid
+			err := cronJob.Schedule.IsValid()
 			if err != nil {
 				return apperrors.Wrap(err)
 			}
@@ -44,8 +44,12 @@ func (uc *CronJobUC) CreateCronJob(
 			}
 			return nil
 		},
-		AfterPersisting: func(ctx context.Context, db database.Tx, data *settings.CreateSettingData,
-			pData *settings.PersistingSettingCreationData) error {
+		AfterPersisting: func(
+			ctx context.Context,
+			db database.Tx,
+			data *settings.CreateSettingData,
+			pData *settings.PersistingSettingCreationData,
+		) error {
 			err := uc.taskQueue.ScheduleTasksForCronJob(ctx, db, pData.Setting, false)
 			if err != nil {
 				return apperrors.Wrap(err)

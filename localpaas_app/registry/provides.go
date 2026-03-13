@@ -15,6 +15,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/settinghandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/systemhandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/systemsettingshandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/userhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/usersettingshandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/webhookhandler"
@@ -62,13 +63,14 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/notificationuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/registryauthuc"
-	repowebhooksettingsuc "github.com/localpaas/localpaas/localpaas_app/usecase/settings/repowebhookuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/repowebhookuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/lpappuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/nginxuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/syserroruc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/systemsettings/systemcleanupuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/taskuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc"
@@ -118,6 +120,7 @@ var Provides = []any{
 	settinghandler.NewSettingHandler,
 	usersettingshandler.NewUserSettingsHandler,
 	systemhandler.NewSystemHandler,
+	systemsettingshandler.NewSystemSettingsHandler,
 	gitsourcehandler.NewGitSourceHandler,
 	webhookhandler.NewWebhookHandler,
 
@@ -152,9 +155,10 @@ var Provides = []any{
 	taskuc.NewTaskUC,
 	emailuc.NewEmailUC,
 	webhookuc.NewWebhookUC,
-	repowebhooksettingsuc.NewRepoWebhookUC,
+	repowebhookuc.NewRepoWebhookUC,
 	notificationuc.NewNotificationUC,
 	imagebuilduc.NewImageBuildUC,
+	systemcleanupuc.NewSystemCleanupUC,
 
 	// Service
 	clusterservice.NewClusterService,

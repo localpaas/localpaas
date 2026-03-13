@@ -18,7 +18,7 @@ type BaseMsgDataCronTaskNotification struct {
 	AppName       string
 	Succeeded     bool
 	CronJobName   string
-	CronJobExpr   string
+	Schedule      string
 	CreatedAt     time.Time
 	StartedAt     time.Time
 	Duration      time.Duration

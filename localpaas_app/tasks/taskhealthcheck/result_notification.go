@@ -192,7 +192,13 @@ func (e *Executor) sendNotificationViaEmail(
 		return nil
 	}
 
-	subject := fmt.Sprintf("[%s/%s]", data.Project.Name, data.App.Name)
+	subject := "[System]"
+	if data.Project != nil {
+		subject = fmt.Sprintf("[%s]", data.Project.Name)
+	}
+	if data.App != nil {
+		subject += fmt.Sprintf("[%s]", data.App.Name)
+	}
 	subject += gofn.If(data.Task.IsDone(), " Healthcheck succeeded", " Healthcheck failed")
 
 	err = e.notificationService.EmailSendHealthcheckNotification(ctx, db,

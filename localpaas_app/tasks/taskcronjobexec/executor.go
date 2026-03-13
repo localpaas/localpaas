@@ -25,12 +25,24 @@ import (
 )
 
 type Executor struct {
-	logger              logging.Logger
-	db                  *database.DB
-	redisClient         rediscache.Client
-	settingRepo         repository.SettingRepo
-	taskRepo            repository.TaskRepo
-	taskLogRepo         repository.TaskLogRepo
+	logger      logging.Logger
+	db          *database.DB
+	redisClient rediscache.Client
+
+	userRepo                 repository.UserRepo
+	aclPermissionRepo        repository.ACLPermissionRepo
+	projectRepo              repository.ProjectRepo
+	projectTagRepo           repository.ProjectTagRepo
+	projectSharedSettingRepo repository.ProjectSharedSettingRepo
+	appRepo                  repository.AppRepo
+	appTagRepo               repository.AppTagRepo
+	deploymentRepo           repository.DeploymentRepo
+	taskLogRepo              repository.TaskLogRepo
+	settingRepo              repository.SettingRepo
+	taskRepo                 repository.TaskRepo
+	sysErrorRepo             repository.SysErrorRepo
+	loginTrustedDeviceRepo   repository.LoginTrustedDeviceRepo
+
 	cronJobService      cronjobservice.CronJobService
 	appService          appservice.AppService
 	settingService      settingservice.SettingService
@@ -44,9 +56,19 @@ func NewExecutor(
 	db *database.DB,
 	taskQueue queue.TaskQueue,
 	redisClient rediscache.Client,
+	userRepo repository.UserRepo,
+	aclPermissionRepo repository.ACLPermissionRepo,
+	projectRepo repository.ProjectRepo,
+	projectTagRepo repository.ProjectTagRepo,
+	projectSharedSettingRepo repository.ProjectSharedSettingRepo,
+	appRepo repository.AppRepo,
+	appTagRepo repository.AppTagRepo,
+	deploymentRepo repository.DeploymentRepo,
+	taskLogRepo repository.TaskLogRepo,
 	settingRepo repository.SettingRepo,
 	taskRepo repository.TaskRepo,
-	taskLogRepo repository.TaskLogRepo,
+	sysErrorRepo repository.SysErrorRepo,
+	loginTrustedDeviceRepo repository.LoginTrustedDeviceRepo,
 	cronJobService cronjobservice.CronJobService,
 	appService appservice.AppService,
 	settingService settingservice.SettingService,
@@ -55,18 +77,28 @@ func NewExecutor(
 	dockerManager docker.Manager,
 ) *Executor {
 	e := &Executor{
-		logger:              logger,
-		db:                  db,
-		redisClient:         redisClient,
-		settingRepo:         settingRepo,
-		taskRepo:            taskRepo,
-		taskLogRepo:         taskLogRepo,
-		cronJobService:      cronJobService,
-		appService:          appService,
-		settingService:      settingService,
-		userService:         userService,
-		notificationService: notificationService,
-		dockerManager:       dockerManager,
+		logger:                   logger,
+		db:                       db,
+		redisClient:              redisClient,
+		userRepo:                 userRepo,
+		aclPermissionRepo:        aclPermissionRepo,
+		projectRepo:              projectRepo,
+		projectTagRepo:           projectTagRepo,
+		projectSharedSettingRepo: projectSharedSettingRepo,
+		appRepo:                  appRepo,
+		appTagRepo:               appTagRepo,
+		deploymentRepo:           deploymentRepo,
+		taskLogRepo:              taskLogRepo,
+		settingRepo:              settingRepo,
+		taskRepo:                 taskRepo,
+		sysErrorRepo:             sysErrorRepo,
+		loginTrustedDeviceRepo:   loginTrustedDeviceRepo,
+		cronJobService:           cronJobService,
+		appService:               appService,
+		settingService:           settingService,
+		userService:              userService,
+		notificationService:      notificationService,
+		dockerManager:            dockerManager,
 	}
 	taskQueue.RegisterExecutor(base.TaskTypeCronJobExec, e.execute)
 	return e
@@ -79,7 +111,6 @@ type taskData struct {
 	Project        *entity.Project
 	App            *entity.App
 	LogStore       *applog.Store
-	RefObjects     *entity.RefObjects
 	NotifMsgData   *notificationservice.BaseMsgDataCronTaskNotification
 }
 
@@ -109,9 +140,11 @@ func (e *Executor) execute(
 		_ = e.saveLogs(ctx, db, data, true)
 	}()
 
-	switch data.CronJob.CronType { //nolint
+	switch data.CronJob.CronType {
 	case base.CronJobTypeContainerCommand:
 		err = e.cronExecContainerCmd(ctx, db, data)
+	case base.CronJobTypeSystemCleanup:
+		err = e.cronExecSystemCleanup(ctx, db, data)
 	}
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -129,15 +162,22 @@ func (e *Executor) loadCronJobData(
 	data.LogStore = applog.NewLocalStore(logStoreKey)
 
 	// Load reference objects
-	data.RefObjects, err = e.settingService.LoadReferenceObjects(ctx, db, base.SettingScopeApp, data.CronJob.App.ID,
-		"", true, false, data.CronJobSetting)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
 	if data.CronJob.App.ID != "" {
+		refObjects, err := e.settingService.LoadReferenceObjects(ctx, db, base.SettingScopeApp, data.CronJob.App.ID,
+			"", true, false, data.CronJobSetting)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+		data.AddRefObjects(refObjects)
 		data.App = data.RefObjects.RefApps[data.CronJob.App.ID]
 		data.Project = data.App.Project
+	} else { // global refs
+		refObjects, err := e.settingService.LoadReferenceObjects(ctx, db, base.SettingScopeGlobal, "",
+			"", true, false, data.CronJobSetting)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+		data.AddRefObjects(refObjects)
 	}
 
 	return nil

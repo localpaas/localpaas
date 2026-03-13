@@ -33,6 +33,8 @@ type TaskRepo interface {
 		opts ...bunex.InsertQueryOption) error
 	Update(ctx context.Context, db database.IDB, task *entity.Task,
 		opts ...bunex.UpdateQueryOption) error
+
+	DeleteHard(ctx context.Context, db database.IDB, opts ...bunex.DeleteQueryOption) error
 }
 
 type taskRepo struct {
@@ -66,7 +68,7 @@ func (repo *taskRepo) List(ctx context.Context, db database.IDB, jobID string, p
 	var tasks []*entity.Task
 	query := db.NewSelect().Model(&tasks)
 	if jobID != "" {
-		query = query.Where("task.job_id = ?", jobID)
+		query = query.Where("task.target_id = ?", jobID)
 	}
 	query = bunex.ApplySelect(query, opts...)
 
@@ -166,6 +168,18 @@ func (repo *taskRepo) UpdateMulti(ctx context.Context, db database.IDB, tasks []
 	opts ...bunex.UpdateQueryOption) error {
 	query := db.NewUpdate().Model(&tasks).Bulk()
 	query = bunex.ApplyUpdate(query, opts...)
+
+	_, err := query.Exec(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (repo *taskRepo) DeleteHard(ctx context.Context, db database.IDB,
+	opts ...bunex.DeleteQueryOption) error {
+	query := db.NewDelete().Model((*entity.Task)(nil)).ForceDelete()
+	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)
 	if err != nil {
