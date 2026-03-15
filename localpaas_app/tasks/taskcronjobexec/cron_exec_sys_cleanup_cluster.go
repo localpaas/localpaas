@@ -17,10 +17,10 @@ func (e *Executor) sysClusterCleanup(
 		return nil
 	}
 
-	pruneObjectsUntil := clusterCleanup.OnlyObjectsOlderThan.ToDuration()
+	objectsOlderThan := clusterCleanup.OnlyObjectsOlderThan.ToDuration()
 
 	if clusterCleanup.PruneContainers {
-		report, e := e.dockerManager.ContainersPrune(ctx, pruneObjectsUntil)
+		report, e := e.dockerManager.ContainersPrune(ctx, objectsOlderThan)
 		if e != nil {
 			data.TaskOutput.ClusterCleanup.ContainersPruneError = e.Error()
 			err = errors.Join(err, e)
@@ -31,7 +31,7 @@ func (e *Executor) sysClusterCleanup(
 	}
 
 	if clusterCleanup.PruneImages {
-		report, e := e.dockerManager.ImagesPrune(ctx, false, pruneObjectsUntil)
+		report, e := e.dockerManager.ImagesPrune(ctx, false, objectsOlderThan)
 		if e != nil {
 			data.TaskOutput.ClusterCleanup.ImagesPruneError = e.Error()
 			err = errors.Join(err, e)
@@ -53,7 +53,7 @@ func (e *Executor) sysClusterCleanup(
 	}
 
 	if clusterCleanup.PruneNetworks {
-		report, e := e.dockerManager.NetworksPrune(ctx, pruneObjectsUntil)
+		report, e := e.dockerManager.NetworksPrune(ctx, objectsOlderThan)
 		if e != nil {
 			data.TaskOutput.ClusterCleanup.NetworksPruneError = e.Error()
 			err = errors.Join(err, e)

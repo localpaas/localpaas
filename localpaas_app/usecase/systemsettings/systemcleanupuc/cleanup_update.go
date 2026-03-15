@@ -90,7 +90,8 @@ func (uc *SystemCleanupUC) loadSettingData(
 	db database.Tx,
 	data *updateSettingData,
 ) error {
-	cleanupSetting, err := uc.SettingRepo.GetSingleGlobally(ctx, db, base.SettingTypeSystemCleanup, false,
+	cleanupSetting, err := uc.SettingRepo.GetSingle(ctx, db, base.NewSettingScopeGlobal(),
+		base.SettingTypeSystemCleanup, false,
 		bunex.SelectFor("UPDATE OF setting"),
 	)
 	if err != nil {
@@ -106,7 +107,8 @@ func (uc *SystemCleanupUC) loadSettingData(
 		cleanup.ScheduleFrom != data.NewCleanup.ScheduleFrom
 
 	// Load cron job of the cleanup
-	jobSetting, err := uc.SettingRepo.GetSingleGlobally(ctx, db, base.SettingTypeCronJob, false,
+	jobSetting, err := uc.SettingRepo.GetSingle(ctx, db, base.NewSettingScopeGlobal(),
+		base.SettingTypeCronJob, false,
 		bunex.SelectWhere("setting.data->'targetSetting'->>'id' = ?", cleanupSetting.ID),
 	)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {

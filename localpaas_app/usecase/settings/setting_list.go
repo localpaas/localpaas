@@ -21,7 +21,8 @@ type ListSettingReq struct {
 }
 
 func (req *ListSettingReq) Validate() (validators []vld.Validator) {
-	validators = append(validators, basedto.ValidateSlice(req.Status, true, 0, base.AllSettingStatuses, "status")...)
+	validators = append(validators, basedto.ValidateSlice(req.Status, true, 0,
+		base.AllSettingStatuses, "status")...)
 	return
 }
 
@@ -63,33 +64,17 @@ func (uc *BaseSettingUC) ListSetting(
 	}
 	listOpts = append(listOpts, data.ExtraLoadOpts...)
 
-	var settings []*entity.Setting
-	var paging *basedto.PagingMeta
-
-	switch req.Scope {
-	case base.SettingScopeGlobal:
-		settings, paging, err = uc.SettingRepo.ListGlobally(ctx, db, &req.Paging, listOpts...)
-	case base.SettingScopeProject:
-		settings, paging, err = uc.SettingRepo.ListByProject(ctx, db, req.ObjectID,
-			&req.Paging, listOpts...)
-	case base.SettingScopeApp:
-		settings, paging, err = uc.SettingRepo.ListByApp(ctx, db, req.ObjectID, req.ParentObjectID,
-			&req.Paging, listOpts...)
-	case base.SettingScopeUser:
-		settings, paging, err = uc.SettingRepo.ListByUser(ctx, db, req.ObjectID,
-			&req.Paging, listOpts...)
-	case base.SettingScopeNone:
-	}
+	settings, paging, err := uc.SettingRepo.List(ctx, db, req.Scope, &req.Paging, listOpts...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
 	for _, setting := range settings {
-		setting.CurrentObjectID = req.ObjectID
+		setting.CurrentObjectID = req.Scope.MainObjectID()
 	}
 
-	refObjects, err := uc.SettingService.LoadReferenceObjects(ctx, uc.DB, req.Scope, req.ObjectID,
-		req.ParentObjectID, true, false, settings...)
+	refObjects, err := uc.SettingService.LoadReferenceObjects(ctx, uc.DB, req.Scope, true,
+		false, settings...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

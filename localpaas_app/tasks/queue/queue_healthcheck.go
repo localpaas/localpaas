@@ -36,6 +36,14 @@ type HealthcheckExecData struct {
 	NotifEventMap map[string]*cacheentity.HealthcheckNotifEvent
 }
 
+func (t *HealthcheckExecData) AddRefObjects(refObjects *entity.RefObjects) {
+	if t.RefObjects == nil {
+		t.RefObjects = refObjects
+	} else {
+		t.RefObjects.AddRefObjects(refObjects)
+	}
+}
+
 type HealthcheckExecFunc func(context.Context, *HealthcheckExecData) error
 
 func (q *taskQueue) RegisterHealthcheckExecutor(execFunc HealthcheckExecFunc) {
@@ -191,7 +199,7 @@ func (q *taskQueue) loadHealthcheckDataFromDB(
 	ctx context.Context,
 	db database.IDB,
 ) (*cacheentity.HealthcheckSettings, error) {
-	dbSettings, _, err := q.settingRepo.List(ctx, db, nil,
+	dbSettings, _, err := q.settingRepo.List(ctx, db, nil, nil,
 		bunex.SelectWhere("setting.type = ?", base.SettingTypeHealthcheck),
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
 		bunex.SelectRelation("BelongToProject",
@@ -226,8 +234,8 @@ func (q *taskQueue) loadHealthcheckDataFromDB(
 	}
 
 	// Load reference objects
-	refObjects, err := q.settingService.LoadReferenceObjects(ctx, db, base.SettingScopeNone,
-		"", "", true, false, validHealthchecks...)
+	refObjects, err := q.settingService.LoadReferenceObjects(ctx, db, nil,
+		true, false, validHealthchecks...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

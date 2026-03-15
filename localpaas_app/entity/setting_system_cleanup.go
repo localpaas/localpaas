@@ -23,11 +23,11 @@ func (s *systemCleanupParser) New() SettingData {
 }
 
 type SystemCleanup struct {
-	ScheduleInterval  timeutil.Duration    `json:"scheduleInterval"`
-	ScheduleFrom      time.Time            `json:"scheduleFrom"`
-	DBObjectRetention *DBObjectRetention   `json:"dbObjectRetention"`
-	ClusterCleanup    *ClusterCleanup      `json:"clusterCleanup"`
-	Notification      *CronJobNotification `json:"notification,omitempty"`
+	ScheduleInterval  timeutil.Duration      `json:"scheduleInterval"`
+	ScheduleFrom      time.Time              `json:"scheduleFrom"`
+	DBObjectRetention *DBObjectRetention     `json:"dbObjectRetention"`
+	ClusterCleanup    *ClusterCleanup        `json:"clusterCleanup"`
+	Notification      *BaseEventNotification `json:"notification,omitempty"`
 }
 
 type DBObjectRetention struct {
@@ -54,12 +54,7 @@ func (s *SystemCleanup) GetType() base.SettingType {
 func (s *SystemCleanup) GetRefObjectIDs() *RefObjectIDs {
 	refIDs := &RefObjectIDs{}
 	if s.Notification != nil {
-		if s.Notification.Success.ID != "" {
-			refIDs.RefSettingIDs = append(refIDs.RefSettingIDs, s.Notification.Success.ID)
-		}
-		if s.Notification.Failure.ID != "" {
-			refIDs.RefSettingIDs = append(refIDs.RefSettingIDs, s.Notification.Failure.ID)
-		}
+		refIDs.AddRefIDs(s.Notification.GetRefObjectIDs())
 	}
 	return refIDs
 }

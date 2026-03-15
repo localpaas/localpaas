@@ -116,7 +116,7 @@ func (uc *WebhookUC) loadWebhookSettings(
 	db database.IDB,
 	req *webhookdto.HandleRepoWebhookReq,
 ) ([]*entity.Setting, error) {
-	settings, _, err := uc.settingRepo.List(ctx, db, nil,
+	settings, _, err := uc.settingRepo.List(ctx, db, nil, nil,
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
 		bunex.SelectWhereGroup(
 			bunex.SelectWhere("setting.type = ?", base.SettingTypeRepoWebhook),

@@ -3,8 +3,6 @@ package appuc
 import (
 	"context"
 
-	"github.com/tiendc/gofn"
-
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -25,13 +23,9 @@ func (uc *AppUC) GetAppEnvVars(
 		return nil, apperrors.Wrap(err)
 	}
 
-	// When get ENV vars for an app, also need all ENV vars of the parent app and project
-	objectIDs := gofn.ToSliceSkippingZero(app.ID, app.ParentID, app.ProjectID)
-
-	settings, _, err := uc.settingRepo.List(ctx, uc.db, nil,
+	settings, _, err := uc.settingRepo.List(ctx, uc.db, app.GetSettingScope(), nil,
 		bunex.SelectWhere("setting.type = ?", base.SettingTypeEnvVar),
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
-		bunex.SelectWhere("setting.object_id IN (?)", bunex.In(objectIDs)),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)

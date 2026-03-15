@@ -170,8 +170,8 @@ func (uc *AppUC) applyDomainSSL(
 		return apperrors.Wrap(err)
 	}
 
-	refObjects, err := uc.settingService.LoadReferenceObjects(ctx, db, base.SettingScopeApp, data.App.ID,
-		data.App.ProjectID, true, true, data.HttpSettings)
+	refObjects, err := uc.settingService.LoadReferenceObjects(ctx, db, data.App.GetSettingScope(),
+		true, true, data.HttpSettings)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

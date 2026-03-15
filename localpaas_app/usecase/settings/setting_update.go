@@ -7,7 +7,6 @@ import (
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
@@ -140,7 +139,7 @@ func (uc *BaseSettingUC) loadSettingForUpdate(
 		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
 	}
 
-	if req.Scope != base.SettingScopeGlobal && setting.ObjectID != req.ObjectID {
+	if setting.ObjectID != req.Scope.MainObjectID() {
 		return apperrors.New(apperrors.ErrOwnSettingRequired).
 			WithMsgLog("imported or inherited setting is not allowed to update")
 	}
@@ -181,7 +180,7 @@ func (uc *BaseSettingUC) prepareSettingUpdate(
 	timeNow := timeutil.NowUTC()
 	setting := data.Setting
 	setting.Name = gofn.Coalesce(data.VerifyingName, setting.Name)
-	setting.AvailInProjects = gofn.If(req.Scope != base.SettingScopeGlobal, false, req.AvailInProjects)
+	setting.AvailInProjects = gofn.If(!req.Scope.IsGlobalScope(), false, req.AvailInProjects)
 	setting.Default = req.Default
 	setting.UpdateVer++
 	setting.UpdatedAt = timeNow

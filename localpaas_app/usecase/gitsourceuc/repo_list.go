@@ -22,7 +22,7 @@ func (uc *GitSourceUC) ListRepo(
 	auth *basedto.Auth,
 	req *gitsourcedto.ListRepoReq,
 ) (*gitsourcedto.ListRepoResp, error) {
-	setting, err := uc.settingRepo.GetByID(ctx, uc.db, "", req.SettingID, true,
+	setting, err := uc.settingRepo.GetByID(ctx, uc.db, nil, "", req.SettingID, true,
 		bunex.SelectWhere("setting.type IN (?)",
 			bunex.InItems(base.SettingTypeGithubApp, base.SettingTypeAccessToken)),
 	)

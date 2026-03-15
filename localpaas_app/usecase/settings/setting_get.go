@@ -42,11 +42,10 @@ func (uc *BaseSettingUC) GetSetting(
 		return nil, apperrors.Wrap(err)
 	}
 	if setting != nil {
-		setting.CurrentObjectID = req.ObjectID
+		setting.CurrentObjectID = req.Scope.MainObjectID()
 	}
 
-	refObjects, err := uc.SettingService.LoadReferenceObjects(ctx, uc.DB, req.Scope, req.ObjectID,
-		req.ParentObjectID, true, false, setting)
+	refObjects, err := uc.SettingService.LoadReferenceObjects(ctx, uc.DB, req.Scope, true, false, setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -70,7 +69,7 @@ func (uc *BaseSettingUC) GetSettingByID(
 		return nil, apperrors.Wrap(err)
 	}
 	if setting != nil {
-		setting.CurrentObjectID = req.ObjectID
+		setting.CurrentObjectID = req.Scope.MainObjectID()
 	}
 	return setting, nil
 }

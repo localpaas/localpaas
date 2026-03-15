@@ -46,6 +46,14 @@ func (app *App) GetName() string {
 	return app.Name
 }
 
+func (app *App) GetSettingScope() *base.SettingScope {
+	return &base.SettingScope{
+		AppID:       app.ID,
+		ParentAppID: app.ParentID,
+		ProjectID:   app.ProjectID,
+	}
+}
+
 func (app *App) GetSettingsByType(typ base.SettingType) (resp []*Setting) {
 	for _, setting := range app.Settings {
 		if setting.Type == typ {

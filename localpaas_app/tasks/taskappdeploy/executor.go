@@ -204,8 +204,8 @@ func (e *Executor) loadDeploymentData(
 	refObjectIDs := data.Deployment.Settings.GetRefObjectIDs()
 
 	// Load reference objects
-	refObjects, err := e.settingService.LoadReferenceObjectsByIDs(ctx, db, base.SettingScopeApp, data.App.ID,
-		data.App.ProjectID, true, true, refObjectIDs)
+	refObjects, err := e.settingService.LoadReferenceObjectsByIDs(ctx, db, data.App.GetSettingScope(),
+		true, true, refObjectIDs)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

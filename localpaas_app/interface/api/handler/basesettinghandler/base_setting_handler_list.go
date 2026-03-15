@@ -44,11 +44,10 @@ func ListSettingPreRequestHandler(fn func(auth *basedto.Auth, req any) error) Li
 func (h *BaseSettingHandler) ListSetting(
 	ctx *gin.Context,
 	resType base.ResourceType,
-	scope base.SettingScope,
+	scopeType base.SettingScopeType,
 	opts ...ListSettingOption,
 ) {
 	var auth *basedto.Auth
-	var objectID, parentObjectID string
 	var err error
 
 	options := &ListSettingOptions{}
@@ -56,15 +55,16 @@ func (h *BaseSettingHandler) ListSetting(
 		o(options)
 	}
 
-	switch scope {
+	scope := &base.SettingScope{}
+	switch scopeType {
 	case base.SettingScopeGlobal:
 		auth, _, err = h.GetAuthGlobalSettings(ctx, resType, base.ActionTypeRead, "")
 	case base.SettingScopeProject:
-		auth, objectID, _, err = h.GetAuthProjectSettings(ctx, base.ActionTypeRead, "")
+		auth, scope.ProjectID, _, err = h.GetAuthProjectSettings(ctx, base.ActionTypeRead, "")
 	case base.SettingScopeApp:
-		auth, parentObjectID, objectID, _, err = h.GetAuthAppSettings(ctx, base.ActionTypeRead, "")
+		auth, scope.ProjectID, scope.AppID, _, err = h.GetAuthAppSettings(ctx, base.ActionTypeRead, "")
 	case base.SettingScopeUser:
-		auth, objectID, _, err = h.GetAuthUserSettings(ctx, base.ActionTypeRead, "")
+		auth, scope.UserID, _, err = h.GetAuthUserSettings(ctx, base.ActionTypeRead, "")
 	case base.SettingScopeNone:
 		err = apperrors.NewUnsupported("Setting scope 'none'")
 	}
@@ -81,92 +81,92 @@ func (h *BaseSettingHandler) ListSetting(
 	switch resType { //nolint:exhaustive
 	case base.ResourceTypeBasicAuth:
 		r := basicauthdto.NewListBasicAuthReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.BasicAuthUC.ListBasicAuth(reqCtx, auth, r) }
 
 	case base.ResourceTypeGithubApp:
 		r := githubappdto.NewListGithubAppReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.GithubAppUC.ListGithubApp(reqCtx, auth, r) }
 
 	case base.ResourceTypeAccessToken:
 		r := accesstokendto.NewListAccessTokenReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.AccessTokenUC.ListAccessToken(reqCtx, auth, r) }
 
 	case base.ResourceTypeOAuth:
 		r := oauthdto.NewListOAuthReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.OAuthUC.ListOAuth(reqCtx, auth, r) }
 
 	case base.ResourceTypeRegistryAuth:
 		r := registryauthdto.NewListRegistryAuthReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.RegistryAuthUC.ListRegistryAuth(reqCtx, auth, r) }
 
 	case base.ResourceTypeAWS:
 		r := awsdto.NewListAWSReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.AWSUC.ListAWS(reqCtx, auth, r) }
 
 	case base.ResourceTypeAWSS3:
 		r := awss3dto.NewListAWSS3Req()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.AWSS3UC.ListAWSS3(reqCtx, auth, r) }
 
 	case base.ResourceTypeSSHKey:
 		r := sshkeydto.NewListSSHKeyReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.SSHKeyUC.ListSSHKey(reqCtx, auth, r) }
 
 	case base.ResourceTypeSSL:
 		r := ssldto.NewListSSLReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.SSLUC.ListSSL(reqCtx, auth, r) }
 
 	case base.ResourceTypeCronJob:
 		r := cronjobdto.NewListCronJobReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.CronJobUC.ListCronJob(reqCtx, auth, r) }
 
 	case base.ResourceTypeHealthcheck:
 		r := healthcheckdto.NewListHealthcheckReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.HealthcheckUC.ListHealthcheck(reqCtx, auth, r) }
 
 	case base.ResourceTypeSecret:
 		r := secretdto.NewListSecretReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.SecretUC.ListSecret(reqCtx, auth, r) }
 
 	case base.ResourceTypeAPIKey:
 		r := apikeydto.NewListAPIKeyReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.APIKeyUC.ListAPIKey(reqCtx, auth, r) }
 
 	case base.ResourceTypeIMService:
 		r := imservicedto.NewListIMServiceReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.IMServiceUC.ListIMService(reqCtx, auth, r) }
 
 	case base.ResourceTypeEmail:
 		r := emaildto.NewListEmailReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.EmailUC.ListEmail(reqCtx, auth, r) }
 
 	case base.ResourceTypeRepoWebhook:
 		r := repowebhookdto.NewListRepoWebhookReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.RepoWebhookUC.ListRepoWebhook(reqCtx, auth, r) }
 
 	case base.ResourceTypeNotification:
 		r := notificationdto.NewListNotificationReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.NotificationUC.ListNotification(reqCtx, auth, r) }
 
 	case base.ResourceTypeImageBuild:
 		r := imagebuilddto.NewListImageBuildReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.ImageBuildUC.ListImageBuild(reqCtx, auth, r) }
 	}
 

@@ -162,22 +162,17 @@ func (e *Executor) loadCronJobData(
 	data.LogStore = applog.NewLocalStore(logStoreKey)
 
 	// Load reference objects
+	scope := &base.SettingScope{AppID: data.CronJob.App.ID}
+	refObjects, err := e.settingService.LoadReferenceObjects(ctx, db, scope,
+		true, false, data.CronJobSetting)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	data.AddRefObjects(refObjects)
+
 	if data.CronJob.App.ID != "" {
-		refObjects, err := e.settingService.LoadReferenceObjects(ctx, db, base.SettingScopeApp, data.CronJob.App.ID,
-			"", true, false, data.CronJobSetting)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
-		data.AddRefObjects(refObjects)
 		data.App = data.RefObjects.RefApps[data.CronJob.App.ID]
 		data.Project = data.App.Project
-	} else { // global refs
-		refObjects, err := e.settingService.LoadReferenceObjects(ctx, db, base.SettingScopeGlobal, "",
-			"", true, false, data.CronJobSetting)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
-		data.AddRefObjects(refObjects)
 	}
 
 	return nil

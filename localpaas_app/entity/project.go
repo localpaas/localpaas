@@ -44,6 +44,12 @@ func (p *Project) GetName() string {
 	return p.Name
 }
 
+func (p *Project) GetSettingScope() *base.SettingScope {
+	return &base.SettingScope{
+		ProjectID: p.ID,
+	}
+}
+
 func (p *Project) GetSettingsByType(typ base.SettingType) (resp []*Setting) {
 	for _, setting := range p.Settings {
 		if setting.Type == typ {

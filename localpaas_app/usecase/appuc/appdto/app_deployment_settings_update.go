@@ -30,7 +30,7 @@ type DeploymentSettingsReq struct {
 	PreDeploymentCommand  string `json:"preDeploymentCommand"`
 	PostDeploymentCommand string `json:"postDeploymentCommand"`
 
-	Notification *DeploymentNotificationReq `json:"notification"`
+	Notification *basedto.BaseEventNotificationReq `json:"notification"`
 
 	UpdateVer int `json:"updateVer"`
 }
@@ -127,33 +127,6 @@ func (req *DeploymentRepoSourceReq) validate(field string) (res []vld.Validator)
 	return res
 }
 
-type DeploymentNotificationReq struct {
-	Success basedto.ObjectIDReq `json:"success"`
-	Failure basedto.ObjectIDReq `json:"failure"`
-}
-
-func (req *DeploymentNotificationReq) ToEntity() *entity.AppDeploymentNotification {
-	if req == nil {
-		return nil
-	}
-	return &entity.AppDeploymentNotification{
-		Success: entity.ObjectID{ID: req.Success.ID},
-		Failure: entity.ObjectID{ID: req.Failure.ID},
-	}
-}
-
-func (req *DeploymentNotificationReq) validate(field string) (res []vld.Validator) {
-	if req == nil {
-		return
-	}
-	if field != "" {
-		field += "."
-	}
-	res = append(res, basedto.ValidateObjectIDReq(&req.Success, false, field+"success")...)
-	res = append(res, basedto.ValidateObjectIDReq(&req.Failure, false, field+"failure")...)
-	return res
-}
-
 func NewUpdateAppDeploymentSettingsReq() *UpdateAppDeploymentSettingsReq {
 	return &UpdateAppDeploymentSettingsReq{}
 }
@@ -167,7 +140,7 @@ func (req *UpdateAppDeploymentSettingsReq) Validate() apperrors.ValidationErrors
 	validators = append(validators, req.RepoSource.validate("repoSource")...)
 	validators = append(validators, basedto.ValidateStrIn(&req.ActiveMethod, true,
 		base.AllDeploymentMethods, "activeMethod")...)
-	validators = append(validators, req.Notification.validate("notification")...)
+	validators = append(validators, req.Notification.Validate("notification")...)
 	// TODO: add validation for deployment settings input
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }

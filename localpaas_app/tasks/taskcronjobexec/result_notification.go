@@ -2,14 +2,17 @@ package taskcronjobexec
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
 )
 
@@ -17,18 +20,33 @@ func (e *Executor) sendNotification(
 	ctx context.Context,
 	db database.IDB,
 	data *taskData,
-) error {
-	if data.CronJob.Notification == nil {
+) (err error) {
+	notifConfig := data.CronJob.Notification
+	if notifConfig == nil {
 		return nil
 	}
 
-	notifSettingID := gofn.If(data.Task.IsDone(), data.CronJob.Notification.Success.ID,
-		data.CronJob.Notification.Failure.ID)
-	notifSetting := data.RefObjects.RefSettings[notifSettingID]
-	if notifSetting == nil {
+	isSuccess := data.Task.IsDone()
+	notifSettingID := gofn.If(isSuccess, notifConfig.Success.ID, notifConfig.Failure.ID)
+	var notification *entity.Notification
+	if notifSettingID == "" {
+		if (isSuccess && !notifConfig.SuccessUseDefault) || (!isSuccess && !notifConfig.FailureUseDefault) {
+			return nil
+		}
+		notification, err = e.getDefaultNotification(ctx, db, data)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+	} else {
+		notifSetting := data.RefObjects.RefSettings[notifSettingID]
+		if notifSetting == nil {
+			return nil
+		}
+		notification = notifSetting.MustAsNotification()
+	}
+	if notification == nil {
 		return nil
 	}
-	notification := notifSetting.MustAsNotification()
 
 	var execFuncs []func(ctx context.Context) error
 
@@ -53,12 +71,49 @@ func (e *Executor) sendNotification(
 
 	e.buildNotificationMsgData(data)
 
-	err := gofn.ExecTasks(ctx, 0, execFuncs...)
+	err = gofn.ExecTasks(ctx, 0, execFuncs...)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
 	return nil
+}
+
+func (e *Executor) getDefaultNotification(
+	ctx context.Context,
+	db database.IDB,
+	data *taskData,
+) (*entity.Notification, error) {
+	var scope *base.SettingScope
+	switch {
+	case data.App != nil:
+		scope = data.App.GetSettingScope()
+	case data.Project != nil:
+		scope = data.Project.GetSettingScope()
+	default:
+		scope = &base.SettingScope{}
+	}
+
+	setting, err := e.settingRepo.GetSingle(ctx, db, scope, base.SettingTypeNotification, true,
+		bunex.SelectWhere("setting.is_default = TRUE"),
+	)
+	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
+		return nil, apperrors.Wrap(err)
+	}
+	if setting == nil {
+		return nil, nil
+	}
+	notification := setting.MustAsNotification()
+
+	// Load ref objects of the setting (otherwise we will have error of missing ref objects)
+	refObjects, err := e.settingService.LoadReferenceObjects(ctx, db, scope, true,
+		false, setting)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	data.AddRefObjects(refObjects)
+
+	return notification, nil
 }
 
 func (e *Executor) buildNotificationMsgData(

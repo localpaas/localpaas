@@ -184,11 +184,10 @@ func (e *Executor) repoDeployStepImageBuild(
 	// TODO: check dockerfile existence
 	dockerfile := gofn.Coalesce(repoSource.DockerfilePath, "Dockerfile")
 
-	dbBuildSetting, err := e.getBuildSetting(ctx, db, data)
+	buildSetting, err := e.getBuildSetting(ctx, db, data)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	buildSetting := dbBuildSetting.MustAsImageBuild()
 
 	imageTags, err := e.calcBuildImageTags(repoSource.ImageTags, data)
 	if err != nil {

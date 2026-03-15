@@ -14,10 +14,9 @@ func (s *emailService) GetDefaultSystemEmail(
 	ctx context.Context,
 	db database.IDB,
 ) (*entity.Setting, error) {
-	settings, _, err := s.settingRepo.List(ctx, db, nil,
+	settings, _, err := s.settingRepo.List(ctx, db, base.NewSettingScopeGlobal(), nil,
 		bunex.SelectWhere("setting.type = ?", base.SettingTypeEmail),
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
-		bunex.SelectWhere("setting.object_id IS NULL"),
 		bunex.SelectOrder("setting.is_default DESC"),
 		bunex.SelectLimit(2), //nolint
 	)

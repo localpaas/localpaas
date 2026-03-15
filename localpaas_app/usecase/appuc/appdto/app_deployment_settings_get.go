@@ -44,7 +44,7 @@ type DeploymentSettingsResp struct {
 	PreDeploymentCommand  string `json:"preDeploymentCommand,omitempty"`
 	PostDeploymentCommand string `json:"postDeploymentCommand,omitempty"`
 
-	Notification *DeploymentNotificationResp `json:"notification,omitempty"`
+	Notification *basedto.BaseEventNotificationResp `json:"notification,omitempty"`
 
 	UpdateVer int `json:"updateVer"`
 }
@@ -66,11 +66,6 @@ type DeploymentRepoSourceResp struct {
 	PushToRegistry *settings.BaseSettingResp `json:"pushToRegistry"`
 }
 
-type DeploymentNotificationResp struct {
-	Success *settings.BaseSettingResp `json:"success"`
-	Failure *settings.BaseSettingResp `json:"failure"`
-}
-
 type AppDeploymentSettingsTransformInput struct {
 	App                *entity.App
 	DeploymentSettings *entity.Setting
@@ -88,11 +83,12 @@ func TransformDeploymentSettings(input *AppDeploymentSettingsTransformInput) (re
 			input.ServiceSpec.TaskTemplate.ContainerSpec.Args)
 	}
 
+	var appDeploymentSettings *entity.AppDeploymentSettings
 	if input.DeploymentSettings != nil {
 		if err = copier.Copy(&resp, input.DeploymentSettings); err != nil {
 			return nil, apperrors.Wrap(err)
 		}
-		appDeploymentSettings := input.DeploymentSettings.MustAsAppDeploymentSettings()
+		appDeploymentSettings = input.DeploymentSettings.MustAsAppDeploymentSettings()
 		if err = copier.Copy(&resp, appDeploymentSettings); err != nil {
 			return nil, apperrors.Wrap(err)
 		}
@@ -115,15 +111,8 @@ func TransformDeploymentSettings(input *AppDeploymentSettingsTransformInput) (re
 		}
 	}
 
-	if resp.Notification != nil {
-		if resp.Notification.Success != nil {
-			itemResp, _ := settings.TransformSettingBase(refObjects.RefSettings[resp.Notification.Success.ID])
-			resp.Notification.Success = itemResp
-		}
-		if resp.Notification.Failure != nil {
-			itemResp, _ := settings.TransformSettingBase(refObjects.RefSettings[resp.Notification.Failure.ID])
-			resp.Notification.Failure = itemResp
-		}
+	if appDeploymentSettings != nil {
+		resp.Notification = basedto.TransformBaseEventNotification(appDeploymentSettings.Notification, refObjects)
 	}
 
 	return resp, nil

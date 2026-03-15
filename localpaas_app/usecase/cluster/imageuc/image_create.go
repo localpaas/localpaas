@@ -50,7 +50,8 @@ func (uc *ImageUC) loadImageData(
 	data *createImageData,
 ) error {
 	if req.RegistryAuth.ID != "" {
-		regAuth, err := uc.settingRepo.GetByID(ctx, db, base.SettingTypeRegistryAuth, req.RegistryAuth.ID, true)
+		regAuth, err := uc.settingRepo.GetByID(ctx, db, base.NewSettingScopeGlobal(), base.SettingTypeRegistryAuth,
+			req.RegistryAuth.ID, true)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}

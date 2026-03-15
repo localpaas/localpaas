@@ -21,16 +21,16 @@ type CreateCronJobReq struct {
 }
 
 type CronJobBaseReq struct {
-	Name         string                      `json:"name"`
-	CronType     base.CronJobType            `json:"cronType"`
-	Schedule     *CronJobScheduleReq         `json:"schedule"`
-	App          basedto.ObjectIDReq         `json:"app"`
-	Priority     base.TaskPriority           `json:"priority"`
-	MaxRetry     int                         `json:"maxRetry"`
-	RetryDelay   timeutil.Duration           `json:"retryDelay"`
-	Timeout      timeutil.Duration           `json:"timeout"`
-	Command      *CronJobContainerCommandReq `json:"command"`
-	Notification *CronJobNotificationReq     `json:"notification"`
+	Name         string                            `json:"name"`
+	CronType     base.CronJobType                  `json:"cronType"`
+	Schedule     *ScheduleReq                      `json:"schedule"`
+	App          basedto.ObjectIDReq               `json:"app"`
+	Priority     base.TaskPriority                 `json:"priority"`
+	MaxRetry     int                               `json:"maxRetry"`
+	RetryDelay   timeutil.Duration                 `json:"retryDelay"`
+	Timeout      timeutil.Duration                 `json:"timeout"`
+	Command      *ContainerCommandReq              `json:"command"`
+	Notification *basedto.BaseEventNotificationReq `json:"notification"`
 }
 
 func (req *CronJobBaseReq) ToEntity() *entity.CronJob {
@@ -47,13 +47,13 @@ func (req *CronJobBaseReq) ToEntity() *entity.CronJob {
 	}
 }
 
-type CronJobScheduleReq struct {
+type ScheduleReq struct {
 	CronExpr    string            `json:"cronExpr"` // cronExpr and interval are mutually exclusive
 	Interval    timeutil.Duration `json:"interval"`
 	InitialTime time.Time         `json:"initialTime"`
 }
 
-func (req *CronJobScheduleReq) ToEntity() *entity.CronJobSchedule {
+func (req *ScheduleReq) ToEntity() *entity.CronJobSchedule {
 	if req == nil {
 		return nil
 	}
@@ -64,7 +64,7 @@ func (req *CronJobScheduleReq) ToEntity() *entity.CronJobSchedule {
 	}
 }
 
-type CronJobContainerCommandReq struct {
+type ContainerCommandReq struct {
 	RunInShell string                       `json:"runInShell"`
 	Command    string                       `json:"command"`
 	WorkingDir string                       `json:"workingDir"`
@@ -72,7 +72,7 @@ type CronJobContainerCommandReq struct {
 	ArgGroups  []*CronJobCommandArgGroupReq `json:"argGroups"`
 }
 
-func (req *CronJobContainerCommandReq) ToEntity() *entity.CronJobContainerCommand {
+func (req *ContainerCommandReq) ToEntity() *entity.CronJobContainerCommand {
 	if req == nil {
 		return nil
 	}
@@ -118,21 +118,6 @@ func (req *CronJobCommandArgReq) ToEntity() *entity.CronJobCommandArg {
 		Use:   req.Use,
 		Name:  req.Name,
 		Value: req.Value,
-	}
-}
-
-type CronJobNotificationReq struct {
-	Success basedto.ObjectIDReq `json:"success"`
-	Failure basedto.ObjectIDReq `json:"failure"`
-}
-
-func (req *CronJobNotificationReq) ToEntity() *entity.CronJobNotification {
-	if req == nil {
-		return nil
-	}
-	return &entity.CronJobNotification{
-		Success: entity.ObjectID{ID: req.Success.ID},
-		Failure: entity.ObjectID{ID: req.Failure.ID},
 	}
 }
 

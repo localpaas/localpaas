@@ -44,11 +44,10 @@ func CreateSettingPreRequestHandler(fn func(auth *basedto.Auth, req any) error) 
 func (h *BaseSettingHandler) CreateSetting(
 	ctx *gin.Context,
 	resType base.ResourceType,
-	scope base.SettingScope,
+	scopeType base.SettingScopeType,
 	opts ...CreateSettingOption,
 ) {
 	var auth *basedto.Auth
-	var objectID, parentObjectID string
 	var err error
 
 	options := &CreateSettingOptions{}
@@ -56,15 +55,16 @@ func (h *BaseSettingHandler) CreateSetting(
 		o(options)
 	}
 
-	switch scope {
+	scope := &base.SettingScope{}
+	switch scopeType {
 	case base.SettingScopeGlobal:
 		auth, _, err = h.GetAuthGlobalSettings(ctx, resType, base.ActionTypeWrite, "")
 	case base.SettingScopeProject:
-		auth, objectID, _, err = h.GetAuthProjectSettings(ctx, base.ActionTypeWrite, "")
+		auth, scope.ProjectID, _, err = h.GetAuthProjectSettings(ctx, base.ActionTypeWrite, "")
 	case base.SettingScopeApp:
-		auth, parentObjectID, objectID, _, err = h.GetAuthAppSettings(ctx, base.ActionTypeWrite, "")
+		auth, scope.ProjectID, scope.AppID, _, err = h.GetAuthAppSettings(ctx, base.ActionTypeWrite, "")
 	case base.SettingScopeUser:
-		auth, objectID, _, err = h.GetAuthUserSettings(ctx, base.ActionTypeWrite, "")
+		auth, scope.UserID, _, err = h.GetAuthUserSettings(ctx, base.ActionTypeWrite, "")
 	case base.SettingScopeNone:
 		err = apperrors.NewUnsupported("Setting scope 'none'")
 	}
@@ -80,92 +80,92 @@ func (h *BaseSettingHandler) CreateSetting(
 	switch resType { //nolint:exhaustive
 	case base.ResourceTypeBasicAuth:
 		r := basicauthdto.NewCreateBasicAuthReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.BasicAuthUC.CreateBasicAuth(reqCtx, auth, r) }
 
 	case base.ResourceTypeGithubApp:
 		r := githubappdto.NewCreateGithubAppReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.GithubAppUC.CreateGithubApp(reqCtx, auth, r) }
 
 	case base.ResourceTypeAccessToken:
 		r := accesstokendto.NewCreateAccessTokenReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.AccessTokenUC.CreateAccessToken(reqCtx, auth, r) }
 
 	case base.ResourceTypeOAuth:
 		r := oauthdto.NewCreateOAuthReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.OAuthUC.CreateOAuth(reqCtx, auth, r) }
 
 	case base.ResourceTypeRegistryAuth:
 		r := registryauthdto.NewCreateRegistryAuthReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.RegistryAuthUC.CreateRegistryAuth(reqCtx, auth, r) }
 
 	case base.ResourceTypeAWS:
 		r := awsdto.NewCreateAWSReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.AWSUC.CreateAWS(reqCtx, auth, r) }
 
 	case base.ResourceTypeAWSS3:
 		r := awss3dto.NewCreateAWSS3Req()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.AWSS3UC.CreateAWSS3(reqCtx, auth, r) }
 
 	case base.ResourceTypeSSHKey:
 		r := sshkeydto.NewCreateSSHKeyReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.SSHKeyUC.CreateSSHKey(reqCtx, auth, r) }
 
 	case base.ResourceTypeSSL:
 		r := ssldto.NewCreateSSLReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.SSLUC.CreateSSL(reqCtx, auth, r) }
 
 	case base.ResourceTypeCronJob:
 		r := cronjobdto.NewCreateCronJobReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.CronJobUC.CreateCronJob(reqCtx, auth, r) }
 
 	case base.ResourceTypeHealthcheck:
 		r := healthcheckdto.NewCreateHealthcheckReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.HealthcheckUC.CreateHealthcheck(reqCtx, auth, r) }
 
 	case base.ResourceTypeSecret:
 		r := secretdto.NewCreateSecretReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.SecretUC.CreateSecret(reqCtx, auth, r) }
 
 	case base.ResourceTypeAPIKey:
 		r := apikeydto.NewCreateAPIKeyReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.APIKeyUC.CreateAPIKey(reqCtx, auth, r) }
 
 	case base.ResourceTypeIMService:
 		r := imservicedto.NewCreateIMServiceReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.IMServiceUC.CreateIMService(reqCtx, auth, r) }
 
 	case base.ResourceTypeEmail:
 		r := emaildto.NewCreateEmailReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.EmailUC.CreateEmail(reqCtx, auth, r) }
 
 	case base.ResourceTypeRepoWebhook:
 		r := repowebhookdto.NewCreateRepoWebhookReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.RepoWebhookUC.CreateRepoWebhook(reqCtx, auth, r) }
 
 	case base.ResourceTypeNotification:
 		r := notificationdto.NewCreateNotificationReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.NotificationUC.CreateNotification(reqCtx, auth, r) }
 
 	case base.ResourceTypeImageBuild:
 		r := imagebuilddto.NewCreateImageBuildReq()
-		r.Scope, r.ObjectID, r.ParentObjectID = scope, objectID, parentObjectID
+		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.ImageBuildUC.CreateImageBuild(reqCtx, auth, r) }
 	}
 

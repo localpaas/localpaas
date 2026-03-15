@@ -34,11 +34,11 @@ type GetSystemCleanupResp struct {
 
 type SystemCleanupResp struct {
 	*settings.BaseSettingResp
-	ScheduleInterval  timeutil.Duration      `json:"scheduleInterval"`
-	ScheduleFrom      time.Time              `json:"scheduleFrom"`
-	DBObjectRetention *DBObjectRetentionResp `json:"dbObjectRetention"`
-	ClusterCleanup    *ClusterCleanupResp    `json:"clusterCleanup"`
-	Notification      *NotificationResp      `json:"notification"`
+	ScheduleInterval  timeutil.Duration                  `json:"scheduleInterval"`
+	ScheduleFrom      time.Time                          `json:"scheduleFrom"`
+	DBObjectRetention *DBObjectRetentionResp             `json:"dbObjectRetention"`
+	ClusterCleanup    *ClusterCleanupResp                `json:"clusterCleanup"`
+	Notification      *basedto.BaseEventNotificationResp `json:"notification"`
 }
 
 type DBObjectRetentionResp struct {
@@ -57,11 +57,6 @@ type ClusterCleanupResp struct {
 	PruneContainers bool `json:"pruneContainers"`
 }
 
-type NotificationResp struct {
-	Success *settings.BaseSettingResp `json:"success"`
-	Failure *settings.BaseSettingResp `json:"failure"`
-}
-
 func TransformSystemCleanup(
 	setting *entity.Setting,
 	refObjects *entity.RefObjects,
@@ -76,16 +71,6 @@ func TransformSystemCleanup(
 		return nil, apperrors.Wrap(err)
 	}
 
-	if resp.Notification != nil {
-		if resp.Notification.Success != nil {
-			itemResp, _ := settings.TransformSettingBase(refObjects.RefSettings[resp.Notification.Success.ID])
-			resp.Notification.Success = itemResp
-		}
-		if resp.Notification.Failure != nil {
-			itemResp, _ := settings.TransformSettingBase(refObjects.RefSettings[resp.Notification.Failure.ID])
-			resp.Notification.Failure = itemResp
-		}
-	}
-
+	resp.Notification = basedto.TransformBaseEventNotification(config.Notification, refObjects)
 	return resp, nil
 }

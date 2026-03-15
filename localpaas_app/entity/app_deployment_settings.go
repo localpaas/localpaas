@@ -29,7 +29,7 @@ type AppDeploymentSettings struct {
 	PreDeploymentCommand  string `json:"preDeploymentCommand,omitempty"`
 	PostDeploymentCommand string `json:"postDeploymentCommand,omitempty"`
 
-	Notification *AppDeploymentNotification `json:"notification,omitempty"`
+	Notification *BaseEventNotification `json:"notification,omitempty"`
 }
 
 type DeploymentImageSource struct {
@@ -54,11 +54,6 @@ type RepoCredentials struct {
 	Type base.SettingType `json:"type"`
 }
 
-type AppDeploymentNotification struct {
-	Success ObjectID `json:"success"`
-	Failure ObjectID `json:"failure"`
-}
-
 func (s *AppDeploymentSettings) GetType() base.SettingType {
 	return base.SettingTypeAppDeployment
 }
@@ -68,12 +63,7 @@ func (s *AppDeploymentSettings) GetRefObjectIDs() *RefObjectIDs {
 		RefSettingIDs: gofn.Flatten(s.GetRegistryAuthIDs(), s.GetGitCredentialIDs()),
 	}
 	if s.Notification != nil {
-		if s.Notification.Success.ID != "" {
-			refIDs.RefSettingIDs = append(refIDs.RefSettingIDs, s.Notification.Success.ID)
-		}
-		if s.Notification.Failure.ID != "" {
-			refIDs.RefSettingIDs = append(refIDs.RefSettingIDs, s.Notification.Failure.ID)
-		}
+		refIDs.AddRefIDs(s.Notification.GetRefObjectIDs())
 	}
 	return refIDs
 }

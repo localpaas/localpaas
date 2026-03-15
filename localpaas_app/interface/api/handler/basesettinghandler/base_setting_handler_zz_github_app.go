@@ -17,18 +17,18 @@ const (
 	htmlSuccess = "<html><body><h3>Success</h3></body></html>"
 )
 
-func (h *BaseSettingHandler) GithubAppManifestFlowBegin(ctx *gin.Context, scope base.SettingScope) {
+func (h *BaseSettingHandler) GithubAppManifestFlowBegin(ctx *gin.Context, scopeType base.SettingScopeType) {
 	var auth *basedto.Auth
 	var err error
-	var objectID string
 
-	switch scope { //nolint:exhaustive
+	scope := &base.SettingScope{}
+	switch scopeType { //nolint:exhaustive
 	case base.SettingScopeGlobal:
 		auth, _, err = h.GetAuthGlobalSettings(ctx, base.ResourceTypeGithubApp, base.ActionTypeWrite, "")
 	case base.SettingScopeProject:
-		auth, objectID, _, err = h.GetAuthProjectSettings(ctx, base.ActionTypeWrite, "")
+		auth, scope.ProjectID, _, err = h.GetAuthProjectSettings(ctx, base.ActionTypeWrite, "")
 	default:
-		h.RenderError(ctx, apperrors.NewUnsupported(fmt.Sprintf("Scope '%v'", scope)))
+		h.RenderError(ctx, apperrors.NewUnsupported(fmt.Sprintf("Scope '%v'", scopeType)))
 		return
 	}
 	if err != nil {
@@ -39,7 +39,6 @@ func (h *BaseSettingHandler) GithubAppManifestFlowBegin(ctx *gin.Context, scope 
 	req := githubappdto.NewBeginGithubAppManifestFlowReq()
 	req.Scope = scope
 	req.Type = base.SettingTypeGithubApp
-	req.ObjectID = objectID
 	if err = h.ParseJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -54,8 +53,8 @@ func (h *BaseSettingHandler) GithubAppManifestFlowBegin(ctx *gin.Context, scope 
 	ctx.JSON(http.StatusOK, resp)
 }
 
-func (h *BaseSettingHandler) GithubAppManifestFlowBeginCreation(ctx *gin.Context, scope base.SettingScope) {
-	if scope == base.SettingScopeProject {
+func (h *BaseSettingHandler) GithubAppManifestFlowBeginCreation(ctx *gin.Context, scopeType base.SettingScopeType) {
+	if scopeType == base.SettingScopeProject {
 		_, err := h.ParseStringParam(ctx, "projectID")
 		if err != nil {
 			h.RenderError(ctx, err)
@@ -85,8 +84,8 @@ func (h *BaseSettingHandler) GithubAppManifestFlowBeginCreation(ctx *gin.Context
 	ctx.Data(http.StatusOK, "text/html", reflectutil.UnsafeStrToBytes(resp.Data.PageContent))
 }
 
-func (h *BaseSettingHandler) GithubAppManifestFlowProgress(ctx *gin.Context, scope base.SettingScope) {
-	if scope == base.SettingScopeProject {
+func (h *BaseSettingHandler) GithubAppManifestFlowProgress(ctx *gin.Context, scopeType base.SettingScopeType) {
+	if scopeType == base.SettingScopeProject {
 		_, err := h.ParseStringParam(ctx, "projectID")
 		if err != nil {
 			h.RenderError(ctx, err)
@@ -120,18 +119,19 @@ func (h *BaseSettingHandler) GithubAppManifestFlowProgress(ctx *gin.Context, sco
 	ctx.Data(http.StatusOK, "text/html", []byte(htmlSuccess))
 }
 
-func (h *BaseSettingHandler) GithubAppBeginReprovision(ctx *gin.Context, scope base.SettingScope) {
+func (h *BaseSettingHandler) GithubAppBeginReprovision(ctx *gin.Context, scopeType base.SettingScopeType) {
 	var auth *basedto.Auth
 	var err error
-	var objectID, itemID string
+	var itemID string
 
-	switch scope { //nolint:exhaustive
+	scope := &base.SettingScope{}
+	switch scopeType { //nolint:exhaustive
 	case base.SettingScopeGlobal:
 		auth, itemID, err = h.GetAuthGlobalSettings(ctx, base.ResourceTypeGithubApp, base.ActionTypeWrite, "itemID")
 	case base.SettingScopeProject:
-		auth, objectID, itemID, err = h.GetAuthProjectSettings(ctx, base.ActionTypeWrite, "itemID")
+		auth, scope.ProjectID, itemID, err = h.GetAuthProjectSettings(ctx, base.ActionTypeWrite, "itemID")
 	default:
-		h.RenderError(ctx, apperrors.NewUnsupported(fmt.Sprintf("Scope '%v'", scope)))
+		h.RenderError(ctx, apperrors.NewUnsupported(fmt.Sprintf("Scope '%v'", scopeType)))
 		return
 	}
 	if err != nil {
@@ -142,7 +142,6 @@ func (h *BaseSettingHandler) GithubAppBeginReprovision(ctx *gin.Context, scope b
 	req := githubappdto.NewBeginReprovisionGithubAppReq()
 	req.Scope = scope
 	req.Type = base.SettingTypeGithubApp
-	req.ObjectID = objectID
 	req.ID = itemID
 	if err = h.ParseJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)

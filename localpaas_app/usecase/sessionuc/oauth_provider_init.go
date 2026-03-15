@@ -19,14 +19,14 @@ func (uc *SessionUC) InitOAuthProvider(
 	ctx context.Context,
 	req *sessiondto.InitOAuthProviderReq,
 ) error {
-	setting, err := uc.settingRepo.GetByID(ctx, uc.db, "", req.Name, true)
+	setting, err := uc.settingRepo.GetByID(ctx, uc.db, base.NewSettingScopeGlobal(), "", req.Provider, true)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
 	oauth := setting.MustAsOAuth()
 	clientSecret := oauth.ClientSecret.MustGetPlain()
-	callbackURL := config.Current.SsoCallbackURL(req.Name)
+	callbackURL := config.Current.SsoCallbackURL(req.Provider)
 
 	var provider goth.Provider
 	switch base.OAuthKind(setting.Kind) {
@@ -47,7 +47,7 @@ func (uc *SessionUC) InitOAuthProvider(
 	case base.OAuthKindGoogle:
 		provider = google.New(oauth.ClientID, clientSecret, callbackURL, oauth.Scopes...)
 	}
-	provider.SetName(req.Name)
+	provider.SetName(req.Provider)
 	goth.UseProviders(provider)
 
 	return nil

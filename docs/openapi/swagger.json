@@ -19126,6 +19126,42 @@
         "type" : "string",
         "x-enum-varnames" : [ "WebhookKindGithub", "WebhookKindGitlab", "WebhookKindGitea", "WebhookKindBitbucket", "WebhookKindGogs", "WebhookKindAzureDevOps" ]
       },
+      "github_com_localpaas_localpaas_localpaas_app_basedto.BaseEventNotificationReq" : {
+        "properties" : {
+          "failure" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
+          },
+          "failureUseDefault" : {
+            "type" : "boolean"
+          },
+          "success" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
+          },
+          "successUseDefault" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "failure", "failureUseDefault", "success", "successUseDefault" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_basedto.BaseEventNotificationResp" : {
+        "properties" : {
+          "failure" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.NamedObjectResp"
+          },
+          "failureUseDefault" : {
+            "type" : "boolean"
+          },
+          "success" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.NamedObjectResp"
+          },
+          "successUseDefault" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "failure", "failureUseDefault", "success", "successUseDefault" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_basedto.EnvVarReq" : {
         "properties" : {
           "isLiteral" : {
@@ -19288,18 +19324,6 @@
         "required" : [ "email", "fullName", "id", "photo", "username" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_entity.AppDeploymentNotification" : {
-        "properties" : {
-          "failure" : {
-            "type" : "string"
-          },
-          "success" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "failure", "success" ],
-        "type" : "object"
-      },
       "github_com_localpaas_localpaas_localpaas_app_entity.AppDeploymentOutput" : {
         "properties" : {
           "commitHash" : {
@@ -19329,7 +19353,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.DeploymentImageSource"
           },
           "notification" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.AppDeploymentNotification"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.BaseEventNotification"
           },
           "postDeploymentCommand" : {
             "type" : "string"
@@ -19345,6 +19369,24 @@
           }
         },
         "required" : [ "activeMethod", "imageSource", "repoSource" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_entity.BaseEventNotification" : {
+        "properties" : {
+          "failure" : {
+            "type" : "string"
+          },
+          "failureUseDefault" : {
+            "type" : "boolean"
+          },
+          "success" : {
+            "type" : "string"
+          },
+          "successUseDefault" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "failure", "success" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_entity.DeploymentImageSource" : {
@@ -19795,30 +19837,6 @@
         "required" : [ "image", "registryAuth" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentNotificationReq" : {
-        "properties" : {
-          "failure" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
-          },
-          "success" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
-          }
-        },
-        "required" : [ "failure", "success" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentNotificationResp" : {
-        "properties" : {
-          "failure" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
-          },
-          "success" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
-          }
-        },
-        "required" : [ "failure", "success" ],
-        "type" : "object"
-      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentRepoSourceReq" : {
         "properties" : {
           "buildTool" : {
@@ -19910,7 +19928,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentImageSourceResp"
           },
           "notification" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentNotificationResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseEventNotificationResp"
           },
           "postDeploymentCommand" : {
             "type" : "string"
@@ -20325,7 +20343,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentImageSourceReq"
           },
           "notification" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DeploymentNotificationReq"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseEventNotificationReq"
           },
           "postDeploymentCommand" : {
             "type" : "string"
@@ -22693,6 +22711,93 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CommandArgGroupResp" : {
+        "properties" : {
+          "args" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CommandArgResp"
+            },
+            "type" : "array"
+          },
+          "exportEnv" : {
+            "type" : "string"
+          },
+          "separator" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "args", "exportEnv", "separator" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CommandArgResp" : {
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "use" : {
+            "type" : "boolean"
+          },
+          "value" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "name", "use", "value" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.ContainerCommandReq" : {
+        "properties" : {
+          "argGroups" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobCommandArgGroupReq"
+            },
+            "type" : "array"
+          },
+          "command" : {
+            "type" : "string"
+          },
+          "envVars" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.EnvVarReq"
+            },
+            "type" : "array"
+          },
+          "runInShell" : {
+            "type" : "string"
+          },
+          "workingDir" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "argGroups", "command", "envVars", "runInShell", "workingDir" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.ContainerCommandResp" : {
+        "properties" : {
+          "argGroups" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CommandArgGroupResp"
+            },
+            "type" : "array"
+          },
+          "command" : {
+            "type" : "string"
+          },
+          "envVars" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.EnvVarResp"
+            },
+            "type" : "array"
+          },
+          "runInShell" : {
+            "type" : "string"
+          },
+          "workingDir" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "argGroups", "command", "envVars", "runInShell", "workingDir" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CreateCronJobReq" : {
         "properties" : {
           "app" : {
@@ -22702,7 +22807,7 @@
             "type" : "boolean"
           },
           "command" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobContainerCommandReq"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.ContainerCommandReq"
           },
           "cronType" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.CronJobType"
@@ -22717,7 +22822,7 @@
             "type" : "string"
           },
           "notification" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobNotificationReq"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseEventNotificationReq"
           },
           "priority" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.TaskPriority"
@@ -22726,7 +22831,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
           },
           "schedule" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobScheduleReq"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.ScheduleReq"
           },
           "timeout" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
@@ -22765,24 +22870,6 @@
         "required" : [ "exportEnv", "separator" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobCommandArgGroupResp" : {
-        "properties" : {
-          "args" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobCommandArgResp"
-            },
-            "type" : "array"
-          },
-          "exportEnv" : {
-            "type" : "string"
-          },
-          "separator" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "args", "exportEnv", "separator" ],
-        "type" : "object"
-      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobCommandArgReq" : {
         "properties" : {
           "name" : {
@@ -22798,99 +22885,6 @@
         "required" : [ "name", "use", "value" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobCommandArgResp" : {
-        "properties" : {
-          "name" : {
-            "type" : "string"
-          },
-          "use" : {
-            "type" : "boolean"
-          },
-          "value" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "name", "use", "value" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobContainerCommandReq" : {
-        "properties" : {
-          "argGroups" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobCommandArgGroupReq"
-            },
-            "type" : "array"
-          },
-          "command" : {
-            "type" : "string"
-          },
-          "envVars" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.EnvVarReq"
-            },
-            "type" : "array"
-          },
-          "runInShell" : {
-            "type" : "string"
-          },
-          "workingDir" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "argGroups", "command", "envVars", "runInShell", "workingDir" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobContainerCommandResp" : {
-        "properties" : {
-          "argGroups" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobCommandArgGroupResp"
-            },
-            "type" : "array"
-          },
-          "command" : {
-            "type" : "string"
-          },
-          "envVars" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.EnvVarResp"
-            },
-            "type" : "array"
-          },
-          "runInShell" : {
-            "type" : "string"
-          },
-          "workingDir" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "argGroups", "command", "envVars", "runInShell", "workingDir" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobNotificationReq" : {
-        "properties" : {
-          "failure" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
-          },
-          "success" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
-          }
-        },
-        "required" : [ "failure", "success" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobNotificationResp" : {
-        "properties" : {
-          "failure" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
-          },
-          "success" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
-          }
-        },
-        "required" : [ "failure", "success" ],
-        "type" : "object"
-      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobResp" : {
         "properties" : {
           "app" : {
@@ -22900,7 +22894,7 @@
             "type" : "boolean"
           },
           "command" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobContainerCommandResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.ContainerCommandResp"
           },
           "createdAt" : {
             "type" : "string"
@@ -22930,7 +22924,7 @@
             "type" : "string"
           },
           "notification" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobNotificationResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseEventNotificationResp"
           },
           "priority" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.TaskPriority"
@@ -22939,7 +22933,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
           },
           "schedule" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobScheduleResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.ScheduleResp"
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
@@ -22958,38 +22952,6 @@
           }
         },
         "required" : [ "app", "command", "createdAt", "cronType", "id", "maxRetry", "name", "notification", "priority", "retryDelay", "schedule", "status", "timeout", "type", "updateVer", "updatedAt" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobScheduleReq" : {
-        "properties" : {
-          "cronExpr" : {
-            "description" : "cronExpr and interval are mutually exclusive",
-            "type" : "string"
-          },
-          "initialTime" : {
-            "type" : "string"
-          },
-          "interval" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
-          }
-        },
-        "required" : [ "cronExpr", "initialTime", "interval" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobScheduleResp" : {
-        "properties" : {
-          "cronExpr" : {
-            "description" : "cronExpr and interval are mutually exclusive",
-            "type" : "string"
-          },
-          "initialTime" : {
-            "type" : "string"
-          },
-          "interval" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
-          }
-        },
-        "required" : [ "initialTime" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobTaskLogsDataResp" : {
@@ -23103,6 +23065,38 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.ScheduleReq" : {
+        "properties" : {
+          "cronExpr" : {
+            "description" : "cronExpr and interval are mutually exclusive",
+            "type" : "string"
+          },
+          "initialTime" : {
+            "type" : "string"
+          },
+          "interval" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
+          }
+        },
+        "required" : [ "cronExpr", "initialTime", "interval" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.ScheduleResp" : {
+        "properties" : {
+          "cronExpr" : {
+            "description" : "cronExpr and interval are mutually exclusive",
+            "type" : "string"
+          },
+          "initialTime" : {
+            "type" : "string"
+          },
+          "interval" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
+          }
+        },
+        "required" : [ "initialTime" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.UpdateCronJobMetaReq" : {
         "properties" : {
           "availableInProjects" : {
@@ -23142,7 +23136,7 @@
             "type" : "boolean"
           },
           "command" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobContainerCommandReq"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.ContainerCommandReq"
           },
           "cronType" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.CronJobType"
@@ -23157,7 +23151,7 @@
             "type" : "string"
           },
           "notification" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobNotificationReq"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseEventNotificationReq"
           },
           "priority" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.TaskPriority"
@@ -23166,7 +23160,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
           },
           "schedule" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.CronJobScheduleReq"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cronjobuc_cronjobdto.ScheduleReq"
           },
           "timeout" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
@@ -23983,7 +23977,7 @@
             "type" : "string"
           },
           "notification" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.HealthcheckNotificationReq"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseEventNotificationReq"
           },
           "rest" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.HealthcheckRESTReq"
@@ -24052,30 +24046,6 @@
         "required" : [ "addr", "returnStatus", "service", "version" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.HealthcheckNotificationReq" : {
-        "properties" : {
-          "failure" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
-          },
-          "success" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
-          }
-        },
-        "required" : [ "failure", "success" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.HealthcheckNotificationResp" : {
-        "properties" : {
-          "failure" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
-          },
-          "success" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
-          }
-        },
-        "required" : [ "failure", "success" ],
-        "type" : "object"
-      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.HealthcheckRESTReq" : {
         "properties" : {
           "body" : {
@@ -24142,7 +24112,7 @@
             "type" : "string"
           },
           "notification" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.HealthcheckNotificationResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseEventNotificationResp"
           },
           "rest" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.HealthcheckRESTReq"
@@ -24256,7 +24226,7 @@
             "type" : "string"
           },
           "notification" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.HealthcheckNotificationReq"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseEventNotificationReq"
           },
           "rest" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_healthcheckuc_healthcheckdto.HealthcheckRESTReq"
@@ -26509,30 +26479,6 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systemcleanupuc_systemcleanupdto.NotificationReq" : {
-        "properties" : {
-          "failure" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
-          },
-          "success" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
-          }
-        },
-        "required" : [ "failure", "success" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systemcleanupuc_systemcleanupdto.NotificationResp" : {
-        "properties" : {
-          "failure" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
-          },
-          "success" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
-          }
-        },
-        "required" : [ "failure", "success" ],
-        "type" : "object"
-      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systemcleanupuc_systemcleanupdto.SystemCleanupResp" : {
         "properties" : {
           "availableInProjects" : {
@@ -26566,7 +26512,7 @@
             "type" : "string"
           },
           "notification" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systemcleanupuc_systemcleanupdto.NotificationResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseEventNotificationResp"
           },
           "scheduleFrom" : {
             "type" : "string"
@@ -26605,7 +26551,7 @@
             "type" : "boolean"
           },
           "notification" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systemcleanupuc_systemcleanupdto.NotificationReq"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseEventNotificationReq"
           },
           "scheduleFrom" : {
             "type" : "string"

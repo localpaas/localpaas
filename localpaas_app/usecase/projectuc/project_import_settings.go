@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
@@ -68,7 +69,7 @@ func (uc *ProjectUC) loadSettingsForImport(
 	data.Project = project
 
 	settingIDs := req.Settings.ToIDStringSlice()
-	settings, err := uc.settingRepo.ListByIDs(ctx, db, settingIDs, false)
+	settings, err := uc.settingRepo.ListByIDs(ctx, db, base.NewSettingScopeGlobal(), settingIDs, false)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -76,14 +77,9 @@ func (uc *ProjectUC) loadSettingsForImport(
 
 	settingMap := entityutil.SliceToIDMap(settings)
 	for _, id := range settingIDs {
-		setting, exists := settingMap[id]
-		if !exists {
+		if _, exists := settingMap[id]; !exists {
 			return apperrors.NewNotFound("Setting").
 				WithMsgLog("setting %s not found", id)
-		}
-		if setting.ObjectID != "" {
-			return apperrors.New(apperrors.ErrGlobalSettingRequired).
-				WithMsgLog("setting %s is not global, hence unable to import", id)
 		}
 	}
 

@@ -2,7 +2,6 @@ package imagebuilduc
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -47,7 +46,11 @@ func (uc *ImageBuildUC) CreateImageBuild(
 			data *settings.CreateSettingData,
 			pData *settings.PersistingSettingCreationData,
 		) error {
-			return uc.ensureSettingIsUniqueInScope(ctx, db, &req.BaseSettingReq)
+			err := uc.SettingRepo.EnsureUnique(ctx, db, req.Scope, req.Type)
+			if err != nil {
+				return apperrors.Wrap(err)
+			}
+			return nil
 		},
 	})
 	if err != nil {
@@ -57,23 +60,4 @@ func (uc *ImageBuildUC) CreateImageBuild(
 	return &imagebuilddto.CreateImageBuildResp{
 		Data: resp.Data,
 	}, nil
-}
-
-func (uc *ImageBuildUC) ensureSettingIsUniqueInScope(
-	ctx context.Context,
-	db database.IDB,
-	req *settings.BaseSettingReq,
-) (err error) {
-	switch req.Scope { //nolint:exhaustive
-	case base.SettingScopeGlobal:
-		err = uc.SettingRepo.EnsureUniqueGlobally(ctx, db, req.Type)
-	case base.SettingScopeProject:
-		err = uc.SettingRepo.EnsureUniqueInProject(ctx, db, req.Type, req.ObjectID)
-	default:
-		return apperrors.NewUnsupported(fmt.Sprintf("setting scope '%v'", req.Scope))
-	}
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	return nil
 }

@@ -33,15 +33,15 @@ type GetHealthcheckResp struct {
 
 type HealthcheckResp struct {
 	*settings.BaseSettingResp
-	HealthcheckType base.HealthcheckType         `json:"healthcheckType"`
-	Interval        timeutil.Duration            `json:"interval"`
-	MaxRetry        int                          `json:"maxRetry"`
-	RetryDelay      timeutil.Duration            `json:"retryDelay"`
-	Timeout         timeutil.Duration            `json:"timeout"`
-	SaveResultTasks bool                         `json:"saveResultTasks"`
-	REST            *HealthcheckRESTReq          `json:"rest"`
-	GRPC            *HealthcheckGRPCReq          `json:"grpc"`
-	Notification    *HealthcheckNotificationResp `json:"notification"`
+	HealthcheckType base.HealthcheckType               `json:"healthcheckType"`
+	Interval        timeutil.Duration                  `json:"interval"`
+	MaxRetry        int                                `json:"maxRetry"`
+	RetryDelay      timeutil.Duration                  `json:"retryDelay"`
+	Timeout         timeutil.Duration                  `json:"timeout"`
+	SaveResultTasks bool                               `json:"saveResultTasks"`
+	REST            *HealthcheckRESTReq                `json:"rest"`
+	GRPC            *HealthcheckGRPCReq                `json:"grpc"`
+	Notification    *basedto.BaseEventNotificationResp `json:"notification"`
 }
 
 type HealthcheckRESTResp struct {
@@ -61,11 +61,6 @@ type HealthcheckGRPCResp struct {
 	ReturnStatus base.HealthcheckGRPCStatus  `json:"returnStatus"`
 }
 
-type HealthcheckNotificationResp struct {
-	Success *settings.BaseSettingResp `json:"success"`
-	Failure *settings.BaseSettingResp `json:"failure"`
-}
-
 func TransformHealthcheck(
 	setting *entity.Setting,
 	refObjects *entity.RefObjects,
@@ -80,16 +75,6 @@ func TransformHealthcheck(
 		return nil, apperrors.Wrap(err)
 	}
 
-	if resp.Notification != nil {
-		if resp.Notification.Success != nil {
-			itemResp, _ := settings.TransformSettingBase(refObjects.RefSettings[resp.Notification.Success.ID])
-			resp.Notification.Success = itemResp
-		}
-		if resp.Notification.Failure != nil {
-			itemResp, _ := settings.TransformSettingBase(refObjects.RefSettings[resp.Notification.Failure.ID])
-			resp.Notification.Failure = itemResp
-		}
-	}
-
+	resp.Notification = basedto.TransformBaseEventNotification(config.Notification, refObjects)
 	return resp, nil
 }

@@ -36,9 +36,7 @@ func (h *AppHandler) ListAppHealthcheckTask(ctx *gin.Context) {
 
 	req := healthcheckdto.NewListHealthcheckTaskReq()
 	req.JobID = jobID
-	req.ObjectID = appID
-	req.ParentObjectID = projectID
-	req.Scope = base.SettingScopeApp
+	req.Scope = base.NewSettingScopeApp(appID, projectID)
 	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return

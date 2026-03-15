@@ -130,7 +130,7 @@ func (e *Executor) calcBuildRegistryAuths(
 ) (map[string]registry.AuthConfig, error) {
 	app := data.App
 
-	settings, _, err := e.settingRepo.ListByProject(ctx, db, app.ProjectID, nil,
+	settings, _, err := e.settingRepo.List(ctx, db, base.NewSettingScopeProject(app.ProjectID), nil,
 		bunex.SelectWhere("setting.type = ?", base.SettingTypeRegistryAuth),
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
 	)
@@ -162,11 +162,15 @@ func (e *Executor) getBuildSetting(
 	ctx context.Context,
 	db database.Tx,
 	data *repoDeployTaskData,
-) (*entity.Setting, error) {
-	setting, err := e.settingRepo.GetSingleByProject(ctx, db, base.SettingTypeImageBuild,
-		data.App.ProjectID, true)
+) (*entity.ImageBuild, error) {
+	app := data.App
+	setting, err := e.settingRepo.GetSingle(ctx, db, base.NewSettingScopeProject(app.ProjectID),
+		base.SettingTypeImageBuild, true)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return nil, apperrors.Wrap(err)
 	}
-	return setting, nil
+	if setting != nil {
+		return setting.MustAsImageBuild(), nil
+	}
+	return nil, nil
 }

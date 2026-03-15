@@ -6,7 +6,6 @@ import (
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
@@ -114,8 +113,9 @@ func (uc *BaseSettingUC) loadSettingForDeletion(
 	}
 	data.Setting = setting
 
-	if setting.ObjectID == "" && req.Scope == base.SettingScopeProject {
-		data.ProjectSharedSetting, err = uc.ProjectSharedSettingRepo.Get(ctx, db, req.ObjectID, req.ID)
+	// The setting was imported to project from global
+	if setting.ObjectID == "" && req.Scope.IsProjectScope() {
+		data.ProjectSharedSetting, err = uc.ProjectSharedSettingRepo.Get(ctx, db, req.Scope.ProjectID, req.ID)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}

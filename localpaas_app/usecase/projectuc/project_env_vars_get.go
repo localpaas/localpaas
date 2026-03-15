@@ -25,11 +25,9 @@ func (uc *ProjectUC) GetProjectEnvVars(
 		return nil, apperrors.Wrap(err)
 	}
 
-	settings, _, err := uc.settingRepo.List(ctx, uc.db, nil,
+	settings, _, err := uc.settingRepo.List(ctx, uc.db, project.GetSettingScope(), nil,
 		bunex.SelectWhere("setting.type = ?", base.SettingTypeEnvVar),
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
-		bunex.SelectWhere("setting.object_id = ?", project.ID),
-		bunex.SelectLimit(1),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)

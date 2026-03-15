@@ -21,15 +21,15 @@ func (s *healthcheckParser) New() SettingData {
 }
 
 type Healthcheck struct {
-	HealthcheckType base.HealthcheckType     `json:"healthcheckType"`
-	Interval        timeutil.Duration        `json:"interval"`
-	MaxRetry        int                      `json:"maxRetry,omitempty"`
-	RetryDelay      timeutil.Duration        `json:"retryDelay,omitempty"`
-	Timeout         timeutil.Duration        `json:"timeout,omitempty"`
-	SaveResultTasks bool                     `json:"saveResultTasks,omitempty"`
-	REST            *HealthcheckREST         `json:"rest,omitempty"`
-	GRPC            *HealthcheckGRPC         `json:"grpc,omitempty"`
-	Notification    *HealthcheckNotification `json:"notification,omitempty"`
+	HealthcheckType base.HealthcheckType   `json:"healthcheckType"`
+	Interval        timeutil.Duration      `json:"interval"`
+	MaxRetry        int                    `json:"maxRetry,omitempty"`
+	RetryDelay      timeutil.Duration      `json:"retryDelay,omitempty"`
+	Timeout         timeutil.Duration      `json:"timeout,omitempty"`
+	SaveResultTasks bool                   `json:"saveResultTasks,omitempty"`
+	REST            *HealthcheckREST       `json:"rest,omitempty"`
+	GRPC            *HealthcheckGRPC       `json:"grpc,omitempty"`
+	Notification    *BaseEventNotification `json:"notification,omitempty"`
 }
 
 type HealthcheckREST struct {
@@ -49,26 +49,16 @@ type HealthcheckGRPC struct {
 	ReturnStatus base.HealthcheckGRPCStatus  `json:"returnStatus"`
 }
 
-type HealthcheckNotification struct {
-	Success ObjectID `json:"success"`
-	Failure ObjectID `json:"failure"`
-}
-
 func (s *Healthcheck) GetType() base.SettingType {
 	return base.SettingTypeHealthcheck
 }
 
 func (s *Healthcheck) GetRefObjectIDs() *RefObjectIDs {
-	res := &RefObjectIDs{}
+	refIDs := &RefObjectIDs{}
 	if s.Notification != nil {
-		if s.Notification.Success.ID != "" {
-			res.RefSettingIDs = append(res.RefSettingIDs, s.Notification.Success.ID)
-		}
-		if s.Notification.Failure.ID != "" {
-			res.RefSettingIDs = append(res.RefSettingIDs, s.Notification.Failure.ID)
-		}
+		refIDs.AddRefIDs(s.Notification.GetRefObjectIDs())
 	}
-	return res
+	return refIDs
 }
 
 func (s *Setting) AsHealthcheck() (*Healthcheck, error) {

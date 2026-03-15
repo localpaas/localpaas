@@ -2,6 +2,10 @@ package base
 
 import "github.com/tiendc/gofn"
 
+const (
+	SettingNameMaxLen = 100
+)
+
 type SettingType string
 
 const (
@@ -53,16 +57,84 @@ var (
 	AllSettingSettableStatuses = gofn.Drop(AllSettingStatuses, SettingStatusExpired)
 )
 
-type SettingScope int8
+type SettingScopeType int8
 
 const (
-	SettingScopeNone SettingScope = iota
+	SettingScopeNone SettingScopeType = iota
 	SettingScopeGlobal
 	SettingScopeUser
 	SettingScopeProject
 	SettingScopeApp
 )
 
-const (
-	SettingNameMaxLen = 100
-)
+type SettingScope struct {
+	AppID       string
+	ParentAppID string
+	ProjectID   string
+	UserID      string
+}
+
+func (s *SettingScope) ScopeType() SettingScopeType {
+	switch {
+	case s.AppID != "":
+		return SettingScopeApp
+	case s.ProjectID != "":
+		return SettingScopeProject
+	case s.UserID != "":
+		return SettingScopeUser
+	default:
+		return SettingScopeGlobal
+	}
+}
+
+func (s *SettingScope) IsGlobalScope() bool {
+	return s.ScopeType() == SettingScopeGlobal
+}
+
+func (s *SettingScope) IsAppScope() bool {
+	return s.AppID != ""
+}
+
+func (s *SettingScope) IsProjectScope() bool {
+	return s.ProjectID != ""
+}
+
+func (s *SettingScope) IsUserScope() bool {
+	return s.UserID != ""
+}
+
+func (s *SettingScope) MainObjectID() string {
+	switch {
+	case s.AppID != "":
+		return s.AppID
+	case s.ProjectID != "":
+		return s.ProjectID
+	case s.UserID != "":
+		return s.UserID
+	default:
+		return ""
+	}
+}
+
+func NewSettingScopeGlobal() *SettingScope {
+	return &SettingScope{}
+}
+
+func NewSettingScopeApp(appID, projectID string) *SettingScope {
+	return &SettingScope{
+		AppID:     appID,
+		ProjectID: projectID,
+	}
+}
+
+func NewSettingScopeProject(projectID string) *SettingScope {
+	return &SettingScope{
+		ProjectID: projectID,
+	}
+}
+
+func NewSettingScopeUser(userID string) *SettingScope {
+	return &SettingScope{
+		UserID: userID,
+	}
+}

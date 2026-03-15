@@ -28,7 +28,7 @@ func (h *SessionHandler) SSOOAuthBegin(ctx *gin.Context) {
 		return
 	}
 
-	err = h.sessionUC.InitOAuthProvider(ctx, &sessiondto.InitOAuthProviderReq{Name: provider})
+	err = h.sessionUC.InitOAuthProvider(ctx, &sessiondto.InitOAuthProviderReq{Provider: provider})
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

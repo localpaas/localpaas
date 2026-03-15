@@ -37,9 +37,7 @@ func (h *AppHandler) ListAppCronJobTask(ctx *gin.Context) {
 
 	req := cronjobdto.NewListCronJobTaskReq()
 	req.JobID = jobID
-	req.ObjectID = appID
-	req.ParentObjectID = projectID
-	req.Scope = base.SettingScopeApp
+	base.NewSettingScopeApp(appID, projectID)
 	if err = h.ParseAndValidateRequest(ctx, req, &req.Paging); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -84,10 +82,7 @@ func (h *AppHandler) GetAppCronJobTask(ctx *gin.Context) {
 	req := cronjobdto.NewGetCronJobTaskReq()
 	req.TaskID = taskID
 	req.JobID = jobID
-	req.ObjectID = appID
-	req.ParentObjectID = projectID
-	req.Scope = base.SettingScopeApp
-
+	base.NewSettingScopeApp(appID, projectID)
 	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -132,10 +127,7 @@ func (h *AppHandler) GetAppCronJobTaskLogs(ctx *gin.Context, mel *melody.Melody)
 	req := cronjobdto.NewGetCronJobTaskLogsReq()
 	req.TaskID = taskID
 	req.JobID = jobID
-	req.ObjectID = appID
-	req.ParentObjectID = projectID
-	req.Scope = base.SettingScopeApp
-
+	req.Scope = base.NewSettingScopeApp(appID, projectID)
 	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return

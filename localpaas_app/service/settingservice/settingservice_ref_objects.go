@@ -16,9 +16,7 @@ import (
 func (s *settingService) LoadReferenceObjects(
 	ctx context.Context,
 	db database.IDB,
-	scope base.SettingScope,
-	objectID string,
-	parentObjectID string,
+	scope *base.SettingScope,
 	requireActive bool,
 	errorIfUnavail bool,
 	inSettings ...*entity.Setting,
@@ -27,16 +25,13 @@ func (s *settingService) LoadReferenceObjects(
 	for _, setting := range inSettings {
 		allRefIDs.AddRefIDs(setting.MustGetRefObjectIDs())
 	}
-	return s.LoadReferenceObjectsByIDs(ctx, db, scope, objectID, parentObjectID, requireActive,
-		errorIfUnavail, allRefIDs)
+	return s.LoadReferenceObjectsByIDs(ctx, db, scope, requireActive, errorIfUnavail, allRefIDs)
 }
 
 func (s *settingService) LoadReferenceObjectsByIDs(
 	ctx context.Context,
 	db database.IDB,
-	scope base.SettingScope,
-	objectID string,
-	parentObjectID string,
+	scope *base.SettingScope,
 	requireActive bool,
 	errorIfUnavail bool,
 	refIDs *entity.RefObjectIDs,
@@ -56,17 +51,14 @@ func (s *settingService) LoadReferenceObjectsByIDs(
 	}
 
 	// Make sure the current app id is in the list
-	if scope == base.SettingScopeApp && !gofn.Contain(refIDs.RefAppIDs, objectID) {
-		refIDs.RefAppIDs = append(refIDs.RefAppIDs, objectID)
+	if scope != nil && scope.IsAppScope() && !gofn.Contain(refIDs.RefAppIDs, scope.AppID) {
+		refIDs.RefAppIDs = append(refIDs.RefAppIDs, scope.AppID)
 	}
 	// Load ref apps
 	if len(refIDs.RefAppIDs) > 0 {
-		var projectID string
-		switch scope { //nolint:exhaustive
-		case base.SettingScopeProject:
-			projectID = objectID
-		case base.SettingScopeApp:
-			projectID = parentObjectID
+		projectID := ""
+		if scope != nil {
+			projectID = scope.ProjectID
 		}
 		refObjects.RefApps, err = s.LoadReferenceApps(ctx, db, projectID, requireActive,
 			errorIfUnavail, refIDs.RefAppIDs)
@@ -77,14 +69,8 @@ func (s *settingService) LoadReferenceObjectsByIDs(
 
 	// Load ref settings
 	if len(refIDs.RefSettingIDs) > 0 {
-		if scope == base.SettingScopeApp && parentObjectID == "" {
-			app := refObjects.RefApps[objectID]
-			if app != nil && app.Project != nil {
-				parentObjectID = app.Project.ID
-			}
-		}
-		refObjects.RefSettings, err = s.LoadReferenceSettings(ctx, db, scope, objectID, parentObjectID,
-			requireActive, errorIfUnavail, refIDs.RefSettingIDs)
+		refObjects.RefSettings, err = s.LoadReferenceSettings(ctx, db, scope, requireActive,
+			errorIfUnavail, refIDs.RefSettingIDs)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}
@@ -96,8 +82,8 @@ func (s *settingService) LoadReferenceObjectsByIDs(
 		return refObjects, nil
 	}
 
-	newRecursiveRefObjects, err := s.LoadReferenceObjectsByIDs(ctx, db, scope, objectID, parentObjectID,
-		requireActive, errorIfUnavail, newRecursiveRefIDs)
+	newRecursiveRefObjects, err := s.LoadReferenceObjectsByIDs(ctx, db, scope, requireActive,
+		errorIfUnavail, newRecursiveRefIDs)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -109,9 +95,7 @@ func (s *settingService) LoadReferenceObjectsByIDs(
 func (s *settingService) LoadReferenceSettings(
 	ctx context.Context,
 	db database.IDB,
-	scope base.SettingScope,
-	objectID string,
-	parentObjectID string,
+	scope *base.SettingScope,
 	requireActive bool,
 	errorIfUnavail bool,
 	settingIDs []string,
@@ -124,19 +108,7 @@ func (s *settingService) LoadReferenceSettings(
 		listOpts = append(listOpts, bunex.SelectWhere("setting.status = ?", base.SettingStatusActive))
 	}
 
-	var settings []*entity.Setting
-	switch scope {
-	case base.SettingScopeNone:
-		settings, _, err = s.settingRepo.List(ctx, db, nil, listOpts...)
-	case base.SettingScopeGlobal:
-		settings, _, err = s.settingRepo.ListGlobally(ctx, db, nil, listOpts...)
-	case base.SettingScopeProject:
-		settings, _, err = s.settingRepo.ListByProject(ctx, db, objectID, nil, listOpts...)
-	case base.SettingScopeApp:
-		settings, _, err = s.settingRepo.ListByApp(ctx, db, objectID, parentObjectID, nil, listOpts...)
-	case base.SettingScopeUser:
-		settings, _, err = s.settingRepo.ListByUser(ctx, db, objectID, nil, listOpts...)
-	}
+	settings, _, err := s.settingRepo.List(ctx, db, scope, nil, listOpts...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -170,14 +142,11 @@ func (s *settingService) LoadReferenceApps(
 			bunex.SelectExcludeColumns(entity.ProjectDefaultExcludeColumns...),
 		),
 	}
-	if projectID != "" {
-		opts = append(opts, bunex.SelectWhere("app.project_id = ?", projectID))
-	}
 	if requireActive {
 		opts = append(opts, bunex.SelectWhere("app.status = ?", base.AppStatusActive))
 	}
 
-	apps, err := s.appRepo.ListByIDs(ctx, db, "", appIDs, opts...)
+	apps, err := s.appRepo.ListByIDs(ctx, db, projectID, appIDs, opts...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

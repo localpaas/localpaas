@@ -17,12 +17,10 @@ import (
 type SettingService interface {
 	PersistSettingData(ctx context.Context, db database.IDB, data *PersistingSettingData) error
 
-	LoadReferenceObjects(ctx context.Context, db database.IDB, scope base.SettingScope,
-		objectID string, parentObjectID string, requireActive bool, errorIfUnavail bool,
-		inSettings ...*entity.Setting) (*entity.RefObjects, error)
-	LoadReferenceObjectsByIDs(ctx context.Context, db database.IDB, scope base.SettingScope,
-		objectID string, parentObjectID string, requireActive bool, errorIfUnavail bool,
-		refIDs *entity.RefObjectIDs) (*entity.RefObjects, error)
+	LoadReferenceObjects(ctx context.Context, db database.IDB, scope *base.SettingScope, requireActive bool,
+		errorIfUnavail bool, inSettings ...*entity.Setting) (*entity.RefObjects, error)
+	LoadReferenceObjectsByIDs(ctx context.Context, db database.IDB, scope *base.SettingScope, requireActive bool,
+		errorIfUnavail bool, refIDs *entity.RefObjectIDs) (*entity.RefObjects, error)
 
 	// Default settings
 	InitDefaults(ctx context.Context, db database.IDB) error

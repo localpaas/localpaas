@@ -31,7 +31,7 @@ func (s *settingService) InitDefaults(
 			return apperrors.Wrap(apperrors.ErrActionFailed)
 		}
 
-		settings, _, err := s.settingRepo.ListGlobally(ctx, db, nil,
+		settings, _, err := s.settingRepo.List(ctx, db, base.NewSettingScopeGlobal(), nil,
 			bunex.SelectWhereIn("setting.type IN (?)", base.SettingTypeImageBuild,
 				base.SettingTypeSystemCleanup),
 			bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),

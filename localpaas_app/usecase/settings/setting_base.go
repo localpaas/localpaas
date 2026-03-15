@@ -16,10 +16,8 @@ import (
 )
 
 type BaseSettingReq struct {
-	Type           base.SettingType  `json:"-" mapstructure:"-"`
-	Scope          base.SettingScope `json:"-" mapstructure:"-"`
-	ObjectID       string            `json:"-" mapstructure:"-"`
-	ParentObjectID string            `json:"-" mapstructure:"-"`
+	Type  base.SettingType   `json:"-" mapstructure:"-"`
+	Scope *base.SettingScope `json:"-" mapstructure:"-"`
 }
 
 type BaseSettingResp struct {
@@ -46,22 +44,7 @@ func (uc *BaseSettingUC) loadSettingByID(
 	requireActive bool,
 	opts ...bunex.SelectQueryOption,
 ) (setting *entity.Setting, err error) {
-	loadOpts := append([]bunex.SelectQueryOption{}, opts...)
-	switch req.Scope {
-	case base.SettingScopeGlobal:
-		loadOpts = append(loadOpts, bunex.SelectWhere("setting.object_id IS NULL"))
-		setting, err = uc.SettingRepo.GetByID(ctx, db, req.Type, id, requireActive, loadOpts...)
-	case base.SettingScopeProject:
-		setting, err = uc.SettingRepo.GetByIDAndProject(ctx, db, req.Type, id, req.ObjectID,
-			requireActive, loadOpts...)
-	case base.SettingScopeApp:
-		setting, err = uc.SettingRepo.GetByIDAndApp(ctx, db, req.Type, id, req.ObjectID, req.ParentObjectID,
-			requireActive, loadOpts...)
-	case base.SettingScopeUser:
-		setting, err = uc.SettingRepo.GetByIDAndUser(ctx, db, req.Type, id, req.ObjectID,
-			requireActive, loadOpts...)
-	case base.SettingScopeNone:
-	}
+	setting, err = uc.SettingRepo.GetByID(ctx, db, req.Scope, req.Type, id, requireActive, opts...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -78,20 +61,7 @@ func (uc *BaseSettingUC) checkNameConflict(
 	if name == "" {
 		return nil
 	}
-	var setting *entity.Setting
-	switch req.Scope {
-	case base.SettingScopeGlobal:
-		setting, err = uc.SettingRepo.GetByName(ctx, db, req.Type, name, false,
-			bunex.SelectWhere("setting.object_id IS NULL"),
-		)
-	case base.SettingScopeProject:
-		setting, err = uc.SettingRepo.GetByNameAndProject(ctx, db, req.Type, name, req.ObjectID, false)
-	case base.SettingScopeApp:
-		setting, err = uc.SettingRepo.GetByNameAndApp(ctx, db, req.Type, name, req.ObjectID, req.ParentObjectID, false)
-	case base.SettingScopeUser:
-		setting, err = uc.SettingRepo.GetByNameAndUser(ctx, db, req.Type, name, req.ObjectID, false)
-	case base.SettingScopeNone:
-	}
+	setting, err := uc.SettingRepo.GetByName(ctx, db, req.Scope, req.Type, name, false)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}
@@ -112,25 +82,10 @@ func (uc *BaseSettingUC) checkRefSettingsExistence(
 	if len(refSettingIDs) == 0 {
 		return nil
 	}
-	listOpts := []bunex.SelectQueryOption{
+	settings, _, err := uc.SettingRepo.List(ctx, db, req.Scope, nil,
 		bunex.SelectWhere("setting.id IN (?)", bunex.In(refSettingIDs)),
-	}
-	if requireActive {
-		listOpts = append(listOpts, bunex.SelectWhere("setting.status = ?", base.SettingStatusActive))
-	}
-	var settings []*entity.Setting
-	switch req.Scope {
-	case base.SettingScopeGlobal:
-		listOpts = append(listOpts, bunex.SelectWhere("setting.object_id IS NULL"))
-		settings, _, err = uc.SettingRepo.List(ctx, db, nil, listOpts...)
-	case base.SettingScopeProject:
-		settings, _, err = uc.SettingRepo.ListByProject(ctx, db, req.ObjectID, nil, listOpts...)
-	case base.SettingScopeApp:
-		settings, _, err = uc.SettingRepo.ListByApp(ctx, db, req.ObjectID, req.ParentObjectID, nil, listOpts...)
-	case base.SettingScopeUser:
-		settings, _, err = uc.SettingRepo.ListByUser(ctx, db, req.ObjectID, nil, listOpts...)
-	case base.SettingScopeNone:
-	}
+		bunex.SelectWhereIf(requireActive, "setting.status = ?", base.SettingStatusActive),
+	)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -149,22 +104,9 @@ func (uc *BaseSettingUC) ensureSettingDefaultUniqueness(
 	req *BaseSettingReq,
 	setting *entity.Setting,
 ) error {
-	opts := []bunex.UpdateQueryOption{
+	err := uc.SettingRepo.UpdateClearDefaultFlag(ctx, db, req.Scope, req.Type, setting.ID,
 		bunex.UpdateWithDeleted(),
-	}
-	switch req.Scope {
-	case base.SettingScopeGlobal:
-		opts = append(opts, bunex.UpdateWhere("setting.object_id IS NULL"))
-	case base.SettingScopeProject:
-		opts = append(opts, bunex.UpdateWhere("setting.object_id = ?", req.ObjectID))
-	case base.SettingScopeApp:
-		opts = append(opts, bunex.UpdateWhere("setting.object_id = ?", req.ObjectID))
-	case base.SettingScopeUser:
-		opts = append(opts, bunex.UpdateWhere("setting.object_id = ?", req.ObjectID))
-	case base.SettingScopeNone:
-	}
-
-	err := uc.SettingRepo.UpdateClearDefaultFlag(ctx, db, req.Type, setting.ID, opts...)
+	)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

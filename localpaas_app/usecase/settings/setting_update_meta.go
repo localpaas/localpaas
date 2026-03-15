@@ -133,7 +133,7 @@ func (uc *BaseSettingUC) loadSettingForUpdateMeta(
 		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
 	}
 
-	if req.Scope != base.SettingScopeGlobal && setting.ObjectID != req.ObjectID {
+	if setting.ObjectID != req.Scope.MainObjectID() {
 		return apperrors.New(apperrors.ErrOwnSettingRequired).
 			WithMsgLog("imported or inherited setting is not allowed to update")
 	}
@@ -167,7 +167,7 @@ func (uc *BaseSettingUC) prepareSettingMetaUpdate(
 		setting.ExpireAt = *req.ExpireAt
 	}
 	if req.AvailableInProjects != nil {
-		setting.AvailInProjects = gofn.If(req.Scope != base.SettingScopeGlobal, false, *req.AvailableInProjects)
+		setting.AvailInProjects = gofn.If(!req.Scope.IsGlobalScope(), false, *req.AvailableInProjects)
 	}
 	if req.Default != nil {
 		setting.Default = *req.Default

@@ -35,7 +35,11 @@ func (uc *ImageBuildUC) UpdateImageBuild(
 			data *settings.UpdateSettingData,
 			pData *settings.PersistingSettingData,
 		) error {
-			return uc.ensureSettingIsUniqueInScope(ctx, db, &req.BaseSettingReq)
+			err := uc.SettingRepo.EnsureUnique(ctx, db, req.Scope, req.Type)
+			if err != nil {
+				return apperrors.Wrap(err)
+			}
+			return nil
 		},
 	})
 	if err != nil {

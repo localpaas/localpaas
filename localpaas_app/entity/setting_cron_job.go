@@ -38,7 +38,7 @@ type CronJob struct {
 	RetryDelay    timeutil.Duration        `json:"retryDelay,omitempty"`
 	Timeout       timeutil.Duration        `json:"timeout,omitempty"`
 	Command       *CronJobContainerCommand `json:"command,omitempty"`
-	Notification  *CronJobNotification     `json:"notification,omitempty"`
+	Notification  *BaseEventNotification   `json:"notification,omitempty"`
 }
 
 type CronJobSchedule struct {
@@ -147,11 +147,6 @@ type CronJobCommandArg struct {
 	Value string `json:"value"`
 }
 
-type CronJobNotification struct {
-	Success ObjectID `json:"success"`
-	Failure ObjectID `json:"failure"`
-}
-
 func (s *CronJob) GetType() base.SettingType {
 	return base.SettingTypeCronJob
 }
@@ -165,12 +160,7 @@ func (s *CronJob) GetRefObjectIDs() *RefObjectIDs {
 		refIDs.RefSettingIDs = append(refIDs.RefSettingIDs, s.TargetSetting.ID)
 	}
 	if s.Notification != nil {
-		if s.Notification.Success.ID != "" {
-			refIDs.RefSettingIDs = append(refIDs.RefSettingIDs, s.Notification.Success.ID)
-		}
-		if s.Notification.Failure.ID != "" {
-			refIDs.RefSettingIDs = append(refIDs.RefSettingIDs, s.Notification.Failure.ID)
-		}
+		refIDs.AddRefIDs(s.Notification.GetRefObjectIDs())
 	}
 	return refIDs
 }

@@ -35,46 +35,41 @@ type GetCronJobResp struct {
 
 type CronJobResp struct {
 	*settings.BaseSettingResp
-	CronType     base.CronJobType             `json:"cronType"`
-	Schedule     *CronJobScheduleResp         `json:"schedule"`
-	App          *basedto.NamedObjectResp     `json:"app"`
-	Priority     base.TaskPriority            `json:"priority"`
-	MaxRetry     int                          `json:"maxRetry"`
-	RetryDelay   timeutil.Duration            `json:"retryDelay"`
-	Timeout      timeutil.Duration            `json:"timeout"`
-	Command      *CronJobContainerCommandResp `json:"command"`
-	Notification *CronJobNotificationResp     `json:"notification"`
+	CronType     base.CronJobType                   `json:"cronType"`
+	Schedule     *ScheduleResp                      `json:"schedule"`
+	App          *basedto.NamedObjectResp           `json:"app"`
+	Priority     base.TaskPriority                  `json:"priority"`
+	MaxRetry     int                                `json:"maxRetry"`
+	RetryDelay   timeutil.Duration                  `json:"retryDelay"`
+	Timeout      timeutil.Duration                  `json:"timeout"`
+	Command      *ContainerCommandResp              `json:"command"`
+	Notification *basedto.BaseEventNotificationResp `json:"notification"`
 }
 
-type CronJobScheduleResp struct {
+type ScheduleResp struct {
 	CronExpr    string            `json:"cronExpr,omitempty"` // cronExpr and interval are mutually exclusive
 	Interval    timeutil.Duration `json:"interval,omitempty"`
 	InitialTime time.Time         `json:"initialTime"`
 }
 
-type CronJobContainerCommandResp struct {
-	RunInShell string                        `json:"runInShell"`
-	Command    string                        `json:"command"`
-	WorkingDir string                        `json:"workingDir"`
-	EnvVars    []*basedto.EnvVarResp         `json:"envVars"`
-	ArgGroups  []*CronJobCommandArgGroupResp `json:"argGroups"`
+type ContainerCommandResp struct {
+	RunInShell string                 `json:"runInShell"`
+	Command    string                 `json:"command"`
+	WorkingDir string                 `json:"workingDir"`
+	EnvVars    []*basedto.EnvVarResp  `json:"envVars"`
+	ArgGroups  []*CommandArgGroupResp `json:"argGroups"`
 }
 
-type CronJobCommandArgGroupResp struct {
-	ExportEnv string                   `json:"exportEnv"`
-	Separator string                   `json:"separator"`
-	Args      []*CronJobCommandArgResp `json:"args"`
+type CommandArgGroupResp struct {
+	ExportEnv string            `json:"exportEnv"`
+	Separator string            `json:"separator"`
+	Args      []*CommandArgResp `json:"args"`
 }
 
-type CronJobCommandArgResp struct {
+type CommandArgResp struct {
 	Use   bool   `json:"use"`
 	Name  string `json:"name"`
 	Value string `json:"value"`
-}
-
-type CronJobNotificationResp struct {
-	Success *settings.BaseSettingResp `json:"success"`
-	Failure *settings.BaseSettingResp `json:"failure"`
 }
 
 func TransformCronJob(
@@ -98,16 +93,6 @@ func TransformCronJob(
 		}
 	}
 
-	if resp.Notification != nil {
-		if resp.Notification.Success != nil {
-			itemResp, _ := settings.TransformSettingBase(refObjects.RefSettings[resp.Notification.Success.ID])
-			resp.Notification.Success = itemResp
-		}
-		if resp.Notification.Failure != nil {
-			itemResp, _ := settings.TransformSettingBase(refObjects.RefSettings[resp.Notification.Failure.ID])
-			resp.Notification.Failure = itemResp
-		}
-	}
-
+	resp.Notification = basedto.TransformBaseEventNotification(config.Notification, refObjects)
 	return resp, nil
 }

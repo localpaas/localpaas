@@ -26,10 +26,10 @@ func (uc *AppUC) GetAppDeploymentSettings(
 		return nil, apperrors.Wrap(err)
 	}
 
-	settings, _, err := uc.settingRepo.List(ctx, uc.db, nil,
+	settings, _, err := uc.settingRepo.List(ctx, uc.db, nil, nil,
 		bunex.SelectWhere("setting.type = ?", base.SettingTypeAppDeployment),
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
-		bunex.SelectWhere("setting.object_id = ?", app.ID),
+		bunex.SelectWhere("setting.object_id = ?", app.ID), // load app direct settings
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -71,8 +71,8 @@ func (uc *AppUC) loadAppDeploymentSettingsRefData(
 		refIDs = input.DeploymentSettings.MustAsAppDeploymentSettings().GetRefObjectIDs()
 	}
 
-	refObjects, err := uc.settingService.LoadReferenceObjectsByIDs(ctx, db, base.SettingScopeApp,
-		app.ID, app.ProjectID, true, false, refIDs)
+	refObjects, err := uc.settingService.LoadReferenceObjectsByIDs(ctx, db, app.GetSettingScope(),
+		true, false, refIDs)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

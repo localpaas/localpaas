@@ -33,7 +33,7 @@ func (h *SystemSettingsHandler) GetCleanupSettings(ctx *gin.Context) {
 	}
 
 	req := systemcleanupdto.NewGetSystemCleanupReq()
-	req.Scope = base.SettingScopeGlobal
+	req.Scope = base.NewSettingScopeGlobal()
 	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -71,7 +71,7 @@ func (h *SystemSettingsHandler) UpdateCleanupSettings(ctx *gin.Context) {
 	}
 
 	req := systemcleanupdto.NewUpdateSystemCleanupReq()
-	req.Scope = base.SettingScopeGlobal
+	req.Scope = base.NewSettingScopeGlobal()
 	if err = h.ParseJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return

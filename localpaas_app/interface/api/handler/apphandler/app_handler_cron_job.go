@@ -139,9 +139,7 @@ func (h *AppHandler) ExecuteAppCronJob(ctx *gin.Context) {
 
 	req := cronjobdto.NewExecuteCronJobReq()
 	req.ID = jobID
-	req.ObjectID = appID
-	req.ParentObjectID = projectID
-	req.Scope = base.SettingScopeApp
+	req.Scope = base.NewSettingScopeApp(appID, projectID)
 
 	if err = h.ParseJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)

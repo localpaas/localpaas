@@ -18,11 +18,11 @@ type UpdateSystemCleanupReq struct {
 }
 
 type SystemCleanupBaseReq struct {
-	ScheduleInterval  timeutil.Duration     `json:"scheduleInterval"`
-	ScheduleFrom      time.Time             `json:"scheduleFrom"`
-	DBObjectRetention *DBObjectRetentionReq `json:"dbObjectRetention"`
-	ClusterCleanup    *ClusterCleanupReq    `json:"clusterCleanup"`
-	Notification      *NotificationReq      `json:"notification"`
+	ScheduleInterval  timeutil.Duration                 `json:"scheduleInterval"`
+	ScheduleFrom      time.Time                         `json:"scheduleFrom"`
+	DBObjectRetention *DBObjectRetentionReq             `json:"dbObjectRetention"`
+	ClusterCleanup    *ClusterCleanupReq                `json:"clusterCleanup"`
+	Notification      *basedto.BaseEventNotificationReq `json:"notification"`
 }
 
 func (req *SystemCleanupBaseReq) ToEntity() *entity.SystemCleanup {
@@ -74,21 +74,6 @@ func (req *ClusterCleanupReq) ToEntity() *entity.ClusterCleanup {
 		PruneVolumes:    req.PruneVolumes,
 		PruneNetworks:   req.PruneNetworks,
 		PruneContainers: req.PruneContainers,
-	}
-}
-
-type NotificationReq struct {
-	Success basedto.ObjectIDReq `json:"success"`
-	Failure basedto.ObjectIDReq `json:"failure"`
-}
-
-func (req *NotificationReq) ToEntity() *entity.CronJobNotification {
-	if req == nil {
-		return nil
-	}
-	return &entity.CronJobNotification{
-		Success: entity.ObjectID{ID: req.Success.ID},
-		Failure: entity.ObjectID{ID: req.Failure.ID},
 	}
 }
 
