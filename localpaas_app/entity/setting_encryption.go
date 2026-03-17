@@ -84,6 +84,10 @@ func (s *EncryptedField) Set(value string) {
 	}
 }
 
+func (s *EncryptedField) Equal(enc *EncryptedField) bool {
+	return s.MustGetPlain() == enc.MustGetPlain()
+}
+
 func (s *EncryptedField) encrypt() (string, error) {
 	// TODO: should we use Mutex?
 	if s.encrypted != "" {

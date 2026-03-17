@@ -41,9 +41,6 @@ type UpdateSettingData struct {
 	PrepareUpdate    func(context.Context, database.Tx, *UpdateSettingData, *PersistingSettingData) error
 	BeforePersisting func(context.Context, database.Tx, *UpdateSettingData, *PersistingSettingData) error
 	AfterPersisting  func(context.Context, database.Tx, *UpdateSettingData, *PersistingSettingData) error
-
-	oldDefaultFlag bool
-	updateEvent    *settingservice.UpdateEvent
 }
 
 type PersistingSettingData struct {
@@ -94,9 +91,10 @@ func (uc *BaseSettingUC) UpdateSetting(
 		}
 
 		// Fire update event
-		data.updateEvent.NewStatus = persistingData.Setting.Status
-		data.updateEvent.NewKind = persistingData.Setting.Kind
-		err = uc.SettingService.OnUpdate(ctx, db, data.updateEvent)
+		err = uc.SettingService.OnUpdate(ctx, db, &settingservice.UpdateEvent{
+			Setting:    persistingData.Setting,
+			OldSetting: data.Setting,
+		})
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -160,15 +158,6 @@ func (uc *BaseSettingUC) loadSettingForUpdate(
 		}
 	}
 
-	data.oldDefaultFlag = setting.Default
-
-	// Create update event data to fire later
-	data.updateEvent = &settingservice.UpdateEvent{
-		Setting:   setting,
-		OldStatus: setting.Status,
-		OldKind:   setting.Kind,
-	}
-
 	return nil
 }
 
@@ -178,7 +167,8 @@ func (uc *BaseSettingUC) prepareSettingUpdate(
 	persistingData *PersistingSettingData,
 ) {
 	timeNow := timeutil.NowUTC()
-	setting := data.Setting
+	copySetting := *data.Setting
+	setting := &copySetting
 	setting.Name = gofn.Coalesce(data.VerifyingName, setting.Name)
 	setting.AvailInProjects = gofn.If(!req.Scope.IsGlobalScope(), false, req.AvailInProjects)
 	setting.Default = req.Default
@@ -200,7 +190,7 @@ func (uc *BaseSettingUC) persistSettingUpdate(
 		return apperrors.Wrap(err)
 	}
 
-	if data.DefaultMustUnique && !data.oldDefaultFlag && persistingData.Setting.Default {
+	if data.DefaultMustUnique && !data.Setting.Default && persistingData.Setting.Default {
 		if data.DefaultMustUnique && persistingData.Setting.Default {
 			err = uc.ensureSettingDefaultUniqueness(ctx, db, &req.BaseSettingReq, persistingData.Setting)
 			if err != nil {

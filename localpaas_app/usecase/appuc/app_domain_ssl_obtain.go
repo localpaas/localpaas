@@ -191,8 +191,11 @@ func (uc *AppUC) applyDomainSSL(
 		return apperrors.Wrap(err)
 	}
 
-	allSSLIDs := appHttpSettings.GetSSLCertIDs()
-	err = uc.appService.EnsureSSLConfigFiles(allSSLIDs, false, refObjects)
+	var sslSettings []*entity.Setting
+	for _, sslID := range appHttpSettings.GetSSLCertIDs() {
+		sslSettings = append(sslSettings, refObjects.RefSettings[sslID])
+	}
+	err = uc.settingService.PersistSSLConfigFiles(false, sslSettings...)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

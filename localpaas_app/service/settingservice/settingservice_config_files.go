@@ -1,6 +1,7 @@
-package appservice
+package settingservice
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 
@@ -17,12 +18,11 @@ const (
 	basicAuthDirFileMode = 0o755
 )
 
-func (s *appService) EnsureSSLConfigFiles(
-	sslIDs []string,
+func (s *settingService) PersistSSLConfigFiles(
 	forceRecreate bool,
-	refObjects *entity.RefObjects,
+	settings ...*entity.Setting,
 ) error {
-	if len(sslIDs) == 0 {
+	if len(settings) == 0 {
 		return nil
 	}
 	certDir := config.Current.DataPathCerts()
@@ -31,9 +31,9 @@ func (s *appService) EnsureSSLConfigFiles(
 		return apperrors.New(err).WithMsgLog("failed to create directory to save cert files")
 	}
 
-	for _, sslID := range sslIDs {
-		certFile := sslID + ".crt"
-		keyFile := sslID + ".key"
+	for _, setting := range settings {
+		certFile := setting.ID + ".crt"
+		keyFile := setting.ID + ".key"
 		certFileExists, _ := fileutil.FileExists(filepath.Join(certDir, certFile), true)
 		keyFileExists, _ := fileutil.FileExists(filepath.Join(certDir, keyFile), true)
 
@@ -41,11 +41,7 @@ func (s *appService) EnsureSSLConfigFiles(
 			continue
 		}
 
-		dbSSL := refObjects.RefSettings[sslID]
-		if dbSSL == nil {
-			return apperrors.NewNotFound("SSL").WithMsgLog("ssl %s not found", sslID)
-		}
-		ssl := dbSSL.MustAsSSL()
+		ssl := setting.MustAsSSL()
 		certBytes := reflectutil.UnsafeStrToBytes(ssl.Certificate)
 		keyBytes := reflectutil.UnsafeStrToBytes(ssl.PrivateKey.MustGetPlain())
 
@@ -58,12 +54,35 @@ func (s *appService) EnsureSSLConfigFiles(
 	return nil
 }
 
-func (s *appService) EnsureBasicAuthConfigFiles(
-	basicAuthIDs []string,
-	forceRecreate bool,
-	refObjects *entity.RefObjects,
+func (s *settingService) DeleteSSLConfigFiles(
+	settings ...*entity.Setting,
 ) error {
-	if len(basicAuthIDs) == 0 {
+	if len(settings) == 0 {
+		return nil
+	}
+	certDir := config.Current.DataPathCerts()
+	for _, setting := range settings {
+		certFile := setting.ID + ".crt"
+		keyFile := setting.ID + ".key"
+
+		err := os.Remove(filepath.Join(certDir, certFile))
+		if err != nil && !errors.Is(err, os.ErrNotExist) {
+			return apperrors.Wrap(err)
+		}
+
+		err = os.Remove(filepath.Join(certDir, keyFile))
+		if err != nil && !errors.Is(err, os.ErrNotExist) {
+			return apperrors.Wrap(err)
+		}
+	}
+	return nil
+}
+
+func (s *settingService) PersistBasicAuthConfigFiles(
+	forceRecreate bool,
+	settings ...*entity.Setting,
+) error {
+	if len(settings) == 0 {
 		return nil
 	}
 	basicAuthDir := config.Current.DataPathNginxShareBasicAuth()
@@ -72,19 +91,14 @@ func (s *appService) EnsureBasicAuthConfigFiles(
 		return apperrors.New(err).WithMsgLog("failed to create directory to save basic auth files")
 	}
 
-	for _, authID := range basicAuthIDs {
-		authFile := filepath.Join(basicAuthDir, authID)
+	for _, setting := range settings {
+		authFile := filepath.Join(basicAuthDir, setting.ID)
 		authFileExists, _ := fileutil.FileExists(authFile, true)
 
 		if !forceRecreate && authFileExists {
 			continue
 		}
-
-		dbBasicAuth := refObjects.RefSettings[authID]
-		if dbBasicAuth == nil {
-			return apperrors.NewNotFound("BasicAuth").WithMsgLog("basic-auth %s not found", authID)
-		}
-		basicAuth := dbBasicAuth.MustAsBasicAuth()
+		basicAuth := setting.MustAsBasicAuth()
 
 		hashedPasswd := htpasswd.HashedPasswords{}
 		err = hashedPasswd.SetPassword(basicAuth.Username, basicAuth.Password.MustGetPlain(), htpasswd.HashBCrypt)
@@ -98,5 +112,21 @@ func (s *appService) EnsureBasicAuthConfigFiles(
 		}
 	}
 
+	return nil
+}
+
+func (s *settingService) DeleteBasicAuthConfigFiles(
+	settings ...*entity.Setting,
+) error {
+	if len(settings) == 0 {
+		return nil
+	}
+	basicAuthDir := config.Current.DataPathNginxShareBasicAuth()
+	for _, setting := range settings {
+		err := os.Remove(filepath.Join(basicAuthDir, setting.ID))
+		if err != nil && !errors.Is(err, os.ErrNotExist) {
+			return apperrors.Wrap(err)
+		}
+	}
 	return nil
 }

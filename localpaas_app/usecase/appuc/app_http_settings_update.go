@@ -132,14 +132,20 @@ func (uc *AppUC) applyAppHttpSettings(
 		return apperrors.Wrap(err)
 	}
 
-	allSSLIDs := appHttpSettings.GetSSLCertIDs()
-	err = uc.appService.EnsureSSLConfigFiles(allSSLIDs, false, data.RefObjects)
+	var sslSettings []*entity.Setting
+	for _, sslID := range appHttpSettings.GetSSLCertIDs() {
+		sslSettings = append(sslSettings, data.RefObjects.RefSettings[sslID])
+	}
+	err = uc.settingService.PersistSSLConfigFiles(false, sslSettings...)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	allBasicAuthIDs := appHttpSettings.GetBasicAuthIDs()
-	err = uc.appService.EnsureBasicAuthConfigFiles(allBasicAuthIDs, false, data.RefObjects)
+	var basicAuthSettings []*entity.Setting
+	for _, basicAuthID := range appHttpSettings.GetBasicAuthIDs() {
+		basicAuthSettings = append(basicAuthSettings, data.RefObjects.RefSettings[basicAuthID])
+	}
+	err = uc.settingService.PersistBasicAuthConfigFiles(false, basicAuthSettings...)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

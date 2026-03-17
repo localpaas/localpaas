@@ -41,9 +41,6 @@ type UpdateSettingMetaData struct {
 	AfterLoading     func(context.Context, database.Tx, *UpdateSettingMetaData) error
 	BeforePersisting func(context.Context, database.Tx, *UpdateSettingMetaData, *PersistingSettingMetaData) error
 	AfterPersisting  func(context.Context, database.Tx, *UpdateSettingMetaData, *PersistingSettingMetaData) error
-
-	oldDefaultFlag bool
-	updateEvent    *settingservice.UpdateEvent
 }
 
 type PersistingSettingMetaData struct {
@@ -87,9 +84,10 @@ func (uc *BaseSettingUC) UpdateSettingMeta(
 		}
 
 		// Fire update event
-		data.updateEvent.NewStatus = persistingData.Setting.Status
-		data.updateEvent.NewKind = persistingData.Setting.Kind
-		err = uc.SettingService.OnUpdate(ctx, db, data.updateEvent)
+		err = uc.SettingService.OnUpdateMeta(ctx, db, &settingservice.UpdateEvent{
+			Setting:    persistingData.Setting,
+			OldSetting: data.Setting,
+		})
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -138,15 +136,6 @@ func (uc *BaseSettingUC) loadSettingForUpdateMeta(
 			WithMsgLog("imported or inherited setting is not allowed to update")
 	}
 
-	data.oldDefaultFlag = setting.Default
-
-	// Create update event data to fire later
-	data.updateEvent = &settingservice.UpdateEvent{
-		Setting:   setting,
-		OldStatus: setting.Status,
-		OldKind:   setting.Kind,
-	}
-
 	return nil
 }
 
@@ -156,7 +145,8 @@ func (uc *BaseSettingUC) prepareSettingMetaUpdate(
 	persistingData *PersistingSettingMetaData,
 ) {
 	timeNow := timeutil.NowUTC()
-	setting := data.Setting
+	copySetting := *data.Setting
+	setting := &copySetting
 	setting.UpdateVer++
 	setting.UpdatedAt = timeNow
 
@@ -190,7 +180,7 @@ func (uc *BaseSettingUC) persistSettingMetaUpdate(
 		return apperrors.Wrap(err)
 	}
 
-	if data.DefaultMustUnique && !data.oldDefaultFlag && persistingData.Setting.Default {
+	if data.DefaultMustUnique && !data.Setting.Default && persistingData.Setting.Default {
 		if data.DefaultMustUnique && persistingData.Setting.Default {
 			err = uc.ensureSettingDefaultUniqueness(ctx, db, &req.BaseSettingReq, persistingData.Setting)
 			if err != nil {

@@ -17,6 +17,11 @@ import (
 type SettingService interface {
 	PersistSettingData(ctx context.Context, db database.IDB, data *PersistingSettingData) error
 
+	PersistSSLConfigFiles(forceRecreate bool, settings ...*entity.Setting) error
+	DeleteSSLConfigFiles(settings ...*entity.Setting) error
+	PersistBasicAuthConfigFiles(forceRecreate bool, settings ...*entity.Setting) error
+	DeleteBasicAuthConfigFiles(settings ...*entity.Setting) error
+
 	LoadReferenceObjects(ctx context.Context, db database.IDB, scope *base.SettingScope, requireActive bool,
 		errorIfUnavail bool, inSettings ...*entity.Setting) (*entity.RefObjects, error)
 	LoadReferenceObjectsByIDs(ctx context.Context, db database.IDB, scope *base.SettingScope, requireActive bool,
@@ -28,6 +33,7 @@ type SettingService interface {
 	// Events
 	OnCreate(ctx context.Context, db database.IDB, event *CreateEvent) error
 	OnUpdate(ctx context.Context, db database.IDB, event *UpdateEvent) error
+	OnUpdateMeta(ctx context.Context, db database.IDB, event *UpdateEvent) error
 	OnDelete(ctx context.Context, db database.IDB, event *DeleteEvent) error
 }
 
