@@ -10,7 +10,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/basesettinghandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/clusterhandler"
-	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/gitsourcehandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projecthandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/settinghandler"
@@ -47,7 +46,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/imageuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/nodeuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/volumeuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/gitsourceuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
@@ -123,7 +121,6 @@ var Provides = []any{
 	usersettingshandler.NewUserSettingsHandler,
 	systemhandler.NewSystemHandler,
 	systemsettingshandler.NewSystemSettingsHandler,
-	gitsourcehandler.NewGitSourceHandler,
 	webhookhandler.NewWebhookHandler,
 
 	// Use case
@@ -151,7 +148,6 @@ var Provides = []any{
 	accesstokenuc.NewAccessTokenUC,
 	nginxuc.NewNginxUC,
 	lpappuc.NewLpAppUC,
-	gitsourceuc.NewGitSourceUC,
 	cronjobuc.NewCronJobUC,
 	healthcheckuc.NewHealthcheckUC,
 	taskuc.NewTaskUC,

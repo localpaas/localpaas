@@ -79,6 +79,9 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 	{ // Git credentials group
 		gitCredentialGroup := projectGroup.Group("/:projectID/git-credentials")
 		gitCredentialGroup.GET("", projectHandler.ListGitCredential)
+
+		// Repos
+		gitCredentialGroup.GET("/:itemID/repositories", projectHandler.ListGitRepo)
 	}
 
 	{ // AWS group

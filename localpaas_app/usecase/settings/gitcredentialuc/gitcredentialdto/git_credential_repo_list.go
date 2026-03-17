@@ -1,4 +1,4 @@
-package gitsourcedto
+package gitcredentialdto
 
 import (
 	"strconv"
@@ -11,11 +11,12 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
 type ListRepoReq struct {
-	SettingID string         `json:"-"`
-	Paging    basedto.Paging `json:"-"`
+	settings.GetSettingReq
+	Paging basedto.Paging `json:"-"`
 }
 
 func NewListRepoReq() *ListRepoReq {

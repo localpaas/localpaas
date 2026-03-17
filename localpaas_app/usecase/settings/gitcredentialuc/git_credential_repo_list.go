@@ -1,4 +1,4 @@
-package gitsourceuc
+package gitcredentialuc
 
 import (
 	"context"
@@ -11,20 +11,19 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/gitsourceuc/gitsourcedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/gitcredentialuc/gitcredentialdto"
 	"github.com/localpaas/localpaas/services/git/gitea"
 	"github.com/localpaas/localpaas/services/git/github"
 	"github.com/localpaas/localpaas/services/git/gitlab"
 )
 
-func (uc *GitSourceUC) ListRepo(
+func (uc *GitCredentialUC) ListRepo(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *gitsourcedto.ListRepoReq,
-) (*gitsourcedto.ListRepoResp, error) {
-	setting, err := uc.settingRepo.GetByID(ctx, uc.db, nil, "", req.SettingID, true,
-		bunex.SelectWhere("setting.type IN (?)",
-			bunex.InItems(base.SettingTypeGithubApp, base.SettingTypeAccessToken)),
+	req *gitcredentialdto.ListRepoReq,
+) (*gitcredentialdto.ListRepoResp, error) {
+	setting, err := uc.SettingRepo.GetByID(ctx, uc.DB, req.Scope, "", req.ID, true,
+		bunex.SelectWhereIn("setting.type IN (?)", base.SettingTypeGithubApp, base.SettingTypeAccessToken),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -49,11 +48,11 @@ func (uc *GitSourceUC) ListRepo(
 	}
 }
 
-func (uc *GitSourceUC) listGithubRepo(
+func (uc *GitCredentialUC) listGithubRepo(
 	ctx context.Context,
-	req *gitsourcedto.ListRepoReq,
+	req *gitcredentialdto.ListRepoReq,
 	setting *entity.Setting,
-) (*gitsourcedto.ListRepoResp, error) {
+) (*gitcredentialdto.ListRepoResp, error) {
 	client, err := github.NewFromSetting(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -70,22 +69,22 @@ func (uc *GitSourceUC) listGithubRepo(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := gitsourcedto.TransformGithubRepos(repos)
+	resp, err := gitcredentialdto.TransformGithubRepos(repos)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &gitsourcedto.ListRepoResp{
+	return &gitcredentialdto.ListRepoResp{
 		Meta: &basedto.ListMeta{Page: pagingMeta},
 		Data: resp,
 	}, nil
 }
 
-func (uc *GitSourceUC) listGitlabRepo(
+func (uc *GitCredentialUC) listGitlabRepo(
 	ctx context.Context,
-	req *gitsourcedto.ListRepoReq,
+	req *gitcredentialdto.ListRepoReq,
 	setting *entity.Setting,
-) (*gitsourcedto.ListRepoResp, error) {
+) (*gitcredentialdto.ListRepoResp, error) {
 	client, err := gitlab.NewFromSetting(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -96,22 +95,22 @@ func (uc *GitSourceUC) listGitlabRepo(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := gitsourcedto.TransformGitlabProjects(projects)
+	resp, err := gitcredentialdto.TransformGitlabProjects(projects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &gitsourcedto.ListRepoResp{
+	return &gitcredentialdto.ListRepoResp{
 		Meta: &basedto.ListMeta{Page: pagingMeta},
 		Data: resp,
 	}, nil
 }
 
-func (uc *GitSourceUC) listGiteaRepo(
+func (uc *GitCredentialUC) listGiteaRepo(
 	ctx context.Context,
-	req *gitsourcedto.ListRepoReq,
+	req *gitcredentialdto.ListRepoReq,
 	setting *entity.Setting,
-) (*gitsourcedto.ListRepoResp, error) {
+) (*gitcredentialdto.ListRepoResp, error) {
 	client, err := gitea.NewFromSetting(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -122,12 +121,12 @@ func (uc *GitSourceUC) listGiteaRepo(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := gitsourcedto.TransformGiteaRepos(repos)
+	resp, err := gitcredentialdto.TransformGiteaRepos(repos)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &gitsourcedto.ListRepoResp{
+	return &gitcredentialdto.ListRepoResp{
 		Meta: &basedto.ListMeta{Page: pagingMeta},
 		Data: resp,
 	}, nil

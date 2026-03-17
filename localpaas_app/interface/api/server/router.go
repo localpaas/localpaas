@@ -10,7 +10,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/apphandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/clusterhandler"
-	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/gitsourcehandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projecthandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/settinghandler"
@@ -32,7 +31,6 @@ type HandlerRegistry struct {
 	userSettingsHandler   *usersettingshandler.UserSettingsHandler
 	systemHandler         *systemhandler.SystemHandler
 	systemSettingsHandler *systemsettingshandler.SystemSettingsHandler
-	gitSourceHandler      *gitsourcehandler.GitSourceHandler
 	webhookHandler        *webhookhandler.WebhookHandler
 }
 
@@ -47,7 +45,6 @@ func NewHandlerRegistry(
 	userSettingsHandler *usersettingshandler.UserSettingsHandler,
 	systemHandler *systemhandler.SystemHandler,
 	systemSettingsHandler *systemsettingshandler.SystemSettingsHandler,
-	gitSourceHandler *gitsourcehandler.GitSourceHandler,
 	webhookHandler *webhookhandler.WebhookHandler,
 ) *HandlerRegistry {
 	return &HandlerRegistry{
@@ -61,7 +58,6 @@ func NewHandlerRegistry(
 		userSettingsHandler:   userSettingsHandler,
 		systemHandler:         systemHandler,
 		systemSettingsHandler: systemSettingsHandler,
-		gitSourceHandler:      gitSourceHandler,
 		webhookHandler:        webhookHandler,
 	}
 }
@@ -107,13 +103,6 @@ func (s *HTTPServer) registerRoutes() {
 	_, _ = s.registerSystemRoutes(apiGroup)
 	_ = s.registerClusterRoutes(apiGroup)
 	_ = s.registerWebhookRoutes(apiGroup)
-
-	// OTHER ROUTES (will split later)
-	{ // git source group
-		gitSourceGroup := apiGroup.Group("/git-source")
-		// Repo
-		gitSourceGroup.GET("/:itemID/repositories", s.handlerRegistry.gitSourceHandler.ListGitRepo)
-	}
 }
 
 func routePing(c *gin.Context) {
