@@ -30,6 +30,8 @@ func (s *HTTPServer) registerAppRoutes(projectGroup *gin.RouterGroup) *gin.Route
 	appGroup.PUT("/:appID/http-settings", appHandler.UpdateAppHttpSettings)
 	appGroup.GET("/:appID/network-settings", appHandler.GetAppNetworkSettings)
 	appGroup.PUT("/:appID/network-settings", appHandler.UpdateAppNetworkSettings)
+	appGroup.GET("/:appID/resource-settings", appHandler.GetAppResourceSettings)
+	appGroup.PUT("/:appID/resource-settings", appHandler.UpdateAppResourceSettings)
 	// Env vars
 	appGroup.GET("/:appID/env-vars", appHandler.GetAppEnvVars)
 	appGroup.PUT("/:appID/env-vars", appHandler.UpdateAppEnvVars)
