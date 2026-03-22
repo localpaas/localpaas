@@ -49,10 +49,8 @@ func (uc *AppUC) UpdateAppNetworkSettings(
 }
 
 type updateAppNetworkSettingsData struct {
-	App      *entity.App
-	Service  *swarm.Service
-	Errors   []string // stores errors
-	Warnings []string // stores warnings
+	App     *entity.App
+	Service *swarm.Service
 }
 
 func (uc *AppUC) loadAppNetworkSettingsForUpdate(
@@ -103,7 +101,7 @@ func (uc *AppUC) prepareUpdatingAppNetworkAttachments(
 	service := data.Service
 	taskSpec := &service.Spec.TaskTemplate
 
-	currAttachments := make(map[string]*swarm.NetworkAttachmentConfig)
+	currAttachments := make(map[string]*swarm.NetworkAttachmentConfig, len(taskSpec.Networks))
 	for i := range taskSpec.Networks {
 		netAttachment := &taskSpec.Networks[i]
 		currAttachments[netAttachment.Target] = netAttachment

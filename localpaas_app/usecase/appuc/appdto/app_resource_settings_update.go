@@ -38,6 +38,4 @@ type UpdateAppResourceSettingsResp struct {
 }
 
 type UpdateAppResourceSettingsDataResp struct {
-	Errors   []string `json:"errors,omitempty"`
-	Warnings []string `json:"warnings,omitempty"`
 }

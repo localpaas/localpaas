@@ -52,10 +52,8 @@ func (uc *AppUC) UpdateAppResourceSettings(
 }
 
 type updateAppResourceSettingsData struct {
-	App      *entity.App
-	Service  *swarm.Service
-	Errors   []string // stores errors
-	Warnings []string // stores warnings
+	App     *entity.App
+	Service *swarm.Service
 }
 
 func (uc *AppUC) loadAppResourceSettingsForUpdate(
@@ -114,28 +112,29 @@ func (uc *AppUC) prepareUpdatingAppResourceReservations(
 		return
 	}
 
-	taskSpec.Resources.Reservations = &swarm.Resources{
-		NanoCPUs:         int64(req.Reservations.CPUs * docker.UnitCPUNano),
-		MemoryBytes:      req.Reservations.MemoryMB * docker.UnitMemMB,
-		GenericResources: make([]swarm.GenericResource, 0, len(req.Reservations.GenericResources)),
+	if taskSpec.Resources.Reservations == nil {
+		taskSpec.Resources.Reservations = &swarm.Resources{}
 	}
+	reservations := taskSpec.Resources.Reservations
+	reservations.NanoCPUs = int64(req.Reservations.CPUs * docker.UnitCPUNano)
+	reservations.MemoryBytes = req.Reservations.MemoryMB * docker.UnitMemMB
+	reservations.GenericResources = make([]swarm.GenericResource, 0, len(req.Reservations.GenericResources))
 
 	for _, r := range req.Reservations.GenericResources {
 		num, err := strconv.ParseInt(r.Value, 10, 64)
-		genericRes := swarm.GenericResource{}
+		res := swarm.GenericResource{}
 		if err != nil {
-			genericRes.NamedResourceSpec = &swarm.NamedGenericResource{
+			res.NamedResourceSpec = &swarm.NamedGenericResource{
 				Kind:  r.Kind,
 				Value: r.Value,
 			}
 		} else {
-			genericRes.DiscreteResourceSpec = &swarm.DiscreteGenericResource{
+			res.DiscreteResourceSpec = &swarm.DiscreteGenericResource{
 				Kind:  r.Kind,
 				Value: num,
 			}
 		}
-		taskSpec.Resources.Reservations.GenericResources =
-			append(taskSpec.Resources.Reservations.GenericResources, genericRes)
+		reservations.GenericResources = append(reservations.GenericResources, res)
 	}
 }
 
@@ -154,11 +153,13 @@ func (uc *AppUC) prepareUpdatingAppResourceLimits(
 		return
 	}
 
-	taskSpec.Resources.Limits = &swarm.Limit{
-		NanoCPUs:    int64(req.Limits.CPUs * docker.UnitCPUNano),
-		MemoryBytes: req.Limits.MemoryMB * docker.UnitMemMB,
-		Pids:        req.Limits.Pids,
+	if taskSpec.Resources.Limits == nil {
+		taskSpec.Resources.Limits = &swarm.Limit{}
 	}
+	limits := taskSpec.Resources.Limits
+	limits.NanoCPUs = int64(req.Limits.CPUs * docker.UnitCPUNano)
+	limits.MemoryBytes = req.Limits.MemoryMB * docker.UnitMemMB
+	limits.Pids = req.Limits.Pids
 }
 
 func (uc *AppUC) prepareUpdatingAppResourceUlimits(

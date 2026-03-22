@@ -7,24 +7,21 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 )
 
-type UpdateAppNetworkSettingsReq struct {
+type UpdateAppStorageSettingsReq struct {
 	ProjectID string `json:"-"`
 	AppID     string `json:"-"`
 
-	NetworkAttachments []*NetworkAttachment `json:"networkAttachments"`
-	HostsFileEntries   []*HostsFileEntry    `json:"hostsFileEntries"`
-	DNSConfig          *DNSConfig           `json:"dnsConfig"`
-	EndpointSpec       *EndpointSpec        `json:"endpointSpec"`
+	Mounts []*Mount `json:"mounts"`
 
 	UpdateVer int `json:"updateVer"`
 }
 
-func NewUpdateAppNetworkSettingsReq() *UpdateAppNetworkSettingsReq {
-	return &UpdateAppNetworkSettingsReq{}
+func NewUpdateAppStorageSettingsReq() *UpdateAppStorageSettingsReq {
+	return &UpdateAppStorageSettingsReq{}
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *UpdateAppNetworkSettingsReq) Validate() apperrors.ValidationErrors {
+func (req *UpdateAppStorageSettingsReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, basedto.ValidateID(&req.ProjectID, true, "projectId")...)
 	validators = append(validators, basedto.ValidateID(&req.AppID, true, "appId")...)
@@ -32,10 +29,10 @@ func (req *UpdateAppNetworkSettingsReq) Validate() apperrors.ValidationErrors {
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type UpdateAppNetworkSettingsResp struct {
+type UpdateAppStorageSettingsResp struct {
 	Meta *basedto.Meta                     `json:"meta"`
-	Data *UpdateAppNetworkSettingsDataResp `json:"data"`
+	Data *UpdateAppStorageSettingsDataResp `json:"data"`
 }
 
-type UpdateAppNetworkSettingsDataResp struct {
+type UpdateAppStorageSettingsDataResp struct {
 }
