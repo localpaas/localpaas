@@ -139,12 +139,12 @@ func TransformUlimits(ulimits []*container.Ulimit) []*Ulimit {
 	return resp
 }
 
-func TransformCapabilities(contSpec *swarm.ContainerSpec) *Capabilities {
+func TransformCapabilities(containerSpec *swarm.ContainerSpec) *Capabilities {
 	return &Capabilities{
-		CapabilityAdd:  contSpec.CapabilityAdd,
-		CapabilityDrop: contSpec.CapabilityDrop,
-		EnableGPU:      gofn.Contain(contSpec.CapabilityAdd, "[gpu]"),
-		OomScoreAdj:    contSpec.OomScoreAdj,
-		Sysctls:        contSpec.Sysctls,
+		CapabilityAdd:  containerSpec.CapabilityAdd,
+		CapabilityDrop: containerSpec.CapabilityDrop,
+		EnableGPU:      gofn.Contain(containerSpec.CapabilityAdd, "[gpu]"),
+		OomScoreAdj:    containerSpec.OomScoreAdj,
+		Sysctls:        containerSpec.Sysctls,
 	}
 }

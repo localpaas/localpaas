@@ -1,0 +1,38 @@
+package appuc
+
+import (
+	"context"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
+)
+
+func (uc *AppUC) GetAppContainerSettings(
+	ctx context.Context,
+	auth *basedto.Auth,
+	req *appdto.GetAppContainerSettingsReq,
+) (*appdto.GetAppContainerSettingsResp, error) {
+	app, err := uc.appRepo.GetByID(ctx, uc.db, req.ProjectID, req.AppID,
+		bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
+	)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	service, err := uc.appService.ServiceInspect(ctx, app.ServiceID, true)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	resp, err := appdto.TransformContainerSettings(service)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	return &appdto.GetAppContainerSettingsResp{
+		Data: resp,
+	}, nil
+}
