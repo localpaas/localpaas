@@ -33,31 +33,31 @@ func registerSettingParser(typ base.SettingType, parser SettingParser) bool {
 }
 
 type Setting struct {
-	ID              string `bun:",pk"`
-	ObjectID        string `bun:",nullzero"`
-	Type            base.SettingType
-	Kind            string `bun:",nullzero"`
-	Status          base.SettingStatus
-	Name            string `bun:",nullzero"`
-	Data            string `bun:",nullzero"`
-	AvailInProjects bool
-	Default         bool `bun:"is_default"`
-	Version         int
-	UpdateVer       int
+	ID              string             `bun:",pk" json:"id"`
+	ObjectID        string             `bun:",nullzero" json:"objectID"`
+	Type            base.SettingType   `json:"type"`
+	Kind            string             `bun:",nullzero" json:"kind"`
+	Status          base.SettingStatus `json:"status"`
+	Name            string             `bun:",nullzero" json:"name"`
+	Data            string             `bun:",nullzero" json:"data"`
+	AvailInProjects bool               `json:"availInProjects"`
+	Default         bool               `bun:"is_default" json:"isDefault"`
+	Version         int                `json:"version"`
+	UpdateVer       int                `json:"updateVer"`
 
-	CreatedAt time.Time `bun:",default:current_timestamp"`
-	UpdatedAt time.Time `bun:",default:current_timestamp"`
-	ExpireAt  time.Time `bun:",nullzero"`
-	DeletedAt time.Time `bun:",soft_delete,nullzero"`
+	CreatedAt time.Time `bun:",default:current_timestamp" json:"createdAt"`
+	UpdatedAt time.Time `bun:",default:current_timestamp" json:"updatedAt"`
+	ExpireAt  time.Time `bun:",nullzero" json:"expireAt"`
+	DeletedAt time.Time `bun:",soft_delete,nullzero" json:"deletedAt"`
 
-	BelongToUser    *User    `bun:"rel:belongs-to,join:object_id=id"`
-	BelongToProject *Project `bun:"rel:belongs-to,join:object_id=id"`
-	BelongToApp     *App     `bun:"rel:belongs-to,join:object_id=id"`
-	Tasks           []*Task  `bun:"rel:has-many,join:id=target_id"`
+	BelongToUser    *User    `bun:"rel:belongs-to,join:object_id=id" json:"-"`
+	BelongToProject *Project `bun:"rel:belongs-to,join:object_id=id" json:"-"`
+	BelongToApp     *App     `bun:"rel:belongs-to,join:object_id=id" json:"-"`
+	Tasks           []*Task  `bun:"rel:has-many,join:id=target_id" json:"-"`
 
 	// NOTE: temporary fields
 	parsedData      SettingData
-	CurrentObjectID string `bun:"-"`
+	CurrentObjectID string `bun:"-" json:"-"`
 }
 
 type SettingData interface {

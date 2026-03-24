@@ -15,11 +15,12 @@ import (
 )
 
 const (
-	sslRenewalSettingName = "SSL renewal settings"
-	sslRenewalJobName     = "SSL renewal job"
-	sslRenewalInterval    = timeutil.Duration(time.Hour * 24) // daily
-	sslRenewalMaxRetry    = 1
-	sslRenewalRetryDelay  = timeutil.Duration(time.Second * 30)
+	sslRenewalSettingName   = "SSL renewal settings"
+	sslRenewalJobName       = "SSL renewal job"
+	sslRenewalDefaultStatus = base.SettingStatusActive
+	sslRenewalInterval      = timeutil.Duration(time.Hour * 24) // daily
+	sslRenewalMaxRetry      = 1
+	sslRenewalRetryDelay    = timeutil.Duration(time.Second * 60)
 )
 
 func (s *settingService) initDefaultSSLRenewal(
@@ -31,7 +32,7 @@ func (s *settingService) initDefaultSSLRenewal(
 	renewalSetting := &entity.Setting{
 		ID:        gofn.Must(ulid.NewStringULID()),
 		Type:      base.SettingTypeSSLRenewal,
-		Status:    base.SettingStatusActive,
+		Status:    sslRenewalDefaultStatus,
 		Name:      sslRenewalSettingName,
 		Version:   entity.CurrentSSLRenewalVersion,
 		CreatedAt: timeNow,
@@ -48,7 +49,7 @@ func (s *settingService) initDefaultSSLRenewal(
 		ID:        gofn.Must(ulid.NewStringULID()),
 		Type:      base.SettingTypeCronJob,
 		Kind:      string(base.CronJobTypeSSLRenewal),
-		Status:    base.SettingStatusActive,
+		Status:    sslRenewalDefaultStatus,
 		Name:      sslRenewalJobName,
 		Version:   entity.CurrentCronJobVersion,
 		CreatedAt: timeNow,

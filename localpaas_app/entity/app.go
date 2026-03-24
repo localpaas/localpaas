@@ -15,25 +15,25 @@ var (
 )
 
 type App struct {
-	ID        string `bun:",pk"`
-	Name      string
-	Key       string
-	ProjectID string
-	ParentID  string `bun:",nullzero"`
-	ServiceID string `bun:",nullzero"`
-	Status    base.AppStatus
-	Token     string
-	Note      string `bun:",nullzero"`
-	UpdateVer int
+	ID        string         `bun:",pk" json:"id"`
+	Name      string         `json:"name"`
+	Key       string         `json:"key"`
+	ProjectID string         `json:"projectID"`
+	ParentID  string         `bun:",nullzero" json:"parentID"`
+	ServiceID string         `bun:",nullzero" json:"serviceID"`
+	Status    base.AppStatus `json:"status"`
+	Token     string         `json:"token"`
+	Note      string         `bun:",nullzero" json:"note"`
+	UpdateVer int            `json:"updateVer"`
 
-	CreatedAt time.Time `bun:",default:current_timestamp"`
-	UpdatedAt time.Time `bun:",default:current_timestamp"`
-	DeletedAt time.Time `bun:",soft_delete,nullzero"`
+	CreatedAt time.Time `bun:",default:current_timestamp" json:"createdAt"`
+	UpdatedAt time.Time `bun:",default:current_timestamp" json:"updatedAt"`
+	DeletedAt time.Time `bun:",soft_delete,nullzero" json:"deletedAt"`
 
-	Project   *Project   `bun:"rel:has-one,join:project_id=id"`
-	ParentApp *App       `bun:"rel:has-one,join:parent_id=id"`
-	Settings  []*Setting `bun:"rel:has-many,join:id=object_id"`
-	Tags      []*AppTag  `bun:"rel:has-many,join:id=app_id"`
+	Project   *Project   `bun:"rel:has-one,join:project_id=id" json:"-"`
+	ParentApp *App       `bun:"rel:has-one,join:parent_id=id" json:"-"`
+	Settings  []*Setting `bun:"rel:has-many,join:id=object_id" json:"-"`
+	Tags      []*AppTag  `bun:"rel:has-many,join:id=app_id" json:"-"`
 }
 
 // GetID implements IDEntity interface

@@ -46,6 +46,7 @@ const (
 	ResourceTypeNotification  ResourceType = "notification"
 	ResourceTypeImageBuild    ResourceType = "image-build"
 	ResourceTypeSystemCleanup ResourceType = "system-cleanup"
+	ResourceTypeSystemBackup  ResourceType = "system-backup"
 	ResourceTypeSSLRenewal    ResourceType = "ssl-renewal"
 )
 

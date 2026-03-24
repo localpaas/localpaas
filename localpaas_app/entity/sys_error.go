@@ -5,16 +5,16 @@ import (
 )
 
 type SysError struct {
-	ID         string `bun:",pk"`
-	RequestID  string
-	Status     int
-	Code       string
-	Detail     string
-	Cause      string
-	DebugLog   string
-	StackTrace string
+	ID         string `bun:",pk" json:"id"`
+	RequestID  string `json:"requestID"`
+	Status     int    `json:"status"`
+	Code       string `json:"code"`
+	Detail     string `json:"detail"`
+	Cause      string `json:"cause"`
+	DebugLog   string `json:"debugLog"`
+	StackTrace string `json:"stackTrace"`
 
-	CreatedAt time.Time `bun:",default:current_timestamp"`
+	CreatedAt time.Time `bun:",default:current_timestamp" json:"createdAt"`
 }
 
 // GetID implements IDEntity interface

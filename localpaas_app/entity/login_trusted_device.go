@@ -8,10 +8,10 @@ var (
 )
 
 type LoginTrustedDevice struct {
-	UserID    string `bun:",pk"`
-	DeviceID  string `bun:",pk"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	UserID    string    `bun:",pk" json:"userID"`
+	DeviceID  string    `bun:",pk" json:"deviceID"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 
-	User *User `bun:"rel:has-one,join:user_id=id"`
+	User *User `bun:"rel:has-one,join:user_id=id" json:"-"`
 }

@@ -51,6 +51,13 @@ func (s *HTTPServer) registerSystemRoutes(apiGroup *gin.RouterGroup) (*gin.Route
 		cleanupGroup.POST("/exec", systemSettingsHandler.ExecuteCleanup)
 	}
 
+	{ // Backup group
+		backupGroup := systemSettingGroup.Group("/backup")
+		backupGroup.GET("", systemSettingsHandler.GetBackupSettings)
+		backupGroup.PUT("", systemSettingsHandler.UpdateBackupSettings)
+		backupGroup.POST("/exec", systemSettingsHandler.ExecuteBackup)
+	}
+
 	{ // SSL renewal group
 		sslRenewalGroup := systemSettingGroup.Group("/ssl-renewal")
 		sslRenewalGroup.GET("", systemSettingsHandler.GetSSLRenewalSettings)

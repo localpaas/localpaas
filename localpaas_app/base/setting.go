@@ -33,6 +33,7 @@ const (
 	SettingTypeNotification  SettingType = "notification"
 	SettingTypeImageBuild    SettingType = "image-build"
 	SettingTypeSystemCleanup SettingType = "system-cleanup"
+	SettingTypeSystemBackup  SettingType = "system-backup"
 	SettingTypeSSLRenewal    SettingType = "ssl-renewal"
 )
 

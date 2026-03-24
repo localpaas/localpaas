@@ -24,28 +24,28 @@ var (
 )
 
 type Task struct {
-	ID        string `bun:",pk"`
-	TargetID  string `bun:",nullzero"`
-	Type      base.TaskType
-	Status    base.TaskStatus
-	Config    TaskConfig `bun:",nullzero"`
-	Args      string     `bun:",nullzero"`
-	Runs      string     `bun:",nullzero"`
-	Output    string     `bun:",nullzero"`
-	Version   int
-	UpdateVer int
+	ID        string          `bun:",pk" json:"id"`
+	TargetID  string          `bun:",nullzero" json:"targetID"`
+	Type      base.TaskType   `json:"type"`
+	Status    base.TaskStatus `json:"status"`
+	Config    TaskConfig      `bun:",nullzero" json:"config"`
+	Args      string          `bun:",nullzero" json:"args"`
+	Runs      string          `bun:",nullzero" json:"runs"`
+	Output    string          `bun:",nullzero" json:"output"`
+	Version   int             `json:"version"`
+	UpdateVer int             `json:"updateVer"`
 
-	RunAt     time.Time `bun:",nullzero"`
-	RetryAt   time.Time `bun:",nullzero"`
-	StartedAt time.Time `bun:",nullzero"`
-	EndedAt   time.Time `bun:",nullzero"`
+	RunAt     time.Time `bun:",nullzero" json:"runAt"`
+	RetryAt   time.Time `bun:",nullzero" json:"retryAt"`
+	StartedAt time.Time `bun:",nullzero" json:"startedAt"`
+	EndedAt   time.Time `bun:",nullzero" json:"endedAt"`
 
-	CreatedAt time.Time `bun:",default:current_timestamp"`
-	UpdatedAt time.Time `bun:",default:current_timestamp"`
-	DeletedAt time.Time `bun:",soft_delete,nullzero"`
+	CreatedAt time.Time `bun:",default:current_timestamp" json:"createdAt"`
+	UpdatedAt time.Time `bun:",default:current_timestamp" json:"updatedAt"`
+	DeletedAt time.Time `bun:",soft_delete,nullzero" json:"deletedAt"`
 
-	TargetJob        *Setting    `bun:"rel:belongs-to,join:target_id=id"`
-	TargetDeployment *Deployment `bun:"rel:belongs-to,join:target_id=id"`
+	TargetJob        *Setting    `bun:"rel:belongs-to,join:target_id=id" json:"-"`
+	TargetDeployment *Deployment `bun:"rel:belongs-to,join:target_id=id" json:"-"`
 
 	// NOTE: temporary fields
 	parsedArgs   any

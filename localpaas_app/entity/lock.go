@@ -6,5 +6,5 @@ var (
 )
 
 type Lock struct {
-	ID string `bun:",pk"`
+	ID string `bun:",pk" json:"id"`
 }

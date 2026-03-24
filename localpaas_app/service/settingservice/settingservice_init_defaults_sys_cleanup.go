@@ -15,11 +15,12 @@ import (
 )
 
 const (
-	sysCleanupSettingName = "System cleanup settings"
-	sysCleanupJobName     = "System cleanup job"
-	sysCleanupInterval    = timeutil.Duration(time.Hour * 24) // daily
-	sysCleanupMaxRetry    = 1
-	sysCleanupRetryDelay  = timeutil.Duration(time.Second * 30)
+	sysCleanupSettingName   = "System cleanup settings"
+	sysCleanupJobName       = "System cleanup job"
+	sysCleanupDefaultStatus = base.SettingStatusActive
+	sysCleanupInterval      = timeutil.Duration(time.Hour * 24) // daily
+	sysCleanupMaxRetry      = 1
+	sysCleanupRetryDelay    = timeutil.Duration(time.Second * 30)
 
 	dbObjectRetentionOfTasks          = timeutil.Duration(time.Hour * 24 * 180) // 180 days
 	dbObjectRetentionOfSysErrors      = timeutil.Duration(time.Hour * 24 * 180)
@@ -36,7 +37,7 @@ func (s *settingService) initDefaultSystemCleanup(
 	cleanupSetting := &entity.Setting{
 		ID:        gofn.Must(ulid.NewStringULID()),
 		Type:      base.SettingTypeSystemCleanup,
-		Status:    base.SettingStatusActive,
+		Status:    sysCleanupDefaultStatus,
 		Name:      sysCleanupSettingName,
 		Version:   entity.CurrentSystemCleanupVersion,
 		CreatedAt: timeNow,
@@ -46,16 +47,22 @@ func (s *settingService) initDefaultSystemCleanup(
 		ScheduleInterval: sysCleanupInterval,
 		ScheduleFrom:     timeNow.Truncate(sysCleanupInterval.ToDuration()),
 		DBObjectRetention: &entity.DBObjectRetention{
+			Enabled:        true,
 			Tasks:          dbObjectRetentionOfTasks,
 			SysErrors:      dbObjectRetentionOfSysErrors,
 			Deployments:    dbObjectRetentionOfDeployments,
 			DeletedObjects: dbObjectRetentionOfDeletedObjects,
 		},
 		ClusterCleanup: &entity.ClusterCleanup{
+			Enabled:         true,
 			PruneImages:     true,
 			PruneVolumes:    true,
 			PruneNetworks:   true,
 			PruneContainers: true,
+		},
+		Notification: &entity.BaseEventNotification{
+			SuccessUseDefault: true,
+			FailureUseDefault: true,
 		},
 	}
 	cleanupSetting.MustSetData(cleanup)
@@ -65,7 +72,7 @@ func (s *settingService) initDefaultSystemCleanup(
 		ID:        gofn.Must(ulid.NewStringULID()),
 		Type:      base.SettingTypeCronJob,
 		Kind:      string(base.CronJobTypeSystemCleanup),
-		Status:    base.SettingStatusActive,
+		Status:    sysCleanupDefaultStatus,
 		Name:      sysCleanupJobName,
 		Version:   entity.CurrentCronJobVersion,
 		CreatedAt: timeNow,

@@ -2,7 +2,6 @@ package cronjobuc
 
 import (
 	"context"
-	"time"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -36,10 +35,7 @@ func (uc *CronJobUC) UpdateCronJob(
 			pData *settings.PersistingSettingData,
 		) error {
 			pData.Setting.Kind = string(newJob.CronType)
-			// Schedule changes, reset the timestamp
-			if scheduleChanges {
-				newJob.Schedule.LastSchedTime = time.Time{}
-			}
+			newJob.Schedule.OnChange(scheduleChanges) // call this to handle if the schedule changes
 			err := pData.Setting.SetData(newJob)
 			if err != nil {
 				return apperrors.Wrap(err)

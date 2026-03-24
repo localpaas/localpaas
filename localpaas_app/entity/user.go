@@ -16,27 +16,27 @@ var (
 )
 
 type User struct {
-	ID       string `bun:",pk"`
-	Username string
-	Email    string `bun:",nullzero"`
-	Role     base.UserRole
-	Status   base.UserStatus
-	FullName string
-	Position string `bun:",nullzero"`
-	Photo    string `bun:",nullzero"`
-	Notes    string `bun:",nullzero"`
+	ID       string          `bun:",pk" json:"id"`
+	Username string          `json:"username"`
+	Email    string          `bun:",nullzero" json:"email"`
+	Role     base.UserRole   `json:"role"`
+	Status   base.UserStatus `json:"status"`
+	FullName string          `json:"fullName"`
+	Position string          `bun:",nullzero" json:"position"`
+	Photo    string          `bun:",nullzero" json:"photo"`
+	Notes    string          `bun:",nullzero" json:"notes"`
 
-	SecurityOption base.UserSecurityOption
-	TotpSecret     string `bun:",nullzero"`
-	Password       string `bun:",nullzero"`
+	SecurityOption base.UserSecurityOption `json:"securityOption"`
+	TotpSecret     string                  `bun:",nullzero" json:"totpSecret"`
+	Password       string                  `bun:",nullzero" json:"password"`
 
-	CreatedAt      time.Time `bun:",default:current_timestamp"`
-	UpdatedAt      time.Time `bun:",default:current_timestamp"`
-	AccessExpireAt time.Time `bun:",nullzero"`
-	DeletedAt      time.Time `bun:",soft_delete,nullzero"`
-	LastAccess     time.Time `bun:",nullzero"`
+	CreatedAt      time.Time `bun:",default:current_timestamp" json:"createdAt"`
+	UpdatedAt      time.Time `bun:",default:current_timestamp" json:"updatedAt"`
+	AccessExpireAt time.Time `bun:",nullzero" json:"accessExpireAt"`
+	DeletedAt      time.Time `bun:",soft_delete,nullzero" json:"deletedAt"`
+	LastAccess     time.Time `bun:",nullzero" json:"lastAccess"`
 
-	Accesses []*ACLPermission `bun:"rel:has-many,join:id=subject_id"`
+	Accesses []*ACLPermission `bun:"rel:has-many,join:id=subject_id" json:"-"`
 }
 
 // GetID implements IDEntity interface

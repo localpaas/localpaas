@@ -13,20 +13,20 @@ var (
 )
 
 type ACLPermission struct {
-	SubjectType  base.SubjectType
-	SubjectID    string `bun:",pk"`
-	ResourceType base.ResourceType
-	ResourceID   string             `bun:",pk"`
-	Actions      base.AccessActions `bun:"embed:action_"`
+	SubjectType  base.SubjectType   `json:"subjectType"`
+	SubjectID    string             `bun:",pk" json:"subjectID"`
+	ResourceType base.ResourceType  `json:"resourceType"`
+	ResourceID   string             `bun:",pk" json:"resourceID"`
+	Actions      base.AccessActions `bun:"embed:action_" json:"actions"`
 
-	CreatedAt time.Time `bun:",default:current_timestamp"`
-	UpdatedAt time.Time `bun:",default:current_timestamp"`
-	DeletedAt time.Time `bun:",soft_delete,nullzero"`
+	CreatedAt time.Time `bun:",default:current_timestamp" json:"createdAt"`
+	UpdatedAt time.Time `bun:",default:current_timestamp" json:"updatedAt"`
+	DeletedAt time.Time `bun:",soft_delete,nullzero" json:"deletedAt"`
 
-	SubjectUser    *User    `bun:"rel:has-one,join:subject_id=id"`
-	SubjectProject *Project `bun:"rel:has-one,join:subject_id=id"`
-	SubjectApp     *App     `bun:"rel:has-one,join:subject_id=id"`
+	SubjectUser    *User    `bun:"rel:has-one,join:subject_id=id" json:"-"`
+	SubjectProject *Project `bun:"rel:has-one,join:subject_id=id" json:"-"`
+	SubjectApp     *App     `bun:"rel:has-one,join:subject_id=id" json:"-"`
 
-	ResourceProject *Project `bun:"rel:has-one,join:resource_id=id"`
-	ResourceApp     *App     `bun:"rel:has-one,join:resource_id=id"`
+	ResourceProject *Project `bun:"rel:has-one,join:resource_id=id" json:"-"`
+	ResourceApp     *App     `bun:"rel:has-one,join:resource_id=id" json:"-"`
 }

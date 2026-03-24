@@ -17,23 +17,23 @@ var (
 )
 
 type Deployment struct {
-	ID        string `bun:",pk"`
-	AppID     string
-	Status    base.DeploymentStatus
-	Settings  *AppDeploymentSettings
-	Trigger   *AppDeploymentTrigger
-	Output    *AppDeploymentOutput
-	Version   int
-	UpdateVer int
+	ID        string                 `bun:",pk" json:"id"`
+	AppID     string                 `json:"appID"`
+	Status    base.DeploymentStatus  `json:"status"`
+	Settings  *AppDeploymentSettings `json:"settings"`
+	Trigger   *AppDeploymentTrigger  `json:"trigger"`
+	Output    *AppDeploymentOutput   `json:"output"`
+	Version   int                    `json:"version"`
+	UpdateVer int                    `json:"updateVer"`
 
-	StartedAt time.Time `bun:",nullzero"`
-	EndedAt   time.Time `bun:",nullzero"`
-	CreatedAt time.Time `bun:",default:current_timestamp"`
-	UpdatedAt time.Time `bun:",default:current_timestamp"`
-	DeletedAt time.Time `bun:",soft_delete,nullzero"`
+	StartedAt time.Time `bun:",nullzero" json:"startedAt"`
+	EndedAt   time.Time `bun:",nullzero" json:"endedAt"`
+	CreatedAt time.Time `bun:",default:current_timestamp" json:"createdAt"`
+	UpdatedAt time.Time `bun:",default:current_timestamp" json:"updatedAt"`
+	DeletedAt time.Time `bun:",soft_delete,nullzero" json:"deletedAt"`
 
-	App   *App    `bun:"rel:belongs-to,join:app_id=id"`
-	Tasks []*Task `bun:"rel:has-many,join:id=target_id"`
+	App   *App    `bun:"rel:belongs-to,join:app_id=id" json:"-"`
+	Tasks []*Task `bun:"rel:has-many,join:id=target_id" json:"-"`
 }
 
 // GetID implements IDEntity interface

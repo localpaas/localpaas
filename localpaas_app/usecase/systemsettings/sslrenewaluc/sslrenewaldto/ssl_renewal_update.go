@@ -6,6 +6,7 @@ import (
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
@@ -18,8 +19,9 @@ type UpdateSSLRenewalReq struct {
 }
 
 type SSLRenewalBaseReq struct {
-	ScheduleInterval timeutil.Duration `json:"scheduleInterval"`
-	ScheduleFrom     time.Time         `json:"scheduleFrom"`
+	Status           base.SettingStatus `json:"status"`
+	ScheduleInterval timeutil.Duration  `json:"scheduleInterval"`
+	ScheduleFrom     time.Time          `json:"scheduleFrom"`
 }
 
 func (req *SSLRenewalBaseReq) ToEntity() *entity.SSLRenewal {

@@ -10,9 +10,9 @@ var (
 )
 
 type ProjectTag struct {
-	ProjectID    string `bun:",pk"`
-	Tag          string `bun:",pk"`
-	DisplayOrder int
+	ProjectID    string `bun:",pk" json:"projectID"`
+	Tag          string `bun:",pk" json:"tag"`
+	DisplayOrder int    `json:"displayOrder"`
 
-	DeletedAt time.Time `bun:",soft_delete,nullzero"`
+	DeletedAt time.Time `bun:",soft_delete,nullzero" json:"deletedAt"`
 }

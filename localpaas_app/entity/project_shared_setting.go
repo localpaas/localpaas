@@ -10,10 +10,10 @@ var (
 )
 
 type ProjectSharedSetting struct {
-	ProjectID       string `bun:",pk"`
-	SettingID       string `bun:",pk"`
-	DataViewAllowed bool
+	ProjectID       string `bun:",pk" json:"projectID"`
+	SettingID       string `bun:",pk" json:"settingID"`
+	DataViewAllowed bool   `json:"dataViewAllowed"`
 
-	CreatedAt time.Time `bun:",default:current_timestamp"`
-	DeletedAt time.Time `bun:",soft_delete,nullzero"`
+	CreatedAt time.Time `bun:",default:current_timestamp" json:"createdAt"`
+	DeletedAt time.Time `bun:",soft_delete,nullzero" json:"deletedAt"`
 }

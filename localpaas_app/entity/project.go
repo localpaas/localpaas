@@ -14,24 +14,24 @@ var (
 )
 
 type Project struct {
-	ID        string `bun:",pk"`
-	Name      string
-	Key       string
-	Photo     string `bun:",nullzero"`
-	Status    base.ProjectStatus
-	Note      string `bun:",nullzero"`
-	OwnerID   string
-	UpdateVer int
+	ID        string             `bun:",pk" json:"id"`
+	Name      string             `json:"name"`
+	Key       string             `json:"key"`
+	Photo     string             `bun:",nullzero" json:"photo"`
+	Status    base.ProjectStatus `json:"status"`
+	Note      string             `bun:",nullzero" json:"note"`
+	OwnerID   string             `json:"ownerID"`
+	UpdateVer int                `json:"updateVer"`
 
-	CreatedAt time.Time `bun:",default:current_timestamp"`
-	UpdatedAt time.Time `bun:",default:current_timestamp"`
-	DeletedAt time.Time `bun:",soft_delete,nullzero"`
+	CreatedAt time.Time `bun:",default:current_timestamp" json:"createdAt"`
+	UpdatedAt time.Time `bun:",default:current_timestamp" json:"updatedAt"`
+	DeletedAt time.Time `bun:",soft_delete,nullzero" json:"deletedAt"`
 
-	Owner    *User            `bun:"rel:has-one,join:owner_id=id"`
-	Settings []*Setting       `bun:"rel:has-many,join:id=object_id"`
-	Apps     []*App           `bun:"rel:has-many,join:id=project_id"`
-	Tags     []*ProjectTag    `bun:"rel:has-many,join:id=project_id"`
-	Accesses []*ACLPermission `bun:"rel:has-many,join:id=resource_id"`
+	Owner    *User            `bun:"rel:has-one,join:owner_id=id" json:"-"`
+	Settings []*Setting       `bun:"rel:has-many,join:id=object_id" json:"-"`
+	Apps     []*App           `bun:"rel:has-many,join:id=project_id" json:"-"`
+	Tags     []*ProjectTag    `bun:"rel:has-many,join:id=project_id" json:"-"`
+	Accesses []*ACLPermission `bun:"rel:has-many,join:id=resource_id" json:"-"`
 }
 
 // GetID implements IDEntity interface

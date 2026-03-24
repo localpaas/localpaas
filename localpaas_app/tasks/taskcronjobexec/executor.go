@@ -149,6 +149,8 @@ func (e *Executor) execute(
 		err = e.cronExecContainerCmd(ctx, db, data)
 	case base.CronJobTypeSystemCleanup:
 		err = e.cronExecSystemCleanup(ctx, db, data)
+	case base.CronJobTypeSystemBackup:
+		err = e.cronExecSystemBackup(ctx, db, data)
 	case base.CronJobTypeSSLRenewal:
 		err = e.cronExecSSLRenew(ctx, db, data)
 	}

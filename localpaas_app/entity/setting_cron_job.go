@@ -52,6 +52,12 @@ func (s *CronJobSchedule) Changed(oldSched *CronJobSchedule) bool {
 	return s.CronExpr != oldSched.CronExpr || s.Interval != oldSched.Interval || s.InitialTime != oldSched.InitialTime
 }
 
+func (s *CronJobSchedule) OnChange(scheduleChanged bool) {
+	if scheduleChanged {
+		s.LastSchedTime = time.Time{}
+	}
+}
+
 func (s *CronJobSchedule) IsValid() error {
 	if s.CronExpr != "" {
 		_, err := parser.Parse(s.CronExpr)

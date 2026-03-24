@@ -33,8 +33,7 @@ func (s *settingService) InitDefaults(
 
 		settings, _, err := s.settingRepo.List(ctx, db, base.NewSettingScopeGlobal(), nil,
 			bunex.SelectWhereIn("setting.type IN (?)", base.SettingTypeImageBuild,
-				base.SettingTypeSystemCleanup, base.SettingTypeSSLRenewal),
-			bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
+				base.SettingTypeSystemCleanup, base.SettingTypeSystemBackup, base.SettingTypeSSLRenewal),
 			bunex.SelectExcludeColumns("data"),
 		)
 		if err != nil {
@@ -58,6 +57,16 @@ func (s *settingService) InitDefaults(
 			return item.Type == base.SettingTypeSystemCleanup
 		}) {
 			err = s.initDefaultSystemCleanup(ctx, db, timeNow)
+			if err != nil {
+				return apperrors.Wrap(err)
+			}
+		}
+
+		// System backup settings
+		if !gofn.ContainBy(settings, func(item *entity.Setting) bool {
+			return item.Type == base.SettingTypeSystemBackup
+		}) {
+			err = s.initDefaultSystemBackup(ctx, db, timeNow)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

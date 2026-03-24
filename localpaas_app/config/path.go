@@ -155,3 +155,13 @@ func (cfg *Config) DataPathLetsEncrypt() string {
 func (cfg *Config) DataPathLetsEncryptEtc() string {
 	return filepath.Join(cfg.DataPathLetsEncrypt(), "etc")
 }
+
+/// SYSTEM BACKUP
+
+func (cfg *Config) DataPathSystemBackup() string {
+	return filepath.Join(cfg.AppPath, "system", "backup")
+}
+
+func (cfg *Config) DataPathSystemBackupFiles() string {
+	return filepath.Join(cfg.DataPathSystemBackup(), "files")
+}

@@ -24,7 +24,7 @@ const (
 	renewalSettingName   = "SSL renewal settings"
 	renewalJobName       = "SSL renewal job"
 	renewalJobMaxRetry   = 1
-	renewalJobRetryDelay = timeutil.Duration(time.Second * 30)
+	renewalJobRetryDelay = timeutil.Duration(time.Second * 60)
 )
 
 func (uc *SSLRenewalUC) UpdateSSLRenewal(
@@ -55,7 +55,7 @@ func (uc *SSLRenewalUC) UpdateSSLRenewal(
 			pData *settings.PersistingSettingData,
 		) error {
 			persistingData.PersistingSettingData = pData
-			return uc.preparePersistingData(updateData, persistingData)
+			return uc.preparePersistingData(req, updateData, persistingData)
 		},
 		AfterPersisting: func(
 			ctx context.Context,
@@ -142,11 +142,12 @@ func (uc *SSLRenewalUC) loadSettingData(
 }
 
 func (uc *SSLRenewalUC) preparePersistingData(
+	req *sslrenewaldto.UpdateSSLRenewalReq,
 	updateData *updateSettingData,
 	persistingData *persistingSettingData,
 ) error {
 	// Set new cleanup settings
-	persistingData.Setting.Status = base.SettingStatusActive
+	persistingData.Setting.Status = req.Status
 	err := persistingData.Setting.SetData(updateData.NewRenewal)
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -154,16 +155,15 @@ func (uc *SSLRenewalUC) preparePersistingData(
 
 	// Update renewal job
 	jobSetting := updateData.JobSetting
-	jobSetting.Status = base.SettingStatusActive
+	jobSetting.Status = gofn.If(persistingData.Setting.Status == base.SettingStatusActive,
+		base.SettingStatusActive, base.SettingStatusDisabled)
 	jobSetting.Kind = string(base.CronJobTypeSSLRenewal)
 	persistingData.JobSetting = jobSetting
 
 	renewalJob := jobSetting.MustAsCronJob()
 	renewalJob.Schedule.Interval = updateData.NewRenewal.ScheduleInterval
 	renewalJob.Schedule.InitialTime = updateData.NewRenewal.ScheduleFrom
-	if updateData.JobScheduleChanges { // Schedule changes, reset the timestamp
-		renewalJob.Schedule.LastSchedTime = time.Time{}
-	}
+	renewalJob.Schedule.OnChange(updateData.JobScheduleChanges) // call this to handle if the schedule changes
 	jobSetting.MustSetData(renewalJob)
 
 	return nil

@@ -5,8 +5,8 @@ import (
 )
 
 type DataMigration struct {
-	ID        string `bun:",pk"`
-	AppliedAt time.Time
+	ID        string    `bun:",pk" json:"id"`
+	AppliedAt time.Time `json:"appliedAt"`
 }
 
 type DataMigrateable interface {

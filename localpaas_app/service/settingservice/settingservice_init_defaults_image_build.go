@@ -16,12 +16,13 @@ import (
 )
 
 const (
-	imageBuildCPUDefault = 2
-	imageBuildCPUMin     = 1
-	imageBuildCPUMax     = 8
-	imageBuildMemDefault = 2048      // 2GB
-	imageBuildMemMin     = 1024      // MB
-	imageBuildMemMax     = 16 * 1024 // MB
+	imageBuildSettingName = "Image build settings"
+	imageBuildCPUDefault  = 2
+	imageBuildCPUMin      = 1
+	imageBuildCPUMax      = 8
+	imageBuildMemDefault  = 2048      // 2GB
+	imageBuildMemMin      = 1024      // MB
+	imageBuildMemMax      = 16 * 1024 // MB
 )
 
 func (s *settingService) initDefaultImageBuild(
@@ -33,7 +34,7 @@ func (s *settingService) initDefaultImageBuild(
 		ID:              gofn.Must(ulid.NewStringULID()),
 		Type:            base.SettingTypeImageBuild,
 		Status:          base.SettingStatusActive,
-		Name:            "image build settings",
+		Name:            imageBuildSettingName,
 		AvailInProjects: true,
 		Default:         true,
 		Version:         entity.CurrentImageBuildVersion,

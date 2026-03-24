@@ -1,4 +1,4 @@
-package systemcleanupuc
+package systembackupuc
 
 import (
 	"context"
@@ -16,30 +16,30 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/systemsettings/systemcleanupuc/systemcleanupdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/systemsettings/systembackupuc/systembackupdto"
 )
 
 const (
-	currentSettingType   = base.SettingTypeSystemCleanup
-	cleanupSettingName   = "System cleanup settings"
-	cleanupJobName       = "System cleanup job"
-	cleanupJobMaxRetry   = 1
-	cleanupJobRetryDelay = timeutil.Duration(time.Second * 30)
+	currentSettingType  = base.SettingTypeSystemBackup
+	backupSettingName   = "System backup settings"
+	backupJobName       = "System backup job"
+	backupJobMaxRetry   = 1
+	backupJobRetryDelay = timeutil.Duration(time.Second * 60)
 )
 
-func (uc *SystemCleanupUC) UpdateSystemCleanup(
+func (uc *SystemBackupUC) UpdateSystemBackup(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *systemcleanupdto.UpdateSystemCleanupReq,
-) (*systemcleanupdto.UpdateSystemCleanupResp, error) {
+	req *systembackupdto.UpdateSystemBackupReq,
+) (*systembackupdto.UpdateSystemBackupResp, error) {
 	req.Type = currentSettingType
 	updateData := &updateSettingData{
-		NewCleanup: req.ToEntity(),
+		NewBackup: req.ToEntity(),
 	}
 	persistingData := &persistingSettingData{}
 
 	_, err := uc.UpdateSetting(ctx, &req.UpdateSettingReq, &settings.UpdateSettingData{
-		VerifyingName: cleanupSettingName,
+		VerifyingName: backupSettingName,
 		Load: func(
 			ctx context.Context,
 			db database.Tx,
@@ -70,12 +70,12 @@ func (uc *SystemCleanupUC) UpdateSystemCleanup(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &systemcleanupdto.UpdateSystemCleanupResp{}, nil
+	return &systembackupdto.UpdateSystemBackupResp{}, nil
 }
 
 type updateSettingData struct {
 	*settings.UpdateSettingData
-	NewCleanup         *entity.SystemCleanup
+	NewBackup          *entity.SystemBackup
 	JobSetting         *entity.Setting
 	JobScheduleChanges bool
 }
@@ -85,30 +85,30 @@ type persistingSettingData struct {
 	JobSetting *entity.Setting
 }
 
-func (uc *SystemCleanupUC) loadSettingData(
+func (uc *SystemBackupUC) loadSettingData(
 	ctx context.Context,
 	db database.Tx,
-	req *systemcleanupdto.UpdateSystemCleanupReq,
+	req *systembackupdto.UpdateSystemBackupReq,
 	data *updateSettingData,
 ) error {
-	cleanupSetting, err := uc.SettingRepo.GetSingle(ctx, db, req.Scope, base.SettingTypeSystemCleanup, false,
+	backupSetting, err := uc.SettingRepo.GetSingle(ctx, db, req.Scope, base.SettingTypeSystemBackup, false,
 		bunex.SelectFor("UPDATE OF setting"),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	data.Setting = cleanupSetting
+	data.Setting = backupSetting
 
-	cleanup, err := cleanupSetting.AsSystemCleanup()
+	backup, err := backupSetting.AsSystemBackup()
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	data.JobScheduleChanges = cleanup.ScheduleInterval != data.NewCleanup.ScheduleInterval ||
-		cleanup.ScheduleFrom != data.NewCleanup.ScheduleFrom
+	data.JobScheduleChanges = backup.ScheduleInterval != data.NewBackup.ScheduleInterval ||
+		backup.ScheduleFrom != data.NewBackup.ScheduleFrom
 
-	// Load cron job of the cleanup
+	// Load cron job of the backup
 	jobSetting, err := uc.SettingRepo.GetSingle(ctx, db, req.Scope, base.SettingTypeCronJob, false,
-		bunex.SelectWhere("setting.data->'targetSetting'->>'id' = ?", cleanupSetting.ID),
+		bunex.SelectWhere("setting.data->'targetSetting'->>'id' = ?", backupSetting.ID),
 		bunex.SelectFor("UPDATE OF setting"),
 	)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
@@ -120,17 +120,17 @@ func (uc *SystemCleanupUC) loadSettingData(
 			ID:        gofn.Must(ulid.NewStringULID()),
 			Type:      base.SettingTypeCronJob,
 			Status:    base.SettingStatusActive,
-			Name:      cleanupJobName,
+			Name:      backupJobName,
 			Version:   entity.CurrentCronJobVersion,
 			CreatedAt: timeNow,
 			UpdatedAt: timeNow,
 		}
 		cronJob := &entity.CronJob{
-			CronType:      base.CronJobTypeSystemCleanup,
+			CronType:      base.CronJobTypeSystemBackup,
 			Schedule:      &entity.CronJobSchedule{},
-			TargetSetting: entity.ObjectID{ID: cleanupSetting.ID},
-			MaxRetry:      cleanupJobMaxRetry,
-			RetryDelay:    cleanupJobRetryDelay,
+			TargetSetting: entity.ObjectID{ID: backupSetting.ID},
+			MaxRetry:      backupJobMaxRetry,
+			RetryDelay:    backupJobRetryDelay,
 		}
 		jobSetting.MustSetData(cronJob)
 	}
@@ -139,36 +139,36 @@ func (uc *SystemCleanupUC) loadSettingData(
 	return nil
 }
 
-func (uc *SystemCleanupUC) preparePersistingData(
-	req *systemcleanupdto.UpdateSystemCleanupReq,
+func (uc *SystemBackupUC) preparePersistingData(
+	req *systembackupdto.UpdateSystemBackupReq,
 	updateData *updateSettingData,
 	persistingData *persistingSettingData,
 ) error {
-	// Set new cleanup settings
+	// Set new backup settings
 	persistingData.Setting.Status = req.Status
-	err := persistingData.Setting.SetData(updateData.NewCleanup)
+	err := persistingData.Setting.SetData(updateData.NewBackup)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	// Update cleanup job
+	// Update backup job
 	jobSetting := updateData.JobSetting
 	jobSetting.Status = gofn.If(persistingData.Setting.Status == base.SettingStatusActive,
 		base.SettingStatusActive, base.SettingStatusDisabled)
-	jobSetting.Kind = string(base.CronJobTypeSystemCleanup)
+	jobSetting.Kind = string(base.CronJobTypeSystemBackup)
 	persistingData.JobSetting = jobSetting
 
-	cleanupJob := jobSetting.MustAsCronJob()
-	cleanupJob.Schedule.Interval = updateData.NewCleanup.ScheduleInterval
-	cleanupJob.Schedule.InitialTime = updateData.NewCleanup.ScheduleFrom
-	cleanupJob.Schedule.OnChange(updateData.JobScheduleChanges) // call this to handle if the schedule changes
-	cleanupJob.Notification = updateData.NewCleanup.Notification
-	jobSetting.MustSetData(cleanupJob)
+	backupJob := jobSetting.MustAsCronJob()
+	backupJob.Schedule.Interval = updateData.NewBackup.ScheduleInterval
+	backupJob.Schedule.InitialTime = updateData.NewBackup.ScheduleFrom
+	backupJob.Schedule.OnChange(updateData.JobScheduleChanges) // call this to handle if the schedule changes
+	backupJob.Notification = updateData.NewBackup.Notification
+	jobSetting.MustSetData(backupJob)
 
 	return nil
 }
 
-func (uc *SystemCleanupUC) postPersisting(
+func (uc *SystemBackupUC) postPersisting(
 	ctx context.Context,
 	db database.Tx,
 	updateData *updateSettingData,

@@ -10,9 +10,9 @@ var (
 )
 
 type AppTag struct {
-	AppID        string `bun:",pk"`
-	Tag          string `bun:",pk"`
-	DisplayOrder int
+	AppID        string `bun:",pk" json:"appID"`
+	Tag          string `bun:",pk" json:"tag"`
+	DisplayOrder int    `json:"displayOrder"`
 
-	DeletedAt time.Time `bun:",soft_delete,nullzero"`
+	DeletedAt time.Time `bun:",soft_delete,nullzero" json:"deletedAt"`
 }
