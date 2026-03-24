@@ -9,9 +9,9 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accesstokenuc/accesstokendto"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/awss3uc/awss3dto"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/awsuc/awsdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc/basicauthdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cloudprovideruc/cloudproviderdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cloudstorageuc/cloudstoragedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc/cronjobdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc/emaildto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc/githubappdto"
@@ -104,15 +104,15 @@ func (h *BaseSettingHandler) ListSetting(
 		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.RegistryAuthUC.ListRegistryAuth(reqCtx, auth, r) }
 
-	case base.ResourceTypeAWS:
-		r := awsdto.NewListAWSReq()
+	case base.ResourceTypeCloudProvider:
+		r := cloudproviderdto.NewListCloudProviderReq()
 		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.AWSUC.ListAWS(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.CloudProviderUC.ListCloudProvider(reqCtx, auth, r) }
 
-	case base.ResourceTypeAWSS3:
-		r := awss3dto.NewListAWSS3Req()
+	case base.ResourceTypeCloudStorage:
+		r := cloudstoragedto.NewListCloudStorageReq()
 		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.AWSS3UC.ListAWSS3(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.CloudStorageUC.ListCloudStorage(reqCtx, auth, r) }
 
 	case base.ResourceTypeSSHKey:
 		r := sshkeydto.NewListSSHKeyReq()

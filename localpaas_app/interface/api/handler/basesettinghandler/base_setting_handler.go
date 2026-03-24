@@ -4,9 +4,9 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accesstokenuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/awss3uc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/awsuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cloudprovideruc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cloudstorageuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/gitcredentialuc"
@@ -31,8 +31,8 @@ type BaseSettingHandler struct {
 	*handler.BaseHandler
 	AuthHandler     *authhandler.AuthHandler
 	OAuthUC         *oauthuc.OAuthUC
-	AWSUC           *awsuc.AWSUC
-	AWSS3UC         *awss3uc.AWSS3UC
+	CloudProviderUC *cloudprovideruc.CloudProviderUC
+	CloudStorageUC  *cloudstorageuc.CloudStorageUC
 	SSHKeyUC        *sshkeyuc.SSHKeyUC
 	IMServiceUC     *imserviceuc.IMServiceUC
 	RegistryAuthUC  *registryauthuc.RegistryAuthUC
@@ -58,8 +58,8 @@ func NewBaseSettingHandler(
 	baseHandler *handler.BaseHandler,
 	authHandler *authhandler.AuthHandler,
 	oauthUC *oauthuc.OAuthUC,
-	awsUC *awsuc.AWSUC,
-	awsS3UC *awss3uc.AWSS3UC,
+	cloudProviderUC *cloudprovideruc.CloudProviderUC,
+	cloudStorageUC *cloudstorageuc.CloudStorageUC,
 	sshKeyUC *sshkeyuc.SSHKeyUC,
 	imServiceUC *imserviceuc.IMServiceUC,
 	registryAuthUC *registryauthuc.RegistryAuthUC,
@@ -84,8 +84,8 @@ func NewBaseSettingHandler(
 		BaseHandler:     baseHandler,
 		AuthHandler:     authHandler,
 		OAuthUC:         oauthUC,
-		AWSUC:           awsUC,
-		AWSS3UC:         awsS3UC,
+		CloudProviderUC: cloudProviderUC,
+		CloudStorageUC:  cloudStorageUC,
 		SSHKeyUC:        sshKeyUC,
 		IMServiceUC:     imServiceUC,
 		RegistryAuthUC:  registryAuthUC,

@@ -55,26 +55,26 @@ func (s *HTTPServer) registerSettingRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		gitCredentialGroup.GET("", settingHandler.ListGitCredential)
 	}
 
-	{ // aws group
-		awsGroup := settingGroup.Group("/aws")
-		awsGroup.GET("/:itemID", settingHandler.GetAWS)
-		awsGroup.GET("", settingHandler.ListAWS)
-		awsGroup.POST("", settingHandler.CreateAWS)
-		awsGroup.PUT("/:itemID", settingHandler.UpdateAWS)
-		awsGroup.PUT("/:itemID/meta", settingHandler.UpdateAWSMeta)
-		awsGroup.DELETE("/:itemID", settingHandler.DeleteAWS)
+	{ // Cloud provider group
+		cloudProviderGroup := settingGroup.Group("/cloud-providers")
+		cloudProviderGroup.GET("/:itemID", settingHandler.GetCloudProvider)
+		cloudProviderGroup.GET("", settingHandler.ListCloudProvider)
+		cloudProviderGroup.POST("", settingHandler.CreateCloudProvider)
+		cloudProviderGroup.PUT("/:itemID", settingHandler.UpdateCloudProvider)
+		cloudProviderGroup.PUT("/:itemID/meta", settingHandler.UpdateCloudProviderMeta)
+		cloudProviderGroup.DELETE("/:itemID", settingHandler.DeleteCloudProvider)
 	}
 
-	{ // aws s3 group
-		awsS3Group := settingGroup.Group("/aws-s3")
-		awsS3Group.GET("/:itemID", settingHandler.GetAWSS3)
-		awsS3Group.GET("", settingHandler.ListAWSS3)
-		awsS3Group.POST("", settingHandler.CreateAWSS3)
-		awsS3Group.PUT("/:itemID", settingHandler.UpdateAWSS3)
-		awsS3Group.PUT("/:itemID/meta", settingHandler.UpdateAWSS3Meta)
-		awsS3Group.DELETE("/:itemID", settingHandler.DeleteAWSS3)
+	{ // Cloud storage group
+		cloudStorageGroup := settingGroup.Group("/cloud-storages")
+		cloudStorageGroup.GET("/:itemID", settingHandler.GetCloudStorage)
+		cloudStorageGroup.GET("", settingHandler.ListCloudStorage)
+		cloudStorageGroup.POST("", settingHandler.CreateCloudStorage)
+		cloudStorageGroup.PUT("/:itemID", settingHandler.UpdateCloudStorage)
+		cloudStorageGroup.PUT("/:itemID/meta", settingHandler.UpdateCloudStorageMeta)
+		cloudStorageGroup.DELETE("/:itemID", settingHandler.DeleteCloudStorage)
 		// Test connection
-		awsS3Group.POST("/test-conn", settingHandler.TestAWSS3Conn)
+		cloudStorageGroup.POST("/test-conn", settingHandler.TestCloudStorageConn)
 	}
 
 	{ // ssh key group

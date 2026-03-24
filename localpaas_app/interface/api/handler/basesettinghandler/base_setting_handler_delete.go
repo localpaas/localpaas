@@ -9,9 +9,9 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accesstokenuc/accesstokendto"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/awss3uc/awss3dto"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/awsuc/awsdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc/basicauthdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cloudprovideruc/cloudproviderdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cloudstorageuc/cloudstoragedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc/cronjobdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc/emaildto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc/githubappdto"
@@ -104,15 +104,15 @@ func (h *BaseSettingHandler) DeleteSetting(
 		r.Scope, r.ID = scope, itemID
 		req, ucFunc = r, func() (any, error) { return h.RegistryAuthUC.DeleteRegistryAuth(reqCtx, auth, r) }
 
-	case base.ResourceTypeAWS:
-		r := awsdto.NewDeleteAWSReq()
+	case base.ResourceTypeCloudProvider:
+		r := cloudproviderdto.NewDeleteCloudProviderReq()
 		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.AWSUC.DeleteAWS(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.CloudProviderUC.DeleteCloudProvider(reqCtx, auth, r) }
 
-	case base.ResourceTypeAWSS3:
-		r := awss3dto.NewDeleteAWSS3Req()
+	case base.ResourceTypeCloudStorage:
+		r := cloudstoragedto.NewDeleteCloudStorageReq()
 		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.AWSS3UC.DeleteAWSS3(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.CloudStorageUC.DeleteCloudStorage(reqCtx, auth, r) }
 
 	case base.ResourceTypeSSHKey:
 		r := sshkeydto.NewDeleteSSHKeyReq()

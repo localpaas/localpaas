@@ -50,9 +50,9 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accesstokenuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/awss3uc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/awsuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cloudprovideruc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cloudstorageuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/gitcredentialuc"
@@ -136,8 +136,8 @@ var Provides = []any{
 	appuc.NewAppUC,
 	appdeploymentuc.NewAppDeploymentUC,
 	settings.NewBaseSettingUC,
-	awsuc.NewAWSUC,
-	awss3uc.NewAWSS3UC,
+	cloudprovideruc.NewCloudProviderUC,
+	cloudstorageuc.NewCloudStorageUC,
 	sshkeyuc.NewSSHKeyUC,
 	apikeyuc.NewAPIKeyUC,
 	oauthuc.NewOAuthUC,

@@ -84,24 +84,24 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		gitCredentialGroup.GET("/:itemID/repositories", projectHandler.ListGitRepo)
 	}
 
-	{ // AWS group
-		awsGroup := projectGroup.Group("/:projectID/aws")
-		awsGroup.GET("/:itemID", projectHandler.GetAWS)
-		awsGroup.GET("", projectHandler.ListAWS)
-		awsGroup.POST("", projectHandler.CreateAWS)
-		awsGroup.PUT("/:itemID", projectHandler.UpdateAWS)
-		awsGroup.PUT("/:itemID/meta", projectHandler.UpdateAWSMeta)
-		awsGroup.DELETE("/:itemID", projectHandler.DeleteAWS)
+	{ // Cloud provider group
+		cloudProviderGroup := projectGroup.Group("/:projectID/cloud-providers")
+		cloudProviderGroup.GET("/:itemID", projectHandler.GetCloudProvider)
+		cloudProviderGroup.GET("", projectHandler.ListCloudProvider)
+		cloudProviderGroup.POST("", projectHandler.CreateCloudProvider)
+		cloudProviderGroup.PUT("/:itemID", projectHandler.UpdateCloudProvider)
+		cloudProviderGroup.PUT("/:itemID/meta", projectHandler.UpdateCloudProviderMeta)
+		cloudProviderGroup.DELETE("/:itemID", projectHandler.DeleteCloudProvider)
 	}
 
-	{ // AWS S3 group
-		awsS3Group := projectGroup.Group("/:projectID/aws-s3")
-		awsS3Group.GET("/:itemID", projectHandler.GetAWSS3)
-		awsS3Group.GET("", projectHandler.ListAWSS3)
-		awsS3Group.POST("", projectHandler.CreateAWSS3)
-		awsS3Group.PUT("/:itemID", projectHandler.UpdateAWSS3)
-		awsS3Group.PUT("/:itemID/meta", projectHandler.UpdateAWSS3Meta)
-		awsS3Group.DELETE("/:itemID", projectHandler.DeleteAWSS3)
+	{ // Cloud storage group
+		cloudStorageGroup := projectGroup.Group("/:projectID/cloud-storages")
+		cloudStorageGroup.GET("/:itemID", projectHandler.GetCloudStorage)
+		cloudStorageGroup.GET("", projectHandler.ListCloudStorage)
+		cloudStorageGroup.POST("", projectHandler.CreateCloudStorage)
+		cloudStorageGroup.PUT("/:itemID", projectHandler.UpdateCloudStorage)
+		cloudStorageGroup.PUT("/:itemID/meta", projectHandler.UpdateCloudStorageMeta)
+		cloudStorageGroup.DELETE("/:itemID", projectHandler.DeleteCloudStorage)
 	}
 
 	{ // SSH key group
