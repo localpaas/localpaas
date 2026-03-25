@@ -35,7 +35,7 @@ type EmailSMTP struct {
 
 type EmailHTTP struct {
 	Endpoint     string                 `json:"endpoint"`
-	Method       string                 `json:"method"`
+	Method       base.HTTPMethod        `json:"method"`
 	ContentType  string                 `json:"contentType"`
 	Headers      map[string]string      `json:"headers"`
 	FieldMapping *EmailHTTPFieldMapping `json:"fieldMapping"`

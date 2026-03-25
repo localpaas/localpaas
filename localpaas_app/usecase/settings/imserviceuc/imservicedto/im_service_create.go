@@ -10,6 +10,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
+const (
+	webhookURLMaxLen = 512
+)
+
 type CreateIMServiceReq struct {
 	settings.CreateSettingReq
 	*IMServiceBaseReq
@@ -43,6 +47,17 @@ func (req *SlackReq) ToEntity() *entity.Slack {
 	}
 }
 
+func (req *SlackReq) validate(field string) (res []vld.Validator) {
+	if req == nil {
+		return nil
+	}
+	if field != "" {
+		field += "."
+	}
+	res = append(res, basedto.ValidateStr(&req.Webhook, true, 1, webhookURLMaxLen, field+"webhook")...)
+	return res
+}
+
 type DiscordReq struct {
 	Webhook string `json:"webhook"`
 }
@@ -53,9 +68,30 @@ func (req *DiscordReq) ToEntity() *entity.Discord {
 	}
 }
 
-func (req *IMServiceBaseReq) validate(_ string) []vld.Validator {
-	// TODO: add validation
-	return nil
+func (req *DiscordReq) validate(field string) (res []vld.Validator) {
+	if req == nil {
+		return nil
+	}
+	if field != "" {
+		field += "."
+	}
+	res = append(res, basedto.ValidateStr(&req.Webhook, true, 1, webhookURLMaxLen, field+"webhook")...)
+	return res
+}
+
+func (req *IMServiceBaseReq) validate(field string) (res []vld.Validator) {
+	if field != "" {
+		field += "."
+	}
+	switch req.Kind {
+	case base.IMServiceKindSlack:
+		res = append(res, basedto.ValidateValue(req.Slack != nil, field+"slack")...)
+		res = append(res, req.Slack.validate(field+"slack")...)
+	case base.IMServiceKindDiscord:
+		res = append(res, basedto.ValidateValue(req.Discord != nil, field+"discord")...)
+		res = append(res, req.Discord.validate(field+"discord")...)
+	}
+	return res
 }
 
 func NewCreateIMServiceReq() *CreateIMServiceReq {

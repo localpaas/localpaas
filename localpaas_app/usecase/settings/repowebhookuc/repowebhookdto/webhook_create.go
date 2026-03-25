@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	webhookSecretMaxLen = 100
+	webhookSecretMaxLen = 200
 )
 
 type CreateRepoWebhookReq struct {

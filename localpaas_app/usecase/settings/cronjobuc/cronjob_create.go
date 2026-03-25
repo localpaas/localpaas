@@ -33,13 +33,8 @@ func (uc *CronJobUC) CreateCronJob(
 			pData *settings.PersistingSettingCreationData,
 		) error {
 			cronJob := req.ToEntity()
-			// Check the schedule to be valid
-			err := cronJob.Schedule.IsValid()
-			if err != nil {
-				return apperrors.Wrap(err)
-			}
 			pData.Setting.Kind = string(cronJob.CronType)
-			if err = pData.Setting.SetData(cronJob); err != nil {
+			if err := pData.Setting.SetData(cronJob); err != nil {
 				return apperrors.Wrap(err)
 			}
 			return nil

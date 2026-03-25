@@ -83,15 +83,24 @@ func ValidateObjectSliceBy[T, A comparable, S ~[]T](s S, required, unique bool, 
 	return result
 }
 
-func ValidateMutualExclusiveFields(shouldValidate bool, fields ...string) (result []vld.Validator) {
+func ValidateValue(mustCond bool, field string) (result []vld.Validator) {
+	result = append(result,
+		vld.Must(mustCond).OnError(
+			vld.SetField(field, nil),
+			vld.SetCustomKey("ERR_VLD_VALUE_INVALID"),
+		),
+	)
+	return result
+}
+
+func ValidateMutualExclusiveFields(mustCond bool, fields ...string) (result []vld.Validator) {
 	for _, field := range fields {
 		result = append(result,
-			vld.Must(!shouldValidate).OnError(
+			vld.Must(mustCond).OnError(
 				vld.SetField(field, nil),
 				vld.SetCustomKey("ERR_VLD_MUTUALLY_EXCLUSIVE_FIELDS_INVALID"),
 			),
 		)
 	}
-
 	return result
 }

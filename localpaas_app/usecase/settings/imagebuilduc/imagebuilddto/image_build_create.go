@@ -28,8 +28,13 @@ func (req *ImageBuildBaseReq) ToEntity() *entity.ImageBuild {
 	}
 }
 
-func (req *ImageBuildBaseReq) validate(field string) []vld.Validator {
-	return nil
+// nolint
+func (req *ImageBuildBaseReq) validate(field string) (res []vld.Validator) {
+	if field != "" {
+		field += "."
+	}
+	// TODO: add validation
+	return res
 }
 
 type ImageBuildResourcesReq struct {

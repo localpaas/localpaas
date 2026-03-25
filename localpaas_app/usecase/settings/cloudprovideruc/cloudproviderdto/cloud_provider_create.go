@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	maxKeyLen = 100
+	maxKeyLen = 255
 )
 
 type CreateCloudProviderReq struct {
@@ -26,9 +26,11 @@ type CloudProviderBaseReq struct {
 }
 
 func (req *CloudProviderBaseReq) ToEntity() *entity.CloudProvider {
-	return &entity.CloudProvider{
-		AWS: req.AWS.ToEntity(),
+	res := &entity.CloudProvider{}
+	if req.Kind == base.CloudProviderKindAWS {
+		res.AWS = req.AWS.ToEntity()
 	}
+	return res
 }
 
 type CloudProviderAWSReq struct {
@@ -38,6 +40,9 @@ type CloudProviderAWSReq struct {
 }
 
 func (req *CloudProviderAWSReq) ToEntity() *entity.CloudProviderAWS {
+	if req == nil {
+		return nil
+	}
 	return &entity.CloudProviderAWS{
 		AccessKeyID: req.AccessKeyID,
 		SecretKey:   entity.NewEncryptedField(req.SecretKey),
@@ -61,7 +66,9 @@ func (req *CloudProviderBaseReq) validate(field string) (res []vld.Validator) {
 	}
 	res = append(res, basedto.ValidateStr(&req.Name, true, 1, base.SettingNameMaxLen, field+"name")...)
 	res = append(res, basedto.ValidateStrIn(&req.Kind, true, base.AllCloudProviderKinds, field+"kind")...)
-	res = append(res, req.AWS.validate("")...)
+	if req.Kind == base.CloudProviderKindAWS {
+		res = append(res, req.AWS.validate("")...)
+	}
 	return res
 }
 

@@ -21,12 +21,6 @@ func ValidateObjectAccessReq(access *ObjectAccessReq, required bool, field strin
 			vld.SetCustomKey("ERR_VLD_OBJECT_ID_REQUIRED"), // use default error key
 		))
 	}
-	// if id != nil && *id != "" {
-	//	res = append(res, vld.StrIsULID(id).OnError(
-	//		vld.SetField(field+".id", nil),
-	//		vld.SetCustomKey("ERR_VLD_OBJECT_ID_INVALID"), // use default error key
-	//	))
-	// }
 	return res
 }
 
@@ -46,16 +40,6 @@ func ValidateObjectAccessSliceReq(access ObjectAccessSliceReq, unique bool, minL
 			vld.SetCustomKey("ERR_VLD_OBJECT_IDS_REQUIRED"),
 		))
 	}
-	// res = append(res,
-	//	vld.Slice(access).ForEach(func(item *ObjectAccessReq, index int, itemValidator vld.ItemValidator) {
-	//		itemValidator.Validate(
-	//			vld.StrIsULID(&item.ID).OnError(
-	//				vld.SetField(fmt.Sprintf("%s[%d].id", field, index), nil),
-	//				vld.SetCustomKey("ERR_VLD_OBJECT_ID_INVALID"),
-	//			),
-	//		)
-	//	}),
-	// )
 	return res
 }
 

@@ -60,6 +60,9 @@ func (s *CronJobSchedule) OnChange(scheduleChanged bool) {
 
 func (s *CronJobSchedule) IsValid() error {
 	if s.CronExpr != "" {
+		if s.Interval > 0 {
+			return apperrors.NewValueInvalid()
+		}
 		_, err := parser.Parse(s.CronExpr)
 		if err != nil {
 			return apperrors.Wrap(err)

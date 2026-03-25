@@ -39,8 +39,8 @@ func NewFromSetting(setting *entity.Setting) (*Client, error) {
 	switch setting.Type { //nolint:exhaustive
 	case base.SettingTypeAccessToken:
 		gitToken, err := setting.AsAccessToken()
-		tokenKind := base.TokenKind(setting.Kind)
-		if tokenKind != base.TokenKindGitlab {
+		tokenKind := base.AccessTokenKind(setting.Kind)
+		if tokenKind != base.AccessTokenKindGitlab {
 			return nil, apperrors.New(ErrAccessProviderInvalid).
 				WithMsgLog("git source '%s' is invalid", setting.Kind)
 		}

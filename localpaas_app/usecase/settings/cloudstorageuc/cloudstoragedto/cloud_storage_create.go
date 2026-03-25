@@ -27,10 +27,13 @@ type CloudStorageBaseReq struct {
 }
 
 func (req *CloudStorageBaseReq) ToEntity() *entity.CloudStorage {
-	return &entity.CloudStorage{
+	res := &entity.CloudStorage{
 		Provider: entity.ObjectID{ID: req.Provider.ID},
-		S3:       req.S3.ToEntity(),
 	}
+	if req.Kind == base.CloudStorageKindS3 {
+		res.S3 = req.S3.ToEntity()
+	}
+	return res
 }
 
 type CloudStorageS3Req struct {
@@ -40,6 +43,9 @@ type CloudStorageS3Req struct {
 }
 
 func (req *CloudStorageS3Req) ToEntity() *entity.CloudStorageS3 {
+	if req == nil {
+		return nil
+	}
 	return &entity.CloudStorageS3{
 		Region:   req.Region,
 		Bucket:   req.Bucket,
@@ -55,7 +61,7 @@ func (req *CloudStorageS3Req) validate(field string) (res []vld.Validator) {
 		field += "."
 	}
 	res = append(res, basedto.ValidateStr(&req.Region, false, 1, maxKeyLen, field+"region")...)
-	res = append(res, basedto.ValidateStr(&req.Bucket, false, 1, maxKeyLen, field+"bucket")...)
+	res = append(res, basedto.ValidateStr(&req.Bucket, true, 1, maxKeyLen, field+"bucket")...)
 	res = append(res, basedto.ValidateStr(&req.Endpoint, false, 1, maxKeyLen, field+"endpoint")...)
 	return res
 }
@@ -67,7 +73,9 @@ func (req *CloudStorageBaseReq) validate(field string) (res []vld.Validator) {
 	res = append(res, basedto.ValidateStr(&req.Name, true, 1, base.SettingNameMaxLen, field+"name")...)
 	res = append(res, basedto.ValidateStrIn(&req.Kind, true, base.AllCloudStorageKinds, field+"kind")...)
 	res = append(res, basedto.ValidateObjectIDReq(&req.Provider, true, field+"provider")...)
-	res = append(res, req.S3.validate("s3")...)
+	if req.Kind == base.CloudStorageKindS3 {
+		res = append(res, req.S3.validate("s3")...)
+	}
 	return res
 }
 

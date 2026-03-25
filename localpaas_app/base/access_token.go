@@ -1,18 +1,18 @@
 package base
 
-type TokenKind string
+type AccessTokenKind string
 
 const (
-	TokenKindGithub    TokenKind = "github"
-	TokenKindGitlab    TokenKind = "gitlab"
-	TokenKindGitea     TokenKind = "gitea"
-	TokenKindBitbucket TokenKind = "bitbucket"
-	TokenKindGogs      TokenKind = "gogs"
+	AccessTokenKindGithub    AccessTokenKind = "github"
+	AccessTokenKindGitlab    AccessTokenKind = "gitlab"
+	AccessTokenKindGitea     AccessTokenKind = "gitea"
+	AccessTokenKindBitbucket AccessTokenKind = "bitbucket"
+	AccessTokenKindGogs      AccessTokenKind = "gogs"
 )
 
 var (
-	AllGitTokenKinds = []TokenKind{TokenKindGithub, TokenKindGitlab, TokenKindGitea, TokenKindBitbucket,
-		TokenKindGogs}
+	AllGitAccessTokenKinds = []AccessTokenKind{AccessTokenKindGithub, AccessTokenKindGitlab,
+		AccessTokenKindGitea, AccessTokenKindBitbucket, AccessTokenKindGogs}
 
-	AllTokenKinds = append([]TokenKind{}, AllGitTokenKinds...)
+	AllAccessTokenKinds = append([]AccessTokenKind{}, AllGitAccessTokenKinds...)
 )

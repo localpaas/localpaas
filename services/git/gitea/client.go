@@ -31,8 +31,8 @@ func NewFromSetting(setting *entity.Setting) (*Client, error) {
 	switch setting.Type { //nolint:exhaustive
 	case base.SettingTypeAccessToken:
 		gitToken, err := setting.AsAccessToken()
-		tokenKind := base.TokenKind(setting.Kind)
-		if tokenKind != base.TokenKindGitea {
+		tokenKind := base.AccessTokenKind(setting.Kind)
+		if tokenKind != base.AccessTokenKindGitea {
 			return nil, apperrors.New(ErrAccessProviderInvalid).
 				WithMsgLog("token kind '%s' is unsupported", tokenKind)
 		}

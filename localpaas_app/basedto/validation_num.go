@@ -5,7 +5,7 @@ import (
 	vldbase "github.com/tiendc/go-validator/base"
 )
 
-func ValidateNumber[T int | uint](v *T, required bool, min, max T, field string) (result []vld.Validator) {
+func ValidateNumber[T vldbase.Number](v *T, required bool, min, max T, field string) (result []vld.Validator) {
 	if required {
 		result = append(result, vld.Must(v != nil).OnError(
 			vld.SetField(field, nil),
@@ -21,7 +21,7 @@ func ValidateNumber[T int | uint](v *T, required bool, min, max T, field string)
 	return result
 }
 
-func ValidateNumberIn[T int | uint](v *T, required bool, allowedValues []T, field string) (result []vld.Validator) {
+func ValidateNumberIn[T vldbase.Number](v *T, required bool, allowedValues []T, field string) (result []vld.Validator) {
 	if required {
 		result = append(result, vld.Must(v != nil).OnError(
 			vld.SetField(field, nil),

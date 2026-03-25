@@ -88,7 +88,7 @@ func NewFromSetting(setting *entity.Setting) (*Client, error) {
 		return NewFromApp(githubApp.AppID, githubApp.InstallationID, reflectutil.UnsafeStrToBytes(privateKey))
 
 	case base.SettingTypeAccessToken:
-		if base.TokenKind(setting.Kind) != base.TokenKindGithub {
+		if base.AccessTokenKind(setting.Kind) != base.AccessTokenKindGithub {
 			return nil, apperrors.New(ErrAccessProviderInvalid).
 				WithMsgLog("token kind '%s' is unsupported", setting.Kind)
 		}

@@ -13,9 +13,9 @@ import (
 )
 
 const (
-	addressMaxLen  = 100
+	addressMaxLen  = 200
 	usernameMaxLen = 100
-	passwordMaxLen = 64
+	passwordMaxLen = 100
 )
 
 type CreateRegistryAuthReq struct {

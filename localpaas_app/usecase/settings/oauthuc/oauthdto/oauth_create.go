@@ -39,9 +39,13 @@ func (req *OAuthBaseReq) ToEntity() *entity.OAuth {
 	}
 }
 
-func (req *OAuthBaseReq) validate(_ string) []vld.Validator {
+// nolint
+func (req *OAuthBaseReq) validate(field string) (res []vld.Validator) {
+	if field != "" {
+		field += "."
+	}
 	// TODO: add validation
-	return nil
+	return res
 }
 
 func NewCreateOAuthReq() *CreateOAuthReq {

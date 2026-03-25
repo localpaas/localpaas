@@ -33,13 +33,13 @@ type Healthcheck struct {
 }
 
 type HealthcheckREST struct {
-	URL         string `json:"url"`
-	Method      string `json:"method,omitempty"`
-	ContentType string `json:"contentType,omitempty"`
-	Body        string `json:"body,omitempty"`
-	ReturnCode  int    `json:"returnCode,omitempty"`
-	ReturnText  string `json:"returnText,omitempty"`
-	ReturnJSON  string `json:"returnJSON,omitempty"`
+	URL         string          `json:"url"`
+	Method      base.HTTPMethod `json:"method,omitempty"`
+	ContentType string          `json:"contentType,omitempty"`
+	Body        string          `json:"body,omitempty"`
+	ReturnCode  int             `json:"returnCode,omitempty"`
+	ReturnText  string          `json:"returnText,omitempty"`
+	ReturnJSON  string          `json:"returnJSON,omitempty"`
 }
 
 type HealthcheckGRPC struct {

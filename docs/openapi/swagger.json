@@ -19956,6 +19956,11 @@
         "required" : [ "delete", "read", "write" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_base.AccessTokenKind" : {
+        "enum" : [ "github", "gitlab", "gitea", "bitbucket", "gogs" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "AccessTokenKindGithub", "AccessTokenKindGitlab", "AccessTokenKindGitea", "AccessTokenKindBitbucket", "AccessTokenKindGogs" ]
+      },
       "github_com_localpaas_localpaas_localpaas_app_base.AppStatus" : {
         "enum" : [ "active", "disabled", "deleting" ],
         "type" : "string",
@@ -19995,6 +20000,11 @@
         "enum" : [ "smtp", "http" ],
         "type" : "string",
         "x-enum-varnames" : [ "EmailKindSMTP", "EmailKindHTTP" ]
+      },
+      "github_com_localpaas_localpaas_localpaas_app_base.HTTPMethod" : {
+        "enum" : [ "GET", "POST", "PUT", "PATCH", "DELETE" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "HTTPMethodGet", "HTTPMethodPost", "HTTPMethodPut", "HTTPMethodPatch", "HTTPMethodDelete" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.HealthcheckGRPCStatus" : {
         "enum" : [ 0, 1, 2, 3 ],
@@ -20081,11 +20091,6 @@
         "enum" : [ "task:app-deploy", "task:cron-job-exec", "task:healthcheck" ],
         "type" : "string",
         "x-enum-varnames" : [ "TaskTypeAppDeploy", "TaskTypeCronJobExec", "TaskTypeHealthcheck" ]
-      },
-      "github_com_localpaas_localpaas_localpaas_app_base.TokenKind" : {
-        "enum" : [ "github", "gitlab", "gitea", "bitbucket", "gogs" ],
-        "type" : "string",
-        "x-enum-varnames" : [ "TokenKindGithub", "TokenKindGitlab", "TokenKindGitea", "TokenKindBitbucket", "TokenKindGogs" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.UserRole" : {
         "enum" : [ "admin", "member" ],
@@ -20520,7 +20525,7 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 86400000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 86400000000000 ],
         "format" : "int64",
         "type" : "integer",
         "x-enum-varnames" : [ "dayDuration" ]
@@ -23597,7 +23602,7 @@
             "type" : "string"
           },
           "kind" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.TokenKind"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.AccessTokenKind"
           },
           "name" : {
             "type" : "string"
@@ -23669,7 +23674,7 @@
             "type" : "string"
           },
           "kind" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.TokenKind"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.AccessTokenKind"
           },
           "name" : {
             "type" : "string"
@@ -23738,7 +23743,7 @@
             "type" : "string"
           },
           "kind" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.TokenKind"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.AccessTokenKind"
           },
           "name" : {
             "type" : "string"
@@ -24944,7 +24949,7 @@
             "type" : "object"
           },
           "method" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.HTTPMethod"
           },
           "password" : {
             "type" : "string"
@@ -24977,7 +24982,7 @@
             "type" : "object"
           },
           "method" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.HTTPMethod"
           },
           "password" : {
             "type" : "string"
@@ -25844,7 +25849,7 @@
             "type" : "string"
           },
           "method" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.HTTPMethod"
           },
           "returnCode" : {
             "type" : "integer"

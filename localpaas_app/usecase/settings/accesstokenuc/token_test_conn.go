@@ -19,11 +19,11 @@ func (uc *AccessTokenUC) TestAccessTokenConn(
 ) (*accesstokendto.TestAccessTokenConnResp, error) {
 	var err error
 	switch req.Kind { //nolint:exhaustive
-	case base.TokenKindGithub:
+	case base.AccessTokenKindGithub:
 		err = uc.testGithubTokenConn(ctx, req)
-	case base.TokenKindGitlab:
+	case base.AccessTokenKindGitlab:
 		err = uc.testGitlabTokenConn(ctx, req)
-	case base.TokenKindGitea:
+	case base.AccessTokenKindGitea:
 		err = uc.testGiteaTokenConn(ctx, req)
 	default:
 		err = apperrors.New(apperrors.ErrUnsupported).

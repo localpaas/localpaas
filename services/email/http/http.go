@@ -12,6 +12,7 @@ import (
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/httpclient"
 )
@@ -39,8 +40,8 @@ func SendMail(
 	passwordField := gofn.Coalesce(conf.FieldMapping.Password, "password")
 
 	contentType := conf.ContentType
-	switch conf.Method {
-	case "POST", "PUT":
+	switch conf.Method { //nolint:exhaustive
+	case base.HTTPMethodPost, base.HTTPMethodPut:
 		bodyMap := make(map[string]any)
 		bodyMap[fromAddressField] = conf.Username
 		if fromNameField != "" {
@@ -64,7 +65,7 @@ func SendMail(
 				return apperrors.Wrap(err)
 			}
 
-			req, err = http.NewRequest(conf.Method, conf.Endpoint, bytes.NewBuffer(dataBytes))
+			req, err = http.NewRequest(string(conf.Method), conf.Endpoint, bytes.NewBuffer(dataBytes))
 			if err != nil {
 				return apperrors.Wrap(err)
 			}
@@ -81,7 +82,7 @@ func SendMail(
 				formValues.Add(gofn.Coalesce(toAddressesField, toAddressField), strings.Join(recipients, ","))
 			}
 
-			req, err = http.NewRequest(conf.Method, conf.Endpoint, strings.NewReader(formValues.Encode()))
+			req, err = http.NewRequest(string(conf.Method), conf.Endpoint, strings.NewReader(formValues.Encode()))
 			if err != nil {
 				return apperrors.Wrap(err)
 			}
@@ -89,8 +90,8 @@ func SendMail(
 
 		req.Header.Set("Content-Type", contentType)
 
-	case "GET":
-		req, err = http.NewRequest(conf.Method, conf.Endpoint, nil)
+	case base.HTTPMethodGet:
+		req, err = http.NewRequest(string(conf.Method), conf.Endpoint, nil)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}

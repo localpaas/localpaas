@@ -58,7 +58,7 @@ func (resp *EmailSMTPResp) CopyPassword(field entity.EncryptedField) error {
 
 type EmailHTTPResp struct {
 	Endpoint     string                        `json:"endpoint"`
-	Method       string                        `json:"method"`
+	Method       base.HTTPMethod               `json:"method"`
 	ContentType  string                        `json:"contentType"`
 	Headers      map[string]string             `json:"headers"`
 	FieldMapping *entity.EmailHTTPFieldMapping `json:"fieldMapping"`

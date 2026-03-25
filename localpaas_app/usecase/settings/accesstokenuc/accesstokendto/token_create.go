@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	tokenMaxLen = 500
-	urlMaxLen   = 200
+	tokenMaxLen = 512
+	urlMaxLen   = 512
 )
 
 type CreateAccessTokenReq struct {
@@ -24,12 +24,12 @@ type CreateAccessTokenReq struct {
 }
 
 type AccessTokenBaseReq struct {
-	Kind     base.TokenKind `json:"kind"`
-	Name     string         `json:"name"`
-	User     string         `json:"user"`
-	Token    string         `json:"token"`
-	BaseURL  string         `json:"baseURL"`
-	ExpireAt time.Time      `json:"expireAt"`
+	Kind     base.AccessTokenKind `json:"kind"`
+	Name     string               `json:"name"`
+	User     string               `json:"user"`
+	Token    string               `json:"token"`
+	BaseURL  string               `json:"baseURL"`
+	ExpireAt time.Time            `json:"expireAt"`
 }
 
 func (req *AccessTokenBaseReq) ToEntity() *entity.AccessToken {
@@ -52,7 +52,7 @@ func (req *AccessTokenBaseReq) validate(field string) (res []vld.Validator) {
 	if field != "" {
 		field += "."
 	}
-	res = append(res, basedto.ValidateStrIn(&req.Kind, true, base.AllTokenKinds, field+"kind")...)
+	res = append(res, basedto.ValidateStrIn(&req.Kind, true, base.AllAccessTokenKinds, field+"kind")...)
 	res = append(res, basedto.ValidateStr(&req.Name, true, 1, base.SettingNameMaxLen, field+"name")...)
 	res = append(res, basedto.ValidateStr(&req.Token, true, 1, tokenMaxLen, field+"token")...)
 	res = append(res, basedto.ValidateStr(&req.User, false, 1, base.SettingNameMaxLen, field+"user")...)

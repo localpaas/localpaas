@@ -41,7 +41,7 @@ func (e *Executor) doHealthcheckREST(
 	if healthchk.Body != "" {
 		input = strings.NewReader(healthchk.Body)
 	}
-	req, err := http.NewRequestWithContext(reqCtx, method, healthchk.URL, input)
+	req, err := http.NewRequestWithContext(reqCtx, string(method), healthchk.URL, input)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

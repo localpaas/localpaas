@@ -14,7 +14,7 @@ import (
 
 const (
 	usernameMaxLen = 100
-	passwordMaxLen = 64
+	passwordMaxLen = 100
 )
 
 type CreateBasicAuthReq struct {
