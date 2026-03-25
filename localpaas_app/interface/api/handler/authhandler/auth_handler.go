@@ -36,17 +36,31 @@ func (h *AuthHandler) GetCurrentUser(ctx *gin.Context) (*basedto.User, error) {
 	if err != nil {
 		return nil, apperrors.New(err)
 	}
+	if token != "" {
+		user, err := h.sessionUC.GetCurrentUserByJWT(h.RequestCtx(ctx), token)
+		if err != nil {
+			return nil, apperrors.New(err)
+		}
+		return user, nil
+	}
 
-	user, err := h.sessionUC.GetCurrentUser(h.RequestCtx(ctx), token)
+	keyID, secret, err := h.getAuthAPIKey(ctx)
 	if err != nil {
 		return nil, apperrors.New(err)
 	}
+	if keyID != "" && secret != "" {
+		user, err := h.sessionUC.GetCurrentUserByAPIKey(h.RequestCtx(ctx), keyID, secret)
+		if err != nil {
+			return nil, apperrors.New(err)
+		}
+		return user, nil
+	}
 
-	return user, nil
+	return nil, apperrors.New(apperrors.ErrNoSession)
 }
 
 func (h *AuthHandler) GetCurrentUserByToken(ctx *gin.Context, token string) (*basedto.User, error) {
-	user, err := h.sessionUC.GetCurrentUser(h.RequestCtx(ctx), token)
+	user, err := h.sessionUC.GetCurrentUserByJWT(h.RequestCtx(ctx), token)
 	if err != nil {
 		return nil, apperrors.New(err)
 	}
@@ -74,20 +88,51 @@ func (h *AuthHandler) getCurrentAuth(ctx *gin.Context) (*basedto.Auth, error) {
 	if err != nil {
 		return nil, apperrors.New(err)
 	}
-
-	auth, err := h.sessionUC.GetCurrentAuth(h.RequestCtx(ctx), token)
-	if err != nil {
-		return auth, apperrors.New(err) // NOTE: on error, still return `auth`
+	if token != "" {
+		auth, err := h.sessionUC.GetCurrentAuthByJWT(h.RequestCtx(ctx), token)
+		if err != nil {
+			return auth, apperrors.New(err) // NOTE: on error, still return `auth`
+		}
+		return auth, nil
 	}
-	return auth, nil
+
+	keyID, secret, err := h.getAuthAPIKey(ctx)
+	if err != nil {
+		return nil, apperrors.New(err)
+	}
+	if keyID != "" && secret != "" {
+		auth, err := h.sessionUC.GetCurrentAuthByAPIKey(h.RequestCtx(ctx), keyID, secret)
+		if err != nil {
+			return auth, apperrors.New(err) // NOTE: on error, still return `auth`
+		}
+		return auth, nil
+	}
+
+	return nil, apperrors.New(apperrors.ErrNoSession)
 }
 
 // getAuthToken gets token from request header `Authorization`.
 // The value should be in form of `Bearer <token-data>`.
 func (h *AuthHandler) getAuthToken(ctx *gin.Context) (token string, err error) {
-	tokenParts := strings.SplitN(ctx.GetHeader("Authorization"), " ", 2) //nolint:mnd
+	authHeader := ctx.GetHeader("Authorization")
+	if authHeader == "" {
+		return "", nil
+	}
+	tokenParts := strings.SplitN(authHeader, " ", 2) //nolint:mnd
 	if len(tokenParts) != 2 || tokenParts[1] == "" {
 		return "", apperrors.New(apperrors.ErrSessionJWTInvalid)
 	}
 	return tokenParts[1], nil
+}
+
+func (h *AuthHandler) getAuthAPIKey(ctx *gin.Context) (keyID, secret string, err error) {
+	keyID = ctx.GetHeader("LOCALPAAS_API_KEY_ID")
+	secret = ctx.GetHeader("LOCALPAAS_API_SECRET_KEY")
+	if keyID == "" && secret == "" {
+		return "", "", nil
+	}
+	if keyID == "" || secret == "" {
+		return "", "", apperrors.New(apperrors.ErrSessionAPIKeyInvalid)
+	}
+	return keyID, secret, nil
 }

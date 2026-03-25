@@ -40,8 +40,10 @@ var (
 
 // Errors for session
 var (
+	ErrNoSession                   = errors.New("ERR_NO_SESSION")
 	ErrSessionJWTInvalid           = errors.New("ERR_SESSION_JWT_INVALID")
 	ErrSessionJWTExpired           = errors.New("ERR_SESSION_JWT_EXPIRED")
+	ErrSessionAPIKeyInvalid        = errors.New("ERR_SESSION_API_KEY_INVALID")
 	ErrSessionRefreshTokenRequired = errors.New("ERR_SESSION_REFRESH_TOKEN_REQUIRED")
 	ErrSSORequired                 = errors.New("ERR_SSO_REQUIRED")
 	ErrLoginInputInvalid           = errors.New("ERR_LOGIN_INPUT_INVALID")
@@ -149,8 +151,10 @@ var errorStatusMap = map[error]int{
 	ErrURLInvalid:           http.StatusUnprocessableEntity,
 
 	// Session errors
+	ErrNoSession:                   http.StatusUnauthorized,
 	ErrSessionJWTInvalid:           http.StatusUnauthorized,
 	ErrSessionJWTExpired:           http.StatusUnauthorized,
+	ErrSessionAPIKeyInvalid:        http.StatusUnauthorized,
 	ErrSessionRefreshTokenRequired: http.StatusForbidden,
 	ErrSSORequired:                 http.StatusForbidden,
 	ErrLoginInputInvalid:           http.StatusUnauthorized,

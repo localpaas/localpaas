@@ -11,28 +11,42 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
-func (uc *SessionUC) GetCurrentAuth(ctx context.Context, jwt string) (*basedto.Auth, error) {
-	user, err := uc.GetCurrentUser(ctx, jwt)
+func (uc *SessionUC) GetCurrentAuthByJWT(ctx context.Context, jwt string) (*basedto.Auth, error) {
+	user, err := uc.GetCurrentUserByJWT(ctx, jwt)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 	auth := &basedto.Auth{User: user}
+	return auth, uc.verifyAuth(ctx, auth)
+}
+
+func (uc *SessionUC) GetCurrentAuthByAPIKey(ctx context.Context, keyID, secret string) (*basedto.Auth, error) {
+	user, err := uc.GetCurrentUserByAPIKey(ctx, keyID, secret)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	auth := &basedto.Auth{User: user}
+	return auth, uc.verifyAuth(ctx, auth)
+}
+
+func (uc *SessionUC) verifyAuth(ctx context.Context, auth *basedto.Auth) error {
+	user := auth.User
 
 	// User must have access permission
 	if user.IsAccessExpired() {
-		return auth, apperrors.New(apperrors.ErrUserUnavailable).
+		return apperrors.New(apperrors.ErrUserUnavailable).
 			WithMsgLog("user access expired at: %v", user.AccessExpireAt)
 	}
 
 	// Use must complete MFA requirement
 	if user.SecurityOption == base.UserSecurityPassword2FA && user.TotpSecret == "" {
-		return auth, apperrors.New(apperrors.ErrUserNotCompleteMFASetup).
+		return apperrors.New(apperrors.ErrUserNotCompleteMFASetup).
 			WithMsgLog("user hasn't completed the MFA setup")
 	}
 
 	// User status is not active
 	if user.Status != base.UserStatusActive {
-		return auth, apperrors.New(apperrors.ErrUserUnavailable).
+		return apperrors.New(apperrors.ErrUserUnavailable).
 			WithMsgLog("user status: %s", user.Status)
 	}
 
@@ -46,5 +60,5 @@ func (uc *SessionUC) GetCurrentAuth(ctx context.Context, jwt string) (*basedto.A
 		_ = uc.userRepo.Update(ctx, uc.db, user.Entity(), bunex.UpdateColumns("last_access"))
 	}
 
-	return auth, nil
+	return nil
 }

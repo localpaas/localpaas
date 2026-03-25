@@ -30,8 +30,10 @@ ERR_STATUS_NOT_ALLOW_ACTION = "Status of object does not allow the action"
 ERR_URL_INVALID = "URL '{{.URL}}' is invalid or unsupported"
 
 # Session errors
+ERR_NO_SESSION = "No session found"
 ERR_SESSION_JWT_INVALID = "Session JWT is invalid"
 ERR_SESSION_JWT_EXPIRED = "Session JWT expired"
+ERR_SESSION_API_KEY_INVALID = "API key is invalid"
 ERR_SESSION_REFRESH_TOKEN_REQUIRED = "Session refresh token is required"
 ERR_SSO_REQUIRED = "You are required to login with SSO"
 ERR_LOGIN_INPUT_INVALID = "Email or password is incorrect"

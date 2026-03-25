@@ -5,13 +5,14 @@ import (
 	"errors"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/jwtsession"
 )
 
-func (uc *SessionUC) GetCurrentUser(ctx context.Context, jwt string) (*basedto.User, error) {
+func (uc *SessionUC) GetCurrentUserByJWT(ctx context.Context, jwt string) (*basedto.User, error) {
 	authClaims := &jwtsession.AuthClaims{}
 	err := jwtsession.ParseToken(jwt, authClaims)
 	if err != nil {
@@ -34,4 +35,34 @@ func (uc *SessionUC) GetCurrentUser(ctx context.Context, jwt string) (*basedto.U
 	}
 
 	return &basedto.User{User: user, AuthClaims: authClaims}, nil
+}
+
+func (uc *SessionUC) GetCurrentUserByAPIKey(ctx context.Context, keyID, secret string) (*basedto.User, error) {
+	apiKeySetting, err := uc.settingRepo.GetByKind(ctx, uc.db, nil, base.SettingTypeAPIKey, keyID, false)
+	if err != nil {
+		return nil, apperrors.Wrap(apperrors.ErrAPIKeyInvalid)
+	}
+	if apiKeySetting == nil || !apiKeySetting.IsActive() {
+		return nil, apperrors.Wrap(apperrors.ErrAPIKeyInvalid)
+	}
+
+	apiKey := apiKeySetting.MustAsAPIKey()
+	if apiKey == nil {
+		return nil, apperrors.Wrap(apperrors.ErrAPIKeyMismatched)
+	}
+	if err = apiKey.SecretKey.VerifyHash(secret); err != nil {
+		return nil, apperrors.Wrap(apperrors.ErrAPIKeyMismatched)
+	}
+	actingUserID := apiKeySetting.ObjectID
+
+	user, err := uc.userService.LoadUser(ctx, uc.db, actingUserID)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	return &basedto.User{User: user, AuthClaims: &jwtsession.AuthClaims{
+		UserID:       user.ID,
+		IsAPIKey:     true,
+		AccessAction: apiKey.AccessAction,
+	}}, nil
 }
