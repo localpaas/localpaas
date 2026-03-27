@@ -29,7 +29,7 @@ func (e *Executor) sysBackupRemoveOldFiles(
 
 	backupRetention := sysBackup.LocalBackupRetention.ToDuration()
 	oldestTime := timeutil.NowUTC().Add(-backupRetention)
-	backupFilenamesToDelete := make([]string, 0)
+	backupFilesToDelete := make([]string, 0)
 	upsertingFileSettings := make([]*entity.Setting, 0)
 
 	for _, entry := range allBackupFiles {
@@ -38,7 +38,7 @@ func (e *Executor) sysBackupRemoveOldFiles(
 		}
 		filename := entry.Name()
 		if backupRetention == 0 {
-			backupFilenamesToDelete = append(backupFilenamesToDelete, filename)
+			backupFilesToDelete = append(backupFilesToDelete, filename)
 			continue
 		}
 		fileTime := sysBackupParseFileTime(filename)
@@ -50,17 +50,17 @@ func (e *Executor) sysBackupRemoveOldFiles(
 			} else {
 				_ = data.LogStore.Add(ctx, applog.NewOutFrame("Outdated backup file removed: "+filename,
 					applog.TsNow))
-				backupFilenamesToDelete = append(backupFilenamesToDelete, filename)
+				backupFilesToDelete = append(backupFilesToDelete, filename)
 			}
 		}
 	}
 
-	if len(backupFilenamesToDelete) > 0 {
+	if len(backupFilesToDelete) > 0 {
 		deletingFileSettings, _, err := e.settingRepo.List(ctx, db, base.NewSettingScopeGlobal(), nil,
 			bunex.SelectWhere("setting.type = ?", base.SettingTypeFile),
 			bunex.SelectWhere("setting.kind = ?", base.FileKindSystemBackup),
 			bunex.SelectWhere("setting.data->>'storageType' = ?", base.FileStorageLocal),
-			bunex.SelectWhereIn("setting.name IN (?)", backupFilenamesToDelete...),
+			bunex.SelectWhereIn("setting.name IN (?)", backupFilesToDelete...),
 		)
 		if err != nil {
 			return apperrors.Wrap(err)

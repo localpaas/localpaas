@@ -170,6 +170,7 @@ func (h *BaseHandler) parseQuery(ctx *gin.Context, query any) error {
 	config := &mapstructure.DecoderConfig{
 		Result:           query,
 		WeaklyTypedInput: true,
+		Squash:           true,
 	}
 
 	if len(defaultParseFuncs) == 1 {

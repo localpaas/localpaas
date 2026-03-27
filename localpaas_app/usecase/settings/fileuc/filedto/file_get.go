@@ -33,8 +33,8 @@ type GetFileResp struct {
 type FileResp struct {
 	*settings.BaseSettingResp
 	StorageType base.FileStorageType      `json:"storageType"`
-	Storage     *settings.BaseSettingResp `json:"storage"`
-	Bucket      string                    `json:"bucket"`
+	Storage     *settings.BaseSettingResp `json:"storage,omitempty"`
+	Bucket      string                    `json:"bucket,omitempty"`
 	Mimetype    string                    `json:"mimetype"`
 	Size        int64                     `json:"size"`
 	Path        string                    `json:"path"`

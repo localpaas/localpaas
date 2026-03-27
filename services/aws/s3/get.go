@@ -40,19 +40,21 @@ func (client *Client) PresignGet(
 	objectKey string,
 	viewInline bool,
 	fileName string,
+	mimetype string,
 	presignExp time.Duration,
 ) (string, error) {
+	if mimetype == "" {
+		mimetype = mime.TypeByExtension(filepath.Ext(fileName))
+	}
 	objectInput := &s3.GetObjectInput{
-		Bucket:                     aws.String(bucketName),
-		Key:                        aws.String(objectKey),
-		ResponseContentDisposition: aws.String("attachment; filename=" + fileName),
+		Bucket:              aws.String(bucketName),
+		Key:                 aws.String(objectKey),
+		ResponseContentType: aws.String(mimetype),
 	}
 	if viewInline {
-		fileExt := filepath.Ext(objectKey)
-		if fileExt != "" {
-			objectInput.ResponseContentType = aws.String(mime.TypeByExtension(fileExt))
-			objectInput.ResponseContentDisposition = aws.String("inline; filename=" + fileName)
-		}
+		objectInput.ResponseContentDisposition = aws.String("inline; filename=" + fileName)
+	} else {
+		objectInput.ResponseContentDisposition = aws.String("attachment; filename=" + fileName)
 	}
 	request, err := client.presignClient.PresignGetObject(ctx, objectInput, func(opts *s3.PresignOptions) {
 		opts.Expires = presignExp

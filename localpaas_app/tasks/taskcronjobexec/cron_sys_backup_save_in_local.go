@@ -61,6 +61,7 @@ func (e *Executor) sysBackupSaveResultInLocal(
 		FileKind:    base.FileKindSystemBackup,
 		StorageType: base.FileStorageLocal,
 		Mimetype:    "application/octet-stream",
+		Name:        data.OutFileName,
 		Path:        strings.TrimPrefix(data.BackupSaveDir, config.Current.AppPath),
 	}
 	localFileInfo, err := os.Stat(data.OutFilePath)

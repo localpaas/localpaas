@@ -25,6 +25,7 @@ type File struct {
 	Storage     ObjectID             `json:"storage,omitzero"`
 	Bucket      string               `json:"bucket,omitempty"`
 	Mimetype    string               `json:"mimetype"`
+	Name        string               `json:"name"`
 	Size        int64                `json:"size"`
 	Path        string               `json:"path"`
 	Deleted     bool                 `json:"deleted,omitempty"`
@@ -36,6 +37,9 @@ func (s *File) GetType() base.SettingType {
 
 func (s *File) GetRefObjectIDs() *RefObjectIDs {
 	refIDs := &RefObjectIDs{}
+	if s.Storage.ID != "" {
+		refIDs.RefSettingIDs = append(refIDs.RefSettingIDs, s.Storage.ID)
+	}
 	return refIDs
 }
 

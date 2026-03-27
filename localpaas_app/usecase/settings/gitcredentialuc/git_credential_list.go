@@ -19,8 +19,8 @@ func (uc *GitCredentialUC) ListGitCredential(
 		bunex.SelectWhereIn("setting.type IN (?)", base.SettingTypeGithubApp,
 			base.SettingTypeAccessToken, base.SettingTypeSSHKey),
 	}
-	if len(req.Status) > 0 {
-		listOpts = append(listOpts, bunex.SelectWhere("setting.status IN (?)", bunex.In(req.Status)))
+	if len(req.Statuses) > 0 {
+		listOpts = append(listOpts, bunex.SelectWhereIn("setting.status IN (?)", req.Statuses...))
 	}
 	if req.Search != "" {
 		keyword := bunex.MakeLikeOpStr(req.Search, true)
@@ -32,7 +32,7 @@ func (uc *GitCredentialUC) ListGitCredential(
 	}
 	if len(auth.AllowObjectIDs) > 0 {
 		listOpts = append(listOpts,
-			bunex.SelectWhere("setting.id IN (?)", bunex.In(auth.AllowObjectIDs)),
+			bunex.SelectWhereIn("setting.id IN (?)", auth.AllowObjectIDs...),
 		)
 	}
 

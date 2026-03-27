@@ -99,6 +99,7 @@ func (e *Executor) sysBackupSaveResultInStorage(
 		Storage:     entity.ObjectID{ID: sysBackup.DestinationStorage.ID},
 		Bucket:      storageBucket,
 		Mimetype:    localFile.Mimetype,
+		Name:        data.OutFileName,
 		Size:        localFile.Size,
 		Path:        sysBackup.DestinationStorageDir,
 	}

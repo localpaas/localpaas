@@ -4,6 +4,7 @@ import (
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
@@ -11,6 +12,7 @@ import (
 
 type ListFileReq struct {
 	settings.ListSettingReq
+	StorageTypes []base.FileStorageType `json:"-" mapstructure:"storageType"`
 }
 
 func NewListFileReq() *ListFileReq {
@@ -18,7 +20,7 @@ func NewListFileReq() *ListFileReq {
 		ListSettingReq: settings.ListSettingReq{
 			Paging: basedto.Paging{
 				// Default paging if unset by client
-				Sort: basedto.Orders{{Direction: basedto.DirectionAsc, ColumnName: "name"}},
+				Sort: basedto.Orders{{Direction: basedto.DirectionDesc, ColumnName: "name"}},
 			},
 		},
 	}

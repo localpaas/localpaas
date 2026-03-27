@@ -14,14 +14,15 @@ import (
 
 type ListSettingReq struct {
 	BaseSettingReq
-	Status []base.SettingStatus `json:"-" mapstructure:"status"`
-	Search string               `json:"-" mapstructure:"search"`
+	Statuses []base.SettingStatus `json:"-" mapstructure:"status"`
+	Kinds    []string             `json:"-" mapstructure:"kind"`
+	Search   string               `json:"-" mapstructure:"search"`
 
 	Paging basedto.Paging `json:"-"`
 }
 
 func (req *ListSettingReq) Validate() (validators []vld.Validator) {
-	validators = append(validators, basedto.ValidateSlice(req.Status, true, 0,
+	validators = append(validators, basedto.ValidateSlice(req.Statuses, true, 0,
 		base.AllSettingStatuses, "status")...)
 	return
 }
@@ -46,8 +47,11 @@ func (uc *BaseSettingUC) ListSetting(
 	listOpts := []bunex.SelectQueryOption{
 		bunex.SelectWhere("setting.type = ?", req.Type),
 	}
-	if len(req.Status) > 0 {
-		listOpts = append(listOpts, bunex.SelectWhere("setting.status IN (?)", bunex.In(req.Status)))
+	if len(req.Statuses) > 0 {
+		listOpts = append(listOpts, bunex.SelectWhereIn("setting.status IN (?)", req.Statuses...))
+	}
+	if len(req.Kinds) > 0 {
+		listOpts = append(listOpts, bunex.SelectWhereIn("setting.kind IN (?)", req.Kinds...))
 	}
 	if req.Search != "" {
 		keyword := bunex.MakeLikeOpStr(req.Search, true)
@@ -59,7 +63,7 @@ func (uc *BaseSettingUC) ListSetting(
 	}
 	if len(auth.AllowObjectIDs) > 0 {
 		listOpts = append(listOpts,
-			bunex.SelectWhere("setting.id IN (?)", bunex.In(auth.AllowObjectIDs)),
+			bunex.SelectWhereIn("setting.id IN (?)", auth.AllowObjectIDs),
 		)
 	}
 	listOpts = append(listOpts, data.ExtraLoadOpts...)
