@@ -20,6 +20,8 @@ import (
 )
 
 const (
+	sysBackupVer = "v1.0.0"
+
 	// 0755 grants read/write/execute for owner, read/execute for group/others
 	// 0644 grants read/write for owner, read-only for group/others
 	sysBackupDirFileMode = 0o755
@@ -94,6 +96,7 @@ func (e *Executor) sysBackup(
 	// Write header to the backup file
 	err = jsonlW.WriteMetadata(jsonl.Metadata{
 		Type:      "system-backup",
+		Version:   sysBackupVer,
 		Timestamp: data.TimeNow.Truncate(time.Second),
 	})
 	if err != nil {
