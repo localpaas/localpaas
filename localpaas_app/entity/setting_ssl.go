@@ -5,6 +5,7 @@ import (
 
 	"github.com/tiendc/gofn"
 
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
@@ -57,13 +58,17 @@ func (s *SSL) IsRenewable() bool {
 }
 
 func (s *SSL) Migrate(setting *Setting) (hasChange bool, err error) {
-	if CurrentSSLVersion == setting.Version {
+	if setting.Version == CurrentSSLVersion {
 		return false, nil
+	}
+	if setting.Version > CurrentSSLVersion {
+		return false, apperrors.New(apperrors.ErrDataVerNewerThanSystemVer)
 	}
 
 	// TODO: add migration if we make any change
 
 	setting.Version = CurrentSSLVersion
+	setting.UpdateVer++
 	setting.MustSetData(s)
 	return true, nil
 }

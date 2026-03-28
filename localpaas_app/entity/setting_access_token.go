@@ -3,6 +3,7 @@ package entity
 import (
 	"github.com/tiendc/gofn"
 
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
@@ -39,13 +40,17 @@ func (s *AccessToken) MustDecrypt() *AccessToken {
 }
 
 func (s *AccessToken) Migrate(setting *Setting) (hasChange bool, err error) {
-	if CurrentAccessTokenVersion == setting.Version {
+	if setting.Version == CurrentAccessTokenVersion {
 		return false, nil
+	}
+	if setting.Version > CurrentAccessTokenVersion {
+		return false, apperrors.New(apperrors.ErrDataVerNewerThanSystemVer)
 	}
 
 	// TODO: add migration if we make any change
 
 	setting.Version = CurrentAccessTokenVersion
+	setting.UpdateVer++
 	setting.MustSetData(s)
 	return true, nil
 }

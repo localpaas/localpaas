@@ -3,6 +3,7 @@ package entity
 import (
 	"github.com/tiendc/gofn"
 
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
@@ -62,13 +63,17 @@ func (s *Healthcheck) GetRefObjectIDs() *RefObjectIDs {
 }
 
 func (s *Healthcheck) Migrate(setting *Setting) (hasChange bool, err error) {
-	if CurrentHealthcheckVersion == setting.Version {
+	if setting.Version == CurrentHealthcheckVersion {
 		return false, nil
+	}
+	if setting.Version > CurrentHealthcheckVersion {
+		return false, apperrors.New(apperrors.ErrDataVerNewerThanSystemVer)
 	}
 
 	// TODO: add migration if we make any change
 
 	setting.Version = CurrentHealthcheckVersion
+	setting.UpdateVer++
 	setting.MustSetData(s)
 	return true, nil
 }

@@ -5,6 +5,7 @@ import (
 
 	"github.com/tiendc/gofn"
 
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
@@ -59,13 +60,17 @@ func (s *SystemBackup) MustDecrypt() *SystemBackup {
 }
 
 func (s *SystemBackup) Migrate(setting *Setting) (hasChange bool, err error) {
-	if CurrentSystemBackupVersion == setting.Version {
+	if setting.Version == CurrentSystemBackupVersion {
 		return false, nil
+	}
+	if setting.Version > CurrentSystemBackupVersion {
+		return false, apperrors.New(apperrors.ErrDataVerNewerThanSystemVer)
 	}
 
 	// TODO: add migration if we make any change
 
 	setting.Version = CurrentSystemBackupVersion
+	setting.UpdateVer++
 	setting.MustSetData(s)
 	return true, nil
 }

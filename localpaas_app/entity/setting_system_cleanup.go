@@ -5,6 +5,7 @@ import (
 
 	"github.com/tiendc/gofn"
 
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
@@ -60,13 +61,17 @@ func (s *SystemCleanup) GetRefObjectIDs() *RefObjectIDs {
 }
 
 func (s *SystemCleanup) Migrate(setting *Setting) (hasChange bool, err error) {
-	if CurrentSystemCleanupVersion == setting.Version {
+	if setting.Version == CurrentSystemCleanupVersion {
 		return false, nil
+	}
+	if setting.Version > CurrentSystemCleanupVersion {
+		return false, apperrors.New(apperrors.ErrDataVerNewerThanSystemVer)
 	}
 
 	// TODO: add migration if we make any change
 
 	setting.Version = CurrentSystemCleanupVersion
+	setting.UpdateVer++
 	setting.MustSetData(s)
 	return true, nil
 }

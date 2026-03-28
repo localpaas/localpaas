@@ -44,13 +44,17 @@ func (s *OAuth) MustDecrypt() *OAuth {
 }
 
 func (s *OAuth) Migrate(setting *Setting) (hasChange bool, err error) {
-	if CurrentOAuthVersion == setting.Version {
+	if setting.Version == CurrentOAuthVersion {
 		return false, nil
+	}
+	if setting.Version > CurrentOAuthVersion {
+		return false, apperrors.New(apperrors.ErrDataVerNewerThanSystemVer)
 	}
 
 	// TODO: add migration if we make any change
 
 	setting.Version = CurrentOAuthVersion
+	setting.UpdateVer++
 	setting.MustSetData(s)
 	return true, nil
 }

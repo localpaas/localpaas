@@ -3,6 +3,7 @@ package entity
 import (
 	"github.com/tiendc/gofn"
 
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
@@ -43,13 +44,17 @@ func (s *CloudStorage) MustDecrypt() *CloudStorage {
 }
 
 func (s *CloudStorage) Migrate(setting *Setting) (hasChange bool, err error) {
-	if CurrentCloudStorageVersion == setting.Version {
+	if setting.Version == CurrentCloudStorageVersion {
 		return false, nil
+	}
+	if setting.Version > CurrentCloudStorageVersion {
+		return false, apperrors.New(apperrors.ErrDataVerNewerThanSystemVer)
 	}
 
 	// TODO: add migration if we make any change
 
 	setting.Version = CurrentCloudStorageVersion
+	setting.UpdateVer++
 	setting.MustSetData(s)
 	return true, nil
 }

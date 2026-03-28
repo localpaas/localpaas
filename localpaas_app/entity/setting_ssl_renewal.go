@@ -5,6 +5,7 @@ import (
 
 	"github.com/tiendc/gofn"
 
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
@@ -36,13 +37,17 @@ func (s *SSLRenewal) GetRefObjectIDs() *RefObjectIDs {
 }
 
 func (s *SSLRenewal) Migrate(setting *Setting) (hasChange bool, err error) {
-	if CurrentSSLRenewalVersion == setting.Version {
+	if setting.Version == CurrentSSLRenewalVersion {
 		return false, nil
+	}
+	if setting.Version > CurrentSSLRenewalVersion {
+		return false, apperrors.New(apperrors.ErrDataVerNewerThanSystemVer)
 	}
 
 	// TODO: add migration if we make any change
 
 	setting.Version = CurrentSSLRenewalVersion
+	setting.UpdateVer++
 	setting.MustSetData(s)
 	return true, nil
 }

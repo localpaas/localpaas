@@ -58,13 +58,17 @@ func (s *RegistryAuth) GenerateAuthHeader() (string, error) {
 }
 
 func (s *RegistryAuth) Migrate(setting *Setting) (hasChange bool, err error) {
-	if CurrentRegistryAuthVersion == setting.Version {
+	if setting.Version == CurrentRegistryAuthVersion {
 		return false, nil
+	}
+	if setting.Version > CurrentRegistryAuthVersion {
+		return false, apperrors.New(apperrors.ErrDataVerNewerThanSystemVer)
 	}
 
 	// TODO: add migration if we make any change
 
 	setting.Version = CurrentRegistryAuthVersion
+	setting.UpdateVer++
 	setting.MustSetData(s)
 	return true, nil
 }

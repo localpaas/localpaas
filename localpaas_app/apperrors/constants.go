@@ -73,11 +73,12 @@ var (
 
 // Errors for settings
 var (
-	ErrSettingInactive       = errors.New("ERR_SETTING_INACTIVE")
-	ErrGlobalSettingRequired = errors.New("ERR_GLOBAL_SETTING_REQUIRED")
-	ErrOwnSettingRequired    = errors.New("ERR_OWN_SETTING_REQUIRED")
-	ErrSettingMissing        = errors.New("ERR_SETTING_MISSING")
-	ErrSettingTypeInvalid    = errors.New("ERR_SETTING_TYPE_INVALID")
+	ErrSettingInactive           = errors.New("ERR_SETTING_INACTIVE")
+	ErrGlobalSettingRequired     = errors.New("ERR_GLOBAL_SETTING_REQUIRED")
+	ErrOwnSettingRequired        = errors.New("ERR_OWN_SETTING_REQUIRED")
+	ErrSettingMissing            = errors.New("ERR_SETTING_MISSING")
+	ErrSettingTypeInvalid        = errors.New("ERR_SETTING_TYPE_INVALID")
+	ErrDataVerNewerThanSystemVer = errors.New("ERR_DATA_VER_NEWER_THAN_SYSTEM_VER")
 )
 
 // Errors for projects
@@ -179,11 +180,12 @@ var errorStatusMap = map[error]int{
 	ErrEmailChangeUnallowed:        http.StatusUnprocessableEntity,
 
 	// Settings errors
-	ErrSettingInactive:       http.StatusNotAcceptable,
-	ErrGlobalSettingRequired: http.StatusUnprocessableEntity,
-	ErrOwnSettingRequired:    http.StatusUnprocessableEntity,
-	ErrSettingMissing:        http.StatusUnprocessableEntity,
-	ErrSettingTypeInvalid:    http.StatusNotAcceptable,
+	ErrSettingInactive:           http.StatusNotAcceptable,
+	ErrGlobalSettingRequired:     http.StatusUnprocessableEntity,
+	ErrOwnSettingRequired:        http.StatusUnprocessableEntity,
+	ErrSettingMissing:            http.StatusUnprocessableEntity,
+	ErrSettingTypeInvalid:        http.StatusNotAcceptable,
+	ErrDataVerNewerThanSystemVer: http.StatusUnprocessableEntity,
 
 	// Project errors
 	ErrProjectInactive: http.StatusNotAcceptable,

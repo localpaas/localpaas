@@ -5,6 +5,7 @@ import (
 
 	"github.com/tiendc/gofn"
 
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
@@ -111,13 +112,17 @@ func (s *AppHttpSettings) GetBasicAuthIDs() (res []string) {
 }
 
 func (s *AppHttpSettings) Migrate(setting *Setting) (hasChange bool, err error) {
-	if CurrentAppHttpSettingsVersion == setting.Version {
+	if setting.Version == CurrentAppHttpSettingsVersion {
 		return false, nil
+	}
+	if setting.Version > CurrentAppHttpSettingsVersion {
+		return false, apperrors.New(apperrors.ErrDataVerNewerThanSystemVer)
 	}
 
 	// TODO: add migration if we make any change
 
 	setting.Version = CurrentAppHttpSettingsVersion
+	setting.UpdateVer++
 	setting.MustSetData(s)
 	return true, nil
 }

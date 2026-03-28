@@ -3,6 +3,7 @@ package entity
 import (
 	"github.com/tiendc/gofn"
 
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
@@ -88,13 +89,17 @@ func (s *AppDeploymentSettings) GetGitCredentialIDs() (res []string) {
 }
 
 func (s *AppDeploymentSettings) Migrate(setting *Setting) (hasChange bool, err error) {
-	if CurrentAppDeploymentSettingsVersion == setting.Version {
+	if setting.Version == CurrentAppDeploymentSettingsVersion {
 		return false, nil
+	}
+	if setting.Version > CurrentAppDeploymentSettingsVersion {
+		return false, apperrors.New(apperrors.ErrDataVerNewerThanSystemVer)
 	}
 
 	// TODO: add migration if we make any change
 
 	setting.Version = CurrentAppDeploymentSettingsVersion
+	setting.UpdateVer++
 	setting.MustSetData(s)
 	return true, nil
 }

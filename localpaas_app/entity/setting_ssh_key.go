@@ -3,6 +3,7 @@ package entity
 import (
 	"github.com/tiendc/gofn"
 
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
@@ -39,13 +40,17 @@ func (s *SSHKey) MustDecrypt() *SSHKey {
 }
 
 func (s *SSHKey) Migrate(setting *Setting) (hasChange bool, err error) {
-	if CurrentSSHKeyVersion == setting.Version {
+	if setting.Version == CurrentSSHKeyVersion {
 		return false, nil
+	}
+	if setting.Version > CurrentSSHKeyVersion {
+		return false, apperrors.New(apperrors.ErrDataVerNewerThanSystemVer)
 	}
 
 	// TODO: add migration if we make any change
 
 	setting.Version = CurrentSSHKeyVersion
+	setting.UpdateVer++
 	setting.MustSetData(s)
 	return true, nil
 }

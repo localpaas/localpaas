@@ -3,6 +3,7 @@ package entity
 import (
 	"github.com/tiendc/gofn"
 
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
@@ -39,13 +40,17 @@ func (s *EnvVars) GetRefObjectIDs() *RefObjectIDs {
 }
 
 func (s *EnvVars) Migrate(setting *Setting) (hasChange bool, err error) {
-	if CurrentEnvVarsVersion == setting.Version {
+	if setting.Version == CurrentEnvVarsVersion {
 		return false, nil
+	}
+	if setting.Version > CurrentEnvVarsVersion {
+		return false, apperrors.New(apperrors.ErrDataVerNewerThanSystemVer)
 	}
 
 	// TODO: add migration if we make any change
 
 	setting.Version = CurrentEnvVarsVersion
+	setting.UpdateVer++
 	setting.MustSetData(s)
 	return true, nil
 }
