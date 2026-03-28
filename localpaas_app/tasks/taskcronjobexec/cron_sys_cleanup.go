@@ -30,17 +30,21 @@ func (e *Executor) cronExecSystemCleanup(
 		TaskOutput: &entity.TaskSystemCleanupOutput{
 			DBCleanup:      &entity.DBCleanupOutput{},
 			ClusterCleanup: &entity.ClusterCleanupOutput{},
+			FileCleanup:    &entity.FileCleanupOutput{},
 		},
 	}
 
-	// Cleanup system DB
-	err1 := e.sysDBCleanup(ctx, db, sysCleanup.DBObjectRetention, taskData)
+	// Cleanup DB objects
+	err1 := e.sysCleanupDB(ctx, db, sysCleanup.DBObjectRetention, taskData)
 
 	// Cleanup unused cluster data (docker)
-	err2 := e.sysClusterCleanup(ctx, sysCleanup.ClusterCleanup, taskData)
+	err2 := e.sysCleanupCluster(ctx, sysCleanup.ClusterCleanup, taskData)
+
+	// Cleanup orphaned files
+	err3 := e.sysCleanupFiles(ctx, taskData)
 
 	// Assign back the result output
 	data.Task.MustSetOutput(taskData.TaskOutput)
 
-	return errors.Join(err1, err2)
+	return errors.Join(err1, err2, err3)
 }

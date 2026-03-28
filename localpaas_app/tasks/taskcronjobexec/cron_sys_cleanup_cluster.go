@@ -8,7 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 )
 
-func (e *Executor) sysClusterCleanup(
+func (e *Executor) sysCleanupCluster(
 	ctx context.Context,
 	clusterCleanup *entity.ClusterCleanup,
 	data *sysCleanupTaskData,

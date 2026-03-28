@@ -12,7 +12,73 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
-func (e *Executor) sysDBCleanup(
+var (
+	sysCleanupDBModels = []*sysCleanupDBModel{
+		{
+			Type:  "db/user",
+			Model: (*entity.User)(nil),
+		},
+		{
+			Type:  "db/acl-permission",
+			Model: (*entity.ACLPermission)(nil),
+		},
+		{
+			Type:         "db/login-trusted-device",
+			Model:        (*entity.LoginTrustedDevice)(nil),
+			NoSoftDelete: true,
+		},
+		{
+			Type:  "db/setting",
+			Model: (*entity.Setting)(nil),
+		},
+		{
+			Type:  "db/project",
+			Model: (*entity.Project)(nil),
+		},
+		{
+			Type:  "db/project-tag",
+			Model: (*entity.ProjectTag)(nil),
+		},
+		{
+			Type:  "db/project-shared-setting",
+			Model: (*entity.ProjectSharedSetting)(nil),
+		},
+		{
+			Type:  "db/app",
+			Model: (*entity.App)(nil),
+		},
+		{
+			Type:  "db/app-tag",
+			Model: (*entity.AppTag)(nil),
+		},
+		{
+			Type:  "db/deployment",
+			Model: (*entity.Deployment)(nil),
+		},
+		{
+			Type:  "db/task",
+			Model: (*entity.Task)(nil),
+		},
+		{
+			Type:         "db/task-log",
+			Model:        (*entity.TaskLog)(nil),
+			NoSoftDelete: true,
+		},
+		{
+			Type:         "db/sys-error",
+			Model:        (*entity.SysError)(nil),
+			NoSoftDelete: true,
+		},
+	}
+)
+
+type sysCleanupDBModel struct {
+	Type         string
+	Model        any
+	NoSoftDelete bool
+}
+
+func (e *Executor) sysCleanupDB(
 	ctx context.Context,
 	db database.IDB,
 	retentionSetting *entity.DBObjectRetention,
@@ -29,25 +95,25 @@ func (e *Executor) sysDBCleanup(
 	}()
 
 	// Hard delete all old deleted objects from the DB
-	err = e.sysCleanupOldDeletedObjects(ctx, db, retentionSetting, timeNow)
+	err = e.sysCleanupDBOldDeletedObjects(ctx, db, retentionSetting, timeNow)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
 	// Hard delete all old tasks and their logs from the DB
-	err = e.sysCleanupOldTasks(ctx, db, retentionSetting, timeNow)
+	err = e.sysCleanupDBOldTasks(ctx, db, retentionSetting, timeNow)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
 	// Hard delete all old deployments from the DB
-	err = e.sysCleanupOldDeployments(ctx, db, retentionSetting, timeNow)
+	err = e.sysCleanupDBOldDeployments(ctx, db, retentionSetting, timeNow)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
 	// Hard delete all old sys-errors from the DB
-	err = e.sysCleanupOldSysErrors(ctx, db, retentionSetting, timeNow)
+	err = e.sysCleanupDBOldSysErrors(ctx, db, retentionSetting, timeNow)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -55,7 +121,7 @@ func (e *Executor) sysDBCleanup(
 	return nil
 }
 
-func (e *Executor) sysCleanupOldDeletedObjects(
+func (e *Executor) sysCleanupDBOldDeletedObjects(
 	ctx context.Context,
 	db database.IDB,
 	retentionSetting *entity.DBObjectRetention,
@@ -64,33 +130,30 @@ func (e *Executor) sysCleanupOldDeletedObjects(
 	if retentionSetting.DeletedObjects <= 0 {
 		return nil
 	}
-
 	oldestTs := timeNow.Add(-retentionSetting.DeletedObjects.ToDuration())
-	opts := []bunex.DeleteQueryOption{
-		bunex.DeleteWithDeleted(),
-		bunex.DeleteWhere("deleted_at IS NOT NULL"),
-		bunex.DeleteWhere("deleted_at < ?", oldestTs),
+	var errs []error
+	for _, model := range sysCleanupDBModels {
+		if model.NoSoftDelete {
+			continue
+		}
+		q := db.NewDelete().Model(model.Model).
+			ForceDelete().
+			WhereAllWithDeleted().
+			Where("deleted_at IS NOT NULL").
+			Where("deleted_at < ?", oldestTs)
+		_, e := q.Exec(ctx)
+		if e != nil {
+			errs = append(errs, e)
+		}
 	}
-	// NOTE: apply on tables with soft-deleted enabled
-	e1 := e.userRepo.DeleteHard(ctx, db, opts...)
-	e2 := e.aclPermissionRepo.DeleteHard(ctx, db, opts...)
-	e3 := e.projectRepo.DeleteHard(ctx, db, opts...)
-	e4 := e.projectTagRepo.DeleteHard(ctx, db, opts...)
-	e5 := e.projectSharedSettingRepo.DeleteHard(ctx, db, opts...)
-	e6 := e.appRepo.DeleteHard(ctx, db, opts...)
-	e7 := e.appTagRepo.DeleteHard(ctx, db, opts...)
-	e8 := e.deploymentRepo.DeleteHard(ctx, db, opts...)
-	e9 := e.settingRepo.DeleteHard(ctx, db, opts...)
-	e10 := e.taskRepo.DeleteHard(ctx, db, opts...)
-	err = errors.Join(e1, e2, e3, e4, e5, e6, e7, e8, e9, e10)
+	err = errors.Join(errs...)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-
 	return nil
 }
 
-func (e *Executor) sysCleanupOldTasks(
+func (e *Executor) sysCleanupDBOldTasks(
 	ctx context.Context,
 	db database.IDB,
 	retentionSetting *entity.DBObjectRetention,
@@ -121,7 +184,7 @@ func (e *Executor) sysCleanupOldTasks(
 	return nil
 }
 
-func (e *Executor) sysCleanupOldDeployments(
+func (e *Executor) sysCleanupDBOldDeployments(
 	ctx context.Context,
 	db database.IDB,
 	retentionSetting *entity.DBObjectRetention,
@@ -143,7 +206,7 @@ func (e *Executor) sysCleanupOldDeployments(
 	return nil
 }
 
-func (e *Executor) sysCleanupOldSysErrors(
+func (e *Executor) sysCleanupDBOldSysErrors(
 	ctx context.Context,
 	db database.IDB,
 	retentionSetting *entity.DBObjectRetention,

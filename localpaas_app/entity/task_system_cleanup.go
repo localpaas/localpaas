@@ -3,6 +3,7 @@ package entity
 type TaskSystemCleanupOutput struct {
 	DBCleanup      *DBCleanupOutput      `json:"dbCleanup"`
 	ClusterCleanup *ClusterCleanupOutput `json:"clusterCleanup"`
+	FileCleanup    *FileCleanupOutput    `json:"fileCleanup"`
 }
 
 type DBCleanupOutput struct {
@@ -19,6 +20,10 @@ type ClusterCleanupOutput struct {
 	NetworksDeleted      int    `json:"networksDeleted"`
 	NetworksPruneError   string `json:"networksPruneError,omitempty"`
 	SpaceReclaimed       uint64 `json:"spaceReclaimed"`
+}
+
+type FileCleanupOutput struct {
+	Error string `json:"error,omitempty"`
 }
 
 func (t *Task) OutputAsSystemCleanup() (*TaskSystemCleanupOutput, error) {
