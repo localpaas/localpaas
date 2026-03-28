@@ -30,27 +30,20 @@ func (e *Executor) sysBackupSaveResultInStorage(
 	if storageSttg == nil {
 		return nil
 	}
-	storage := storageSttg.MustAsCloudStorage()
-	providerSttg := data.RefObjects.RefSettings[storage.Provider.ID]
-	if providerSttg == nil {
-		return nil
-	}
-	provider := providerSttg.MustAsCloudProvider()
-	storage.RefProvider = provider
 
 	var s3Client *s3.Client
 	var storageName string
 	var storageBucket string
-	switch {
-	case storage.S3 != nil:
+	switch base.CloudStorageKind(storageSttg.Kind) {
+	case base.CloudStorageKindS3:
+		s3Client, err = s3.NewClientFromSetting(ctx, storageSttg)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 		storageName = "AWS S3"
-		storageBucket = storage.S3.Bucket
-		s3Client, err = s3.NewClientFromStorage(ctx, storage)
+		storageBucket = s3Client.Config.Bucket
 	default:
-		err = apperrors.NewUnsupported("Storage type")
-	}
-	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.NewUnsupported("Storage type")
 	}
 
 	targetFilePath := filepath.Join(sysBackup.DestinationStorageDir, data.OutFileName)
@@ -63,13 +56,13 @@ func (e *Executor) sysBackupSaveResultInStorage(
 	start := timeutil.NowUTC()
 	_ = data.LogStore.Add(ctx, applog.NewOutFrame(fmt.Sprintf(
 		"Start uploading file '%v' to '%v' bucket '%v'...",
-		data.OutFileName, storageName, storage.S3.Bucket), applog.TsNow))
+		data.OutFileName, storageName, storageBucket), applog.TsNow))
 
-	switch {
-	case storage.S3 != nil:
+	switch base.CloudStorageKind(storageSttg.Kind) {
+	case base.CloudStorageKindS3:
 		err = s3Client.UploadEx(ctx, storageBucket, targetFilePath, 0, 0, backupFile)
 	default:
-		err = apperrors.NewUnsupported("Storage type")
+		return apperrors.NewUnsupported("Storage type")
 	}
 
 	if err != nil {

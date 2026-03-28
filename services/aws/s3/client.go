@@ -10,11 +10,12 @@ import (
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 )
 
 type Client struct {
-	config        *Config
+	Config        *Config
 	client        *s3.Client
 	presignClient *s3.PresignClient
 }
@@ -45,25 +46,32 @@ func NewClient(ctx context.Context, cfg *Config) (*Client, error) {
 	})
 
 	return &Client{
-		config:        cfg,
+		Config:        cfg,
 		client:        s3Client,
 		presignClient: s3.NewPresignClient(s3Client),
 	}, nil
 }
 
-func NewClientFromStorage(ctx context.Context, storage *entity.CloudStorage) (*Client, error) {
+func NewClientFromSetting(ctx context.Context, storageSttg *entity.Setting) (*Client, error) {
+	if storageSttg.Type != base.SettingTypeCloudStorage || storageSttg.Kind != string(base.CloudStorageKindS3) {
+		return nil, apperrors.New(apperrors.ErrSettingTypeInvalid)
+	}
+	storage, err := storageSttg.AsCloudStorage()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
 	return NewClient(ctx, &Config{
-		AccessKeyID:     storage.RefProvider.AWS.AccessKeyID,
-		SecretAccessKey: storage.RefProvider.AWS.SecretKey.MustGetPlain(),
+		AccessKeyID:     storage.S3.AccessKeyID,
+		SecretAccessKey: storage.S3.SecretKey.MustGetPlain(),
 		Endpoint:        storage.S3.Endpoint,
-		Region:          gofn.Coalesce(storage.S3.Region, storage.RefProvider.AWS.Region),
+		Region:          gofn.Coalesce(storage.S3.Region, storage.S3.CloudProviderAWS.Region),
 		Bucket:          storage.S3.Bucket,
 	})
 }
 
 func (client *Client) HeadBucket(ctx context.Context) (*s3.HeadBucketOutput, error) {
 	result, err := client.client.HeadBucket(ctx, &s3.HeadBucketInput{
-		Bucket: aws.String(client.config.Bucket),
+		Bucket: aws.String(client.Config.Bucket),
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)

@@ -20,16 +20,13 @@ type CreateCloudStorageReq struct {
 }
 
 type CloudStorageBaseReq struct {
-	Name     string                `json:"name"`
-	Kind     base.CloudStorageKind `json:"kind"`
-	Provider basedto.ObjectIDReq   `json:"provider"`
-	S3       *CloudStorageS3Req    `json:"s3"`
+	Name string                `json:"name"`
+	Kind base.CloudStorageKind `json:"kind"`
+	S3   *CloudStorageS3Req    `json:"s3"`
 }
 
 func (req *CloudStorageBaseReq) ToEntity() *entity.CloudStorage {
-	res := &entity.CloudStorage{
-		Provider: entity.ObjectID{ID: req.Provider.ID},
-	}
+	res := &entity.CloudStorage{}
 	if req.Kind == base.CloudStorageKindS3 {
 		res.S3 = req.S3.ToEntity()
 	}
@@ -37,9 +34,16 @@ func (req *CloudStorageBaseReq) ToEntity() *entity.CloudStorage {
 }
 
 type CloudStorageS3Req struct {
+	CloudProviderAWSReq
 	Region   string `json:"region"`
 	Bucket   string `json:"bucket"`
 	Endpoint string `json:"endpoint"`
+}
+
+type CloudProviderAWSReq struct {
+	AccessKeyID string `json:"accessKeyID"`
+	SecretKey   string `json:"secretKey"`
+	Region      string `json:"region"`
 }
 
 func (req *CloudStorageS3Req) ToEntity() *entity.CloudStorageS3 {
@@ -47,6 +51,11 @@ func (req *CloudStorageS3Req) ToEntity() *entity.CloudStorageS3 {
 		return nil
 	}
 	return &entity.CloudStorageS3{
+		CloudProviderAWS: &entity.CloudProviderAWS{
+			AccessKeyID: req.AccessKeyID,
+			SecretKey:   entity.NewEncryptedField(req.SecretKey),
+			Region:      req.Region,
+		},
 		Region:   req.Region,
 		Bucket:   req.Bucket,
 		Endpoint: req.Endpoint,
@@ -72,7 +81,6 @@ func (req *CloudStorageBaseReq) validate(field string) (res []vld.Validator) {
 	}
 	res = append(res, basedto.ValidateStr(&req.Name, true, 1, base.SettingNameMaxLen, field+"name")...)
 	res = append(res, basedto.ValidateStrIn(&req.Kind, true, base.AllCloudStorageKinds, field+"kind")...)
-	res = append(res, basedto.ValidateObjectIDReq(&req.Provider, true, field+"provider")...)
 	if req.Kind == base.CloudStorageKindS3 {
 		res = append(res, req.S3.validate("s3")...)
 	}

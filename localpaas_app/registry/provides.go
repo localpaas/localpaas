@@ -10,6 +10,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/basesettinghandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/clusterhandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/filehandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projecthandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/settinghandler"
@@ -52,7 +53,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accesstokenuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cloudprovideruc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cloudstorageuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc"
@@ -126,6 +126,7 @@ var Provides = []any{
 	systemhandler.NewSystemHandler,
 	systemsettingshandler.NewSystemSettingsHandler,
 	webhookhandler.NewWebhookHandler,
+	filehandler.NewFileHandler,
 
 	// Use case
 	syserroruc.NewSysErrorUC,
@@ -138,7 +139,6 @@ var Provides = []any{
 	appuc.NewAppUC,
 	appdeploymentuc.NewAppDeploymentUC,
 	settings.NewBaseSettingUC,
-	cloudprovideruc.NewCloudProviderUC,
 	cloudstorageuc.NewCloudStorageUC,
 	sshkeyuc.NewSSHKeyUC,
 	apikeyuc.NewAPIKeyUC,

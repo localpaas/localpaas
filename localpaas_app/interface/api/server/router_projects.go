@@ -84,16 +84,6 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		gitCredentialGroup.GET("/:itemID/repositories", projectHandler.ListGitRepo)
 	}
 
-	{ // Cloud provider group
-		cloudProviderGroup := projectGroup.Group("/:projectID/cloud-providers")
-		cloudProviderGroup.GET("/:itemID", projectHandler.GetCloudProvider)
-		cloudProviderGroup.GET("", projectHandler.ListCloudProvider)
-		cloudProviderGroup.POST("", projectHandler.CreateCloudProvider)
-		cloudProviderGroup.PUT("/:itemID", projectHandler.UpdateCloudProvider)
-		cloudProviderGroup.PUT("/:itemID/meta", projectHandler.UpdateCloudProviderMeta)
-		cloudProviderGroup.DELETE("/:itemID", projectHandler.DeleteCloudProvider)
-	}
-
 	{ // Cloud storage group
 		cloudStorageGroup := projectGroup.Group("/:projectID/cloud-storages")
 		cloudStorageGroup.GET("/:itemID", projectHandler.GetCloudStorage)

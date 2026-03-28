@@ -24,9 +24,8 @@ func (uc *CloudStorageUC) CreateCloudStorage(
 ) (*cloudstoragedto.CreateCloudStorageResp, error) {
 	req.Type = currentSettingType
 	resp, err := uc.CreateSetting(ctx, &req.CreateSettingReq, &settings.CreateSettingData{
-		VerifyingName:   req.Name,
-		VerifyingRefIDs: []string{req.Provider.ID},
-		Version:         currentSettingVersion,
+		VerifyingName: req.Name,
+		Version:       currentSettingVersion,
 		PrepareCreation: func(
 			ctx context.Context,
 			db database.Tx,

@@ -5,7 +5,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accesstokenuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cloudprovideruc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cloudstorageuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc"
@@ -32,7 +31,6 @@ type BaseSettingHandler struct {
 	*handler.BaseHandler
 	AuthHandler     *authhandler.AuthHandler
 	OAuthUC         *oauthuc.OAuthUC
-	CloudProviderUC *cloudprovideruc.CloudProviderUC
 	CloudStorageUC  *cloudstorageuc.CloudStorageUC
 	SSHKeyUC        *sshkeyuc.SSHKeyUC
 	IMServiceUC     *imserviceuc.IMServiceUC
@@ -60,7 +58,6 @@ func NewBaseSettingHandler(
 	baseHandler *handler.BaseHandler,
 	authHandler *authhandler.AuthHandler,
 	oauthUC *oauthuc.OAuthUC,
-	cloudProviderUC *cloudprovideruc.CloudProviderUC,
 	cloudStorageUC *cloudstorageuc.CloudStorageUC,
 	sshKeyUC *sshkeyuc.SSHKeyUC,
 	imServiceUC *imserviceuc.IMServiceUC,
@@ -87,7 +84,6 @@ func NewBaseSettingHandler(
 		BaseHandler:     baseHandler,
 		AuthHandler:     authHandler,
 		OAuthUC:         oauthUC,
-		CloudProviderUC: cloudProviderUC,
 		CloudStorageUC:  cloudStorageUC,
 		SSHKeyUC:        sshKeyUC,
 		IMServiceUC:     imServiceUC,

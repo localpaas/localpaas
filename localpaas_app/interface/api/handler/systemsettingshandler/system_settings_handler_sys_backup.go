@@ -2,7 +2,6 @@ package systemsettingshandler
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -11,6 +10,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/fileuc/filedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/systemsettings/systembackupuc/systembackupdto"
+)
+
+const (
+	defaultUsePresignURLOnFileSize = 10 * 1024 * 1024 // 10MB
 )
 
 // GetBackupSettings Gets backup settings
@@ -213,18 +216,18 @@ func (h *SystemSettingsHandler) GetBackupFile(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
-// GetBackupFileDownloadURL Gets download URL of a backup file
-// @Summary Gets download URL of a backup file
-// @Description Gets download URL of a backup file
+// DownloadBackupFile Downloads a backup file
+// @Summary Downloads a backup file
+// @Description Downloads a backup file
 // @Tags    system_settings
 // @Produce json
-// @Id      getSystemBackupFileDownloadURL
+// @Id      downloadSystemBackupFile
 // @Param   fileID path string true "file setting ID"
-// @Success 200 {object} filedto.GetFileDownloadURLResp
+// @Success 200
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /system/settings/backup/files/{fileID}/download-url [get]
-func (h *SystemSettingsHandler) GetBackupFileDownloadURL(ctx *gin.Context) {
+// @Router  /system/settings/backup/files/{fileID}/download [get]
+func (h *SystemSettingsHandler) DownloadBackupFile(ctx *gin.Context) {
 	fileID, err := h.ParseStringParam(ctx, "fileID")
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -242,22 +245,26 @@ func (h *SystemSettingsHandler) GetBackupFileDownloadURL(ctx *gin.Context) {
 		return
 	}
 
-	req := filedto.NewGetFileDownloadURLReq()
+	req := filedto.NewDownloadFileReq()
 	req.Scope = base.NewSettingScopeGlobal()
 	req.ID = fileID
-	req.RequireLogin = true
-	req.CloudPresign = true
-	req.Expiration = time.Minute * 5 //nolint:mnd
+	req.UsePresignURLOnFileSize = defaultUsePresignURLOnFileSize
 	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.FileUC.GetFileDownloadURL(h.RequestCtx(ctx), auth, req)
+	resp, err := h.FileUC.DownloadFile(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
+	data := resp.Data
 
-	ctx.JSON(http.StatusOK, resp)
+	if data.RedirectURL != "" {
+		ctx.Redirect(http.StatusFound, data.RedirectURL)
+		return
+	}
+
+	ctx.DataFromReader(http.StatusOK, data.ContentLength, data.ContentType, data.Content, data.ExtraHeaders)
 }

@@ -55,16 +55,6 @@ func (s *HTTPServer) registerSettingRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		gitCredentialGroup.GET("", settingHandler.ListGitCredential)
 	}
 
-	{ // Cloud provider group
-		cloudProviderGroup := settingGroup.Group("/cloud-providers")
-		cloudProviderGroup.GET("/:itemID", settingHandler.GetCloudProvider)
-		cloudProviderGroup.GET("", settingHandler.ListCloudProvider)
-		cloudProviderGroup.POST("", settingHandler.CreateCloudProvider)
-		cloudProviderGroup.PUT("/:itemID", settingHandler.UpdateCloudProvider)
-		cloudProviderGroup.PUT("/:itemID/meta", settingHandler.UpdateCloudProviderMeta)
-		cloudProviderGroup.DELETE("/:itemID", settingHandler.DeleteCloudProvider)
-	}
-
 	{ // Cloud storage group
 		cloudStorageGroup := settingGroup.Group("/cloud-storages")
 		cloudStorageGroup.GET("/:itemID", settingHandler.GetCloudStorage)

@@ -17,8 +17,7 @@ func (uc *CloudStorageUC) UpdateCloudStorage(
 ) (*cloudstoragedto.UpdateCloudStorageResp, error) {
 	req.Type = currentSettingType
 	_, err := uc.UpdateSetting(ctx, &req.UpdateSettingReq, &settings.UpdateSettingData{
-		VerifyingName:   req.Name,
-		VerifyingRefIDs: []string{req.Provider.ID},
+		VerifyingName: req.Name,
 		PrepareUpdate: func(
 			ctx context.Context,
 			db database.Tx,

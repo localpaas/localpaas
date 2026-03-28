@@ -17,19 +17,23 @@ func (uc *CloudStorageUC) TestCloudStorageConn(
 	auth *basedto.Auth,
 	req *cloudstoragedto.TestCloudStorageConnReq,
 ) (*cloudstoragedto.TestCloudStorageConnResp, error) {
-	setting, err := uc.SettingRepo.GetByID(ctx, uc.DB, nil, base.SettingTypeCloudProvider, req.Provider.ID, true)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
+	switch req.Kind {
+	case base.CloudStorageKindS3:
+		return uc.testCloudStorageS3Conn(ctx, req)
+	default:
+		return nil, apperrors.NewUnsupported("Storage kind")
 	}
-	cloudConf, err := setting.AsCloudProvider()
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
+}
 
+func (uc *CloudStorageUC) testCloudStorageS3Conn(
+	ctx context.Context,
+	req *cloudstoragedto.TestCloudStorageConnReq,
+) (*cloudstoragedto.TestCloudStorageConnResp, error) {
+	storage := req.ToEntity()
 	s3Client, err := s3.NewClient(ctx, &s3.Config{
-		AccessKeyID:     cloudConf.AWS.AccessKeyID,
-		SecretAccessKey: cloudConf.AWS.SecretKey.MustGetPlain(),
-		Region:          gofn.Coalesce(req.S3.Region, cloudConf.AWS.Region),
+		AccessKeyID:     storage.S3.AccessKeyID,
+		SecretAccessKey: storage.S3.SecretKey.MustGetPlain(),
+		Region:          gofn.Coalesce(req.S3.Region, storage.S3.CloudProviderAWS.Region),
 		Endpoint:        req.S3.Endpoint,
 		Bucket:          req.S3.Bucket,
 	})

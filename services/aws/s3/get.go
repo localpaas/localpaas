@@ -2,13 +2,14 @@ package s3
 
 import (
 	"context"
-	"io"
 	"mime"
+	"net/url"
 	"path/filepath"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
@@ -17,7 +18,7 @@ func (client *Client) GetObject(
 	ctx context.Context,
 	bucketName string,
 	objectKey string,
-) ([]byte, error) {
+) (*s3.GetObjectOutput, error) {
 	result, err := client.client.GetObject(ctx, &s3.GetObjectInput{
 		Bucket: aws.String(bucketName),
 		Key:    aws.String(objectKey),
@@ -25,23 +26,17 @@ func (client *Client) GetObject(
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	defer result.Body.Close()
-
-	data, err := io.ReadAll(result.Body)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-	return data, nil
+	return result, nil
 }
 
-func (client *Client) PresignGet(
+func (client *Client) PresignGetObject(
 	ctx context.Context,
 	bucketName string,
 	objectKey string,
-	viewInline bool,
 	fileName string,
 	mimetype string,
-	presignExp time.Duration,
+	viewInline bool,
+	expiration time.Duration,
 ) (string, error) {
 	if mimetype == "" {
 		mimetype = mime.TypeByExtension(filepath.Ext(fileName))
@@ -50,14 +45,12 @@ func (client *Client) PresignGet(
 		Bucket:              aws.String(bucketName),
 		Key:                 aws.String(objectKey),
 		ResponseContentType: aws.String(mimetype),
+		ResponseContentDisposition: aws.String(gofn.If(viewInline, "inline; ", "attachment; ") +
+			`filename*=UTF-8''` + url.QueryEscape(fileName)),
 	}
-	if viewInline {
-		objectInput.ResponseContentDisposition = aws.String("inline; filename=" + fileName)
-	} else {
-		objectInput.ResponseContentDisposition = aws.String("attachment; filename=" + fileName)
-	}
+
 	request, err := client.presignClient.PresignGetObject(ctx, objectInput, func(opts *s3.PresignOptions) {
-		opts.Expires = presignExp
+		opts.Expires = expiration
 	})
 	if err != nil {
 		return "", apperrors.Wrap(err)

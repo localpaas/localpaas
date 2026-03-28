@@ -1321,6 +1321,49 @@
         "tags" : [ "cluster_volumes" ]
       }
     },
+    "/files/{fileID}/download" : {
+      "get" : {
+        "description" : "Downloads a file",
+        "operationId" : "downloadFile",
+        "parameters" : [ {
+          "description" : "file ID",
+          "in" : "path",
+          "name" : "fileID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : { },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/octet-stream" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/octet-stream" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Downloads a file",
+        "tags" : [ "files" ]
+      }
+    },
     "/internal/auth/dev-mode-login" : {
       "post" : {
         "description" : "Login user for dev mode. `userID` params is required.",
@@ -6124,390 +6167,6 @@
           }
         },
         "summary" : "Updates basic auth meta",
-        "tags" : [ "project_settings" ],
-        "x-codegen-request-body-name" : "body"
-      }
-    },
-    "/projects/{projectID}/cloud-providers" : {
-      "get" : {
-        "description" : "Lists cloud providers",
-        "operationId" : "listProjectCloudProvider",
-        "parameters" : [ {
-          "description" : "project ID",
-          "in" : "path",
-          "name" : "projectID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "`search=<target> (support *)`",
-          "in" : "query",
-          "name" : "search",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "`pageOffset=offset`",
-          "in" : "query",
-          "name" : "pageOffset",
-          "schema" : {
-            "type" : "integer"
-          }
-        }, {
-          "description" : "`pageLimit=limit`",
-          "in" : "query",
-          "name" : "pageLimit",
-          "schema" : {
-            "type" : "integer"
-          }
-        }, {
-          "description" : "`sort=[-]field1|field2...`",
-          "in" : "query",
-          "name" : "sort",
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.ListCloudProviderResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Lists cloud providers",
-        "tags" : [ "project_settings" ]
-      },
-      "post" : {
-        "description" : "Creates a cloud provider",
-        "operationId" : "createProjectCloudProvider",
-        "parameters" : [ {
-          "description" : "project ID",
-          "in" : "path",
-          "name" : "projectID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "*/*" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.CreateCloudProviderReq"
-              }
-            }
-          },
-          "description" : "request data",
-          "required" : true
-        },
-        "responses" : {
-          "201" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.CreateCloudProviderResp"
-                }
-              }
-            },
-            "description" : "Created"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Creates a cloud provider",
-        "tags" : [ "project_settings" ],
-        "x-codegen-request-body-name" : "body"
-      }
-    },
-    "/projects/{projectID}/cloud-providers/{itemID}" : {
-      "delete" : {
-        "description" : "Deletes a cloud provider",
-        "operationId" : "deleteProjectCloudProvider",
-        "parameters" : [ {
-          "description" : "project ID",
-          "in" : "path",
-          "name" : "projectID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "setting ID",
-          "in" : "path",
-          "name" : "itemID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.DeleteCloudProviderResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Deletes a cloud provider",
-        "tags" : [ "project_settings" ]
-      },
-      "get" : {
-        "description" : "Gets cloud provider details",
-        "operationId" : "getProjectCloudProvider",
-        "parameters" : [ {
-          "description" : "project ID",
-          "in" : "path",
-          "name" : "projectID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "setting ID",
-          "in" : "path",
-          "name" : "itemID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.GetCloudProviderResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Gets cloud provider details",
-        "tags" : [ "project_settings" ]
-      },
-      "put" : {
-        "description" : "Updates a cloud provider",
-        "operationId" : "updateProjectCloudProvider",
-        "parameters" : [ {
-          "description" : "project ID",
-          "in" : "path",
-          "name" : "projectID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "setting ID",
-          "in" : "path",
-          "name" : "itemID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "*/*" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.UpdateCloudProviderReq"
-              }
-            }
-          },
-          "description" : "request data",
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.UpdateCloudProviderResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Updates a cloud provider",
-        "tags" : [ "project_settings" ],
-        "x-codegen-request-body-name" : "body"
-      }
-    },
-    "/projects/{projectID}/cloud-providers/{itemID}/meta" : {
-      "put" : {
-        "description" : "Updates a cloud provider's meta",
-        "operationId" : "updateProjectCloudProviderMeta",
-        "parameters" : [ {
-          "description" : "project ID",
-          "in" : "path",
-          "name" : "projectID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "setting ID",
-          "in" : "path",
-          "name" : "itemID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "*/*" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.UpdateCloudProviderMetaReq"
-              }
-            }
-          },
-          "description" : "request data",
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.UpdateCloudProviderMetaResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Updates a cloud provider's meta",
         "tags" : [ "project_settings" ],
         "x-codegen-request-body-name" : "body"
       }
@@ -12611,341 +12270,6 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/settings/cloud-providers" : {
-      "get" : {
-        "description" : "Lists cloud providers",
-        "operationId" : "listSettingCloudProvider",
-        "parameters" : [ {
-          "description" : "`search=<target> (support *)`",
-          "in" : "query",
-          "name" : "search",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "`pageOffset=offset`",
-          "in" : "query",
-          "name" : "pageOffset",
-          "schema" : {
-            "type" : "integer"
-          }
-        }, {
-          "description" : "`pageLimit=limit`",
-          "in" : "query",
-          "name" : "pageLimit",
-          "schema" : {
-            "type" : "integer"
-          }
-        }, {
-          "description" : "`sort=[-]field1|field2...`",
-          "in" : "query",
-          "name" : "sort",
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.ListCloudProviderResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Lists cloud providers",
-        "tags" : [ "settings" ]
-      },
-      "post" : {
-        "description" : "Creates a new cloud provider",
-        "operationId" : "createSettingCloudProvider",
-        "requestBody" : {
-          "content" : {
-            "*/*" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.CreateCloudProviderReq"
-              }
-            }
-          },
-          "description" : "request data",
-          "required" : true
-        },
-        "responses" : {
-          "201" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.CreateCloudProviderResp"
-                }
-              }
-            },
-            "description" : "Created"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Creates a new cloud provider",
-        "tags" : [ "settings" ],
-        "x-codegen-request-body-name" : "body"
-      }
-    },
-    "/settings/cloud-providers/{itemID}" : {
-      "delete" : {
-        "description" : "Deletes a cloud provider",
-        "operationId" : "deleteSettingCloudProvider",
-        "parameters" : [ {
-          "description" : "setting ID",
-          "in" : "path",
-          "name" : "itemID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.DeleteCloudProviderResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Deletes a cloud provider",
-        "tags" : [ "settings" ]
-      },
-      "get" : {
-        "description" : "Gets cloud provider details",
-        "operationId" : "getSettingCloudProvider",
-        "parameters" : [ {
-          "description" : "setting ID",
-          "in" : "path",
-          "name" : "itemID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.GetCloudProviderResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Gets cloud provider details",
-        "tags" : [ "settings" ]
-      },
-      "put" : {
-        "description" : "Updates a cloud provider",
-        "operationId" : "updateSettingCloudProvider",
-        "parameters" : [ {
-          "description" : "setting ID",
-          "in" : "path",
-          "name" : "itemID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "*/*" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.UpdateCloudProviderReq"
-              }
-            }
-          },
-          "description" : "request data",
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.UpdateCloudProviderResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Updates a cloud provider",
-        "tags" : [ "settings" ],
-        "x-codegen-request-body-name" : "body"
-      }
-    },
-    "/settings/cloud-providers/{itemID}/meta" : {
-      "put" : {
-        "description" : "Updates a cloud provider's metadata",
-        "operationId" : "updateSettingCloudProviderMeta",
-        "parameters" : [ {
-          "description" : "setting ID",
-          "in" : "path",
-          "name" : "itemID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "*/*" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.UpdateCloudProviderMetaReq"
-              }
-            }
-          },
-          "description" : "request data",
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.UpdateCloudProviderMetaResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Updates a cloud provider's metadata",
-        "tags" : [ "settings" ],
-        "x-codegen-request-body-name" : "body"
-      }
-    },
     "/settings/cloud-storages" : {
       "get" : {
         "description" : "Lists cloud storages",
@@ -18198,10 +17522,10 @@
         "tags" : [ "system_settings" ]
       }
     },
-    "/system/settings/backup/files/{fileID}/download-url" : {
+    "/system/settings/backup/files/{fileID}/download" : {
       "get" : {
-        "description" : "Gets download URL of a backup file",
-        "operationId" : "getSystemBackupFileDownloadURL",
+        "description" : "Downloads a backup file",
+        "operationId" : "downloadSystemBackupFile",
         "parameters" : [ {
           "description" : "file setting ID",
           "in" : "path",
@@ -18213,13 +17537,7 @@
         } ],
         "responses" : {
           "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_fileuc_filedto.GetFileDownloadURLResp"
-                }
-              }
-            },
+            "content" : { },
             "description" : "OK"
           },
           "400" : {
@@ -18243,7 +17561,7 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Gets download URL of a backup file",
+        "summary" : "Downloads a backup file",
         "tags" : [ "system_settings" ]
       }
     },
@@ -20138,11 +19456,6 @@
         "type" : "string",
         "x-enum-varnames" : [ "BuildToolDocker", "BuildToolNixpacks" ]
       },
-      "github_com_localpaas_localpaas_localpaas_app_base.CloudProviderKind" : {
-        "enum" : [ "aws", "gcp", "azure", "cloudflare" ],
-        "type" : "string",
-        "x-enum-varnames" : [ "CloudProviderKindAWS", "CloudProviderKindGCP", "CloudProviderKindAzure", "CloudProviderKindCloudflare" ]
-      },
       "github_com_localpaas_localpaas_localpaas_app_base.CloudStorageKind" : {
         "enum" : [ "aws-s3" ],
         "type" : "string",
@@ -20697,7 +20010,7 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 86400000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 86400000000000 ],
         "format" : "int64",
         "type" : "integer",
         "x-enum-varnames" : [ "dayDuration" ]
@@ -24125,216 +23438,6 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.CloudProviderAWSReq" : {
-        "properties" : {
-          "accessKeyID" : {
-            "type" : "string"
-          },
-          "region" : {
-            "type" : "string"
-          },
-          "secretKey" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "accessKeyID", "region", "secretKey" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.CloudProviderAWSResp" : {
-        "properties" : {
-          "accessKeyID" : {
-            "type" : "string"
-          },
-          "region" : {
-            "type" : "string"
-          },
-          "secretKey" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "accessKeyID", "region" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.CloudProviderResp" : {
-        "properties" : {
-          "availableInProjects" : {
-            "type" : "boolean"
-          },
-          "aws" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.CloudProviderAWSResp"
-          },
-          "createdAt" : {
-            "type" : "string"
-          },
-          "default" : {
-            "type" : "boolean"
-          },
-          "expireAt" : {
-            "type" : "string"
-          },
-          "id" : {
-            "type" : "string"
-          },
-          "inherited" : {
-            "type" : "boolean"
-          },
-          "kind" : {
-            "type" : "string"
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "secretMasked" : {
-            "type" : "boolean"
-          },
-          "status" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
-          },
-          "type" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingType"
-          },
-          "updateVer" : {
-            "type" : "integer"
-          },
-          "updatedAt" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "createdAt", "id", "name", "status", "type", "updateVer", "updatedAt" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.CreateCloudProviderReq" : {
-        "properties" : {
-          "availableInProjects" : {
-            "type" : "boolean"
-          },
-          "aws" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.CloudProviderAWSReq"
-          },
-          "default" : {
-            "type" : "boolean"
-          },
-          "kind" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.CloudProviderKind"
-          },
-          "name" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "availableInProjects", "aws", "default", "kind", "name" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.CreateCloudProviderResp" : {
-        "properties" : {
-          "data" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
-          },
-          "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
-          }
-        },
-        "required" : [ "data", "meta" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.DeleteCloudProviderResp" : {
-        "properties" : {
-          "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
-          }
-        },
-        "required" : [ "meta" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.GetCloudProviderResp" : {
-        "properties" : {
-          "data" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.CloudProviderResp"
-          },
-          "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
-          }
-        },
-        "required" : [ "data", "meta" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.ListCloudProviderResp" : {
-        "properties" : {
-          "data" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.CloudProviderResp"
-            },
-            "type" : "array"
-          },
-          "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
-          }
-        },
-        "required" : [ "data", "meta" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.UpdateCloudProviderMetaReq" : {
-        "properties" : {
-          "availableInProjects" : {
-            "type" : "boolean"
-          },
-          "default" : {
-            "type" : "boolean"
-          },
-          "expireAt" : {
-            "type" : "string"
-          },
-          "status" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
-          },
-          "updateVer" : {
-            "type" : "integer"
-          }
-        },
-        "required" : [ "availableInProjects", "default", "expireAt", "status", "updateVer" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.UpdateCloudProviderMetaResp" : {
-        "properties" : {
-          "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
-          }
-        },
-        "required" : [ "meta" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.UpdateCloudProviderReq" : {
-        "properties" : {
-          "availableInProjects" : {
-            "type" : "boolean"
-          },
-          "aws" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.CloudProviderAWSReq"
-          },
-          "default" : {
-            "type" : "boolean"
-          },
-          "kind" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.CloudProviderKind"
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "updateVer" : {
-            "type" : "integer"
-          }
-        },
-        "required" : [ "availableInProjects", "aws", "default", "kind", "name", "updateVer" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.UpdateCloudProviderResp" : {
-        "properties" : {
-          "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
-          }
-        },
-        "required" : [ "meta" ],
-        "type" : "object"
-      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudstorageuc_cloudstoragedto.CloudStorageResp" : {
         "properties" : {
           "availableInProjects" : {
@@ -24361,9 +23464,6 @@
           "name" : {
             "type" : "string"
           },
-          "provider" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudprovideruc_cloudproviderdto.CloudProviderResp"
-          },
           "s3" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudstorageuc_cloudstoragedto.CloudStorageS3Resp"
           },
@@ -24388,6 +23488,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudstorageuc_cloudstoragedto.CloudStorageS3Req" : {
         "properties" : {
+          "accessKeyID" : {
+            "type" : "string"
+          },
           "bucket" : {
             "type" : "string"
           },
@@ -24396,13 +23499,19 @@
           },
           "region" : {
             "type" : "string"
+          },
+          "secretKey" : {
+            "type" : "string"
           }
         },
-        "required" : [ "bucket", "endpoint", "region" ],
+        "required" : [ "accessKeyID", "bucket", "endpoint", "region", "secretKey" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudstorageuc_cloudstoragedto.CloudStorageS3Resp" : {
         "properties" : {
+          "accessKeyID" : {
+            "type" : "string"
+          },
           "bucket" : {
             "type" : "string"
           },
@@ -24411,9 +23520,12 @@
           },
           "region" : {
             "type" : "string"
+          },
+          "secretKey" : {
+            "type" : "string"
           }
         },
-        "required" : [ "bucket", "endpoint", "region" ],
+        "required" : [ "accessKeyID", "bucket", "endpoint", "region", "secretKey" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudstorageuc_cloudstoragedto.CreateCloudStorageReq" : {
@@ -24430,14 +23542,11 @@
           "name" : {
             "type" : "string"
           },
-          "provider" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
-          },
           "s3" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudstorageuc_cloudstoragedto.CloudStorageS3Req"
           }
         },
-        "required" : [ "availableInProjects", "default", "kind", "name", "provider", "s3" ],
+        "required" : [ "availableInProjects", "default", "kind", "name", "s3" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudstorageuc_cloudstoragedto.CreateCloudStorageResp" : {
@@ -24496,14 +23605,11 @@
           "name" : {
             "type" : "string"
           },
-          "provider" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
-          },
           "s3" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudstorageuc_cloudstoragedto.CloudStorageS3Req"
           }
         },
-        "required" : [ "kind", "name", "provider", "s3" ],
+        "required" : [ "kind", "name", "s3" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudstorageuc_cloudstoragedto.TestCloudStorageConnResp" : {
@@ -24559,9 +23665,6 @@
           "name" : {
             "type" : "string"
           },
-          "provider" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
-          },
           "s3" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudstorageuc_cloudstoragedto.CloudStorageS3Req"
           },
@@ -24569,7 +23672,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "availableInProjects", "default", "kind", "name", "provider", "s3", "updateVer" ],
+        "required" : [ "availableInProjects", "default", "kind", "name", "s3", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudstorageuc_cloudstoragedto.UpdateCloudStorageResp" : {
@@ -25394,18 +24497,6 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_fileuc_filedto.FileDownloadURLDataResp" : {
-        "properties" : {
-          "expiration" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
-          },
-          "url" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "expiration", "url" ],
-        "type" : "object"
-      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_fileuc_filedto.FileResp" : {
         "properties" : {
           "availableInProjects" : {
@@ -25464,18 +24555,6 @@
           }
         },
         "required" : [ "createdAt", "id", "mimetype", "name", "path", "size", "status", "storageType", "type", "updateVer", "updatedAt" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_fileuc_filedto.GetFileDownloadURLResp" : {
-        "properties" : {
-          "data" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_fileuc_filedto.FileDownloadURLDataResp"
-          },
-          "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
-          }
-        },
-        "required" : [ "data", "meta" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_fileuc_filedto.GetFileResp" : {

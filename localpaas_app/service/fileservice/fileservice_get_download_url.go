@@ -57,25 +57,21 @@ func (s *fileService) GetDownloadURL(
 	}
 
 	// File is stored in an external cloud and presign allowed
-	refObjects, err := s.settingService.LoadReferenceObjectsByIDs(ctx, db, nil, true,
-		false, file.GetRefObjectIDs())
+	refObjects, err := s.settingService.LoadReferenceObjects(ctx, db, nil, true,
+		false, req.File)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 	storageSttg := refObjects.RefSettings[file.Storage.ID]
-	storage := storageSttg.MustAsCloudStorage()
-	providerSttg := refObjects.RefSettings[storage.Provider.ID]
-	provider := providerSttg.MustAsCloudProvider()
-	storage.RefProvider = provider
 
-	switch {
-	case storage.S3 != nil:
-		s3Client, err := s3.NewClientFromStorage(ctx, storage)
+	switch base.CloudStorageKind(storageSttg.Kind) {
+	case base.CloudStorageKindS3:
+		s3Client, err := s3.NewClientFromSetting(ctx, storageSttg)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}
-		urlStr, err := s3Client.PresignGet(ctx, file.Bucket, filepath.Join(file.Path, file.Name), req.ViewInline,
-			file.Name, file.Mimetype, req.Expiration)
+		urlStr, err := s3Client.PresignGetObject(ctx, file.Bucket, filepath.Join(file.Path, file.Name),
+			file.Name, file.Mimetype, req.ViewInline, req.Expiration)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}
@@ -98,4 +94,12 @@ func (s *fileService) generateFileDownloadToken(
 		return "", apperrors.Wrap(err)
 	}
 	return fileToken, nil
+}
+
+func (s *fileService) ParseFileDownloadToken(token string) (*appentity.FileDownloadTokenClaims, error) {
+	tokenClaims := &appentity.FileDownloadTokenClaims{}
+	if err := jwtsession.ParseToken(token, tokenClaims); err != nil {
+		return nil, apperrors.New(apperrors.ErrTokenInvalid).WithCause(err)
+	}
+	return tokenClaims, nil
 }

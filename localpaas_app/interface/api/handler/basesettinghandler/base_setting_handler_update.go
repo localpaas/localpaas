@@ -10,7 +10,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accesstokenuc/accesstokendto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc/basicauthdto"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cloudprovideruc/cloudproviderdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cloudstorageuc/cloudstoragedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc/cronjobdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc/emaildto"
@@ -102,11 +101,6 @@ func (h *BaseSettingHandler) UpdateSetting(
 		r := registryauthdto.NewUpdateRegistryAuthReq()
 		r.Scope, r.ID = scope, itemID
 		req, ucFunc = r, func() (any, error) { return h.RegistryAuthUC.UpdateRegistryAuth(reqCtx, auth, r) }
-
-	case base.ResourceTypeCloudProvider:
-		r := cloudproviderdto.NewUpdateCloudProviderReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.CloudProviderUC.UpdateCloudProvider(reqCtx, auth, r) }
 
 	case base.ResourceTypeCloudStorage:
 		r := cloudstoragedto.NewUpdateCloudStorageReq()

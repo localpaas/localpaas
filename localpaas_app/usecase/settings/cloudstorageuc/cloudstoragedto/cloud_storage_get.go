@@ -8,7 +8,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cloudprovideruc/cloudproviderdto"
+)
+
+const (
+	maskedSecret = "********"
 )
 
 type GetCloudStorageReq struct {
@@ -32,28 +35,29 @@ type GetCloudStorageResp struct {
 
 type CloudStorageResp struct {
 	*settings.BaseSettingResp
-	Provider     *cloudproviderdto.CloudProviderResp `json:"provider,omitempty"`
-	S3           *CloudStorageS3Resp                 `json:"s3"`
-	SecretMasked bool                                `json:"secretMasked,omitempty"`
+	S3           *CloudStorageS3Resp `json:"s3"`
+	SecretMasked bool                `json:"secretMasked,omitempty"`
 }
 
 type CloudStorageS3Resp struct {
+	*CloudProviderAWSResp
 	Region   string `json:"region"`
 	Bucket   string `json:"bucket"`
 	Endpoint string `json:"endpoint"`
 }
 
+type CloudProviderAWSResp struct {
+	AccessKeyID string `json:"accessKeyID"`
+	SecretKey   string `json:"secretKey"`
+	Region      string `json:"region"`
+}
+
 func TransformCloudStorage(
 	setting *entity.Setting,
-	refObjects *entity.RefObjects,
+	_ *entity.RefObjects,
 ) (resp *CloudStorageResp, err error) {
 	config := setting.MustAsCloudStorage()
 	if err = copier.Copy(&resp, &config); err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-
-	resp.Provider, err = cloudproviderdto.TransformCloudProvider(refObjects.RefSettings[config.Provider.ID], refObjects)
-	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
@@ -62,7 +66,12 @@ func TransformCloudStorage(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp.SecretMasked = resp.Provider.SecretMasked
+	resp.SecretMasked = resp.Inherited || (config.S3 != nil && config.S3.SecretKey.IsEncrypted())
+	if resp.SecretMasked {
+		if resp.S3 != nil {
+			resp.S3.SecretKey = maskedSecret
+		}
+	}
 
 	return resp, nil
 }

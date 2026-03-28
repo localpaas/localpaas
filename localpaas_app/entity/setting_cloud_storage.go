@@ -20,14 +20,11 @@ func (s *cloudStorageParser) New() SettingData {
 }
 
 type CloudStorage struct {
-	Provider ObjectID        `json:"provider"`
-	S3       *CloudStorageS3 `json:"s3,omitempty"`
-
-	// NOTE: this is a temporary field
-	RefProvider *CloudProvider `json:"-"`
+	S3 *CloudStorageS3 `json:"s3,omitempty"`
 }
 
 type CloudStorageS3 struct {
+	*CloudProviderAWS
 	Region   string `json:"region,omitempty"`
 	Bucket   string `json:"bucket,omitempty"`
 	Endpoint string `json:"endpoint,omitempty"`
@@ -38,11 +35,7 @@ func (s *CloudStorage) GetType() base.SettingType {
 }
 
 func (s *CloudStorage) GetRefObjectIDs() *RefObjectIDs {
-	refIDs := &RefObjectIDs{}
-	if s.Provider.ID != "" {
-		refIDs.RefSettingIDs = append(refIDs.RefSettingIDs, s.Provider.ID)
-	}
-	return refIDs
+	return &RefObjectIDs{}
 }
 
 func (s *CloudStorage) MustDecrypt() *CloudStorage {
