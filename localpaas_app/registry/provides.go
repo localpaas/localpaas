@@ -32,11 +32,11 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/fileservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/lpappservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/networkservice"
-	"github.com/localpaas/localpaas/localpaas_app/service/nginxservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/projectservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/taskservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/traefikservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
 	"github.com/localpaas/localpaas/localpaas_app/tasks/initializer"
 	"github.com/localpaas/localpaas/localpaas_app/tasks/queue"
@@ -70,8 +70,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/lpappuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/system/nginxuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/syserroruc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/system/traefikuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/systemsettings/sslrenewaluc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/systemsettings/systembackupuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/systemsettings/systemcleanupuc"
@@ -150,7 +150,7 @@ var Provides = []any{
 	ssluc.NewSSLUC,
 	githubappuc.NewGithubAppUC,
 	accesstokenuc.NewAccessTokenUC,
-	nginxuc.NewNginxUC,
+	traefikuc.NewTraefikUC,
 	lpappuc.NewLpAppUC,
 	cronjobuc.NewCronJobUC,
 	healthcheckuc.NewHealthcheckUC,
@@ -174,7 +174,7 @@ var Provides = []any{
 	networkservice.NewNetworkService,
 	settingservice.NewSettingService,
 	envvarservice.NewEnvVarService,
-	nginxservice.NewNginxService,
+	traefikservice.NewTraefikService,
 	lpappservice.NewLpAppService,
 	emailservice.NewEmailService,
 	notificationservice.NewNotificationService,

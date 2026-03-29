@@ -7,6 +7,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
 const (
@@ -29,32 +30,48 @@ type AppHttpSettings struct {
 }
 
 type AppDomain struct {
-	Enabled         bool           `json:"enabled"`
-	Domain          string         `json:"domain"`
-	DomainRedirect  string         `json:"domainRedirect,omitempty"`
-	SSLCert         ObjectID       `json:"sslCert,omitzero"`
-	ContainerPort   int            `json:"containerPort,omitempty"`
-	ForceHttps      bool           `json:"forceHttps,omitempty"`
-	WebsocketConfig string         `json:"websocketConfig,omitempty"`
-	BasicAuth       ObjectID       `json:"basicAuth,omitzero"`
-	NginxSettings   *NginxSettings `json:"nginxSettings,omitempty"`
+	Enabled           bool                   `json:"enabled"`
+	Domain            string                 `json:"domain"`
+	DomainRedirect    string                 `json:"domainRedirect,omitempty"`
+	SSLCert           ObjectID               `json:"sslCert,omitzero"`
+	ContainerPort     int                    `json:"containerPort,omitempty"`
+	ForceHttps        bool                   `json:"forceHttps,omitempty"`
+	BasicAuth         ObjectID               `json:"basicAuth,omitzero"`
+	ClientConfig      *HTTPClientConfig      `json:"clientConfig,omitempty"`
+	CompressionConfig *HTTPCompressionConfig `json:"compressionConfig,omitempty"`
+	RateLimitConfig   *HTTPRateLimitConfig   `json:"rateLimitConfig,omitempty"`
+	Paths             []*HTTPPathConfig      `json:"paths,omitempty"`
 }
 
-type NginxSettings struct {
-	ClientConfig    string                `json:"clientConfig,omitempty"`
-	GzipConfig      string                `json:"gzipConfig,omitempty"` // on/off/default/custom
-	LimitZoneConfig string                `json:"limitZoneConfig,omitempty"`
-	CustomConfig    string                `json:"customConfig,omitempty"`
-	Locations       []*NginxLocationBlock `json:"locations"`
+type HTTPClientConfig struct {
+	Enabled             bool     `json:"enabled"`
+	MaxRequestBodyBytes int      `json:"maxRequestBodyBytes,omitempty"`
+	MemRequestBodyBytes int      `json:"memRequestBodyBytes,omitempty"`
+	AllowedIPs          []string `json:"allowedIPs,omitempty"`
 }
 
-type NginxLocationBlock struct {
-	Location          string   `json:"location"`
-	ProxyHeaderConfig string   `json:"proxyHeaderConfig,omitempty"`
-	WebsocketConfig   string   `json:"websocketConfig,omitempty"`
-	BasicAuth         ObjectID `json:"basicAuth,omitzero"`
-	LimitReqConfig    string   `json:"limitReqConfig,omitempty"`
-	CustomConfig      string   `json:"customConfig,omitempty"`
+type HTTPCompressionConfig struct {
+	Enabled              bool     `json:"enabled"`
+	ExcludedContentTypes []string `json:"excludedContentTypes,omitempty"`
+	IncludedContentTypes []string `json:"includedContentTypes,omitempty"`
+	MinResponseBodyBytes int      `json:"minResponseBodyBytes,omitempty"`
+	DefaultEncoding      string   `json:"defaultEncoding,omitempty"`
+}
+
+type HTTPRateLimitConfig struct {
+	Enabled           bool              `json:"enabled"`
+	Average           int               `json:"average,omitempty"`
+	Period            timeutil.Duration `json:"period,omitempty"`
+	Burst             int               `json:"burst,omitempty"`
+	InFlightReqAmount int               `json:"inFlightReqAmount,omitempty"`
+}
+
+type HTTPPathConfig struct {
+	Path            string               `json:"path"`
+	IsRegex         bool                 `json:"isRegex"`
+	BasicAuth       ObjectID             `json:"basicAuth,omitzero"`
+	ClientConfig    *HTTPClientConfig    `json:"clientConfig,omitempty"`
+	RateLimitConfig *HTTPRateLimitConfig `json:"rateLimitConfig,omitempty"`
 }
 
 func (s *AppHttpSettings) GetDomain(domain string) *AppDomain {
@@ -98,12 +115,9 @@ func (s *AppHttpSettings) GetBasicAuthIDs() (res []string) {
 		if domain.BasicAuth.ID != "" {
 			res = append(res, domain.BasicAuth.ID)
 		}
-		if domain.NginxSettings == nil {
-			continue
-		}
-		for _, locationBlock := range domain.NginxSettings.Locations {
-			if locationBlock.BasicAuth.ID != "" {
-				res = append(res, locationBlock.BasicAuth.ID)
+		for _, pathConfig := range domain.Paths {
+			if pathConfig.BasicAuth.ID != "" {
+				res = append(res, pathConfig.BasicAuth.ID)
 			}
 		}
 	}

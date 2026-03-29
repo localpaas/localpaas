@@ -26,6 +26,7 @@ func InitConfig(lc fx.Lifecycle, cfg *config.Config, logger logging.Logger) {
 				return apperrors.Wrap(err)
 			}
 			exportEnvVars(cfg, logger)
+			createSystemDataDirs(cfg, logger)
 
 			// Register the channel to receive SIGHUP signal
 			sigs := make(chan os.Signal, 1)
@@ -92,4 +93,15 @@ func exportEnvVars(cfg *config.Config, logger logging.Logger) {
 	}
 
 	// TODO: More to export?
+}
+
+func createSystemDataDirs(cfg *config.Config, logger logging.Logger) {
+	logger.Info("creating data dirs if not exists...")
+
+	for path, mode := range cfg.DataPathsToInitAtStartup() {
+		err := os.Mkdir(path, mode)
+		if err != nil {
+			logger.Errorf("failed to create data dir %s: %v", path, err)
+		}
+	}
 }

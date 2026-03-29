@@ -6,8 +6,7 @@ import (
 	"io"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/feature/s3/transfermanager"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
@@ -22,7 +21,7 @@ func (client *Client) Upload(
 	objectKey string,
 	data []byte,
 ) error {
-	_, err := manager.NewUploader(client.client).Upload(ctx, &s3.PutObjectInput{
+	_, err := transfermanager.New(client.client).UploadObject(ctx, &transfermanager.UploadObjectInput{
 		Bucket:      aws.String(bucketName),
 		Key:         aws.String(objectKey),
 		Body:        bytes.NewReader(data),
@@ -38,19 +37,19 @@ func (client *Client) UploadEx(
 	ctx context.Context,
 	bucketName string,
 	objectKey string,
-	partSize int64,
+	partSizeBytes int64,
 	concurrency int,
 	data io.Reader,
 ) error {
-	uploader := manager.NewUploader(client.client, func(u *manager.Uploader) {
-		if partSize > 0 {
-			u.PartSize = partSize
+	uploader := transfermanager.New(client.client, func(u *transfermanager.Options) {
+		if partSizeBytes > 0 {
+			u.PartSizeBytes = partSizeBytes
 		}
 		if concurrency > 0 {
 			u.Concurrency = concurrency
 		}
 	})
-	_, err := uploader.Upload(ctx, &s3.PutObjectInput{
+	_, err := uploader.UploadObject(ctx, &transfermanager.UploadObjectInput{
 		Bucket:      aws.String(bucketName),
 		Key:         aws.String(objectKey),
 		Body:        data,

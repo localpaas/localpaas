@@ -11,16 +11,12 @@ import (
 
 func (s *networkService) UpdateAppGlobalRoutingNetwork(
 	ctx context.Context,
-	app *entity.App,
+	_ *entity.App,
+	service *swarm.Service,
 	dbHttpSettings *entity.Setting,
 ) error {
 	httpSettings := dbHttpSettings.MustAsAppHttpSettings()
 	globalNetworkID, err := s.FindGlobalRoutingNetworkID(ctx)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	service, err := s.dockerManager.ServiceInspect(ctx, app.ServiceID)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -43,9 +39,5 @@ func (s *networkService) UpdateAppGlobalRoutingNetwork(
 	}
 	spec.TaskTemplate.Networks = networks
 
-	_, err = s.dockerManager.ServiceUpdate(ctx, service.ID, &service.Version, &service.Spec)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
 	return nil
 }

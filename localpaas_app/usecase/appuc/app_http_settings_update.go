@@ -15,7 +15,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
-	"github.com/localpaas/localpaas/localpaas_app/service/nginxservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/traefikservice"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
 )
 
@@ -144,18 +144,12 @@ func (uc *AppUC) applyAppHttpSettings(
 		return apperrors.Wrap(err)
 	}
 
-	basicAuthSettings := map[string]*entity.Setting{}
-	for _, basicAuthID := range appHttpSettings.GetBasicAuthIDs() {
-		if s := data.RefObjects.RefSettings[basicAuthID]; s != nil {
-			basicAuthSettings[s.ID] = s
-		}
-	}
-	err = uc.settingService.PersistBasicAuthConfigFiles(false, gofn.MapValues(basicAuthSettings)...)
+	service, err := uc.dockerManager.ServiceInspect(ctx, data.App.ServiceID)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	err = uc.nginxService.ApplyAppConfig(ctx, data.App, &nginxservice.AppConfigData{
+	err = uc.traefikService.ApplyAppConfig(ctx, data.App, service, &traefikservice.AppConfigData{
 		HttpSettings: appHttpSettings,
 		RefObjects:   data.RefObjects,
 	})
@@ -163,7 +157,12 @@ func (uc *AppUC) applyAppHttpSettings(
 		return apperrors.Wrap(err)
 	}
 
-	err = uc.networkService.UpdateAppGlobalRoutingNetwork(ctx, data.App, data.HttpSettings)
+	err = uc.networkService.UpdateAppGlobalRoutingNetwork(ctx, data.App, service, data.HttpSettings)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	_, err = uc.dockerManager.ServiceUpdate(ctx, service.ID, &service.Version, &service.Spec)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

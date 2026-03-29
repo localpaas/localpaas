@@ -7,6 +7,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
@@ -38,32 +39,48 @@ type HttpSettingsResp struct {
 }
 
 type DomainResp struct {
-	Enabled         bool                      `json:"enabled"`
-	Domain          string                    `json:"domain"`
-	DomainRedirect  string                    `json:"domainRedirect"`
-	SSLCert         *settings.BaseSettingResp `json:"sslCert"`
-	ContainerPort   int                       `json:"containerPort"`
-	ForceHttps      bool                      `json:"forceHttps"`
-	WebsocketConfig string                    `json:"websocketConfig"`
-	BasicAuth       *settings.BaseSettingResp `json:"basicAuth"`
-	NginxSettings   *NginxSettingsResp        `json:"nginxSettings"`
+	Enabled           bool                       `json:"enabled"`
+	Domain            string                     `json:"domain"`
+	DomainRedirect    string                     `json:"domainRedirect"`
+	SSLCert           *settings.BaseSettingResp  `json:"sslCert"`
+	ContainerPort     int                        `json:"containerPort"`
+	ForceHttps        bool                       `json:"forceHttps"`
+	BasicAuth         *settings.BaseSettingResp  `json:"basicAuth"`
+	ClientConfig      *HTTPClientConfigResp      `json:"clientConfig"`
+	CompressionConfig *HTTPCompressionConfigResp `json:"compressionConfig"`
+	RateLimitConfig   *HTTPRateLimitConfigResp   `json:"rateLimitConfig"`
+	Paths             []*HTTPPathConfigResp      `json:"paths"`
 }
 
-type NginxSettingsResp struct {
-	ClientConfig    string                    `json:"clientConfig"`
-	GzipConfig      string                    `json:"gzipConfig"` // on/off/default/custom
-	LimitZoneConfig string                    `json:"limitZoneConfig"`
-	CustomConfig    string                    `json:"customConfig"`
-	Locations       []*NginxLocationBlockResp `json:"locations"`
+type HTTPClientConfigResp struct {
+	Enabled             bool     `json:"enabled"`
+	MaxRequestBodyBytes int      `json:"maxRequestBodyBytes"`
+	MemRequestBodyBytes int      `json:"memRequestBodyBytes"`
+	AllowedIPs          []string `json:"allowedIPs"`
 }
 
-type NginxLocationBlockResp struct {
-	Location          string                    `json:"location"`
-	ProxyHeaderConfig string                    `json:"proxyHeaderConfig"`
-	WebsocketConfig   string                    `json:"websocketConfig"`
-	BasicAuth         *settings.BaseSettingResp `json:"basicAuth,omitzero"`
-	LimitReqConfig    string                    `json:"limitReqConfig"`
-	CustomConfig      string                    `json:"customConfig"`
+type HTTPRateLimitConfigResp struct {
+	Enabled           bool              `json:"enabled"`
+	Average           int               `json:"average"`
+	Period            timeutil.Duration `json:"period"`
+	Burst             int               `json:"burst"`
+	InFlightReqAmount int               `json:"inFlightReqAmount"`
+}
+
+type HTTPCompressionConfigResp struct {
+	Enabled              bool     `json:"enabled"`
+	ExcludedContentTypes []string `json:"excludedContentTypes"`
+	IncludedContentTypes []string `json:"includedContentTypes"`
+	MinResponseBodyBytes int      `json:"minResponseBodyBytes"`
+	DefaultEncoding      string   `json:"defaultEncoding"`
+}
+
+type HTTPPathConfigResp struct {
+	Path            string                    `json:"path"`
+	IsRegex         bool                      `json:"isRegex"`
+	BasicAuth       *settings.BaseSettingResp `json:"basicAuth,omitzero"`
+	ClientConfig    *HTTPClientConfigResp     `json:"clientConfig"`
+	RateLimitConfig *HTTPRateLimitConfigResp  `json:"rateLimitConfig"`
 }
 
 type AppHttpSettingsTransformInput struct {
@@ -99,15 +116,12 @@ func TransformHttpSettings(input *AppHttpSettingsTransformInput) (resp *HttpSett
 			domain.BasicAuth = nil
 		}
 
-		if domain.NginxSettings == nil {
-			continue
-		}
-		for _, locationBlock := range domain.NginxSettings.Locations {
-			setting := input.RefSettingMap[locationBlock.BasicAuth.ID]
-			if locationBlock.BasicAuth != nil && locationBlock.BasicAuth.ID != "" {
-				locationBlock.BasicAuth, _ = settings.TransformSettingBase(setting)
+		for _, pathConfig := range domain.Paths {
+			setting := input.RefSettingMap[pathConfig.BasicAuth.ID]
+			if pathConfig.BasicAuth != nil && pathConfig.BasicAuth.ID != "" {
+				pathConfig.BasicAuth, _ = settings.TransformSettingBase(setting)
 			} else {
-				locationBlock.BasicAuth = nil
+				pathConfig.BasicAuth = nil
 			}
 		}
 	}

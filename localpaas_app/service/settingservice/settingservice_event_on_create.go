@@ -26,13 +26,5 @@ func (s *settingService) OnCreate(
 		}
 	}
 
-	// Save BasicAuth files in a directory for using later
-	if event.Setting.Type == base.SettingTypeBasicAuth {
-		err = s.PersistBasicAuthConfigFiles(true, event.Setting)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
-	}
-
 	return nil
 }

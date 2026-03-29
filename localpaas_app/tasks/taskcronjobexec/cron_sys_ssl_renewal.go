@@ -157,9 +157,9 @@ func (e *Executor) cronExecSSLRenew(
 	// Assign back the result output
 	data.Task.MustSetOutput(taskData.TaskOutput)
 
-	// Reload nginx config
+	// Reload traefik config
 	if len(taskData.TaskOutput.RenewedSSLs) > 0 {
-		_ = e.nginxService.ReloadNginxConfig(ctx, true)
+		_ = e.traefikService.ReloadTraefikConfig(ctx, true)
 	}
 
 	return nil

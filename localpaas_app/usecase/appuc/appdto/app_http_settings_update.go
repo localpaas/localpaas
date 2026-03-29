@@ -7,6 +7,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
 type UpdateAppHttpSettingsReq struct {
@@ -27,28 +28,34 @@ func (req *UpdateAppHttpSettingsReq) ToEntity() *entity.AppHttpSettings {
 }
 
 type DomainReq struct {
-	Enabled         bool                `json:"enabled"`
-	Domain          string              `json:"domain"`
-	DomainRedirect  string              `json:"domainRedirect"`
-	SSLCert         basedto.ObjectIDReq `json:"sslCert"`
-	ContainerPort   int                 `json:"containerPort"`
-	ForceHttps      bool                `json:"forceHttps"`
-	WebsocketConfig string              `json:"websocketConfig"`
-	BasicAuth       basedto.ObjectIDReq `json:"basicAuth"`
-	NginxSettings   *NginxSettingsReq   `json:"nginxSettings"`
+	Enabled           bool                      `json:"enabled"`
+	Domain            string                    `json:"domain"`
+	DomainRedirect    string                    `json:"domainRedirect"`
+	SSLCert           basedto.ObjectIDReq       `json:"sslCert"`
+	ContainerPort     int                       `json:"containerPort"`
+	ForceHttps        bool                      `json:"forceHttps"`
+	BasicAuth         basedto.ObjectIDReq       `json:"basicAuth"`
+	ClientConfig      *HTTPClientConfigReq      `json:"clientConfig"`
+	CompressionConfig *HTTPCompressionConfigReq `json:"compressionConfig"`
+	RateLimitConfig   *HTTPRateLimitConfigReq   `json:"rateLimitConfig"`
+	Paths             []*HTTPPathConfigReq      `json:"paths"`
 }
 
 func (req *DomainReq) ToEntity() *entity.AppDomain {
 	return &entity.AppDomain{
-		Enabled:         req.Enabled,
-		Domain:          req.Domain,
-		DomainRedirect:  req.DomainRedirect,
-		SSLCert:         entity.ObjectID{ID: req.SSLCert.ID},
-		ContainerPort:   req.ContainerPort,
-		ForceHttps:      req.ForceHttps,
-		WebsocketConfig: req.WebsocketConfig,
-		BasicAuth:       entity.ObjectID{ID: req.BasicAuth.ID},
-		NginxSettings:   req.NginxSettings.ToEntity(),
+		Enabled:           req.Enabled,
+		Domain:            req.Domain,
+		DomainRedirect:    req.DomainRedirect,
+		SSLCert:           entity.ObjectID{ID: req.SSLCert.ID},
+		ContainerPort:     req.ContainerPort,
+		ForceHttps:        req.ForceHttps,
+		BasicAuth:         entity.ObjectID{ID: req.BasicAuth.ID},
+		ClientConfig:      req.ClientConfig.ToEntity(),
+		CompressionConfig: req.CompressionConfig.ToEntity(),
+		RateLimitConfig:   req.RateLimitConfig.ToEntity(),
+		Paths: gofn.MapSlice(req.Paths, func(item *HTTPPathConfigReq) *entity.HTTPPathConfig {
+			return item.ToEntity()
+		}),
 	}
 }
 
@@ -64,49 +71,85 @@ func (req *DomainReq) validate(field string) (res []vld.Validator) {
 	return res
 }
 
-type NginxSettingsReq struct {
-	ClientConfig    string                   `json:"clientConfig"`
-	GzipConfig      string                   `json:"gzipConfig"` // on/off/default/custom
-	LimitZoneConfig string                   `json:"limitZoneConfig"`
-	CustomConfig    string                   `json:"customConfig"`
-	Locations       []*NginxLocationBlockReq `json:"locations"`
+type HTTPClientConfigReq struct {
+	Enabled             bool     `json:"enabled"`
+	MaxRequestBodyBytes int      `json:"maxRequestBodyBytes"`
+	MemRequestBodyBytes int      `json:"memRequestBodyBytes"`
+	AllowedIPs          []string `json:"allowedIPs"`
 }
 
-func (r *NginxSettingsReq) ToEntity() *entity.NginxSettings {
+func (r *HTTPClientConfigReq) ToEntity() *entity.HTTPClientConfig {
 	if r == nil {
 		return nil
 	}
-	return &entity.NginxSettings{
-		ClientConfig:    r.ClientConfig,
-		GzipConfig:      r.GzipConfig,
-		LimitZoneConfig: r.LimitZoneConfig,
-		CustomConfig:    r.CustomConfig,
-		Locations: gofn.MapSlice(r.Locations, func(item *NginxLocationBlockReq) *entity.NginxLocationBlock {
-			return item.ToEntity()
-		}),
+	return &entity.HTTPClientConfig{
+		Enabled:             r.Enabled,
+		MaxRequestBodyBytes: r.MaxRequestBodyBytes,
+		MemRequestBodyBytes: r.MemRequestBodyBytes,
+		AllowedIPs:          r.AllowedIPs,
 	}
 }
 
-type NginxLocationBlockReq struct {
-	Location          string              `json:"location"`
-	ProxyHeaderConfig string              `json:"proxyHeaderConfig"`
-	WebsocketConfig   string              `json:"websocketConfig"`
-	BasicAuth         basedto.ObjectIDReq `json:"basicAuth"`
-	LimitReqConfig    string              `json:"limitReqConfig"`
-	CustomConfig      string              `json:"customConfig"`
+type HTTPCompressionConfigReq struct {
+	Enabled              bool     `json:"enabled"`
+	ExcludedContentTypes []string `json:"excludedContentTypes"`
+	IncludedContentTypes []string `json:"includedContentTypes"`
+	MinResponseBodyBytes int      `json:"minResponseBodyBytes"`
+	DefaultEncoding      string   `json:"defaultEncoding"`
 }
 
-func (r *NginxLocationBlockReq) ToEntity() *entity.NginxLocationBlock {
+func (r *HTTPCompressionConfigReq) ToEntity() *entity.HTTPCompressionConfig {
 	if r == nil {
 		return nil
 	}
-	return &entity.NginxLocationBlock{
-		Location:          r.Location,
-		ProxyHeaderConfig: r.ProxyHeaderConfig,
-		WebsocketConfig:   r.WebsocketConfig,
-		BasicAuth:         entity.ObjectID{ID: r.BasicAuth.ID},
-		LimitReqConfig:    r.LimitReqConfig,
-		CustomConfig:      r.CustomConfig,
+	return &entity.HTTPCompressionConfig{
+		Enabled:              r.Enabled,
+		ExcludedContentTypes: r.ExcludedContentTypes,
+		IncludedContentTypes: r.IncludedContentTypes,
+		MinResponseBodyBytes: r.MinResponseBodyBytes,
+		DefaultEncoding:      r.DefaultEncoding,
+	}
+}
+
+type HTTPRateLimitConfigReq struct {
+	Enabled           bool              `json:"enabled"`
+	Average           int               `json:"average"`
+	Period            timeutil.Duration `json:"period"`
+	Burst             int               `json:"burst"`
+	InFlightReqAmount int               `json:"inFlightReqAmount"`
+}
+
+func (r *HTTPRateLimitConfigReq) ToEntity() *entity.HTTPRateLimitConfig {
+	if r == nil {
+		return nil
+	}
+	return &entity.HTTPRateLimitConfig{
+		Enabled:           r.Enabled,
+		Average:           r.Average,
+		Period:            r.Period,
+		Burst:             r.Burst,
+		InFlightReqAmount: r.InFlightReqAmount,
+	}
+}
+
+type HTTPPathConfigReq struct {
+	Path            string                  `json:"path"`
+	IsRegex         bool                    `json:"isRegex"`
+	BasicAuth       basedto.ObjectIDReq     `json:"basicAuth"`
+	ClientConfig    *HTTPClientConfigReq    `json:"clientConfig"`
+	RateLimitConfig *HTTPRateLimitConfigReq `json:"rateLimitConfig"`
+}
+
+func (r *HTTPPathConfigReq) ToEntity() *entity.HTTPPathConfig {
+	if r == nil {
+		return nil
+	}
+	return &entity.HTTPPathConfig{
+		Path:            r.Path,
+		IsRegex:         r.IsRegex,
+		BasicAuth:       entity.ObjectID{ID: r.BasicAuth.ID},
+		ClientConfig:    r.ClientConfig.ToEntity(),
+		RateLimitConfig: r.RateLimitConfig.ToEntity(),
 	}
 }
 

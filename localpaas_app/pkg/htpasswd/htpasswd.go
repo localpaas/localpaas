@@ -16,14 +16,6 @@ var (
 // HashedPasswords name => hash
 type HashedPasswords map[string]string
 
-// HashAlgorithm enum for hashing algorithms
-type HashAlgorithm string
-
-const (
-	// HashBCrypt bcrypt - recommended
-	HashBCrypt = "bcrypt"
-)
-
 const (
 	// PasswordSeparator separates passwords from hashes
 	PasswordSeparator = ":"

@@ -8,21 +8,21 @@ import (
 	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/system/nginxuc/nginxdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/system/traefikuc/traefikdto"
 )
 
-// ReloadNginxConfig Reloads nginx config files
-// @Summary Reloads nginx config files
-// @Description Reloads nginx config files
-// @Tags    system_nginx
+// ReloadTraefikConfig Reloads traefik config files
+// @Summary Reloads traefik config files
+// @Description Reloads traefik config files
+// @Tags    system_traefik
 // @Produce json
-// @Id      reloadNginxConfig
-// @Param   body body nginxdto.ReloadNginxConfigReq true "request data"
-// @Success 200 {object} nginxdto.ReloadNginxConfigResp
+// @Id      reloadTraefikConfig
+// @Param   body body traefikdto.ReloadTraefikConfigReq true "request data"
+// @Success 200 {object} traefikdto.ReloadTraefikConfigResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /system/nginx/config/reload [post]
-func (h *SystemHandler) ReloadNginxConfig(ctx *gin.Context) {
+// @Router  /system/traefik/config/reload [post]
+func (h *SystemHandler) ReloadTraefikConfig(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceModule: base.ResourceModuleSystem,
 		Action:         base.ActionTypeWrite,
@@ -32,13 +32,13 @@ func (h *SystemHandler) ReloadNginxConfig(ctx *gin.Context) {
 		return
 	}
 
-	req := nginxdto.NewReloadNginxConfigReq()
+	req := traefikdto.NewReloadTraefikConfigReq()
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.nginxUC.ReloadNginxConfig(h.RequestCtx(ctx), auth, req)
+	resp, err := h.traefikUC.ReloadTraefikConfig(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -47,18 +47,18 @@ func (h *SystemHandler) ReloadNginxConfig(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
-// ResetNginxConfig Resets nginx config files
-// @Summary Resets nginx config files
-// @Description Resets nginx config files
-// @Tags    system_nginx
+// ResetTraefikConfig Resets traefik config files
+// @Summary Resets traefik config files
+// @Description Resets traefik config files
+// @Tags    system_traefik
 // @Produce json
-// @Id      resetNginxConfig
-// @Param   body body nginxdto.ResetNginxConfigReq true "request data"
-// @Success 200 {object} nginxdto.ResetNginxConfigResp
+// @Id      resetTraefikConfig
+// @Param   body body traefikdto.ResetTraefikConfigReq true "request data"
+// @Success 200 {object} traefikdto.ResetTraefikConfigResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /system/nginx/config/reset [post]
-func (h *SystemHandler) ResetNginxConfig(ctx *gin.Context) {
+// @Router  /system/traefik/config/reset [post]
+func (h *SystemHandler) ResetTraefikConfig(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceModule: base.ResourceModuleSystem,
 		Action:         base.ActionTypeWrite,
@@ -68,13 +68,13 @@ func (h *SystemHandler) ResetNginxConfig(ctx *gin.Context) {
 		return
 	}
 
-	req := nginxdto.NewResetNginxConfigReq()
+	req := traefikdto.NewResetTraefikConfigReq()
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.nginxUC.ResetNginxConfig(h.RequestCtx(ctx), auth, req)
+	resp, err := h.traefikUC.ResetTraefikConfig(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -83,18 +83,18 @@ func (h *SystemHandler) ResetNginxConfig(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
-// RestartNginx Restarts nginx containers
-// @Summary Restarts nginx containers
-// @Description Restarts nginx containers
-// @Tags    system_nginx
+// RestartTraefik Restarts traefik containers
+// @Summary Restarts traefik containers
+// @Description Restarts traefik containers
+// @Tags    system_traefik
 // @Produce json
-// @Id      restartNginx
-// @Param   body body nginxdto.RestartNginxReq true "request data"
-// @Success 200 {object} nginxdto.RestartNginxResp
+// @Id      restartTraefik
+// @Param   body body traefikdto.RestartTraefikReq true "request data"
+// @Success 200 {object} traefikdto.RestartTraefikResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /system/nginx/restart [post]
-func (h *SystemHandler) RestartNginx(ctx *gin.Context) {
+// @Router  /system/traefik/restart [post]
+func (h *SystemHandler) RestartTraefik(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceModule: base.ResourceModuleSystem,
 		Action:         base.ActionTypeWrite,
@@ -104,13 +104,13 @@ func (h *SystemHandler) RestartNginx(ctx *gin.Context) {
 		return
 	}
 
-	req := nginxdto.NewRestartNginxReq()
+	req := traefikdto.NewRestartTraefikReq()
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.nginxUC.RestartNginx(h.RequestCtx(ctx), auth, req)
+	resp, err := h.traefikUC.RestartTraefik(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

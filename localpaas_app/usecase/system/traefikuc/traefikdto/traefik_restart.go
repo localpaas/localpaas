@@ -1,22 +1,22 @@
-package nginxdto
+package traefikdto
 
 import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 )
 
-type RestartNginxReq struct {
+type RestartTraefikReq struct {
 }
 
-func NewRestartNginxReq() *RestartNginxReq {
-	return &RestartNginxReq{}
+func NewRestartTraefikReq() *RestartTraefikReq {
+	return &RestartTraefikReq{}
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *RestartNginxReq) Validate() apperrors.ValidationErrors {
+func (req *RestartTraefikReq) Validate() apperrors.ValidationErrors {
 	return nil
 }
 
-type RestartNginxResp struct {
+type RestartTraefikResp struct {
 	Meta *basedto.Meta `json:"meta"`
 }

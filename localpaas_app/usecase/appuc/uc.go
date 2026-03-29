@@ -7,9 +7,9 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/clusterservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/envvarservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/networkservice"
-	"github.com/localpaas/localpaas/localpaas_app/service/nginxservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/projectservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/traefikservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
 	"github.com/localpaas/localpaas/localpaas_app/tasks/queue"
 	"github.com/localpaas/localpaas/services/docker"
@@ -27,7 +27,7 @@ type AppUC struct {
 	projectService projectservice.ProjectService
 	networkService networkservice.NetworkService
 	envVarService  envvarservice.EnvVarService
-	nginxService   nginxservice.NginxService
+	traefikService traefikservice.TraefikService
 	clusterService clusterservice.ClusterService
 	dockerManager  docker.Manager
 	taskQueue      queue.TaskQueue
@@ -45,7 +45,7 @@ func NewAppUC(
 	projectService projectservice.ProjectService,
 	networkService networkservice.NetworkService,
 	envVarService envvarservice.EnvVarService,
-	nginxService nginxservice.NginxService,
+	traefikService traefikservice.TraefikService,
 	clusterService clusterservice.ClusterService,
 	dockerManager docker.Manager,
 	taskQueue queue.TaskQueue,
@@ -62,7 +62,7 @@ func NewAppUC(
 		projectService: projectService,
 		networkService: networkService,
 		envVarService:  envVarService,
-		nginxService:   nginxService,
+		traefikService: traefikService,
 		clusterService: clusterService,
 		dockerManager:  dockerManager,
 		taskQueue:      taskQueue,

@@ -17,9 +17,9 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 	"github.com/localpaas/localpaas/localpaas_app/service/appservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/cronjobservice"
-	"github.com/localpaas/localpaas/localpaas_app/service/nginxservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/traefikservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
 	"github.com/localpaas/localpaas/localpaas_app/tasks/queue"
 	"github.com/localpaas/localpaas/services/docker"
@@ -49,7 +49,7 @@ type Executor struct {
 	settingService      settingservice.SettingService
 	userService         userservice.UserService
 	notificationService notificationservice.NotificationService
-	nginxService        nginxservice.NginxService
+	traefikService      traefikservice.TraefikService
 	dockerManager       docker.Manager
 }
 
@@ -76,7 +76,7 @@ func NewExecutor(
 	settingService settingservice.SettingService,
 	userService userservice.UserService,
 	notificationService notificationservice.NotificationService,
-	nginxService nginxservice.NginxService,
+	traefikService traefikservice.TraefikService,
 	dockerManager docker.Manager,
 ) *Executor {
 	e := &Executor{
@@ -101,7 +101,7 @@ func NewExecutor(
 		settingService:           settingService,
 		userService:              userService,
 		notificationService:      notificationService,
-		nginxService:             nginxService,
+		traefikService:           traefikService,
 		dockerManager:            dockerManager,
 	}
 	taskQueue.RegisterExecutor(base.TaskTypeCronJobExec, e.execute)

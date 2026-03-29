@@ -4,8 +4,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/lpappuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/system/nginxuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/syserroruc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/system/traefikuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/taskuc"
 )
 
@@ -15,7 +15,7 @@ type SystemHandler struct {
 	sysErrorUC  *syserroruc.SysErrorUC
 	taskUC      *taskuc.TaskUC
 	lpAppUC     *lpappuc.LpAppUC
-	nginxUC     *nginxuc.NginxUC
+	traefikUC   *traefikuc.TraefikUC
 }
 
 func NewSystemHandler(
@@ -24,7 +24,7 @@ func NewSystemHandler(
 	sysErrorUC *syserroruc.SysErrorUC,
 	taskUC *taskuc.TaskUC,
 	lpAppUC *lpappuc.LpAppUC,
-	nginxUC *nginxuc.NginxUC,
+	traefikUC *traefikuc.TraefikUC,
 ) *SystemHandler {
 	return &SystemHandler{
 		BaseHandler: baseHandler,
@@ -32,6 +32,6 @@ func NewSystemHandler(
 		sysErrorUC:  sysErrorUC,
 		taskUC:      taskUC,
 		lpAppUC:     lpAppUC,
-		nginxUC:     nginxUC,
+		traefikUC:   traefikUC,
 	}
 }

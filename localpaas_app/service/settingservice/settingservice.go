@@ -19,8 +19,6 @@ type SettingService interface {
 
 	PersistSSLConfigFiles(forceRecreate bool, settings ...*entity.Setting) error
 	DeleteSSLConfigFiles(settings ...*entity.Setting) error
-	PersistBasicAuthConfigFiles(forceRecreate bool, settings ...*entity.Setting) error
-	DeleteBasicAuthConfigFiles(settings ...*entity.Setting) error
 
 	LoadReferenceObjects(ctx context.Context, db database.IDB, scope *base.SettingScope, requireActive bool,
 		errorIfUnavail bool, inSettings ...*entity.Setting) (*entity.RefObjects, error)

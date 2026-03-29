@@ -3,11 +3,16 @@ package config
 import (
 	"fmt"
 	"net/url"
+	"os"
 	"path/filepath"
 
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/base"
+)
+
+const (
+	defaultDirMode = 0755
 )
 
 func (cfg *Config) BaseAPIURL() string {
@@ -129,38 +134,29 @@ func (cfg *Config) DataPathProjectPhoto() string {
 
 /// SSL CERTS
 
-func (cfg *Config) DataPathCerts() string {
-	return filepath.Join(cfg.AppPath, "certs")
+func (cfg *Config) DataPathSsl() string {
+	return filepath.Join(cfg.AppPath, "ssl")
+}
+func (cfg *Config) DataPathSslCerts() string {
+	return filepath.Join(cfg.DataPathSsl(), "certs")
+}
+func (cfg *Config) DataPathSslLetsEncrypt() string {
+	return filepath.Join(cfg.DataPathSsl(), "letsencrypt")
+}
+func (cfg *Config) HttpPathSslLetsEncrypt() string {
+	return "/letsencrypt/"
 }
 
-/// NGINX
+/// TRAEFIK
 
-func (cfg *Config) DataPathNginx() string {
-	return filepath.Join(cfg.AppPath, "nginx")
+func (cfg *Config) DataPathTraefik() string {
+	return filepath.Join(cfg.AppPath, "traefik")
 }
-func (cfg *Config) DataPathNginxEtc() string {
-	return filepath.Join(cfg.DataPathNginx(), "etc")
+func (cfg *Config) DataPathTraefikEtc() string {
+	return filepath.Join(cfg.DataPathTraefik(), "etc")
 }
-func (cfg *Config) DataPathNginxEtcConf() string {
-	return filepath.Join(cfg.DataPathNginxEtc(), "conf.d")
-}
-func (cfg *Config) DataPathNginxShare() string {
-	return filepath.Join(cfg.DataPathNginx(), "share")
-}
-func (cfg *Config) DataPathNginxShareDomains() string {
-	return filepath.Join(cfg.DataPathNginxShare(), "domains")
-}
-func (cfg *Config) DataPathNginxShareBasicAuth() string {
-	return filepath.Join(cfg.DataPathNginxShare(), "basic-auth")
-}
-
-/// LETS ENCRYPT
-
-func (cfg *Config) DataPathLetsEncrypt() string {
-	return filepath.Join(cfg.AppPath, "letsencrypt")
-}
-func (cfg *Config) DataPathLetsEncryptEtc() string {
-	return filepath.Join(cfg.DataPathLetsEncrypt(), "etc")
+func (cfg *Config) DataPathTraefikEtcDynamic() string {
+	return filepath.Join(cfg.DataPathTraefikEtc(), "dynamic")
 }
 
 /// SYSTEM BACKUP
@@ -168,7 +164,22 @@ func (cfg *Config) DataPathLetsEncryptEtc() string {
 func (cfg *Config) DataPathSystemBackup() string {
 	return filepath.Join(cfg.AppPath, "system", "backup")
 }
-
 func (cfg *Config) DataPathSystemBackupFiles() string {
 	return filepath.Join(cfg.DataPathSystemBackup(), "files")
+}
+
+/// DIRS TO CREATE AT STARTUP
+
+func (cfg *Config) DataPathsToInitAtStartup() map[string]os.FileMode {
+	return map[string]os.FileMode{
+		cfg.DataPathSslCerts():       defaultDirMode,
+		cfg.DataPathSslLetsEncrypt(): defaultDirMode,
+
+		cfg.DataPathTraefikEtcDynamic(): defaultDirMode,
+
+		cfg.DataPathUserPhoto():    defaultDirMode,
+		cfg.DataPathProjectPhoto(): defaultDirMode,
+
+		cfg.DataPathSystemBackupFiles(): defaultDirMode,
+	}
 }

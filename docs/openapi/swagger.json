@@ -17106,162 +17106,6 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/system/nginx/config/reload" : {
-      "post" : {
-        "description" : "Reloads nginx config files",
-        "operationId" : "reloadNginxConfig",
-        "requestBody" : {
-          "content" : {
-            "*/*" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_system_nginxuc_nginxdto.ReloadNginxConfigReq"
-              }
-            }
-          },
-          "description" : "request data",
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_system_nginxuc_nginxdto.ReloadNginxConfigResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Reloads nginx config files",
-        "tags" : [ "system_nginx" ],
-        "x-codegen-request-body-name" : "body"
-      }
-    },
-    "/system/nginx/config/reset" : {
-      "post" : {
-        "description" : "Resets nginx config files",
-        "operationId" : "resetNginxConfig",
-        "requestBody" : {
-          "content" : {
-            "*/*" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_system_nginxuc_nginxdto.ResetNginxConfigReq"
-              }
-            }
-          },
-          "description" : "request data",
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_system_nginxuc_nginxdto.ResetNginxConfigResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Resets nginx config files",
-        "tags" : [ "system_nginx" ],
-        "x-codegen-request-body-name" : "body"
-      }
-    },
-    "/system/nginx/restart" : {
-      "post" : {
-        "description" : "Restarts nginx containers",
-        "operationId" : "restartNginx",
-        "requestBody" : {
-          "content" : {
-            "*/*" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_system_nginxuc_nginxdto.RestartNginxReq"
-              }
-            }
-          },
-          "description" : "request data",
-          "required" : true
-        },
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_system_nginxuc_nginxdto.RestartNginxResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Restarts nginx containers",
-        "tags" : [ "system_nginx" ],
-        "x-codegen-request-body-name" : "body"
-      }
-    },
     "/system/settings/backup" : {
       "get" : {
         "description" : "Gets backup settings",
@@ -18051,6 +17895,162 @@
         },
         "summary" : "Updates task meta",
         "tags" : [ "system_tasks" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/system/traefik/config/reload" : {
+      "post" : {
+        "description" : "Reloads traefik config files",
+        "operationId" : "reloadTraefikConfig",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_system_traefikuc_traefikdto.ReloadTraefikConfigReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_system_traefikuc_traefikdto.ReloadTraefikConfigResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Reloads traefik config files",
+        "tags" : [ "system_traefik" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/system/traefik/config/reset" : {
+      "post" : {
+        "description" : "Resets traefik config files",
+        "operationId" : "resetTraefikConfig",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_system_traefikuc_traefikdto.ResetTraefikConfigReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_system_traefikuc_traefikdto.ResetTraefikConfigResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Resets traefik config files",
+        "tags" : [ "system_traefik" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/system/traefik/restart" : {
+      "post" : {
+        "description" : "Restarts traefik containers",
+        "operationId" : "restartTraefik",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_system_traefikuc_traefikdto.RestartTraefikReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_system_traefikuc_traefikdto.RestartTraefikResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Restarts traefik containers",
+        "tags" : [ "system_traefik" ],
         "x-codegen-request-body-name" : "body"
       }
     },
@@ -20560,6 +20560,12 @@
           "basicAuth" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
           },
+          "clientConfig" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HTTPClientConfigReq"
+          },
+          "compressionConfig" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HTTPCompressionConfigReq"
+          },
           "containerPort" : {
             "type" : "integer"
           },
@@ -20575,17 +20581,20 @@
           "forceHttps" : {
             "type" : "boolean"
           },
-          "nginxSettings" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxSettingsReq"
+          "paths" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HTTPPathConfigReq"
+            },
+            "type" : "array"
+          },
+          "rateLimitConfig" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HTTPRateLimitConfigReq"
           },
           "sslCert" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
-          },
-          "websocketConfig" : {
-            "type" : "string"
           }
         },
-        "required" : [ "basicAuth", "containerPort", "domain", "domainRedirect", "enabled", "forceHttps", "nginxSettings", "sslCert", "websocketConfig" ],
+        "required" : [ "basicAuth", "clientConfig", "compressionConfig", "containerPort", "domain", "domainRedirect", "enabled", "forceHttps", "paths", "rateLimitConfig", "sslCert" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.DomainResp" : {
@@ -20593,6 +20602,12 @@
           "basicAuth" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
           },
+          "clientConfig" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HTTPClientConfigResp"
+          },
+          "compressionConfig" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HTTPCompressionConfigResp"
+          },
           "containerPort" : {
             "type" : "integer"
           },
@@ -20608,17 +20623,20 @@
           "forceHttps" : {
             "type" : "boolean"
           },
-          "nginxSettings" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxSettingsResp"
+          "paths" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HTTPPathConfigResp"
+            },
+            "type" : "array"
+          },
+          "rateLimitConfig" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HTTPRateLimitConfigResp"
           },
           "sslCert" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
-          },
-          "websocketConfig" : {
-            "type" : "string"
           }
         },
-        "required" : [ "basicAuth", "containerPort", "domain", "domainRedirect", "enabled", "forceHttps", "nginxSettings", "sslCert", "websocketConfig" ],
+        "required" : [ "basicAuth", "clientConfig", "compressionConfig", "containerPort", "domain", "domainRedirect", "enabled", "forceHttps", "paths", "rateLimitConfig", "sslCert" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.EndpointSpec" : {
@@ -20800,6 +20818,186 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HTTPClientConfigReq" : {
+        "properties" : {
+          "allowedIPs" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "maxRequestBodyBytes" : {
+            "type" : "integer"
+          },
+          "memRequestBodyBytes" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "allowedIPs", "enabled", "maxRequestBodyBytes", "memRequestBodyBytes" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HTTPClientConfigResp" : {
+        "properties" : {
+          "allowedIPs" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "maxRequestBodyBytes" : {
+            "type" : "integer"
+          },
+          "memRequestBodyBytes" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "allowedIPs", "enabled", "maxRequestBodyBytes", "memRequestBodyBytes" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HTTPCompressionConfigReq" : {
+        "properties" : {
+          "defaultEncoding" : {
+            "type" : "string"
+          },
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "excludedContentTypes" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "includedContentTypes" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "minResponseBodyBytes" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "defaultEncoding", "enabled", "excludedContentTypes", "includedContentTypes", "minResponseBodyBytes" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HTTPCompressionConfigResp" : {
+        "properties" : {
+          "defaultEncoding" : {
+            "type" : "string"
+          },
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "excludedContentTypes" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "includedContentTypes" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "minResponseBodyBytes" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "defaultEncoding", "enabled", "excludedContentTypes", "includedContentTypes", "minResponseBodyBytes" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HTTPPathConfigReq" : {
+        "properties" : {
+          "basicAuth" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
+          },
+          "clientConfig" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HTTPClientConfigReq"
+          },
+          "isRegex" : {
+            "type" : "boolean"
+          },
+          "path" : {
+            "type" : "string"
+          },
+          "rateLimitConfig" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HTTPRateLimitConfigReq"
+          }
+        },
+        "required" : [ "basicAuth", "clientConfig", "isRegex", "path", "rateLimitConfig" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HTTPPathConfigResp" : {
+        "properties" : {
+          "basicAuth" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
+          },
+          "clientConfig" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HTTPClientConfigResp"
+          },
+          "isRegex" : {
+            "type" : "boolean"
+          },
+          "path" : {
+            "type" : "string"
+          },
+          "rateLimitConfig" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HTTPRateLimitConfigResp"
+          }
+        },
+        "required" : [ "basicAuth", "clientConfig", "isRegex", "path", "rateLimitConfig" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HTTPRateLimitConfigReq" : {
+        "properties" : {
+          "average" : {
+            "type" : "integer"
+          },
+          "burst" : {
+            "type" : "integer"
+          },
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "inFlightReqAmount" : {
+            "type" : "integer"
+          },
+          "period" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
+          }
+        },
+        "required" : [ "average", "burst", "enabled", "inFlightReqAmount", "period" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HTTPRateLimitConfigResp" : {
+        "properties" : {
+          "average" : {
+            "type" : "integer"
+          },
+          "burst" : {
+            "type" : "integer"
+          },
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "inFlightReqAmount" : {
+            "type" : "integer"
+          },
+          "period" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
+          }
+        },
+        "required" : [ "average", "burst", "enabled", "inFlightReqAmount", "period" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.Healthcheck" : {
         "properties" : {
           "command" : {
@@ -20964,104 +21162,6 @@
           }
         },
         "required" : [ "dnsConfig", "endpointSpec", "hostsFileEntries", "networkAttachments", "updateVer" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxLocationBlockReq" : {
-        "properties" : {
-          "basicAuth" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
-          },
-          "customConfig" : {
-            "type" : "string"
-          },
-          "limitReqConfig" : {
-            "type" : "string"
-          },
-          "location" : {
-            "type" : "string"
-          },
-          "proxyHeaderConfig" : {
-            "type" : "string"
-          },
-          "websocketConfig" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "basicAuth", "customConfig", "limitReqConfig", "location", "proxyHeaderConfig", "websocketConfig" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxLocationBlockResp" : {
-        "properties" : {
-          "basicAuth" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
-          },
-          "customConfig" : {
-            "type" : "string"
-          },
-          "limitReqConfig" : {
-            "type" : "string"
-          },
-          "location" : {
-            "type" : "string"
-          },
-          "proxyHeaderConfig" : {
-            "type" : "string"
-          },
-          "websocketConfig" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "basicAuth", "customConfig", "limitReqConfig", "location", "proxyHeaderConfig", "websocketConfig" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxSettingsReq" : {
-        "properties" : {
-          "clientConfig" : {
-            "type" : "string"
-          },
-          "customConfig" : {
-            "type" : "string"
-          },
-          "gzipConfig" : {
-            "description" : "on/off/default/custom",
-            "type" : "string"
-          },
-          "limitZoneConfig" : {
-            "type" : "string"
-          },
-          "locations" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxLocationBlockReq"
-            },
-            "type" : "array"
-          }
-        },
-        "required" : [ "clientConfig", "customConfig", "gzipConfig", "limitZoneConfig", "locations" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxSettingsResp" : {
-        "properties" : {
-          "clientConfig" : {
-            "type" : "string"
-          },
-          "customConfig" : {
-            "type" : "string"
-          },
-          "gzipConfig" : {
-            "description" : "on/off/default/custom",
-            "type" : "string"
-          },
-          "limitZoneConfig" : {
-            "type" : "string"
-          },
-          "locations" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.NginxLocationBlockResp"
-            },
-            "type" : "array"
-          }
-        },
-        "required" : [ "clientConfig", "customConfig", "gzipConfig", "limitZoneConfig", "locations" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.ObtainDomainSSLReq" : {
@@ -27467,42 +27567,6 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_system_nginxuc_nginxdto.ReloadNginxConfigReq" : {
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_system_nginxuc_nginxdto.ReloadNginxConfigResp" : {
-        "properties" : {
-          "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
-          }
-        },
-        "required" : [ "meta" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_system_nginxuc_nginxdto.ResetNginxConfigReq" : {
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_system_nginxuc_nginxdto.ResetNginxConfigResp" : {
-        "properties" : {
-          "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
-          }
-        },
-        "required" : [ "meta" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_system_nginxuc_nginxdto.RestartNginxReq" : {
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_system_nginxuc_nginxdto.RestartNginxResp" : {
-        "properties" : {
-          "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
-          }
-        },
-        "required" : [ "meta" ],
-        "type" : "object"
-      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_system_syserroruc_syserrordto.DeleteSysErrorResp" : {
         "properties" : {
           "meta" : {
@@ -27570,6 +27634,42 @@
           }
         },
         "required" : [ "cause", "code", "createdAt", "debugLog", "detail", "id", "requestID", "stackTrace", "status" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_system_traefikuc_traefikdto.ReloadTraefikConfigReq" : {
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_system_traefikuc_traefikdto.ReloadTraefikConfigResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_system_traefikuc_traefikdto.ResetTraefikConfigReq" : {
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_system_traefikuc_traefikdto.ResetTraefikConfigResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_system_traefikuc_traefikdto.RestartTraefikReq" : {
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_system_traefikuc_traefikdto.RestartTraefikResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "meta" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_sslrenewaluc_sslrenewaldto.ExecuteSSLRenewalDataResp" : {

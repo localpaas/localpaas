@@ -14,8 +14,8 @@ func (s *appService) DeleteApp(ctx context.Context, app *entity.App) error {
 		return apperrors.Wrap(err)
 	}
 
-	// Remove app config from nginx
-	err = s.nginxService.RemoveAppConfig(ctx, app)
+	// Remove app config from traefik
+	err = s.traefikService.RemoveAppConfig(ctx, app, nil)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

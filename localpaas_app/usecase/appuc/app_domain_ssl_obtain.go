@@ -16,7 +16,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
-	"github.com/localpaas/localpaas/localpaas_app/service/nginxservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/traefikservice"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
 	"github.com/localpaas/localpaas/services/ssl/letsencrypt"
 )
@@ -27,7 +27,7 @@ func (uc *AppUC) ObtainDomainSSL(
 	req *appdto.ObtainDomainSSLReq,
 ) (*appdto.ObtainDomainSSLResp, error) {
 	email := gofn.Coalesce(req.Email, config.Current.SSL.LeUserEmail)
-	leClient, err := letsencrypt.NewClient(email, req.KeySize, config.Current.DataPathNginxShareDomains())
+	leClient, err := letsencrypt.NewClient(email, req.KeySize, config.Current.DataPathSslLetsEncrypt())
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -200,7 +200,12 @@ func (uc *AppUC) applyDomainSSL(
 		return apperrors.Wrap(err)
 	}
 
-	err = uc.nginxService.ApplyAppConfig(ctx, data.App, &nginxservice.AppConfigData{
+	service, err := uc.dockerManager.ServiceInspect(ctx, data.App.ServiceID)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	err = uc.traefikService.ApplyAppConfig(ctx, data.App, service, &traefikservice.AppConfigData{
 		HttpSettings: appHttpSettings,
 		RefObjects:   refObjects,
 	})
@@ -208,7 +213,12 @@ func (uc *AppUC) applyDomainSSL(
 		return apperrors.Wrap(err)
 	}
 
-	err = uc.networkService.UpdateAppGlobalRoutingNetwork(ctx, data.App, data.HttpSettings)
+	err = uc.networkService.UpdateAppGlobalRoutingNetwork(ctx, data.App, service, data.HttpSettings)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	_, err = uc.dockerManager.ServiceUpdate(ctx, service.ID, &service.Version, &service.Spec)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

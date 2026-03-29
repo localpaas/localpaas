@@ -23,13 +23,13 @@ func (s *HTTPServer) registerSystemRoutes(apiGroup *gin.RouterGroup) (*gin.Route
 		errorGroup.DELETE("/:errorID", systemHandler.DeleteSysError)
 	}
 
-	{ // nginx group
-		nginxGroup := systemGroup.Group("/nginx")
+	{ // traefik group
+		traefikGroup := systemGroup.Group("/traefik")
 		// Process
-		nginxGroup.POST("/restart", systemHandler.RestartNginx)
+		traefikGroup.POST("/restart", systemHandler.RestartTraefik)
 		// Config
-		nginxGroup.POST("/config/reload", systemHandler.ReloadNginxConfig)
-		nginxGroup.POST("/config/reset", systemHandler.ResetNginxConfig)
+		traefikGroup.POST("/config/reload", systemHandler.ReloadTraefikConfig)
+		traefikGroup.POST("/config/reset", systemHandler.ResetTraefikConfig)
 	}
 
 	{ // localpaas app group

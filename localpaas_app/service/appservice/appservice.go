@@ -11,7 +11,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 	"github.com/localpaas/localpaas/localpaas_app/repository/cacherepository"
-	"github.com/localpaas/localpaas/localpaas_app/service/nginxservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/traefikservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
 	"github.com/localpaas/localpaas/services/docker"
 )
@@ -44,7 +44,7 @@ func NewAppService(
 	deploymentInfoRepo cacherepository.DeploymentInfoRepo,
 	permissionManager permission.Manager,
 	userService userservice.UserService,
-	nginxService nginxservice.NginxService,
+	traefikService traefikservice.TraefikService,
 	dockerManager docker.Manager,
 ) AppService {
 	return &appService{
@@ -56,7 +56,7 @@ func NewAppService(
 		deploymentInfoRepo: deploymentInfoRepo,
 		permissionManager:  permissionManager,
 		userService:        userService,
-		nginxService:       nginxService,
+		traefikService:     traefikService,
 		dockerManager:      dockerManager,
 	}
 }
@@ -70,6 +70,6 @@ type appService struct {
 	deploymentInfoRepo cacherepository.DeploymentInfoRepo
 	permissionManager  permission.Manager
 	userService        userservice.UserService
-	nginxService       nginxservice.NginxService
+	traefikService     traefikservice.TraefikService
 	dockerManager      docker.Manager
 }

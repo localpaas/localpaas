@@ -1,15 +1,22 @@
 version: "3"
 
 services:
-  nginx:
-    image: nginx:1.29-alpine
-
+  traefik:
+    image: traefik:v3.6
+    command:
+      - "--api.insecure=true"
+      - "--providers.swarm=true"
+      - "--providers.swarm.watch=true"
+      - "--providers.swarm.network=localpaas_net"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--providers.file.directory=/etc/traefik/dynamic"
+      - "--providers.file.watch=true"
     networks:
       # Connect to the 'localpaas_net' overlay network for inter-container communication across nodes
       - localpaas_net
-
     ports:
-      # Expose nginx's entry points to the Swarm
+      # Expose traefik's entry points to the Swarm
       # Swarm requires the long syntax for ports.
       - target: 80 # Container port
         published: 80 # Host port exposed on the nodes
@@ -22,13 +29,14 @@ services:
         published: 443 # Host port
         protocol: tcp
         mode: host
-
+      - target: 8080 # Traefik dashboard
+        published: 38081 # Exposed dashboard
+        protocol: tcp
+        mode: host
     volumes:
-      - ./localpaas/nginx/etc:/etc/nginx
-      - ./localpaas/nginx/log:/var/log/nginx
-      - ./localpaas/nginx/share:/usr/share/nginx
-      - ./localpaas/certs:/usr/share/nginx/certs/main
-
+      - ./localpaas/traefik/etc/dynamic:/etc/traefik/dynamic
+      - ./localpaas/ssl/certs:/etc/traefik/ssl/certs
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     deploy:
       mode: replicated
       replicas: 1
@@ -69,6 +77,16 @@ services:
       - internal_net
     volumes:
       - adminer:/data
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.adminer.rule=Host(`adminer.dev.localpaas.com`)"
+        - "traefik.http.routers.adminer.entrypoints=websecure"
+        - "traefik.http.routers.adminer.tls=true"
+        - "traefik.http.routers.adminer-http.rule=Host(`adminer.dev.localpaas.com`)"
+        - "traefik.http.routers.adminer-http.entrypoints=web"
+        - "traefik.http.services.adminer.loadbalancer.server.port=8080"
+        - "traefik.docker.network=localpaas_net"
 
   hello-world:
     image: crccheck/hello-world:latest
@@ -87,6 +105,18 @@ services:
     volumes:
       - ./localpaas:/var/lib/localpaas
       - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.services.app-svc.loadbalancer.server.port=10000"
+        - "traefik.http.routers.app-router.rule=Host(`app.dev.localpaas.com`)"
+        - "traefik.http.routers.app-router.entrypoints=websecure"
+        - "traefik.http.routers.app-router.tls=true"
+        - "traefik.http.routers.app-router-http-acme.rule=Host(`*`) && PathPrefix(`/.well-known/acme-challenge/`)"
+        - "traefik.http.routers.app-router-http-acme.entrypoints=web"
+        - "traefik.http.middlewares.addprefix-le-acme.addprefix.prefix=/letenscrypt"
+        - "traefik.http.routers.app-router-http-acme.middlewares=addprefix-le-acme"
+        - "traefik.docker.network=localpaas_net"
 
 networks:
   localpaas_net:

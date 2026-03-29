@@ -31,7 +31,7 @@ func (e *Executor) sslGetLeClient(
 		return client, nil
 	}
 
-	client, err := letsencrypt.NewClient(email, keySize, config.Current.DataPathNginxShareDomains())
+	client, err := letsencrypt.NewClient(email, keySize, config.Current.DataPathSslLetsEncrypt())
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

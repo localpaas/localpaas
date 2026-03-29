@@ -1,4 +1,4 @@
-package nginxservice
+package traefikservice
 
 import (
 	"context"
@@ -9,19 +9,19 @@ import (
 )
 
 const (
-	nginxServiceName = "localpaas_nginx"
+	traefikServiceName = "localpaas_traefik"
 )
 
-func (s *nginxService) GetNginxSwarmService(ctx context.Context) (*swarm.Service, error) {
-	service, err := s.dockerManager.ServiceGetByName(ctx, nginxServiceName)
+func (s *traefikService) GetTraefikSwarmService(ctx context.Context) (*swarm.Service, error) {
+	service, err := s.dockerManager.ServiceGetByName(ctx, traefikServiceName)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 	return service, nil
 }
 
-func (s *nginxService) RestartNginxSwarmService(ctx context.Context) error {
-	service, err := s.GetNginxSwarmService(ctx)
+func (s *traefikService) RestartTraefikSwarmService(ctx context.Context) error {
+	service, err := s.GetTraefikSwarmService(ctx)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

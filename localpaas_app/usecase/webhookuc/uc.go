@@ -6,8 +6,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/appservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/envvarservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/networkservice"
-	"github.com/localpaas/localpaas/localpaas_app/service/nginxservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/projectservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/traefikservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
 	"github.com/localpaas/localpaas/localpaas_app/tasks/queue"
 	"github.com/localpaas/localpaas/services/docker"
@@ -24,7 +24,7 @@ type WebhookUC struct {
 	projectService projectservice.ProjectService
 	networkService networkservice.NetworkService
 	envVarService  envvarservice.EnvVarService
-	nginxService   nginxservice.NginxService
+	traefikService traefikservice.TraefikService
 	dockerManager  docker.Manager
 	taskQueue      queue.TaskQueue
 }
@@ -40,7 +40,7 @@ func NewWebhookUC(
 	projectService projectservice.ProjectService,
 	networkService networkservice.NetworkService,
 	envVarService envvarservice.EnvVarService,
-	nginxService nginxservice.NginxService,
+	traefikService traefikservice.TraefikService,
 	dockerManager docker.Manager,
 	taskQueue queue.TaskQueue,
 ) *WebhookUC {
@@ -55,7 +55,7 @@ func NewWebhookUC(
 		projectService: projectService,
 		networkService: networkService,
 		envVarService:  envVarService,
-		nginxService:   nginxService,
+		traefikService: traefikService,
 		dockerManager:  dockerManager,
 		taskQueue:      taskQueue,
 	}

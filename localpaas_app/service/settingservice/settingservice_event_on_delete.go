@@ -33,12 +33,5 @@ func (s *settingService) OnDelete(
 		}
 	}
 
-	if event.Setting.Type == base.SettingTypeBasicAuth {
-		err = s.DeleteBasicAuthConfigFiles(event.Setting)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
-	}
-
 	return nil
 }
