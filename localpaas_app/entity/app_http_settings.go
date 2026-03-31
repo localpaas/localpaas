@@ -8,6 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/unit"
 )
 
 const (
@@ -45,10 +46,10 @@ type AppDomain struct {
 }
 
 type HTTPClientConfig struct {
-	Enabled             bool     `json:"enabled"`
-	MaxRequestBodyBytes int      `json:"maxRequestBodyBytes,omitempty"`
-	MemRequestBodyBytes int      `json:"memRequestBodyBytes,omitempty"`
-	AllowedIPs          []string `json:"allowedIPs,omitempty"`
+	Enabled        bool          `json:"enabled"`
+	MaxRequestBody unit.DataSize `json:"maxRequestBody,omitempty"`
+	MemRequestBody unit.DataSize `json:"memRequestBody,omitempty"`
+	AllowedIPs     []string      `json:"allowedIPs,omitempty"`
 }
 
 type HTTPHeaderConfig struct {
@@ -59,11 +60,11 @@ type HTTPHeaderConfig struct {
 }
 
 type HTTPCompressionConfig struct {
-	Enabled              bool     `json:"enabled"`
-	ExcludedContentTypes []string `json:"excludedContentTypes,omitempty"`
-	IncludedContentTypes []string `json:"includedContentTypes,omitempty"`
-	MinResponseBodyBytes int      `json:"minResponseBodyBytes,omitempty"`
-	DefaultEncoding      string   `json:"defaultEncoding,omitempty"`
+	Enabled              bool          `json:"enabled"`
+	ExcludedContentTypes []string      `json:"excludedContentTypes,omitempty"`
+	IncludedContentTypes []string      `json:"includedContentTypes,omitempty"`
+	MinResponseBody      unit.DataSize `json:"minResponseBody,omitempty"`
+	DefaultEncoding      string        `json:"defaultEncoding,omitempty"`
 }
 
 type HTTPRateLimitConfig struct {

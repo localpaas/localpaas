@@ -1,0 +1,265 @@
+// NOTE: source copied from https://github.com/c2h5oh/datasize with modification
+
+package unit
+
+import (
+	"bytes"
+	"fmt"
+	"strconv"
+	"strings"
+
+	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tracerr"
+)
+
+type DataSize uint64
+
+const (
+	B  DataSize = 1
+	KB          = B << 10
+	MB          = KB << 10
+	GB          = MB << 10
+	TB          = GB << 10
+	PB          = TB << 10
+	EB          = PB << 10
+
+	fnUnmarshalText string = "UnmarshalText"
+	maxUint64       uint64 = (1 << 64) - 1 //nolint:mnd
+	cutoff          uint64 = maxUint64 / 10
+)
+
+func (b DataSize) Bytes() uint64 {
+	return uint64(b)
+}
+
+func (b DataSize) KBytes() float64 {
+	v := b / KB
+	r := b % KB
+	return float64(v) + float64(r)/float64(KB)
+}
+
+func (b DataSize) MBytes() float64 {
+	v := b / MB
+	r := b % MB
+	return float64(v) + float64(r)/float64(MB)
+}
+
+func (b DataSize) GBytes() float64 {
+	v := b / GB
+	r := b % GB
+	return float64(v) + float64(r)/float64(GB)
+}
+
+func (b DataSize) TBytes() float64 {
+	v := b / TB
+	r := b % TB
+	return float64(v) + float64(r)/float64(TB)
+}
+
+func (b DataSize) PBytes() float64 {
+	v := b / PB
+	r := b % PB
+	return float64(v) + float64(r)/float64(PB)
+}
+
+func (b DataSize) EBytes() float64 {
+	v := b / EB
+	r := b % EB
+	return float64(v) + float64(r)/float64(EB)
+}
+
+func (b DataSize) String() string {
+	switch {
+	case b == 0:
+		return "0b"
+	case b%EB == 0:
+		return fmt.Sprintf("%deb", b/EB)
+	case b%PB == 0:
+		return fmt.Sprintf("%dpb", b/PB)
+	case b%TB == 0:
+		return fmt.Sprintf("%dtb", b/TB)
+	case b%GB == 0:
+		return fmt.Sprintf("%dgb", b/GB)
+	case b%MB == 0:
+		return fmt.Sprintf("%dmb", b/MB)
+	case b%KB == 0:
+		return fmt.Sprintf("%dkb", b/KB)
+	default:
+		return fmt.Sprintf("%db", b)
+	}
+}
+
+func (b DataSize) HR() string {
+	return b.HumanReadable()
+}
+
+func (b DataSize) HumanReadable() string {
+	switch {
+	case b > EB:
+		return fmt.Sprintf("%.1f EB", b.EBytes())
+	case b > PB:
+		return fmt.Sprintf("%.1f PB", b.PBytes())
+	case b > TB:
+		return fmt.Sprintf("%.1f TB", b.TBytes())
+	case b > GB:
+		return fmt.Sprintf("%.1f GB", b.GBytes())
+	case b > MB:
+		return fmt.Sprintf("%.1f MB", b.MBytes())
+	case b > KB:
+		return fmt.Sprintf("%.1f KB", b.KBytes())
+	default:
+		return fmt.Sprintf("%d B", b)
+	}
+}
+
+func (b DataSize) MarshalText() ([]byte, error) {
+	return []byte(b.String()), nil
+}
+
+//nolint:gocognit
+func (b *DataSize) UnmarshalText(t []byte) error {
+	var val uint64
+	var unit string
+
+	// copy for error message
+	t0 := t
+
+	var c byte
+	var i int
+
+ParseLoop:
+	for i < len(t) {
+		c = t[i]
+		switch {
+		case '0' <= c && c <= '9':
+			if val > cutoff {
+				goto Overflow
+			}
+
+			c -= '0'
+			val *= 10
+
+			if val > val+uint64(c) {
+				// val+v overflows
+				goto Overflow
+			}
+			val += uint64(c)
+			i++
+
+		default:
+			if i == 0 {
+				goto SyntaxError
+			}
+			break ParseLoop
+		}
+	}
+
+	unit = strings.TrimSpace(string(t[i:]))
+	unit = strings.ToLower(unit)
+	switch unit {
+	case "", "b":
+		// do nothing - already in bytes
+
+	case "kb":
+		if val > maxUint64/uint64(KB) {
+			goto Overflow
+		}
+		val *= uint64(KB)
+
+	case "mb":
+		if val > maxUint64/uint64(MB) {
+			goto Overflow
+		}
+		val *= uint64(MB)
+
+	case "gb":
+		if val > maxUint64/uint64(GB) {
+			goto Overflow
+		}
+		val *= uint64(GB)
+
+	case "tb":
+		if val > maxUint64/uint64(TB) {
+			goto Overflow
+		}
+		val *= uint64(TB)
+
+	case "pb":
+		if val > maxUint64/uint64(PB) {
+			goto Overflow
+		}
+		val *= uint64(PB)
+
+	case "eb":
+		if val > maxUint64/uint64(EB) {
+			goto Overflow
+		}
+		val *= uint64(EB)
+
+	default:
+		goto SyntaxError
+	}
+
+	*b = DataSize(val)
+	return nil
+
+Overflow:
+	*b = DataSize(maxUint64)
+	return &strconv.NumError{Func: fnUnmarshalText, Num: string(t0), Err: strconv.ErrRange}
+
+SyntaxError:
+	*b = 0
+	return &strconv.NumError{Func: fnUnmarshalText, Num: string(t0), Err: strconv.ErrSyntax}
+}
+
+func (b DataSize) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + b.String() + `"`), nil
+}
+
+func (b *DataSize) UnmarshalJSON(in []byte) error {
+	if bytes.Equal(in, []byte("null")) {
+		*b = 0
+		return nil
+	}
+
+	// Remove double quotes covering the str
+	if len(in) > 1 && in[0] == '"' {
+		in = in[1 : len(in)-1]
+		d, err := ParseDataSize(in)
+		if err != nil {
+			return tracerr.Wrap(err)
+		}
+		*b = d
+		return nil
+	}
+
+	// Parse unit as integer number
+	v, err := strconv.ParseUint(reflectutil.UnsafeBytesToStr(in), 10, 64)
+	if err != nil {
+		return tracerr.Wrap(err)
+	}
+	*b = DataSize(v)
+	return nil
+}
+
+func ParseDataSize(t []byte) (DataSize, error) {
+	var v DataSize
+	err := v.UnmarshalText(t)
+	return v, err
+}
+
+func MustParseDataSize(t []byte) DataSize {
+	v, err := ParseDataSize(t)
+	if err != nil {
+		panic(err)
+	}
+	return v
+}
+
+func ParseDataSizeString(s string) (DataSize, error) {
+	return ParseDataSize([]byte(s))
+}
+
+func MustParseDataSizeString(s string) DataSize {
+	return MustParseDataSize([]byte(s))
+}

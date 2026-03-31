@@ -20010,10 +20010,16 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 86400000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 86400000000000 ],
         "format" : "int64",
         "type" : "integer",
         "x-enum-varnames" : [ "dayDuration" ]
+      },
+      "github_com_localpaas_localpaas_localpaas_app_pkg_unit.DataSize" : {
+        "enum" : [ 1, 1024, 1048576, 1073741824, 1099511627776, 1125899906842624, 1152921504606846976 ],
+        "format" : "int64",
+        "type" : "integer",
+        "x-enum-varnames" : [ "B", "KB", "MB", "GB", "TB", "PB", "EB" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentReq" : {
         "type" : "object"
@@ -20835,14 +20841,14 @@
           "enabled" : {
             "type" : "boolean"
           },
-          "maxRequestBodyBytes" : {
-            "type" : "integer"
+          "maxRequestBody" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_unit.DataSize"
           },
-          "memRequestBodyBytes" : {
-            "type" : "integer"
+          "memRequestBody" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_unit.DataSize"
           }
         },
-        "required" : [ "allowedIPs", "enabled", "maxRequestBodyBytes", "memRequestBodyBytes" ],
+        "required" : [ "allowedIPs", "enabled", "maxRequestBody", "memRequestBody" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HTTPClientConfigResp" : {
@@ -20856,14 +20862,14 @@
           "enabled" : {
             "type" : "boolean"
           },
-          "maxRequestBodyBytes" : {
-            "type" : "integer"
+          "maxRequestBody" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_unit.DataSize"
           },
-          "memRequestBodyBytes" : {
-            "type" : "integer"
+          "memRequestBody" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_unit.DataSize"
           }
         },
-        "required" : [ "allowedIPs", "enabled", "maxRequestBodyBytes", "memRequestBodyBytes" ],
+        "required" : [ "allowedIPs", "enabled", "maxRequestBody", "memRequestBody" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HTTPCompressionConfigReq" : {
@@ -20886,11 +20892,11 @@
             },
             "type" : "array"
           },
-          "minResponseBodyBytes" : {
-            "type" : "integer"
+          "minResponseBody" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_unit.DataSize"
           }
         },
-        "required" : [ "defaultEncoding", "enabled", "excludedContentTypes", "includedContentTypes", "minResponseBodyBytes" ],
+        "required" : [ "defaultEncoding", "enabled", "excludedContentTypes", "includedContentTypes", "minResponseBody" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HTTPCompressionConfigResp" : {
@@ -20913,11 +20919,11 @@
             },
             "type" : "array"
           },
-          "minResponseBodyBytes" : {
-            "type" : "integer"
+          "minResponseBody" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_unit.DataSize"
           }
         },
-        "required" : [ "defaultEncoding", "enabled", "excludedContentTypes", "includedContentTypes", "minResponseBodyBytes" ],
+        "required" : [ "defaultEncoding", "enabled", "excludedContentTypes", "includedContentTypes", "minResponseBody" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.HTTPHeaderConfigReq" : {

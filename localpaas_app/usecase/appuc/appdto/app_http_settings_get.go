@@ -8,6 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/unit"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
@@ -54,10 +55,10 @@ type DomainResp struct {
 }
 
 type HTTPClientConfigResp struct {
-	Enabled             bool     `json:"enabled"`
-	MaxRequestBodyBytes int      `json:"maxRequestBodyBytes"`
-	MemRequestBodyBytes int      `json:"memRequestBodyBytes"`
-	AllowedIPs          []string `json:"allowedIPs"`
+	Enabled        bool          `json:"enabled"`
+	MaxRequestBody unit.DataSize `json:"maxRequestBody"`
+	MemRequestBody unit.DataSize `json:"memRequestBody"`
+	AllowedIPs     []string      `json:"allowedIPs"`
 }
 
 type HTTPHeaderConfigResp struct {
@@ -76,11 +77,11 @@ type HTTPRateLimitConfigResp struct {
 }
 
 type HTTPCompressionConfigResp struct {
-	Enabled              bool     `json:"enabled"`
-	ExcludedContentTypes []string `json:"excludedContentTypes"`
-	IncludedContentTypes []string `json:"includedContentTypes"`
-	MinResponseBodyBytes int      `json:"minResponseBodyBytes"`
-	DefaultEncoding      string   `json:"defaultEncoding"`
+	Enabled              bool          `json:"enabled"`
+	ExcludedContentTypes []string      `json:"excludedContentTypes"`
+	IncludedContentTypes []string      `json:"includedContentTypes"`
+	MinResponseBody      unit.DataSize `json:"minResponseBody"`
+	DefaultEncoding      string        `json:"defaultEncoding"`
 }
 
 type HTTPPathConfigResp struct {

@@ -5,8 +5,10 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"reflect"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/mitchellh/mapstructure"
@@ -21,18 +23,44 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/strutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/translation"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/unit"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/syserroruc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/syserroruc/syserrordto"
 )
 
 var (
-	defaultParseFuncs = []mapstructure.DecodeHookFunc{
-		// TODO: add parse hook functions for specific types
+	parseStrFuncMap = map[reflect.Type]func(string) (any, error){
+		reflect.TypeFor[time.Time](): func(s string) (any, error) {
+			return time.Parse(time.RFC3339, s)
+		},
+		reflect.TypeFor[time.Duration](): func(s string) (any, error) {
+			return time.ParseDuration(s)
+		},
+		reflect.TypeFor[timeutil.Date](): func(s string) (any, error) {
+			return timeutil.ParseDate(s)
+		},
+		reflect.TypeFor[timeutil.Duration](): func(s string) (any, error) {
+			return timeutil.ParseDuration(s)
+		},
+		reflect.TypeFor[unit.DataSize](): func(s string) (any, error) {
+			return unit.ParseDataSizeString(s)
+		},
+	}
 
-		// This helps parse timeutil.Date from string value
-		timeutil.MapstructureParseDateFunc(),
-		timeutil.MapstructureParseTimeFunc(),
-		timeutil.MapstructureParseDurationFunc(),
+	defaultParseFuncs = []mapstructure.DecodeHookFunc{
+		// TODO: add more parse hook functions for specific types
+
+		func(f reflect.Type, t reflect.Type, data any) (any, error) {
+			switch f.Kind() { //nolint:exhaustive
+			case reflect.String:
+				if fun, exists := parseStrFuncMap[t]; exists {
+					return fun(data.(string)) //nolint:forcetypeassert
+				}
+				return data, nil
+			default:
+				return data, nil
+			}
+		},
 
 		// NOTE: Parse slice should be the last hook function as some
 		// types may be treated as slice, such as UUID can be []byte.

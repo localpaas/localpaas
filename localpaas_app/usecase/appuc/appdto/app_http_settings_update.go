@@ -8,6 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/unit"
 )
 
 type UpdateAppHttpSettingsReq struct {
@@ -74,10 +75,10 @@ func (req *DomainReq) validate(field string) (res []vld.Validator) {
 }
 
 type HTTPClientConfigReq struct {
-	Enabled             bool     `json:"enabled"`
-	MaxRequestBodyBytes int      `json:"maxRequestBodyBytes"`
-	MemRequestBodyBytes int      `json:"memRequestBodyBytes"`
-	AllowedIPs          []string `json:"allowedIPs"`
+	Enabled        bool          `json:"enabled"`
+	MaxRequestBody unit.DataSize `json:"maxRequestBody"`
+	MemRequestBody unit.DataSize `json:"memRequestBody"`
+	AllowedIPs     []string      `json:"allowedIPs"`
 }
 
 func (r *HTTPClientConfigReq) ToEntity() *entity.HTTPClientConfig {
@@ -85,10 +86,10 @@ func (r *HTTPClientConfigReq) ToEntity() *entity.HTTPClientConfig {
 		return nil
 	}
 	return &entity.HTTPClientConfig{
-		Enabled:             r.Enabled,
-		MaxRequestBodyBytes: r.MaxRequestBodyBytes,
-		MemRequestBodyBytes: r.MemRequestBodyBytes,
-		AllowedIPs:          r.AllowedIPs,
+		Enabled:        r.Enabled,
+		MaxRequestBody: r.MaxRequestBody,
+		MemRequestBody: r.MemRequestBody,
+		AllowedIPs:     r.AllowedIPs,
 	}
 }
 
@@ -112,11 +113,11 @@ func (r *HTTPHeaderConfigReq) ToEntity() *entity.HTTPHeaderConfig {
 }
 
 type HTTPCompressionConfigReq struct {
-	Enabled              bool     `json:"enabled"`
-	ExcludedContentTypes []string `json:"excludedContentTypes"`
-	IncludedContentTypes []string `json:"includedContentTypes"`
-	MinResponseBodyBytes int      `json:"minResponseBodyBytes"`
-	DefaultEncoding      string   `json:"defaultEncoding"`
+	Enabled              bool          `json:"enabled"`
+	ExcludedContentTypes []string      `json:"excludedContentTypes"`
+	IncludedContentTypes []string      `json:"includedContentTypes"`
+	MinResponseBody      unit.DataSize `json:"minResponseBody"`
+	DefaultEncoding      string        `json:"defaultEncoding"`
 }
 
 func (r *HTTPCompressionConfigReq) ToEntity() *entity.HTTPCompressionConfig {
@@ -127,7 +128,7 @@ func (r *HTTPCompressionConfigReq) ToEntity() *entity.HTTPCompressionConfig {
 		Enabled:              r.Enabled,
 		ExcludedContentTypes: r.ExcludedContentTypes,
 		IncludedContentTypes: r.IncludedContentTypes,
-		MinResponseBodyBytes: r.MinResponseBodyBytes,
+		MinResponseBody:      r.MinResponseBody,
 		DefaultEncoding:      r.DefaultEncoding,
 	}
 }

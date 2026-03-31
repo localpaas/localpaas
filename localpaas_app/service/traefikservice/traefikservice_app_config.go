@@ -30,15 +30,15 @@ var (
 	sanitizeRouterNameReplacer = strings.NewReplacer(".", "-", "_", "-")
 )
 
-type TraefikConfig struct {
-	TLS *TraefikTLS `yaml:"tls,omitempty"`
+type AppTraefikConfig struct {
+	TLS *AppTraefikTLS `yaml:"tls,omitempty"`
 }
 
-type TraefikTLS struct {
-	Certificates []TraefikTLSCertificate `yaml:"certificates,omitempty"`
+type AppTraefikTLS struct {
+	Certificates []AppTraefikTLSCertificate `yaml:"certificates,omitempty"`
 }
 
-type TraefikTLSCertificate struct {
+type AppTraefikTLSCertificate struct {
 	CertFile string `yaml:"certFile"`
 	KeyFile  string `yaml:"keyFile"`
 }
@@ -48,7 +48,7 @@ type AppConfigData struct {
 	RefObjects   *entity.RefObjects
 
 	confPath string
-	confData *TraefikConfig
+	confData *AppTraefikConfig
 }
 
 func (s *traefikService) ApplyAppConfig(
@@ -62,7 +62,7 @@ func (s *traefikService) ApplyAppConfig(
 
 	// 1. Calculate labels and TLS certs
 	labels := make(map[string]string)
-	traefikConfig := &TraefikConfig{}
+	traefikConfig := &AppTraefikConfig{}
 	data.confData = traefikConfig
 
 	hasCerts := false
@@ -99,7 +99,7 @@ func (s *traefikService) collectDomainConfig(
 	app *entity.App,
 	domain *entity.AppDomain,
 	labels map[string]string,
-	traefikConfig *TraefikConfig,
+	traefikConfig *AppTraefikConfig,
 	data *AppConfigData,
 	hasCerts *bool,
 ) {
@@ -231,7 +231,7 @@ func (s *traefikService) createForceHttpsConfig(
 	labels[fmt.Sprintf("traefik.http.routers.%s.service", routerName)] = serviceName
 	labels[fmt.Sprintf("traefik.http.routers.%s.entrypoints", routerName)] = "web"
 
-	mwName := fmt.Sprintf("%s-redirectscheme", domainKey)
+	mwName := fmt.Sprintf("%s-forcehttps", domainKey)
 	labels[fmt.Sprintf("traefik.http.middlewares.%s.redirectscheme.scheme", mwName)] = "https"
 	labels[fmt.Sprintf("traefik.http.middlewares.%s.redirectscheme.permanent", mwName)] = labelValueTrue
 	labels[fmt.Sprintf("traefik.http.routers.%s.middlewares", routerName)] =
@@ -267,16 +267,13 @@ func (s *traefikService) createClientConfig(
 		return
 	}
 	mwName := fmt.Sprintf("%s-buffering", domainKey)
-	if clientCfg.MaxRequestBodyBytes > 0 {
+	if clientCfg.MaxRequestBody > 0 {
 		labels[fmt.Sprintf("traefik.http.middlewares.%s.buffering.maxrequestbodybytes", mwName)] =
-			strconv.Itoa(clientCfg.MaxRequestBodyBytes)
+			strconv.FormatUint(uint64(clientCfg.MaxRequestBody), 10)
 	}
-	if clientCfg.MemRequestBodyBytes > 0 {
+	if clientCfg.MemRequestBody > 0 {
 		labels[fmt.Sprintf("traefik.http.middlewares.%s.buffering.memrequestbodybytes", mwName)] =
-			strconv.Itoa(clientCfg.MemRequestBodyBytes)
-	}
-	if clientCfg.MaxRequestBodyBytes == 0 && clientCfg.MemRequestBodyBytes == 0 {
-		labels[fmt.Sprintf("traefik.http.middlewares.%s.buffering.maxrequestbodybytes", mwName)] = "0"
+			strconv.FormatUint(uint64(clientCfg.MemRequestBody), 10)
 	}
 	*middlewares = append(*middlewares, mwName+middlewareProvider)
 
@@ -357,9 +354,9 @@ func (s *traefikService) createCompressionConfig(
 		labels[fmt.Sprintf("traefik.http.middlewares.%s.compress.includedcontenttypes", mwName)] =
 			strings.Join(compCfg.IncludedContentTypes, ",")
 	}
-	if compCfg.MinResponseBodyBytes > 0 {
+	if compCfg.MinResponseBody > 0 {
 		labels[fmt.Sprintf("traefik.http.middlewares.%s.compress.minresponsebodybytes", mwName)] =
-			strconv.Itoa(compCfg.MinResponseBodyBytes)
+			strconv.FormatUint(uint64(compCfg.MinResponseBody), 10)
 	}
 	if compCfg.DefaultEncoding != "" {
 		labels[fmt.Sprintf("traefik.http.middlewares.%s.compress.defaultencoding", mwName)] =
@@ -428,7 +425,7 @@ func (s *traefikService) updateSwarmServiceLabels(
 }
 
 func (s *traefikService) addTLSCertificate(
-	traefikConfig *TraefikConfig,
+	traefikConfig *AppTraefikConfig,
 	certID string,
 ) bool {
 	if certID == "" {
@@ -439,7 +436,7 @@ func (s *traefikService) addTLSCertificate(
 	keyFile := filepath.Join(certsDir, certID+".key")
 
 	if traefikConfig.TLS == nil {
-		traefikConfig.TLS = &TraefikTLS{}
+		traefikConfig.TLS = &AppTraefikTLS{}
 	}
 
 	alreadyAdded := false
@@ -450,7 +447,7 @@ func (s *traefikService) addTLSCertificate(
 		}
 	}
 	if !alreadyAdded {
-		traefikConfig.TLS.Certificates = append(traefikConfig.TLS.Certificates, TraefikTLSCertificate{
+		traefikConfig.TLS.Certificates = append(traefikConfig.TLS.Certificates, AppTraefikTLSCertificate{
 			CertFile: certFile,
 			KeyFile:  keyFile,
 		})
