@@ -68,7 +68,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/repowebhookuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sslcertuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/lpappuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/syserroruc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/traefikuc"
@@ -147,7 +147,7 @@ var Provides = []any{
 	imserviceuc.NewIMServiceUC,
 	registryauthuc.NewRegistryAuthUC,
 	basicauthuc.NewBasicAuthUC,
-	ssluc.NewSSLUC,
+	sslcertuc.NewSSLCertUC,
 	githubappuc.NewGithubAppUC,
 	accesstokenuc.NewAccessTokenUC,
 	traefikuc.NewTraefikUC,

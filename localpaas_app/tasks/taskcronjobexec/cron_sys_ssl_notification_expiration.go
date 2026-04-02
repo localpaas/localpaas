@@ -65,7 +65,7 @@ func (e *Executor) sslBuildExpiringNotificationMsgData(
 	item *sslRenewalTaskItem,
 	data *sslRenewalTaskData,
 ) {
-	ssl := item.Setting.MustAsSSL()
+	ssl := item.Setting.MustAsSSLCert()
 	msgData := &notificationservice.BaseMsgDataSSLExpiringNotification{
 		SSLName:   item.Setting.Name,
 		SSLType:   string(ssl.Provider),

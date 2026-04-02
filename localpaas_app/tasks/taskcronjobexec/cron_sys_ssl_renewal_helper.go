@@ -17,7 +17,7 @@ import (
 )
 
 func (e *Executor) sslGetLeClient(
-	ssl *entity.SSL,
+	ssl *entity.SSLCert,
 	data *sslRenewalTaskData,
 ) (*letsencrypt.Client, error) {
 	data.Mu.Lock()
@@ -47,7 +47,7 @@ func (e *Executor) sslGetNotification(
 	eventIsSuccess bool,
 	data *sslRenewalTaskData,
 ) (notifSetting *entity.Setting, err error) {
-	ssl := sslSetting.MustAsSSL()
+	ssl := sslSetting.MustAsSSLCert()
 	if ssl.Notification == nil {
 		return nil, nil
 	}

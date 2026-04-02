@@ -65,7 +65,7 @@ func (e *Executor) sslBuildRenewalNotificationMsgData(
 	item *sslRenewalTaskItem,
 	data *sslRenewalTaskData,
 ) {
-	ssl := item.Setting.MustAsSSL()
+	ssl := item.Setting.MustAsSSLCert()
 	timeNow := timeutil.NowUTC()
 	msgData := &notificationservice.BaseMsgDataSSLRenewalNotification{
 		Succeeded: item.RenewalError == nil,

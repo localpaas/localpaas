@@ -23,7 +23,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/repowebhookuc/repowebhookdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc/secretdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc/sshkeydto"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc/ssldto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sslcertuc/sslcertdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc/apikeydto"
 )
 
@@ -112,10 +112,10 @@ func (h *BaseSettingHandler) CreateSetting(
 		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.SSHKeyUC.CreateSSHKey(reqCtx, auth, r) }
 
-	case base.ResourceTypeSSL:
-		r := ssldto.NewCreateSSLReq()
+	case base.ResourceTypeSSLCert:
+		r := sslcertdto.NewCreateSSLCertReq()
 		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.SSLUC.CreateSSL(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.SSLCertUC.CreateSSLCert(reqCtx, auth, r) }
 
 	case base.ResourceTypeCronJob:
 		r := cronjobdto.NewCreateCronJobReq()

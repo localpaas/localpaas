@@ -24,7 +24,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/repowebhookuc/repowebhookdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc/secretdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc/sshkeydto"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc/ssldto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sslcertuc/sslcertdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc/apikeydto"
 )
 
@@ -102,10 +102,10 @@ func (h *BaseSettingHandler) UpdateSettingMeta(
 		r.Scope, r.ID = scope, itemID
 		req, ucFunc = r, func() (any, error) { return h.SSHKeyUC.UpdateSSHKeyMeta(reqCtx, auth, r) }
 
-	case base.ResourceTypeSSL:
-		r := ssldto.NewUpdateSSLMetaReq()
+	case base.ResourceTypeSSLCert:
+		r := sslcertdto.NewUpdateSSLCertMetaReq()
 		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.SSLUC.UpdateSSLMeta(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.SSLCertUC.UpdateSSLCertMeta(reqCtx, auth, r) }
 
 	case base.ResourceTypeCronJob:
 		r := cronjobdto.NewUpdateCronJobMetaReq()

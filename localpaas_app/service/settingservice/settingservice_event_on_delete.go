@@ -26,7 +26,7 @@ func (s *settingService) OnDelete(
 		}
 	}
 
-	if event.Setting.Type == base.SettingTypeSSL {
+	if event.Setting.Type == base.SettingTypeSSLCert {
 		err = s.DeleteSSLConfigFiles(event.Setting)
 		if err != nil {
 			return apperrors.Wrap(err)

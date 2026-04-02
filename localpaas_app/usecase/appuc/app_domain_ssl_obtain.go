@@ -126,7 +126,7 @@ func (uc *AppUC) preparePersistingDomainSSLData(
 		ID:        gofn.Must(ulid.NewStringULID()),
 		Scope:     base.SettingScopeProject,
 		ObjectID:  data.App.ProjectID,
-		Type:      base.SettingTypeSSL,
+		Type:      base.SettingTypeSSLCert,
 		Status:    base.SettingStatusActive,
 		Name:      req.Domain,
 		Kind:      string(base.SSLProviderLetsEncrypt),
@@ -135,7 +135,7 @@ func (uc *AppUC) preparePersistingDomainSSLData(
 	}
 	data.SSLCert = dbSSL
 
-	ssl := &entity.SSL{
+	ssl := &entity.SSLCert{
 		Domain:      req.Domain,
 		Certificate: string(data.ObtainedCerts.Certificate),
 		PrivateKey:  entity.NewEncryptedField(string(data.ObtainedCerts.PrivateKey)),

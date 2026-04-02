@@ -5,100 +5,100 @@ import (
 
 	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	_ "github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc/ssldto"
+	_ "github.com/localpaas/localpaas/localpaas_app/usecase/settings/sslcertuc/sslcertdto"
 )
 
-// ListSSL Lists SSL settings
-// @Summary Lists SSL settings
-// @Description Lists SSL settings
+// ListSSLCert Lists SSL certs
+// @Summary Lists SSL certs
+// @Description Lists SSL certs
 // @Tags    settings
 // @Produce json
-// @Id      listSettingSSL
+// @Id      listSettingSSLCert
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
 // @Param   pageLimit query int false "`pageLimit=limit`"
 // @Param   sort query string false "`sort=[-]field1|field2...`"
-// @Success 200 {object} ssldto.ListSSLResp
+// @Success 200 {object} sslcertdto.ListSSLCertResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /settings/ssls [get]
-func (h *SettingHandler) ListSSL(ctx *gin.Context) {
-	h.ListSetting(ctx, base.ResourceTypeSSL, base.SettingScopeGlobal)
+// @Router  /settings/ssl-certs [get]
+func (h *SettingHandler) ListSSLCert(ctx *gin.Context) {
+	h.ListSetting(ctx, base.ResourceTypeSSLCert, base.SettingScopeGlobal)
 }
 
-// GetSSL Gets SSL setting details
-// @Summary Gets SSL setting details
-// @Description Gets SSL setting details
+// GetSSLCert Gets SSL cert details
+// @Summary Gets SSL cert details
+// @Description Gets SSL cert details
 // @Tags    settings
 // @Produce json
-// @Id      getSettingSSL
+// @Id      getSettingSSLCert
 // @Param   itemID path string true "setting ID"
-// @Success 200 {object} ssldto.GetSSLResp
+// @Success 200 {object} sslcertdto.GetSSLCertResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /settings/ssls/{itemID} [get]
-func (h *SettingHandler) GetSSL(ctx *gin.Context) {
-	h.GetSetting(ctx, base.ResourceTypeSSL, base.SettingScopeGlobal)
+// @Router  /settings/ssl-certs/{itemID} [get]
+func (h *SettingHandler) GetSSLCert(ctx *gin.Context) {
+	h.GetSetting(ctx, base.ResourceTypeSSLCert, base.SettingScopeGlobal)
 }
 
-// CreateSSL Creates a new SSL setting
-// @Summary Creates a new SSL setting
-// @Description Creates a new SSL setting
+// CreateSSLCert Creates a new SSL cert
+// @Summary Creates a new SSL cert
+// @Description Creates a new SSL cert
 // @Tags    settings
 // @Produce json
-// @Id      createSettingSSL
-// @Param   body body ssldto.CreateSSLReq true "request data"
-// @Success 201 {object} ssldto.CreateSSLResp
+// @Id      createSettingSSLCert
+// @Param   body body sslcertdto.CreateSSLCertReq true "request data"
+// @Success 201 {object} sslcertdto.CreateSSLCertResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /settings/ssls [post]
-func (h *SettingHandler) CreateSSL(ctx *gin.Context) {
-	h.CreateSetting(ctx, base.ResourceTypeSSL, base.SettingScopeGlobal)
+// @Router  /settings/ssl-certs [post]
+func (h *SettingHandler) CreateSSLCert(ctx *gin.Context) {
+	h.CreateSetting(ctx, base.ResourceTypeSSLCert, base.SettingScopeGlobal)
 }
 
-// UpdateSSL Updates SSL
-// @Summary Updates SSL
-// @Description Updates SSL
+// UpdateSSLCert Updates SSL cert
+// @Summary Updates SSL cert
+// @Description Updates SSL cert
 // @Tags    settings
 // @Produce json
-// @Id      updateSettingSSL
+// @Id      updateSettingSSLCert
 // @Param   itemID path string true "setting ID"
-// @Param   body body ssldto.UpdateSSLReq true "request data"
-// @Success 200 {object} ssldto.UpdateSSLResp
+// @Param   body body sslcertdto.UpdateSSLCertReq true "request data"
+// @Success 200 {object} sslcertdto.UpdateSSLCertResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /settings/ssls/{itemID} [put]
-func (h *SettingHandler) UpdateSSL(ctx *gin.Context) {
-	h.UpdateSetting(ctx, base.ResourceTypeSSL, base.SettingScopeGlobal)
+// @Router  /settings/ssl-certs/{itemID} [put]
+func (h *SettingHandler) UpdateSSLCert(ctx *gin.Context) {
+	h.UpdateSetting(ctx, base.ResourceTypeSSLCert, base.SettingScopeGlobal)
 }
 
-// UpdateSSLMeta Updates SSL meta
-// @Summary Updates SSL meta
-// @Description Updates SSL meta
+// UpdateSSLCertMeta Updates SSL cert meta
+// @Summary Updates SSL cert meta
+// @Description Updates SSL cert meta
 // @Tags    settings
 // @Produce json
-// @Id      updateSettingSSLMeta
+// @Id      updateSettingSSLCertMeta
 // @Param   itemID path string true "setting ID"
-// @Param   body body ssldto.UpdateSSLMetaReq true "request data"
-// @Success 200 {object} ssldto.UpdateSSLMetaResp
+// @Param   body body sslcertdto.UpdateSSLCertMetaReq true "request data"
+// @Success 200 {object} sslcertdto.UpdateSSLCertMetaResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /settings/ssls/{itemID}/meta [put]
-func (h *SettingHandler) UpdateSSLMeta(ctx *gin.Context) {
-	h.UpdateSettingMeta(ctx, base.ResourceTypeSSL, base.SettingScopeGlobal)
+// @Router  /settings/ssl-certs/{itemID}/meta [put]
+func (h *SettingHandler) UpdateSSLCertMeta(ctx *gin.Context) {
+	h.UpdateSettingMeta(ctx, base.ResourceTypeSSLCert, base.SettingScopeGlobal)
 }
 
-// DeleteSSL Deletes SSL setting
-// @Summary Deletes SSL setting
-// @Description Deletes SSL setting
+// DeleteSSLCert Deletes SSL cert
+// @Summary Deletes SSL cert
+// @Description Deletes SSL cert
 // @Tags    settings
 // @Produce json
-// @Id      deleteSettingSSL
+// @Id      deleteSettingSSLCert
 // @Param   itemID path string true "setting ID"
-// @Success 200 {object} ssldto.DeleteSSLResp
+// @Success 200 {object} sslcertdto.DeleteSSLCertResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /settings/ssls/{itemID} [delete]
-func (h *SettingHandler) DeleteSSL(ctx *gin.Context) {
-	h.DeleteSetting(ctx, base.ResourceTypeSSL, base.SettingScopeGlobal)
+// @Router  /settings/ssl-certs/{itemID} [delete]
+func (h *SettingHandler) DeleteSSLCert(ctx *gin.Context) {
+	h.DeleteSetting(ctx, base.ResourceTypeSSLCert, base.SettingScopeGlobal)
 }

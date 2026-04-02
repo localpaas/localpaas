@@ -24,7 +24,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/repowebhookuc/repowebhookdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc/secretdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc/sshkeydto"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc/ssldto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sslcertuc/sslcertdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc/apikeydto"
 )
 
@@ -114,10 +114,10 @@ func (h *BaseSettingHandler) DeleteSetting(
 		r.Scope, r.ID = scope, itemID
 		req, ucFunc = r, func() (any, error) { return h.SSHKeyUC.DeleteSSHKey(reqCtx, auth, r) }
 
-	case base.ResourceTypeSSL:
-		r := ssldto.NewDeleteSSLReq()
+	case base.ResourceTypeSSLCert:
+		r := sslcertdto.NewDeleteSSLCertReq()
 		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.SSLUC.DeleteSSL(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.SSLCertUC.DeleteSSLCert(reqCtx, auth, r) }
 
 	case base.ResourceTypeCronJob:
 		r := cronjobdto.NewDeleteCronJobReq()

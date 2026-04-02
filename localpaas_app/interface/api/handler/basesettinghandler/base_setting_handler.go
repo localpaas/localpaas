@@ -20,7 +20,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/repowebhookuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sslcertuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/systemsettings/sslrenewaluc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/systemsettings/systembackupuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/systemsettings/systemcleanupuc"
@@ -36,7 +36,7 @@ type BaseSettingHandler struct {
 	IMServiceUC     *imserviceuc.IMServiceUC
 	RegistryAuthUC  *registryauthuc.RegistryAuthUC
 	BasicAuthUC     *basicauthuc.BasicAuthUC
-	SSLUC           *ssluc.SSLUC
+	SSLCertUC       *sslcertuc.SSLCertUC
 	GithubAppUC     *githubappuc.GithubAppUC
 	AccessTokenUC   *accesstokenuc.AccessTokenUC
 	CronJobUC       *cronjobuc.CronJobUC
@@ -63,7 +63,7 @@ func NewBaseSettingHandler(
 	imServiceUC *imserviceuc.IMServiceUC,
 	registryAuthUC *registryauthuc.RegistryAuthUC,
 	basicAuthUC *basicauthuc.BasicAuthUC,
-	sslUC *ssluc.SSLUC,
+	sslCertUC *sslcertuc.SSLCertUC,
 	githubAppUC *githubappuc.GithubAppUC,
 	accessTokenUC *accesstokenuc.AccessTokenUC,
 	cronJobUC *cronjobuc.CronJobUC,
@@ -89,7 +89,7 @@ func NewBaseSettingHandler(
 		IMServiceUC:     imServiceUC,
 		RegistryAuthUC:  registryAuthUC,
 		BasicAuthUC:     basicAuthUC,
-		SSLUC:           sslUC,
+		SSLCertUC:       sslCertUC,
 		GithubAppUC:     githubAppUC,
 		AccessTokenUC:   accessTokenUC,
 		CronJobUC:       cronJobUC,

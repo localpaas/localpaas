@@ -10,7 +10,7 @@ import (
 
 func (e *Executor) sslRenewByLetsEncrypt(
 	ctx context.Context,
-	ssl *entity.SSL,
+	ssl *entity.SSLCert,
 	data *sslRenewalTaskData,
 ) (err error) {
 	if !ssl.AutoRenew {

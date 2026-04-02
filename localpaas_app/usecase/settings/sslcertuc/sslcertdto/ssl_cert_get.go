@@ -1,4 +1,4 @@
-package ssldto
+package sslcertdto
 
 import (
 	"time"
@@ -17,26 +17,26 @@ const (
 	maskedSecret = "****************"
 )
 
-type GetSSLReq struct {
+type GetSSLCertReq struct {
 	settings.GetSettingReq
 }
 
-func NewGetSSLReq() *GetSSLReq {
-	return &GetSSLReq{}
+func NewGetSSLCertReq() *GetSSLCertReq {
+	return &GetSSLCertReq{}
 }
 
-func (req *GetSSLReq) Validate() apperrors.ValidationErrors {
+func (req *GetSSLCertReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.GetSettingReq.Validate()...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type GetSSLResp struct {
+type GetSSLCertResp struct {
 	Meta *basedto.Meta `json:"meta"`
-	Data *SSLResp      `json:"data"`
+	Data *SSLCertResp  `json:"data"`
 }
 
-type SSLResp struct {
+type SSLCertResp struct {
 	*settings.BaseSettingResp
 	Domain        string                             `json:"domain"`
 	Certificate   string                             `json:"certificate"`
@@ -52,16 +52,16 @@ type SSLResp struct {
 	SecretMasked  bool                               `json:"secretMasked,omitempty"`
 }
 
-func (resp *SSLResp) CopyPrivateKey(field entity.EncryptedField) error {
+func (resp *SSLCertResp) CopyPrivateKey(field entity.EncryptedField) error {
 	resp.PrivateKey = field.String()
 	return nil
 }
 
-func TransformSSL(
+func TransformSSLCert(
 	setting *entity.Setting,
 	refObjects *entity.RefObjects,
-) (resp *SSLResp, err error) {
-	config := setting.MustAsSSL()
+) (resp *SSLCertResp, err error) {
+	config := setting.MustAsSSLCert()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
 	}

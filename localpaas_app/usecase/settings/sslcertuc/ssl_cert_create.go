@@ -1,4 +1,4 @@
-package ssluc
+package sslcertuc
 
 import (
 	"context"
@@ -9,19 +9,19 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc/ssldto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sslcertuc/sslcertdto"
 )
 
 const (
-	currentSettingType    = base.SettingTypeSSL
-	currentSettingVersion = entity.CurrentSSLVersion
+	currentSettingType    = base.SettingTypeSSLCert
+	currentSettingVersion = entity.CurrentSSLCertVersion
 )
 
-func (uc *SSLUC) CreateSSL(
+func (uc *SSLCertUC) CreateSSLCert(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *ssldto.CreateSSLReq,
-) (*ssldto.CreateSSLResp, error) {
+	req *sslcertdto.CreateSSLCertReq,
+) (*sslcertdto.CreateSSLCertResp, error) {
 	req.Type = currentSettingType
 	resp, err := uc.CreateSetting(ctx, &req.CreateSettingReq, &settings.CreateSettingData{
 		VerifyingName: req.Name,
@@ -44,7 +44,7 @@ func (uc *SSLUC) CreateSSL(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &ssldto.CreateSSLResp{
+	return &sslcertdto.CreateSSLCertResp{
 		Data: resp.Data,
 	}, nil
 }

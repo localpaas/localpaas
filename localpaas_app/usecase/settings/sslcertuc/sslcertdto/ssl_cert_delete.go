@@ -1,4 +1,4 @@
-package ssldto
+package sslcertdto
 
 import (
 	vld "github.com/tiendc/go-validator"
@@ -8,26 +8,21 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
-type UpdateSSLReq struct {
-	settings.UpdateSettingReq
-	*SSLBaseReq
+type DeleteSSLCertReq struct {
+	settings.DeleteSettingReq
 }
 
-func NewUpdateSSLReq() *UpdateSSLReq {
-	return &UpdateSSLReq{}
-}
-
-func (req *UpdateSSLReq) ModifyRequest() error {
-	return req.modifyRequest()
+func NewDeleteSSLCertReq() *DeleteSSLCertReq {
+	return &DeleteSSLCertReq{}
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *UpdateSSLReq) Validate() apperrors.ValidationErrors {
+func (req *DeleteSSLCertReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, req.validate("")...)
+	validators = append(validators, req.DeleteSettingReq.Validate()...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type UpdateSSLResp struct {
+type DeleteSSLCertResp struct {
 	Meta *basedto.Meta `json:"meta"`
 }

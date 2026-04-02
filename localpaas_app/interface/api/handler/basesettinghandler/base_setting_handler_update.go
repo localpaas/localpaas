@@ -23,7 +23,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/repowebhookuc/repowebhookdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc/secretdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc/sshkeydto"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc/ssldto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sslcertuc/sslcertdto"
 )
 
 type UpdateSettingOptions struct {
@@ -112,10 +112,10 @@ func (h *BaseSettingHandler) UpdateSetting(
 		r.Scope, r.ID = scope, itemID
 		req, ucFunc = r, func() (any, error) { return h.SSHKeyUC.UpdateSSHKey(reqCtx, auth, r) }
 
-	case base.ResourceTypeSSL:
-		r := ssldto.NewUpdateSSLReq()
+	case base.ResourceTypeSSLCert:
+		r := sslcertdto.NewUpdateSSLCertReq()
 		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.SSLUC.UpdateSSL(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.SSLCertUC.UpdateSSLCert(reqCtx, auth, r) }
 
 	case base.ResourceTypeCronJob:
 		r := cronjobdto.NewUpdateCronJobReq()

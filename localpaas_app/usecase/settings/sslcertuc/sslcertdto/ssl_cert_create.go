@@ -1,4 +1,4 @@
-package ssldto
+package sslcertdto
 
 import (
 	"strings"
@@ -18,12 +18,12 @@ const (
 	providerMaxLen = 100
 )
 
-type CreateSSLReq struct {
+type CreateSSLCertReq struct {
 	settings.CreateSettingReq
-	*SSLBaseReq
+	*SSLCertBaseReq
 }
 
-type SSLBaseReq struct {
+type SSLCertBaseReq struct {
 	Name        string           `json:"name"`
 	Domain      string           `json:"domain"`
 	Certificate string           `json:"certificate"`
@@ -36,8 +36,8 @@ type SSLBaseReq struct {
 	NotifyFrom  time.Time        `json:"notifyFrom"`
 }
 
-func (req *SSLBaseReq) ToEntity() *entity.SSL {
-	return &entity.SSL{
+func (req *SSLCertBaseReq) ToEntity() *entity.SSLCert {
+	return &entity.SSLCert{
 		Domain:      req.Domain,
 		Certificate: req.Certificate,
 		PrivateKey:  entity.NewEncryptedField(req.PrivateKey),
@@ -50,12 +50,12 @@ func (req *SSLBaseReq) ToEntity() *entity.SSL {
 	}
 }
 
-func (req *SSLBaseReq) modifyRequest() error {
+func (req *SSLCertBaseReq) modifyRequest() error {
 	req.Name = strings.TrimSpace(req.Name)
 	return nil
 }
 
-func (req *SSLBaseReq) validate(field string) (res []vld.Validator) {
+func (req *SSLCertBaseReq) validate(field string) (res []vld.Validator) {
 	if field != "" {
 		field += "."
 	}
@@ -67,22 +67,22 @@ func (req *SSLBaseReq) validate(field string) (res []vld.Validator) {
 	return res
 }
 
-func NewCreateSSLReq() *CreateSSLReq {
-	return &CreateSSLReq{}
+func NewCreateSSLCertReq() *CreateSSLCertReq {
+	return &CreateSSLCertReq{}
 }
 
-func (req *CreateSSLReq) ModifyRequest() error {
+func (req *CreateSSLCertReq) ModifyRequest() error {
 	return req.modifyRequest()
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *CreateSSLReq) Validate() apperrors.ValidationErrors {
+func (req *CreateSSLCertReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.validate("")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type CreateSSLResp struct {
+type CreateSSLCertResp struct {
 	Meta *basedto.Meta         `json:"meta"`
 	Data *basedto.ObjectIDResp `json:"data"`
 }

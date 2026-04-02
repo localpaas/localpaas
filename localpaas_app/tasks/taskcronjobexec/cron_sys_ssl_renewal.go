@@ -66,7 +66,7 @@ func (e *Executor) cronExecSSLRenew(
 	offset, limit := 0, sslHandlingBatchSize
 	for {
 		listOpts := []bunex.SelectQueryOption{
-			bunex.SelectWhere("setting.type = ?", base.SettingTypeSSL),
+			bunex.SelectWhere("setting.type = ?", base.SettingTypeSSLCert),
 			bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
 			bunex.SelectWhereGroup(
 				bunex.SelectWhereGroup(
@@ -128,7 +128,7 @@ func (e *Executor) cronExecSSLRenew(
 
 		_ = gofn.ExecTaskFuncEx(ctx, sslHandlingConcurrentTasks, false,
 			func(ctx context.Context, taskItem *sslRenewalTaskItem) error {
-				ssl := taskItem.Setting.MustAsSSL()
+				ssl := taskItem.Setting.MustAsSSLCert()
 				switch {
 				case e.sslShouldNotifyOfExpiration(ssl, timeNow):
 					taskItem.ExpiringNotifyOnly = true
@@ -166,7 +166,7 @@ func (e *Executor) cronExecSSLRenew(
 }
 
 func (e *Executor) sslShouldRenew(
-	ssl *entity.SSL,
+	ssl *entity.SSLCert,
 	timeNow time.Time,
 ) bool {
 	return ssl.AutoRenew &&
@@ -179,7 +179,7 @@ func (e *Executor) sslRenew(
 	setting *entity.Setting,
 	data *sslRenewalTaskData,
 ) (err error) {
-	ssl := setting.MustAsSSL()
+	ssl := setting.MustAsSSLCert()
 
 	startTime := timeutil.NowUTC()
 	defer func() {
@@ -203,7 +203,7 @@ func (e *Executor) sslRenew(
 }
 
 func (e *Executor) sslShouldNotifyOfExpiration(
-	ssl *entity.SSL,
+	ssl *entity.SSLCert,
 	timeNow time.Time,
 ) bool {
 	return !ssl.AutoRenew && !ssl.NotifyFrom.IsZero() &&

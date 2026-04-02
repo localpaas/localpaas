@@ -1,17 +1,17 @@
-package ssluc
+package sslcertuc
 
 import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
-type SSLUC struct {
+type SSLCertUC struct {
 	*settings.BaseSettingUC
 }
 
-func NewSSLUC(
+func NewSSLCertUC(
 	baseSettingUC *settings.BaseSettingUC,
-) *SSLUC {
-	return &SSLUC{
+) *SSLCertUC {
+	return &SSLCertUC{
 		BaseSettingUC: baseSettingUC,
 	}
 }

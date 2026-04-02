@@ -1,4 +1,4 @@
-package ssldto
+package sslcertdto
 
 import (
 	vld "github.com/tiendc/go-validator"
@@ -9,12 +9,12 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
-type ListSSLReq struct {
+type ListSSLCertReq struct {
 	settings.ListSettingReq
 }
 
-func NewListSSLReq() *ListSSLReq {
-	return &ListSSLReq{
+func NewListSSLCertReq() *ListSSLCertReq {
+	return &ListSSLCertReq{
 		ListSettingReq: settings.ListSettingReq{
 			Paging: basedto.Paging{
 				// Default paging if unset by client
@@ -24,24 +24,24 @@ func NewListSSLReq() *ListSSLReq {
 	}
 }
 
-func (req *ListSSLReq) Validate() apperrors.ValidationErrors {
+func (req *ListSSLCertReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.ListSettingReq.Validate()...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type ListSSLResp struct {
+type ListSSLCertResp struct {
 	Meta *basedto.ListMeta `json:"meta"`
-	Data []*SSLResp        `json:"data"`
+	Data []*SSLCertResp    `json:"data"`
 }
 
-func TransformSSLs(
+func TransformSSLCerts(
 	settings []*entity.Setting,
 	refObjects *entity.RefObjects,
-) (resp []*SSLResp, err error) {
-	resp = make([]*SSLResp, 0, len(settings))
+) (resp []*SSLCertResp, err error) {
+	resp = make([]*SSLCertResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformSSL(setting, refObjects)
+		item, err := TransformSSLCert(setting, refObjects)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

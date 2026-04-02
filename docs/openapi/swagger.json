@@ -10874,10 +10874,10 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/ssls" : {
+    "/projects/{projectID}/ssl-certs" : {
       "get" : {
-        "description" : "Lists SSL settings",
-        "operationId" : "listProjectSSL",
+        "description" : "Lists SSL certs",
+        "operationId" : "listProjectSSLCert",
         "parameters" : [ {
           "description" : "project ID",
           "in" : "path",
@@ -10920,7 +10920,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.ListSSLResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.ListSSLCertResp"
                 }
               }
             },
@@ -10947,12 +10947,12 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Lists SSL settings",
+        "summary" : "Lists SSL certs",
         "tags" : [ "project_settings" ]
       },
       "post" : {
-        "description" : "Creates a new SSL setting",
-        "operationId" : "createProjectSSL",
+        "description" : "Creates a new SSL cert",
+        "operationId" : "createProjectSSLCert",
         "parameters" : [ {
           "description" : "project ID",
           "in" : "path",
@@ -10966,7 +10966,7 @@
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.CreateSSLReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.CreateSSLCertReq"
               }
             }
           },
@@ -10978,7 +10978,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.CreateSSLResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.CreateSSLCertResp"
                 }
               }
             },
@@ -11005,15 +11005,15 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Creates a new SSL setting",
+        "summary" : "Creates a new SSL cert",
         "tags" : [ "project_settings" ],
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/ssls/{itemID}" : {
+    "/projects/{projectID}/ssl-certs/{itemID}" : {
       "delete" : {
-        "description" : "Deletes SSL setting",
-        "operationId" : "deleteProjectSSL",
+        "description" : "Deletes an SSL cert",
+        "operationId" : "deleteProjectSSLCert",
         "parameters" : [ {
           "description" : "project ID",
           "in" : "path",
@@ -11036,7 +11036,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.DeleteSSLResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.DeleteSSLCertResp"
                 }
               }
             },
@@ -11063,12 +11063,12 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Deletes SSL setting",
+        "summary" : "Deletes an SSL cert",
         "tags" : [ "project_settings" ]
       },
       "get" : {
-        "description" : "Gets SSL setting details",
-        "operationId" : "getProjectSSL",
+        "description" : "Gets SSL cert details",
+        "operationId" : "getProjectSSLCert",
         "parameters" : [ {
           "description" : "project ID",
           "in" : "path",
@@ -11091,7 +11091,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.GetSSLResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.GetSSLCertResp"
                 }
               }
             },
@@ -11118,12 +11118,12 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Gets SSL setting details",
+        "summary" : "Gets SSL cert details",
         "tags" : [ "project_settings" ]
       },
       "put" : {
-        "description" : "Updates SSL",
-        "operationId" : "updateProjectSSL",
+        "description" : "Updates an SSL cert",
+        "operationId" : "updateProjectSSLCert",
         "parameters" : [ {
           "description" : "project ID",
           "in" : "path",
@@ -11145,7 +11145,7 @@
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSSLReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.UpdateSSLCertReq"
               }
             }
           },
@@ -11157,7 +11157,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSSLResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.UpdateSSLCertResp"
                 }
               }
             },
@@ -11184,15 +11184,15 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Updates SSL",
+        "summary" : "Updates an SSL cert",
         "tags" : [ "project_settings" ],
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/ssls/{itemID}/meta" : {
+    "/projects/{projectID}/ssl-certs/{itemID}/meta" : {
       "put" : {
-        "description" : "Updates SSL meta",
-        "operationId" : "updateProjectSSLMeta",
+        "description" : "Updates SSL cert meta",
+        "operationId" : "updateProjectSSLCertMeta",
         "parameters" : [ {
           "description" : "project ID",
           "in" : "path",
@@ -11214,7 +11214,7 @@
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSSLMetaReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.UpdateSSLCertMetaReq"
               }
             }
           },
@@ -11226,7 +11226,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSSLMetaResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.UpdateSSLCertMetaResp"
                 }
               }
             },
@@ -11253,7 +11253,7 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Updates SSL meta",
+        "summary" : "Updates SSL cert meta",
         "tags" : [ "project_settings" ],
         "x-codegen-request-body-name" : "body"
       }
@@ -16488,10 +16488,10 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/settings/ssls" : {
+    "/settings/ssl-certs" : {
       "get" : {
-        "description" : "Lists SSL settings",
-        "operationId" : "listSettingSSL",
+        "description" : "Lists SSL certs",
+        "operationId" : "listSettingSSLCert",
         "parameters" : [ {
           "description" : "`search=<target> (support *)`",
           "in" : "query",
@@ -16526,7 +16526,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.ListSSLResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.ListSSLCertResp"
                 }
               }
             },
@@ -16553,17 +16553,17 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Lists SSL settings",
+        "summary" : "Lists SSL certs",
         "tags" : [ "settings" ]
       },
       "post" : {
-        "description" : "Creates a new SSL setting",
-        "operationId" : "createSettingSSL",
+        "description" : "Creates a new SSL cert",
+        "operationId" : "createSettingSSLCert",
         "requestBody" : {
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.CreateSSLReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.CreateSSLCertReq"
               }
             }
           },
@@ -16575,7 +16575,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.CreateSSLResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.CreateSSLCertResp"
                 }
               }
             },
@@ -16602,15 +16602,15 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Creates a new SSL setting",
+        "summary" : "Creates a new SSL cert",
         "tags" : [ "settings" ],
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/settings/ssls/{itemID}" : {
+    "/settings/ssl-certs/{itemID}" : {
       "delete" : {
-        "description" : "Deletes SSL setting",
-        "operationId" : "deleteSettingSSL",
+        "description" : "Deletes SSL cert",
+        "operationId" : "deleteSettingSSLCert",
         "parameters" : [ {
           "description" : "setting ID",
           "in" : "path",
@@ -16625,7 +16625,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.DeleteSSLResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.DeleteSSLCertResp"
                 }
               }
             },
@@ -16652,12 +16652,12 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Deletes SSL setting",
+        "summary" : "Deletes SSL cert",
         "tags" : [ "settings" ]
       },
       "get" : {
-        "description" : "Gets SSL setting details",
-        "operationId" : "getSettingSSL",
+        "description" : "Gets SSL cert details",
+        "operationId" : "getSettingSSLCert",
         "parameters" : [ {
           "description" : "setting ID",
           "in" : "path",
@@ -16672,7 +16672,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.GetSSLResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.GetSSLCertResp"
                 }
               }
             },
@@ -16699,12 +16699,12 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Gets SSL setting details",
+        "summary" : "Gets SSL cert details",
         "tags" : [ "settings" ]
       },
       "put" : {
-        "description" : "Updates SSL",
-        "operationId" : "updateSettingSSL",
+        "description" : "Updates SSL cert",
+        "operationId" : "updateSettingSSLCert",
         "parameters" : [ {
           "description" : "setting ID",
           "in" : "path",
@@ -16718,7 +16718,7 @@
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSSLReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.UpdateSSLCertReq"
               }
             }
           },
@@ -16730,7 +16730,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSSLResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.UpdateSSLCertResp"
                 }
               }
             },
@@ -16757,15 +16757,15 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Updates SSL",
+        "summary" : "Updates SSL cert",
         "tags" : [ "settings" ],
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/settings/ssls/{itemID}/meta" : {
+    "/settings/ssl-certs/{itemID}/meta" : {
       "put" : {
-        "description" : "Updates SSL meta",
-        "operationId" : "updateSettingSSLMeta",
+        "description" : "Updates SSL cert meta",
+        "operationId" : "updateSettingSSLCertMeta",
         "parameters" : [ {
           "description" : "setting ID",
           "in" : "path",
@@ -16779,7 +16779,7 @@
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSSLMetaReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.UpdateSSLCertMetaReq"
               }
             }
           },
@@ -16791,7 +16791,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSSLMetaResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.UpdateSSLCertMetaResp"
                 }
               }
             },
@@ -16818,7 +16818,7 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Updates SSL meta",
+        "summary" : "Updates SSL cert meta",
         "tags" : [ "settings" ],
         "x-codegen-request-body-name" : "body"
       }
@@ -19598,9 +19598,9 @@
         "x-enum-varnames" : [ "SettingStatusActive", "SettingStatusPending", "SettingStatusDisabled", "SettingStatusExpired" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.SettingType" : {
-        "enum" : [ "project", "app", "app-deployment", "app-http", "env-var", "secret", "cloud-provider", "cloud-storage", "oauth", "ssh-key", "api-key", "im-service", "registry-auth", "basic-auth", "ssl", "github-app", "access-token", "cron-job", "healthcheck", "email", "repo-webhook", "notification", "image-build", "system-cleanup", "system-backup", "ssl-renewal", "file" ],
+        "enum" : [ "project", "app", "app-deployment", "app-http", "env-var", "secret", "cloud-provider", "cloud-storage", "oauth", "ssh-key", "api-key", "im-service", "registry-auth", "basic-auth", "ssl-cert", "github-app", "access-token", "cron-job", "healthcheck", "email", "repo-webhook", "notification", "image-build", "system-cleanup", "system-backup", "ssl-renewal", "file" ],
         "type" : "string",
-        "x-enum-varnames" : [ "SettingTypeProject", "SettingTypeApp", "SettingTypeAppDeployment", "SettingTypeAppHttp", "SettingTypeEnvVar", "SettingTypeSecret", "SettingTypeCloudProvider", "SettingTypeCloudStorage", "SettingTypeOAuth", "SettingTypeSSHKey", "SettingTypeAPIKey", "SettingTypeIMService", "SettingTypeRegistryAuth", "SettingTypeBasicAuth", "SettingTypeSSL", "SettingTypeGithubApp", "SettingTypeAccessToken", "SettingTypeCronJob", "SettingTypeHealthcheck", "SettingTypeEmail", "SettingTypeRepoWebhook", "SettingTypeNotification", "SettingTypeImageBuild", "SettingTypeSystemCleanup", "SettingTypeSystemBackup", "SettingTypeSSLRenewal", "SettingTypeFile" ]
+        "x-enum-varnames" : [ "SettingTypeProject", "SettingTypeApp", "SettingTypeAppDeployment", "SettingTypeAppHttp", "SettingTypeEnvVar", "SettingTypeSecret", "SettingTypeCloudProvider", "SettingTypeCloudStorage", "SettingTypeOAuth", "SettingTypeSSHKey", "SettingTypeAPIKey", "SettingTypeIMService", "SettingTypeRegistryAuth", "SettingTypeBasicAuth", "SettingTypeSSLCert", "SettingTypeGithubApp", "SettingTypeAccessToken", "SettingTypeCronJob", "SettingTypeHealthcheck", "SettingTypeEmail", "SettingTypeRepoWebhook", "SettingTypeNotification", "SettingTypeImageBuild", "SettingTypeSystemCleanup", "SettingTypeSystemBackup", "SettingTypeSSLRenewal", "SettingTypeFile" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.TaskPriority" : {
         "enum" : [ "low", "default", "critical" ],
@@ -20050,7 +20050,7 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 86400000000000, 604800000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 86400000000000, 604800000000000 ],
         "format" : "int64",
         "type" : "integer",
         "x-enum-varnames" : [ "Day", "Week" ]
@@ -27394,7 +27394,7 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.CreateSSLReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.CreateSSLCertReq" : {
         "properties" : {
           "autoRenew" : {
             "type" : "boolean"
@@ -27436,7 +27436,7 @@
         "required" : [ "autoRenew", "availableInProjects", "certificate", "default", "domain", "email", "expireAt", "keySize", "name", "notifyFrom", "privateKey", "provider" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.CreateSSLResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.CreateSSLCertResp" : {
         "properties" : {
           "data" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
@@ -27448,7 +27448,7 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.DeleteSSLResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.DeleteSSLCertResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
@@ -27457,10 +27457,10 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.GetSSLResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.GetSSLCertResp" : {
         "properties" : {
           "data" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.SSLResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.SSLCertResp"
           },
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
@@ -27469,11 +27469,11 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.ListSSLResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.ListSSLCertResp" : {
         "properties" : {
           "data" : {
             "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.SSLResp"
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.SSLCertResp"
             },
             "type" : "array"
           },
@@ -27484,7 +27484,7 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.SSLResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.SSLCertResp" : {
         "properties" : {
           "autoRenew" : {
             "type" : "boolean"
@@ -27559,7 +27559,7 @@
         "required" : [ "autoRenew", "certificate", "createdAt", "domain", "email", "expireAt", "id", "keySize", "name", "notification", "notifyFrom", "privateKey", "provider", "renewableFrom", "status", "type", "updateVer", "updatedAt" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSSLMetaReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.UpdateSSLCertMetaReq" : {
         "properties" : {
           "availableInProjects" : {
             "type" : "boolean"
@@ -27580,7 +27580,7 @@
         "required" : [ "availableInProjects", "default", "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSSLMetaResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.UpdateSSLCertMetaResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
@@ -27589,7 +27589,7 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSSLReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.UpdateSSLCertReq" : {
         "properties" : {
           "autoRenew" : {
             "type" : "boolean"
@@ -27634,7 +27634,7 @@
         "required" : [ "autoRenew", "availableInProjects", "certificate", "default", "domain", "email", "expireAt", "keySize", "name", "notifyFrom", "privateKey", "provider", "updateVer" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_ssluc_ssldto.UpdateSSLResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.UpdateSSLCertResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"

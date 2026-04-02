@@ -1,4 +1,4 @@
-package ssluc
+package sslcertuc
 
 import (
 	"context"
@@ -6,27 +6,27 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/ssluc/ssldto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sslcertuc/sslcertdto"
 )
 
-func (uc *SSLUC) GetSSL(
+func (uc *SSLCertUC) GetSSLCert(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *ssldto.GetSSLReq,
-) (*ssldto.GetSSLResp, error) {
+	req *sslcertdto.GetSSLCertReq,
+) (*sslcertdto.GetSSLCertResp, error) {
 	req.Type = currentSettingType
 	resp, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp.Data.MustAsSSL().MustDecrypt()
-	respData, err := ssldto.TransformSSL(resp.Data, resp.RefObjects)
+	resp.Data.MustAsSSLCert().MustDecrypt()
+	respData, err := sslcertdto.TransformSSLCert(resp.Data, resp.RefObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &ssldto.GetSSLResp{
+	return &sslcertdto.GetSSLCertResp{
 		Data: respData,
 	}, nil
 }

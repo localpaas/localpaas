@@ -40,7 +40,7 @@ func (s *settingService) PersistSSLConfigFiles(
 			continue
 		}
 
-		ssl := setting.MustAsSSL()
+		ssl := setting.MustAsSSLCert()
 		certBytes := reflectutil.UnsafeStrToBytes(ssl.Certificate)
 		keyBytes := reflectutil.UnsafeStrToBytes(ssl.PrivateKey.MustGetPlain())
 

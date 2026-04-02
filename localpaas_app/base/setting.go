@@ -23,7 +23,7 @@ const (
 	SettingTypeIMService     SettingType = "im-service"
 	SettingTypeRegistryAuth  SettingType = "registry-auth"
 	SettingTypeBasicAuth     SettingType = "basic-auth"
-	SettingTypeSSL           SettingType = "ssl"
+	SettingTypeSSLCert       SettingType = "ssl-cert"
 	SettingTypeGithubApp     SettingType = "github-app"
 	SettingTypeAccessToken   SettingType = "access-token"
 	SettingTypeCronJob       SettingType = "cron-job"
