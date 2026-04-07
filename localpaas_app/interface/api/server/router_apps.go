@@ -96,5 +96,11 @@ func (s *HTTPServer) registerAppRoutes(projectGroup *gin.RouterGroup) *gin.Route
 		})
 	}
 
+	appContainerGroup := appGroup.Group("/:appID/container")
+	{ // app container group
+		// Cancel
+		appContainerGroup.POST("/check-port", appHandler.CheckAppContainerPort)
+	}
+
 	return appGroup
 }
