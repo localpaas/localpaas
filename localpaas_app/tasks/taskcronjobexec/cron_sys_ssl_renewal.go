@@ -62,6 +62,8 @@ func (e *Executor) cronExecSSLRenew(
 	}
 	timeNow := timeutil.NowUTC()
 
+	// TODO (high): renew self-signed SSL cert if needs to
+
 	taskArgs := gofn.Coalesce(gofn.Must(data.Task.ArgsAsSSLRenewal()), &entity.TaskSSLRenewalArgs{})
 	offset, limit := 0, sslHandlingBatchSize
 	for {

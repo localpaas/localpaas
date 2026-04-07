@@ -2,11 +2,50 @@ package traefikservice
 
 import (
 	"context"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
 func (s *traefikService) ReloadTraefikConfig(ctx context.Context, restartServiceOnFailure bool) error {
 	// Traefik automatically watches the dynamic configuration directory and reloads changes.
-	// We do not need to send a SIGHUP signal to the container.
+
+	err := s.reloadTraefikConfig(ctx)
+	if err == nil {
+		return nil
+	}
+	if !restartServiceOnFailure {
+		return apperrors.Wrap(err)
+	}
+	err = s.RestartTraefikSwarmService(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (s *traefikService) reloadTraefikConfig(ctx context.Context) error {
+	service, err := s.dockerManager.ServiceGetByName(ctx, traefikServiceName)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	containers, err := s.dockerManager.ServiceContainerList(ctx, service.ID)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	containerIDs := make([]string, 0, len(containers))
+	for _, container := range containers {
+		containerIDs = append(containerIDs, container.ID)
+	}
+	if len(containerIDs) == 0 {
+		return apperrors.NewNotFound("Traefik service")
+	}
+
+	errMap := s.dockerManager.ContainerKillMulti(ctx, containerIDs, "SIGHUP")
+	for _, err := range errMap {
+		return apperrors.Wrap(err)
+	}
 	return nil
 }
 
