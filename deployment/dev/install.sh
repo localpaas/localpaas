@@ -59,6 +59,9 @@ docker run --net localpaas_internal_net \
   -w /app localpaas/localpaas-dev:app-latest \
   make seed-data-with-clear
 
+# Force restart the main app
+docker service update --force localpaas_app
+
 sleep 3
 # docker restart $(docker ps -a -q -f status=running)
 TRAEFIK_CONT_ID=$(docker ps -f "status=running" | grep traefik | awk -F' ' '{print $1}')
