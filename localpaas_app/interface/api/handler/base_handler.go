@@ -73,7 +73,7 @@ type BaseHandler struct {
 	sysErrorUC *syserroruc.UC
 }
 
-func NewBaseHandler(
+func New(
 	sysErrorUC *syserroruc.UC,
 ) *BaseHandler {
 	return &BaseHandler{

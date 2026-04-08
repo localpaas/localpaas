@@ -8,7 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 )
 
-func (h *ProjectHandler) getAuth(
+func (h *Handler) getAuth(
 	ctx *gin.Context,
 	action base.ActionType,
 	getProjectID bool,

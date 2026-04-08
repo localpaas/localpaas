@@ -9,7 +9,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 )
 
-func (h *UserHandler) getAuth(
+func (h *Handler) getAuth(
 	ctx *gin.Context,
 	resType base.ResourceType,
 	action base.ActionType,

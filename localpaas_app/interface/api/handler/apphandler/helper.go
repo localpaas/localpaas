@@ -10,7 +10,7 @@ import (
 )
 
 //nolint:nakedret
-func (h *AppHandler) getAuth(
+func (h *Handler) getAuth(
 	ctx *gin.Context,
 	action base.ActionType,
 	getAppID bool,
@@ -49,7 +49,7 @@ func (h *AppHandler) getAuth(
 }
 
 //nolint:nakedret,unparam
-func (h *AppHandler) getAuthForItem(
+func (h *Handler) getAuthForItem(
 	ctx *gin.Context,
 	action base.ActionType,
 	paramName string,

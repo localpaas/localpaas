@@ -28,33 +28,33 @@ var (
 )
 
 type HandlerRegistry struct {
-	authHandler           *authhandler.AuthHandler
-	clusterHandler        *clusterhandler.ClusterHandler
-	sessionHandler        *sessionhandler.SessionHandler
-	userHandler           *userhandler.UserHandler
-	projectHandler        *projecthandler.ProjectHandler
-	appHandler            *apphandler.AppHandler
-	settingHandler        *settinghandler.SettingHandler
-	userSettingsHandler   *usersettingshandler.UserSettingsHandler
-	systemHandler         *systemhandler.SystemHandler
-	systemSettingsHandler *systemsettingshandler.SystemSettingsHandler
-	webhookHandler        *webhookhandler.WebhookHandler
-	fileHandler           *filehandler.FileHandler
+	authHandler           *authhandler.Handler
+	clusterHandler        *clusterhandler.Handler
+	sessionHandler        *sessionhandler.Handler
+	userHandler           *userhandler.Handler
+	projectHandler        *projecthandler.Handler
+	appHandler            *apphandler.Handler
+	settingHandler        *settinghandler.Handler
+	userSettingsHandler   *usersettingshandler.Handler
+	systemHandler         *systemhandler.Handler
+	systemSettingsHandler *systemsettingshandler.Handler
+	webhookHandler        *webhookhandler.Handler
+	fileHandler           *filehandler.Handler
 }
 
 func NewHandlerRegistry(
-	authHandler *authhandler.AuthHandler,
-	clusterHandler *clusterhandler.ClusterHandler,
-	sessionHandler *sessionhandler.SessionHandler,
-	userHandler *userhandler.UserHandler,
-	projectHandler *projecthandler.ProjectHandler,
-	appHandler *apphandler.AppHandler,
-	settingHandler *settinghandler.SettingHandler,
-	userSettingsHandler *usersettingshandler.UserSettingsHandler,
-	systemHandler *systemhandler.SystemHandler,
-	systemSettingsHandler *systemsettingshandler.SystemSettingsHandler,
-	webhookHandler *webhookhandler.WebhookHandler,
-	fileHandler *filehandler.FileHandler,
+	authHandler *authhandler.Handler,
+	clusterHandler *clusterhandler.Handler,
+	sessionHandler *sessionhandler.Handler,
+	userHandler *userhandler.Handler,
+	projectHandler *projecthandler.Handler,
+	appHandler *apphandler.Handler,
+	settingHandler *settinghandler.Handler,
+	userSettingsHandler *usersettingshandler.Handler,
+	systemHandler *systemhandler.Handler,
+	systemSettingsHandler *systemsettingshandler.Handler,
+	webhookHandler *webhookhandler.Handler,
+	fileHandler *filehandler.Handler,
 ) *HandlerRegistry {
 	return &HandlerRegistry{
 		authHandler:           authHandler,
