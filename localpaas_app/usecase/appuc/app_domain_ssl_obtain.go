@@ -195,7 +195,7 @@ func (uc *AppUC) applyDomainSSL(
 			sslSettings[s.ID] = s
 		}
 	}
-	err = uc.settingService.PersistSSLCertFiles(false, gofn.MapValues(sslSettings)...)
+	err = uc.sslService.WriteCertFiles(false, gofn.MapValues(sslSettings)...)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

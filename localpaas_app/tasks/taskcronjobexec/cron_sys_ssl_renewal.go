@@ -265,7 +265,7 @@ func (e *Executor) sslSaveUpdatedSettings(
 		return apperrors.Wrap(err)
 	}
 
-	err = e.settingService.PersistSSLCertFiles(true, persistingSettings...)
+	err = e.sslService.WriteCertFiles(true, persistingSettings...)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

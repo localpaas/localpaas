@@ -1,4 +1,4 @@
-package settingserviceimpl
+package sslserviceimpl
 
 import (
 	"errors"
@@ -18,7 +18,7 @@ const (
 	certDirFileMode = 0o755
 )
 
-func (s *service) PersistSSLCertFiles(
+func (s *service) WriteCertFiles(
 	forceRecreate bool,
 	settings ...*entity.Setting,
 ) error {
@@ -56,7 +56,7 @@ func (s *service) PersistSSLCertFiles(
 	return nil
 }
 
-func (s *service) DeleteSSLCertFiles(
+func (s *service) DeleteCertFiles(
 	settings ...*entity.Setting,
 ) error {
 	if len(settings) == 0 {

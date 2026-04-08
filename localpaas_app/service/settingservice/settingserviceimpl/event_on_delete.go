@@ -23,7 +23,7 @@ func (s *service) OnDelete(
 	}
 
 	if event.Setting.Type == base.SettingTypeSSLCert {
-		err = s.DeleteSSLCertFiles(event.Setting)
+		err = s.sslService.DeleteCertFiles(event.Setting)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}

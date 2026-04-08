@@ -5,9 +5,13 @@ import (
 	"time"
 
 	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 )
 
 type Service interface {
+	WriteCertFiles(forceRecreate bool, settings ...*entity.Setting) error
+	DeleteCertFiles(settings ...*entity.Setting) error
+
 	GenerateCert(subject *pkix.Name, keyType base.SSLKeyType, notBefore, notAfter time.Time,
 		isCA bool) (cert, key []byte, err error)
 }

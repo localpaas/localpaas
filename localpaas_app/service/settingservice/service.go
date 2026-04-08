@@ -11,9 +11,6 @@ import (
 type Service interface {
 	PersistSettingData(ctx context.Context, db database.IDB, data *PersistingSettingData) error
 
-	PersistSSLCertFiles(forceRecreate bool, settings ...*entity.Setting) error
-	DeleteSSLCertFiles(settings ...*entity.Setting) error
-
 	LoadReferenceObjects(ctx context.Context, db database.IDB, scope *base.SettingScope, requireActive bool,
 		errorIfUnavail bool, inSettings ...*entity.Setting) (*entity.RefObjects, error)
 	LoadReferenceObjectsByIDs(ctx context.Context, db database.IDB, scope *base.SettingScope, requireActive bool,

@@ -19,6 +19,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/cronjobservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/sslservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/traefikservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
 	"github.com/localpaas/localpaas/localpaas_app/tasks/queue"
@@ -47,6 +48,7 @@ type Executor struct {
 	cronJobService      cronjobservice.Service
 	appService          appservice.Service
 	settingService      settingservice.Service
+	sslService          sslservice.Service
 	userService         userservice.Service
 	notificationService notificationservice.Service
 	traefikService      traefikservice.Service
@@ -74,6 +76,7 @@ func NewExecutor(
 	cronJobService cronjobservice.Service,
 	appService appservice.Service,
 	settingService settingservice.Service,
+	sslService sslservice.Service,
 	userService userservice.Service,
 	notificationService notificationservice.Service,
 	traefikService traefikservice.Service,
@@ -99,6 +102,7 @@ func NewExecutor(
 		cronJobService:           cronJobService,
 		appService:               appService,
 		settingService:           settingService,
+		sslService:               sslService,
 		userService:              userService,
 		notificationService:      notificationService,
 		traefikService:           traefikService,

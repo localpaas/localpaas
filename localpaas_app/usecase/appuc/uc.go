@@ -9,6 +9,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/networkservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/projectservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/sslservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/traefikservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
 	"github.com/localpaas/localpaas/localpaas_app/tasks/queue"
@@ -24,6 +25,7 @@ type AppUC struct {
 	userService    userservice.Service
 	appService     appservice.Service
 	settingService settingservice.Service
+	sslService     sslservice.Service
 	projectService projectservice.Service
 	networkService networkservice.Service
 	envVarService  envvarservice.Service
@@ -42,6 +44,7 @@ func NewAppUC(
 	userService userservice.Service,
 	appService appservice.Service,
 	settingService settingservice.Service,
+	sslService sslservice.Service,
 	projectService projectservice.Service,
 	networkService networkservice.Service,
 	envVarService envvarservice.Service,
@@ -59,6 +62,7 @@ func NewAppUC(
 		userService:    userService,
 		appService:     appService,
 		settingService: settingService,
+		sslService:     sslService,
 		projectService: projectService,
 		networkService: networkService,
 		envVarService:  envVarService,

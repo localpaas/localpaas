@@ -33,11 +33,6 @@ func (s *service) initDefaultSSLSelfSigned(
 	timeNow time.Time,
 ) (err error) {
 	certDir := config.Current.DataPathSslCerts()
-	err = os.MkdirAll(certDir, certDirFileMode)
-	if err != nil {
-		return apperrors.New(err).WithMsgLog("failed to create directory to save cert files")
-	}
-
 	certFile := filepath.Join(certDir, sslSelfSignedBaseName+".crt")
 	keyFile := filepath.Join(certDir, sslSelfSignedBaseName+".key")
 	certFileExists, _ := fileutil.FileExists(certFile, true)
@@ -100,7 +95,7 @@ func (s *service) initDefaultSSLSelfSigned(
 	}
 
 	if regenerate {
-		err = s.PersistSSLCertFiles(true, sslSetting)
+		err = s.sslService.WriteCertFiles(true, sslSetting)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
