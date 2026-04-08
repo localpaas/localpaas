@@ -7,12 +7,12 @@ import (
 
 type TraefikUC struct {
 	db             *database.DB
-	traefikService traefikservice.TraefikService
+	traefikService traefikservice.Service
 }
 
 func NewTraefikUC(
 	db *database.DB,
-	traefikService traefikservice.TraefikService,
+	traefikService traefikservice.Service,
 ) *TraefikUC {
 	return &TraefikUC{
 		db:             db,

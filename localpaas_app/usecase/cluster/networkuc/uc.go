@@ -11,16 +11,16 @@ import (
 type NetworkUC struct {
 	db             *database.DB
 	settingRepo    repository.SettingRepo
-	clusterService clusterservice.ClusterService
-	projectService projectservice.ProjectService
+	clusterService clusterservice.Service
+	projectService projectservice.Service
 	dockerManager  docker.Manager
 }
 
 func NewNetworkUC(
 	db *database.DB,
 	settingRepo repository.SettingRepo,
-	clusterService clusterservice.ClusterService,
-	projectService projectservice.ProjectService,
+	clusterService clusterservice.Service,
+	projectService projectservice.Service,
 	dockerManager docker.Manager,
 ) *NetworkUC {
 	return &NetworkUC{

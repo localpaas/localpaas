@@ -17,8 +17,8 @@ type SessionUC struct {
 	userTokenRepo          cacherepository.UserTokenRepo
 	cacheMfaPasscodeRepo   cacherepository.MFAPasscodeRepo
 	cacheLoginAttemptRepo  cacherepository.LoginAttemptRepo
-	userService            userservice.UserService
-	emailService           emailservice.EmailService
+	userService            userservice.Service
+	emailService           emailservice.Service
 	permissionManager      permission.Manager
 }
 
@@ -30,8 +30,8 @@ func NewSessionUC(
 	userTokenRepo cacherepository.UserTokenRepo,
 	cacheMfaPasscodeRepo cacherepository.MFAPasscodeRepo,
 	cacheLoginAttemptRepo cacherepository.LoginAttemptRepo,
-	userService userservice.UserService,
-	emailService emailservice.EmailService,
+	userService userservice.Service,
+	emailService emailservice.Service,
 	permissionManager permission.Manager,
 ) *SessionUC {
 	return &SessionUC{

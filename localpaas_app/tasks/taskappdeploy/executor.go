@@ -43,10 +43,10 @@ type Executor struct {
 	taskInfoRepo        cacherepository.TaskInfoRepo
 	deploymentInfoRepo  cacherepository.DeploymentInfoRepo
 	dockerManager       docker.Manager
-	envVarService       envvarservice.EnvVarService
-	settingService      settingservice.SettingService
-	userService         userservice.UserService
-	notificationService notificationservice.NotificationService
+	envVarService       envvarservice.Service
+	settingService      settingservice.Service
+	userService         userservice.Service
+	notificationService notificationservice.Service
 }
 
 func NewExecutor(
@@ -61,10 +61,10 @@ func NewExecutor(
 	taskInfoRepo cacherepository.TaskInfoRepo,
 	deploymentInfoRepo cacherepository.DeploymentInfoRepo,
 	dockerManager docker.Manager,
-	envVarService envvarservice.EnvVarService,
-	settingService settingservice.SettingService,
-	userService userservice.UserService,
-	notificationService notificationservice.NotificationService,
+	envVarService envvarservice.Service,
+	settingService settingservice.Service,
+	userService userservice.Service,
+	notificationService notificationservice.Service,
 ) *Executor {
 	e := &Executor{
 		logger:              logger,

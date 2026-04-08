@@ -12,8 +12,8 @@ type CronJobUC struct {
 	*settings.BaseSettingUC
 	appRepo        repository.AppRepo
 	taskRepo       repository.TaskRepo
-	taskService    taskservice.TaskService
-	cronJobService cronjobservice.CronJobService
+	taskService    taskservice.Service
+	cronJobService cronjobservice.Service
 	taskQueue      queue.TaskQueue
 }
 
@@ -21,8 +21,8 @@ func NewCronJobUC(
 	baseSettingUC *settings.BaseSettingUC,
 	appRepo repository.AppRepo,
 	taskRepo repository.TaskRepo,
-	taskService taskservice.TaskService,
-	cronJobService cronjobservice.CronJobService,
+	taskService taskservice.Service,
+	cronJobService cronjobservice.Service,
 	taskQueue queue.TaskQueue,
 ) *CronJobUC {
 	return &CronJobUC{

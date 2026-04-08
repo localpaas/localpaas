@@ -44,12 +44,12 @@ type Executor struct {
 	sysErrorRepo             repository.SysErrorRepo
 	loginTrustedDeviceRepo   repository.LoginTrustedDeviceRepo
 
-	cronJobService      cronjobservice.CronJobService
-	appService          appservice.AppService
-	settingService      settingservice.SettingService
-	userService         userservice.UserService
-	notificationService notificationservice.NotificationService
-	traefikService      traefikservice.TraefikService
+	cronJobService      cronjobservice.Service
+	appService          appservice.Service
+	settingService      settingservice.Service
+	userService         userservice.Service
+	notificationService notificationservice.Service
+	traefikService      traefikservice.Service
 	dockerManager       docker.Manager
 }
 
@@ -71,12 +71,12 @@ func NewExecutor(
 	taskRepo repository.TaskRepo,
 	sysErrorRepo repository.SysErrorRepo,
 	loginTrustedDeviceRepo repository.LoginTrustedDeviceRepo,
-	cronJobService cronjobservice.CronJobService,
-	appService appservice.AppService,
-	settingService settingservice.SettingService,
-	userService userservice.UserService,
-	notificationService notificationservice.NotificationService,
-	traefikService traefikservice.TraefikService,
+	cronJobService cronjobservice.Service,
+	appService appservice.Service,
+	settingService settingservice.Service,
+	userService userservice.Service,
+	notificationService notificationservice.Service,
+	traefikService traefikservice.Service,
 	dockerManager docker.Manager,
 ) *Executor {
 	e := &Executor{

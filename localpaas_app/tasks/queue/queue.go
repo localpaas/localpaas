@@ -42,9 +42,9 @@ type taskQueue struct {
 	taskInfoRepo              cacherepository.TaskInfoRepo
 	healthcheckSettingsRepo   cacherepository.HealthcheckSettingsRepo
 	healthcheckNotifEventRepo cacherepository.HealthcheckNotifEventRepo
-	cronJobService            cronjobservice.CronJobService
-	taskService               taskservice.TaskService
-	settingService            settingservice.SettingService
+	cronJobService            cronjobservice.Service
+	taskService               taskservice.Service
+	settingService            settingservice.Service
 
 	taskExecutorMap     map[base.TaskType]gocronqueue.TaskExecFunc
 	healthcheckExecutor HealthcheckExecFunc
@@ -60,9 +60,9 @@ func NewTaskQueue(
 	cacheTaskInfoRepo cacherepository.TaskInfoRepo,
 	healthcheckSettingsRepo cacherepository.HealthcheckSettingsRepo,
 	healthcheckNotifEventRepo cacherepository.HealthcheckNotifEventRepo,
-	cronJobService cronjobservice.CronJobService,
-	taskService taskservice.TaskService,
-	settingService settingservice.SettingService,
+	cronJobService cronjobservice.Service,
+	taskService taskservice.Service,
+	settingService settingservice.Service,
 ) TaskQueue {
 	return &taskQueue{
 		db:                        db,

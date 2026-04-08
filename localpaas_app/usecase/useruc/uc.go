@@ -10,15 +10,15 @@ import (
 type UserUC struct {
 	db           *database.DB
 	userRepo     repository.UserRepo
-	userService  userservice.UserService
-	emailService emailservice.EmailService
+	userService  userservice.Service
+	emailService emailservice.Service
 }
 
 func NewUserUC(
 	db *database.DB,
 	userRepo repository.UserRepo,
-	userService userservice.UserService,
-	emailService emailservice.EmailService,
+	userService userservice.Service,
+	emailService emailservice.Service,
 ) *UserUC {
 	return &UserUC{
 		db:           db,

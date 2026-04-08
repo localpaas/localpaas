@@ -29,10 +29,10 @@ type Executor struct {
 	redisClient         rediscache.Client
 	settingRepo         repository.SettingRepo
 	notifEventRepo      cacherepository.HealthcheckNotifEventRepo
-	appService          appservice.AppService
-	settingService      settingservice.SettingService
-	userService         userservice.UserService
-	notificationService notificationservice.NotificationService
+	appService          appservice.Service
+	settingService      settingservice.Service
+	userService         userservice.Service
+	notificationService notificationservice.Service
 }
 
 func NewExecutor(
@@ -42,10 +42,10 @@ func NewExecutor(
 	redisClient rediscache.Client,
 	settingRepo repository.SettingRepo,
 	notifEventRepo cacherepository.HealthcheckNotifEventRepo,
-	appService appservice.AppService,
-	settingService settingservice.SettingService,
-	userService userservice.UserService,
-	notificationService notificationservice.NotificationService,
+	appService appservice.Service,
+	settingService settingservice.Service,
+	userService userservice.Service,
+	notificationService notificationservice.Service,
 ) *Executor {
 	e := &Executor{
 		logger:              logger,

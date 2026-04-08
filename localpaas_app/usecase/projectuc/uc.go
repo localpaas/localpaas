@@ -16,9 +16,9 @@ type ProjectUC struct {
 	settingRepo              repository.SettingRepo
 	projectSharedSettingRepo repository.ProjectSharedSettingRepo
 	permissionManager        permission.Manager
-	userService              userservice.UserService
-	projectService           projectservice.ProjectService
-	networkService           networkservice.NetworkService
+	userService              userservice.Service
+	projectService           projectservice.Service
+	networkService           networkservice.Service
 	dockerManager            docker.Manager
 }
 
@@ -28,9 +28,9 @@ func NewProjectUC(
 	settingRepo repository.SettingRepo,
 	projectSharedSettingRepo repository.ProjectSharedSettingRepo,
 	permissionManager permission.Manager,
-	userService userservice.UserService,
-	projectService projectservice.ProjectService,
-	networkService networkservice.NetworkService,
+	userService userservice.Service,
+	projectService projectservice.Service,
+	networkService networkservice.Service,
 	dockerManager docker.Manager,
 ) *ProjectUC {
 	return &ProjectUC{

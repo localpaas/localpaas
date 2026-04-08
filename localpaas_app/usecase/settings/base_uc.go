@@ -11,16 +11,16 @@ type BaseSettingUC struct {
 	DB                       *database.DB
 	SettingRepo              repository.SettingRepo
 	ProjectSharedSettingRepo repository.ProjectSharedSettingRepo
-	SettingService           settingservice.SettingService
-	FileService              fileservice.FileService
+	SettingService           settingservice.Service
+	FileService              fileservice.Service
 }
 
 func NewBaseSettingUC(
 	db *database.DB,
 	settingRepo repository.SettingRepo,
 	projectSharedSettingRepo repository.ProjectSharedSettingRepo,
-	settingService settingservice.SettingService,
-	fileService fileservice.FileService,
+	settingService settingservice.Service,
+	fileService fileservice.Service,
 ) *BaseSettingUC {
 	return &BaseSettingUC{
 		DB:                       db,

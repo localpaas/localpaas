@@ -19,12 +19,12 @@ type WebhookUC struct {
 	appRepo        repository.AppRepo
 	settingRepo    repository.SettingRepo
 	deploymentRepo repository.DeploymentRepo
-	userService    userservice.UserService
-	appService     appservice.AppService
-	projectService projectservice.ProjectService
-	networkService networkservice.NetworkService
-	envVarService  envvarservice.EnvVarService
-	traefikService traefikservice.TraefikService
+	userService    userservice.Service
+	appService     appservice.Service
+	projectService projectservice.Service
+	networkService networkservice.Service
+	envVarService  envvarservice.Service
+	traefikService traefikservice.Service
 	dockerManager  docker.Manager
 	taskQueue      queue.TaskQueue
 }
@@ -35,12 +35,12 @@ func NewWebhookUC(
 	appRepo repository.AppRepo,
 	settingRepo repository.SettingRepo,
 	deploymentRepo repository.DeploymentRepo,
-	userService userservice.UserService,
-	appService appservice.AppService,
-	projectService projectservice.ProjectService,
-	networkService networkservice.NetworkService,
-	envVarService envvarservice.EnvVarService,
-	traefikService traefikservice.TraefikService,
+	userService userservice.Service,
+	appService appservice.Service,
+	projectService projectservice.Service,
+	networkService networkservice.Service,
+	envVarService envvarservice.Service,
+	traefikService traefikservice.Service,
 	dockerManager docker.Manager,
 	taskQueue queue.TaskQueue,
 ) *WebhookUC {

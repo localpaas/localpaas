@@ -21,14 +21,14 @@ type AppUC struct {
 	appRepo        repository.AppRepo
 	settingRepo    repository.SettingRepo
 	deploymentRepo repository.DeploymentRepo
-	userService    userservice.UserService
-	appService     appservice.AppService
-	settingService settingservice.SettingService
-	projectService projectservice.ProjectService
-	networkService networkservice.NetworkService
-	envVarService  envvarservice.EnvVarService
-	traefikService traefikservice.TraefikService
-	clusterService clusterservice.ClusterService
+	userService    userservice.Service
+	appService     appservice.Service
+	settingService settingservice.Service
+	projectService projectservice.Service
+	networkService networkservice.Service
+	envVarService  envvarservice.Service
+	traefikService traefikservice.Service
+	clusterService clusterservice.Service
 	dockerManager  docker.Manager
 	taskQueue      queue.TaskQueue
 }
@@ -39,14 +39,14 @@ func NewAppUC(
 	appRepo repository.AppRepo,
 	settingRepo repository.SettingRepo,
 	deploymentRepo repository.DeploymentRepo,
-	userService userservice.UserService,
-	appService appservice.AppService,
-	settingService settingservice.SettingService,
-	projectService projectservice.ProjectService,
-	networkService networkservice.NetworkService,
-	envVarService envvarservice.EnvVarService,
-	traefikService traefikservice.TraefikService,
-	clusterService clusterservice.ClusterService,
+	userService userservice.Service,
+	appService appservice.Service,
+	settingService settingservice.Service,
+	projectService projectservice.Service,
+	networkService networkservice.Service,
+	envVarService envvarservice.Service,
+	traefikService traefikservice.Service,
+	clusterService clusterservice.Service,
 	dockerManager docker.Manager,
 	taskQueue queue.TaskQueue,
 ) *AppUC {

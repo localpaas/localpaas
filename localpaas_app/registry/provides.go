@@ -23,22 +23,22 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 	"github.com/localpaas/localpaas/localpaas_app/repository/cacherepository"
-	"github.com/localpaas/localpaas/localpaas_app/service/appservice"
-	"github.com/localpaas/localpaas/localpaas_app/service/clusterservice"
-	"github.com/localpaas/localpaas/localpaas_app/service/cronjobservice"
-	"github.com/localpaas/localpaas/localpaas_app/service/dbservice"
-	"github.com/localpaas/localpaas/localpaas_app/service/emailservice"
-	"github.com/localpaas/localpaas/localpaas_app/service/envvarservice"
-	"github.com/localpaas/localpaas/localpaas_app/service/fileservice"
-	"github.com/localpaas/localpaas/localpaas_app/service/lpappservice"
-	"github.com/localpaas/localpaas/localpaas_app/service/networkservice"
-	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
-	"github.com/localpaas/localpaas/localpaas_app/service/projectservice"
-	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
-	"github.com/localpaas/localpaas/localpaas_app/service/sslservice"
-	"github.com/localpaas/localpaas/localpaas_app/service/taskservice"
-	"github.com/localpaas/localpaas/localpaas_app/service/traefikservice"
-	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/appservice/appserviceimpl"
+	"github.com/localpaas/localpaas/localpaas_app/service/clusterservice/clusterserviceimpl"
+	"github.com/localpaas/localpaas/localpaas_app/service/cronjobservice/cronjobserviceimpl"
+	"github.com/localpaas/localpaas/localpaas_app/service/dbservice/dbserviceimpl"
+	"github.com/localpaas/localpaas/localpaas_app/service/emailservice/emailserviceimpl"
+	"github.com/localpaas/localpaas/localpaas_app/service/envvarservice/envvarserviceimpl"
+	"github.com/localpaas/localpaas/localpaas_app/service/fileservice/fileserviceimpl"
+	"github.com/localpaas/localpaas/localpaas_app/service/lpappservice/lpappserviceimpl"
+	"github.com/localpaas/localpaas/localpaas_app/service/networkservice/networkserviceimpl"
+	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice/notificationserviceimpl"
+	"github.com/localpaas/localpaas/localpaas_app/service/projectservice/projectserviceimpl"
+	"github.com/localpaas/localpaas/localpaas_app/service/settingservice/settingserviceimpl"
+	"github.com/localpaas/localpaas/localpaas_app/service/sslservice/sslserviceimpl"
+	"github.com/localpaas/localpaas/localpaas_app/service/taskservice/taskserviceimpl"
+	"github.com/localpaas/localpaas/localpaas_app/service/traefikservice/traefikserviceimpl"
+	"github.com/localpaas/localpaas/localpaas_app/service/userservice/userserviceimpl"
 	"github.com/localpaas/localpaas/localpaas_app/tasks/initializer"
 	"github.com/localpaas/localpaas/localpaas_app/tasks/queue"
 	"github.com/localpaas/localpaas/localpaas_app/tasks/taskappdeploy"
@@ -170,22 +170,22 @@ var Provides = []any{
 	fileuc.NewFileUC,
 
 	// Service
-	clusterservice.NewClusterService,
-	userservice.NewUserService,
-	projectservice.NewProjectService,
-	appservice.NewAppService,
-	networkservice.NewNetworkService,
-	settingservice.NewSettingService,
-	envvarservice.NewEnvVarService,
-	traefikservice.NewTraefikService,
-	lpappservice.NewLpAppService,
-	emailservice.NewEmailService,
-	notificationservice.NewNotificationService,
-	cronjobservice.NewCronJobService,
-	taskservice.NewTaskService,
-	dbservice.NewDBService,
-	fileservice.NewFileService,
-	sslservice.NewSSLService,
+	clusterserviceimpl.New,
+	userserviceimpl.New,
+	projectserviceimpl.New,
+	networkserviceimpl.New,
+	settingserviceimpl.New,
+	envvarserviceimpl.New,
+	traefikserviceimpl.New,
+	lpappserviceimpl.New,
+	emailserviceimpl.New,
+	notificationserviceimpl.New,
+	cronjobserviceimpl.New,
+	taskserviceimpl.New,
+	dbserviceimpl.New,
+	fileserviceimpl.New,
+	sslserviceimpl.New,
+	appserviceimpl.New,
 
 	// Repo: User
 	repository.NewUserRepo,

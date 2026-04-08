@@ -11,16 +11,16 @@ import (
 type NodeUC struct {
 	db             *database.DB
 	settingRepo    repository.SettingRepo
-	clusterService clusterservice.ClusterService
-	lpAppService   lpappservice.LpAppService
+	clusterService clusterservice.Service
+	lpAppService   lpappservice.Service
 	dockerManager  docker.Manager
 }
 
 func NewNodeUC(
 	db *database.DB,
 	settingRepo repository.SettingRepo,
-	clusterService clusterservice.ClusterService,
-	lpAppService lpappservice.LpAppService,
+	clusterService clusterservice.Service,
+	lpAppService lpappservice.Service,
 	dockerManager docker.Manager,
 ) *NodeUC {
 	return &NodeUC{

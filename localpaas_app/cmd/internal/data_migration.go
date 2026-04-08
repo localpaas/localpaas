@@ -14,7 +14,7 @@ import (
 func MigrateData(
 	lc fx.Lifecycle,
 	db *database.DB,
-	dbService dbservice.DBService,
+	dbService dbservice.Service,
 	logger logging.Logger) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {

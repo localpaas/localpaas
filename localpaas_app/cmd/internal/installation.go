@@ -26,9 +26,9 @@ func CompleteInstallation(
 	db *database.DB,
 	sysStatusRepo repository.SystemStatusRepo,
 	projectRepo repository.ProjectRepo,
-	userService userservice.UserService,
-	settingService settingservice.SettingService,
-	projectService projectservice.ProjectService,
+	userService userservice.Service,
+	settingService settingservice.Service,
+	projectService projectservice.Service,
 	logger logging.Logger,
 ) {
 	lc.Append(fx.Hook{
@@ -59,9 +59,9 @@ func installationInitData(
 	db *database.DB,
 	sysStatusRepo repository.SystemStatusRepo,
 	projectRepo repository.ProjectRepo,
-	userService userservice.UserService,
-	settingService settingservice.SettingService,
-	projectService projectservice.ProjectService,
+	userService userservice.Service,
+	settingService settingservice.Service,
+	projectService projectservice.Service,
 	logger logging.Logger,
 ) error {
 	logger.Info("initializing system data...")
@@ -118,7 +118,7 @@ func installationInitDevProjects(
 	ctx context.Context,
 	db database.IDB,
 	projectRepo repository.ProjectRepo,
-	projectService projectservice.ProjectService,
+	projectService projectservice.Service,
 	logger logging.Logger,
 ) error {
 	if !config.Current.IsDevEnv() {

@@ -11,7 +11,7 @@ type HealthcheckUC struct {
 	*settings.BaseSettingUC
 	appRepo     repository.AppRepo
 	taskRepo    repository.TaskRepo
-	taskService taskservice.TaskService
+	taskService taskservice.Service
 	taskQueue   queue.TaskQueue
 }
 
@@ -19,7 +19,7 @@ func NewHealthcheckUC(
 	baseSettingUC *settings.BaseSettingUC,
 	appRepo repository.AppRepo,
 	taskRepo repository.TaskRepo,
-	taskService taskservice.TaskService,
+	taskService taskservice.Service,
 	taskQueue queue.TaskQueue,
 ) *HealthcheckUC {
 	return &HealthcheckUC{

@@ -7,12 +7,12 @@ import (
 
 type LpAppUC struct {
 	db           *database.DB
-	lpAppService lpappservice.LpAppService
+	lpAppService lpappservice.Service
 }
 
 func NewLpAppUC(
 	db *database.DB,
-	lpAppService lpappservice.LpAppService,
+	lpAppService lpappservice.Service,
 ) *LpAppUC {
 	return &LpAppUC{
 		db:           db,

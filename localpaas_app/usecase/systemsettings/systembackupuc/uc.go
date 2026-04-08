@@ -12,8 +12,8 @@ type SystemBackupUC struct {
 	*settings.BaseSettingUC
 	appRepo        repository.AppRepo
 	taskRepo       repository.TaskRepo
-	taskService    taskservice.TaskService
-	cronJobService cronjobservice.CronJobService
+	taskService    taskservice.Service
+	cronJobService cronjobservice.Service
 	taskQueue      queue.TaskQueue
 }
 
@@ -21,8 +21,8 @@ func NewSystemBackupUC(
 	baseSettingUC *settings.BaseSettingUC,
 	appRepo repository.AppRepo,
 	taskRepo repository.TaskRepo,
-	taskService taskservice.TaskService,
-	cronJobService cronjobservice.CronJobService,
+	taskService taskservice.Service,
+	cronJobService cronjobservice.Service,
 	taskQueue queue.TaskQueue,
 ) *SystemBackupUC {
 	return &SystemBackupUC{
