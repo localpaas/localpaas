@@ -10,6 +10,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
@@ -23,16 +24,17 @@ type CreateSSLCertReq struct {
 }
 
 type SSLCertBaseReq struct {
-	Name        string           `json:"name"`
-	CertType    base.SSLCertType `json:"certType"`
-	Domain      string           `json:"domain"`
-	Certificate string           `json:"certificate"`
-	PrivateKey  string           `json:"privateKey"`
-	KeyType     base.SSLKeyType  `json:"keyType"`
-	Email       string           `json:"email"`
-	AutoRenew   bool             `json:"autoRenew"`
-	ExpireAt    time.Time        `json:"expireAt"`
-	NotifyFrom  time.Time        `json:"notifyFrom"`
+	Name        string            `json:"name"`
+	CertType    base.SSLCertType  `json:"certType"`
+	Domain      string            `json:"domain"`
+	Certificate string            `json:"certificate"`
+	PrivateKey  string            `json:"privateKey"`
+	KeyType     base.SSLKeyType   `json:"keyType"`
+	ValidPeriod timeutil.Duration `json:"validPeriod"`
+	Email       string            `json:"email"`
+	AutoRenew   bool              `json:"autoRenew"`
+	ExpireAt    time.Time         `json:"expireAt"`
+	NotifyFrom  time.Time         `json:"notifyFrom"`
 }
 
 func (req *SSLCertBaseReq) ToEntity() *entity.SSLCert {
@@ -42,6 +44,7 @@ func (req *SSLCertBaseReq) ToEntity() *entity.SSLCert {
 		Certificate: req.Certificate,
 		PrivateKey:  entity.NewEncryptedField(req.PrivateKey),
 		KeyType:     req.KeyType,
+		ValidPeriod: req.ValidPeriod,
 		Email:       req.Email,
 		AutoRenew:   req.AutoRenew,
 		ExpireAt:    req.ExpireAt,

@@ -7,6 +7,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
 const (
@@ -28,6 +29,7 @@ type SSLCert struct {
 	Certificate   string                 `json:"certificate"`
 	PrivateKey    EncryptedField         `json:"privateKey"`
 	KeyType       base.SSLKeyType        `json:"keyType"`
+	ValidPeriod   timeutil.Duration      `json:"validPeriod"`
 	Email         string                 `json:"email"`
 	BaseFilename  string                 `json:"baseFilename,omitempty"`
 	AutoRenew     bool                   `json:"autoRenew,omitempty"`

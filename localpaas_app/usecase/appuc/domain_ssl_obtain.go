@@ -136,11 +136,11 @@ func (uc *UC) preparePersistingDomainSSLData(
 	data.SSLCert = dbSSL
 
 	ssl := &entity.SSLCert{
+		CertType:    base.SSLCertTypeLetsEncrypt,
 		Domain:      req.Domain,
 		Certificate: string(data.ObtainedCerts.Certificate),
 		PrivateKey:  entity.NewEncryptedField(string(data.ObtainedCerts.PrivateKey)),
 		KeyType:     req.KeyType,
-		CertType:    base.SSLCertTypeLetsEncrypt,
 		Email:       data.Email,
 	}
 	if data.RenewalInfo != nil {
@@ -149,6 +149,7 @@ func (uc *UC) preparePersistingDomainSSLData(
 			ssl.AutoRenew = true
 			// TODO: need a better method to have expiration date of SSLs from Let's encrypt.
 			ssl.ExpireAt = ssl.RenewableFrom.Add(base.LetsEncryptExpirationFromFirstRenewableDate)
+			ssl.ValidPeriod = timeutil.Duration(ssl.ExpireAt.Sub(timeNow))
 		}
 	}
 

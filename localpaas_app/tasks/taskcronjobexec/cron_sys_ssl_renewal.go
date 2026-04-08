@@ -62,8 +62,6 @@ func (e *Executor) cronExecSSLRenew(
 	}
 	timeNow := timeutil.NowUTC()
 
-	// TODO (high): renew self-signed SSL cert if needs to
-
 	taskArgs := gofn.Coalesce(gofn.Must(data.Task.ArgsAsSSLRenewal()), &entity.TaskSSLRenewalArgs{})
 	offset, limit := 0, sslHandlingBatchSize
 	for {
@@ -197,11 +195,20 @@ func (e *Executor) sslRenew(
 		}
 	}()
 
-	if ssl.CertType == base.SSLCertTypeLetsEncrypt {
-		return e.sslRenewByLetsEncrypt(ctx, ssl, data)
+	switch ssl.CertType { //nolint:exhaustive
+	case base.SSLCertTypeLetsEncrypt:
+		err = e.sslRenewByLetsEncrypt(ctx, ssl, data)
+	case base.SSLCertTypeSelfSigned:
+		err = e.sslRenewSelfSignedCert(ctx, ssl, data)
+	default:
+		return apperrors.NewUnsupported(fmt.Sprintf("SSL type '%v'", ssl.CertType))
+	}
+	if err != nil {
+		return apperrors.Wrap(err)
 	}
 
-	return apperrors.NewUnsupported(fmt.Sprintf("SSL type '%v'", ssl.CertType))
+	setting.MustSetData(ssl)
+	return nil
 }
 
 func (e *Executor) sslShouldNotifyOfExpiration(

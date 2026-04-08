@@ -10,6 +10,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
@@ -43,6 +44,7 @@ type SSLCertResp struct {
 	Certificate   string                             `json:"certificate"`
 	PrivateKey    string                             `json:"privateKey"`
 	KeyType       base.SSLKeyType                    `json:"keyType"`
+	ValidPeriod   timeutil.Duration                  `json:"validPeriod"`
 	Email         string                             `json:"email"`
 	AutoRenew     bool                               `json:"autoRenew"`
 	RenewableFrom *time.Time                         `json:"renewableFrom" copy:",nilonzero"`

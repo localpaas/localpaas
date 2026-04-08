@@ -28595,9 +28595,12 @@
           },
           "privateKey" : {
             "type" : "string"
+          },
+          "validPeriod" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
           }
         },
-        "required" : [ "autoRenew", "availableInProjects", "certType", "certificate", "default", "domain", "email", "expireAt", "keyType", "name", "notifyFrom", "privateKey" ],
+        "required" : [ "autoRenew", "availableInProjects", "certType", "certificate", "default", "domain", "email", "expireAt", "keyType", "name", "notifyFrom", "privateKey", "validPeriod" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.CreateSSLCertResp" : {
@@ -28718,9 +28721,12 @@
           },
           "updatedAt" : {
             "type" : "string"
+          },
+          "validPeriod" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
           }
         },
-        "required" : [ "autoRenew", "certType", "certificate", "createdAt", "domain", "email", "expireAt", "id", "keyType", "name", "notification", "notifyFrom", "privateKey", "renewableFrom", "status", "type", "updateVer", "updatedAt" ],
+        "required" : [ "autoRenew", "certType", "certificate", "createdAt", "domain", "email", "expireAt", "id", "keyType", "name", "notification", "notifyFrom", "privateKey", "renewableFrom", "status", "type", "updateVer", "updatedAt", "validPeriod" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.UpdateSSLCertMetaReq" : {
@@ -28793,9 +28799,12 @@
           },
           "updateVer" : {
             "type" : "integer"
+          },
+          "validPeriod" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
           }
         },
-        "required" : [ "autoRenew", "availableInProjects", "certType", "certificate", "default", "domain", "email", "expireAt", "keyType", "name", "notifyFrom", "privateKey", "updateVer" ],
+        "required" : [ "autoRenew", "availableInProjects", "certType", "certificate", "default", "domain", "email", "expireAt", "keyType", "name", "notifyFrom", "privateKey", "updateVer", "validPeriod" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.UpdateSSLCertResp" : {
