@@ -44,8 +44,6 @@ func (s *HTTPServer) registerAppRoutes(projectGroup *gin.RouterGroup) *gin.Route
 	appGroup.POST("/:appID/secrets", appHandler.CreateAppSecret)
 	appGroup.PUT("/:appID/secrets/:itemID", appHandler.UpdateAppSecret)
 	appGroup.DELETE("/:appID/secrets/:itemID", appHandler.DeleteAppSecret)
-	// Domain SSL
-	appGroup.POST("/:appID/ssl/obtain", appHandler.ObtainDomainSSL)
 	// Logs
 	appGroup.GET("/:appID/runtime-logs", func(ctx *gin.Context) {
 		appHandler.GetAppRuntimeLogs(ctx, s.websocket)
