@@ -10,6 +10,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
@@ -26,12 +27,13 @@ func (s *service) InitAdminUser(
 	ctx context.Context,
 	db database.IDB,
 ) (cleanupFunc func(), err error) {
-	email := os.Getenv(envAdminEmail)
-	password := os.Getenv(envAdminPassword)
+	accCfg := &config.Current.AdminAccount
+	email := accCfg.Email
+	password := accCfg.Password
 	if email == "" || password == "" {
 		return nil, apperrors.NewMissing("Email or password is missing")
 	}
-	username := gofn.Coalesce(os.Getenv(envAdminUsername), strings.Split(email, "@")[0])
+	username := gofn.Coalesce(accCfg.Username, strings.Split(email, "@")[0])
 
 	timeNow := timeutil.NowUTC()
 	user := &entity.User{

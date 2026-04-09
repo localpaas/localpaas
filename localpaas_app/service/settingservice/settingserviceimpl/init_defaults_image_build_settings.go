@@ -25,7 +25,7 @@ const (
 	imageBuildMemMax      = 16 * 1024 // MB
 )
 
-func (s *service) initDefaultImageBuild(
+func (s *service) initDefaultImageBuildSettings(
 	ctx context.Context,
 	db database.IDB,
 	timeNow time.Time,
@@ -33,17 +33,17 @@ func (s *service) initDefaultImageBuild(
 	imageBuildSetting := &entity.Setting{
 		ID:              gofn.Must(ulid.NewStringULID()),
 		Scope:           base.SettingScopeGlobal,
-		Type:            base.SettingTypeImageBuild,
+		Type:            base.SettingTypeImageBuildSettings,
 		Status:          base.SettingStatusActive,
 		Name:            imageBuildSettingName,
 		AvailInProjects: true,
 		Default:         true,
-		Version:         entity.CurrentImageBuildVersion,
+		Version:         entity.CurrentImageBuildSettingsVersion,
 		CreatedAt:       timeNow,
 		UpdatedAt:       timeNow,
 	}
-	imageBuild := &entity.ImageBuild{
-		Resources: &entity.ImageBuildResources{
+	imageBuild := &entity.ImageBuildSettings{
+		Resources: &entity.ImageBuildSettingResources{
 			CPUs:  imageBuildCPUDefault,
 			MemMB: imageBuildMemDefault,
 		},

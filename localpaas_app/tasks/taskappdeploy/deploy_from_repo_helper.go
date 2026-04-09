@@ -162,15 +162,15 @@ func (e *Executor) getBuildSetting(
 	ctx context.Context,
 	db database.Tx,
 	data *repoDeployTaskData,
-) (*entity.ImageBuild, error) {
+) (*entity.ImageBuildSettings, error) {
 	app := data.App
 	setting, err := e.settingRepo.GetSingle(ctx, db, base.NewSettingScopeProject(app.ProjectID),
-		base.SettingTypeImageBuild, true)
+		base.SettingTypeImageBuildSettings, true)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return nil, apperrors.Wrap(err)
 	}
 	if setting != nil {
-		return setting.MustAsImageBuild(), nil
+		return setting.MustAsImageBuildSettings(), nil
 	}
 	return nil, nil
 }

@@ -11,6 +11,11 @@ base_url = "http://localhost:10000" # dashboard base URL
 secret = "abc123"
 app_path = ".appdata/localpaas"
 
+[admin_account]
+    username = "admin"
+    email = "tiendc.lp@gmail.com"
+    password = "abc123"
+
 [db]
     host = "localhost"
     port = 35432
@@ -37,9 +42,6 @@ app_path = ".appdata/localpaas"
 
     basic_auth_username = "localpaas"
     basic_auth_password = "abc123"
-
-[ssl]
-    le_user_email = "tiendc.lp@gmail.com"
 
 [proxy]
     http_proxy = ""

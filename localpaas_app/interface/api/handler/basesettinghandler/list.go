@@ -158,10 +158,6 @@ func (h *Handler) ListSetting(
 		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.NotificationUC.ListNotification(reqCtx, auth, r) }
 
-	case base.ResourceTypeImageBuild:
-		// NOTE: not implemented
-		err = apperrors.NewNotImplementedNT()
-
 	case base.ResourceTypeFile:
 		r := filedto.NewListFileReq()
 		r.Scope = scope

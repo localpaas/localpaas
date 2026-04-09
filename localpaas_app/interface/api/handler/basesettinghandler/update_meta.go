@@ -146,10 +146,6 @@ func (h *Handler) UpdateSettingMeta(
 		r.Scope, r.ID = scope, itemID
 		req, ucFunc = r, func() (any, error) { return h.NotificationUC.UpdateNotificationMeta(reqCtx, auth, r) }
 
-	case base.ResourceTypeImageBuild:
-		// NOTE: not implemented
-		err = apperrors.NewNotImplementedNT()
-
 	case base.ResourceTypeFile:
 		r := filedto.NewUpdateFileMetaReq()
 		r.Scope, r.ID = scope, itemID

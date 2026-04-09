@@ -156,10 +156,6 @@ func (h *Handler) CreateSetting(
 		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.NotificationUC.CreateNotification(reqCtx, auth, r) }
 
-	case base.ResourceTypeImageBuild:
-		// NOTE: not implemented
-		err = apperrors.NewNotImplementedNT()
-
 	case base.ResourceTypeFile:
 		// NOTE: not implemented
 		err = apperrors.NewNotImplementedNT()

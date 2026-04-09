@@ -1,4 +1,4 @@
-package imagebuilddto
+package imagebuildsettingsdto
 
 import (
 	vld "github.com/tiendc/go-validator"
@@ -9,19 +9,19 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
-type UpdateUniqueImageBuildReq struct {
+type UpdateUniqueImageBuildSettingsReq struct {
 	settings.UpdateUniqueSettingReq
-	*ImageBuildBaseReq
+	*ImageBuildSettingsBaseReq
 }
 
-type ImageBuildBaseReq struct {
-	Resources *ImageBuildResourcesReq `json:"resources"`
-	NoCache   bool                    `json:"noCache"`
-	NoVerbose bool                    `json:"noVerbose"`
+type ImageBuildSettingsBaseReq struct {
+	Resources *ImageBuildSettingResourcesReq `json:"resources"`
+	NoCache   bool                           `json:"noCache"`
+	NoVerbose bool                           `json:"noVerbose"`
 }
 
-func (req *ImageBuildBaseReq) ToEntity() *entity.ImageBuild {
-	return &entity.ImageBuild{
+func (req *ImageBuildSettingsBaseReq) ToEntity() *entity.ImageBuildSettings {
+	return &entity.ImageBuildSettings{
 		Resources: req.Resources.ToEntity(),
 		NoCache:   req.NoCache,
 		NoVerbose: req.NoVerbose,
@@ -29,7 +29,7 @@ func (req *ImageBuildBaseReq) ToEntity() *entity.ImageBuild {
 }
 
 // nolint
-func (req *ImageBuildBaseReq) validate(field string) (res []vld.Validator) {
+func (req *ImageBuildSettingsBaseReq) validate(field string) (res []vld.Validator) {
 	if field != "" {
 		field += "."
 	}
@@ -37,15 +37,15 @@ func (req *ImageBuildBaseReq) validate(field string) (res []vld.Validator) {
 	return res
 }
 
-type ImageBuildResourcesReq struct {
+type ImageBuildSettingResourcesReq struct {
 	CPUs      int32 `json:"cpus"`
 	MemMB     int64 `json:"memMB"`
 	MemSwapMB int64 `json:"memSwapMB"`
 	ShmSizeMB int64 `json:"shmSizeMB"`
 }
 
-func (req *ImageBuildResourcesReq) ToEntity() *entity.ImageBuildResources {
-	return &entity.ImageBuildResources{
+func (req *ImageBuildSettingResourcesReq) ToEntity() *entity.ImageBuildSettingResources {
+	return &entity.ImageBuildSettingResources{
 		CPUs:      req.CPUs,
 		MemMB:     req.MemMB,
 		MemSwapMB: req.MemSwapMB,
@@ -53,17 +53,17 @@ func (req *ImageBuildResourcesReq) ToEntity() *entity.ImageBuildResources {
 	}
 }
 
-func NewUpdateUniqueImageBuildReq() *UpdateUniqueImageBuildReq {
-	return &UpdateUniqueImageBuildReq{}
+func NewUpdateUniqueImageBuildSettingsReq() *UpdateUniqueImageBuildSettingsReq {
+	return &UpdateUniqueImageBuildSettingsReq{}
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *UpdateUniqueImageBuildReq) Validate() apperrors.ValidationErrors {
+func (req *UpdateUniqueImageBuildSettingsReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.validate("")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type UpdateUniqueImageBuildResp struct {
+type UpdateUniqueImageBuildSettingsResp struct {
 	Meta *basedto.Meta `json:"meta"`
 }

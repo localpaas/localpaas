@@ -62,7 +62,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/gitcredentialuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/healthcheckuc"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imagebuilduc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imagebuildsettingsuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/notificationuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc"
@@ -70,6 +70,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/repowebhookuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sslcertsettingsuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sslcertuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/lpappuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/syserroruc"
@@ -151,6 +152,7 @@ var Provides = []any{
 	registryauthuc.New,
 	basicauthuc.New,
 	sslcertuc.New,
+	sslcertsettingsuc.New,
 	githubappuc.New,
 	accesstokenuc.New,
 	traefikuc.New,
@@ -162,7 +164,7 @@ var Provides = []any{
 	webhookuc.New,
 	repowebhookuc.New,
 	notificationuc.New,
-	imagebuilduc.New,
+	imagebuildsettingsuc.New,
 	systemcleanupuc.New,
 	gitcredentialuc.New,
 	sslrenewaluc.New,

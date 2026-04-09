@@ -56,13 +56,13 @@ type Config struct {
 	Secret  string  `toml:"secret" env:"LP_APP_SECRET" default:"abc123"`
 	AppPath string  `toml:"app_path" env:"LP_APP_PATH" default:"/var/lib/localpaas"`
 
-	HTTPServer HTTPServer `toml:"http_server"`
-	DB         DB         `toml:"db"`
-	Cache      Cache      `toml:"cache"`
-	Session    Session    `toml:"session"`
-	SSL        SSL        `toml:"ssl"`
-	Proxy      Proxy      `toml:"proxy"`
-	Tasks      Tasks      `toml:"tasks"`
+	AdminAccount AdminAccount `toml:"admin_account"`
+	HTTPServer   HTTPServer   `toml:"http_server"`
+	DB           DB           `toml:"db"`
+	Cache        Cache        `toml:"cache"`
+	Session      Session      `toml:"session"`
+	Proxy        Proxy        `toml:"proxy"`
+	Tasks        Tasks        `toml:"tasks"`
 }
 
 func (cfg *Config) IsDevEnv() bool  { return cfg.Env == EnvDev }

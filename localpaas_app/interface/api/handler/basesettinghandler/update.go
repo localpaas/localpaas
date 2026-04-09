@@ -155,10 +155,6 @@ func (h *Handler) UpdateSetting(
 		r.Scope, r.ID = scope, itemID
 		req, ucFunc = r, func() (any, error) { return h.NotificationUC.UpdateNotification(reqCtx, auth, r) }
 
-	case base.ResourceTypeImageBuild:
-		// NOTE: not implemented
-		err = apperrors.NewNotImplementedNT()
-
 	case base.ResourceTypeFile:
 		// NOTE: not implemented
 		err = apperrors.NewNotImplementedNT()

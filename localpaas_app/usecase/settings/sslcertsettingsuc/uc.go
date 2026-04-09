@@ -1,4 +1,4 @@
-package imagebuilduc
+package sslcertsettingsuc
 
 import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	currentSettingType = base.SettingTypeImageBuild
+	currentSettingType = base.SettingTypeSSLCertSettings
 )
 
 type UC struct {

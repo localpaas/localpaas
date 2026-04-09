@@ -54,7 +54,7 @@ func (s *service) obtainCertLetsEncrypt(
 	ctx context.Context,
 	ssl *entity.SSLCert,
 ) (updated bool, err error) {
-	email := gofn.Coalesce(ssl.Email, config.Current.SSL.LeUserEmail)
+	email := ssl.Email
 	keyType := gofn.Coalesce(ssl.KeyType, base.SSLKeyTypeDefault)
 	leClient, err := letsencrypt.NewClient(email, keyType, config.Current.DataPathSslLetsEncrypt())
 	if err != nil {

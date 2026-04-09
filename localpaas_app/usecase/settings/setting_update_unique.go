@@ -51,7 +51,7 @@ func (uc *BaseUC) UpdateUniqueSetting(
 	data *UpdateUniqueSettingData,
 ) (*UpdateUniqueSettingResp, error) {
 	err := transaction.Execute(ctx, uc.DB, func(db database.Tx) error {
-		err := uc.loadSettingForUpdateSingle(ctx, db, req, data)
+		err := uc.loadUniqueSettingForUpdate(ctx, db, req, data)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -63,7 +63,7 @@ func (uc *BaseUC) UpdateUniqueSetting(
 		}
 
 		persistingData := &PersistingSettingData{}
-		uc.prepareSettingUpdateSingle(req, data, persistingData)
+		uc.prepareUniqueSettingUpdate(req, data, persistingData)
 
 		if data.PrepareUpdate != nil {
 			if err := data.PrepareUpdate(ctx, db, data, persistingData); err != nil {
@@ -77,7 +77,7 @@ func (uc *BaseUC) UpdateUniqueSetting(
 			}
 		}
 
-		err = uc.persistSettingUpdateUnique(ctx, db, req, persistingData)
+		err = uc.persistUniqueSettingUpdate(ctx, db, req, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -106,7 +106,7 @@ func (uc *BaseUC) UpdateUniqueSetting(
 	return &UpdateUniqueSettingResp{}, nil
 }
 
-func (uc *BaseUC) loadSettingForUpdateSingle(
+func (uc *BaseUC) loadUniqueSettingForUpdate(
 	ctx context.Context,
 	db database.Tx,
 	req *UpdateUniqueSettingReq,
@@ -149,7 +149,7 @@ func (uc *BaseUC) loadSettingForUpdateSingle(
 	return nil
 }
 
-func (uc *BaseUC) prepareSettingUpdateSingle(
+func (uc *BaseUC) prepareUniqueSettingUpdate(
 	req *UpdateUniqueSettingReq,
 	data *UpdateUniqueSettingData,
 	persistingData *PersistingSettingData,
@@ -184,7 +184,7 @@ func (uc *BaseUC) prepareSettingUpdateSingle(
 	persistingData.Setting = setting
 }
 
-func (uc *BaseUC) persistSettingUpdateUnique(
+func (uc *BaseUC) persistUniqueSettingUpdate(
 	ctx context.Context,
 	db database.IDB,
 	req *UpdateUniqueSettingReq,

@@ -156,10 +156,6 @@ func (h *Handler) GetSetting(
 		r.Scope, r.ID = scope, itemID
 		req, ucFunc = r, func() (any, error) { return h.NotificationUC.GetNotification(reqCtx, auth, r) }
 
-	case base.ResourceTypeImageBuild:
-		// NOTE: not implemented
-		err = apperrors.NewNotImplementedNT()
-
 	case base.ResourceTypeFile:
 		r := filedto.NewGetFileReq()
 		r.Scope, r.ID = scope, itemID

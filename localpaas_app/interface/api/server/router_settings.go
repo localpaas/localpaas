@@ -121,6 +121,14 @@ func (s *HTTPServer) registerSettingRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		sslCertGroup.DELETE("/:itemID", settingHandler.DeleteSSLCert)
 	}
 
+	{ // ssl cert settings group
+		sslCertSettingsGroup := settingGroup.Group("/ssl-cert-settings")
+		sslCertSettingsGroup.GET("", settingHandler.GetUniqueSSLCertSettings)
+		sslCertSettingsGroup.PUT("", settingHandler.UpdateUniqueSSLCertSettings)
+		sslCertSettingsGroup.PUT("/meta", settingHandler.UpdateUniqueSSLCertSettingsMeta)
+		sslCertSettingsGroup.DELETE("", settingHandler.DeleteUniqueSSLCertSettings)
+	}
+
 	{ // email group
 		emailGroup := settingGroup.Group("/emails")
 		emailGroup.GET("/:itemID", settingHandler.GetEmail)
@@ -162,12 +170,12 @@ func (s *HTTPServer) registerSettingRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		notificationGroup.DELETE("/:itemID", settingHandler.DeleteNotification)
 	}
 
-	{ // image-build group
-		imageBuildGroup := settingGroup.Group("/image-build")
-		imageBuildGroup.GET("", settingHandler.GetUniqueImageBuild)
-		imageBuildGroup.PUT("", settingHandler.UpdateUniqueImageBuild)
-		imageBuildGroup.PUT("/meta", settingHandler.UpdateUniqueImageBuildMeta)
-		imageBuildGroup.DELETE("", settingHandler.DeleteUniqueImageBuild)
+	{ // image-build settings group
+		imageBuildSettingsGroup := settingGroup.Group("/image-build-settings")
+		imageBuildSettingsGroup.GET("", settingHandler.GetUniqueImageBuildSettings)
+		imageBuildSettingsGroup.PUT("", settingHandler.UpdateUniqueImageBuildSettings)
+		imageBuildSettingsGroup.PUT("/meta", settingHandler.UpdateUniqueImageBuildSettingsMeta)
+		imageBuildSettingsGroup.DELETE("", settingHandler.DeleteUniqueImageBuildSettings)
 	}
 
 	return settingGroup

@@ -2,11 +2,16 @@ package main
 
 import (
 	"context"
+	"time"
 
 	"go.uber.org/fx"
 
 	"github.com/localpaas/localpaas/localpaas_app/cmd/internal"
 	"github.com/localpaas/localpaas/localpaas_app/registry"
+)
+
+const (
+	startTimeoutDefault = 30 * time.Second
 )
 
 func main() {
@@ -16,6 +21,7 @@ func main() {
 	provides = append(provides, registry.Provides...)
 
 	app := fx.New(
+		fx.StartTimeout(startTimeoutDefault),
 		fx.Provide(provides...),
 		fx.Invoke(internal.InitLogger),
 		fx.Invoke(internal.InitConfig),

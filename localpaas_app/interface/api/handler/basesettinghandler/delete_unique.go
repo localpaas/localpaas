@@ -8,7 +8,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imagebuilduc/imagebuilddto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imagebuildsettingsuc/imagebuildsettingsdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sslcertsettingsuc/sslcertsettingsdto"
 )
 
 type DeleteUniqueSettingOptions struct {
@@ -61,10 +62,15 @@ func (h *Handler) DeleteUniqueSetting(
 	reqCtx := h.RequestCtx(ctx)
 
 	switch resType { //nolint:exhaustive
-	case base.ResourceTypeImageBuild:
-		r := imagebuilddto.NewDeleteUniqueImageBuildReq()
+	case base.ResourceTypeImageBuildSettings:
+		r := imagebuildsettingsdto.NewDeleteUniqueImageBuildSettingsReq()
 		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.ImageBuildUC.DeleteUniqueImageBuild(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.ImageBuildUC.DeleteUniqueImageBuildSettings(reqCtx, auth, r) }
+
+	case base.ResourceTypeSSLCertSettings:
+		r := sslcertsettingsdto.NewDeleteUniqueSSLCertSettingsReq()
+		r.Scope = scope
+		req, ucFunc = r, func() (any, error) { return h.SSLCertSettingsUC.DeleteUniqueSSLCertSettings(reqCtx, auth, r) }
 
 	default:
 		// NOTE: not implemented

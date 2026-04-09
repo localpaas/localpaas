@@ -1,4 +1,4 @@
-package imagebuilduc
+package imagebuildsettingsuc
 
 import (
 	"context"
@@ -6,26 +6,26 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imagebuilduc/imagebuilddto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imagebuildsettingsuc/imagebuildsettingsdto"
 )
 
-func (uc *UC) GetUniqueImageBuild(
+func (uc *UC) GetUniqueImageBuildSettings(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *imagebuilddto.GetUniqueImageBuildReq,
-) (*imagebuilddto.GetUniqueImageBuildResp, error) {
+	req *imagebuildsettingsdto.GetUniqueImageBuildSettingsReq,
+) (*imagebuildsettingsdto.GetUniqueImageBuildSettingsResp, error) {
 	req.Type = currentSettingType
 	resp, err := uc.GetUniqueSetting(ctx, auth, &req.GetUniqueSettingReq, &settings.GetUniqueSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	respData, err := imagebuilddto.TransformImageBuild(resp.Data, resp.RefObjects)
+	respData, err := imagebuildsettingsdto.TransformImageBuild(resp.Data, resp.RefObjects)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &imagebuilddto.GetUniqueImageBuildResp{
+	return &imagebuildsettingsdto.GetUniqueImageBuildSettingsResp{
 		Data: respData,
 	}, nil
 }

@@ -144,6 +144,14 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		sslCertGroup.DELETE("/:itemID", projectHandler.DeleteSSLCert)
 	}
 
+	{ // SSL cert settings group
+		sslCertSettingsGroup := projectGroup.Group("/:projectID/ssl-cert-settings")
+		sslCertSettingsGroup.GET("", projectHandler.GetUniqueSSLCertSettings)
+		sslCertSettingsGroup.PUT("", projectHandler.UpdateUniqueSSLCertSettings)
+		sslCertSettingsGroup.PUT("/meta", projectHandler.UpdateUniqueSSLCertSettingsMeta)
+		sslCertSettingsGroup.DELETE("", projectHandler.DeleteUniqueSSLCertSettings)
+	}
+
 	{ // Email group
 		emailGroup := projectGroup.Group("/:projectID/emails")
 		emailGroup.GET("/:itemID", projectHandler.GetEmail)
@@ -174,12 +182,12 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		notificationGroup.DELETE("/:itemID", projectHandler.DeleteNotification)
 	}
 
-	{ // Image build group
-		imageBuildGroup := projectGroup.Group("/:projectID/image-build")
-		imageBuildGroup.GET("", projectHandler.GetUniqueImageBuild)
-		imageBuildGroup.PUT("", projectHandler.UpdateUniqueImageBuild)
-		imageBuildGroup.PUT("/meta", projectHandler.UpdateUniqueImageBuildMeta)
-		imageBuildGroup.DELETE("", projectHandler.DeleteUniqueImageBuild)
+	{ // Image build settings group
+		imageBuildSettingsGroup := projectGroup.Group("/:projectID/image-build-settings")
+		imageBuildSettingsGroup.GET("", projectHandler.GetUniqueImageBuildSettings)
+		imageBuildSettingsGroup.PUT("", projectHandler.UpdateUniqueImageBuildSettings)
+		imageBuildSettingsGroup.PUT("/meta", projectHandler.UpdateUniqueImageBuildSettingsMeta)
+		imageBuildSettingsGroup.DELETE("", projectHandler.DeleteUniqueImageBuildSettings)
 	}
 
 	{ // Docker network group

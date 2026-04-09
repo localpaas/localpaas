@@ -1,4 +1,4 @@
-package imagebuilddto
+package imagebuildsettingsdto
 
 import (
 	vld "github.com/tiendc/go-validator"
@@ -10,33 +10,33 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
-type GetUniqueImageBuildReq struct {
+type GetUniqueImageBuildSettingsReq struct {
 	settings.GetUniqueSettingReq
 }
 
-func NewGetUniqueImageBuildReq() *GetUniqueImageBuildReq {
-	return &GetUniqueImageBuildReq{}
+func NewGetUniqueImageBuildSettingsReq() *GetUniqueImageBuildSettingsReq {
+	return &GetUniqueImageBuildSettingsReq{}
 }
 
-func (req *GetUniqueImageBuildReq) Validate() apperrors.ValidationErrors {
+func (req *GetUniqueImageBuildSettingsReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.GetUniqueSettingReq.Validate()...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type GetUniqueImageBuildResp struct {
-	Meta *basedto.Meta   `json:"meta"`
-	Data *ImageBuildResp `json:"data"`
+type GetUniqueImageBuildSettingsResp struct {
+	Meta *basedto.Meta           `json:"meta"`
+	Data *ImageBuildSettingsResp `json:"data"`
 }
 
-type ImageBuildResp struct {
+type ImageBuildSettingsResp struct {
 	*settings.BaseSettingResp
-	Resources *ImageBuildResourcesResp `json:"resources"`
-	NoCache   bool                     `json:"noCache"`
-	NoVerbose bool                     `json:"noVerbose"`
+	Resources *ImageBuildSettingResourcesResp `json:"resources"`
+	NoCache   bool                            `json:"noCache"`
+	NoVerbose bool                            `json:"noVerbose"`
 }
 
-type ImageBuildResourcesResp struct {
+type ImageBuildSettingResourcesResp struct {
 	CPUs      int32 `json:"cpus"`
 	MemMB     int64 `json:"memMB"`
 	MemSwapMB int64 `json:"memSwapMB"`
@@ -46,8 +46,8 @@ type ImageBuildResourcesResp struct {
 func TransformImageBuild(
 	setting *entity.Setting,
 	_ *entity.RefObjects,
-) (resp *ImageBuildResp, err error) {
-	config := setting.MustAsImageBuild()
+) (resp *ImageBuildSettingsResp, err error) {
+	config := setting.MustAsImageBuildSettings()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
 	}

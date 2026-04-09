@@ -18,7 +18,7 @@ func (s *service) InitDefaults(
 	db database.IDB,
 ) (err error) {
 	settings, _, err := s.settingRepo.List(ctx, db, base.NewSettingScopeGlobal(), nil,
-		bunex.SelectWhereIn("setting.type IN (?)", base.SettingTypeImageBuild,
+		bunex.SelectWhereIn("setting.type IN (?)", base.SettingTypeImageBuildSettings,
 			base.SettingTypeSystemCleanup, base.SettingTypeSystemBackup, base.SettingTypeSSLRenewal),
 		bunex.SelectExcludeColumns("data"),
 	)
@@ -30,9 +30,19 @@ func (s *service) InitDefaults(
 
 	// Image build settings
 	if !gofn.ContainBy(settings, func(item *entity.Setting) bool {
-		return item.Type == base.SettingTypeImageBuild
+		return item.Type == base.SettingTypeImageBuildSettings
 	}) {
-		err = s.initDefaultImageBuild(ctx, db, timeNow)
+		err = s.initDefaultImageBuildSettings(ctx, db, timeNow)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+	}
+
+	// SSL cert settings
+	if !gofn.ContainBy(settings, func(item *entity.Setting) bool {
+		return item.Type == base.SettingTypeSSLCertSettings
+	}) {
+		err = s.initDefaultSSLCertSettings(ctx, db, timeNow)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}

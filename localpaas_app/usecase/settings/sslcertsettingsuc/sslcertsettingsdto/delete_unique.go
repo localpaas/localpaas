@@ -1,4 +1,4 @@
-package imagebuilddto
+package sslcertsettingsdto
 
 import (
 	vld "github.com/tiendc/go-validator"
@@ -8,21 +8,21 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
-type DeleteUniqueImageBuildReq struct {
+type DeleteUniqueSSLCertSettingsReq struct {
 	settings.DeleteUniqueSettingReq
 }
 
-func NewDeleteUniqueImageBuildReq() *DeleteUniqueImageBuildReq {
-	return &DeleteUniqueImageBuildReq{}
+func NewDeleteUniqueSSLCertSettingsReq() *DeleteUniqueSSLCertSettingsReq {
+	return &DeleteUniqueSSLCertSettingsReq{}
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *DeleteUniqueImageBuildReq) Validate() apperrors.ValidationErrors {
+func (req *DeleteUniqueSSLCertSettingsReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.DeleteUniqueSettingReq.Validate()...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type DeleteUniqueImageBuildResp struct {
+type DeleteUniqueSSLCertSettingsResp struct {
 	Meta *basedto.Meta `json:"meta"`
 }

@@ -23,7 +23,7 @@ func (e *Executor) sslGetLeClient(
 	data.Mu.Lock()
 	defer data.Mu.Unlock()
 
-	email := gofn.Coalesce(ssl.Email, config.Current.SSL.LeUserEmail)
+	email := ssl.Email
 	keyType := gofn.Coalesce(ssl.KeyType, base.SSLKeyTypeDefault)
 	mapKey := fmt.Sprintf("email:%v:keysize:%v", email, keyType)
 

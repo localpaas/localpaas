@@ -9474,10 +9474,10 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/image-build" : {
+    "/projects/{projectID}/image-build-settings" : {
       "delete" : {
-        "description" : "Deletes image build setting",
-        "operationId" : "deleteProjectImageBuild",
+        "description" : "Deletes image build settings",
+        "operationId" : "deleteProjectImageBuildSettings",
         "parameters" : [ {
           "description" : "project ID",
           "in" : "path",
@@ -9492,7 +9492,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.DeleteUniqueImageBuildResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.DeleteUniqueImageBuildSettingsResp"
                 }
               }
             },
@@ -9519,12 +9519,12 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Deletes image build setting",
+        "summary" : "Deletes image build settings",
         "tags" : [ "project_settings" ]
       },
       "get" : {
         "description" : "Gets image build setting details",
-        "operationId" : "getProjectImageBuild",
+        "operationId" : "getProjectImageBuildSettings",
         "parameters" : [ {
           "description" : "project ID",
           "in" : "path",
@@ -9539,7 +9539,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.GetUniqueImageBuildResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.GetUniqueImageBuildSettingsResp"
                 }
               }
             },
@@ -9570,8 +9570,8 @@
         "tags" : [ "project_settings" ]
       },
       "put" : {
-        "description" : "Updates image build",
-        "operationId" : "updateProjectImageBuild",
+        "description" : "Updates image build settings",
+        "operationId" : "updateProjectImageBuildSettings",
         "parameters" : [ {
           "description" : "project ID",
           "in" : "path",
@@ -9585,7 +9585,7 @@
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateUniqueImageBuildReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.UpdateUniqueImageBuildSettingsReq"
               }
             }
           },
@@ -9597,7 +9597,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateUniqueImageBuildResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.UpdateUniqueImageBuildSettingsResp"
                 }
               }
             },
@@ -9624,15 +9624,15 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Updates image build",
+        "summary" : "Updates image build settings",
         "tags" : [ "project_settings" ],
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/image-build/meta" : {
+    "/projects/{projectID}/image-build-settings/meta" : {
       "put" : {
         "description" : "Updates image build meta",
-        "operationId" : "updateProjectImageBuildMeta",
+        "operationId" : "updateProjectImageBuildSettingsMeta",
         "parameters" : [ {
           "description" : "project ID",
           "in" : "path",
@@ -9646,7 +9646,7 @@
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateUniqueImageBuildMetaReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.UpdateUniqueImageBuildSettingsMetaReq"
               }
             }
           },
@@ -9658,7 +9658,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateUniqueImageBuildMetaResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.UpdateUniqueImageBuildSettingsMetaResp"
                 }
               }
             },
@@ -11583,6 +11583,222 @@
           }
         },
         "summary" : "Updates ssh-key meta",
+        "tags" : [ "project_settings" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/projects/{projectID}/ssl-cert-settings" : {
+      "delete" : {
+        "description" : "Deletes ssl cert settings setting",
+        "operationId" : "deleteProjectSSLCertSettings",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertsettingsuc_sslcertsettingsdto.DeleteUniqueSSLCertSettingsResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Deletes ssl cert settings setting",
+        "tags" : [ "project_settings" ]
+      },
+      "get" : {
+        "description" : "Gets ssl cert settings details",
+        "operationId" : "getProjectSSLCertSettings",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertsettingsuc_sslcertsettingsdto.GetUniqueSSLCertSettingsResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Gets ssl cert settings details",
+        "tags" : [ "project_settings" ]
+      },
+      "put" : {
+        "description" : "Updates ssl cert settings",
+        "operationId" : "updateProjectSSLCertSettings",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertsettingsuc_sslcertsettingsdto.UpdateUniqueSSLCertSettingsReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertsettingsuc_sslcertsettingsdto.UpdateUniqueSSLCertSettingsResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates ssl cert settings",
+        "tags" : [ "project_settings" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/projects/{projectID}/ssl-cert-settings/meta" : {
+      "put" : {
+        "description" : "Updates ssl cert settings meta",
+        "operationId" : "updateProjectSSLCertSettingsMeta",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertsettingsuc_sslcertsettingsdto.UpdateUniqueSSLCertSettingsMetaReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertsettingsuc_sslcertsettingsdto.UpdateUniqueSSLCertSettingsMetaResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates ssl cert settings meta",
         "tags" : [ "project_settings" ],
         "x-codegen-request-body-name" : "body"
       }
@@ -15186,16 +15402,16 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/settings/image-build" : {
+    "/settings/image-build-settings" : {
       "delete" : {
-        "description" : "Deletes image build setting",
-        "operationId" : "deleteSettingImageBuild",
+        "description" : "Deletes image build settings",
+        "operationId" : "deleteSettingImageBuildSettings",
         "responses" : {
           "200" : {
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.DeleteUniqueImageBuildResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.DeleteUniqueImageBuildSettingsResp"
                 }
               }
             },
@@ -15222,18 +15438,18 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Deletes image build setting",
+        "summary" : "Deletes image build settings",
         "tags" : [ "settings" ]
       },
       "get" : {
-        "description" : "Gets image build setting details",
-        "operationId" : "getSettingImageBuild",
+        "description" : "Gets image build settings",
+        "operationId" : "getSettingImageBuildSettings",
         "responses" : {
           "200" : {
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.GetUniqueImageBuildResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.GetUniqueImageBuildSettingsResp"
                 }
               }
             },
@@ -15260,17 +15476,17 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Gets image build setting details",
+        "summary" : "Gets image build settings",
         "tags" : [ "settings" ]
       },
       "put" : {
-        "description" : "Updates image build",
-        "operationId" : "updateSettingImageBuild",
+        "description" : "Updates image build settings",
+        "operationId" : "updateSettingImageBuildSettings",
         "requestBody" : {
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateUniqueImageBuildReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.UpdateUniqueImageBuildSettingsReq"
               }
             }
           },
@@ -15282,7 +15498,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateUniqueImageBuildResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.UpdateUniqueImageBuildSettingsResp"
                 }
               }
             },
@@ -15309,20 +15525,20 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Updates image build",
+        "summary" : "Updates image build settings",
         "tags" : [ "settings" ],
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/settings/image-build/meta" : {
+    "/settings/image-build-settings/meta" : {
       "put" : {
-        "description" : "Updates image build meta",
-        "operationId" : "updateSettingImageBuildMeta",
+        "description" : "Updates image build settings meta",
+        "operationId" : "updateSettingImageBuildSettingsMeta",
         "requestBody" : {
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateUniqueImageBuildMetaReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.UpdateUniqueImageBuildSettingsMetaReq"
               }
             }
           },
@@ -15334,7 +15550,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateUniqueImageBuildMetaResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.UpdateUniqueImageBuildSettingsMetaResp"
                 }
               }
             },
@@ -15361,7 +15577,7 @@
             "description" : "Internal Server Error"
           }
         },
-        "summary" : "Updates image build meta",
+        "summary" : "Updates image build settings meta",
         "tags" : [ "settings" ],
         "x-codegen-request-body-name" : "body"
       }
@@ -17042,6 +17258,186 @@
           }
         },
         "summary" : "Updates ssh-key meta",
+        "tags" : [ "settings" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/settings/ssl-cert-settings" : {
+      "delete" : {
+        "description" : "Deletes ssl cert settings setting",
+        "operationId" : "deleteSettingSSLCertSettings",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertsettingsuc_sslcertsettingsdto.DeleteUniqueSSLCertSettingsResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Deletes ssl cert settings setting",
+        "tags" : [ "settings" ]
+      },
+      "get" : {
+        "description" : "Gets ssl cert settings details",
+        "operationId" : "getSettingSSLCertSettings",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertsettingsuc_sslcertsettingsdto.GetUniqueSSLCertSettingsResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Gets ssl cert settings details",
+        "tags" : [ "settings" ]
+      },
+      "put" : {
+        "description" : "Updates ssl cert settings",
+        "operationId" : "updateSettingSSLCertSettings",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertsettingsuc_sslcertsettingsdto.UpdateUniqueSSLCertSettingsReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertsettingsuc_sslcertsettingsdto.UpdateUniqueSSLCertSettingsResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates ssl cert settings",
+        "tags" : [ "settings" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/settings/ssl-cert-settings/meta" : {
+      "put" : {
+        "description" : "Updates ssl cert settings meta",
+        "operationId" : "updateSettingSSLCertSettingsMeta",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertsettingsuc_sslcertsettingsdto.UpdateUniqueSSLCertSettingsMetaReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertsettingsuc_sslcertsettingsdto.UpdateUniqueSSLCertSettingsMetaResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates ssl cert settings meta",
         "tags" : [ "settings" ],
         "x-codegen-request-body-name" : "body"
       }
@@ -20166,9 +20562,9 @@
         "x-enum-varnames" : [ "SettingStatusActive", "SettingStatusPending", "SettingStatusDisabled", "SettingStatusExpired" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.SettingType" : {
-        "enum" : [ "project", "app", "app-deployment", "app-http", "env-var", "secret", "cloud-provider", "cloud-storage", "oauth", "ssh-key", "api-key", "im-service", "registry-auth", "basic-auth", "ssl-cert", "github-app", "access-token", "cron-job", "healthcheck", "email", "repo-webhook", "notification", "image-build", "system-cleanup", "system-backup", "ssl-renewal", "file" ],
+        "enum" : [ "project", "app", "app-deployment", "app-http", "env-var", "secret", "cloud-provider", "cloud-storage", "oauth", "ssh-key", "api-key", "im-service", "registry-auth", "basic-auth", "ssl-cert", "ssl-cert-settings", "github-app", "access-token", "cron-job", "healthcheck", "email", "repo-webhook", "notification", "image-build-settings", "system-cleanup", "system-backup", "ssl-renewal", "file" ],
         "type" : "string",
-        "x-enum-varnames" : [ "SettingTypeProject", "SettingTypeApp", "SettingTypeAppDeployment", "SettingTypeAppHttp", "SettingTypeEnvVar", "SettingTypeSecret", "SettingTypeCloudProvider", "SettingTypeCloudStorage", "SettingTypeOAuth", "SettingTypeSSHKey", "SettingTypeAPIKey", "SettingTypeIMService", "SettingTypeRegistryAuth", "SettingTypeBasicAuth", "SettingTypeSSLCert", "SettingTypeGithubApp", "SettingTypeAccessToken", "SettingTypeCronJob", "SettingTypeHealthcheck", "SettingTypeEmail", "SettingTypeRepoWebhook", "SettingTypeNotification", "SettingTypeImageBuild", "SettingTypeSystemCleanup", "SettingTypeSystemBackup", "SettingTypeSSLRenewal", "SettingTypeFile" ]
+        "x-enum-varnames" : [ "SettingTypeProject", "SettingTypeApp", "SettingTypeAppDeployment", "SettingTypeAppHttp", "SettingTypeEnvVar", "SettingTypeSecret", "SettingTypeCloudProvider", "SettingTypeCloudStorage", "SettingTypeOAuth", "SettingTypeSSHKey", "SettingTypeAPIKey", "SettingTypeIMService", "SettingTypeRegistryAuth", "SettingTypeBasicAuth", "SettingTypeSSLCert", "SettingTypeSSLCertSettings", "SettingTypeGithubApp", "SettingTypeAccessToken", "SettingTypeCronJob", "SettingTypeHealthcheck", "SettingTypeEmail", "SettingTypeRepoWebhook", "SettingTypeNotification", "SettingTypeImageBuildSettings", "SettingTypeSystemCleanup", "SettingTypeSystemBackup", "SettingTypeSSLRenewal", "SettingTypeFile" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.TaskPriority" : {
         "enum" : [ "low", "default", "critical" ],
@@ -20618,7 +21014,7 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 86400000000000, 604800000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 86400000000000, 604800000000000 ],
         "format" : "int64",
         "type" : "integer",
         "x-enum-varnames" : [ "Day", "Week" ]
@@ -26369,7 +26765,7 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.DeleteUniqueImageBuildResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.DeleteUniqueImageBuildSettingsResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
@@ -26378,10 +26774,10 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.GetUniqueImageBuildResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.GetUniqueImageBuildSettingsResp" : {
         "properties" : {
           "data" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.ImageBuildResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.ImageBuildSettingsResp"
           },
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
@@ -26390,7 +26786,7 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.ImageBuildResourcesReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.ImageBuildSettingResourcesReq" : {
         "properties" : {
           "cpus" : {
             "type" : "integer"
@@ -26408,7 +26804,7 @@
         "required" : [ "cpus", "memMB", "memSwapMB", "shmSizeMB" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.ImageBuildResourcesResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.ImageBuildSettingResourcesResp" : {
         "properties" : {
           "cpus" : {
             "type" : "integer"
@@ -26426,7 +26822,7 @@
         "required" : [ "cpus", "memMB", "memSwapMB", "shmSizeMB" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.ImageBuildResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.ImageBuildSettingsResp" : {
         "properties" : {
           "availableInProjects" : {
             "type" : "boolean"
@@ -26459,7 +26855,7 @@
             "type" : "boolean"
           },
           "resources" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.ImageBuildResourcesResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.ImageBuildSettingResourcesResp"
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
@@ -26477,7 +26873,7 @@
         "required" : [ "createdAt", "id", "name", "noCache", "noVerbose", "resources", "status", "type", "updateVer", "updatedAt" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateUniqueImageBuildMetaReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.UpdateUniqueImageBuildSettingsMetaReq" : {
         "properties" : {
           "availableInProjects" : {
             "type" : "boolean"
@@ -26498,7 +26894,7 @@
         "required" : [ "availableInProjects", "default", "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateUniqueImageBuildMetaResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.UpdateUniqueImageBuildSettingsMetaResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
@@ -26507,7 +26903,7 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateUniqueImageBuildReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.UpdateUniqueImageBuildSettingsReq" : {
         "properties" : {
           "availableInProjects" : {
             "type" : "boolean"
@@ -26522,7 +26918,7 @@
             "type" : "boolean"
           },
           "resources" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.ImageBuildResourcesReq"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.ImageBuildSettingResourcesReq"
           },
           "updateVer" : {
             "type" : "integer"
@@ -26531,7 +26927,7 @@
         "required" : [ "availableInProjects", "default", "noCache", "noVerbose", "resources", "updateVer" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateUniqueImageBuildResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.UpdateUniqueImageBuildSettingsResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
@@ -28083,6 +28479,159 @@
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sshkeyuc_sshkeydto.UpdateSSHKeyResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertsettingsuc_sslcertsettingsdto.DeleteUniqueSSLCertSettingsResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertsettingsuc_sslcertsettingsdto.GetUniqueSSLCertSettingsResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertsettingsuc_sslcertsettingsdto.SSLCertSettingsResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertsettingsuc_sslcertsettingsdto.SSLCertSettingsResp" : {
+        "properties" : {
+          "autoRenew" : {
+            "type" : "boolean"
+          },
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
+          "certType" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SSLCertType"
+          },
+          "createdAt" : {
+            "type" : "string"
+          },
+          "default" : {
+            "type" : "boolean"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "expireAt" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "inherited" : {
+            "type" : "boolean"
+          },
+          "keyType" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SSLKeyType"
+          },
+          "kind" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "rootDomain" : {
+            "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingType"
+          },
+          "updateVer" : {
+            "type" : "integer"
+          },
+          "updatedAt" : {
+            "type" : "string"
+          },
+          "validPeriod" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
+          }
+        },
+        "required" : [ "autoRenew", "certType", "createdAt", "email", "id", "keyType", "name", "rootDomain", "status", "type", "updateVer", "updatedAt", "validPeriod" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertsettingsuc_sslcertsettingsdto.UpdateUniqueSSLCertSettingsMetaReq" : {
+        "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
+          "default" : {
+            "type" : "boolean"
+          },
+          "expireAt" : {
+            "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          },
+          "updateVer" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "availableInProjects", "default", "expireAt", "status", "updateVer" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertsettingsuc_sslcertsettingsdto.UpdateUniqueSSLCertSettingsMetaResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertsettingsuc_sslcertsettingsdto.UpdateUniqueSSLCertSettingsReq" : {
+        "properties" : {
+          "autoRenew" : {
+            "type" : "boolean"
+          },
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
+          "certType" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SSLCertType"
+          },
+          "default" : {
+            "type" : "boolean"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "keyType" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SSLKeyType"
+          },
+          "rootDomain" : {
+            "type" : "string"
+          },
+          "updateVer" : {
+            "type" : "integer"
+          },
+          "validPeriod" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
+          }
+        },
+        "required" : [ "autoRenew", "availableInProjects", "certType", "default", "email", "keyType", "rootDomain", "updateVer", "validPeriod" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertsettingsuc_sslcertsettingsdto.UpdateUniqueSSLCertSettingsResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"

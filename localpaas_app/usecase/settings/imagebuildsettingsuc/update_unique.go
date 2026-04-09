@@ -1,4 +1,4 @@
-package imagebuilduc
+package imagebuildsettingsuc
 
 import (
 	"context"
@@ -7,14 +7,14 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imagebuilduc/imagebuilddto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imagebuildsettingsuc/imagebuildsettingsdto"
 )
 
-func (uc *UC) UpdateUniqueImageBuild(
+func (uc *UC) UpdateUniqueImageBuildSettings(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *imagebuilddto.UpdateUniqueImageBuildReq,
-) (*imagebuilddto.UpdateUniqueImageBuildResp, error) {
+	req *imagebuildsettingsdto.UpdateUniqueImageBuildSettingsReq,
+) (*imagebuildsettingsdto.UpdateUniqueImageBuildSettingsResp, error) {
 	req.Type = currentSettingType
 	_, err := uc.UpdateUniqueSetting(ctx, &req.UpdateUniqueSettingReq, &settings.UpdateUniqueSettingData{
 		Name: string(currentSettingType),
@@ -35,5 +35,5 @@ func (uc *UC) UpdateUniqueImageBuild(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &imagebuilddto.UpdateUniqueImageBuildResp{}, nil
+	return &imagebuildsettingsdto.UpdateUniqueImageBuildSettingsResp{}, nil
 }

@@ -8,7 +8,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imagebuilduc/imagebuilddto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imagebuildsettingsuc/imagebuildsettingsdto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sslcertsettingsuc/sslcertsettingsdto"
 )
 
 //nolint:funlen
@@ -49,10 +50,15 @@ func (h *Handler) UpdateUniqueSettingMeta(
 	reqCtx := h.RequestCtx(ctx)
 
 	switch resType { //nolint:exhaustive
-	case base.ResourceTypeImageBuild:
-		r := imagebuilddto.NewUpdateUniqueImageBuildMetaReq()
+	case base.ResourceTypeImageBuildSettings:
+		r := imagebuildsettingsdto.NewUpdateUniqueImageBuildSettingsMetaReq()
 		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.ImageBuildUC.UpdateUniqueImageBuildMeta(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.ImageBuildUC.UpdateUniqueImageBuildSettingsMeta(reqCtx, auth, r) }
+
+	case base.ResourceTypeSSLCertSettings:
+		r := sslcertsettingsdto.NewUpdateUniqueSSLCertSettingsMetaReq()
+		r.Scope = scope
+		req, ucFunc = r, func() (any, error) { return h.SSLCertSettingsUC.UpdateUniqueSSLCertSettingsMeta(reqCtx, auth, r) }
 
 	default:
 		// NOTE: not implemented
