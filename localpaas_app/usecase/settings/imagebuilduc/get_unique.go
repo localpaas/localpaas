@@ -9,13 +9,13 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imagebuilduc/imagebuilddto"
 )
 
-func (uc *UC) GetImageBuild(
+func (uc *UC) GetUniqueImageBuild(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *imagebuilddto.GetImageBuildReq,
-) (*imagebuilddto.GetImageBuildResp, error) {
+	req *imagebuilddto.GetUniqueImageBuildReq,
+) (*imagebuilddto.GetUniqueImageBuildResp, error) {
 	req.Type = currentSettingType
-	resp, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
+	resp, err := uc.GetUniqueSetting(ctx, auth, &req.GetUniqueSettingReq, &settings.GetUniqueSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -25,7 +25,7 @@ func (uc *UC) GetImageBuild(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &imagebuilddto.GetImageBuildResp{
+	return &imagebuilddto.GetUniqueImageBuildResp{
 		Data: respData,
 	}, nil
 }

@@ -8,22 +8,21 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
-type UpdateImageBuildReq struct {
-	settings.UpdateSettingReq
-	*ImageBuildBaseReq
+type DeleteUniqueImageBuildReq struct {
+	settings.DeleteUniqueSettingReq
 }
 
-func NewUpdateImageBuildReq() *UpdateImageBuildReq {
-	return &UpdateImageBuildReq{}
+func NewDeleteUniqueImageBuildReq() *DeleteUniqueImageBuildReq {
+	return &DeleteUniqueImageBuildReq{}
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *UpdateImageBuildReq) Validate() apperrors.ValidationErrors {
+func (req *DeleteUniqueImageBuildReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, req.validate("")...)
+	validators = append(validators, req.DeleteUniqueSettingReq.Validate()...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type UpdateImageBuildResp struct {
+type DeleteUniqueImageBuildResp struct {
 	Meta *basedto.Meta `json:"meta"`
 }

@@ -16,7 +16,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/fileuc/filedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc/githubappdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/healthcheckuc/healthcheckdto"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imagebuilduc/imagebuilddto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc/imservicedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/notificationuc/notificationdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc/oauthdto"
@@ -160,14 +159,21 @@ func (h *Handler) ListSetting(
 		req, ucFunc = r, func() (any, error) { return h.NotificationUC.ListNotification(reqCtx, auth, r) }
 
 	case base.ResourceTypeImageBuild:
-		r := imagebuilddto.NewListImageBuildReq()
-		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.ImageBuildUC.ListImageBuild(reqCtx, auth, r) }
+		// NOTE: not implemented
+		err = apperrors.NewNotImplementedNT()
 
 	case base.ResourceTypeFile:
 		r := filedto.NewListFileReq()
 		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.FileUC.ListFile(reqCtx, auth, r) }
+
+	default:
+		// NOTE: not implemented
+		err = apperrors.NewNotImplementedNT()
+	}
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
 	}
 
 	if err = h.ParseAndValidateRequest(ctx, req, paging); err != nil {

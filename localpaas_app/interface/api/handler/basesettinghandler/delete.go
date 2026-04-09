@@ -16,7 +16,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/fileuc/filedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/githubappuc/githubappdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/healthcheckuc/healthcheckdto"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imagebuilduc/imagebuilddto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc/imservicedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/notificationuc/notificationdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/oauthuc/oauthdto"
@@ -160,14 +159,21 @@ func (h *Handler) DeleteSetting(
 		req, ucFunc = r, func() (any, error) { return h.NotificationUC.DeleteNotification(reqCtx, auth, r) }
 
 	case base.ResourceTypeImageBuild:
-		r := imagebuilddto.NewDeleteImageBuildReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.ImageBuildUC.DeleteImageBuild(reqCtx, auth, r) }
+		// NOTE: not implemented
+		err = apperrors.NewNotImplementedNT()
 
 	case base.ResourceTypeFile:
 		r := filedto.NewDeleteFileReq()
 		r.Scope, r.ID = scope, itemID
 		req, ucFunc = r, func() (any, error) { return h.FileUC.DeleteFile(reqCtx, auth, r) }
+
+	default:
+		// NOTE: not implemented
+		err = apperrors.NewNotImplementedNT()
+	}
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
 	}
 
 	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {

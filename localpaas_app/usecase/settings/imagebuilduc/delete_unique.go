@@ -9,16 +9,16 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imagebuilduc/imagebuilddto"
 )
 
-func (uc *UC) DeleteImageBuild(
+func (uc *UC) DeleteUniqueImageBuild(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *imagebuilddto.DeleteImageBuildReq,
-) (*imagebuilddto.DeleteImageBuildResp, error) {
+	req *imagebuilddto.DeleteUniqueImageBuildReq,
+) (*imagebuilddto.DeleteUniqueImageBuildResp, error) {
 	req.Type = currentSettingType
-	_, err := uc.DeleteSetting(ctx, &req.DeleteSettingReq, &settings.DeleteSettingData{})
+	_, err := uc.DeleteUniqueSetting(ctx, &req.DeleteUniqueSettingReq, &settings.DeleteUniqueSettingData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &imagebuilddto.DeleteImageBuildResp{}, nil
+	return &imagebuilddto.DeleteUniqueImageBuildResp{}, nil
 }

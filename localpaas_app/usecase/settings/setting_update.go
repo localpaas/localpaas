@@ -191,11 +191,9 @@ func (uc *BaseUC) persistSettingUpdate(
 	}
 
 	if data.DefaultMustUnique && !data.Setting.Default && persistingData.Setting.Default {
-		if data.DefaultMustUnique && persistingData.Setting.Default {
-			err = uc.ensureSettingDefaultUniqueness(ctx, db, &req.BaseSettingReq, persistingData.Setting)
-			if err != nil {
-				return apperrors.Wrap(err)
-			}
+		err = uc.ensureSettingDefaultUniqueness(ctx, db, &req.BaseSettingReq, persistingData.Setting)
+		if err != nil {
+			return apperrors.Wrap(err)
 		}
 	}
 

@@ -9475,142 +9475,6 @@
       }
     },
     "/projects/{projectID}/image-build" : {
-      "get" : {
-        "description" : "Lists image build settings",
-        "operationId" : "listProjectImageBuild",
-        "parameters" : [ {
-          "description" : "project ID",
-          "in" : "path",
-          "name" : "projectID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "`search=<target> (support *)`",
-          "in" : "query",
-          "name" : "search",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "`pageOffset=offset`",
-          "in" : "query",
-          "name" : "pageOffset",
-          "schema" : {
-            "type" : "integer"
-          }
-        }, {
-          "description" : "`pageLimit=limit`",
-          "in" : "query",
-          "name" : "pageLimit",
-          "schema" : {
-            "type" : "integer"
-          }
-        }, {
-          "description" : "`sort=[-]field1|field2...`",
-          "in" : "query",
-          "name" : "sort",
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.ListImageBuildResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Lists image build settings",
-        "tags" : [ "project_settings" ]
-      },
-      "post" : {
-        "description" : "Creates a new image build setting",
-        "operationId" : "createProjectImageBuild",
-        "parameters" : [ {
-          "description" : "project ID",
-          "in" : "path",
-          "name" : "projectID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "requestBody" : {
-          "content" : {
-            "*/*" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.CreateImageBuildReq"
-              }
-            }
-          },
-          "description" : "request data",
-          "required" : true
-        },
-        "responses" : {
-          "201" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.CreateImageBuildResp"
-                }
-              }
-            },
-            "description" : "Created"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Creates a new image build setting",
-        "tags" : [ "project_settings" ],
-        "x-codegen-request-body-name" : "body"
-      }
-    },
-    "/projects/{projectID}/image-build/{itemID}" : {
       "delete" : {
         "description" : "Deletes image build setting",
         "operationId" : "deleteProjectImageBuild",
@@ -9622,21 +9486,13 @@
           "schema" : {
             "type" : "string"
           }
-        }, {
-          "description" : "setting ID",
-          "in" : "path",
-          "name" : "itemID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
         } ],
         "responses" : {
           "200" : {
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.DeleteImageBuildResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.DeleteUniqueImageBuildResp"
                 }
               }
             },
@@ -9677,21 +9533,13 @@
           "schema" : {
             "type" : "string"
           }
-        }, {
-          "description" : "setting ID",
-          "in" : "path",
-          "name" : "itemID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
         } ],
         "responses" : {
           "200" : {
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.GetImageBuildResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.GetUniqueImageBuildResp"
                 }
               }
             },
@@ -9732,20 +9580,12 @@
           "schema" : {
             "type" : "string"
           }
-        }, {
-          "description" : "setting ID",
-          "in" : "path",
-          "name" : "itemID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
         } ],
         "requestBody" : {
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateImageBuildReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateUniqueImageBuildReq"
               }
             }
           },
@@ -9757,7 +9597,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateImageBuildResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateUniqueImageBuildResp"
                 }
               }
             },
@@ -9789,7 +9629,7 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/projects/{projectID}/image-build/{itemID}/meta" : {
+    "/projects/{projectID}/image-build/meta" : {
       "put" : {
         "description" : "Updates image build meta",
         "operationId" : "updateProjectImageBuildMeta",
@@ -9801,20 +9641,12 @@
           "schema" : {
             "type" : "string"
           }
-        }, {
-          "description" : "setting ID",
-          "in" : "path",
-          "name" : "itemID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
         } ],
         "requestBody" : {
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateImageBuildMetaReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateUniqueImageBuildMetaReq"
               }
             }
           },
@@ -9826,7 +9658,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateImageBuildMetaResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateUniqueImageBuildMetaResp"
                 }
               }
             },
@@ -15355,143 +15187,15 @@
       }
     },
     "/settings/image-build" : {
-      "get" : {
-        "description" : "Lists image build settings",
-        "operationId" : "listSettingImageBuild",
-        "parameters" : [ {
-          "description" : "`search=<target> (support *)`",
-          "in" : "query",
-          "name" : "search",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "`pageOffset=offset`",
-          "in" : "query",
-          "name" : "pageOffset",
-          "schema" : {
-            "type" : "integer"
-          }
-        }, {
-          "description" : "`pageLimit=limit`",
-          "in" : "query",
-          "name" : "pageLimit",
-          "schema" : {
-            "type" : "integer"
-          }
-        }, {
-          "description" : "`sort=[-]field1|field2...`",
-          "in" : "query",
-          "name" : "sort",
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.ListImageBuildResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Lists image build settings",
-        "tags" : [ "settings" ]
-      },
-      "post" : {
-        "description" : "Creates a new image build setting",
-        "operationId" : "createSettingImageBuild",
-        "requestBody" : {
-          "content" : {
-            "*/*" : {
-              "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.CreateImageBuildReq"
-              }
-            }
-          },
-          "description" : "request data",
-          "required" : true
-        },
-        "responses" : {
-          "201" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.CreateImageBuildResp"
-                }
-              }
-            },
-            "description" : "Created"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Creates a new image build setting",
-        "tags" : [ "settings" ],
-        "x-codegen-request-body-name" : "body"
-      }
-    },
-    "/settings/image-build/{itemID}" : {
       "delete" : {
         "description" : "Deletes image build setting",
         "operationId" : "deleteSettingImageBuild",
-        "parameters" : [ {
-          "description" : "setting ID",
-          "in" : "path",
-          "name" : "itemID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
         "responses" : {
           "200" : {
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.DeleteImageBuildResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.DeleteUniqueImageBuildResp"
                 }
               }
             },
@@ -15524,21 +15228,12 @@
       "get" : {
         "description" : "Gets image build setting details",
         "operationId" : "getSettingImageBuild",
-        "parameters" : [ {
-          "description" : "setting ID",
-          "in" : "path",
-          "name" : "itemID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
         "responses" : {
           "200" : {
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.GetImageBuildResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.GetUniqueImageBuildResp"
                 }
               }
             },
@@ -15571,20 +15266,11 @@
       "put" : {
         "description" : "Updates image build",
         "operationId" : "updateSettingImageBuild",
-        "parameters" : [ {
-          "description" : "setting ID",
-          "in" : "path",
-          "name" : "itemID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
         "requestBody" : {
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateImageBuildReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateUniqueImageBuildReq"
               }
             }
           },
@@ -15596,7 +15282,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateImageBuildResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateUniqueImageBuildResp"
                 }
               }
             },
@@ -15628,24 +15314,15 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/settings/image-build/{itemID}/meta" : {
+    "/settings/image-build/meta" : {
       "put" : {
         "description" : "Updates image build meta",
         "operationId" : "updateSettingImageBuildMeta",
-        "parameters" : [ {
-          "description" : "setting ID",
-          "in" : "path",
-          "name" : "itemID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
         "requestBody" : {
           "content" : {
             "*/*" : {
               "schema" : {
-                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateImageBuildMetaReq"
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateUniqueImageBuildMetaReq"
               }
             }
           },
@@ -15657,7 +15334,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateImageBuildMetaResp"
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateUniqueImageBuildMetaResp"
                 }
               }
             },
@@ -20941,7 +20618,7 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 86400000000000, 604800000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 86400000000000, 604800000000000 ],
         "format" : "int64",
         "type" : "integer",
         "x-enum-varnames" : [ "Day", "Week" ]
@@ -26692,40 +26369,7 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.CreateImageBuildReq" : {
-        "properties" : {
-          "availableInProjects" : {
-            "type" : "boolean"
-          },
-          "default" : {
-            "type" : "boolean"
-          },
-          "noCache" : {
-            "type" : "boolean"
-          },
-          "noVerbose" : {
-            "type" : "boolean"
-          },
-          "resources" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.ImageBuildResourcesReq"
-          }
-        },
-        "required" : [ "availableInProjects", "default", "noCache", "noVerbose", "resources" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.CreateImageBuildResp" : {
-        "properties" : {
-          "data" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
-          },
-          "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
-          }
-        },
-        "required" : [ "data", "meta" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.DeleteImageBuildResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.DeleteUniqueImageBuildResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
@@ -26734,7 +26378,7 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.GetImageBuildResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.GetUniqueImageBuildResp" : {
         "properties" : {
           "data" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.ImageBuildResp"
@@ -26833,22 +26477,7 @@
         "required" : [ "createdAt", "id", "name", "noCache", "noVerbose", "resources", "status", "type", "updateVer", "updatedAt" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.ListImageBuildResp" : {
-        "properties" : {
-          "data" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.ImageBuildResp"
-            },
-            "type" : "array"
-          },
-          "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
-          }
-        },
-        "required" : [ "data", "meta" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateImageBuildMetaReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateUniqueImageBuildMetaReq" : {
         "properties" : {
           "availableInProjects" : {
             "type" : "boolean"
@@ -26869,7 +26498,7 @@
         "required" : [ "availableInProjects", "default", "expireAt", "status", "updateVer" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateImageBuildMetaResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateUniqueImageBuildMetaResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
@@ -26878,7 +26507,7 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateImageBuildReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateUniqueImageBuildReq" : {
         "properties" : {
           "availableInProjects" : {
             "type" : "boolean"
@@ -26902,7 +26531,7 @@
         "required" : [ "availableInProjects", "default", "noCache", "noVerbose", "resources", "updateVer" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateImageBuildResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuilduc_imagebuilddto.UpdateUniqueImageBuildResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"

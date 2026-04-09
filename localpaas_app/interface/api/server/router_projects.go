@@ -176,12 +176,10 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 
 	{ // Image build group
 		imageBuildGroup := projectGroup.Group("/:projectID/image-build")
-		imageBuildGroup.GET("/:itemID", projectHandler.GetImageBuild)
-		imageBuildGroup.GET("", projectHandler.ListImageBuild)
-		imageBuildGroup.POST("", projectHandler.CreateImageBuild)
-		imageBuildGroup.PUT("/:itemID", projectHandler.UpdateImageBuild)
-		imageBuildGroup.PUT("/:itemID/meta", projectHandler.UpdateImageBuildMeta)
-		imageBuildGroup.DELETE("/:itemID", projectHandler.DeleteImageBuild)
+		imageBuildGroup.GET("", projectHandler.GetUniqueImageBuild)
+		imageBuildGroup.PUT("", projectHandler.UpdateUniqueImageBuild)
+		imageBuildGroup.PUT("/meta", projectHandler.UpdateUniqueImageBuildMeta)
+		imageBuildGroup.DELETE("", projectHandler.DeleteUniqueImageBuild)
 	}
 
 	{ // Docker network group

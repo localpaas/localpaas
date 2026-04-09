@@ -9,24 +9,16 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imagebuilduc/imagebuilddto"
 )
 
-func (uc *UC) ListImageBuild(
+func (uc *UC) UpdateUniqueImageBuildMeta(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *imagebuilddto.ListImageBuildReq,
-) (*imagebuilddto.ListImageBuildResp, error) {
+	req *imagebuilddto.UpdateUniqueImageBuildMetaReq,
+) (*imagebuilddto.UpdateUniqueImageBuildMetaResp, error) {
 	req.Type = currentSettingType
-	resp, err := uc.ListSetting(ctx, auth, &req.ListSettingReq, &settings.ListSettingData{})
+	_, err := uc.UpdateUniqueSettingMeta(ctx, &req.UpdateUniqueSettingMetaReq, &settings.UpdateUniqueSettingMetaData{})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	respData, err := imagebuilddto.TransformImageBuilds(resp.Data, resp.RefObjects)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-
-	return &imagebuilddto.ListImageBuildResp{
-		Meta: resp.Meta,
-		Data: respData,
-	}, nil
+	return &imagebuilddto.UpdateUniqueImageBuildMetaResp{}, nil
 }

@@ -10,21 +10,21 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
-type GetImageBuildReq struct {
-	settings.GetSettingReq
+type GetUniqueImageBuildReq struct {
+	settings.GetUniqueSettingReq
 }
 
-func NewGetImageBuildReq() *GetImageBuildReq {
-	return &GetImageBuildReq{}
+func NewGetUniqueImageBuildReq() *GetUniqueImageBuildReq {
+	return &GetUniqueImageBuildReq{}
 }
 
-func (req *GetImageBuildReq) Validate() apperrors.ValidationErrors {
+func (req *GetUniqueImageBuildReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, req.GetSettingReq.Validate()...)
+	validators = append(validators, req.GetUniqueSettingReq.Validate()...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type GetImageBuildResp struct {
+type GetUniqueImageBuildResp struct {
 	Meta *basedto.Meta   `json:"meta"`
 	Data *ImageBuildResp `json:"data"`
 }

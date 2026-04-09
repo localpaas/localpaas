@@ -10,20 +10,21 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imagebuilduc/imagebuilddto"
 )
 
-func (uc *UC) UpdateImageBuildMeta(
+func (uc *UC) UpdateUniqueImageBuild(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *imagebuilddto.UpdateImageBuildMetaReq,
-) (*imagebuilddto.UpdateImageBuildMetaResp, error) {
+	req *imagebuilddto.UpdateUniqueImageBuildReq,
+) (*imagebuilddto.UpdateUniqueImageBuildResp, error) {
 	req.Type = currentSettingType
-	_, err := uc.UpdateSettingMeta(ctx, &req.UpdateSettingMetaReq, &settings.UpdateSettingMetaData{
-		AfterPersisting: func(
+	_, err := uc.UpdateUniqueSetting(ctx, &req.UpdateUniqueSettingReq, &settings.UpdateUniqueSettingData{
+		Name: string(currentSettingType),
+		PrepareUpdate: func(
 			ctx context.Context,
 			db database.Tx,
-			data *settings.UpdateSettingMetaData,
-			pData *settings.PersistingSettingMetaData,
+			data *settings.UpdateUniqueSettingData,
+			pData *settings.PersistingSettingData,
 		) error {
-			err := uc.SettingRepo.EnsureUnique(ctx, db, req.Scope, req.Type)
+			err := pData.Setting.SetData(req.ToEntity())
 			if err != nil {
 				return apperrors.Wrap(err)
 			}
@@ -34,5 +35,5 @@ func (uc *UC) UpdateImageBuildMeta(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &imagebuilddto.UpdateImageBuildMetaResp{}, nil
+	return &imagebuilddto.UpdateUniqueImageBuildResp{}, nil
 }

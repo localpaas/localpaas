@@ -17,9 +17,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
 )
 
-type UpdateSettingMetaReq struct {
+type UpdateUniqueSettingMetaReq struct {
 	BaseSettingReq
-	ID                  string              `json:"-"`
 	Status              *base.SettingStatus `json:"status"`
 	ExpireAt            *time.Time          `json:"expireAt"`
 	AvailableInProjects *bool               `json:"availableInProjects"`
@@ -27,33 +26,28 @@ type UpdateSettingMetaReq struct {
 	UpdateVer           int                 `json:"updateVer"`
 }
 
-type UpdateSettingMetaResp struct {
+type UpdateUniqueSettingMetaResp struct {
 	Meta *basedto.Meta `json:"meta"`
 }
 
-type UpdateSettingMetaData struct {
+type UpdateUniqueSettingMetaData struct {
 	Setting *entity.Setting
 
-	DefaultMustUnique bool
-	ExtraLoadOpts     []bunex.SelectQueryOption
+	ExtraLoadOpts []bunex.SelectQueryOption
 
-	Load             func(context.Context, database.Tx, *UpdateSettingMetaData) error
-	AfterLoading     func(context.Context, database.Tx, *UpdateSettingMetaData) error
-	BeforePersisting func(context.Context, database.Tx, *UpdateSettingMetaData, *PersistingSettingMetaData) error
-	AfterPersisting  func(context.Context, database.Tx, *UpdateSettingMetaData, *PersistingSettingMetaData) error
+	Load             func(context.Context, database.Tx, *UpdateUniqueSettingMetaData) error
+	AfterLoading     func(context.Context, database.Tx, *UpdateUniqueSettingMetaData) error
+	BeforePersisting func(context.Context, database.Tx, *UpdateUniqueSettingMetaData, *PersistingSettingMetaData) error
+	AfterPersisting  func(context.Context, database.Tx, *UpdateUniqueSettingMetaData, *PersistingSettingMetaData) error
 }
 
-type PersistingSettingMetaData struct {
-	Setting *entity.Setting
-}
-
-func (uc *BaseUC) UpdateSettingMeta(
+func (uc *BaseUC) UpdateUniqueSettingMeta(
 	ctx context.Context,
-	req *UpdateSettingMetaReq,
-	data *UpdateSettingMetaData,
-) (*UpdateSettingMetaResp, error) {
+	req *UpdateUniqueSettingMetaReq,
+	data *UpdateUniqueSettingMetaData,
+) (*UpdateUniqueSettingMetaResp, error) {
 	err := transaction.Execute(ctx, uc.DB, func(db database.Tx) error {
-		err := uc.loadSettingForUpdateMeta(ctx, db, req, data)
+		err := uc.loadUniqueSettingForUpdateMeta(ctx, db, req, data)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -65,14 +59,14 @@ func (uc *BaseUC) UpdateSettingMeta(
 		}
 
 		persistingData := &PersistingSettingMetaData{}
-		uc.prepareSettingMetaUpdate(req, data, persistingData)
+		uc.prepareUniqueSettingMetaUpdate(req, data, persistingData)
 		if data.BeforePersisting != nil {
 			if err := data.BeforePersisting(ctx, db, data, persistingData); err != nil {
 				return apperrors.Wrap(err)
 			}
 		}
 
-		err = uc.persistSettingMetaUpdate(ctx, db, req, data, persistingData)
+		err = uc.persistUniqueSettingMetaUpdate(ctx, db, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -98,14 +92,14 @@ func (uc *BaseUC) UpdateSettingMeta(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &UpdateSettingMetaResp{}, nil
+	return &UpdateUniqueSettingMetaResp{}, nil
 }
 
-func (uc *BaseUC) loadSettingForUpdateMeta(
+func (uc *BaseUC) loadUniqueSettingForUpdateMeta(
 	ctx context.Context,
 	db database.Tx,
-	req *UpdateSettingMetaReq,
-	data *UpdateSettingMetaData,
+	req *UpdateUniqueSettingMetaReq,
+	data *UpdateUniqueSettingMetaData,
 ) (err error) {
 	if data.Load != nil {
 		err = data.Load(ctx, db, data)
@@ -118,7 +112,7 @@ func (uc *BaseUC) loadSettingForUpdateMeta(
 		}
 		loadOpts = append(loadOpts, data.ExtraLoadOpts...)
 
-		setting, err := uc.loadSettingByID(ctx, db, &req.BaseSettingReq, req.ID,
+		setting, err := uc.SettingRepo.GetSingle(ctx, db, req.Scope, req.Type,
 			false, loadOpts...)
 		if err != nil {
 			return apperrors.Wrap(err)
@@ -139,9 +133,9 @@ func (uc *BaseUC) loadSettingForUpdateMeta(
 	return nil
 }
 
-func (uc *BaseUC) prepareSettingMetaUpdate(
-	req *UpdateSettingMetaReq,
-	data *UpdateSettingMetaData,
+func (uc *BaseUC) prepareUniqueSettingMetaUpdate(
+	req *UpdateUniqueSettingMetaReq,
+	data *UpdateUniqueSettingMetaData,
 	persistingData *PersistingSettingMetaData,
 ) {
 	timeNow := timeutil.NowUTC()
@@ -166,11 +160,9 @@ func (uc *BaseUC) prepareSettingMetaUpdate(
 	persistingData.Setting = setting
 }
 
-func (uc *BaseUC) persistSettingMetaUpdate(
+func (uc *BaseUC) persistUniqueSettingMetaUpdate(
 	ctx context.Context,
 	db database.IDB,
-	req *UpdateSettingMetaReq,
-	data *UpdateSettingMetaData,
 	persistingData *PersistingSettingMetaData,
 ) error {
 	err := uc.SettingRepo.Update(ctx, db, persistingData.Setting,
@@ -179,13 +171,5 @@ func (uc *BaseUC) persistSettingMetaUpdate(
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-
-	if data.DefaultMustUnique && !data.Setting.Default && persistingData.Setting.Default {
-		err = uc.ensureSettingDefaultUniqueness(ctx, db, &req.BaseSettingReq, persistingData.Setting)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
-	}
-
 	return nil
 }

@@ -1,7 +1,12 @@
 package imagebuilduc
 
 import (
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
+)
+
+const (
+	currentSettingType = base.SettingTypeImageBuild
 )
 
 type UC struct {

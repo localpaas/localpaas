@@ -15,42 +15,35 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
 )
 
-type DeleteSettingReq struct {
+type DeleteUniqueSettingReq struct {
 	BaseSettingReq
-	ID string `json:"-" mapstructure:"-"`
 }
 
-func (req *DeleteSettingReq) Validate() (validators []vld.Validator) {
-	validators = append(validators, basedto.ValidateID(&req.ID, true, "id")...)
+func (req *DeleteUniqueSettingReq) Validate() (validators []vld.Validator) {
 	return
 }
 
-type DeleteSettingResp struct {
+type DeleteUniqueSettingResp struct {
 	Meta *basedto.Meta `json:"meta"`
 }
 
-type DeleteSettingData struct {
+type DeleteUniqueSettingData struct {
 	Setting              *entity.Setting
 	ProjectSharedSetting *entity.ProjectSharedSetting
 	ExtraLoadOpts        []bunex.SelectQueryOption
 
-	AfterLoading     func(context.Context, database.Tx, *DeleteSettingData) error
-	BeforePersisting func(context.Context, database.Tx, *DeleteSettingData, *PersistingSettingDeletionData) error
-	AfterPersisting  func(context.Context, database.Tx, *DeleteSettingData, *PersistingSettingDeletionData) error
+	AfterLoading     func(context.Context, database.Tx, *DeleteUniqueSettingData) error
+	BeforePersisting func(context.Context, database.Tx, *DeleteUniqueSettingData, *PersistingSettingDeletionData) error
+	AfterPersisting  func(context.Context, database.Tx, *DeleteUniqueSettingData, *PersistingSettingDeletionData) error
 }
 
-type PersistingSettingDeletionData struct {
-	Setting              *entity.Setting
-	ProjectSharedSetting *entity.ProjectSharedSetting
-}
-
-func (uc *BaseUC) DeleteSetting(
+func (uc *BaseUC) DeleteUniqueSetting(
 	ctx context.Context,
-	req *DeleteSettingReq,
-	data *DeleteSettingData,
-) (*DeleteSettingResp, error) {
+	req *DeleteUniqueSettingReq,
+	data *DeleteUniqueSettingData,
+) (*DeleteUniqueSettingResp, error) {
 	err := transaction.Execute(ctx, uc.DB, func(db database.Tx) error {
-		err := uc.loadSettingForDeletion(ctx, db, req, data)
+		err := uc.loadUniqueSettingForDeletion(ctx, db, req, data)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -62,7 +55,7 @@ func (uc *BaseUC) DeleteSetting(
 		}
 
 		persistingData := &PersistingSettingDeletionData{}
-		uc.prepareSettingDeletion(req, data, persistingData)
+		uc.prepareUniqueSettingDeletion(req, data, persistingData)
 		if data.BeforePersisting != nil {
 			if err := data.BeforePersisting(ctx, db, data, persistingData); err != nil {
 				return apperrors.Wrap(err)
@@ -92,22 +85,21 @@ func (uc *BaseUC) DeleteSetting(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &DeleteSettingResp{}, nil
+	return &DeleteUniqueSettingResp{}, nil
 }
 
-func (uc *BaseUC) loadSettingForDeletion(
+func (uc *BaseUC) loadUniqueSettingForDeletion(
 	ctx context.Context,
 	db database.IDB,
-	req *DeleteSettingReq,
-	data *DeleteSettingData,
+	req *DeleteUniqueSettingReq,
+	data *DeleteUniqueSettingData,
 ) (err error) {
 	loadOpts := []bunex.SelectQueryOption{
 		bunex.SelectFor("UPDATE OF setting"),
 	}
 	loadOpts = append(loadOpts, data.ExtraLoadOpts...)
 
-	setting, err := uc.loadSettingByID(ctx, db, &req.BaseSettingReq, req.ID,
-		false, loadOpts...)
+	setting, err := uc.SettingRepo.GetSingle(ctx, db, req.Scope, req.Type, false, loadOpts...)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -115,7 +107,7 @@ func (uc *BaseUC) loadSettingForDeletion(
 
 	// The setting was imported to project from global
 	if setting.ObjectID == "" && req.Scope.IsProjectScope() {
-		data.ProjectSharedSetting, err = uc.ProjectSharedSettingRepo.Get(ctx, db, req.Scope.ProjectID, req.ID)
+		data.ProjectSharedSetting, err = uc.ProjectSharedSettingRepo.Get(ctx, db, req.Scope.ProjectID, setting.ID)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -124,9 +116,9 @@ func (uc *BaseUC) loadSettingForDeletion(
 	return nil
 }
 
-func (uc *BaseUC) prepareSettingDeletion(
-	_ *DeleteSettingReq,
-	data *DeleteSettingData,
+func (uc *BaseUC) prepareUniqueSettingDeletion(
+	_ *DeleteUniqueSettingReq,
+	data *DeleteUniqueSettingData,
 	persistingData *PersistingSettingDeletionData,
 ) {
 	timeNow := timeutil.NowUTC()
@@ -138,36 +130,4 @@ func (uc *BaseUC) prepareSettingDeletion(
 		data.Setting.DeletedAt = timeNow
 		persistingData.Setting = data.Setting
 	}
-}
-
-func (uc *BaseUC) persistSettingDeletion(
-	ctx context.Context,
-	db database.IDB,
-	persistingData *PersistingSettingDeletionData,
-) (err error) {
-	if persistingData.ProjectSharedSetting != nil {
-		err = uc.ProjectSharedSettingRepo.Update(ctx, db, persistingData.ProjectSharedSetting,
-			bunex.UpdateColumns("deleted_at"),
-		)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
-		return nil
-	}
-
-	err = uc.SettingRepo.Update(ctx, db, persistingData.Setting,
-		bunex.UpdateColumns("deleted_at"),
-	)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	// If deleted item is global, delete all references from projects
-	if persistingData.Setting.ObjectID == "" {
-		err = uc.ProjectSharedSettingRepo.DeleteAllBySetting(ctx, db, persistingData.Setting.ID)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
-	}
-	return nil
 }
