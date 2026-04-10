@@ -14,7 +14,7 @@ const (
 )
 
 type CreateVolumeReq struct {
-	ProjectID       string            `json:"projectID"`
+	ProjectID       string            `json:"projectId"`
 	AvailInProjects bool              `json:"availableInProjects"`
 	Name            string            `json:"name"`
 	Driver          base.VolumeDriver `json:"driver"`
@@ -47,7 +47,7 @@ func NewCreateVolumeReq() *CreateVolumeReq {
 
 func (req *CreateVolumeReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, basedto.ValidateID(&req.ProjectID, false, "projectID")...)
+	validators = append(validators, basedto.ValidateID(&req.ProjectID, false, "projectId")...)
 	validators = append(validators, basedto.ValidateStr(&req.Name, true, 1, volumeNameMaxLen, "name")...)
 	validators = append(validators, basedto.ValidateStrIn(&req.Driver, true, base.AllVolumeDrivers, "driver")...)
 	validators = append(validators, basedto.ValidateStrIn(&req.Type, true, base.AllVolumeTypes, "type")...)

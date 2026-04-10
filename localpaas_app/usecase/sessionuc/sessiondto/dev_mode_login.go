@@ -7,7 +7,7 @@ import (
 )
 
 type DevModeLoginReq struct {
-	UserID string `mapstructure:"userID"`
+	UserID string `mapstructure:"userId"`
 }
 
 func NewDevModeLoginReq() *DevModeLoginReq {

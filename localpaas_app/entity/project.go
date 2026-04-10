@@ -20,7 +20,7 @@ type Project struct {
 	Photo     string             `bun:",nullzero" json:"photo"`
 	Status    base.ProjectStatus `json:"status"`
 	Note      string             `bun:",nullzero" json:"note"`
-	OwnerID   string             `json:"ownerID"`
+	OwnerID   string             `json:"ownerId"`
 	UpdateVer int                `json:"updateVer"`
 
 	CreatedAt time.Time `bun:",default:current_timestamp" json:"createdAt"`

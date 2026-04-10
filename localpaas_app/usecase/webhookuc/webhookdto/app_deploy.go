@@ -21,7 +21,7 @@ type DeployAppReq struct {
 	ImageSource         *DeploymentImageSourceReq `json:"imageSource"`
 	RepoSource          *DeploymentRepoSourceReq  `json:"repoSource"`
 	ActiveMethod        base.DeploymentMethod     `json:"activeMethod"`
-	DeploymentTriggerID string                    `json:"deploymentTriggerID"`
+	DeploymentTriggerID string                    `json:"deploymentTriggerId"`
 }
 
 func (req *DeployAppReq) ApplyTo(setting *entity.AppDeploymentSettings) error {
@@ -113,5 +113,5 @@ type DeployAppResp struct {
 }
 
 type DeployAppDataResp struct {
-	DeploymentID string `json:"deploymentID"`
+	DeploymentID string `json:"deploymentId"`
 }

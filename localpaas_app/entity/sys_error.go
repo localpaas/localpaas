@@ -6,7 +6,7 @@ import (
 
 type SysError struct {
 	ID         string `bun:",pk" json:"id"`
-	RequestID  string `json:"requestID"`
+	RequestID  string `json:"requestId"`
 	Status     int    `json:"status"`
 	Code       string `json:"code"`
 	Detail     string `json:"detail"`

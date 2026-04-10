@@ -18,8 +18,8 @@ func NewDeleteNetworkReq() *DeleteNetworkReq {
 
 func (req *DeleteNetworkReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, basedto.ValidateStr(&req.NetworkID, true, 1, networkIDMaxLen, "networkID")...)
-	validators = append(validators, basedto.ValidateID(&req.ProjectID, false, "projectID")...)
+	validators = append(validators, basedto.ValidateStr(&req.NetworkID, true, 1, networkIDMaxLen, "networkId")...)
+	validators = append(validators, basedto.ValidateID(&req.ProjectID, false, "projectId")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 

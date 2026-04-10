@@ -14,9 +14,9 @@ var (
 
 type ACLPermission struct {
 	SubjectType  base.SubjectType   `json:"subjectType"`
-	SubjectID    string             `bun:",pk" json:"subjectID"`
+	SubjectID    string             `bun:",pk" json:"subjectId"`
 	ResourceType base.ResourceType  `json:"resourceType"`
-	ResourceID   string             `bun:",pk" json:"resourceID"`
+	ResourceID   string             `bun:",pk" json:"resourceId"`
 	Actions      base.AccessActions `bun:"embed:action_" json:"actions"`
 
 	CreatedAt time.Time `bun:",default:current_timestamp" json:"createdAt"`

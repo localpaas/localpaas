@@ -21,13 +21,13 @@ func (s *githubAppParser) New() SettingData {
 }
 
 type GithubApp struct {
-	ClientID       string         `json:"clientID"`
+	ClientID       string         `json:"clientId"`
 	ClientSecret   EncryptedField `json:"clientSecret"`
 	Organization   string         `json:"org"`
 	WebhookURL     string         `json:"webhookURL"`
 	WebhookSecret  string         `json:"webhookSecret"`
-	AppID          int64          `json:"appID"`
-	InstallationID int64          `json:"installationID"`
+	AppID          int64          `json:"appId"`
+	InstallationID int64          `json:"installationId"`
 	PrivateKey     EncryptedField `json:"privateKey"`
 	SSOEnabled     bool           `json:"ssoEnabled"`
 }

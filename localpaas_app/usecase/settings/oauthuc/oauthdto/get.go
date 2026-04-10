@@ -35,7 +35,7 @@ type GetOAuthResp struct {
 
 type OAuthResp struct {
 	*settings.BaseSettingResp
-	ClientID     string   `json:"clientID"`
+	ClientID     string   `json:"clientId"`
 	ClientSecret string   `json:"clientSecret"`
 	Organization string   `json:"organization"`
 	CallbackURL  string   `json:"callbackURL"`

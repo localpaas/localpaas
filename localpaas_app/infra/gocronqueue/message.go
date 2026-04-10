@@ -13,5 +13,5 @@ const (
 
 type SchedMessage struct {
 	SchedTasks     []*entity.Task `json:"schedTasks,omitempty"`
-	UnschedTaskIDs []string       `json:"unschedTaskIDs,omitempty"`
+	UnschedTaskIDs []string       `json:"unschedTaskIds,omitempty"`
 }

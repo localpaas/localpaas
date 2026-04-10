@@ -26,9 +26,9 @@ type App struct {
 	ID        string         `bun:",pk" json:"id"`
 	Name      string         `json:"name"`
 	Key       string         `json:"key"`
-	ProjectID string         `json:"projectID"`
-	ParentID  string         `bun:",nullzero" json:"parentID"`
-	ServiceID string         `bun:",nullzero" json:"serviceID"`
+	ProjectID string         `json:"projectId"`
+	ParentID  string         `bun:",nullzero" json:"parentId"`
+	ServiceID string         `bun:",nullzero" json:"serviceId"`
 	Status    base.AppStatus `json:"status"`
 	Token     string         `json:"token"`
 	Note      string         `bun:",nullzero" json:"note"`

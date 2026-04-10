@@ -20,7 +20,7 @@ const (
 type LoginWithPasswordReq struct {
 	Username        string `json:"username"`
 	Password        string `json:"password"`
-	TrustedDeviceID string `json:"trustedDeviceID"`
+	TrustedDeviceID string `json:"trustedDeviceId"`
 
 	AcceptLanguage translation.Lang `json:"-"`
 }

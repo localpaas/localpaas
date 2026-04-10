@@ -41,7 +41,7 @@ type CloudStorageS3Req struct {
 }
 
 type CloudProviderAWSReq struct {
-	AccessKeyID string `json:"accessKeyID"`
+	AccessKeyID string `json:"accessKeyId"`
 	SecretKey   string `json:"secretKey"`
 	Region      string `json:"region"`
 }

@@ -77,7 +77,7 @@ func (req *DomainReq) validate(field string) (res []vld.Validator) {
 		false, field+"domain")...)
 	res = append(res, basedto.ValidateDomain(&req.DomainRedirect, false, base.DomainNameMaxLen,
 		false, field+"domainRedirect")...)
-	res = append(res, basedto.ValidatePort(&req.ContainerPort, true, 1,field+"containerPort")...)
+	res = append(res, basedto.ValidatePort(&req.ContainerPort, true, 1, field+"containerPort")...)
 	// TODO: validate other config
 	// TODO: validate paths
 	return res
@@ -191,8 +191,8 @@ func NewUpdateAppHttpSettingsReq() *UpdateAppHttpSettingsReq {
 // Validate implements interface basedto.ReqValidator
 func (req *UpdateAppHttpSettingsReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, basedto.ValidateID(&req.ProjectID, true, "projectID")...)
-	validators = append(validators, basedto.ValidateID(&req.AppID, true, "appID")...)
+	validators = append(validators, basedto.ValidateID(&req.ProjectID, true, "projectId")...)
+	validators = append(validators, basedto.ValidateID(&req.AppID, true, "appId")...)
 	validators = append(validators, vld.Slice(req.Domains).ForEach(
 		func(r *DomainReq, index int, elemValidator vld.ItemValidator) {
 			elemValidator.Validate(r.validate(fmt.Sprintf("domains[%d]", index))...)

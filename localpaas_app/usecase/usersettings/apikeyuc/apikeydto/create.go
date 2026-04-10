@@ -45,6 +45,6 @@ type CreateAPIKeyResp struct {
 
 type APIKeyDataResp struct {
 	ID        string `json:"id"`
-	KeyID     string `json:"keyID"`
+	KeyID     string `json:"keyId"`
 	SecretKey string `json:"secretKey"`
 }

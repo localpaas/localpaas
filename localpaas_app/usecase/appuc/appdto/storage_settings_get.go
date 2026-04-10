@@ -20,8 +20,8 @@ func NewGetAppStorageSettingsReq() *GetAppStorageSettingsReq {
 
 func (req *GetAppStorageSettingsReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, basedto.ValidateID(&req.ProjectID, true, "projectID")...)
-	validators = append(validators, basedto.ValidateID(&req.AppID, true, "appID")...)
+	validators = append(validators, basedto.ValidateID(&req.ProjectID, true, "projectId")...)
+	validators = append(validators, basedto.ValidateID(&req.AppID, true, "appId")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 

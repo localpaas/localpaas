@@ -8,7 +8,7 @@ import (
 type MFATokenClaims struct {
 	jwtsession.BaseClaims
 	Kind            string       `json:"kind"`
-	UserID          string       `json:"userID"`
+	UserID          string       `json:"userId"`
 	MFAType         base.MFAType `json:"mfaType"`
-	TrustedDeviceID string       `json:"deviceID,omitempty"`
+	TrustedDeviceID string       `json:"deviceId,omitempty"`
 }

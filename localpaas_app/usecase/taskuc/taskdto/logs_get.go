@@ -26,7 +26,7 @@ func NewGetTaskLogsReq() *GetTaskLogsReq {
 
 func (req *GetTaskLogsReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, basedto.ValidateID(&req.TaskID, true, "taskID")...)
+	validators = append(validators, basedto.ValidateID(&req.TaskID, true, "taskId")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 

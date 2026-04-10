@@ -25,7 +25,7 @@ var (
 
 type Task struct {
 	ID        string          `bun:",pk" json:"id"`
-	TargetID  string          `bun:",nullzero" json:"targetID"`
+	TargetID  string          `bun:",nullzero" json:"targetId"`
 	Type      base.TaskType   `json:"type"`
 	Status    base.TaskStatus `json:"status"`
 	Config    TaskConfig      `bun:",nullzero" json:"config"`

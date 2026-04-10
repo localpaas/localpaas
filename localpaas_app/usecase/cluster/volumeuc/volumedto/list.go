@@ -28,7 +28,7 @@ func NewListVolumeReq() *ListVolumeReq {
 
 func (req *ListVolumeReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, basedto.ValidateID(&req.ProjectID, false, "projectID")...)
+	validators = append(validators, basedto.ValidateID(&req.ProjectID, false, "projectId")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 

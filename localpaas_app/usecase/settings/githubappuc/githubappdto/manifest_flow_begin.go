@@ -34,5 +34,5 @@ type BeginGithubAppManifestFlowResp struct {
 
 type BeginGithubAppManifestFlowDataResp struct {
 	RedirectURL string `json:"redirectURL"`
-	SettingID   string `json:"settingID"`
+	SettingID   string `json:"settingId"`
 }

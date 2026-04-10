@@ -21164,10 +21164,10 @@
           "note" : {
             "type" : "string"
           },
-          "parentID" : {
+          "parentId" : {
             "type" : "string"
           },
-          "projectID" : {
+          "projectId" : {
             "type" : "string"
           },
           "stats" : {
@@ -21197,7 +21197,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "id", "key", "name", "note", "parentID", "projectID", "stats", "status", "tags", "token", "updateVer", "updatedAt" ],
+        "required" : [ "createdAt", "id", "key", "name", "note", "parentId", "projectId", "stats", "status", "tags", "token", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppRuntimeLogsDataResp" : {
@@ -23103,11 +23103,11 @@
             },
             "type" : "object"
           },
-          "projectID" : {
+          "projectId" : {
             "type" : "string"
           }
         },
-        "required" : [ "attachable", "availableInProjects", "driver", "enableIPv4", "enableIPv6", "ingress", "internal", "labels", "name", "options", "projectID" ],
+        "required" : [ "attachable", "availableInProjects", "driver", "enableIPv4", "enableIPv6", "ingress", "internal", "labels", "name", "options", "projectId" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_networkuc_networkdto.CreateNetworkResp" : {
@@ -23502,7 +23502,7 @@
           "nfsOpts" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_cluster_volumeuc_volumedto.VolumeNfsOptsReq"
           },
-          "projectID" : {
+          "projectId" : {
             "type" : "string"
           },
           "source" : {
@@ -23512,7 +23512,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.VolumeType"
           }
         },
-        "required" : [ "availableInProjects", "driver", "extraDriverOpts", "labels", "name", "nfsOpts", "projectID", "source", "type" ],
+        "required" : [ "availableInProjects", "driver", "extraDriverOpts", "labels", "name", "nfsOpts", "projectId", "source", "type" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_volumeuc_volumedto.CreateVolumeResp" : {
@@ -24207,14 +24207,14 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.LoginWithAPIKeyReq" : {
         "properties" : {
-          "keyID" : {
+          "keyId" : {
             "type" : "string"
           },
           "secretKey" : {
             "type" : "string"
           }
         },
-        "required" : [ "keyID", "secretKey" ],
+        "required" : [ "keyId", "secretKey" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.LoginWithAPIKeyResp" : {
@@ -24283,14 +24283,14 @@
           "password" : {
             "type" : "string"
           },
-          "trustedDeviceID" : {
+          "trustedDeviceId" : {
             "type" : "string"
           },
           "username" : {
             "type" : "string"
           }
         },
-        "required" : [ "password", "trustedDeviceID", "username" ],
+        "required" : [ "password", "trustedDeviceId", "username" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_sessionuc_sessiondto.LoginWithPasswordResp" : {
@@ -24847,7 +24847,7 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudstorageuc_cloudstoragedto.CloudStorageS3Req" : {
         "properties" : {
-          "accessKeyID" : {
+          "accessKeyId" : {
             "type" : "string"
           },
           "bucket" : {
@@ -24863,12 +24863,12 @@
             "type" : "string"
           }
         },
-        "required" : [ "accessKeyID", "bucket", "endpoint", "region", "secretKey" ],
+        "required" : [ "accessKeyId", "bucket", "endpoint", "region", "secretKey" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudstorageuc_cloudstoragedto.CloudStorageS3Resp" : {
         "properties" : {
-          "accessKeyID" : {
+          "accessKeyId" : {
             "type" : "string"
           },
           "bucket" : {
@@ -24884,7 +24884,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "accessKeyID", "bucket", "endpoint", "region", "secretKey" ],
+        "required" : [ "accessKeyId", "bucket", "endpoint", "region", "secretKey" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_cloudstorageuc_cloudstoragedto.CreateCloudStorageReq" : {
@@ -26212,7 +26212,7 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.AppInstallationResp" : {
         "properties" : {
-          "appID" : {
+          "appId" : {
             "type" : "integer"
           },
           "appSlug" : {
@@ -26221,11 +26221,11 @@
           "id" : {
             "type" : "integer"
           },
-          "nodeID" : {
+          "nodeId" : {
             "type" : "string"
           }
         },
-        "required" : [ "appID", "appSlug", "id", "nodeID" ],
+        "required" : [ "appId", "appSlug", "id", "nodeId" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.BeginGithubAppManifestFlowDataResp" : {
@@ -26233,11 +26233,11 @@
           "redirectURL" : {
             "type" : "string"
           },
-          "settingID" : {
+          "settingId" : {
             "type" : "string"
           }
         },
-        "required" : [ "redirectURL", "settingID" ],
+        "required" : [ "redirectURL", "settingId" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.BeginGithubAppManifestFlowReq" : {
@@ -26308,13 +26308,13 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.CreateGithubAppReq" : {
         "properties" : {
-          "appID" : {
+          "appId" : {
             "type" : "integer"
           },
           "availableInProjects" : {
             "type" : "boolean"
           },
-          "clientID" : {
+          "clientId" : {
             "type" : "string"
           },
           "clientSecret" : {
@@ -26323,7 +26323,7 @@
           "default" : {
             "type" : "boolean"
           },
-          "installationID" : {
+          "installationId" : {
             "type" : "integer"
           },
           "name" : {
@@ -26339,7 +26339,7 @@
             "type" : "boolean"
           }
         },
-        "required" : [ "appID", "availableInProjects", "clientID", "clientSecret", "default", "installationID", "name", "organization", "privateKey", "ssoEnabled" ],
+        "required" : [ "appId", "availableInProjects", "clientId", "clientSecret", "default", "installationId", "name", "organization", "privateKey", "ssoEnabled" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.CreateGithubAppResp" : {
@@ -26389,7 +26389,7 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.GithubAppResp" : {
         "properties" : {
-          "appID" : {
+          "appId" : {
             "type" : "integer"
           },
           "availableInProjects" : {
@@ -26398,7 +26398,7 @@
           "callbackURL" : {
             "type" : "string"
           },
-          "clientID" : {
+          "clientId" : {
             "type" : "string"
           },
           "clientSecret" : {
@@ -26419,7 +26419,7 @@
           "inherited" : {
             "type" : "boolean"
           },
-          "installationID" : {
+          "installationId" : {
             "type" : "integer"
           },
           "kind" : {
@@ -26459,21 +26459,21 @@
             "type" : "string"
           }
         },
-        "required" : [ "appID", "callbackURL", "clientID", "clientSecret", "createdAt", "id", "installationID", "name", "organization", "privateKey", "ssoEnabled", "status", "type", "updateVer", "updatedAt", "webhookSecret", "webhookURL" ],
+        "required" : [ "appId", "callbackURL", "clientId", "clientSecret", "createdAt", "id", "installationId", "name", "organization", "privateKey", "ssoEnabled", "status", "type", "updateVer", "updatedAt", "webhookSecret", "webhookURL" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.ListAppInstallationReq" : {
         "properties" : {
-          "appID" : {
+          "appId" : {
             "type" : "integer"
           },
-          "clientID" : {
+          "clientId" : {
             "type" : "string"
           },
           "clientSecret" : {
             "type" : "string"
           },
-          "installationID" : {
+          "installationId" : {
             "type" : "integer"
           },
           "name" : {
@@ -26489,7 +26489,7 @@
             "type" : "boolean"
           }
         },
-        "required" : [ "appID", "clientID", "clientSecret", "installationID", "name", "organization", "privateKey", "ssoEnabled" ],
+        "required" : [ "appId", "clientId", "clientSecret", "installationId", "name", "organization", "privateKey", "ssoEnabled" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.ListAppInstallationResp" : {
@@ -26524,16 +26524,16 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.TestGithubAppConnReq" : {
         "properties" : {
-          "appID" : {
+          "appId" : {
             "type" : "integer"
           },
-          "clientID" : {
+          "clientId" : {
             "type" : "string"
           },
           "clientSecret" : {
             "type" : "string"
           },
-          "installationID" : {
+          "installationId" : {
             "type" : "integer"
           },
           "name" : {
@@ -26549,7 +26549,7 @@
             "type" : "boolean"
           }
         },
-        "required" : [ "appID", "clientID", "clientSecret", "installationID", "name", "organization", "privateKey", "ssoEnabled" ],
+        "required" : [ "appId", "clientId", "clientSecret", "installationId", "name", "organization", "privateKey", "ssoEnabled" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.TestGithubAppConnResp" : {
@@ -26593,13 +26593,13 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.UpdateGithubAppReq" : {
         "properties" : {
-          "appID" : {
+          "appId" : {
             "type" : "integer"
           },
           "availableInProjects" : {
             "type" : "boolean"
           },
-          "clientID" : {
+          "clientId" : {
             "type" : "string"
           },
           "clientSecret" : {
@@ -26608,7 +26608,7 @@
           "default" : {
             "type" : "boolean"
           },
-          "installationID" : {
+          "installationId" : {
             "type" : "integer"
           },
           "name" : {
@@ -26627,7 +26627,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "appID", "availableInProjects", "clientID", "clientSecret", "default", "installationID", "name", "organization", "privateKey", "ssoEnabled", "updateVer" ],
+        "required" : [ "appId", "availableInProjects", "clientId", "clientSecret", "default", "installationId", "name", "organization", "privateKey", "ssoEnabled", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_githubappuc_githubappdto.UpdateGithubAppResp" : {
@@ -27658,7 +27658,7 @@
           "availableInProjects" : {
             "type" : "boolean"
           },
-          "clientID" : {
+          "clientId" : {
             "type" : "string"
           },
           "clientSecret" : {
@@ -27689,7 +27689,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "authURL", "availableInProjects", "clientID", "clientSecret", "default", "kind", "name", "organization", "profileURL", "scopes", "tokenURL" ],
+        "required" : [ "authURL", "availableInProjects", "clientId", "clientSecret", "default", "kind", "name", "organization", "profileURL", "scopes", "tokenURL" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.CreateOAuthResp" : {
@@ -27763,7 +27763,7 @@
           "callbackURL" : {
             "type" : "string"
           },
-          "clientID" : {
+          "clientId" : {
             "type" : "string"
           },
           "clientSecret" : {
@@ -27821,7 +27821,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "callbackURL", "clientID", "clientSecret", "createdAt", "id", "name", "organization", "status", "type", "updateVer", "updatedAt" ],
+        "required" : [ "callbackURL", "clientId", "clientSecret", "createdAt", "id", "name", "organization", "status", "type", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.UpdateOAuthMetaReq" : {
@@ -27862,7 +27862,7 @@
           "availableInProjects" : {
             "type" : "boolean"
           },
-          "clientID" : {
+          "clientId" : {
             "type" : "string"
           },
           "clientSecret" : {
@@ -27896,7 +27896,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "authURL", "availableInProjects", "clientID", "clientSecret", "default", "kind", "name", "organization", "profileURL", "scopes", "tokenURL", "updateVer" ],
+        "required" : [ "authURL", "availableInProjects", "clientId", "clientSecret", "default", "kind", "name", "organization", "profileURL", "scopes", "tokenURL", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.UpdateOAuthResp" : {
@@ -29014,7 +29014,7 @@
           "id" : {
             "type" : "string"
           },
-          "requestID" : {
+          "requestId" : {
             "type" : "string"
           },
           "stackTrace" : {
@@ -29024,7 +29024,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "cause", "code", "createdAt", "debugLog", "detail", "id", "requestID", "stackTrace", "status" ],
+        "required" : [ "cause", "code", "createdAt", "debugLog", "detail", "id", "requestId", "stackTrace", "status" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_system_traefikuc_traefikdto.ReloadTraefikConfigReq" : {
@@ -29689,14 +29689,14 @@
           "id" : {
             "type" : "string"
           },
-          "keyID" : {
+          "keyId" : {
             "type" : "string"
           },
           "secretKey" : {
             "type" : "string"
           }
         },
-        "required" : [ "id", "keyID", "secretKey" ],
+        "required" : [ "id", "keyId", "secretKey" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_usersettings_apikeyuc_apikeydto.APIKeyResp" : {
@@ -29722,7 +29722,7 @@
           "inherited" : {
             "type" : "boolean"
           },
-          "keyID" : {
+          "keyId" : {
             "type" : "string"
           },
           "kind" : {
@@ -29744,7 +29744,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "accessAction", "createdAt", "id", "keyID", "name", "status", "type", "updateVer", "updatedAt" ],
+        "required" : [ "accessAction", "createdAt", "id", "keyId", "name", "status", "type", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_usersettings_apikeyuc_apikeydto.CreateAPIKeyReq" : {
@@ -30438,11 +30438,11 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.DeployAppDataResp" : {
         "properties" : {
-          "deploymentID" : {
+          "deploymentId" : {
             "type" : "string"
           }
         },
-        "required" : [ "deploymentID" ],
+        "required" : [ "deploymentId" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.DeployAppReq" : {
@@ -30450,7 +30450,7 @@
           "activeMethod" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.DeploymentMethod"
           },
-          "deploymentTriggerID" : {
+          "deploymentTriggerId" : {
             "type" : "string"
           },
           "imageSource" : {
@@ -30460,7 +30460,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.DeploymentRepoSourceReq"
           }
         },
-        "required" : [ "activeMethod", "deploymentTriggerID", "imageSource", "repoSource" ],
+        "required" : [ "activeMethod", "deploymentTriggerId", "imageSource", "repoSource" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_webhookuc_webhookdto.DeployAppResp" : {

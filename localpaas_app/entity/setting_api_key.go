@@ -21,7 +21,7 @@ func (s *apiKeyParser) New() SettingData {
 }
 
 type APIKey struct {
-	KeyID        string              `json:"keyID"`
+	KeyID        string              `json:"keyId"`
 	SecretKey    HashField           `json:"secretKey"`
 	AccessAction *base.AccessActions `json:"accessAction,omitempty"`
 }

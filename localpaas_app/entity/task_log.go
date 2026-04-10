@@ -8,8 +8,8 @@ import (
 
 type TaskLog struct {
 	ID       int64          `bun:",pk,autoincrement" json:"id"`
-	TaskID   string         `json:"taskID"`
-	TargetID string         `bun:",nullzero" json:"targetID"`
+	TaskID   string         `json:"taskId"`
+	TargetID string         `bun:",nullzero" json:"targetId"`
 	Type     applog.LogType `bun:",nullzero" json:"type"`
 	Data     string         `json:"data"`
 	Ts       time.Time      `bun:",nullzero" json:"ts"`

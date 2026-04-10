@@ -35,7 +35,7 @@ func registerSettingParser(typ base.SettingType, parser SettingParser) bool {
 type Setting struct {
 	ID              string                `bun:",pk" json:"id"`
 	Scope           base.SettingScopeType `json:"scope"`
-	ObjectID        string                `bun:",nullzero" json:"objectID"`
+	ObjectID        string                `bun:",nullzero" json:"objectId"`
 	Type            base.SettingType      `json:"type"`
 	Kind            string                `bun:",nullzero" json:"kind"`
 	Status          base.SettingStatus    `json:"status"`

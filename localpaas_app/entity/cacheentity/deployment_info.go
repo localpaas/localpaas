@@ -8,8 +8,8 @@ import (
 
 type DeploymentInfo struct {
 	ID        string                `json:"id"`
-	AppID     string                `json:"appID"`
-	TaskID    string                `json:"taskID"`
+	AppID     string                `json:"appId"`
+	TaskID    string                `json:"taskId"`
 	Status    base.DeploymentStatus `json:"status"`
 	StartedAt time.Time             `json:"startedAt"`
 }

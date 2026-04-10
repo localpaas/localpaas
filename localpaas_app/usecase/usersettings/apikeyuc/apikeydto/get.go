@@ -32,7 +32,7 @@ type GetAPIKeyResp struct {
 
 type APIKeyResp struct {
 	*settings.BaseSettingResp
-	KeyID        string             `json:"keyID"`
+	KeyID        string             `json:"keyId"`
 	AccessAction base.AccessActions `json:"accessAction"`
 }
 

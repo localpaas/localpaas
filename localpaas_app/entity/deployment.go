@@ -18,7 +18,7 @@ var (
 
 type Deployment struct {
 	ID        string                 `bun:",pk" json:"id"`
-	AppID     string                 `json:"appID"`
+	AppID     string                 `json:"appId"`
 	Status    base.DeploymentStatus  `json:"status"`
 	Settings  *AppDeploymentSettings `json:"settings"`
 	Trigger   *AppDeploymentTrigger  `json:"trigger"`

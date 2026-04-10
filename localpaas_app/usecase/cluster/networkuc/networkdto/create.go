@@ -14,7 +14,7 @@ const (
 )
 
 type CreateNetworkReq struct {
-	ProjectID       string            `json:"projectID"`
+	ProjectID       string            `json:"projectId"`
 	AvailInProjects bool              `json:"availableInProjects"`
 	Name            string            `json:"name"`
 	Driver          string            `json:"driver"`

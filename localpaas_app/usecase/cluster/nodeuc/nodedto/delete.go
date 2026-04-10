@@ -19,7 +19,7 @@ func NewDeleteNodeReq() *DeleteNodeReq {
 func (req *DeleteNodeReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	// NOTE: node id is docker id, it's not ULID
-	validators = append(validators, basedto.ValidateStr(&req.NodeID, true, 1, nodeIDMaxLen, "nodeID")...)
+	validators = append(validators, basedto.ValidateStr(&req.NodeID, true, 1, nodeIDMaxLen, "nodeId")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 

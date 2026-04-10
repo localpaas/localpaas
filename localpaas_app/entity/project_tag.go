@@ -10,7 +10,7 @@ var (
 )
 
 type ProjectTag struct {
-	ProjectID    string `bun:",pk" json:"projectID"`
+	ProjectID    string `bun:",pk" json:"projectId"`
 	Tag          string `bun:",pk" json:"tag"`
 	DisplayOrder int    `json:"displayOrder"`
 

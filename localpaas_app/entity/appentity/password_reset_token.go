@@ -7,5 +7,5 @@ import (
 type PasswordResetTokenClaims struct {
 	jwtsession.BaseClaims
 	Kind   string `json:"kind"`
-	UserID string `json:"userID"`
+	UserID string `json:"userId"`
 }
