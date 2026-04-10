@@ -8,7 +8,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/repository"
 )
 
 type Manager interface {
@@ -20,22 +19,4 @@ type Manager interface {
 
 	LoadObjectAccesses(ctx context.Context, db database.IDB, check *AccessCheck, sort bool,
 		extraLoadOpts ...bunex.SelectQueryOption) ([]*entity.ACLPermission, error)
-}
-
-type manager struct {
-	aclPermissionRepo repository.ACLPermissionRepo
-	userRepo          repository.UserRepo
-	projectRepo       repository.ProjectRepo
-}
-
-func NewManager(
-	aclPermissionRepo repository.ACLPermissionRepo,
-	userRepo repository.UserRepo,
-	projectRepo repository.ProjectRepo,
-) Manager {
-	return &manager{
-		aclPermissionRepo: aclPermissionRepo,
-		userRepo:          userRepo,
-		projectRepo:       projectRepo,
-	}
 }

@@ -1,4 +1,4 @@
-package queue
+package queueimpl
 
 import (
 	"context"
@@ -20,6 +20,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/redishelper"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
+	"github.com/localpaas/localpaas/localpaas_app/tasks/queue"
 )
 
 const (
@@ -29,55 +30,7 @@ const (
 	taskControlCheckTimeout = 10 * time.Second
 )
 
-type TaskExecData struct {
-	Task *entity.Task
-
-	// RefObjects can be used as a cache to store objects
-	RefObjects *entity.RefObjects
-
-	NonCancelable bool
-	NonRetryable  bool
-	Canceled      bool
-	Done          bool
-
-	// Callback functions
-	onCommand         func(base.TaskCommand, ...any)
-	onPostExec        func()
-	onPostTransaction func()
-}
-
-func (t *TaskExecData) IsCanceled() bool {
-	return t.Canceled
-}
-
-func (t *TaskExecData) IsDone() bool {
-	return t.Done
-}
-
-func (t *TaskExecData) OnCommand(fn func(base.TaskCommand, ...any)) {
-	// NOTE: do we need to use mutex?
-	t.onCommand = fn
-}
-
-func (t *TaskExecData) OnPostExec(fn func()) {
-	t.onPostExec = fn
-}
-
-func (t *TaskExecData) OnPostTransaction(fn func()) {
-	t.onPostTransaction = fn
-}
-
-func (t *TaskExecData) AddRefObjects(refObjects *entity.RefObjects) {
-	if t.RefObjects == nil {
-		t.RefObjects = refObjects
-	} else {
-		t.RefObjects.AddRefObjects(refObjects)
-	}
-}
-
-type TaskExecFunc func(context.Context, database.Tx, *TaskExecData) error
-
-func (q *taskQueue) RegisterExecutor(typ base.TaskType, execFunc TaskExecFunc) {
+func (q *taskQueue) RegisterExecutor(typ base.TaskType, execFunc queue.TaskExecFunc) {
 	if !q.isWorkerMode() {
 		return
 	}
@@ -94,9 +47,9 @@ func (q *taskQueue) executeTask(
 	ctx context.Context,
 	taskID string,
 	_ string,
-	executorFunc func(context.Context, database.Tx, *TaskExecData) error,
+	executorFunc func(context.Context, database.Tx, *queue.TaskExecData) error,
 ) (rescheduleAt *time.Time) {
-	var taskData *TaskExecData
+	var taskData *queue.TaskExecData
 	err := transaction.Execute(ctx, q.db, func(db database.Tx) (err error) {
 		task, err := q.loadTask(ctx, db, taskID)
 		if err != nil {
@@ -106,7 +59,7 @@ func (q *taskQueue) executeTask(
 			return nil
 		}
 
-		taskData = &TaskExecData{
+		taskData = &queue.TaskExecData{
 			Task: task,
 		}
 		taskTimeout := task.Config.Timeout.ToDuration()
@@ -169,8 +122,8 @@ func (q *taskQueue) executeTask(
 				task.Status = gofn.If(taskData.Canceled, base.TaskStatusCanceled, base.TaskStatusDone)
 			}
 			// Post execution event
-			if taskData.onPostExec != nil {
-				taskData.onPostExec()
+			if taskData.OnPostExec != nil {
+				taskData.OnPostExec()
 			}
 			// Delete data in cache
 			_ = q.taskInfoRepo.Del(ctx, task.ID)
@@ -186,8 +139,8 @@ func (q *taskQueue) executeTask(
 	}
 
 	// Post transaction event
-	if taskData != nil && taskData.onPostTransaction != nil {
-		taskData.onPostTransaction()
+	if taskData != nil && taskData.OnPostTransaction != nil {
+		taskData.OnPostTransaction()
 	}
 
 	return rescheduleAt
@@ -237,7 +190,7 @@ func (q *taskQueue) loadTask(
 
 func (q *taskQueue) taskControlCheck(
 	ctx context.Context,
-	taskData *TaskExecData,
+	taskData *queue.TaskExecData,
 ) {
 	key := fmt.Sprintf("task:%s:ctrl", taskData.Task.ID)
 	defer func() {
@@ -261,8 +214,8 @@ func (q *taskQueue) taskControlCheck(
 			continue
 		}
 		cmd := taskControl.Cmd
-		if taskData.onCommand != nil {
-			taskData.onCommand(cmd)
+		if taskData.OnCommand != nil {
+			taskData.OnCommand(cmd)
 		}
 		if taskData.NonCancelable && cmd == base.TaskCommandCancel {
 			taskData.Canceled = true

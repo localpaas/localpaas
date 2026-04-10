@@ -103,7 +103,7 @@ func (e *Executor) execute(
 	task *queue.TaskExecData,
 ) (err error) {
 	data := &taskData{TaskExecData: task}
-	data.OnPostTransaction(func() { e.onPostTransaction(data) }) //nolint
+	data.SetOnPostTransaction(func() { e.onPostTransaction(data) }) //nolint
 
 	err = e.loadDeploymentData(ctx, db, data)
 	if err != nil {

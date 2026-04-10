@@ -1,4 +1,4 @@
-package queue
+package queueimpl
 
 import (
 	"context"
@@ -16,6 +16,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
+	"github.com/localpaas/localpaas/localpaas_app/tasks/queue"
 )
 
 const (
@@ -24,29 +25,7 @@ const (
 	cacheHealthcheckSettingsExp = 5 * time.Minute
 )
 
-type HealthcheckExecData struct {
-	HealthcheckSetting *entity.Setting
-	Healthcheck        *entity.Healthcheck
-	Task               *entity.Task
-	Project            *entity.Project
-	App                *entity.App
-
-	// RefObjects can be used as a cache to store objects
-	RefObjects    *entity.RefObjects
-	NotifEventMap map[string]*cacheentity.HealthcheckNotifEvent
-}
-
-func (t *HealthcheckExecData) AddRefObjects(refObjects *entity.RefObjects) {
-	if t.RefObjects == nil {
-		t.RefObjects = refObjects
-	} else {
-		t.RefObjects.AddRefObjects(refObjects)
-	}
-}
-
-type HealthcheckExecFunc func(context.Context, *HealthcheckExecData) error
-
-func (q *taskQueue) RegisterHealthcheckExecutor(execFunc HealthcheckExecFunc) {
+func (q *taskQueue) RegisterHealthcheckExecutor(execFunc queue.HealthcheckExecFunc) {
 	if !q.isWorkerMode() {
 		return
 	}
@@ -70,7 +49,7 @@ func (q *taskQueue) doHealthcheck(
 		return apperrors.NewUnavailable("Task executor function for healthcheck")
 	}
 
-	baseData := &HealthcheckExecData{}
+	baseData := &queue.HealthcheckExecData{}
 	jobSettings, err := q.loadHealthcheckData(ctx, q.db, baseData)
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -82,7 +61,7 @@ func (q *taskQueue) doHealthcheck(
 
 	for _, jobSetting := range jobSettings {
 		healthcheck := jobSetting.MustAsHealthcheck()
-		healthcheckData := &HealthcheckExecData{
+		healthcheckData := &queue.HealthcheckExecData{
 			HealthcheckSetting: jobSetting,
 			Healthcheck:        healthcheck,
 			Project:            jobSetting.BelongToProject,
@@ -148,7 +127,7 @@ func (q *taskQueue) healthcheckTaskLock(ctx context.Context) (bool, func(), erro
 func (q *taskQueue) loadHealthcheckData(
 	ctx context.Context,
 	db database.IDB,
-	taskData *HealthcheckExecData,
+	taskData *queue.HealthcheckExecData,
 ) ([]*entity.Setting, error) {
 	// Query items from cache first
 	queryDB := false

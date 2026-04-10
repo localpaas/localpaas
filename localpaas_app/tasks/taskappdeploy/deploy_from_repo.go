@@ -48,7 +48,7 @@ func (e *Executor) deployFromRepo(
 	taskData *taskData,
 ) error {
 	data := &repoDeployTaskData{taskData: taskData}
-	data.OnCommand(func(cmd base.TaskCommand, args ...any) { e.onRepoDeployCommand(ctx, data, cmd, args...) })
+	data.SetOnCommand(func(cmd base.TaskCommand, args ...any) { e.onRepoDeployCommand(ctx, data, cmd, args...) })
 
 	// 0. Prepare
 	err := e.repoDeployStepPrepare(ctx, data)

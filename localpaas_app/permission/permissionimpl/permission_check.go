@@ -1,4 +1,4 @@
-package permission
+package permissionimpl
 
 import (
 	"context"
@@ -11,26 +11,16 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
+	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 )
-
-type AccessCheck struct {
-	SubjectType        base.SubjectType
-	SubjectID          string
-	ResourceModule     base.ResourceModule
-	ResourceType       base.ResourceType
-	ResourceID         string
-	ParentResourceType base.ResourceType
-	ParentResourceID   string
-	Action             base.ActionType
-}
 
 //nolint:gocognit
 func (p *manager) CheckAccess(
 	ctx context.Context,
 	db database.IDB,
 	auth *basedto.Auth,
-	check *AccessCheck,
+	check *permission.AccessCheck,
 ) (hasPerm bool, err error) {
 	// Special project/app access check
 	hasPerm, err = p.checkProjectAccess(ctx, db, check)
@@ -97,7 +87,7 @@ func (p *manager) CheckAccess(
 func (p *manager) checkProjectAccess(
 	ctx context.Context,
 	db database.IDB,
-	check *AccessCheck,
+	check *permission.AccessCheck,
 ) (hasPerm bool, err error) {
 	if check.SubjectType != base.SubjectTypeUser || check.SubjectID == "" {
 		return false, nil
@@ -124,7 +114,7 @@ func (p *manager) checkProjectAccess(
 func (p *manager) loadPermissions(
 	ctx context.Context,
 	db database.IDB,
-	check *AccessCheck,
+	check *permission.AccessCheck,
 	opts ...bunex.SelectQueryOption,
 ) (modPerms, parentPerms, objPerms []*entity.ACLPermission, err error) {
 	var resources []*base.PermissionResource
@@ -188,7 +178,7 @@ func (p *manager) hasPermission(perm *entity.ACLPermission, action base.ActionTy
 func (p *manager) LoadObjectAccesses(
 	ctx context.Context,
 	db database.IDB,
-	check *AccessCheck,
+	check *permission.AccessCheck,
 	sort bool,
 	extraLoadOpts ...bunex.SelectQueryOption,
 ) ([]*entity.ACLPermission, error) {

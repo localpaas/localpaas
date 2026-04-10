@@ -20,7 +20,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/usersettingshandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/webhookhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/server"
-	"github.com/localpaas/localpaas/localpaas_app/permission"
+	"github.com/localpaas/localpaas/localpaas_app/permission/permissionimpl"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 	"github.com/localpaas/localpaas/localpaas_app/repository/cacherepository"
 	"github.com/localpaas/localpaas/localpaas_app/service/appservice/appserviceimpl"
@@ -40,7 +40,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/traefikservice/traefikserviceimpl"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice/userserviceimpl"
 	"github.com/localpaas/localpaas/localpaas_app/tasks/initializer"
-	"github.com/localpaas/localpaas/localpaas_app/tasks/queue"
+	"github.com/localpaas/localpaas/localpaas_app/tasks/queue/queueimpl"
 	"github.com/localpaas/localpaas/localpaas_app/tasks/taskappdeploy"
 	"github.com/localpaas/localpaas/localpaas_app/tasks/taskcronjobexec"
 	"github.com/localpaas/localpaas/localpaas_app/tasks/taskhealthcheck"
@@ -102,13 +102,13 @@ var Provides = []any{
 	server.NewHTTPServer,
 
 	// permission
-	permission.NewManager,
+	permissionimpl.NewManager,
 
 	// Infra
 	docker.New,
 
 	// Task queue
-	queue.NewTaskQueue,
+	queueimpl.New,
 	initializer.NewWorkerInitializer,
 	taskappdeploy.NewExecutor,
 	taskcronjobexec.NewExecutor,

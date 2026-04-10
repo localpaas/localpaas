@@ -132,7 +132,7 @@ func (e *Executor) execute(
 		CronJobSetting: task.Task.TargetJob,
 		CronJob:        task.Task.TargetJob.MustAsCronJob(),
 	}
-	data.OnPostTransaction(func() { e.onPostTransaction(data) }) //nolint
+	data.SetOnPostTransaction(func() { e.onPostTransaction(data) }) //nolint
 
 	err = e.loadCronJobData(ctx, db, data)
 	if err != nil {
