@@ -28,10 +28,6 @@ const (
 	projectWebhookSecretLen = 24
 )
 
-var (
-	unallowedProjectKey = []string{"localpaas"}
-)
-
 func (uc *UC) CreateProject(
 	ctx context.Context,
 	auth *basedto.Auth,
@@ -89,7 +85,7 @@ func (uc *UC) loadProjectData(
 	data *createProjectData,
 ) error {
 	data.ProjectKey = slugify.SlugifyEx(req.Name, nil, projectKeyMaxLen)
-	if gofn.Contain(unallowedProjectKey, data.ProjectKey) {
+	if gofn.Contain(base.UnallowedProjectKeys, data.ProjectKey) {
 		return apperrors.New(apperrors.ErrNameUnavailable).WithMsgLog("project name is not allowed")
 	}
 

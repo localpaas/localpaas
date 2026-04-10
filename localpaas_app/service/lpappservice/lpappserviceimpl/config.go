@@ -4,10 +4,11 @@ import (
 	"context"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
 func (s *service) ReloadLpAppConfig(ctx context.Context) error {
-	service, err := s.dockerManager.ServiceGetByName(ctx, lpAppServiceName)
+	service, err := s.dockerManager.ServiceGetByName(ctx, base.LocalpaasAppServiceName)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

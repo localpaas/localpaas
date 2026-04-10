@@ -16,7 +16,8 @@ type Service interface {
 
 	PersistProjectData(ctx context.Context, db database.IDB, data *PersistingProjectData) error
 	DeleteProject(ctx context.Context, project *entity.Project) error
-	SyncProject(ctx context.Context, db database.IDB, project *entity.Project) error
+	SyncProject(ctx context.Context, db database.IDB, project *entity.Project) (
+		newApps, updateApps []*entity.App, _ error)
 
 	SaveProjectPhoto(ctx context.Context, project *entity.Project, data []byte, fileExt string) error
 }

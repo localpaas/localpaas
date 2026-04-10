@@ -7,11 +7,8 @@ import (
 	"github.com/docker/docker/api/types/network"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/services/docker"
-)
-
-const (
-	GlobalRoutingNetwork = "localpaas_net"
 )
 
 var (
@@ -25,7 +22,7 @@ func (s *service) FindGlobalRoutingNetworkID(ctx context.Context) (string, error
 	}
 
 	net, err := s.dockerManager.NetworkList(ctx, func(options *network.ListOptions) {
-		options.Filters = filters.NewArgs(filters.Arg("name", GlobalRoutingNetwork))
+		options.Filters = filters.NewArgs(filters.Arg("name", base.NetworkGlobalRouting))
 	})
 	if err != nil {
 		return "", apperrors.Wrap(err)
@@ -44,7 +41,7 @@ func (s *service) FindGlobalRoutingNetworkID(ctx context.Context) (string, error
 }
 
 func (s *service) createGlobalRoutingNetwork(ctx context.Context) error {
-	resp, err := s.dockerManager.NetworkCreate(ctx, GlobalRoutingNetwork, func(options *network.CreateOptions) {
+	resp, err := s.dockerManager.NetworkCreate(ctx, base.NetworkGlobalRouting, func(options *network.CreateOptions) {
 		options.Driver = docker.NetworkDriverOverlay
 		options.Scope = docker.NetworkScopeSwarm
 		options.Attachable = true

@@ -6,14 +6,11 @@ import (
 	"github.com/docker/docker/api/types/swarm"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-)
-
-const (
-	traefikServiceName = "localpaas_traefik"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
 func (s *service) GetTraefikSwarmService(ctx context.Context) (*swarm.Service, error) {
-	service, err := s.dockerManager.ServiceGetByName(ctx, traefikServiceName)
+	service, err := s.dockerManager.ServiceGetByName(ctx, base.LocalpaasTraefikServiceName)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

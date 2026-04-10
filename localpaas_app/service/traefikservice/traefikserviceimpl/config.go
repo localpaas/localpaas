@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
 func (s *service) ReloadTraefikConfig(ctx context.Context, restartServiceOnFailure bool) error {
@@ -24,7 +25,7 @@ func (s *service) ReloadTraefikConfig(ctx context.Context, restartServiceOnFailu
 }
 
 func (s *service) reloadTraefikConfig(ctx context.Context) error {
-	service, err := s.dockerManager.ServiceGetByName(ctx, traefikServiceName)
+	service, err := s.dockerManager.ServiceGetByName(ctx, base.LocalpaasTraefikServiceName)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

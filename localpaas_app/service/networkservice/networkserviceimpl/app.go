@@ -6,6 +6,7 @@ import (
 	"github.com/docker/docker/api/types/swarm"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 )
 
@@ -24,10 +25,10 @@ func (s *service) UpdateAppGlobalRoutingNetwork(
 	spec := &service.Spec
 	networks := make([]swarm.NetworkAttachmentConfig, 0, len(spec.TaskTemplate.Networks)+1)
 	for _, net := range spec.TaskTemplate.Networks {
-		if httpSettings.ExposePublicly && (net.Target == GlobalRoutingNetwork || net.Target == globalNetworkID) {
+		if httpSettings.ExposePublicly && (net.Target == base.NetworkGlobalRouting || net.Target == globalNetworkID) {
 			return nil // app is attached to the external net already
 		}
-		if !httpSettings.ExposePublicly && (net.Target == GlobalRoutingNetwork || net.Target == globalNetworkID) {
+		if !httpSettings.ExposePublicly && (net.Target == base.NetworkGlobalRouting || net.Target == globalNetworkID) {
 			continue
 		}
 		networks = append(networks, net)

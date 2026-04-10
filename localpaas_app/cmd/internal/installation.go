@@ -132,7 +132,7 @@ func installationInitDevProjects(
 		return apperrors.Wrap(err)
 	}
 
-	err = projectService.SyncProject(ctx, db, projectA)
+	_, _, err = projectService.SyncProject(ctx, db, projectA)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

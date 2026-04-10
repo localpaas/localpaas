@@ -121,11 +121,11 @@ services:
         - "traefik.http.routers.app-router.rule=Host(`app.dev.localpaas.com`)"
         - "traefik.http.routers.app-router.entrypoints=websecure"
         - "traefik.http.routers.app-router.tls=true"
-        - "traefik.http.routers.app-router-http-acme.rule=PathPrefix(`/.well-known/acme-challenge/`)"
-        - "traefik.http.routers.app-router-http-acme.entrypoints=web"
-        - "traefik.http.routers.app-router-http-acme.tls=false"
-        - "traefik.http.middlewares.addprefix-le-acme.addprefix.prefix=/letsencrypt"
-        - "traefik.http.routers.app-router-http-acme.middlewares=addprefix-le-acme@swarm"
+        - "traefik.http.routers.x-custom-router-le-acme.rule=PathPrefix(`/.well-known/acme-challenge/`)"
+        - "traefik.http.routers.x-custom-router-le-acme.entrypoints=web"
+        - "traefik.http.routers.x-custom-router-le-acme.tls=false"
+        - "traefik.http.middlewares.x-custom-addprefix-le.addprefix.prefix=/letsencrypt"
+        - "traefik.http.routers.x-custom-router-le-acme.middlewares=x-custom-addprefix-le@swarm"
         - "traefik.swarm.network=localpaas_net"
 
 networks:

@@ -8,6 +8,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
@@ -15,16 +16,11 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
 )
 
-const (
-	rootProjectName = "LocalPaaS"
-	rootProjectKey  = "localpaas"
-)
-
 func (s *service) InitRootProject(
 	ctx context.Context,
 	db database.IDB,
 ) error {
-	project, err := s.projectRepo.GetByKey(ctx, db, rootProjectKey)
+	project, err := s.projectRepo.GetByKey(ctx, db, base.LocalpaasProjectKey)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}
@@ -32,8 +28,8 @@ func (s *service) InitRootProject(
 		timeNow := timeutil.NowUTC()
 		project = &entity.Project{
 			ID:        gofn.Must(ulid.NewStringULID()),
-			Name:      rootProjectName,
-			Key:       rootProjectKey,
+			Name:      base.LocalpaasProjectName,
+			Key:       base.LocalpaasProjectKey,
 			Status:    base.ProjectStatusActive,
 			CreatedAt: timeNow,
 			UpdatedAt: timeNow,
@@ -61,7 +57,57 @@ func (s *service) InitRootProject(
 		return apperrors.Wrap(err)
 	}
 
-	err = s.SyncProject(ctx, db, project)
+	newApps, _, err := s.SyncProject(ctx, db, project)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	for _, app := range newApps {
+		if app.Key == base.LocalpaasAppKey {
+			err = s.initRootAppLocalpaas(ctx, db, app)
+			if err != nil {
+				return apperrors.Wrap(err)
+			}
+		}
+	}
+
+	return nil
+}
+
+func (s *service) initRootAppLocalpaas(
+	ctx context.Context,
+	db database.IDB,
+	app *entity.App,
+) error {
+	timeNow := timeutil.NowUTC()
+	cfg := config.Current
+
+	// Add HTTP settings for the main app
+	dbHttpSetting := &entity.Setting{
+		ID:        gofn.Must(ulid.NewStringULID()),
+		Scope:     base.SettingScopeApp,
+		ObjectID:  app.ID,
+		Type:      base.SettingTypeAppHttp,
+		Status:    base.SettingStatusActive,
+		Version:   entity.CurrentAppHttpSettingsVersion,
+		CreatedAt: timeNow,
+		UpdatedAt: timeNow,
+	}
+	httpSettings := &entity.AppHttpSettings{
+		ExposePublicly: true,
+		Domains: []*entity.AppDomain{
+			{
+				Enabled:       true,
+				Domain:        cfg.AppDomain,
+				ContainerPort: cfg.HTTPServer.Port,
+				ForceHttps:    true,
+			},
+		},
+	}
+	dbHttpSetting.MustSetData(httpSettings)
+
+	err := s.settingRepo.Upsert(ctx, db, dbHttpSetting,
+		entity.SettingUpsertingConflictCols, entity.SettingUpsertingUpdateCols)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

@@ -6,10 +6,11 @@ import (
 	"github.com/docker/docker/api/types/swarm"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
 func (s *service) GetLpDbSwarmService(ctx context.Context) (*swarm.Service, error) {
-	service, err := s.dockerManager.ServiceGetByName(ctx, lpDbServiceName)
+	service, err := s.dockerManager.ServiceGetByName(ctx, base.LocalpaasDbServiceName)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

@@ -18,11 +18,11 @@ func (s *service) SyncProject(
 	ctx context.Context,
 	db database.IDB,
 	project *entity.Project,
-) error {
+) (newApps, updateApps []*entity.App, err error) {
 	// Loads all apps in project
 	apps, _, err := s.appRepo.List(ctx, db, project.ID, nil)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return nil, nil, apperrors.Wrap(err)
 	}
 
 	appMapByKey := make(map[string]*entity.App, len(apps))
@@ -33,12 +33,10 @@ func (s *service) SyncProject(
 	// Loads all swarm services from docker having the namespace label as project key
 	services, err := s.dockerManager.ServiceListByStack(ctx, project.Key)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return nil, nil, apperrors.Wrap(err)
 	}
 
 	timeNow := timeutil.NowUTC()
-	var newApps []*entity.App
-	var updateApps []*entity.App
 
 	// Sync the services with the apps, create new apps if need to
 	for _, svc := range services {
@@ -71,8 +69,8 @@ func (s *service) SyncProject(
 	err = s.appRepo.UpsertMulti(ctx, db, gofn.Concat(newApps, updateApps),
 		entity.AppUpsertingConflictCols, entity.AppUpsertingUpdateCols)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return nil, nil, apperrors.Wrap(err)
 	}
 
-	return nil
+	return newApps, updateApps, nil
 }

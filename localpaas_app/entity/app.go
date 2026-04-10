@@ -1,12 +1,14 @@
 package entity
 
 import (
+	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/config"
 )
 
 var (
@@ -88,4 +90,8 @@ func (app *App) GetAutoImageName() string {
 
 func (app *App) ResetToken() {
 	app.Token = gofn.RandTokenAsHex(appTokenLen)
+}
+
+func (app *App) TraefikConfigPath() string {
+	return filepath.Join(config.Current.DataPathTraefikEtcDynamic(), app.Key+".yml")
 }

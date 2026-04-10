@@ -6,16 +6,11 @@ import (
 	"github.com/docker/docker/api/types/swarm"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-)
-
-const (
-	lpAppServiceName   = "localpaas_app"
-	lpDbServiceName    = "localpaas_db"
-	lpCacheServiceName = "localpaas_redis"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
 func (s *service) GetLpAppSwarmService(ctx context.Context) (*swarm.Service, error) {
-	service, err := s.dockerManager.ServiceGetByName(ctx, lpAppServiceName)
+	service, err := s.dockerManager.ServiceGetByName(ctx, base.LocalpaasAppServiceName)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
