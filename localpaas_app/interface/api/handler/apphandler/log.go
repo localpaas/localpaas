@@ -28,7 +28,7 @@ import (
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/apps/{appID}/runtime-logs [get]
 func (h *Handler) GetAppRuntimeLogs(ctx *gin.Context, mel *melody.Melody) {
-	auth, projectID, appID, err := h.getAuth(ctx, base.ActionTypeRead, true)
+	auth, projectID, appID, err := h.GetAuth(ctx, base.ActionTypeRead, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

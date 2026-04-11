@@ -24,7 +24,7 @@ import (
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/apps/{appID}/token [put]
 func (h *Handler) UpdateAppToken(ctx *gin.Context) {
-	auth, projectID, appID, err := h.getAuth(ctx, base.ActionTypeWrite, true)
+	auth, projectID, appID, err := h.GetAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

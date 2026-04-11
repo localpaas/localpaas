@@ -23,7 +23,7 @@ import (
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/apps [post]
 func (h *Handler) CreateApp(ctx *gin.Context) {
-	auth, projectID, _, err := h.getAuth(ctx, base.ActionTypeWrite, false)
+	auth, projectID, _, err := h.GetAuth(ctx, base.ActionTypeWrite, false)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -59,7 +59,7 @@ func (h *Handler) CreateApp(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/apps/{appID} [put]
 func (h *Handler) UpdateApp(ctx *gin.Context) {
-	auth, projectID, appID, err := h.getAuth(ctx, base.ActionTypeWrite, true)
+	auth, projectID, appID, err := h.GetAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -96,7 +96,7 @@ func (h *Handler) UpdateApp(ctx *gin.Context) {
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/apps/{appID} [delete]
 func (h *Handler) DeleteApp(ctx *gin.Context) {
-	auth, projectID, appID, err := h.getAuth(ctx, base.ActionTypeDelete, true)
+	auth, projectID, appID, err := h.GetAuth(ctx, base.ActionTypeDelete, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return

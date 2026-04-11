@@ -6,7 +6,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/logging"
 	"github.com/localpaas/localpaas/localpaas_app/infra/rediscache"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/appbasehandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/appdeploymenthandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/apphandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/appsettingshandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/basesettinghandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/clusterhandler"
@@ -45,6 +48,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/tasks/taskcronjobexec"
 	"github.com/localpaas/localpaas/localpaas_app/tasks/taskhealthcheck"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appdeploymentuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/appsettingsuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/imageuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/networkuc"
@@ -123,7 +127,10 @@ var Provides = []any{
 	sessionhandler.New,
 	userhandler.New,
 	projecthandler.New,
+	appbasehandler.New,
 	apphandler.New,
+	appsettingshandler.New,
+	appdeploymenthandler.New,
 	settinghandler.New,
 	usersettingshandler.New,
 	systemhandler.New,
@@ -141,6 +148,7 @@ var Provides = []any{
 	useruc.New,
 	projectuc.New,
 	appuc.New,
+	appsettingsuc.New,
 	appdeploymentuc.New,
 	settings.New,
 	cloudstorageuc.New,
