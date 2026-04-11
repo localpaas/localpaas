@@ -2,13 +2,21 @@ package docker
 
 import (
 	"strings"
-	"time"
 
 	"github.com/docker/docker/api/types/swarm"
 	"github.com/tiendc/gofn"
 
-	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/shellutil"
+)
+
+const (
+	serviceRestrictedLabelsPrefix = "localpaas."
+)
+
+var (
+	serviceSystemLabels = map[string]struct{}{
+		StackLabelNamespace: {},
+	}
 )
 
 func ContainerCommandBuild(cmd []string, args []string) string {
@@ -23,65 +31,60 @@ func ContainerCommandApply(contSpec *swarm.ContainerSpec, cmd string) {
 	}
 }
 
-func CallRetry(
-	fn func() error,
-	maxRetries int,
-	retryInterval time.Duration,
-) error {
-	retry := 0
-	for {
-		err := fn()
-		if err == nil {
-			return nil
+func ServiceFilterOutSystemLabels(labels map[string]string) map[string]string {
+	resp := make(map[string]string, len(labels))
+	for k, v := range labels {
+		if _, exists := serviceSystemLabels[k]; exists {
+			continue
 		}
-		if retry >= maxRetries {
-			return apperrors.NewInfra(err)
+		if strings.HasPrefix(k, serviceRestrictedLabelsPrefix) {
+			continue
 		}
-		if retryInterval > 0 {
-			time.Sleep(retryInterval)
-		}
-		retry++
+		resp[k] = v
 	}
+	return resp
 }
 
-func CallRetry2[T any](
-	fn func() (T, error),
-	maxRetries int,
-	retryInterval time.Duration,
-) (T, error) {
-	retry := 0
-	for {
-		v, err := fn()
-		if err == nil {
-			return v, nil
+func ServiceValidateUserLabels(labels map[string]string, stopAtFirstViolation bool) (unallowedLabels []string) {
+	for k := range labels {
+		if _, exists := serviceSystemLabels[k]; exists {
+			if stopAtFirstViolation {
+				return []string{k}
+			}
+			unallowedLabels = append(unallowedLabels, k)
+			continue
 		}
-		if retry >= maxRetries {
-			return v, apperrors.NewInfra(err)
+		if strings.HasPrefix(k, serviceRestrictedLabelsPrefix) {
+			if stopAtFirstViolation {
+				return []string{k}
+			}
+			unallowedLabels = append(unallowedLabels, k)
+			continue
 		}
-		if retryInterval > 0 {
-			time.Sleep(retryInterval)
-		}
-		retry++
 	}
+	return unallowedLabels
 }
 
-func CallRetry3[T any, U any](
-	fn func() (T, U, error),
-	maxRetries int,
-	retryInterval time.Duration,
-) (T, U, error) {
-	retry := 0
-	for {
-		v1, v2, err := fn()
-		if err == nil {
-			return v1, v2, nil
+func ServiceApplyUserLabels(currLabels, userLabels map[string]string) map[string]string {
+	appliedLabels := make(map[string]string, len(userLabels))
+	for k, v := range currLabels {
+		if _, exists := serviceSystemLabels[k]; exists {
+			appliedLabels[k] = v
+			continue
 		}
-		if retry >= maxRetries {
-			return v1, v2, apperrors.NewInfra(err)
+		if strings.HasPrefix(k, serviceRestrictedLabelsPrefix) {
+			appliedLabels[k] = v
+			continue
 		}
-		if retryInterval > 0 {
-			time.Sleep(retryInterval)
-		}
-		retry++
 	}
+	for k, v := range userLabels {
+		if _, exists := serviceSystemLabels[k]; exists {
+			continue
+		}
+		if strings.HasPrefix(k, serviceRestrictedLabelsPrefix) {
+			continue
+		}
+		appliedLabels[k] = v
+	}
+	return appliedLabels
 }

@@ -5,6 +5,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/services/docker"
 )
 
 type UpdateAppContainerSettingsReq struct {
@@ -25,14 +26,21 @@ func (req *UpdateAppContainerSettingsReq) Validate() apperrors.ValidationErrors 
 	var validators []vld.Validator
 	validators = append(validators, basedto.ValidateID(&req.ProjectID, true, "projectId")...)
 	validators = append(validators, basedto.ValidateID(&req.AppID, true, "appId")...)
-	// TODO: validate env var input
+
+	// Validate service labels
+	unallowedLabels := docker.ServiceValidateUserLabels(req.Labels, true)
+	if len(unallowedLabels) > 0 {
+		validators = append(validators, vld.Must(false).OnError(
+			vld.SetField("labels", nil),
+			vld.SetCustomKey("ERR_VLD_APP_LABEL_UNALLOWED"),
+			vld.SetParam("Label", unallowedLabels[0]),
+		))
+	}
+
+	// TODO: validate other input
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
 type UpdateAppContainerSettingsResp struct {
-	Meta *basedto.Meta                       `json:"meta"`
-	Data *UpdateAppContainerSettingsDataResp `json:"data"`
-}
-
-type UpdateAppContainerSettingsDataResp struct {
+	Meta *basedto.Meta `json:"meta"`
 }

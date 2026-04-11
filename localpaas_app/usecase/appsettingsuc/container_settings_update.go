@@ -17,6 +17,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/shellutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appsettingsuc/appsettingsdto"
+	"github.com/localpaas/localpaas/services/docker"
 )
 
 func (uc *UC) UpdateAppContainerSettings(
@@ -102,7 +103,7 @@ func (uc *UC) prepareUpdatingAppContainerSpec(
 	service := data.Service
 	containerSpec := service.Spec.TaskTemplate.ContainerSpec
 
-	containerSpec.Labels = req.Labels
+	containerSpec.Labels = docker.ServiceApplyUserLabels(containerSpec.Labels, req.Labels)
 	containerSpec.Image = req.Image
 	containerSpec.Command = gofn.If(req.Command == "", nil, gofn.Must(shellutil.CmdSplit(req.Command)))
 	containerSpec.Dir = req.WorkingDir

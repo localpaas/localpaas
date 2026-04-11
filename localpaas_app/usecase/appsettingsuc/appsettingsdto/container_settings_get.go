@@ -136,7 +136,7 @@ func TransformContainerSpec(taskSpec *swarm.TaskSpec) *ContainerSpec {
 		return nil
 	}
 	res := &ContainerSpec{
-		Labels:        containerSpec.Labels,
+		Labels:        docker.ServiceFilterOutSystemLabels(containerSpec.Labels),
 		Image:         containerSpec.Image,
 		Command:       strings.Join(gofn.Concat(containerSpec.Command, containerSpec.Args), " "),
 		WorkingDir:    containerSpec.Dir,
