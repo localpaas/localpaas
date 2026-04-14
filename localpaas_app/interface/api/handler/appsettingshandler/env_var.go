@@ -10,7 +10,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appsettingsuc/appsettingsdto"
 )
 
-// GetAppEnvVars Gets app env vars
+// GetEnvVars Gets app env vars
 // @Summary Gets app env vars
 // @Description Gets app env vars
 // @Tags    apps
@@ -22,7 +22,7 @@ import (
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/apps/{appID}/env-vars [get]
-func (h *Handler) GetAppEnvVars(ctx *gin.Context) {
+func (h *Handler) GetEnvVars(ctx *gin.Context) {
 	auth, projectID, appID, err := h.GetAuth(ctx, base.ActionTypeRead, true)
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -46,7 +46,7 @@ func (h *Handler) GetAppEnvVars(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
-// UpdateAppEnvVars Updates app env vars
+// UpdateEnvVars Updates app env vars
 // @Summary Updates app env vars
 // @Description Updates app env vars
 // @Tags    apps
@@ -59,7 +59,7 @@ func (h *Handler) GetAppEnvVars(ctx *gin.Context) {
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/apps/{appID}/env-vars [put]
-func (h *Handler) UpdateAppEnvVars(ctx *gin.Context) {
+func (h *Handler) UpdateEnvVars(ctx *gin.Context) {
 	auth, projectID, appID, err := h.GetAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)

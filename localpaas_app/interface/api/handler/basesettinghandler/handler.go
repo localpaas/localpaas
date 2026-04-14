@@ -6,6 +6,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accesstokenuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cloudstorageuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/configfileuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/domainsettingsuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc"
@@ -44,6 +45,7 @@ type Handler struct {
 	CronJobUC        *cronjobuc.UC
 	HealthcheckUC    *healthcheckuc.UC
 	SecretUC         *secretuc.UC
+	ConfigFileUC     *configfileuc.UC
 	EmailUC          *emailuc.UC
 	APIKeyUC         *apikeyuc.UC
 	RepoWebhookUC    *repowebhookuc.UC
@@ -72,6 +74,7 @@ func New(
 	cronJobUC *cronjobuc.UC,
 	healthcheckUC *healthcheckuc.UC,
 	secretUC *secretuc.UC,
+	configFileUC *configfileuc.UC,
 	emailUC *emailuc.UC,
 	apiKeyUC *apikeyuc.UC,
 	repoWebhookUC *repowebhookuc.UC,
@@ -99,6 +102,7 @@ func New(
 		CronJobUC:        cronJobUC,
 		HealthcheckUC:    healthcheckUC,
 		SecretUC:         secretUC,
+		ConfigFileUC:     configFileUC,
 		EmailUC:          emailUC,
 		APIKeyUC:         apiKeyUC,
 		RepoWebhookUC:    repoWebhookUC,

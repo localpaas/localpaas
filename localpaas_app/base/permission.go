@@ -31,6 +31,7 @@ const (
 	ResourceTypeSSHKey             ResourceType = "ssh-key"
 	ResourceTypeAPIKey             ResourceType = "api-key"
 	ResourceTypeSecret             ResourceType = "secret"
+	ResourceTypeConfigFile         ResourceType = "config-file"
 	ResourceTypeIMService          ResourceType = "im-service"
 	ResourceTypeRegistryAuth       ResourceType = "registry-auth"
 	ResourceTypeBasicAuth          ResourceType = "basic-auth"

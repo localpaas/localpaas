@@ -1,4 +1,4 @@
-package secretdto
+package configfiledto
 
 import (
 	vld "github.com/tiendc/go-validator"
@@ -9,12 +9,12 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
-type ListSecretReq struct {
+type ListConfigFileReq struct {
 	settings.ListSettingReq
 }
 
-func NewListSecretReq() *ListSecretReq {
-	return &ListSecretReq{
+func NewListConfigFileReq() *ListConfigFileReq {
+	return &ListConfigFileReq{
 		ListSettingReq: settings.ListSettingReq{
 			Paging: basedto.Paging{
 				// Default paging if unset by client
@@ -24,24 +24,24 @@ func NewListSecretReq() *ListSecretReq {
 	}
 }
 
-func (req *ListSecretReq) Validate() apperrors.ValidationErrors {
+func (req *ListConfigFileReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.ListSettingReq.Validate()...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type ListSecretResp struct {
+type ListConfigFileResp struct {
 	Meta *basedto.ListMeta `json:"meta"`
-	Data []*SecretResp     `json:"data"`
+	Data []*ConfigFileResp `json:"data"`
 }
 
-func TransformSecrets(
+func TransformConfigFiles(
 	settings []*entity.Setting,
 	refObjects *entity.RefObjects,
-) (resp []*SecretResp, err error) {
-	resp = make([]*SecretResp, 0, len(settings))
+) (resp []*ConfigFileResp, err error) {
+	resp = make([]*ConfigFileResp, 0, len(settings))
 	for _, setting := range settings {
-		item, err := TransformSecret(setting, refObjects)
+		item, err := TransformConfigFile(setting, refObjects)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

@@ -10,7 +10,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectsettingsuc/projectsettingsdto"
 )
 
-// GetProjectEnvVars Gets project env vars
+// GetEnvVars Gets project env vars
 // @Summary Gets project env vars
 // @Description Gets project env vars
 // @Tags    projects
@@ -21,7 +21,7 @@ import (
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/env-vars [get]
-func (h *Handler) GetProjectEnvVars(ctx *gin.Context) {
+func (h *Handler) GetEnvVars(ctx *gin.Context) {
 	auth, projectID, err := h.GetAuth(ctx, base.ActionTypeRead, true)
 	if err != nil {
 		h.RenderError(ctx, err)
@@ -44,7 +44,7 @@ func (h *Handler) GetProjectEnvVars(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
-// UpdateProjectEnvVars Updates project env vars
+// UpdateEnvVars Updates project env vars
 // @Summary Updates project env vars
 // @Description Updates project env vars
 // @Tags    projects
@@ -56,7 +56,7 @@ func (h *Handler) GetProjectEnvVars(ctx *gin.Context) {
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/env-vars [put]
-func (h *Handler) UpdateProjectEnvVars(ctx *gin.Context) {
+func (h *Handler) UpdateEnvVars(ctx *gin.Context) {
 	auth, projectID, err := h.GetAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)

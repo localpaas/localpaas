@@ -11,12 +11,12 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/gitcredentialuc/gitcredentialdto"
 )
 
-// ListGitCredential Lists git credential settings
-// @Summary Lists git credential settings
-// @Description Lists git credential settings
+// ListGitCredentials Lists git credentials settings
+// @Summary Lists git credentials settings
+// @Description Lists git credentials settings
 // @Tags    project_settings
 // @Produce json
-// @Id      listProjectGitCredential
+// @Id      listProjectGitCredentials
 // @Param   projectID path string true "project ID"
 // @Param   search query string false "`search=<target> (support *)`"
 // @Param   pageOffset query int false "`pageOffset=offset`"
@@ -26,7 +26,7 @@ import (
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/git-credentials [get]
-func (h *Handler) ListGitCredential(ctx *gin.Context) {
+func (h *Handler) ListGitCredentials(ctx *gin.Context) {
 	auth, projectID, _, err := h.GetAuthProjectSettings(ctx, base.ActionTypeRead, "")
 	if err != nil {
 		h.RenderError(ctx, err)

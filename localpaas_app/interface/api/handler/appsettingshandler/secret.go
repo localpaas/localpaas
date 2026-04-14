@@ -8,7 +8,7 @@ import (
 	_ "github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc/secretdto"
 )
 
-// ListAppSecret Lists app secrets
+// ListSecret Lists app secrets
 // @Summary Lists app secrets
 // @Description Lists app secrets
 // @Tags    apps
@@ -20,11 +20,28 @@ import (
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/apps/{appID}/secrets [get]
-func (h *Handler) ListAppSecret(ctx *gin.Context) {
+func (h *Handler) ListSecret(ctx *gin.Context) {
 	h.ListSetting(ctx, base.ResourceTypeSecret, base.SettingScopeApp)
 }
 
-// CreateAppSecret Creates an app secret
+// GetSecret Get an app secret details
+// @Summary Get an app secret details
+// @Description Get an app secret details
+// @Tags    apps
+// @Produce json
+// @Id      getAppSecret
+// @Param   projectID path string true "project ID"
+// @Param   appID path string true "app ID"
+// @Param   itemID path string true "setting ID"
+// @Success 200 {object} secretdto.GetSecretResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /projects/{projectID}/apps/{appID}/secrets/{itemID} [get]
+func (h *Handler) GetSecret(ctx *gin.Context) {
+	h.GetSetting(ctx, base.ResourceTypeSecret, base.SettingScopeApp)
+}
+
+// CreateSecret Creates an app secret
 // @Summary Creates an app secret
 // @Description Creates an app secret
 // @Tags    apps
@@ -37,11 +54,11 @@ func (h *Handler) ListAppSecret(ctx *gin.Context) {
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/apps/{appID}/secrets [post]
-func (h *Handler) CreateAppSecret(ctx *gin.Context) {
+func (h *Handler) CreateSecret(ctx *gin.Context) {
 	h.CreateSetting(ctx, base.ResourceTypeSecret, base.SettingScopeApp)
 }
 
-// UpdateAppSecret Updates an app secret
+// UpdateSecret Updates an app secret
 // @Summary Updates an app secret
 // @Description Updates an app secret
 // @Tags    apps
@@ -55,11 +72,11 @@ func (h *Handler) CreateAppSecret(ctx *gin.Context) {
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/apps/{appID}/secrets/{itemID} [put]
-func (h *Handler) UpdateAppSecret(ctx *gin.Context) {
+func (h *Handler) UpdateSecret(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeSecret, base.SettingScopeApp)
 }
 
-// UpdateAppSecretStatus Updates app secret status
+// UpdateSecretStatus Updates app secret status
 // @Summary Updates app secret status
 // @Description Updates app secret status
 // @Tags    apps
@@ -73,11 +90,11 @@ func (h *Handler) UpdateAppSecret(ctx *gin.Context) {
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/apps/{appID}/secrets/{itemID}/status [put]
-func (h *Handler) UpdateAppSecretStatus(ctx *gin.Context) {
+func (h *Handler) UpdateSecretStatus(ctx *gin.Context) {
 	h.UpdateSettingStatus(ctx, base.ResourceTypeSecret, base.SettingScopeApp)
 }
 
-// DeleteAppSecret Deletes an app secret
+// DeleteSecret Deletes an app secret
 // @Summary Deletes an app secret
 // @Description Deletes an app secret
 // @Tags    apps
@@ -90,6 +107,6 @@ func (h *Handler) UpdateAppSecretStatus(ctx *gin.Context) {
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/apps/{appID}/secrets/{itemID} [delete]
-func (h *Handler) DeleteAppSecret(ctx *gin.Context) {
+func (h *Handler) DeleteSecret(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeSecret, base.SettingScopeApp)
 }

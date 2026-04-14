@@ -20,6 +20,7 @@ func (s *HTTPServer) registerClusterRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		nodeGroup.POST("/join", clusterHandler.JoinNode)
 		nodeGroup.GET("/join-command", clusterHandler.GetNodeJoinCommand)
 	}
+
 	{ // volume group
 		volumeGroup := clusterGroup.Group("/volumes")
 		// Volumes
@@ -29,6 +30,7 @@ func (s *HTTPServer) registerClusterRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		volumeGroup.POST("", clusterHandler.CreateVolume)
 		volumeGroup.DELETE("/:volumeID", clusterHandler.DeleteVolume)
 	}
+
 	{ // image group
 		imageGroup := clusterGroup.Group("/images")
 		// Volumes
@@ -38,6 +40,7 @@ func (s *HTTPServer) registerClusterRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		imageGroup.POST("", clusterHandler.CreateImage)
 		imageGroup.DELETE("/:imageID", clusterHandler.DeleteImage)
 	}
+
 	{ // network group
 		networkGroup := clusterGroup.Group("/networks")
 		// Networks

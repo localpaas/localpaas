@@ -24,19 +24,19 @@ func (s *secretParser) New() SettingData {
 }
 
 type Secret struct {
-	Key      string          `json:"k"`
-	Value    EncryptedField  `json:"v"`
-	Base64   bool            `json:"b64"`
+	Key      string          `json:"key"`
+	Value    EncryptedField  `json:"value"`
+	Base64   bool            `json:"base64,omitempty"`
 	SwarmRef *SwarmSecretRef `json:"swarmRef,omitempty"`
 }
 
 type SwarmSecretRef struct {
-	File       *SwarmSecretRefFileTarget `json:"file"`
-	SecretID   string                    `json:"secretId"`
-	SecretName string                    `json:"secretName"`
+	File       *SwarmRefFileTarget `json:"file"`
+	SecretID   string              `json:"secretId"`
+	SecretName string              `json:"secretName"`
 }
 
-type SwarmSecretRefFileTarget struct {
+type SwarmRefFileTarget struct {
 	Name string      `json:"name,omitempty"`
 	UID  string      `json:"uid,omitempty"`
 	GID  string      `json:"gid,omitempty"`

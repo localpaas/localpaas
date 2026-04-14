@@ -257,7 +257,7 @@ func (s *service) deleteOrphanSwarmSecret(
 	}
 
 	orphanSwarmRef := &entity.SwarmSecretRef{
-		File:       &entity.SwarmSecretRefFileTarget{},
+		File:       &entity.SwarmRefFileTarget{},
 		SecretID:   orphanSwarmSec.ID,
 		SecretName: orphanSwarmSec.Spec.Name,
 	}

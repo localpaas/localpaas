@@ -30,17 +30,18 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 
 	{ // Env vars
 		envVarGroup := projectGroup.Group("/:projectID/env-vars")
-		envVarGroup.GET("", projectSettingsHandler.GetProjectEnvVars)
-		envVarGroup.PUT("", projectSettingsHandler.UpdateProjectEnvVars)
+		envVarGroup.GET("", projectSettingsHandler.GetEnvVars)
+		envVarGroup.PUT("", projectSettingsHandler.UpdateEnvVars)
 	}
 
 	{ // Secrets
 		secretGroup := projectGroup.Group("/:projectID/secrets")
-		secretGroup.GET("", projectSettingsHandler.ListProjectSecrets)
-		secretGroup.POST("", projectSettingsHandler.CreateProjectSecret)
-		secretGroup.PUT("/:itemID", projectSettingsHandler.UpdateProjectSecret)
-		secretGroup.PUT("/:itemID/status", projectSettingsHandler.UpdateProjectSecretStatus)
-		secretGroup.DELETE("/:itemID", projectSettingsHandler.DeleteProjectSecret)
+		secretGroup.GET("", projectSettingsHandler.ListSecret)
+		secretGroup.GET("/:itemID", projectSettingsHandler.GetSecret)
+		secretGroup.POST("", projectSettingsHandler.CreateSecret)
+		secretGroup.PUT("/:itemID", projectSettingsHandler.UpdateSecret)
+		secretGroup.PUT("/:itemID/status", projectSettingsHandler.UpdateSecretStatus)
+		secretGroup.DELETE("/:itemID", projectSettingsHandler.DeleteSecret)
 	}
 
 	{ // Cron jobs
@@ -84,7 +85,7 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 
 	{ // Git credentials group
 		gitCredentialGroup := projectGroup.Group("/:projectID/git-credentials")
-		gitCredentialGroup.GET("", projectSettingsHandler.ListGitCredential)
+		gitCredentialGroup.GET("", projectSettingsHandler.ListGitCredentials)
 
 		// Repos
 		gitCredentialGroup.GET("/:itemID/repositories", projectSettingsHandler.ListGitRepo)

@@ -63,6 +63,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accesstokenuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cloudstorageuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/configfileuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/domainsettingsuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc"
@@ -162,6 +163,7 @@ var Provides = []any{
 	apikeyuc.New,
 	oauthuc.New,
 	secretuc.New,
+	configfileuc.New,
 	imserviceuc.New,
 	registryauthuc.New,
 	basicauthuc.New,

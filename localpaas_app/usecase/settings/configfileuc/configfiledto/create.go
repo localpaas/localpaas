@@ -1,4 +1,4 @@
-package secretdto
+package configfiledto
 
 import (
 	"os"
@@ -12,55 +12,58 @@ import (
 )
 
 const (
-	secretKeyMaxLen   = 200
-	secretValueMaxLen = 10 * 1024 * 1024 // 10MB
+	configFileNameMaxLen    = 200
+	configFileContentMaxLen = 10 * 1024 * 1024 // 10MB
 )
 
-type CreateSecretReq struct {
+type CreateConfigFileReq struct {
 	settings.CreateSettingReq
-	*SecretBaseReq
+	*ConfigFileBaseReq
 }
 
-type SecretBaseReq struct {
-	Key      string             `json:"key"`
-	Value    string             `json:"value"`
+type ConfigFileBaseReq struct {
+	Name     string             `json:"name"`
+	Content  string             `json:"content"`
 	Base64   bool               `json:"base64"`
-	SwarmRef *SwarmSecretRefReq `json:"swarmRef"`
+	SwarmRef *SwarmConfigRefReq `json:"swarmRef"`
 }
 
-func (req *SecretBaseReq) ToEntity() *entity.Secret {
-	return &entity.Secret{
-		Key:      req.Key,
-		Value:    entity.NewEncryptedField(req.Value),
+func (req *ConfigFileBaseReq) ToEntity() *entity.ConfigFile {
+	return &entity.ConfigFile{
+		Name:     req.Name,
+		Content:  req.Content,
 		Base64:   req.Base64,
 		SwarmRef: req.SwarmRef.ToEntity(),
 	}
 }
 
-func (req *SecretBaseReq) validate(valueRequired bool, field string) (res []vld.Validator) {
+func (req *ConfigFileBaseReq) validate(valueRequired bool, field string) (res []vld.Validator) {
+	if req == nil {
+		return nil
+	}
 	if field != "" {
 		field += "."
 	}
-	res = append(res, basedto.ValidateStr(&req.Key, true, 1, secretKeyMaxLen, field+"key")...)
-	res = append(res, basedto.ValidateStr(&req.Value, valueRequired, 1, secretValueMaxLen, field+"value")...)
+	res = append(res, basedto.ValidateStr(&req.Name, true, 1, configFileNameMaxLen, field+"name")...)
+	res = append(res, basedto.ValidateStr(&req.Content, valueRequired, 1, configFileContentMaxLen, field+"content")...)
 	res = append(res, req.SwarmRef.validate(field+"swarmRef")...)
 	return res
 }
 
-type SwarmSecretRefReq struct {
+type SwarmConfigRefReq struct {
 	File *SwarmRefFileTargetReq `json:"file"`
 }
 
-func (req *SwarmSecretRefReq) ToEntity() *entity.SwarmSecretRef {
+func (req *SwarmConfigRefReq) ToEntity() *entity.SwarmConfigRef {
 	if req == nil {
 		return nil
 	}
-	return &entity.SwarmSecretRef{
+	return &entity.SwarmConfigRef{
 		File: req.File.ToEntity(),
 	}
 }
 
-func (req *SwarmSecretRefReq) validate(field string) (res []vld.Validator) {
+func (req *SwarmConfigRefReq) validate(field string) (res []vld.Validator) {
 	if req == nil {
 		return nil
 	}
@@ -97,22 +100,22 @@ func (req *SwarmRefFileTargetReq) validate(field string) (res []vld.Validator) {
 	if field != "" {
 		field += "."
 	}
-	res = append(res, basedto.ValidateStr(&req.Name, false, 1, secretKeyMaxLen, field+"name")...)
+	res = append(res, basedto.ValidateStr(&req.Name, false, 1, configFileNameMaxLen, field+"name")...)
 	return res
 }
 
-func NewCreateSecretReq() *CreateSecretReq {
-	return &CreateSecretReq{}
+func NewCreateConfigFileReq() *CreateConfigFileReq {
+	return &CreateConfigFileReq{}
 }
 
 // Validate implements interface basedto.ReqValidator
-func (req *CreateSecretReq) Validate() apperrors.ValidationErrors {
+func (req *CreateConfigFileReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, req.validate(true, "")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
-type CreateSecretResp struct {
+type CreateConfigFileResp struct {
 	Meta *basedto.Meta         `json:"meta"`
 	Data *basedto.ObjectIDResp `json:"data"`
 }

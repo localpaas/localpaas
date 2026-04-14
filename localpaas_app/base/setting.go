@@ -15,6 +15,7 @@ const (
 	SettingTypeAppHttp            SettingType = "app-http"
 	SettingTypeEnvVar             SettingType = "env-var"
 	SettingTypeSecret             SettingType = "secret"
+	SettingTypeConfigFile         SettingType = "config-file"
 	SettingTypeCloudProvider      SettingType = "cloud-provider"
 	SettingTypeCloudStorage       SettingType = "cloud-storage"
 	SettingTypeOAuth              SettingType = "oauth"

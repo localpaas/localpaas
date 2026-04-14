@@ -11,6 +11,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accesstokenuc/accesstokendto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc/basicauthdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cloudstorageuc/cloudstoragedto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/configfileuc/configfiledto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc/cronjobdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/emailuc/emaildto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/fileuc/filedto"
@@ -132,6 +133,11 @@ func (h *Handler) ListSetting(
 		r := secretdto.NewListSecretReq()
 		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.SecretUC.ListSecret(reqCtx, auth, r) }
+
+	case base.ResourceTypeConfigFile:
+		r := configfiledto.NewListConfigFileReq()
+		r.Scope = scope
+		req, ucFunc = r, func() (any, error) { return h.ConfigFileUC.ListConfigFile(reqCtx, auth, r) }
 
 	case base.ResourceTypeAPIKey:
 		r := apikeydto.NewListAPIKeyReq()

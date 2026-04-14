@@ -32,4 +32,8 @@ type Service interface {
 	CreateSwarmSecret(ctx context.Context, db database.IDB, app *entity.App, secret *entity.Secret) error
 	UpdateSwarmSecret(ctx context.Context, db database.IDB, app *entity.App, oldSecret, newSecret *entity.Secret) error
 	DeleteSwarmSecret(ctx context.Context, db database.IDB, app *entity.App, secret *entity.Secret) error
+
+	CreateSwarmConfig(ctx context.Context, db database.IDB, app *entity.App, secret *entity.ConfigFile) error
+	UpdateSwarmConfig(ctx context.Context, db database.IDB, app *entity.App, oldSecret, newSecret *entity.ConfigFile) error
+	DeleteSwarmConfig(ctx context.Context, db database.IDB, app *entity.App, secret *entity.ConfigFile) error
 }

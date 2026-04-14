@@ -8,7 +8,7 @@ import (
 	_ "github.com/localpaas/localpaas/localpaas_app/usecase/settings/secretuc/secretdto"
 )
 
-// ListProjectSecrets Lists project secrets
+// ListSecret Lists project secrets
 // @Summary Lists project secrets
 // @Description Lists project secrets
 // @Tags    projects
@@ -20,11 +20,27 @@ import (
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/secrets [get]
-func (h *Handler) ListProjectSecrets(ctx *gin.Context) {
+func (h *Handler) ListSecret(ctx *gin.Context) {
 	h.ListSetting(ctx, base.ResourceTypeSecret, base.SettingScopeProject)
 }
 
-// CreateProjectSecret Creates a project secret
+// GetSecret Gets secret details
+// @Summary Gets secret details
+// @Description Gets secret details
+// @Tags    project_settings
+// @Produce json
+// @Id      getProjectSecret
+// @Param   projectID path string true "project ID"
+// @Param   itemID path string true "setting ID"
+// @Success 200 {object} secretdto.GetSecretResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /projects/{projectID}/secrets/{itemID} [get]
+func (h *Handler) GetSecret(ctx *gin.Context) {
+	h.GetSetting(ctx, base.ResourceTypeSecret, base.SettingScopeProject)
+}
+
+// CreateSecret Creates a project secret
 // @Summary Creates a project secret
 // @Description Creates a project secret
 // @Tags    projects
@@ -36,11 +52,11 @@ func (h *Handler) ListProjectSecrets(ctx *gin.Context) {
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/secrets [post]
-func (h *Handler) CreateProjectSecret(ctx *gin.Context) {
+func (h *Handler) CreateSecret(ctx *gin.Context) {
 	h.CreateSetting(ctx, base.ResourceTypeSecret, base.SettingScopeProject)
 }
 
-// UpdateProjectSecret Updates a project secret
+// UpdateSecret Updates a project secret
 // @Summary Updates a project secret
 // @Description Updates a project secret
 // @Tags    projects
@@ -53,11 +69,11 @@ func (h *Handler) CreateProjectSecret(ctx *gin.Context) {
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/secrets/{itemID} [put]
-func (h *Handler) UpdateProjectSecret(ctx *gin.Context) {
+func (h *Handler) UpdateSecret(ctx *gin.Context) {
 	h.UpdateSetting(ctx, base.ResourceTypeSecret, base.SettingScopeProject)
 }
 
-// UpdateProjectSecretStatus Updates project secret status
+// UpdateSecretStatus Updates project secret status
 // @Summary Updates project secret status
 // @Description Updates project secret status
 // @Tags    projects
@@ -70,11 +86,11 @@ func (h *Handler) UpdateProjectSecret(ctx *gin.Context) {
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/secrets/{itemID}/status [put]
-func (h *Handler) UpdateProjectSecretStatus(ctx *gin.Context) {
+func (h *Handler) UpdateSecretStatus(ctx *gin.Context) {
 	h.UpdateSettingStatus(ctx, base.ResourceTypeSecret, base.SettingScopeProject)
 }
 
-// DeleteProjectSecret Deletes a project secret
+// DeleteSecret Deletes a project secret
 // @Summary Deletes a project secret
 // @Description Deletes a project secret
 // @Tags    projects
@@ -86,6 +102,6 @@ func (h *Handler) UpdateProjectSecretStatus(ctx *gin.Context) {
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /projects/{projectID}/secrets/{itemID} [delete]
-func (h *Handler) DeleteProjectSecret(ctx *gin.Context) {
+func (h *Handler) DeleteSecret(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeSecret, base.SettingScopeProject)
 }
