@@ -16,16 +16,18 @@ type UpdateUniqueStorageSettingsReq struct {
 }
 
 type StorageSettingsBaseReq struct {
-	BindSettings   *StorageBindSettingsReq   `json:"bindSettings"`
-	VolumeSettings *StorageVolumeSettingsReq `json:"volumeSettings"`
-	TmpfsSettings  *StorageTmpfsSettingsReq  `json:"tmpfsSettings"`
+	BindSettings          *StorageBindSettingsReq          `json:"bindSettings"`
+	VolumeSettings        *StorageVolumeSettingsReq        `json:"volumeSettings"`
+	ClusterVolumeSettings *StorageClusterVolumeSettingsReq `json:"clusterVolumeSettings"`
+	TmpfsSettings         *StorageTmpfsSettingsReq         `json:"tmpfsSettings"`
 }
 
 func (req *StorageSettingsBaseReq) ToEntity() *entity.StorageSettings {
 	return &entity.StorageSettings{
-		BindSettings:   req.BindSettings.ToEntity(),
-		VolumeSettings: req.VolumeSettings.ToEntity(),
-		TmpfsSettings:  req.TmpfsSettings.ToEntity(),
+		BindSettings:          req.BindSettings.ToEntity(),
+		VolumeSettings:        req.VolumeSettings.ToEntity(),
+		ClusterVolumeSettings: req.ClusterVolumeSettings.ToEntity(),
+		TmpfsSettings:         req.TmpfsSettings.ToEntity(),
 	}
 }
 
@@ -40,7 +42,7 @@ func (req *StorageSettingsBaseReq) validate(field string) (res []vld.Validator) 
 }
 
 type StorageBindSettingsReq struct {
-	AllowAny            bool     `json:"allowAny,omitempty"`
+	Enabled             bool     `json:"enabled"`
 	BaseDirs            []string `json:"baseDirs"`
 	AppsMustUseSubPaths bool     `json:"appsMustUseSubPaths"`
 }
@@ -50,7 +52,7 @@ func (req *StorageBindSettingsReq) ToEntity() *entity.StorageBindSettings {
 		return nil
 	}
 	return &entity.StorageBindSettings{
-		AllowAny:            req.AllowAny,
+		Enabled:             req.Enabled,
 		BaseDirs:            req.BaseDirs,
 		AppsMustUseSubPaths: req.AppsMustUseSubPaths,
 	}
@@ -66,9 +68,9 @@ func (req *StorageBindSettingsReq) validate(field string) (res []vld.Validator) 
 }
 
 type StorageVolumeSettingsReq struct {
-	AllowAny            bool     `json:"allowAny,omitempty"`
-	Volumes             []string `json:"volumes"`
-	AppsMustUseSubPaths bool     `json:"appsMustUseSubPaths"`
+	Enabled             bool                     `json:"enabled"`
+	Volumes             basedto.ObjectIDSliceReq `json:"volumes"`
+	AppsMustUseSubPaths bool                     `json:"appsMustUseSubPaths"`
 }
 
 func (req *StorageVolumeSettingsReq) ToEntity() *entity.StorageVolumeSettings {
@@ -76,8 +78,8 @@ func (req *StorageVolumeSettingsReq) ToEntity() *entity.StorageVolumeSettings {
 		return nil
 	}
 	return &entity.StorageVolumeSettings{
-		AllowAny:            req.AllowAny,
-		Volumes:             req.Volumes,
+		Enabled:             req.Enabled,
+		Volumes:             req.Volumes.ToEntity(),
 		AppsMustUseSubPaths: req.AppsMustUseSubPaths,
 	}
 }
@@ -91,7 +93,34 @@ func (req *StorageVolumeSettingsReq) validate(field string) (res []vld.Validator
 	return res
 }
 
+type StorageClusterVolumeSettingsReq struct {
+	Enabled             bool                     `json:"enabled"`
+	Volumes             basedto.ObjectIDSliceReq `json:"volumes"`
+	AppsMustUseSubPaths bool                     `json:"appsMustUseSubPaths"`
+}
+
+func (req *StorageClusterVolumeSettingsReq) ToEntity() *entity.StorageClusterVolumeSettings {
+	if req == nil {
+		return nil
+	}
+	return &entity.StorageClusterVolumeSettings{
+		Enabled:             req.Enabled,
+		Volumes:             req.Volumes.ToEntity(),
+		AppsMustUseSubPaths: req.AppsMustUseSubPaths,
+	}
+}
+
+// nolint
+func (req *StorageClusterVolumeSettingsReq) validate(field string) (res []vld.Validator) {
+	if field != "" {
+		field += "."
+	}
+	// TODO: add validation
+	return res
+}
+
 type StorageTmpfsSettingsReq struct {
+	Enabled bool          `json:"enabled"`
 	MaxSize unit.DataSize `json:"maxSize"`
 }
 
@@ -100,6 +129,7 @@ func (req *StorageTmpfsSettingsReq) ToEntity() *entity.StorageTmpfsSettings {
 		return nil
 	}
 	return &entity.StorageTmpfsSettings{
+		Enabled: req.Enabled,
 		MaxSize: req.MaxSize,
 	}
 }

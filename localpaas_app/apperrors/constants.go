@@ -7,31 +7,31 @@ import (
 
 // Base errors with equivalent http status code
 var (
-	ErrInternalServer       = errors.New("ERR_INTERNAL_SERVER")
-	ErrPanic                = errors.New("ERR_PANIC")
-	ErrBadRequest           = errors.New("ERR_BAD_REQUEST")
-	ErrParamInvalid         = errors.New("ERR_PARAM_INVALID")
-	ErrUnavailable          = errors.New("ERR_UNAVAILABLE")
-	ErrNameUnavailable      = errors.New("ERR_NAME_UNAVAILABLE")
-	ErrUnauthorized         = errors.New("ERR_UNAUTHORIZED")
-	ErrForbidden            = errors.New("ERR_FORBIDDEN")
-	ErrNotFound             = errors.New("ERR_NOT_FOUND")
-	ErrAlreadyExist         = errors.New("ERR_ALREADY_EXIST")
-	ErrConflict             = errors.New("ERR_CONFLICT")
-	ErrNonEditable          = errors.New("ERR_NON_EDITABLE")
-	ErrNonDeletable         = errors.New("ERR_NON_DELETABLE")
-	ErrResourceInUse        = errors.New("ERR_RESOURCE_IN_USE")
-	ErrResourceInactive     = errors.New("ERR_RESOURCE_INACTIVE")
-	ErrResourceMissing      = errors.New("ERR_RESOURCE_MISSING")
-	ErrRequestTooFrequently = errors.New("ERR_REQUEST_TOO_FREQUENTLY")
-	ErrActionNotAllowed     = errors.New("ERR_ACTION_NOT_ALLOWED")
-	ErrActionFailed         = errors.New("ERR_ACTION_FAILED")
-	ErrNotImplemented       = errors.New("ERR_NOT_IMPLEMENTED")
-	ErrUnsupported          = errors.New("ERR_UNSUPPORTED")
-	ErrTokenInvalid         = errors.New("ERR_TOKEN_INVALID")
-	ErrTypeInvalid          = errors.New("ERR_TYPE_INVALID")
-	ErrValueInvalid         = errors.New("ERR_VALUE_INVALID")
-	ErrValidation           = errors.New("ERR_VALIDATION")
+	ErrInternalServer   = errors.New("ERR_INTERNAL_SERVER")
+	ErrPanic            = errors.New("ERR_PANIC")
+	ErrBadRequest       = errors.New("ERR_BAD_REQUEST")
+	ErrParamInvalid     = errors.New("ERR_PARAM_INVALID")
+	ErrUnavailable      = errors.New("ERR_UNAVAILABLE")
+	ErrNameUnavailable  = errors.New("ERR_NAME_UNAVAILABLE")
+	ErrUnauthorized     = errors.New("ERR_UNAUTHORIZED")
+	ErrForbidden        = errors.New("ERR_FORBIDDEN")
+	ErrNotFound         = errors.New("ERR_NOT_FOUND")
+	ErrAlreadyExist     = errors.New("ERR_ALREADY_EXIST")
+	ErrConflict         = errors.New("ERR_CONFLICT")
+	ErrNonEditable      = errors.New("ERR_NON_EDITABLE")
+	ErrNonDeletable     = errors.New("ERR_NON_DELETABLE")
+	ErrResourceInUse    = errors.New("ERR_RESOURCE_IN_USE")
+	ErrResourceInactive = errors.New("ERR_RESOURCE_INACTIVE")
+	ErrResourceMissing  = errors.New("ERR_RESOURCE_MISSING")
+	ErrTooMany          = errors.New("ERR_TOO_MANY")
+	ErrActionNotAllowed = errors.New("ERR_ACTION_NOT_ALLOWED")
+	ErrActionFailed     = errors.New("ERR_ACTION_FAILED")
+	ErrNotImplemented   = errors.New("ERR_NOT_IMPLEMENTED")
+	ErrUnsupported      = errors.New("ERR_UNSUPPORTED")
+	ErrTokenInvalid     = errors.New("ERR_TOKEN_INVALID")
+	ErrTypeInvalid      = errors.New("ERR_TYPE_INVALID")
+	ErrValueInvalid     = errors.New("ERR_VALUE_INVALID")
+	ErrValidation       = errors.New("ERR_VALIDATION")
 
 	ErrUpdateVerMismatched  = errors.New("ERR_UPDATE_VER_MISMATCHED")
 	ErrStatusNotAllowAction = errors.New("ERR_STATUS_NOT_ALLOW_ACTION")
@@ -122,31 +122,31 @@ var (
 // errorStatusMap - mapping from error to http status code
 var errorStatusMap = map[error]int{
 	// Base errors
-	ErrInternalServer:       http.StatusInternalServerError,
-	ErrPanic:                http.StatusInternalServerError,
-	ErrBadRequest:           http.StatusBadRequest,
-	ErrParamInvalid:         http.StatusBadRequest,
-	ErrUnavailable:          http.StatusBadRequest,
-	ErrUnauthorized:         http.StatusUnauthorized,
-	ErrNameUnavailable:      http.StatusConflict,
-	ErrForbidden:            http.StatusForbidden,
-	ErrNotFound:             http.StatusNotFound,
-	ErrAlreadyExist:         http.StatusConflict,
-	ErrConflict:             http.StatusConflict,
-	ErrNonEditable:          http.StatusUnprocessableEntity,
-	ErrNonDeletable:         http.StatusUnprocessableEntity,
-	ErrResourceInUse:        http.StatusConflict,
-	ErrResourceInactive:     http.StatusNotAcceptable,
-	ErrResourceMissing:      http.StatusNotAcceptable,
-	ErrRequestTooFrequently: http.StatusForbidden,
-	ErrActionNotAllowed:     http.StatusForbidden,
-	ErrActionFailed:         http.StatusUnprocessableEntity,
-	ErrNotImplemented:       http.StatusNotImplemented,
-	ErrUnsupported:          http.StatusNotImplemented,
-	ErrTokenInvalid:         http.StatusUnauthorized,
-	ErrTypeInvalid:          http.StatusUnprocessableEntity,
-	ErrValueInvalid:         http.StatusUnprocessableEntity,
-	ErrValidation:           http.StatusBadRequest,
+	ErrInternalServer:   http.StatusInternalServerError,
+	ErrPanic:            http.StatusInternalServerError,
+	ErrBadRequest:       http.StatusBadRequest,
+	ErrParamInvalid:     http.StatusBadRequest,
+	ErrUnavailable:      http.StatusBadRequest,
+	ErrUnauthorized:     http.StatusUnauthorized,
+	ErrNameUnavailable:  http.StatusConflict,
+	ErrForbidden:        http.StatusForbidden,
+	ErrNotFound:         http.StatusNotFound,
+	ErrAlreadyExist:     http.StatusConflict,
+	ErrConflict:         http.StatusConflict,
+	ErrNonEditable:      http.StatusUnprocessableEntity,
+	ErrNonDeletable:     http.StatusUnprocessableEntity,
+	ErrResourceInUse:    http.StatusConflict,
+	ErrResourceInactive: http.StatusNotAcceptable,
+	ErrResourceMissing:  http.StatusNotAcceptable,
+	ErrTooMany:          http.StatusTooManyRequests,
+	ErrActionNotAllowed: http.StatusForbidden,
+	ErrActionFailed:     http.StatusUnprocessableEntity,
+	ErrNotImplemented:   http.StatusNotImplemented,
+	ErrUnsupported:      http.StatusNotImplemented,
+	ErrTokenInvalid:     http.StatusUnauthorized,
+	ErrTypeInvalid:      http.StatusUnprocessableEntity,
+	ErrValueInvalid:     http.StatusUnprocessableEntity,
+	ErrValidation:       http.StatusBadRequest,
 
 	ErrUpdateVerMismatched:  http.StatusConflict,
 	ErrStatusNotAllowAction: http.StatusForbidden,

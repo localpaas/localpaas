@@ -36,6 +36,7 @@ type GetVolumeResp struct {
 
 type VolumeResp struct {
 	ID                string                 `json:"id"`
+	Name              string                 `json:"name"`
 	AvailInProjects   bool                   `json:"availableInProjects"`
 	Labels            map[string]string      `json:"labels"`
 	Driver            string                 `json:"driver"`
@@ -57,6 +58,7 @@ type ClusterVolumeSpecResp struct {
 func TransformVolume(vol *volume.Volume, _ bool) *VolumeResp {
 	resp := &VolumeResp{
 		ID:              vol.Name,
+		Name:            vol.Name,
 		AvailInProjects: vol.Labels[docker.StackLabelNamespace] == "",
 		Driver:          vol.Driver,
 		Mountpoint:      vol.Mountpoint,

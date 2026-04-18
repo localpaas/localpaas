@@ -3,6 +3,9 @@ package appsettingsuc
 import (
 	"context"
 
+	"github.com/docker/docker/api/types/mount"
+	"github.com/tiendc/gofn"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
@@ -26,6 +29,15 @@ func (uc *UC) GetAppStorageSettings(
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+
+	// Filter out unsupported mount types
+	returningMounts := make([]mount.Mount, 0, len(service.Spec.TaskTemplate.ContainerSpec.Mounts))
+	for _, mnt := range service.Spec.TaskTemplate.ContainerSpec.Mounts {
+		if gofn.Contain(supportedMountTypes, mnt.Type) {
+			returningMounts = append(returningMounts, mnt)
+		}
+	}
+	service.Spec.TaskTemplate.ContainerSpec.Mounts = returningMounts
 
 	resp, err := appsettingsdto.TransformStorageSettings(service)
 	if err != nil {

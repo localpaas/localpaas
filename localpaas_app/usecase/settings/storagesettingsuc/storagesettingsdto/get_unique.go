@@ -1,7 +1,9 @@
 package storagesettingsdto
 
 import (
+	"github.com/docker/docker/api/types/volume"
 	vld "github.com/tiendc/go-validator"
+	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -32,34 +34,66 @@ type GetUniqueStorageSettingsResp struct {
 
 type StorageSettingsResp struct {
 	*settings.BaseSettingResp
-	BindSettings   *StorageBindSettingsResp   `json:"bindSettings"`
-	VolumeSettings *StorageVolumeSettingsResp `json:"volumeSettings"`
-	TmpfsSettings  *StorageTmpfsSettingsResp  `json:"tmpfsSettings"`
+	BindSettings          *StorageBindSettingsResp          `json:"bindSettings"`
+	VolumeSettings        *StorageVolumeSettingsResp        `json:"volumeSettings"`
+	ClusterVolumeSettings *StorageClusterVolumeSettingsResp `json:"clusterVolumeSettings"`
+	TmpfsSettings         *StorageTmpfsSettingsResp         `json:"tmpfsSettings"`
 }
 
 type StorageBindSettingsResp struct {
-	AllowAny            bool     `json:"allowAny,omitempty"`
+	Enabled             bool     `json:"enabled,omitempty"`
 	BaseDirs            []string `json:"baseDirs"`
+	BaseSubpath         string   `json:"baseSubpath"`
 	AppsMustUseSubPaths bool     `json:"appsMustUseSubPaths"`
 }
 
 type StorageVolumeSettingsResp struct {
-	AllowAny            bool     `json:"allowAny,omitempty"`
-	Volumes             []string `json:"volumes"`
-	AppsMustUseSubPaths bool     `json:"appsMustUseSubPaths"`
+	Enabled             bool                         `json:"enabled,omitempty"`
+	Volumes             basedto.NamedObjectSliceResp `json:"volumes"`
+	BaseSubpath         string                       `json:"baseSubpath"`
+	AppsMustUseSubPaths bool                         `json:"appsMustUseSubPaths"`
+}
+
+type StorageClusterVolumeSettingsResp struct {
+	Enabled             bool                         `json:"enabled,omitempty"`
+	Volumes             basedto.NamedObjectSliceResp `json:"volumes"`
+	BaseSubpath         string                       `json:"baseSubpath"`
+	AppsMustUseSubPaths bool                         `json:"appsMustUseSubPaths"`
 }
 
 type StorageTmpfsSettingsResp struct {
+	Enabled bool          `json:"enabled,omitempty"`
 	MaxSize unit.DataSize `json:"maxSize"`
 }
 
 func TransformStorageSettings(
 	setting *entity.Setting,
-	_ *entity.RefObjects,
+	volumes []*volume.Volume,
 ) (resp *StorageSettingsResp, err error) {
 	config := setting.MustAsStorageSettings()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
+	}
+
+	// Docker named volume, the name is the same as the id
+	if resp.VolumeSettings != nil {
+		for _, vol := range resp.VolumeSettings.Volumes {
+			vol.Name = vol.ID
+		}
+	}
+
+	// Docker cluster volumes have both IDs and names
+	if resp.ClusterVolumeSettings != nil {
+		for _, vol := range resp.ClusterVolumeSettings.Volumes {
+			v, _ := gofn.Find(volumes, func(v *volume.Volume) bool {
+				return v.ClusterVolume != nil && v.ClusterVolume.ID == vol.ID
+			})
+			if v != nil {
+				vol.Name = v.Name
+			} else {
+				vol.Name = "<missing-volume>"
+			}
+		}
 	}
 
 	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)

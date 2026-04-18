@@ -95,6 +95,14 @@ func NewUnavailableNT(name string) AppError { // NT: non translation param
 	return New(ErrUnavailable).WithNTParam("Name", name)
 }
 
+// NewForbidden return AppError for error Forbidden
+func NewForbidden(name string) AppError {
+	return New(ErrForbidden).WithParam("Name", name)
+}
+func NewForbiddenNT(name string) AppError { // NT: non translation param
+	return New(ErrForbidden).WithNTParam("Name", name)
+}
+
 // NewNonEditable return AppError for error NonEditable
 func NewNonEditable(name string) AppError {
 	return New(ErrNonEditable).WithParam("Name", name)

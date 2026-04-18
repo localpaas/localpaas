@@ -267,11 +267,11 @@ func (s *service) createClientConfig(
 	mwName := fmt.Sprintf("%s-buffering", routerName)
 	if clientCfg.MaxRequestBody > 0 {
 		labels[fmt.Sprintf("traefik.http.middlewares.%s.buffering.maxrequestbodybytes", mwName)] =
-			strconv.FormatUint(uint64(clientCfg.MaxRequestBody), 10)
+			strconv.FormatInt(clientCfg.MaxRequestBody.Bytes(), 10)
 	}
 	if clientCfg.MemRequestBody > 0 {
 		labels[fmt.Sprintf("traefik.http.middlewares.%s.buffering.memrequestbodybytes", mwName)] =
-			strconv.FormatUint(uint64(clientCfg.MemRequestBody), 10)
+			strconv.FormatInt(clientCfg.MemRequestBody.Bytes(), 10)
 	}
 	*middlewares = append(*middlewares, mwName+middlewareProvider)
 
@@ -354,7 +354,7 @@ func (s *service) createCompressionConfig(
 	}
 	if compCfg.MinResponseBody > 0 {
 		labels[fmt.Sprintf("traefik.http.middlewares.%s.compress.minresponsebodybytes", mwName)] =
-			strconv.FormatUint(uint64(compCfg.MinResponseBody), 10)
+			strconv.FormatInt(compCfg.MinResponseBody.Bytes(), 10)
 	}
 	if compCfg.DefaultEncoding != "" {
 		labels[fmt.Sprintf("traefik.http.middlewares.%s.compress.defaultencoding", mwName)] =

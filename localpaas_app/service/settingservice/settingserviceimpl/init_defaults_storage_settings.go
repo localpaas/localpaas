@@ -15,7 +15,8 @@ import (
 )
 
 const (
-	storageSettingName = "Storage settings"
+	storageSettingName        = "Storage settings"
+	storageSettingBaseSubpath = "project_data"
 )
 
 func (s *service) initDefaultStorageSettings(
@@ -35,20 +36,35 @@ func (s *service) initDefaultStorageSettings(
 		CreatedAt:       timeNow,
 		UpdatedAt:       timeNow,
 	}
-	storage := &entity.StorageSettings{}
+	storage := &entity.StorageSettings{
+		BindSettings: &entity.StorageBindSettings{
+			BaseSubpath:         storageSettingBaseSubpath,
+			AppsMustUseSubPaths: true,
+		},
+		VolumeSettings: &entity.StorageVolumeSettings{
+			BaseSubpath:         storageSettingBaseSubpath,
+			AppsMustUseSubPaths: true,
+		},
+		ClusterVolumeSettings: &entity.StorageClusterVolumeSettings{
+			BaseSubpath:         storageSettingBaseSubpath,
+			AppsMustUseSubPaths: true,
+		},
+		TmpfsSettings: &entity.StorageTmpfsSettings{
+			Enabled: true,
+		},
+	}
 
 	storageCfg := &config.Current.Storage
 	if storageCfg.BindSource != "" {
-		storage.BindSettings = &entity.StorageBindSettings{
-			BaseDirs:            []string{storageCfg.BindSource},
-			AppsMustUseSubPaths: true,
-		}
+		storage.BindSettings.Enabled = true
+		storage.BindSettings.BaseDirs = []string{storageCfg.BindSource}
 	}
 	if storageCfg.Volume != "" {
-		storage.VolumeSettings = &entity.StorageVolumeSettings{
-			Volumes:             []string{storageCfg.Volume},
-			AppsMustUseSubPaths: true,
-		}
+		storage.VolumeSettings.Enabled = true
+		storage.VolumeSettings.Volumes = entity.ObjectIDSlice{{ID: storageCfg.Volume}}
+
+		storage.ClusterVolumeSettings.Enabled = true
+		storage.ClusterVolumeSettings.Volumes = entity.ObjectIDSlice{{ID: storageCfg.Volume}}
 	}
 
 	storageSetting.MustSetData(storage)

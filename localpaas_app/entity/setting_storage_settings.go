@@ -22,24 +22,35 @@ func (s *storageSettingsParser) New() SettingData {
 }
 
 type StorageSettings struct {
-	BindSettings   *StorageBindSettings   `json:"bindSettings"`
-	VolumeSettings *StorageVolumeSettings `json:"volumeSettings"`
-	TmpfsSettings  *StorageTmpfsSettings  `json:"tmpfsSettings"`
+	BindSettings          *StorageBindSettings          `json:"bindSettings"`
+	VolumeSettings        *StorageVolumeSettings        `json:"volumeSettings"`
+	ClusterVolumeSettings *StorageClusterVolumeSettings `json:"clusterVolumeSettings"`
+	TmpfsSettings         *StorageTmpfsSettings         `json:"tmpfsSettings"`
 }
 
 type StorageBindSettings struct {
-	AllowAny            bool     `json:"allowAny,omitempty"`
+	Enabled             bool     `json:"enabled,omitempty"`
 	BaseDirs            []string `json:"baseDirs"`
+	BaseSubpath         string   `json:"baseSubpath"`
 	AppsMustUseSubPaths bool     `json:"appsMustUseSubPaths"`
 }
 
 type StorageVolumeSettings struct {
-	AllowAny            bool     `json:"allowAny,omitempty"`
-	Volumes             []string `json:"volumes"`
-	AppsMustUseSubPaths bool     `json:"appsMustUseSubPaths"`
+	Enabled             bool          `json:"enabled,omitempty"`
+	Volumes             ObjectIDSlice `json:"volumes"`
+	BaseSubpath         string        `json:"baseSubpath"`
+	AppsMustUseSubPaths bool          `json:"appsMustUseSubPaths"`
+}
+
+type StorageClusterVolumeSettings struct {
+	Enabled             bool          `json:"enabled,omitempty"`
+	Volumes             ObjectIDSlice `json:"volumes"`
+	BaseSubpath         string        `json:"baseSubpath"`
+	AppsMustUseSubPaths bool          `json:"appsMustUseSubPaths"`
 }
 
 type StorageTmpfsSettings struct {
+	Enabled bool          `json:"enabled,omitempty"`
 	MaxSize unit.DataSize `json:"maxSize"`
 }
 

@@ -5,6 +5,7 @@ package unit
 import (
 	"bytes"
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 
@@ -12,7 +13,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/tracerr"
 )
 
-type DataSize uint64
+type DataSize int64
 
 const (
 	B  DataSize = 1
@@ -24,12 +25,12 @@ const (
 	EB          = PB << 10
 
 	fnUnmarshalText string = "UnmarshalText"
-	maxUint64       uint64 = (1 << 64) - 1 //nolint:mnd
-	cutoff          uint64 = maxUint64 / 10
+	maxInt64        int64  = math.MaxInt64
+	cutoff          int64  = maxInt64 / 10
 )
 
-func (b DataSize) Bytes() uint64 {
-	return uint64(b)
+func (b DataSize) Bytes() int64 {
+	return int64(b)
 }
 
 func (b DataSize) KBytes() float64 {
@@ -118,7 +119,7 @@ func (b DataSize) MarshalText() ([]byte, error) {
 
 //nolint:gocognit
 func (b *DataSize) UnmarshalText(t []byte) error {
-	var val uint64
+	var val int64
 	var unit string
 
 	// copy for error message
@@ -139,11 +140,11 @@ ParseLoop:
 			c -= '0'
 			val *= 10
 
-			if val > val+uint64(c) {
+			if val > val+int64(c) {
 				// val+v overflows
 				goto Overflow
 			}
-			val += uint64(c)
+			val += int64(c)
 			i++
 
 		default:
@@ -161,40 +162,40 @@ ParseLoop:
 		// do nothing - already in bytes
 
 	case "kb":
-		if val > maxUint64/uint64(KB) {
+		if val > maxInt64/int64(KB) {
 			goto Overflow
 		}
-		val *= uint64(KB)
+		val *= int64(KB)
 
 	case "mb":
-		if val > maxUint64/uint64(MB) {
+		if val > maxInt64/int64(MB) {
 			goto Overflow
 		}
-		val *= uint64(MB)
+		val *= int64(MB)
 
 	case "gb":
-		if val > maxUint64/uint64(GB) {
+		if val > maxInt64/int64(GB) {
 			goto Overflow
 		}
-		val *= uint64(GB)
+		val *= int64(GB)
 
 	case "tb":
-		if val > maxUint64/uint64(TB) {
+		if val > maxInt64/int64(TB) {
 			goto Overflow
 		}
-		val *= uint64(TB)
+		val *= int64(TB)
 
 	case "pb":
-		if val > maxUint64/uint64(PB) {
+		if val > maxInt64/int64(PB) {
 			goto Overflow
 		}
-		val *= uint64(PB)
+		val *= int64(PB)
 
 	case "eb":
-		if val > maxUint64/uint64(EB) {
+		if val > maxInt64/int64(EB) {
 			goto Overflow
 		}
-		val *= uint64(EB)
+		val *= int64(EB)
 
 	default:
 		goto SyntaxError
@@ -204,7 +205,7 @@ ParseLoop:
 	return nil
 
 Overflow:
-	*b = DataSize(maxUint64)
+	*b = DataSize(maxInt64)
 	return &strconv.NumError{Func: fnUnmarshalText, Num: string(t0), Err: strconv.ErrRange}
 
 SyntaxError:
@@ -234,7 +235,7 @@ func (b *DataSize) UnmarshalJSON(in []byte) error {
 	}
 
 	// Parse unit as integer number
-	v, err := strconv.ParseUint(reflectutil.UnsafeBytesToStr(in), 10, 64)
+	v, err := strconv.ParseInt(reflectutil.UnsafeBytesToStr(in), 10, 64)
 	if err != nil {
 		return tracerr.Wrap(err)
 	}

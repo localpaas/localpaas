@@ -7,6 +7,9 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/osutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/unit"
 )
 
 type GetAppStorageSettingsReq struct {
@@ -37,11 +40,45 @@ type StorageSettingsResp struct {
 }
 
 type Mount struct {
-	Type        mount.Type        `json:"type"`
-	Source      string            `json:"source,omitempty"`
-	Target      string            `json:"target,omitempty"`
-	ReadOnly    bool              `json:"readOnly,omitempty"`
-	Consistency mount.Consistency `json:"consistency,omitempty"`
+	Type           mount.Type        `json:"type"`
+	Source         string            `json:"source,omitempty"`
+	Target         string            `json:"target"`
+	ReadOnly       bool              `json:"readOnly,omitempty"`
+	Consistency    mount.Consistency `json:"consistency,omitempty"`
+	BindOptions    *BindOptions      `json:"bindOptions,omitempty"`
+	VolumeOptions  *VolumeOptions    `json:"volumeOptions,omitempty"`
+	TmpfsOptions   *TmpfsOptions     `json:"tmpfsOptions,omitempty"`
+	ClusterOptions *ClusterOptions   `json:"clusterOptions,omitempty"`
+}
+
+type BindOptions struct {
+	Propagation            mount.Propagation `json:"propagation"`
+	NonRecursive           bool              `json:"nonRecursive"`
+	CreateMountpoint       bool              `json:"createMountpoint"`
+	ReadOnlyNonRecursive   bool              `json:"readOnlyNonRecursive"`
+	ReadOnlyForceRecursive bool              `json:"readOnlyForceRecursive"`
+}
+
+type VolumeOptions struct {
+	NoCopy       bool              `json:"noCopy"`
+	Labels       map[string]string `json:"labels"`
+	Subpath      string            `json:"subpath"`
+	DriverConfig *VolumeDriver     `json:"driverConfig"`
+}
+
+type VolumeDriver struct {
+	Name    string            `json:"name"`
+	Options map[string]string `json:"options"`
+}
+
+type TmpfsOptions struct {
+	Size    unit.DataSize   `json:"size" copy:"SizeBytes"`
+	Mode    osutil.FileMode `json:"mode"`
+	Options [][]string      `json:"options"`
+}
+
+type ClusterOptions struct {
+	VolumeOptions
 }
 
 func TransformStorageSettings(
@@ -52,21 +89,29 @@ func TransformStorageSettings(
 		UpdateVer: int(service.Version.Index), //nolint:gosec
 	}
 
-	resp.Mounts = TransformVolumeMounts(spec.TaskTemplate.ContainerSpec.Mounts)
+	resp.Mounts, err = TransformStorageMounts(spec.TaskTemplate.ContainerSpec.Mounts)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
 
 	return resp, nil
 }
 
-func TransformVolumeMounts(mounts []mount.Mount) []*Mount {
+func TransformStorageMount(mount *mount.Mount) (resp *Mount, err error) {
+	if err = copier.Copy(&resp, mount); err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return resp, nil
+}
+
+func TransformStorageMounts(mounts []mount.Mount) ([]*Mount, error) {
 	resp := make([]*Mount, 0, len(mounts))
 	for _, mnt := range mounts {
-		resp = append(resp, &Mount{
-			Type:        mnt.Type,
-			Source:      mnt.Source,
-			Target:      mnt.Target,
-			ReadOnly:    mnt.ReadOnly,
-			Consistency: mnt.Consistency,
-		})
+		itemResp, err := TransformStorageMount(&mnt)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		resp = append(resp, itemResp)
 	}
-	return resp
+	return resp, nil
 }

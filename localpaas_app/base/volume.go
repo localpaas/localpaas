@@ -3,12 +3,11 @@ package base
 type VolumeDriver string
 
 const (
-	VolumeDriverLocal     VolumeDriver = "local"
-	VolumeDriverSeaweedFs VolumeDriver = "seaweedfs"
+	VolumeDriverLocal VolumeDriver = "local"
 )
 
 var (
-	AllVolumeDrivers = []VolumeDriver{VolumeDriverLocal, VolumeDriverSeaweedFs}
+	AllVolumeDrivers = []VolumeDriver{VolumeDriverLocal}
 )
 
 type VolumeType string

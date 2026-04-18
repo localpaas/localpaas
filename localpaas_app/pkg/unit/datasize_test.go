@@ -9,7 +9,7 @@ import (
 
 func TestDataSize_Values(t *testing.T) {
 	size := MB
-	assert.Equal(t, uint64(1024*1024), size.Bytes())
+	assert.Equal(t, int64(1024*1024), size.Bytes())
 	assert.Equal(t, 1024.0, size.KBytes())
 	assert.Equal(t, 1.0, size.MBytes())
 	assert.Equal(t, 1.0/1024.0, size.GBytes())

@@ -21661,9 +21661,9 @@
         "x-enum-varnames" : [ "UserStatusActive", "UserStatusPending", "UserStatusDisabled" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.VolumeDriver" : {
-        "enum" : [ "local", "seaweedfs" ],
+        "enum" : [ "local" ],
         "type" : "string",
-        "x-enum-varnames" : [ "VolumeDriverLocal", "VolumeDriverSeaweedFs" ]
+        "x-enum-varnames" : [ "VolumeDriverLocal" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.VolumeScope" : {
         "enum" : [ "global", "local" ],
@@ -22101,7 +22101,7 @@
         "x-enum-varnames" : [ "ModeDir", "ModeAppend", "ModeExclusive", "ModeTemporary", "ModeSymlink", "ModeDevice", "ModeNamedPipe", "ModeSocket", "ModeSetuid", "ModeSetgid", "ModeCharDevice", "ModeSticky", "ModeIrregular", "ModeType", "ModePerm" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 86400000000000, 604800000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 86400000000000, 604800000000000 ],
         "format" : "int64",
         "type" : "integer",
         "x-enum-varnames" : [ "Day", "Week" ]
@@ -22216,6 +22216,27 @@
         },
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.BindOptions" : {
+        "properties" : {
+          "createMountpoint" : {
+            "type" : "boolean"
+          },
+          "nonRecursive" : {
+            "type" : "boolean"
+          },
+          "propagation" : {
+            "$ref" : "#/components/schemas/mount.Propagation"
+          },
+          "readOnlyForceRecursive" : {
+            "type" : "boolean"
+          },
+          "readOnlyNonRecursive" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "createMountpoint", "nonRecursive", "propagation", "readOnlyForceRecursive", "readOnlyNonRecursive" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.Capabilities" : {
         "properties" : {
           "capabilityAdd" : {
@@ -22276,6 +22297,27 @@
           }
         },
         "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.ClusterOptions" : {
+        "properties" : {
+          "driverConfig" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.VolumeDriver"
+          },
+          "labels" : {
+            "additionalProperties" : {
+              "type" : "string"
+            },
+            "type" : "object"
+          },
+          "noCopy" : {
+            "type" : "boolean"
+          },
+          "subpath" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "driverConfig", "labels", "noCopy", "subpath" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.ContainerSettingsResp" : {
@@ -23105,6 +23147,12 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.Mount" : {
         "properties" : {
+          "bindOptions" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.BindOptions"
+          },
+          "clusterOptions" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.ClusterOptions"
+          },
           "consistency" : {
             "$ref" : "#/components/schemas/mount.Consistency"
           },
@@ -23117,11 +23165,17 @@
           "target" : {
             "type" : "string"
           },
+          "tmpfsOptions" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.TmpfsOptions"
+          },
           "type" : {
             "$ref" : "#/components/schemas/mount.Type"
+          },
+          "volumeOptions" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.VolumeOptions"
           }
         },
-        "required" : [ "type" ],
+        "required" : [ "target", "type" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.NetworkAttachment" : {
@@ -23397,6 +23451,27 @@
           }
         },
         "required" : [ "mounts", "updateVer" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.TmpfsOptions" : {
+        "properties" : {
+          "mode" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_osutil.FileMode"
+          },
+          "options" : {
+            "items" : {
+              "items" : {
+                "type" : "string"
+              },
+              "type" : "array"
+            },
+            "type" : "array"
+          },
+          "size" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_unit.DataSize"
+          }
+        },
+        "required" : [ "mode", "options", "size" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.Ulimit" : {
@@ -23782,6 +23857,42 @@
           }
         },
         "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.VolumeDriver" : {
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "options" : {
+            "additionalProperties" : {
+              "type" : "string"
+            },
+            "type" : "object"
+          }
+        },
+        "required" : [ "name", "options" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.VolumeOptions" : {
+        "properties" : {
+          "driverConfig" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.VolumeDriver"
+          },
+          "labels" : {
+            "additionalProperties" : {
+              "type" : "string"
+            },
+            "type" : "object"
+          },
+          "noCopy" : {
+            "type" : "boolean"
+          },
+          "subpath" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "driverConfig", "labels", "noCopy", "subpath" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppBaseResp" : {
@@ -24700,6 +24811,9 @@
           "mountpoint" : {
             "type" : "string"
           },
+          "name" : {
+            "type" : "string"
+          },
           "options" : {
             "additionalProperties" : {
               "type" : "string"
@@ -24725,7 +24839,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "availableInProjects", "clusterVolumeSpec", "createdAt", "driver", "id", "labels", "mountpoint", "options", "refCount", "scope", "size", "status", "updateVer" ],
+        "required" : [ "availableInProjects", "clusterVolumeSpec", "createdAt", "driver", "id", "labels", "mountpoint", "name", "options", "refCount", "scope", "size", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectsettingsuc_projectsettingsdto.CreateProjectTagReq" : {
@@ -30347,9 +30461,6 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_storagesettingsuc_storagesettingsdto.StorageBindSettingsReq" : {
         "properties" : {
-          "allowAny" : {
-            "type" : "boolean"
-          },
           "appsMustUseSubPaths" : {
             "type" : "boolean"
           },
@@ -30358,16 +30469,16 @@
               "type" : "string"
             },
             "type" : "array"
+          },
+          "enabled" : {
+            "type" : "boolean"
           }
         },
-        "required" : [ "appsMustUseSubPaths", "baseDirs" ],
+        "required" : [ "appsMustUseSubPaths", "baseDirs", "enabled" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_storagesettingsuc_storagesettingsdto.StorageBindSettingsResp" : {
         "properties" : {
-          "allowAny" : {
-            "type" : "boolean"
-          },
           "appsMustUseSubPaths" : {
             "type" : "boolean"
           },
@@ -30376,9 +30487,54 @@
               "type" : "string"
             },
             "type" : "array"
+          },
+          "baseSubpath" : {
+            "type" : "string"
+          },
+          "enabled" : {
+            "type" : "boolean"
           }
         },
-        "required" : [ "appsMustUseSubPaths", "baseDirs" ],
+        "required" : [ "appsMustUseSubPaths", "baseDirs", "baseSubpath" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_storagesettingsuc_storagesettingsdto.StorageClusterVolumeSettingsReq" : {
+        "properties" : {
+          "appsMustUseSubPaths" : {
+            "type" : "boolean"
+          },
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "volumes" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
+            },
+            "type" : "array"
+          }
+        },
+        "required" : [ "appsMustUseSubPaths", "enabled", "volumes" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_storagesettingsuc_storagesettingsdto.StorageClusterVolumeSettingsResp" : {
+        "properties" : {
+          "appsMustUseSubPaths" : {
+            "type" : "boolean"
+          },
+          "baseSubpath" : {
+            "type" : "string"
+          },
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "volumes" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.NamedObjectResp"
+            },
+            "type" : "array"
+          }
+        },
+        "required" : [ "appsMustUseSubPaths", "baseSubpath", "volumes" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_storagesettingsuc_storagesettingsdto.StorageSettingsResp" : {
@@ -30388,6 +30544,9 @@
           },
           "bindSettings" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_storagesettingsuc_storagesettingsdto.StorageBindSettingsResp"
+          },
+          "clusterVolumeSettings" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_storagesettingsuc_storagesettingsdto.StorageClusterVolumeSettingsResp"
           },
           "createdAt" : {
             "type" : "string"
@@ -30429,20 +30588,26 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_storagesettingsuc_storagesettingsdto.StorageVolumeSettingsResp"
           }
         },
-        "required" : [ "bindSettings", "createdAt", "id", "name", "status", "tmpfsSettings", "type", "updateVer", "updatedAt", "volumeSettings" ],
+        "required" : [ "bindSettings", "clusterVolumeSettings", "createdAt", "id", "name", "status", "tmpfsSettings", "type", "updateVer", "updatedAt", "volumeSettings" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_storagesettingsuc_storagesettingsdto.StorageTmpfsSettingsReq" : {
         "properties" : {
+          "enabled" : {
+            "type" : "boolean"
+          },
           "maxSize" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_unit.DataSize"
           }
         },
-        "required" : [ "maxSize" ],
+        "required" : [ "enabled", "maxSize" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_storagesettingsuc_storagesettingsdto.StorageTmpfsSettingsResp" : {
         "properties" : {
+          "enabled" : {
+            "type" : "boolean"
+          },
           "maxSize" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_unit.DataSize"
           }
@@ -30452,38 +30617,41 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_storagesettingsuc_storagesettingsdto.StorageVolumeSettingsReq" : {
         "properties" : {
-          "allowAny" : {
+          "appsMustUseSubPaths" : {
             "type" : "boolean"
           },
-          "appsMustUseSubPaths" : {
+          "enabled" : {
             "type" : "boolean"
           },
           "volumes" : {
             "items" : {
-              "type" : "string"
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
             },
             "type" : "array"
           }
         },
-        "required" : [ "appsMustUseSubPaths", "volumes" ],
+        "required" : [ "appsMustUseSubPaths", "enabled", "volumes" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_storagesettingsuc_storagesettingsdto.StorageVolumeSettingsResp" : {
         "properties" : {
-          "allowAny" : {
+          "appsMustUseSubPaths" : {
             "type" : "boolean"
           },
-          "appsMustUseSubPaths" : {
+          "baseSubpath" : {
+            "type" : "string"
+          },
+          "enabled" : {
             "type" : "boolean"
           },
           "volumes" : {
             "items" : {
-              "type" : "string"
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.NamedObjectResp"
             },
             "type" : "array"
           }
         },
-        "required" : [ "appsMustUseSubPaths", "volumes" ],
+        "required" : [ "appsMustUseSubPaths", "baseSubpath", "volumes" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_storagesettingsuc_storagesettingsdto.UpdateUniqueStorageSettingsReq" : {
@@ -30493,6 +30661,9 @@
           },
           "bindSettings" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_storagesettingsuc_storagesettingsdto.StorageBindSettingsReq"
+          },
+          "clusterVolumeSettings" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_storagesettingsuc_storagesettingsdto.StorageClusterVolumeSettingsReq"
           },
           "default" : {
             "type" : "boolean"
@@ -30507,7 +30678,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_storagesettingsuc_storagesettingsdto.StorageVolumeSettingsReq"
           }
         },
-        "required" : [ "availableInProjects", "bindSettings", "default", "tmpfsSettings", "updateVer", "volumeSettings" ],
+        "required" : [ "availableInProjects", "bindSettings", "clusterVolumeSettings", "default", "tmpfsSettings", "updateVer", "volumeSettings" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_storagesettingsuc_storagesettingsdto.UpdateUniqueStorageSettingsResp" : {
@@ -32157,6 +32328,11 @@
         "enum" : [ "consistent", "cached", "delegated", "default" ],
         "type" : "string",
         "x-enum-varnames" : [ "ConsistencyFull", "ConsistencyCached", "ConsistencyDelegated", "ConsistencyDefault" ]
+      },
+      "mount.Propagation" : {
+        "enum" : [ "rprivate", "private", "rshared", "shared", "rslave", "slave" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "PropagationRPrivate", "PropagationPrivate", "PropagationRShared", "PropagationShared", "PropagationRSlave", "PropagationSlave" ]
       },
       "mount.Type" : {
         "enum" : [ "bind", "volume", "tmpfs", "npipe", "cluster", "image" ],
