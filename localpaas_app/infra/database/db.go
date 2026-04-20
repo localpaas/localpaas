@@ -35,7 +35,8 @@ func NewDB(cfg *config.Config, logger logging.Logger) *DB {
 func connect(cfg *config.Config, logger logging.Logger) *bun.DB {
 	conf, err := pgx.ParseConfig(cfg.DB.GetDSN())
 	if err != nil {
-		logger.Error("Failed to parse dsn")
+		logger.Errorf("Failed to parse dsn: %v", err)
+		return nil
 	}
 	sqlDB := sql.OpenDB(stdlib.GetConnector(*conf))
 
@@ -45,11 +46,11 @@ func connect(cfg *config.Config, logger logging.Logger) *bun.DB {
 	db.SetConnMaxLifetime(cfg.DB.ConnMaxLifetime)
 
 	if !cfg.IsProdEnv() {
-		db.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose(true)))
+		db = db.WithQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose(true)))
 	}
 
 	if err := db.Ping(); err != nil {
-		logger.Error("Failed to connect to database: %v", err)
+		logger.Errorf("Failed to connect to database: %v", err)
 	}
 
 	logger.Info("Successfully connected to db")
