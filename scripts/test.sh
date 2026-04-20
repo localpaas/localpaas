@@ -16,7 +16,6 @@ PKG_LIST=$(go list ./...\
       -e ^./tests\
       -e ^./test-results\
       -e ^./tools\
-      -e ^./localpaas_app/interface/api/docs\
   | tr '\n' ',')
 
 echo "---------------------------------------------------------------"
