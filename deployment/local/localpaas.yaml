@@ -57,13 +57,14 @@ services:
       POSTGRES_DB: localpaas
       POSTGRES_USER: localpaas
       POSTGRES_PASSWORD: abc123
+      PGDATA: /var/lib/postgresql/18/docker
     ports:
       - target: 5432 # Container port
         published: 35432 # Host port exposed on the nodes
         protocol: tcp
         mode: host
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - localpaas_db:/var/lib/postgresql
 
   redis:
     image: redis:8-alpine
@@ -75,8 +76,6 @@ services:
         published: 36379 # Host port exposed on the nodes
         protocol: tcp
         mode: host
-    volumes:
-      - redis:/data
 
   adminer:
     image: adminer:latest
@@ -108,8 +107,6 @@ services:
         published: 35540 # Host port exposed on the nodes
         protocol: tcp
         mode: host
-    volumes:
-      - redis_ui:/data
 
 # Define the overlay network for Swarm
 networks:
@@ -120,9 +117,5 @@ networks:
     attachable: true
 
 volumes:
-  db_data:
-    driver: local
-  redis:
-    driver: local
-  redis_ui:
+  localpaas_db:
     driver: local
