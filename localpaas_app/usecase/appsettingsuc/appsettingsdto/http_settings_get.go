@@ -92,11 +92,12 @@ type HTTPCompressionConfigResp struct {
 }
 
 type HTTPPathConfigResp struct {
-	Path            string                    `json:"path"`
-	Mode            base.HTTPPathMode         `json:"mode"`
-	BasicAuth       *settings.BaseSettingResp `json:"basicAuth,omitzero"`
-	ClientConfig    *HTTPClientConfigResp     `json:"clientConfig"`
-	RateLimitConfig *HTTPRateLimitConfigResp  `json:"rateLimitConfig"`
+	Path              string                     `json:"path"`
+	Mode              base.HTTPPathMode          `json:"mode"`
+	BasicAuth         *settings.BaseSettingResp  `json:"basicAuth,omitzero"`
+	ClientConfig      *HTTPClientConfigResp      `json:"clientConfig"`
+	RateLimitConfig   *HTTPRateLimitConfigResp   `json:"rateLimitConfig"`
+	CompressionConfig *HTTPCompressionConfigResp `json:"compressionConfig"`
 }
 
 type AppHttpSettingsTransformInput struct {

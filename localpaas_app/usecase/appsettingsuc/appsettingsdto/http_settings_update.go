@@ -164,11 +164,12 @@ func (r *HTTPRateLimitConfigReq) ToEntity() *entity.HTTPRateLimitConfig {
 }
 
 type HTTPPathConfigReq struct {
-	Path            string                  `json:"path"`
-	Mode            base.HTTPPathMode       `json:"mode"`
-	BasicAuth       basedto.ObjectIDReq     `json:"basicAuth"`
-	ClientConfig    *HTTPClientConfigReq    `json:"clientConfig"`
-	RateLimitConfig *HTTPRateLimitConfigReq `json:"rateLimitConfig"`
+	Path              string                    `json:"path"`
+	Mode              base.HTTPPathMode         `json:"mode"`
+	BasicAuth         basedto.ObjectIDReq       `json:"basicAuth"`
+	ClientConfig      *HTTPClientConfigReq      `json:"clientConfig"`
+	RateLimitConfig   *HTTPRateLimitConfigReq   `json:"rateLimitConfig"`
+	CompressionConfig *HTTPCompressionConfigReq `json:"compressionConfig"`
 }
 
 func (r *HTTPPathConfigReq) ToEntity() *entity.HTTPPathConfig {
@@ -176,11 +177,12 @@ func (r *HTTPPathConfigReq) ToEntity() *entity.HTTPPathConfig {
 		return nil
 	}
 	return &entity.HTTPPathConfig{
-		Path:            r.Path,
-		Mode:            r.Mode,
-		BasicAuth:       entity.ObjectID{ID: r.BasicAuth.ID},
-		ClientConfig:    r.ClientConfig.ToEntity(),
-		RateLimitConfig: r.RateLimitConfig.ToEntity(),
+		Path:              r.Path,
+		Mode:              r.Mode,
+		BasicAuth:         entity.ObjectID{ID: r.BasicAuth.ID},
+		ClientConfig:      r.ClientConfig.ToEntity(),
+		RateLimitConfig:   r.RateLimitConfig.ToEntity(),
+		CompressionConfig: r.CompressionConfig.ToEntity(),
 	}
 }
 

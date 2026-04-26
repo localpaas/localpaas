@@ -76,12 +76,13 @@ type HTTPRateLimitConfig struct {
 }
 
 type HTTPPathConfig struct {
-	Path            string               `json:"path"`
-	Mode            base.HTTPPathMode    `json:"mode"`
-	BasicAuth       ObjectID             `json:"basicAuth,omitzero"`
-	ClientConfig    *HTTPClientConfig    `json:"clientConfig,omitempty"`
-	RateLimitConfig *HTTPRateLimitConfig `json:"rateLimitConfig,omitempty"`
-	HeaderConfig    *HTTPHeaderConfig    `json:"headerConfig,omitempty"`
+	Path              string                 `json:"path"`
+	Mode              base.HTTPPathMode      `json:"mode"`
+	BasicAuth         ObjectID               `json:"basicAuth,omitzero"`
+	ClientConfig      *HTTPClientConfig      `json:"clientConfig,omitempty"`
+	RateLimitConfig   *HTTPRateLimitConfig   `json:"rateLimitConfig,omitempty"`
+	HeaderConfig      *HTTPHeaderConfig      `json:"headerConfig,omitempty"`
+	CompressionConfig *HTTPCompressionConfig `json:"compressionConfig,omitempty"`
 }
 
 func (s *AppHttpSettings) GetDomain(domain string) *AppDomain {

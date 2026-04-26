@@ -208,6 +208,9 @@ func (s *service) collectPathConfig(
 	// Header config for path
 	s.createHeaderConfig(pathCfg.HeaderConfig, pathRouterName, labels, &pathMiddlewares)
 
+	// Compression config
+	s.createCompressionConfig(pathCfg.CompressionConfig, pathRouterName, labels, &pathMiddlewares)
+
 	// RateLimit config for path
 	s.createRateLimitConfig(pathCfg.RateLimitConfig, pathRouterName, labels, &pathMiddlewares)
 

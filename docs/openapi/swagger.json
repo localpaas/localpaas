@@ -1637,12 +1637,12 @@
     },
     "/internal/auth/dev-mode-login" : {
       "post" : {
-        "description" : "Login user for dev mode. `userID` params is required.",
+        "description" : "Login user for dev mode",
         "operationId" : "devModeLogin",
         "parameters" : [ {
           "description" : "user ID to login",
           "in" : "query",
-          "name" : "userID",
+          "name" : "userId",
           "schema" : {
             "type" : "string"
           }
@@ -22218,6 +22218,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.BindOptions" : {
         "properties" : {
+          "baseDir" : {
+            "type" : "string"
+          },
           "createMountpoint" : {
             "type" : "boolean"
           },
@@ -22232,9 +22235,15 @@
           },
           "readOnlyNonRecursive" : {
             "type" : "boolean"
+          },
+          "subpath" : {
+            "type" : "string"
+          },
+          "subpathRequired" : {
+            "type" : "string"
           }
         },
-        "required" : [ "createMountpoint", "nonRecursive", "propagation", "readOnlyForceRecursive", "readOnlyNonRecursive" ],
+        "required" : [ "baseDir", "createMountpoint", "nonRecursive", "propagation", "readOnlyForceRecursive", "readOnlyNonRecursive", "subpath", "subpathRequired" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.Capabilities" : {
@@ -22315,9 +22324,15 @@
           },
           "subpath" : {
             "type" : "string"
+          },
+          "subpathRequired" : {
+            "type" : "string"
+          },
+          "volume" : {
+            "type" : "string"
           }
         },
-        "required" : [ "driverConfig", "labels", "noCopy", "subpath" ],
+        "required" : [ "driverConfig", "labels", "noCopy", "subpath", "subpathRequired", "volume" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.ContainerSettingsResp" : {
@@ -22990,6 +23005,9 @@
           "clientConfig" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPClientConfigReq"
           },
+          "compressionConfig" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPCompressionConfigReq"
+          },
           "mode" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.HTTPPathMode"
           },
@@ -23000,7 +23018,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPRateLimitConfigReq"
           }
         },
-        "required" : [ "basicAuth", "clientConfig", "mode", "path", "rateLimitConfig" ],
+        "required" : [ "basicAuth", "clientConfig", "compressionConfig", "mode", "path", "rateLimitConfig" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPPathConfigResp" : {
@@ -23010,6 +23028,9 @@
           },
           "clientConfig" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPClientConfigResp"
+          },
+          "compressionConfig" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPCompressionConfigResp"
           },
           "mode" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.HTTPPathMode"
@@ -23021,7 +23042,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPRateLimitConfigResp"
           }
         },
-        "required" : [ "basicAuth", "clientConfig", "mode", "path", "rateLimitConfig" ],
+        "required" : [ "basicAuth", "clientConfig", "compressionConfig", "mode", "path", "rateLimitConfig" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPRateLimitConfigReq" : {
@@ -23158,9 +23179,6 @@
           },
           "readOnly" : {
             "type" : "boolean"
-          },
-          "source" : {
-            "type" : "string"
           },
           "target" : {
             "type" : "string"
@@ -23890,9 +23908,15 @@
           },
           "subpath" : {
             "type" : "string"
+          },
+          "subpathRequired" : {
+            "type" : "string"
+          },
+          "volume" : {
+            "type" : "string"
           }
         },
-        "required" : [ "driverConfig", "labels", "noCopy", "subpath" ],
+        "required" : [ "driverConfig", "labels", "noCopy", "subpath", "subpathRequired", "volume" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppBaseResp" : {
