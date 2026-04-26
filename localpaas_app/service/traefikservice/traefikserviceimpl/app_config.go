@@ -128,7 +128,7 @@ func (s *service) collectDomainConfig(
 	var middlewares []string
 
 	// Force Https config
-	s.createForceHttpsConfig(domain.ForceHttps, routerName, labels, &middlewares)
+	s.createForceHttpsConfig(domain.ForceHttps, domain.Domain, serviceName, routerName, labels)
 
 	// Redirect config
 	needRedirection := domain.DomainRedirect != "" && domain.Domain != domain.DomainRedirect
@@ -219,21 +219,27 @@ func (s *service) collectPathConfig(
 
 func (s *service) createForceHttpsConfig(
 	forceHttps bool,
+	domain string,
+	serviceName string,
 	routerName string,
 	labels map[string]string,
-	middlewares *[]string,
 ) {
 	if !forceHttps {
 		return
 	}
 
+	// Https redirection router
+	routerName += "-forcehttps"
+	labels[fmt.Sprintf("traefik.http.routers.%s.rule", routerName)] =
+		fmt.Sprintf("Host(`%s`)", domain)
+	labels[fmt.Sprintf("traefik.http.routers.%s.service", routerName)] = serviceName
 	// Listen to HTTP, then redirect to HTTPS
-	labels[fmt.Sprintf("traefik.http.routers.%s.entrypoints", routerName)] = "web,websecure"
+	labels[fmt.Sprintf("traefik.http.routers.%s.entrypoints", routerName)] = "web"
 
 	mwName := fmt.Sprintf("%s-forcehttps", routerName)
 	labels[fmt.Sprintf("traefik.http.middlewares.%s.redirectscheme.scheme", mwName)] = "https"
 	labels[fmt.Sprintf("traefik.http.middlewares.%s.redirectscheme.permanent", mwName)] = labelValueTrue
-	*middlewares = append(*middlewares, mwName+middlewareProvider)
+	labels[fmt.Sprintf("traefik.http.routers.%s.middlewares", routerName)] = mwName + middlewareProvider
 }
 
 func (s *service) createRedirectionConfig(
