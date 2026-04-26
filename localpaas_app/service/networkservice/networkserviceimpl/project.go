@@ -10,6 +10,18 @@ import (
 	"github.com/localpaas/localpaas/services/docker"
 )
 
+func (s *service) GetProjectNetwork(
+	ctx context.Context,
+	project *entity.Project,
+) (*network.Inspect, error) {
+	// Create a default network for the project apps
+	net, err := s.dockerManager.NetworkInspect(ctx, project.GetDefaultNetworkName())
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return net, nil
+}
+
 func (s *service) CreateProjectNetwork(
 	ctx context.Context,
 	project *entity.Project,

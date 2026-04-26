@@ -10,6 +10,7 @@ import (
 )
 
 type Service interface {
+	GetProjectNetwork(ctx context.Context, project *entity.Project) (*network.Inspect, error)
 	CreateProjectNetwork(ctx context.Context, project *entity.Project) (*network.CreateResponse, error)
 	RemoveProjectNetwork(ctx context.Context, project *entity.Project) error
 

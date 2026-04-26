@@ -2,9 +2,12 @@ package appsettingsuc
 
 import (
 	"context"
+	"errors"
 	"strings"
 
+	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/api/types/swarm"
+	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -49,8 +52,9 @@ func (uc *UC) UpdateAppNetworkSettings(
 }
 
 type updateAppNetworkSettingsData struct {
-	App     *entity.App
-	Service *swarm.Service
+	App                *entity.App
+	Service            *swarm.Service
+	ProjectInternalNet *network.Inspect
 }
 
 func (uc *UC) loadAppNetworkSettingsForUpdate(
@@ -81,6 +85,12 @@ func (uc *UC) loadAppNetworkSettingsForUpdate(
 		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
 	}
 
+	// Loads project internal network
+	data.ProjectInternalNet, err = uc.networkService.GetProjectNetwork(ctx, app.Project)
+	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
+		return apperrors.Wrap(err)
+	}
+
 	return nil
 }
 
@@ -99,6 +109,7 @@ func (uc *UC) prepareUpdatingAppNetworkAttachments(
 	data *updateAppNetworkSettingsData,
 ) {
 	service := data.Service
+	internalNet := data.ProjectInternalNet
 	taskSpec := &service.Spec.TaskTemplate
 
 	currAttachments := make(map[string]*swarm.NetworkAttachmentConfig, len(taskSpec.Networks))
@@ -116,6 +127,12 @@ func (uc *UC) prepareUpdatingAppNetworkAttachments(
 			}
 		}
 		attachment.Aliases = reqNetAttachment.Aliases
+		// Special case: the network is the default project one
+		if internalNet != nil && (reqNetAttachment.ID == internalNet.ID || reqNetAttachment.ID == internalNet.Name) {
+			if !gofn.Contain(attachment.Aliases, data.App.LocalKey) {
+				attachment.Aliases = append([]string{data.App.LocalKey}, attachment.Aliases...)
+			}
+		}
 		taskSpec.Networks = append(taskSpec.Networks, *attachment)
 	}
 }
