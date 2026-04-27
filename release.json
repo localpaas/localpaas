@@ -1,0 +1,12 @@
+{
+  "stable": {
+  },
+  "beta": {
+    "releaseDate": "2026-01-01",
+    "appVersion": "v0.1.0",
+    "appImage": "localpaas/localpaas-dev:0.1.0",
+    "redisImage": "redis:8-alpine",
+    "dbImage": "postgres:18-alpine",
+    "traefikImage": "traefik:v3.6"
+  }
+}
