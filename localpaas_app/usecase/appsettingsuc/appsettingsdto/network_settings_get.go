@@ -98,7 +98,8 @@ func TransformNetworkAttachments(
 	resp = make([]*NetworkAttachment, 0, len(netAttachments))
 	for _, netAttachment := range netAttachments {
 		itemResp := &NetworkAttachment{
-			ID: netAttachment.Target,
+			ID:      netAttachment.Target,
+			Aliases: netAttachment.Aliases,
 		}
 		if net := refObjects.Networks[itemResp.ID]; net != nil {
 			itemResp.Name = net.Name
