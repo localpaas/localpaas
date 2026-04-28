@@ -73,7 +73,7 @@ func (s *service) ApplyAppConfig(
 		labels["traefik.swarm.network"] = base.NetworkGlobalRouting
 
 		for i, domain := range httpSettings.Domains {
-			s.collectDomainConfig(domain, i, labels, traefikConfig, data)
+			s.collectDomainConfig(app, domain, i, labels, traefikConfig, data)
 		}
 	}
 
@@ -98,19 +98,21 @@ func (s *service) ApplyAppConfig(
 }
 
 func (s *service) collectDomainConfig(
+	app *entity.App,
 	domain *entity.AppDomain,
 	domainIndex int,
 	labels map[string]string,
 	traefikConfig *AppTraefikConfig,
 	data *appConfigData,
 ) {
+	appKey := sanitizeRouterNameReplacer.Replace(app.Key)
 	domainKey := sanitizeRouterNameReplacer.Replace(domain.Domain)
 	if domainKey == "" {
 		return
 	}
 
 	// Service
-	serviceName := fmt.Sprintf("svc-%v", domainIndex)
+	serviceName := fmt.Sprintf("svc-%v-%v", appKey, domainIndex)
 	labels[fmt.Sprintf("traefik.http.services.%s.loadbalancer.server.port", serviceName)] =
 		strconv.Itoa(domain.ContainerPort)
 	labels[fmt.Sprintf("traefik.http.services.%s.loadbalancer.passhostheader", serviceName)] = labelValueTrue
@@ -120,7 +122,7 @@ func (s *service) collectDomainConfig(
 	}
 
 	// Main router
-	routerName := fmt.Sprintf("router-%v", domainIndex)
+	routerName := fmt.Sprintf("rout-%v-%v", appKey, domainIndex)
 	labels[fmt.Sprintf("traefik.http.routers.%s.rule", routerName)] =
 		fmt.Sprintf("Host(`%s`)", domain.Domain)
 	labels[fmt.Sprintf("traefik.http.routers.%s.service", routerName)] = serviceName

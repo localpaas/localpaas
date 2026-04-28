@@ -11,6 +11,7 @@ services:
       - "--providers.swarm.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.http.tls=true"
       - "--providers.file.directory=/etc/traefik/dynamic"
       - "--providers.file.watch=true"
       - "--log.level=DEBUG"
