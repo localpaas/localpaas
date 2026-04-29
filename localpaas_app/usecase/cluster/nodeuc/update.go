@@ -73,7 +73,7 @@ func (uc *UC) verifyNodeUpdateChange(
 			allNodes[tasks[i].NodeID] = &tasks[i]
 		}
 		if len(allNodes) == 1 && allNodes[node.ID] != nil {
-			return apperrors.New(apperrors.ErrNodeRequiredByLocalPaasApp).WithDisplayLevelHigh()
+			return apperrors.New(apperrors.ErrNodeRequiredByLocalPaaSApp).WithDisplayLevelHigh()
 		}
 	}
 	return nil

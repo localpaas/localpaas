@@ -118,7 +118,7 @@ var (
 
 // Errors for cluster
 var (
-	ErrNodeRequiredByLocalPaasApp = errors.New("ERR_NODE_REQUIRED_BY_LOCAL_PAAS_APP")
+	ErrNodeRequiredByLocalPaaSApp = errors.New("ERR_NODE_REQUIRED_BY_LOCAL_PAAS_APP")
 )
 
 // errorStatusMap - mapping from error to http status code
@@ -219,7 +219,7 @@ var errorStatusMap = map[error]int{
 	ErrInfraUnauthorized:       http.StatusUnauthorized,
 
 	// Cluster errors
-	ErrNodeRequiredByLocalPaasApp: http.StatusUnprocessableEntity,
+	ErrNodeRequiredByLocalPaaSApp: http.StatusUnprocessableEntity,
 }
 
 // errorWarnLevelMap defines the errors that are handled but unexpected to happen.

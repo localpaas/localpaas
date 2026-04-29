@@ -1,9 +1,6 @@
 env = "myenv"
 platform = "myplatform"
 
-name = "LocalpaaS"
-version = 1
-
 [db]
   host = "localhost"
   port = 15432

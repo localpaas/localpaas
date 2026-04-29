@@ -11,18 +11,18 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/lpappuc/lpappdto"
 )
 
-// ReloadLocalPaasAppConfig Reloads LocalPaas config files
-// @Summary Reloads LocalPaas config files
-// @Description Reloads LocalPaas config files
+// ReloadLocalPaaSAppConfig Reloads LocalPaaS config files
+// @Summary Reloads LocalPaaS config files
+// @Description Reloads LocalPaaS config files
 // @Tags    system_localpaas_app
 // @Produce json
-// @Id      reloadLocalPaasAppConfig
+// @Id      reloadLocalPaaSAppConfig
 // @Param   body body lpappdto.ReloadLpAppConfigReq true "request data"
 // @Success 200 {object} lpappdto.ReloadLpAppConfigResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /system/localpaas/config/reload [post]
-func (h *Handler) ReloadLocalPaasAppConfig(ctx *gin.Context) {
+func (h *Handler) ReloadLocalPaaSAppConfig(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceModule: base.ResourceModuleSystem,
 		Action:         base.ActionTypeWrite,
@@ -47,18 +47,18 @@ func (h *Handler) ReloadLocalPaasAppConfig(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
-// RestartLocalPaasApp Restarts localpaas app containers
+// RestartLocalPaaSApp Restarts localpaas app containers
 // @Summary Restarts localpaas app containers
 // @Description Restarts localpaas app containers
 // @Tags    system_localpaas_app
 // @Produce json
-// @Id      restartLocalPaasApp
+// @Id      restartLocalPaaSApp
 // @Param   body body lpappdto.RestartLpAppReq true "request data"
 // @Success 200 {object} lpappdto.RestartLpAppResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /system/localpaas/restart [post]
-func (h *Handler) RestartLocalPaasApp(ctx *gin.Context) {
+func (h *Handler) RestartLocalPaaSApp(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
 		ResourceModule: base.ResourceModuleSystem,
 		Action:         base.ActionTypeWrite,

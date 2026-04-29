@@ -11,17 +11,17 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/lpappuc/lpappdto"
 )
 
-// GetLocalPaasReleaseInfo Gets release info of the app
+// GetLocalPaaSReleaseInfo Gets release info of the app
 // @Summary Gets release info of the app
 // @Description Gets release info of the app
 // @Tags    system_localpaas_app
 // @Produce json
-// @Id      getLocalPaasReleaseInfo
+// @Id      getLocalPaaSReleaseInfo
 // @Success 200 {object} lpappdto.GetLpAppReleaseInfoResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
 // @Router  /system/localpaas/release-info [get]
-func (h *Handler) GetLocalPaasReleaseInfo(ctx *gin.Context) {
+func (h *Handler) GetLocalPaaSReleaseInfo(ctx *gin.Context) {
 	auth, err := h.authHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
 	if err != nil {
 		h.RenderError(ctx, err)

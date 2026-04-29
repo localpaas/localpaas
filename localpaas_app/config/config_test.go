@@ -15,7 +15,6 @@ func Test_LoadConfig(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, "myenv", cfg.Env)
 		assert.Equal(t, "myplatform", cfg.Platform)
-		assert.Equal(t, "LocalpaaS", cfg.Name)
 	})
 
 	t.Run("success with override a key with ENV", func(t *testing.T) {
@@ -26,7 +25,6 @@ func Test_LoadConfig(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, "myenv", cfg.Env)
 		assert.Equal(t, "myplatform", cfg.Platform)
-		assert.Equal(t, "overridden", cfg.Name)
 	})
 
 	t.Run("failure: no ENV to find config", func(t *testing.T) {

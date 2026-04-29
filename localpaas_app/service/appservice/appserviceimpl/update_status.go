@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	labelLocalPaasAppPrevServiceMode = "localpaas.app.prevServiceMode"
+	labelLocalPaaSAppPrevServiceMode = "localpaas.app.prevServiceMode"
 )
 
 func (s *service) OnAppStatusChanged(ctx context.Context, app *entity.App, oldStatus base.AppStatus) error {
@@ -45,7 +45,7 @@ func (s *service) onAppDisabled(ctx context.Context, app *entity.App) error {
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	service.Spec.Labels[labelLocalPaasAppPrevServiceMode] = string(prevSvcMode)
+	service.Spec.Labels[labelLocalPaaSAppPrevServiceMode] = string(prevSvcMode)
 
 	// Scale down to 0
 	service.Spec.Mode = swarm.ServiceMode{
@@ -75,7 +75,7 @@ func (s *service) onAppEnabled(ctx context.Context, app *entity.App) error {
 		return apperrors.Wrap(err)
 	}
 
-	prevSvcModeStr := service.Spec.Labels[labelLocalPaasAppPrevServiceMode]
+	prevSvcModeStr := service.Spec.Labels[labelLocalPaaSAppPrevServiceMode]
 	if prevSvcModeStr != "" {
 		mode := swarm.ServiceMode{}
 		err = json.Unmarshal(reflectutil.UnsafeStrToBytes(prevSvcModeStr), &mode)
@@ -83,7 +83,7 @@ func (s *service) onAppEnabled(ctx context.Context, app *entity.App) error {
 			return apperrors.Wrap(err)
 		}
 		service.Spec.Mode = mode
-		delete(service.Spec.Labels, labelLocalPaasAppPrevServiceMode)
+		delete(service.Spec.Labels, labelLocalPaaSAppPrevServiceMode)
 	} else {
 		service.Spec.Mode = swarm.ServiceMode{
 			Replicated: &swarm.ReplicatedService{

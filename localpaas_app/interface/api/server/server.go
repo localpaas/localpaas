@@ -33,10 +33,10 @@ type HTTPServer struct {
 	logger          logging.Logger
 }
 
-// NewHTTPServer Create new LocalPaas app
-// @title LocalPaas App
+// NewHTTPServer Create new LocalPaaS app
+// @title LocalPaaS App
 // @version 0.1
-// @description LocalPaas App
+// @description LocalPaaS App
 // @termsOfService http://swagger.io/terms/
 // @contact.name API Support
 // @contact.url http://www.swagger.io/support

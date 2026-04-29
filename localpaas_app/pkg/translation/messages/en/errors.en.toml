@@ -94,4 +94,4 @@ ERR_INFRA_DATA_LOSS = "{{.Error}}"
 ERR_INFRA_UNAUTHORIZED = "{{.Error}}"
 
 # Cluster error
-ERR_NODE_REQUIRED_BY_LOCAL_PAAS_APP = "Node is required to be an active manager as LocalPaas app is running in it"
+ERR_NODE_REQUIRED_BY_LOCAL_PAAS_APP = "Node is required to be an active manager as LocalPaaS app is running in it"

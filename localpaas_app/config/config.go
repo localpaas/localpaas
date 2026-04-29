@@ -51,12 +51,9 @@ type Config struct {
 
 	RootDomain string `toml:"root_domain" env:"LP_ROOT_DOMAIN"`
 	AppDomain  string `toml:"app_domain" env:"LP_APP_DOMAIN"`
-
-	Name    string `toml:"name" env:"LP_APP_NAME" default:"LocalPaaS"`
-	Version int    `toml:"version" env:"LP_APP_VERSION"`
-	BaseURL string `toml:"base_url" env:"LP_APP_BASE_URL"`
-	Secret  string `toml:"secret" env:"LP_APP_SECRET" default:"abc123"`
-	AppPath string `toml:"app_path" env:"LP_APP_PATH" default:"/var/lib/localpaas"`
+	BaseURL    string `toml:"base_url" env:"LP_APP_BASE_URL"`
+	Secret     string `toml:"secret" env:"LP_APP_SECRET" default:"abc123"`
+	AppPath    string `toml:"app_path" env:"LP_APP_PATH" default:"/var/lib/localpaas"`
 
 	AdminAccount AdminAccount `toml:"admin_account"`
 	HTTPServer   HTTPServer   `toml:"http_server"`
