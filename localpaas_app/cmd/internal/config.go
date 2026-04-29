@@ -57,7 +57,7 @@ func InitConfig(lc fx.Lifecycle, cfg *config.Config, logger logging.Logger) {
 
 func validateConfig(cfg *config.Config, logger logging.Logger) error {
 	logger.Info("validating app config...")
-	isProdEnv := cfg.IsProdEnv()
+	isProdEnv := !cfg.IsDevEnv()
 
 	// JWT secret must not be empty or a trivial value
 	if isProdEnv && len(cfg.Session.JWTSecret) < 10 {

@@ -6,5 +6,5 @@ type Cache struct {
 	ReadTimeout  int    `toml:"read_timeout" env:"LP_CACHE_READ_TIMEOUT"`
 	WriteTimeout int    `toml:"write_timeout" env:"LP_CACHE_WRITE_TIMEOUT"`
 	MinIdleConns int    `toml:"min_idle_conns" env:"LP_CACHE_MIN_IDLE_CONNS"`
-	UseTLS       bool   `toml:"use_tls" env:"LP_CACHE_USE_TLS"`
+	UseTLS       bool   `toml:"use_tls" env:"LP_CACHE_USE_TLS" default:"false"`
 }

@@ -78,7 +78,7 @@ func (s *HTTPServer) init() {
 		cors.CORS(s.config),
 	)
 
-	if !s.config.IsProdEnv() {
+	if s.config.IsDevEnv() {
 		engine.Use(ginlogger.SetLogger())
 	} else {
 		gin.SetMode(gin.ReleaseMode)

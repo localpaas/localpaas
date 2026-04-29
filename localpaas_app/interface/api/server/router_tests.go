@@ -9,7 +9,7 @@ import (
 
 //nolint:mnd
 func (s *HTTPServer) registerTestRoutes(apiGroup *gin.RouterGroup) *gin.RouterGroup {
-	if s.config.IsProdEnv() {
+	if !s.config.IsDevEnv() {
 		return nil
 	}
 	testGroup := apiGroup.Group("/tests")

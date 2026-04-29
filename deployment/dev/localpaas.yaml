@@ -5,6 +5,7 @@ services:
     image: traefik:v3.6
     command:
       - "--api.insecure=true"
+      - "--api.dashboard=true"
       - "--providers.swarm=true"
       - "--providers.swarm.watch=true"
       - "--providers.swarm.network=localpaas_net"
@@ -19,7 +20,6 @@ services:
       - "--accesslog=true"
       - "--accesslog.filepath=/var/log/traefik/access.log"
     networks:
-      # Connect to the 'localpaas_net' overlay network for inter-container communication across nodes
       - localpaas_net
     ports:
       # Expose traefik's entry points to the Swarm
@@ -70,6 +70,11 @@ services:
     deploy:
       labels:
         - "traefik.enable=false"
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
 
   redis:
     image: redis:8-alpine
@@ -80,6 +85,11 @@ services:
     deploy:
       labels:
         - "traefik.enable=false"
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
 
   adminer:
     image: adminer:latest
@@ -126,6 +136,11 @@ services:
         - "traefik.http.middlewares.x-custom-addprefix-le.addprefix.prefix=/letsencrypt"
         - "traefik.http.routers.x-custom-router-le-acme.middlewares=x-custom-addprefix-le@swarm"
         - "traefik.swarm.network=localpaas_net"
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
 
   worker:
     image: localpaas/localpaas-dev:latest
@@ -143,6 +158,11 @@ services:
     deploy:
       labels:
         - "traefik.enable=false"
+      mode: replicated
+      replicas: 0
+      placement:
+        constraints:
+          - node.role == manager
 
 networks:
   localpaas_net:

@@ -146,7 +146,7 @@ func (h *Handler) writeSessionDataToCookies(ctx *gin.Context, sessionResp *sessi
 	writeRefreshOnly bool) {
 	ctx.SetSameSite(http.SameSiteLaxMode)
 
-	secure := config.Current.IsProdEnv()
+	secure := !config.Current.IsDevEnv()
 	timeNow := timeutil.NowUTC()
 
 	if !writeRefreshOnly {

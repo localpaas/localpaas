@@ -45,7 +45,7 @@ func connect(cfg *config.Config, logger logging.Logger) *bun.DB {
 	db.SetMaxIdleConns(cfg.DB.MaxIdleConns)
 	db.SetConnMaxLifetime(cfg.DB.ConnMaxLifetime)
 
-	if !cfg.IsProdEnv() {
+	if cfg.IsDevEnv() {
 		db = db.WithQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose(true)))
 	}
 

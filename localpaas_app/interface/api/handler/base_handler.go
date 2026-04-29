@@ -97,8 +97,8 @@ func (h *BaseHandler) RenderError(ctx *gin.Context, err error) {
 	errInfo, _ := apperrors.ParseError(err, h.ParseRequestLang(ctx))
 	h.SaveError(ctx, err, errInfo)
 
-	// Remove the error debug data from the response if we are in production env
-	if config.Current.IsProdEnv() {
+	// Remove the error debug data from the response if we are not in dev env
+	if !config.Current.IsDevEnv() {
 		// these fields are for dev only
 		errInfo.Cause = ""
 		errInfo.DebugLog = ""

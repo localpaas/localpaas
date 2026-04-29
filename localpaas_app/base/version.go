@@ -1,7 +1,17 @@
 package base
 
-const CurrentVersion = VersionV1
+const (
+	VersionCodeV1 = "v000001" // Date: 2026-01-01
+)
+
+const CurrentVersion = VersionCodeV1
 
 const (
-	VersionV1 = "v0001-20251019"
+	StableVersion     = "v0.1.0"
+	StableVersionCode = VersionCodeV1
+)
+
+const (
+	BetaVersion     = "v0.1.0-beta1"
+	BetaVersionCode = VersionCodeV1
 )

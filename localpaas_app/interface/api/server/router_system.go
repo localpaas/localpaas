@@ -38,6 +38,8 @@ func (s *HTTPServer) registerSystemRoutes(apiGroup *gin.RouterGroup) (*gin.Route
 		lpAppGroup.POST("/restart", systemHandler.RestartLocalPaasApp)
 		// Config
 		lpAppGroup.POST("/config/reload", systemHandler.ReloadLocalPaasAppConfig)
+		// Release info
+		lpAppGroup.GET("/release-info", systemHandler.GetLocalPaasReleaseInfo)
 	}
 
 	// System settings group

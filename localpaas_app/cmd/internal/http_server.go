@@ -16,12 +16,10 @@ func InitHTTPServer(lc fx.Lifecycle, cfg *config.Config, srv server.Server, logg
 	lc.Append(fx.Hook{
 		OnStart: func(_ context.Context) error {
 			if isHttpServerEnabled(cfg) {
-				go func() {
-					logger.Info("starting HTTP server ...")
-					if err := srv.Start(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-						logger.Fatalf("start server error: %v", err.Error())
-					}
-				}()
+				logger.Info("starting HTTP server ...")
+				if err := srv.Start(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+					logger.Fatalf("start server error: %v", err.Error())
+				}
 			}
 			return nil
 		},
@@ -36,5 +34,5 @@ func InitHTTPServer(lc fx.Lifecycle, cfg *config.Config, srv server.Server, logg
 }
 
 func isHttpServerEnabled(cfg *config.Config) bool {
-	return cfg.RunMode == config.RunModeApp || cfg.RunMode == config.RunModeEmbeddedWorker
+	return cfg.RunMode == config.RunModeApp || cfg.RunMode == config.RunModeAppAndWorker
 }

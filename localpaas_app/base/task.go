@@ -6,6 +6,9 @@ const (
 	TaskTypeAppDeploy   TaskType = "task:app-deploy"
 	TaskTypeCronJobExec TaskType = "task:cron-job-exec"
 	TaskTypeHealthcheck TaskType = "task:healthcheck"
+
+	// Admin tasks
+	TaskTypeAppVerUpdate TaskType = "task:app-ver-update"
 )
 
 var (

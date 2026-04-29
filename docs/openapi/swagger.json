@@ -19202,6 +19202,46 @@
         "x-codegen-request-body-name" : "body"
       }
     },
+    "/system/localpaas/release-info" : {
+      "get" : {
+        "description" : "Gets release info of the app",
+        "operationId" : "getLocalPaasReleaseInfo",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_system_lpappuc_lpappdto.GetLpAppReleaseInfoResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Gets release info of the app",
+        "tags" : [ "system_localpaas_app" ]
+      }
+    },
     "/system/localpaas/restart" : {
       "post" : {
         "description" : "Restarts localpaas app containers",
@@ -21756,9 +21796,9 @@
         "x-enum-varnames" : [ "TaskStatusNotStarted", "TaskStatusInProgress", "TaskStatusCanceled", "TaskStatusDone", "TaskStatusFailed" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.TaskType" : {
-        "enum" : [ "task:app-deploy", "task:cron-job-exec", "task:healthcheck" ],
+        "enum" : [ "task:app-deploy", "task:cron-job-exec", "task:healthcheck", "task:app-ver-update" ],
         "type" : "string",
-        "x-enum-varnames" : [ "TaskTypeAppDeploy", "TaskTypeCronJobExec", "TaskTypeHealthcheck" ]
+        "x-enum-varnames" : [ "TaskTypeAppDeploy", "TaskTypeCronJobExec", "TaskTypeHealthcheck", "TaskTypeAppVerUpdate" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.UserRole" : {
         "enum" : [ "admin", "member" ],
@@ -22201,7 +22241,7 @@
         "x-enum-varnames" : [ "ModeDir", "ModeAppend", "ModeExclusive", "ModeTemporary", "ModeSymlink", "ModeDevice", "ModeNamedPipe", "ModeSocket", "ModeSetuid", "ModeSetgid", "ModeCharDevice", "ModeSticky", "ModeIrregular", "ModeType", "ModePerm" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 86400000000000, 604800000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 86400000000000, 604800000000000 ],
         "format" : "int64",
         "type" : "integer",
         "x-enum-varnames" : [ "Day", "Week" ]
@@ -22211,6 +22251,33 @@
         "format" : "int64",
         "type" : "integer",
         "x-enum-varnames" : [ "B", "KB", "MB", "GB", "TB", "PB", "EB" ]
+      },
+      "github_com_localpaas_localpaas_localpaas_app_service_lpappservice.ReleaseInfo" : {
+        "properties" : {
+          "appImage" : {
+            "type" : "string"
+          },
+          "appVersion" : {
+            "type" : "string"
+          },
+          "canUpdate" : {
+            "type" : "boolean"
+          },
+          "dbImage" : {
+            "type" : "string"
+          },
+          "redisImage" : {
+            "type" : "string"
+          },
+          "releaseDate" : {
+            "type" : "string"
+          },
+          "traefikImage" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "appImage", "appVersion", "canUpdate", "dbImage", "redisImage", "releaseDate", "traefikImage" ],
+        "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.CancelDeploymentReq" : {
         "type" : "object"
@@ -30942,6 +31009,30 @@
           }
         },
         "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_system_lpappuc_lpappdto.GetLpAppReleaseInfoResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_system_lpappuc_lpappdto.LpAppReleaseInfoResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_system_lpappuc_lpappdto.LpAppReleaseInfoResp" : {
+        "properties" : {
+          "beta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_service_lpappservice.ReleaseInfo"
+          },
+          "stable" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_service_lpappservice.ReleaseInfo"
+          }
+        },
+        "required" : [ "beta", "stable" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_system_lpappuc_lpappdto.ReloadLpAppConfigReq" : {

@@ -89,7 +89,7 @@ func (s *HTTPServer) registerRoutes() {
 	s.engine.NoRoute(routeNotFound)
 
 	// Swagger server
-	if !s.config.IsProdEnv() {
+	if s.config.IsDevEnv() {
 		s.engine.Use(StaticServe("/docs", localFile("./docs", false, "")))
 		s.engine.GET("/swagger/*any", swaggoGin.WrapHandler(swaggoFiles.Handler,
 			swaggoGin.URL("/docs/openapi/swagger.json")))
@@ -114,7 +114,7 @@ func (s *HTTPServer) registerRoutes() {
 	v1BasicAuth.Use(basicAuthMdlw)
 
 	// Dev mode
-	if !s.config.IsProdEnv() {
+	if s.config.IsDevEnv() {
 		v1BasicAuth.POST("/auth/dev-mode-login", s.handlerRegistry.sessionHandler.DevModeLogin)
 	}
 

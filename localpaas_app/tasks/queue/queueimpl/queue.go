@@ -94,7 +94,7 @@ func (q *taskQueue) Start() (err error) {
 	}
 
 	// Initialize task queue client if configured
-	if q.config.RunMode == config.RunModeApp || q.config.RunMode == config.RunModeEmbeddedWorker {
+	if q.config.RunMode == config.RunModeApp || q.config.RunMode == config.RunModeAppAndWorker {
 		q.logger.Infof("starting task queue client...")
 		q.client, err = gocronqueue.NewClient(q.redisClient, q.logger)
 		if err != nil {
@@ -123,5 +123,5 @@ func (q *taskQueue) Shutdown() error {
 }
 
 func (q *taskQueue) isWorkerMode() bool {
-	return q.config.RunMode == config.RunModeWorker || q.config.RunMode == config.RunModeEmbeddedWorker
+	return q.config.RunMode == config.RunModeWorker || q.config.RunMode == config.RunModeAppAndWorker
 }

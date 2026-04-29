@@ -21,6 +21,7 @@ const (
 	PlatformRemote = "remote"
 
 	EnvDev  = "development"
+	EnvBeta = "beta"
 	EnvProd = "production"
 )
 
@@ -32,9 +33,10 @@ var (
 type RunMode string
 
 const (
-	RunModeApp            RunMode = "app"
-	RunModeWorker         RunMode = "worker"
-	RunModeEmbeddedWorker RunMode = "embedded-worker"
+	RunModeApp          RunMode = "app"
+	RunModeWorker       RunMode = "worker"
+	RunModeAppAndWorker RunMode = "app-n-worker"
+	RunModeUpdater      RunMode = "updater"
 )
 
 var (
@@ -43,18 +45,18 @@ var (
 )
 
 type Config struct {
-	Env      string `toml:"env" env:"LP_ENV"`
-	Platform string `toml:"platform" env:"LP_PLATFORM"`
+	Env      string  `toml:"env" env:"LP_ENV"`
+	Platform string  `toml:"platform" env:"LP_PLATFORM" default:"remote"`
+	RunMode  RunMode `toml:"run_mode" env:"LP_RUN_MODE" default:"app-n-worker"`
 
 	RootDomain string `toml:"root_domain" env:"LP_ROOT_DOMAIN"`
 	AppDomain  string `toml:"app_domain" env:"LP_APP_DOMAIN"`
 
-	Name    string  `toml:"name" env:"LP_APP_NAME" default:"LocalPaaS"`
-	Version int     `toml:"version" env:"LP_APP_VERSION"`
-	RunMode RunMode `toml:"run_mode" env:"LP_APP_RUN_MODE" default:"app"`
-	BaseURL string  `toml:"base_url" env:"LP_APP_BASE_URL"`
-	Secret  string  `toml:"secret" env:"LP_APP_SECRET" default:"abc123"`
-	AppPath string  `toml:"app_path" env:"LP_APP_PATH" default:"/var/lib/localpaas"`
+	Name    string `toml:"name" env:"LP_APP_NAME" default:"LocalPaaS"`
+	Version int    `toml:"version" env:"LP_APP_VERSION"`
+	BaseURL string `toml:"base_url" env:"LP_APP_BASE_URL"`
+	Secret  string `toml:"secret" env:"LP_APP_SECRET" default:"abc123"`
+	AppPath string `toml:"app_path" env:"LP_APP_PATH" default:"/var/lib/localpaas"`
 
 	AdminAccount AdminAccount `toml:"admin_account"`
 	HTTPServer   HTTPServer   `toml:"http_server"`
@@ -70,6 +72,7 @@ type Config struct {
 }
 
 func (cfg *Config) IsDevEnv() bool  { return cfg.Env == EnvDev }
+func (cfg *Config) IsBetaEnv() bool { return cfg.Env == EnvBeta }
 func (cfg *Config) IsProdEnv() bool { return cfg.Env == EnvProd }
 
 /// LOAD CONFIG

@@ -12,6 +12,11 @@ type Service interface {
 	RestartLpAppSwarmService(ctx context.Context) error
 	ReloadLpAppConfig(ctx context.Context) error
 
+	GetAppReleaseInfo(ctx context.Context) (*AppReleaseInfo, error)
+
+	GetLpWorkerSwarmService(ctx context.Context) (*swarm.Service, error)
+	RestartLpWorkerSwarmService(ctx context.Context) error
+
 	GetLpDbSwarmService(ctx context.Context) (*swarm.Service, error)
 	RestartLpDbSwarmService(ctx context.Context) error
 

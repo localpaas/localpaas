@@ -31,7 +31,7 @@ func (s *service) RestartLpAppSwarmService(ctx context.Context) error {
 }
 
 func (s *service) GetLpAppTasks(ctx context.Context) ([]swarm.Task, error) {
-	service, err := s.GetLpDbSwarmService(ctx)
+	service, err := s.GetLpAppSwarmService(ctx)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

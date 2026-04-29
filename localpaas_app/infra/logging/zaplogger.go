@@ -13,7 +13,7 @@ type ZapLogger struct {
 
 func NewZapLogger(cfg *config.Config) (Logger, error) {
 	var zapConfig zap.Config
-	if cfg.IsProdEnv() {
+	if !cfg.IsDevEnv() {
 		zapConfig = zap.NewProductionConfig()
 	} else {
 		zapConfig = zap.NewDevelopmentConfig()

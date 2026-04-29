@@ -15,7 +15,7 @@ func Recovery(cfg *config.Config) gin.HandlerFunc {
 	// In production, use `nil` as writer to prevent Gin to log sensitive information
 	// of the request to the default stderr.
 	var writer io.Writer
-	if !cfg.IsProdEnv() {
+	if cfg.IsDevEnv() {
 		writer = gin.DefaultErrorWriter
 	}
 

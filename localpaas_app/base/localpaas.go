@@ -4,6 +4,9 @@ const (
 	LocalpaasAppServiceName = "localpaas_app"
 	LocalpaasAppKey         = "localpaas_app"
 
+	LocalpaasWorkerServiceName = "localpaas_worker"
+	LocalpaasWorkerKey         = "localpaas_worker"
+
 	LocalpaasDbServiceName = "localpaas_db"
 	LocalpaasDbAppKey      = "localpaas_db"
 
