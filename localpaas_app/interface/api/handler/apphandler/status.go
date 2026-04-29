@@ -10,37 +10,39 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
 )
 
-// CreateApp Creates a new app
-// @Summary Creates a new app
-// @Description Creates a new app
+// UpdateAppStatus Updates app status
+// @Summary Updates app status
+// @Description Updates app status
 // @Tags    apps
 // @Produce json
-// @Id      createApp
+// @Id      updateAppStatus
 // @Param   projectID path string true "project ID"
-// @Param   body body appdto.CreateAppReq true "request data"
-// @Success 201 {object} appdto.CreateAppResp
+// @Param   appID path string true "app ID"
+// @Param   body body appdto.UpdateAppStatusReq true "request data"
+// @Success 200 {object} appdto.UpdateAppStatusResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /projects/{projectID}/apps [post]
-func (h *Handler) CreateApp(ctx *gin.Context) {
-	auth, projectID, _, err := h.GetAuth(ctx, base.ActionTypeWrite, false)
+// @Router  /projects/{projectID}/apps/{appID}/status [put]
+func (h *Handler) UpdateAppStatus(ctx *gin.Context) {
+	auth, projectID, appID, err := h.GetAuth(ctx, base.ActionTypeWrite, true)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	req := appdto.NewCreateAppReq()
+	req := appdto.NewUpdateAppStatusReq()
+	req.ID = appID
 	req.ProjectID = projectID
 	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	resp, err := h.appUC.CreateApp(h.RequestCtx(ctx), auth, req)
+	resp, err := h.appUC.UpdateAppStatus(h.RequestCtx(ctx), auth, req)
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, resp)
+	ctx.JSON(http.StatusOK, resp)
 }

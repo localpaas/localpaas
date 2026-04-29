@@ -5,6 +5,7 @@ import (
 
 	"github.com/docker/docker/api/types/swarm"
 
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
@@ -21,6 +22,7 @@ type Service interface {
 
 	PersistAppData(ctx context.Context, db database.IDB, data *PersistingAppData) error
 	DeleteApp(ctx context.Context, app *entity.App) error
+	OnAppStatusChanged(ctx context.Context, app *entity.App, oldStatus base.AppStatus) error
 
 	ServiceInspect(ctx context.Context, serviceID string, caching bool) (*swarm.Service, error)
 	ServiceUpdate(ctx context.Context, serviceID string, version *swarm.Version, service *swarm.ServiceSpec,

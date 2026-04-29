@@ -2,14 +2,10 @@ package appuc
 
 import (
 	"context"
-	"errors"
-	"strings"
-
-	"github.com/docker/docker/api/types/swarm"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
@@ -17,14 +13,15 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
 )
 
-func (uc *UC) UpdateApp(
+func (uc *UC) UpdateAppStatus(
 	ctx context.Context,
 	auth *basedto.Auth,
-	req *appdto.UpdateAppReq,
-) (*appdto.UpdateAppResp, error) {
+	req *appdto.UpdateAppStatusReq,
+) (*appdto.UpdateAppStatusResp, error) {
+	var oldAppStatus base.AppStatus
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
 		appData := &updateAppData{}
-		err := uc.loadAppDataForUpdate(ctx, db, req, appData)
+		err := uc.loadAppDataForUpdateStatus(ctx, db, req, appData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -32,28 +29,32 @@ func (uc *UC) UpdateApp(
 			return nil
 		}
 
+		oldAppStatus = appData.App.Status
 		persistingData := &persistingAppData{}
-		uc.preparePersistingAppUpdate(req, appData, persistingData)
+		uc.preparePersistingAppStatusUpdate(req, appData, persistingData)
 
-		return uc.persistData(ctx, db, persistingData)
+		err = uc.persistData(ctx, db, persistingData)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+
+		err = uc.appService.OnAppStatusChanged(ctx, appData.App, oldAppStatus)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+		return nil
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &appdto.UpdateAppResp{}, nil
+	return &appdto.UpdateAppStatusResp{}, nil
 }
 
-type updateAppData struct {
-	App         *entity.App
-	ServiceSpec *swarm.ServiceSpec
-	HasChanges  bool
-}
-
-func (uc *UC) loadAppDataForUpdate(
+func (uc *UC) loadAppDataForUpdateStatus(
 	ctx context.Context,
 	db database.IDB,
-	req *appdto.UpdateAppReq,
+	req *appdto.UpdateAppStatusReq,
 	data *updateAppData,
 ) error {
 	app, err := uc.appService.LoadApp(ctx, db, req.ProjectID, req.ID, true, false,
@@ -67,33 +68,21 @@ func (uc *UC) loadAppDataForUpdate(
 		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
 	}
 	data.App = app
+	data.HasChanges = app.Status != req.Status
 
-	// If name changes, need to verify its uniqueness
-	if !strings.EqualFold(req.Name, app.Name) {
-		conflictApp, err := uc.appRepo.GetByName(ctx, db, req.ProjectID, req.Name, bunex.SelectColumns("id"))
-		if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-			return apperrors.Wrap(err)
-		}
-		if conflictApp != nil {
-			return apperrors.NewAlreadyExist("App").
-				WithMsgLog("app name '%s' already exists", req.Name)
-		}
-	}
-
-	data.HasChanges = true
 	return nil
 }
 
-func (uc *UC) preparePersistingAppUpdate(
-	req *appdto.UpdateAppReq,
+func (uc *UC) preparePersistingAppStatusUpdate(
+	req *appdto.UpdateAppStatusReq,
 	data *updateAppData,
 	persistingData *persistingAppData,
 ) {
 	timeNow := timeutil.NowUTC()
 	app := data.App
 	app.UpdateVer++
+	app.Status = req.Status
+	app.UpdatedAt = timeNow
 
-	uc.preparePersistingAppBase(app, req.AppBaseReq, timeNow, persistingData)
-	persistingData.AppsToDeleteTags = append(persistingData.AppsToDeleteTags, app.ID)
-	uc.preparePersistingAppTags(app, req.Tags, 0, persistingData)
+	persistingData.UpsertingApps = append(persistingData.UpsertingApps, app)
 }

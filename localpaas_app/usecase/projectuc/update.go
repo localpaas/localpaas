@@ -26,6 +26,9 @@ func (uc *UC) UpdateProject(
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
+		if !projectData.HasChanges {
+			return nil
+		}
 
 		persistingData := &persistingProjectData{}
 		uc.preparePersistingProjectUpdate(req, projectData, persistingData)
@@ -40,7 +43,8 @@ func (uc *UC) UpdateProject(
 }
 
 type updateProjectData struct {
-	Project *entity.Project
+	Project    *entity.Project
+	HasChanges bool
 }
 
 func (uc *UC) loadProjectDataForUpdate(
@@ -80,6 +84,7 @@ func (uc *UC) loadProjectDataForUpdate(
 		}
 	}
 
+	data.HasChanges = true
 	return nil
 }
 

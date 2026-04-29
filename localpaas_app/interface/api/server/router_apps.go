@@ -18,6 +18,8 @@ func (s *HTTPServer) registerAppRoutes(projectGroup *gin.RouterGroup) *gin.Route
 		appGroup.POST("", appHandler.CreateApp)
 		appGroup.PUT("/:appID", appHandler.UpdateApp)
 		appGroup.DELETE("/:appID", appHandler.DeleteApp)
+		// Status Update
+		appGroup.PUT("/:appID/status", appHandler.UpdateAppStatus)
 		// Token
 		appGroup.PUT("/:appID/token", appHandler.UpdateAppToken)
 		// Logs

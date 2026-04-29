@@ -2,6 +2,7 @@ package projectserviceimpl
 
 import (
 	"context"
+	"errors"
 	"sync"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -21,7 +22,7 @@ func (s *service) DeleteProject(ctx context.Context, project *entity.Project) er
 
 	// Remove project network
 	err := s.networkService.RemoveProjectNetwork(ctx, project)
-	if err != nil {
+	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}
 
