@@ -13,26 +13,25 @@ import (
 )
 
 func InitHTTPServer(lc fx.Lifecycle, cfg *config.Config, srv server.Server, logger logging.Logger) {
+	stepEnabled := cfg.RunMode == config.RunModeApp || cfg.RunMode == config.RunModeAppAndWorker
 	lc.Append(fx.Hook{
 		OnStart: func(_ context.Context) error {
-			if isHttpServerEnabled(cfg) {
+			if stepEnabled {
 				logger.Info("starting HTTP server ...")
-				if err := srv.Start(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-					logger.Fatalf("start server error: %v", err.Error())
-				}
+				go func() {
+					if err := srv.Start(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+						logger.Fatalf("start server error: %v", err.Error())
+					}
+				}()
 			}
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
-			if isHttpServerEnabled(cfg) {
+			if stepEnabled {
 				logger.Info("stopping HTTP server ...")
 				return srv.Stop(ctx)
 			}
 			return nil
 		},
 	})
-}
-
-func isHttpServerEnabled(cfg *config.Config) bool {
-	return cfg.RunMode == config.RunModeApp || cfg.RunMode == config.RunModeAppAndWorker
 }
