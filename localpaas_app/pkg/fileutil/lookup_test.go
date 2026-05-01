@@ -20,37 +20,42 @@ func TestLookup(t *testing.T) {
 		name       string
 		filename   string
 		lookupDirs []string
-		want       string
+		wantFile   string
+		wantDir    string
 	}{
 		{
 			name:       "file in first dir",
 			filename:   "file1.txt",
 			lookupDirs: []string{tempDir1, tempDir2},
-			want:       tempDir1,
+			wantFile:   filepath.Join(tempDir1, "file1.txt"),
+			wantDir:    tempDir1,
 		},
 		{
 			name:       "file in second dir",
 			filename:   "file2.txt",
 			lookupDirs: []string{tempDir1, tempDir2},
-			want:       tempDir2,
+			wantFile:   filepath.Join(tempDir2, "file2.txt"),
+			wantDir:    tempDir2,
 		},
 		{
 			name:       "file not found",
 			filename:   "file3.txt",
 			lookupDirs: []string{tempDir1, tempDir2},
-			want:       "",
+			wantFile:   "",
+			wantDir:    "",
 		},
 		{
 			name:       "empty dirs",
 			filename:   "file1.txt",
 			lookupDirs: []string{},
-			want:       "",
+			wantFile:   "",
+			wantDir:    "",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Lookup(tt.filename, tt.lookupDirs); got != tt.want {
-				t.Errorf("Lookup() = %v, want %v", got, tt.want)
+			if gotFile, gotDir := Lookup(tt.filename, tt.lookupDirs); gotFile != tt.wantFile || gotDir != tt.wantDir {
+				t.Errorf("Lookup() = %v, %v, want %v, %v", gotFile, gotDir, tt.wantFile, tt.wantDir)
 			}
 		})
 	}

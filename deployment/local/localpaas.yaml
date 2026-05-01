@@ -117,12 +117,11 @@ services:
 
   app:
     image: localpaas/localpaas-dev:latest
-    platform: linux/amd64 # to make it work on ARM machines, but slower
     networks:
       - localpaas_net
       - local_net
     environment:
-      LP_CONFIG_FILE: config/config.local.toml
+      LP_CONFIG_FILE: config/config.development.toml
       LP_ADMIN_USERNAME: admin
       LP_ADMIN_EMAIL: admin@domain.name
       LP_ADMIN_PASSWORD: abc123
@@ -152,11 +151,10 @@ services:
 
   worker:
     image: localpaas/localpaas-dev:latest
-    platform: linux/amd64 # to make it work on ARM machines, but slower
     networks:
       - local_net
     environment:
-      LP_CONFIG_FILE: config/config.local.toml
+      LP_CONFIG_FILE: config/config.development.toml
       LP_RUN_MODE: worker
     volumes:
       - ./localpaas:/var/lib/localpaas
@@ -172,11 +170,10 @@ services:
 
   updater:
     image: localpaas/localpaas-dev:latest
-    platform: linux/amd64 # to make it work on ARM machines, but slower
     networks:
       - local_net
     environment:
-      LP_CONFIG_FILE: config/config.local.toml
+      LP_CONFIG_FILE: config/config.development.toml
       LP_RUN_MODE: updater
     volumes:
       - ./localpaas:/var/lib/localpaas

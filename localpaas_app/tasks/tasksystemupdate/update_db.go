@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os/exec"
-	"path/filepath"
 	"strings"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -33,27 +32,23 @@ func (e *Executor) migrateDBSchema(
 		}
 	}()
 
-	migBinDir := fileutil.Lookup("sql-migrate", []string{
-		"/",
+	migBin, _ := fileutil.Lookup("sql-migrate", []string{
 		"",
-		"/usr/bin",
-		"/usr/sbin",
 		"/usr/local/bin",
-		"/usr/local/sbin",
+		"/usr/bin",
+		"/localpaas",
 	})
-	if migBinDir == "" {
+	if migBin == "" {
 		return apperrors.NewNotFound("Binary 'sql-migrate'")
 	}
-	migBin := filepath.Join(migBinDir, "sql-migrate")
 
-	migConfigDir := fileutil.Lookup("dbconfig.yml", []string{
-		"/localpaas_app/db",
-		"localpaas_app/db",
+	migConfigFile, _ := fileutil.Lookup("localpaas_app/db/dbconfig.yml", []string{
+		"",
+		"/localpaas",
 	})
-	if migConfigDir == "" {
+	if migConfigFile == "" {
 		return apperrors.NewNotFound("Migration config file 'dbconfig.yml'")
 	}
-	migConfigFile := filepath.Join(migConfigDir, "dbconfig.yml")
 
 	cmd := exec.Command(migBin, "up", "-config="+migConfigFile, "-env=main")
 	cmd.Env = []string{
