@@ -4,11 +4,11 @@
 > {{if .Method | eq "repo"}}
 > Repository: {{.RepoURL}}
 > Branch/Ref: `{{.RepoRef}}`
-> Commit Message: `{{.CommitMsg}}`
+> Commit message: `{{.CommitMsg}}`
 > {{else if .Method | eq "image"}}
 > Image: `{{.Image}}`
 > {{else if .Method | eq "tarball"}}
-> Source Archive: `{{.SourceArchive}}`
+> Source archive: `{{.SourceArchive}}`
 > {{end}}
 > Started at: `{{.StartedAt}}`
 > Duration: `{{.Duration}}`

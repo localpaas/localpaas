@@ -11,8 +11,8 @@ import (
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/swarm"
 	"github.com/gitsight/go-vcsurl"
-	"github.com/go-git/go-git/v6"
-	"github.com/go-git/go-git/v6/plumbing"
+	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/moby/go-archive"
 	"github.com/tiendc/gofn"
 
@@ -134,7 +134,7 @@ func (e *Executor) repoDeployStepSourceCheckout(
 		return apperrors.Wrap(err)
 	}
 
-	repo, err := git.PlainCloneContext(ctx, data.CheckoutPath, &git.CloneOptions{
+	repo, err := git.PlainCloneContext(ctx, data.CheckoutPath, false, &git.CloneOptions{
 		URL:               repoSource.RepoURL,
 		ReferenceName:     plumbing.ReferenceName(repoSource.RepoRef),
 		Auth:              authMethod,
