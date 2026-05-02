@@ -8,19 +8,20 @@ import (
 )
 
 func (s *service) ReloadLpAppConfig(ctx context.Context) error {
-	service, err := s.dockerManager.ServiceGetByName(ctx, base.LocalpaasAppServiceName)
+	service, err := s.dockerManager.ServiceGetByName(ctx, base.LocalpaasAppServiceName, false)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	containers, err := s.dockerManager.ServiceContainerList(ctx, service.ID)
+	listResp, err := s.dockerManager.ServiceContainerList(ctx, service.ID)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
+	containers := listResp.Items
 	containerIDs := make([]string, 0, len(containers))
-	for _, container := range containers {
-		containerIDs = append(containerIDs, container.ID)
+	for i := range containers {
+		containerIDs = append(containerIDs, containers[i].ID)
 	}
 
 	errMap := s.dockerManager.ContainerKillMulti(ctx, containerIDs, "SIGHUP")

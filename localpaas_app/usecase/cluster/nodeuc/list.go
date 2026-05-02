@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/docker/docker/api/types/swarm"
+	"github.com/moby/moby/api/types/swarm"
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -18,12 +18,12 @@ func (uc *UC) ListNode(
 	auth *basedto.Auth,
 	req *nodedto.ListNodeReq,
 ) (*nodedto.ListNodeResp, error) {
-	nodes, err := uc.dockerManager.NodeList(ctx)
+	listResp, err := uc.dockerManager.NodeList(ctx)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	filterNodes := nodes
+	filterNodes := listResp.Items
 	if len(req.Status) > 0 {
 		filterNodes = gofn.FilterPtr(filterNodes, func(node *swarm.Node) bool {
 			return gofn.Contain(req.Status, docker.NodeStatus(node.Status.State))

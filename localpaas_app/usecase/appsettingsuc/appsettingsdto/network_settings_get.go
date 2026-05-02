@@ -1,7 +1,8 @@
 package appsettingsdto
 
 import (
-	"github.com/docker/docker/api/types/swarm"
+	"github.com/moby/moby/api/types/network"
+	"github.com/moby/moby/api/types/swarm"
 	vld "github.com/tiendc/go-validator"
 	"github.com/tiendc/gofn"
 
@@ -64,7 +65,7 @@ type EndpointSpec struct {
 type PortConfig struct {
 	Target      uint32                      `json:"target,omitempty"`    // port inside the container
 	Published   uint32                      `json:"published,omitempty"` // port on the swarm hosts
-	Protocol    swarm.PortConfigProtocol    `json:"protocol,omitempty"`
+	Protocol    network.IPProtocol          `json:"protocol,omitempty"`
 	PublishMode swarm.PortConfigPublishMode `json:"publishMode,omitempty"`
 }
 
@@ -125,8 +126,12 @@ func TransformDNSConfig(config *swarm.DNSConfig) *DNSConfig {
 	if config == nil {
 		return nil
 	}
+	nameservers := make([]string, 0, len(config.Nameservers))
+	for i := range config.Nameservers {
+		nameservers = append(nameservers, config.Nameservers[i].String())
+	}
 	return &DNSConfig{
-		Nameservers: config.Nameservers,
+		Nameservers: nameservers,
 		Search:      config.Search,
 		Options:     config.Options,
 	}

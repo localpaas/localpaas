@@ -4,8 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/docker/docker/api/types/filters"
-	"github.com/docker/docker/api/types/swarm"
+	"github.com/moby/moby/api/types/swarm"
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -43,10 +42,11 @@ func (uc *UC) loadGetNodeJoinCommandData(
 	data *joinNodeCommandData,
 ) error {
 	// Find join token from the cluster
-	theSwarm, err := uc.dockerManager.SwarmInspect(ctx)
+	inspect, err := uc.dockerManager.SwarmInspect(ctx)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+	theSwarm := &inspect.Swarm
 
 	joinToken := gofn.If(req.JoinAsManager, theSwarm.JoinTokens.Manager, theSwarm.JoinTokens.Worker)
 	if joinToken == "" {
@@ -56,16 +56,14 @@ func (uc *UC) loadGetNodeJoinCommandData(
 	data.JoinToken = joinToken
 
 	// List all manager nodes to get the addr to join new node
-	managerNodes, err := uc.dockerManager.NodeList(ctx, func(opts *swarm.NodeListOptions) {
-		opts.Filters = filters.NewArgs(filters.Arg("role", "manager"))
-	})
+	listResp, err := uc.dockerManager.NodeManagerList(ctx)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
 	var leaderAddr, managerAddr string
-	for _, node := range managerNodes {
-		mgrStatus := node.ManagerStatus
+	for i := range listResp.Items {
+		mgrStatus := listResp.Items[i].ManagerStatus
 		if mgrStatus.Reachability == swarm.ReachabilityReachable {
 			managerAddr = mgrStatus.Addr
 			if mgrStatus.Leader {

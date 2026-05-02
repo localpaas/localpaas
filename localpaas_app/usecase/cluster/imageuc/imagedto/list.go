@@ -1,7 +1,7 @@
 package imagedto
 
 import (
-	"github.com/docker/docker/api/types/image"
+	"github.com/moby/moby/api/types/image"
 	vld "github.com/tiendc/go-validator"
 	"github.com/tiendc/gofn"
 

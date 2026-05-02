@@ -25,19 +25,20 @@ func (s *service) ReloadTraefikConfig(ctx context.Context, restartServiceOnFailu
 }
 
 func (s *service) reloadTraefikConfig(ctx context.Context) error {
-	service, err := s.dockerManager.ServiceGetByName(ctx, base.LocalpaasTraefikServiceName)
+	service, err := s.dockerManager.ServiceGetByName(ctx, base.LocalpaasTraefikServiceName, false)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	containers, err := s.dockerManager.ServiceContainerList(ctx, service.ID)
+	resp, err := s.dockerManager.ServiceContainerList(ctx, service.ID)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
+	containers := resp.Items
 	containerIDs := make([]string, 0, len(containers))
-	for _, container := range containers {
-		containerIDs = append(containerIDs, container.ID)
+	for i := range containers {
+		containerIDs = append(containerIDs, containers[i].ID)
 	}
 	if len(containerIDs) == 0 {
 		return apperrors.NewNotFound("Traefik service")

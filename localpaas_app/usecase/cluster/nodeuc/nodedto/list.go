@@ -1,7 +1,7 @@
 package nodedto
 
 import (
-	"github.com/docker/docker/api/types/swarm"
+	"github.com/moby/moby/api/types/swarm"
 	vld "github.com/tiendc/go-validator"
 	"github.com/tiendc/gofn"
 

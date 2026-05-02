@@ -3,7 +3,8 @@ package appservice
 import (
 	"context"
 
-	"github.com/docker/docker/api/types/swarm"
+	"github.com/moby/moby/api/types/swarm"
+	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
@@ -26,7 +27,7 @@ type Service interface {
 
 	ServiceInspect(ctx context.Context, serviceID string, caching bool) (*swarm.Service, error)
 	ServiceUpdate(ctx context.Context, serviceID string, version *swarm.Version, service *swarm.ServiceSpec,
-		options ...docker.ServiceUpdateOption) (*swarm.ServiceUpdateResponse, error)
+		options ...docker.ServiceUpdateOption) (*client.ServiceUpdateResult, error)
 
 	CreateDeployment(app *entity.App, deploymentSettings *entity.AppDeploymentSettings) (
 		*entity.Deployment, *entity.Task, error)

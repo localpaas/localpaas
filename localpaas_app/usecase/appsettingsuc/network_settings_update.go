@@ -3,10 +3,12 @@ package appsettingsuc
 import (
 	"context"
 	"errors"
+	"fmt"
+	"net/netip"
 	"strings"
 
-	"github.com/docker/docker/api/types/network"
-	"github.com/docker/docker/api/types/swarm"
+	"github.com/moby/moby/api/types/network"
+	"github.com/moby/moby/api/types/swarm"
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -31,7 +33,10 @@ func (uc *UC) UpdateAppNetworkSettings(
 		}
 
 		persistingData := &persistingAppData{}
-		uc.prepareUpdatingAppNetworkSettings(req, data)
+		err = uc.prepareUpdatingAppNetworkSettings(req, data)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 
 		err = uc.persistData(ctx, db, persistingData)
 		if err != nil {
@@ -97,11 +102,14 @@ func (uc *UC) loadAppNetworkSettingsForUpdate(
 func (uc *UC) prepareUpdatingAppNetworkSettings(
 	req *appsettingsdto.UpdateAppNetworkSettingsReq,
 	data *updateAppNetworkSettingsData,
-) {
+) error {
 	uc.prepareUpdatingAppNetworkAttachments(req, data)
 	uc.prepareUpdatingAppHostsFileEntries(req, data)
-	uc.prepareUpdatingAppDNSConfig(req, data)
+	if err := uc.prepareUpdatingAppDNSConfig(req, data); err != nil {
+		return apperrors.Wrap(err)
+	}
 	uc.prepareUpdatingAppEndpointSpec(req, data)
+	return nil
 }
 
 func (uc *UC) prepareUpdatingAppNetworkAttachments(
@@ -180,19 +188,26 @@ func (uc *UC) prepareUpdatingAppEndpointSpec(
 func (uc *UC) prepareUpdatingAppDNSConfig(
 	req *appsettingsdto.UpdateAppNetworkSettingsReq,
 	data *updateAppNetworkSettingsData,
-) {
+) error {
 	service := data.Service
 	if req.DNSConfig == nil {
 		service.Spec.TaskTemplate.ContainerSpec.DNSConfig = nil
-		return
+		return nil
 	}
 	containerSpec := service.Spec.TaskTemplate.ContainerSpec
 	if containerSpec.DNSConfig == nil {
 		containerSpec.DNSConfig = &swarm.DNSConfig{}
 	}
-	containerSpec.DNSConfig.Nameservers = req.DNSConfig.Nameservers
+	for _, addr := range req.DNSConfig.Nameservers {
+		netAddr, err := netip.ParseAddr(addr)
+		if err != nil {
+			return apperrors.NewParamInvalid(fmt.Sprintf("Addr '%v'", addr))
+		}
+		containerSpec.DNSConfig.Nameservers = append(containerSpec.DNSConfig.Nameservers, netAddr)
+	}
 	containerSpec.DNSConfig.Search = req.DNSConfig.Search
 	containerSpec.DNSConfig.Options = req.DNSConfig.Options
+	return nil
 }
 
 func (uc *UC) applyAppNetworkSettings(

@@ -3,14 +3,14 @@ package traefikserviceimpl
 import (
 	"context"
 
-	"github.com/docker/docker/api/types/swarm"
+	"github.com/moby/moby/api/types/swarm"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
 func (s *service) GetTraefikSwarmService(ctx context.Context) (*swarm.Service, error) {
-	service, err := s.dockerManager.ServiceGetByName(ctx, base.LocalpaasTraefikServiceName)
+	service, err := s.dockerManager.ServiceGetByName(ctx, base.LocalpaasTraefikServiceName, false)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

@@ -3,15 +3,18 @@ package docker
 import (
 	"context"
 
-	"github.com/docker/docker/api/types/swarm"
+	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
-type SecretListOption func(*swarm.SecretListOptions)
+type SecretListOption func(*client.SecretListOptions)
 
-func (m *manager) SecretList(ctx context.Context, options ...SecretListOption) ([]swarm.Secret, error) {
-	opts := swarm.SecretListOptions{}
+func (m *manager) SecretList(
+	ctx context.Context,
+	options ...SecretListOption,
+) (*client.SecretListResult, error) {
+	opts := client.SecretListOptions{}
 	for _, opt := range options {
 		opt(&opts)
 	}
@@ -19,45 +22,62 @@ func (m *manager) SecretList(ctx context.Context, options ...SecretListOption) (
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
 	}
-	return resp, nil
+	return &resp, nil
 }
 
-func (m *manager) SecretInspect(ctx context.Context, secretID string) (*swarm.Secret, error) {
-	resp, _, err := m.client.SecretInspectWithRaw(ctx, secretID)
+type SecretInspectOption func(options *client.SecretInspectOptions)
+
+func (m *manager) SecretInspect(
+	ctx context.Context,
+	configID string,
+	options ...SecretInspectOption,
+) (*client.SecretInspectResult, error) {
+	opts := client.SecretInspectOptions{}
+	for _, opt := range options {
+		opt(&opts)
+	}
+	resp, err := m.client.SecretInspect(ctx, configID, opts)
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
 	}
 	return &resp, nil
 }
 
-type SecretSpecOption func(*swarm.SecretSpec)
+type SecretCreateOption func(*client.SecretCreateOptions)
 
 func (m *manager) SecretCreate(
 	ctx context.Context,
 	name string,
 	data []byte,
-	options ...SecretSpecOption,
-) (*swarm.SecretCreateResponse, error) {
-	spec := swarm.SecretSpec{
-		Annotations: swarm.Annotations{
-			Name: name,
-		},
-		Data: data,
-	}
+	options ...SecretCreateOption,
+) (*client.SecretCreateResult, error) {
+	opts := client.SecretCreateOptions{}
+	opts.Spec.Name = name
+	opts.Spec.Data = data
 	for _, opt := range options {
-		opt(&spec)
+		opt(&opts)
 	}
-	resp, err := m.client.SecretCreate(ctx, spec)
+	resp, err := m.client.SecretCreate(ctx, opts)
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
 	}
 	return &resp, nil
 }
 
-func (m *manager) SecretRemove(ctx context.Context, secretID string) error {
-	err := m.client.SecretRemove(ctx, secretID)
-	if err != nil {
-		return apperrors.NewInfra(err)
+type SecretRemoveOption func(options *client.SecretRemoveOptions)
+
+func (m *manager) SecretRemove(
+	ctx context.Context,
+	configID string,
+	options ...SecretRemoveOption,
+) (*client.SecretRemoveResult, error) {
+	opts := client.SecretRemoveOptions{}
+	for _, opt := range options {
+		opt(&opts)
 	}
-	return nil
+	resp, err := m.client.SecretRemove(ctx, configID, opts)
+	if err != nil {
+		return nil, apperrors.NewInfra(err)
+	}
+	return &resp, nil
 }

@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/docker/docker/api/types/registry"
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/go-git/go-git/v5/plumbing/transport/ssh"
+	"github.com/moby/moby/api/types/registry"
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"

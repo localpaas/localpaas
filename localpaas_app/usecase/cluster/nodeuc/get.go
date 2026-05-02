@@ -13,12 +13,12 @@ func (uc *UC) GetNode(
 	auth *basedto.Auth,
 	req *nodedto.GetNodeReq,
 ) (*nodedto.GetNodeResp, error) {
-	node, _, err := uc.dockerManager.NodeInspect(ctx, req.NodeID)
+	resp, err := uc.dockerManager.NodeInspect(ctx, req.NodeID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
 	return &nodedto.GetNodeResp{
-		Data: nodedto.TransformNode(node, true),
+		Data: nodedto.TransformNode(&resp.Node, true),
 	}, nil
 }

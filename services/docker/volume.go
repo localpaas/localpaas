@@ -3,9 +3,9 @@ package docker
 import (
 	"context"
 
-	"github.com/docker/docker/api/types/filters"
-	"github.com/docker/docker/api/types/swarm"
-	"github.com/docker/docker/api/types/volume"
+	"github.com/moby/moby/api/types/swarm"
+	"github.com/moby/moby/api/types/volume"
+	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
@@ -38,13 +38,13 @@ var (
 	AllVolumeTypes = []VolumeType{VolumeTypeVolume, VolumeTypeCluster}
 )
 
-type VolumeListOption func(*volume.ListOptions)
+type VolumeListOption func(*client.VolumeListOptions)
 
 func (m *manager) VolumeList(
 	ctx context.Context,
 	options ...VolumeListOption,
-) (*volume.ListResponse, error) {
-	opts := volume.ListOptions{}
+) (*client.VolumeListResult, error) {
+	opts := client.VolumeListOptions{}
 	for _, opt := range options {
 		opt(&opts)
 	}
@@ -55,11 +55,17 @@ func (m *manager) VolumeList(
 	return &resp, nil
 }
 
+type VolumeCreateOption func(options *client.VolumeCreateOptions)
+
 func (m *manager) VolumeCreate(
 	ctx context.Context,
-	options *volume.CreateOptions,
-) (*volume.Volume, error) {
-	resp, err := m.client.VolumeCreate(ctx, *options)
+	options ...VolumeCreateOption,
+) (*client.VolumeCreateResult, error) {
+	opts := client.VolumeCreateOptions{}
+	for _, opt := range options {
+		opt(&opts)
+	}
+	resp, err := m.client.VolumeCreate(ctx, opts)
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
 	}
@@ -70,63 +76,85 @@ func (m *manager) VolumeUpdate(
 	ctx context.Context,
 	volumeID string,
 	version *swarm.Version,
-	options *volume.UpdateOptions,
-) error {
-	if options == nil {
-		options = &volume.UpdateOptions{}
+	spec *volume.ClusterVolumeSpec,
+) (*client.VolumeUpdateResult, error) {
+	if spec == nil {
+		return nil, nil
 	}
+
+	opts := client.VolumeUpdateOptions{
+		Spec: spec,
+	}
+
 	if version == nil {
-		resp, _, err := m.client.VolumeInspectWithRaw(ctx, volumeID)
+		resp, err := m.VolumeInspect(ctx, volumeID)
 		if err != nil {
-			return apperrors.NewInfra(err)
+			return nil, apperrors.Wrap(err)
 		}
-		version = &resp.ClusterVolume.Version
+		version = &resp.Volume.ClusterVolume.Version
 	}
-	err := m.client.VolumeUpdate(ctx, volumeID, *version, *options)
+	opts.Version = *version
+
+	resp, err := m.client.VolumeUpdate(ctx, volumeID, opts)
 	if err != nil {
-		return apperrors.NewInfra(err)
+		return nil, apperrors.NewInfra(err)
 	}
-	return nil
+	return &resp, nil
 }
+
+type VolumeRemoveOption func(options *client.VolumeRemoveOptions)
 
 func (m *manager) VolumeRemove(
 	ctx context.Context,
 	volumeID string,
 	force bool,
-) error {
-	err := m.client.VolumeRemove(ctx, volumeID, force)
-	if err != nil {
-		return apperrors.NewInfra(err)
+	options ...VolumeRemoveOption,
+) (*client.VolumeRemoveResult, error) {
+	opts := client.VolumeRemoveOptions{}
+	opts.Force = force
+	for _, opt := range options {
+		opt(&opts)
 	}
-	return nil
+	resp, err := m.client.VolumeRemove(ctx, volumeID, opts)
+	if err != nil {
+		return nil, apperrors.NewInfra(err)
+	}
+	return &resp, nil
 }
+
+type VolumeInspectOption func(options *client.VolumeInspectOptions)
 
 func (m *manager) VolumeInspect(
 	ctx context.Context,
 	volumeID string,
-) (*volume.Volume, []byte, error) {
-	resp, raw, err := m.client.VolumeInspectWithRaw(ctx, volumeID)
-	if err != nil {
-		return nil, nil, apperrors.NewInfra(err)
+	options ...VolumeInspectOption,
+) (*client.VolumeInspectResult, error) {
+	opts := client.VolumeInspectOptions{}
+	for _, opt := range options {
+		opt(&opts)
 	}
-	return &resp, raw, nil
+	resp, err := m.client.VolumeInspect(ctx, volumeID, opts)
+	if err != nil {
+		return nil, apperrors.NewInfra(err)
+	}
+	return &resp, nil
 }
 
-type VolumesPruneOption func(options *filters.Args)
+type VolumePruneOption func(options *client.VolumePruneOptions)
 
-func (m *manager) VolumesPrune(
+func (m *manager) VolumePrune(
 	ctx context.Context,
 	anonymousOnly bool,
-	options ...VolumesPruneOption,
-) (*volume.PruneReport, error) {
-	opts := filters.Args{}
+	options ...VolumePruneOption,
+) (*client.VolumePruneResult, error) {
+	opts := client.VolumePruneOptions{}
 	if !anonymousOnly {
-		FilterAdd(&opts, "all", "true")
+		FilterAdd(&opts.Filters, "all", "true")
 	}
 	for _, opt := range options {
 		opt(&opts)
 	}
-	resp, err := m.client.VolumesPrune(ctx, opts)
+	resp, err := m.client.VolumePrune(ctx, opts)
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
 	}

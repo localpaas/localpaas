@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/docker/docker/api/types/container"
+	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -54,7 +54,7 @@ func (uc *UC) GetAppRuntimeLogs(
 		tail = fmt.Sprintf("%d", req.Tail)
 	}
 
-	logsReader, err := uc.dockerManager.ServiceLogs(ctx, app.ServiceID, func(opts *container.LogsOptions) {
+	logsReader, err := uc.dockerManager.ServiceLogs(ctx, app.ServiceID, func(opts *client.ServiceLogsOptions) {
 		opts.ShowStdout = true
 		opts.ShowStderr = true
 		opts.Follow = req.Follow

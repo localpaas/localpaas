@@ -3,7 +3,8 @@ package imageuc
 import (
 	"context"
 
-	"github.com/docker/docker/api/types/image"
+	"github.com/moby/moby/api/types/registry"
+	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -25,10 +26,9 @@ func (uc *UC) CreateImage(
 		return nil, apperrors.Wrap(err)
 	}
 
-	options := func(opts *image.CreateOptions) {
+	_, err = uc.dockerManager.ImagePull(ctx, req.Name, func(opts *client.ImagePullOptions) {
 		opts.RegistryAuth = data.AuthHeader
-	}
-	_, err = uc.dockerManager.ImageCreate(ctx, req.Name, options)
+	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -57,8 +57,10 @@ func (uc *UC) loadImageData(
 		}
 
 		data.RegistryAuth = regAuth.MustAsRegistryAuth().MustDecrypt()
-		data.AuthHeader, err = docker.GenerateAuthHeader(data.RegistryAuth.Username,
-			data.RegistryAuth.Password.MustGetPlain())
+		data.AuthHeader, err = docker.GenerateAuthHeader(&registry.AuthConfig{
+			Username: data.RegistryAuth.Username,
+			Password: data.RegistryAuth.Password.MustGetPlain(),
+		})
 		if err != nil {
 			return apperrors.Wrap(err)
 		}

@@ -3,13 +3,22 @@ package docker
 import (
 	"context"
 
-	"github.com/docker/docker/api/types/system"
+	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
-func (m *manager) SystemInfo(ctx context.Context) (*system.Info, error) {
-	resp, err := m.client.Info(ctx)
+type SystemInfoOption func(options *client.InfoOptions)
+
+func (m *manager) SystemInfo(
+	ctx context.Context,
+	options ...SystemInfoOption,
+) (*client.SystemInfoResult, error) {
+	opts := client.InfoOptions{}
+	for _, opt := range options {
+		opt(&opts)
+	}
+	resp, err := m.client.Info(ctx, opts)
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
 	}

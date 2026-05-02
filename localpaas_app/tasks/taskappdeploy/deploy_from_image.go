@@ -4,8 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/docker/docker/api/types/image"
-	"github.com/docker/docker/api/types/swarm"
+	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
@@ -79,7 +78,7 @@ func (e *Executor) imageDeployStepImagePull(
 		}
 	}
 
-	logsReader, err := e.dockerManager.ImagePull(ctx, imageSource.Image, func(options *image.PullOptions) {
+	logsReader, err := e.dockerManager.ImagePull(ctx, imageSource.Image, func(options *client.ImagePullOptions) {
 		options.RegistryAuth = data.RegAuthHeader
 	})
 	if err != nil {
@@ -117,11 +116,12 @@ func (e *Executor) imageDeployStepServiceApply(
 	e.addStepStartLog(ctx, data.taskData, "Applying changes to service...")
 	defer e.addStepEndLog(ctx, data.taskData, timeutil.NowUTC(), err)
 
-	service, err := e.dockerManager.ServiceInspect(ctx, data.App.ServiceID)
+	inspect, err := e.dockerManager.ServiceInspect(ctx, data.App.ServiceID)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
+	service := &inspect.Service
 	spec := &service.Spec
 	contSpec := spec.TaskTemplate.ContainerSpec
 	contSpec.Image = imageSource.Image
@@ -129,7 +129,7 @@ func (e *Executor) imageDeployStepServiceApply(
 	docker.ContainerCommandApply(contSpec, deployment.Settings.Command)
 
 	_, err = e.dockerManager.ServiceUpdate(ctx, data.App.ServiceID, &service.Version, spec,
-		func(options *swarm.ServiceUpdateOptions) {
+		func(options *client.ServiceUpdateOptions) {
 			options.EncodedRegistryAuth = data.RegAuthHeader
 		})
 	if err != nil {

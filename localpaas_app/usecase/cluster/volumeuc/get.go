@@ -14,10 +14,11 @@ func (uc *UC) GetVolume(
 	auth *basedto.Auth,
 	req *volumedto.GetVolumeReq,
 ) (*volumedto.GetVolumeResp, error) {
-	volume, _, err := uc.dockerManager.VolumeInspect(ctx, req.VolumeID)
+	inspect, err := uc.dockerManager.VolumeInspect(ctx, req.VolumeID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+	volume := &inspect.Volume
 
 	if req.ProjectID != "" {
 		project, err := uc.projectService.LoadProject(ctx, uc.db, req.ProjectID, true)

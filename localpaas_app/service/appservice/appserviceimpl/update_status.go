@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/docker/docker/api/types/swarm"
+	"github.com/moby/moby/api/types/swarm"
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -36,10 +36,11 @@ func (s *service) onAppDisabled(ctx context.Context, app *entity.App) error {
 		return nil
 	}
 
-	service, err := s.dockerManager.ServiceInspect(ctx, app.ServiceID)
+	inspect, err := s.dockerManager.ServiceInspect(ctx, app.ServiceID)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+	service := &inspect.Service
 
 	prevSvcMode, err := json.Marshal(service.Spec.Mode)
 	if err != nil {
@@ -70,10 +71,11 @@ func (s *service) onAppEnabled(ctx context.Context, app *entity.App) error {
 		return nil
 	}
 
-	service, err := s.dockerManager.ServiceInspect(ctx, app.ServiceID)
+	inspect, err := s.dockerManager.ServiceInspect(ctx, app.ServiceID)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+	service := &inspect.Service
 
 	prevSvcModeStr := service.Spec.Labels[labelLocalPaaSAppPrevServiceMode]
 	if prevSvcModeStr != "" {

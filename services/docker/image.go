@@ -2,22 +2,20 @@ package docker
 
 import (
 	"context"
-	"io"
 	"time"
 
-	"github.com/docker/docker/api/types/filters"
-	"github.com/docker/docker/api/types/image"
+	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
-type ImageListOption func(*image.ListOptions)
+type ImageListOption func(*client.ImageListOptions)
 
 func (m *manager) ImageList(
 	ctx context.Context,
 	options ...ImageListOption,
-) ([]image.Summary, error) {
-	opts := image.ListOptions{}
+) (*client.ImageListResult, error) {
+	opts := client.ImageListOptions{}
 	for _, opt := range options {
 		opt(&opts)
 	}
@@ -25,35 +23,53 @@ func (m *manager) ImageList(
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
 	}
-	return resp, nil
+	return &resp, nil
 }
 
-type ImageCreateOption func(*image.CreateOptions)
+type ImagePullOption func(*client.ImagePullOptions)
 
-func (m *manager) ImageCreate(
+func (m *manager) ImagePull(
 	ctx context.Context,
 	name string,
-	options ...ImageCreateOption,
-) (io.ReadCloser, error) {
-	opts := image.CreateOptions{}
+	options ...ImagePullOption,
+) (client.ImagePullResponse, error) {
+	opts := client.ImagePullOptions{}
 	for _, opt := range options {
 		opt(&opts)
 	}
-	resp, err := m.client.ImageCreate(ctx, name, opts)
+	resp, err := m.client.ImagePull(ctx, name, opts)
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
 	}
 	return resp, nil
 }
 
-type ImageRemoveOption func(options *image.RemoveOptions)
+type ImagePushOption func(*client.ImagePushOptions)
+
+func (m *manager) ImagePush(
+	ctx context.Context,
+	name string,
+	options ...ImagePushOption,
+) (client.ImagePushResponse, error) {
+	opts := client.ImagePushOptions{}
+	for _, opt := range options {
+		opt(&opts)
+	}
+	resp, err := m.client.ImagePush(ctx, name, opts)
+	if err != nil {
+		return nil, apperrors.NewInfra(err)
+	}
+	return resp, nil
+}
+
+type ImageRemoveOption func(*client.ImageRemoveOptions)
 
 func (m *manager) ImageRemove(
 	ctx context.Context,
 	imageID string,
 	options ...ImageRemoveOption,
-) ([]image.DeleteResponse, error) {
-	opts := image.RemoveOptions{}
+) (*client.ImageRemoveResult, error) {
+	opts := client.ImageRemoveOptions{}
 	for _, opt := range options {
 		opt(&opts)
 	}
@@ -61,75 +77,46 @@ func (m *manager) ImageRemove(
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
 	}
-	return resp, nil
+	return &resp, nil
 }
+
+type ImageInspectOption client.ImageInspectOption
 
 func (m *manager) ImageInspect(
 	ctx context.Context,
 	imageID string,
-) (*image.InspectResponse, error) {
-	resp, err := m.client.ImageInspect(ctx, imageID)
+	options ...ImageInspectOption,
+) (*client.ImageInspectResult, error) {
+	opts := make([]client.ImageInspectOption, 0, len(options))
+	for _, opt := range options {
+		opts = append(opts, opt)
+	}
+	resp, err := m.client.ImageInspect(ctx, imageID, opts...)
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
 	}
 	return &resp, nil
 }
 
-type ImagePullOption func(options *image.PullOptions)
+type ImagePruneOption func(options *client.ImagePruneOptions)
 
-func (m *manager) ImagePull(
-	ctx context.Context,
-	refStr string,
-	options ...ImagePullOption,
-) (io.ReadCloser, error) {
-	opts := image.PullOptions{}
-	for _, opt := range options {
-		opt(&opts)
-	}
-	resp, err := m.client.ImagePull(ctx, refStr, opts)
-	if err != nil {
-		return nil, apperrors.NewInfra(err)
-	}
-	return resp, nil
-}
-
-type ImagePushOption func(options *image.PushOptions)
-
-func (m *manager) ImagePush(
-	ctx context.Context,
-	imageTag string,
-	options ...ImagePushOption,
-) (io.ReadCloser, error) {
-	opts := image.PushOptions{}
-	for _, opt := range options {
-		opt(&opts)
-	}
-	resp, err := m.client.ImagePush(ctx, imageTag, opts)
-	if err != nil {
-		return nil, apperrors.NewInfra(err)
-	}
-	return resp, nil
-}
-
-type ImagesPruneOption func(options *filters.Args)
-
-func (m *manager) ImagesPrune(
+func (m *manager) ImagePrune(
 	ctx context.Context,
 	danglingOnly bool,
 	onlyObjectsOlderThan time.Duration,
-	options ...ImagesPruneOption,
-) (*image.PruneReport, error) {
-	opts := filters.Args{}
+	options ...ImagePruneOption,
+) (*client.ImagePruneResult, error) {
+	opts := client.ImagePruneOptions{}
 	if danglingOnly {
-		FilterAdd(&opts, "dangling", "true")
+		FilterAdd(&opts.Filters, "dangling", "true")
 	}
 	if onlyObjectsOlderThan > 0 {
-		FilterAdd(&opts, "until", onlyObjectsOlderThan.String())
+		FilterAdd(&opts.Filters, "until", onlyObjectsOlderThan.String())
 	}
 	for _, opt := range options {
 		opt(&opts)
 	}
-	resp, err := m.client.ImagesPrune(ctx, opts)
+	resp, err := m.client.ImagePrune(ctx, opts)
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
 	}

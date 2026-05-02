@@ -1,11 +1,12 @@
 package entity
 
 import (
-	"github.com/docker/docker/api/types/registry"
+	"github.com/moby/moby/api/types/registry"
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/services/docker"
 )
 
 const (
@@ -46,7 +47,7 @@ func (s *RegistryAuth) GenerateAuthHeader() (string, error) {
 	if err != nil {
 		return "", apperrors.Wrap(err)
 	}
-	h, err := registry.EncodeAuthConfig(registry.AuthConfig{
+	h, err := docker.GenerateAuthHeader(&registry.AuthConfig{
 		Username:      s.Username,
 		Password:      password,
 		ServerAddress: s.Address,

@@ -20,17 +20,17 @@ func (uc *UC) DeleteVolume(
 			return nil, apperrors.Wrap(err)
 		}
 
-		volume, _, err := uc.dockerManager.VolumeInspect(ctx, req.VolumeID)
+		inspect, err := uc.dockerManager.VolumeInspect(ctx, req.VolumeID)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}
 
-		if volume.Labels[docker.StackLabelNamespace] != project.Key {
+		if inspect.Volume.Labels[docker.StackLabelNamespace] != project.Key {
 			return nil, apperrors.NewNotFound("Volume").WithMsgLog("volume not belong to project")
 		}
 	}
 
-	err := uc.dockerManager.VolumeRemove(ctx, req.VolumeID, req.Force)
+	_, err := uc.dockerManager.VolumeRemove(ctx, req.VolumeID, req.Force)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

@@ -3,7 +3,7 @@ package registryauthuc
 import (
 	"context"
 
-	"github.com/docker/docker/api/types/registry"
+	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -15,10 +15,10 @@ func (uc *UC) TestRegistryAuthConn(
 	auth *basedto.Auth,
 	req *registryauthdto.TestRegistryAuthConnReq,
 ) (*registryauthdto.TestRegistryAuthConnResp, error) {
-	_, err := uc.dockerManager.RegistryLogin(ctx, &registry.AuthConfig{
-		Username:      req.Username,
-		Password:      req.Password,
-		ServerAddress: req.Address,
+	_, err := uc.dockerManager.RegistryLogin(ctx, func(opts *client.RegistryLoginOptions) {
+		opts.Username = req.Username
+		opts.Password = req.Password
+		opts.ServerAddress = req.Address
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)

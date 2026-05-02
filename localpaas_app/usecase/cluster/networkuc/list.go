@@ -4,8 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/docker/docker/api/types/filters"
-	"github.com/docker/docker/api/types/network"
+	"github.com/moby/moby/api/types/network"
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -28,16 +27,12 @@ func (uc *UC) ListNetwork(
 		}
 	}
 
-	networks, err := uc.dockerManager.NetworkList(ctx, func(opts *network.ListOptions) {
-		if opts.Filters.Len() == 0 {
-			opts.Filters = filters.NewArgs()
-		}
-	})
+	listResp, err := uc.dockerManager.NetworkList(ctx)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	filterNetworks := networks
+	filterNetworks := listResp.Items
 	if req.ProjectID != "" {
 		filterNetworks = gofn.FilterPtr(filterNetworks, func(net *network.Summary) bool {
 			label := net.Labels[docker.StackLabelNamespace]

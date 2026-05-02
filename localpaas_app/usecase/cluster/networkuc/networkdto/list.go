@@ -1,7 +1,7 @@
 package networkdto
 
 import (
-	"github.com/docker/docker/api/types/network"
+	"github.com/moby/moby/api/types/network"
 	vld "github.com/tiendc/go-validator"
 	"github.com/tiendc/gofn"
 

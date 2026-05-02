@@ -3,7 +3,7 @@ package nodeuc
 import (
 	"context"
 
-	"github.com/docker/docker/api/types/swarm"
+	"github.com/moby/moby/api/types/swarm"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -15,10 +15,11 @@ func (uc *UC) UpdateNode(
 	auth *basedto.Auth,
 	req *nodedto.UpdateNodeReq,
 ) (*nodedto.UpdateNodeResp, error) {
-	node, _, err := uc.dockerManager.NodeInspect(ctx, req.NodeID)
+	inspect, err := uc.dockerManager.NodeInspect(ctx, req.NodeID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+	node := &inspect.Node
 
 	err = uc.verifyNodeUpdateChange(ctx, req, node)
 	if err != nil {
@@ -40,7 +41,7 @@ func (uc *UC) UpdateNode(
 		spec.Availability = swarm.NodeAvailability(req.Availability)
 	}
 
-	err = uc.dockerManager.NodeUpdate(ctx, req.NodeID, &node.Version, spec)
+	_, err = uc.dockerManager.NodeUpdate(ctx, req.NodeID, &node.Version, spec)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

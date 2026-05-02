@@ -3,15 +3,18 @@ package docker
 import (
 	"context"
 
-	"github.com/docker/docker/api/types/swarm"
+	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
-type ConfigListOption func(*swarm.ConfigListOptions)
+type ConfigListOption func(*client.ConfigListOptions)
 
-func (m *manager) ConfigList(ctx context.Context, options ...ConfigListOption) ([]swarm.Config, error) {
-	opts := swarm.ConfigListOptions{}
+func (m *manager) ConfigList(
+	ctx context.Context,
+	options ...ConfigListOption,
+) (*client.ConfigListResult, error) {
+	opts := client.ConfigListOptions{}
 	for _, opt := range options {
 		opt(&opts)
 	}
@@ -19,45 +22,62 @@ func (m *manager) ConfigList(ctx context.Context, options ...ConfigListOption) (
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
 	}
-	return resp, nil
+	return &resp, nil
 }
 
-func (m *manager) ConfigInspect(ctx context.Context, configID string) (*swarm.Config, error) {
-	resp, _, err := m.client.ConfigInspectWithRaw(ctx, configID)
+type ConfigInspectOption func(options *client.ConfigInspectOptions)
+
+func (m *manager) ConfigInspect(
+	ctx context.Context,
+	configID string,
+	options ...ConfigInspectOption,
+) (*client.ConfigInspectResult, error) {
+	opts := client.ConfigInspectOptions{}
+	for _, opt := range options {
+		opt(&opts)
+	}
+	resp, err := m.client.ConfigInspect(ctx, configID, opts)
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
 	}
 	return &resp, nil
 }
 
-type ConfigSpecOption func(*swarm.ConfigSpec)
+type ConfigCreateOption func(*client.ConfigCreateOptions)
 
 func (m *manager) ConfigCreate(
 	ctx context.Context,
 	name string,
 	data []byte,
-	options ...ConfigSpecOption,
-) (*swarm.ConfigCreateResponse, error) {
-	spec := swarm.ConfigSpec{
-		Annotations: swarm.Annotations{
-			Name: name,
-		},
-		Data: data,
-	}
+	options ...ConfigCreateOption,
+) (*client.ConfigCreateResult, error) {
+	opts := client.ConfigCreateOptions{}
+	opts.Spec.Name = name
+	opts.Spec.Data = data
 	for _, opt := range options {
-		opt(&spec)
+		opt(&opts)
 	}
-	resp, err := m.client.ConfigCreate(ctx, spec)
+	resp, err := m.client.ConfigCreate(ctx, opts)
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
 	}
 	return &resp, nil
 }
 
-func (m *manager) ConfigRemove(ctx context.Context, configID string) error {
-	err := m.client.ConfigRemove(ctx, configID)
-	if err != nil {
-		return apperrors.NewInfra(err)
+type ConfigRemoveOption func(options *client.ConfigRemoveOptions)
+
+func (m *manager) ConfigRemove(
+	ctx context.Context,
+	configID string,
+	options ...ConfigRemoveOption,
+) (*client.ConfigRemoveResult, error) {
+	opts := client.ConfigRemoveOptions{}
+	for _, opt := range options {
+		opt(&opts)
 	}
-	return nil
+	resp, err := m.client.ConfigRemove(ctx, configID, opts)
+	if err != nil {
+		return nil, apperrors.NewInfra(err)
+	}
+	return &resp, nil
 }

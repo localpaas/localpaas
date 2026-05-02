@@ -16,10 +16,11 @@ func (uc *UC) GetNetworkInspection(
 	auth *basedto.Auth,
 	req *networkdto.GetNetworkInspectionReq,
 ) (*networkdto.GetNetworkInspectionResp, error) {
-	network, err := uc.dockerManager.NetworkInspect(ctx, req.NetworkID)
+	inspect, err := uc.dockerManager.NetworkInspect(ctx, req.NetworkID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+	network := &inspect.Network
 
 	if req.ProjectID != "" {
 		project, err := uc.projectService.LoadProject(ctx, uc.db, req.ProjectID, true)

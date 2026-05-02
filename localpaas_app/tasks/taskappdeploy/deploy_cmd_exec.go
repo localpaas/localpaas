@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/docker/docker/api/types/container"
+	"github.com/moby/moby/client"
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -75,16 +75,14 @@ func (e *Executor) deployStepExecCmd(
 		cmdStr = deployment.Settings.PostDeploymentCommand
 	}
 
-	execOptions := &container.ExecOptions{
-		AttachStdout: true,
-		AttachStderr: true,
-		Cmd:          gofn.Must(shellutil.CmdSplit(cmdStr)),
-		WorkingDir:   deployment.Settings.WorkingDir,
-		Tty:          true,
-		ConsoleSize:  &docker.DefaultConsoleSize,
-	}
-
-	execInfo, logs, err := e.dockerManager.ContainerExecWait(ctx, contSum.ID, execOptions)
+	execInfo, logs, err := e.dockerManager.ContainerExecWait(ctx, contSum.ID, func(opts *client.ExecCreateOptions) {
+		opts.AttachStdout = true
+		opts.AttachStderr = true
+		opts.Cmd = gofn.Must(shellutil.CmdSplit(cmdStr))
+		opts.WorkingDir = deployment.Settings.WorkingDir
+		opts.TTY = true
+		opts.ConsoleSize = docker.DefaultConsoleSize
+	})
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

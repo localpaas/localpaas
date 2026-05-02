@@ -20,17 +20,17 @@ func (uc *UC) DeleteNetwork(
 			return nil, apperrors.Wrap(err)
 		}
 
-		network, err := uc.dockerManager.NetworkInspect(ctx, req.NetworkID)
+		inspect, err := uc.dockerManager.NetworkInspect(ctx, req.NetworkID)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}
 
-		if network.Labels[docker.StackLabelNamespace] != project.Key {
+		if inspect.Network.Labels[docker.StackLabelNamespace] != project.Key {
 			return nil, apperrors.NewNotFound("Network").WithMsgLog("network not belong to project")
 		}
 	}
 
-	err := uc.dockerManager.NetworkRemove(ctx, req.NetworkID)
+	_, err := uc.dockerManager.NetworkRemove(ctx, req.NetworkID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

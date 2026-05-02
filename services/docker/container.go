@@ -5,36 +5,35 @@ import (
 	"sync"
 	"time"
 
-	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/filters"
+	"github.com/moby/moby/api/types/container"
+	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
-type ContainerListOption func(*container.ListOptions)
+type ContainerListOption func(*client.ContainerListOptions)
 
 func (m *manager) ContainerList(
 	ctx context.Context,
 	options ...ContainerListOption,
-) ([]container.Summary, error) {
-	opts := container.ListOptions{}
+) (*client.ContainerListResult, error) {
+	opts := client.ContainerListOptions{}
 	for _, opt := range options {
 		opt(&opts)
 	}
-	containers, err := m.client.ContainerList(ctx, opts)
+	resp, err := m.client.ContainerList(ctx, opts)
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
 	}
-	return containers, nil
+	return &resp, nil
 }
 
 func (m *manager) ServiceContainerList(
 	ctx context.Context,
 	serviceID string,
 	options ...ContainerListOption,
-) ([]container.Summary, error) {
-	options = append(options, func(opts *container.ListOptions) {
-		opts.All = false
+) (*client.ContainerListResult, error) {
+	options = append(options, func(opts *client.ContainerListOptions) {
 		FilterAdd(&opts.Filters, "label", "com.docker.swarm.service.id="+serviceID)
 	})
 	return m.ContainerList(ctx, options...)
@@ -45,7 +44,7 @@ func (m *manager) ServiceContainerGetActive(
 	serviceID string,
 	maxRetry int,
 	retryDelay time.Duration,
-) (active *container.Summary, all []container.Summary, err error) {
+) (active *container.Summary, all *client.ContainerListResult, err error) {
 	return m.serviceContainerGetActive(ctx, serviceID, -1, maxRetry, retryDelay)
 }
 
@@ -55,19 +54,19 @@ func (m *manager) serviceContainerGetActive(
 	retry int,
 	maxRetry int,
 	retryDelay time.Duration,
-) (active *container.Summary, all []container.Summary, err error) {
+) (active *container.Summary, all *client.ContainerListResult, err error) {
 	if retry >= maxRetry {
 		return nil, nil, nil
 	}
-	summaries, err := m.ServiceContainerList(ctx, serviceID)
+	listResp, err := m.ServiceContainerList(ctx, serviceID)
 	if err != nil {
 		return nil, nil, apperrors.Wrap(err)
 	}
 
-	for i := range summaries {
-		c := &summaries[i]
+	for i := range listResp.Items {
+		c := &listResp.Items[i]
 		if c.State == container.StateRunning {
-			return c, summaries, nil
+			return c, listResp, nil
 		}
 	}
 
@@ -75,38 +74,49 @@ func (m *manager) serviceContainerGetActive(
 	return m.serviceContainerGetActive(ctx, serviceID, retry+1, maxRetry, retryDelay)
 }
 
+type ContainerInspectOption func(*client.ContainerInspectOptions)
+
 func (m *manager) ContainerInspect(
 	ctx context.Context,
 	containerID string,
-) (*container.InspectResponse, error) {
-	respMap, errMap := m.ContainerInspectMulti(ctx, []string{containerID})
-	return respMap[containerID], errMap[containerID]
+	options ...ContainerInspectOption,
+) (*client.ContainerInspectResult, error) {
+	opts := client.ContainerInspectOptions{}
+	for _, opt := range options {
+		opt(&opts)
+	}
+	resp, err := m.client.ContainerInspect(ctx, containerID, opts)
+	if err != nil {
+		return nil, apperrors.NewInfra(err)
+	}
+	return &resp, nil
 }
 
 func (m *manager) ContainerInspectMulti(
 	ctx context.Context,
 	containerIDs []string,
-) (map[string]*container.InspectResponse, map[string]error) {
+	options ...ContainerInspectOption,
+) (map[string]*client.ContainerInspectResult, map[string]error) {
 	if len(containerIDs) == 1 {
-		resp, err := m.client.ContainerInspect(ctx, containerIDs[0])
+		resp, err := m.ContainerInspect(ctx, containerIDs[0], options...)
 		if err != nil {
-			return nil, map[string]error{containerIDs[0]: apperrors.NewInfra(err)}
+			return nil, map[string]error{containerIDs[0]: apperrors.Wrap(err)}
 		}
-		return map[string]*container.InspectResponse{containerIDs[0]: &resp}, nil
+		return map[string]*client.ContainerInspectResult{containerIDs[0]: resp}, nil
 	}
 
 	var wg sync.WaitGroup
 	var mu sync.Mutex
-	allResults := make(map[string]*container.InspectResponse, len(containerIDs))
+	allResults := make(map[string]*client.ContainerInspectResult, len(containerIDs))
 	allErrors := map[string]error{}
 	for _, containerID := range containerIDs {
 		wg.Go(func() {
-			resp, err := m.client.ContainerInspect(ctx, containerID)
+			resp, err := m.ContainerInspect(ctx, containerID, options...)
 			mu.Lock()
 			if err != nil {
-				allErrors[containerID] = apperrors.NewInfra(err)
+				allErrors[containerID] = apperrors.Wrap(err)
 			} else {
-				allResults[containerID] = &resp
+				allResults[containerID] = resp
 			}
 			mu.Unlock()
 		})
@@ -115,34 +125,33 @@ func (m *manager) ContainerInspectMulti(
 	return allResults, allErrors
 }
 
-type ContainerStopOption func(options *container.StopOptions)
+type ContainerRestartOption func(options *client.ContainerRestartOptions)
 
 func (m *manager) ContainerRestart(
 	ctx context.Context,
 	containerID string,
-	options ...ContainerStopOption,
-) error {
-	errMap := m.ContainerRestartMulti(ctx, []string{containerID}, options...)
-	for _, err := range errMap {
-		return err
+	options ...ContainerRestartOption,
+) (*client.ContainerRestartResult, error) {
+	opts := client.ContainerRestartOptions{}
+	for _, opt := range options {
+		opt(&opts)
 	}
-	return nil
+	resp, err := m.client.ContainerRestart(ctx, containerID, opts)
+	if err != nil {
+		return nil, apperrors.NewInfra(err)
+	}
+	return &resp, nil
 }
 
 func (m *manager) ContainerRestartMulti(
 	ctx context.Context,
 	containerIDs []string,
-	options ...ContainerStopOption,
+	options ...ContainerRestartOption,
 ) map[string]error {
-	opts := &container.StopOptions{}
-	for _, opt := range options {
-		opt(opts)
-	}
-
 	if len(containerIDs) == 1 {
-		err := m.client.ContainerRestart(ctx, containerIDs[0], *opts)
+		_, err := m.ContainerRestart(ctx, containerIDs[0], options...)
 		if err != nil {
-			return map[string]error{containerIDs[0]: apperrors.NewInfra(err)}
+			return map[string]error{containerIDs[0]: apperrors.Wrap(err)}
 		}
 		return nil
 	}
@@ -152,10 +161,10 @@ func (m *manager) ContainerRestartMulti(
 	allErrors := map[string]error{}
 	for _, containerID := range containerIDs {
 		wg.Go(func() {
-			err := m.client.ContainerRestart(ctx, containerID, *opts)
+			_, err := m.ContainerRestart(ctx, containerID, options...)
 			if err != nil {
 				mu.Lock()
-				allErrors[containerID] = apperrors.NewInfra(err)
+				allErrors[containerID] = apperrors.Wrap(err)
 				mu.Unlock()
 			}
 		})
@@ -164,27 +173,36 @@ func (m *manager) ContainerRestartMulti(
 	return allErrors
 }
 
+type ContainerKillOption func(options *client.ContainerKillOptions)
+
 func (m *manager) ContainerKill(
 	ctx context.Context,
 	containerID string,
 	signal string,
-) error {
-	errMap := m.ContainerKillMulti(ctx, []string{containerID}, signal)
-	for _, err := range errMap {
-		return err
+	options ...ContainerKillOption,
+) (*client.ContainerKillResult, error) {
+	opts := client.ContainerKillOptions{}
+	opts.Signal = signal
+	for _, opt := range options {
+		opt(&opts)
 	}
-	return nil
+	resp, err := m.client.ContainerKill(ctx, containerID, opts)
+	if err != nil {
+		return nil, apperrors.NewInfra(err)
+	}
+	return &resp, nil
 }
 
 func (m *manager) ContainerKillMulti(
 	ctx context.Context,
 	containerIDs []string,
 	signal string,
+	options ...ContainerKillOption,
 ) map[string]error {
 	if len(containerIDs) == 1 {
-		err := m.client.ContainerKill(ctx, containerIDs[0], signal)
+		_, err := m.ContainerKill(ctx, containerIDs[0], signal, options...)
 		if err != nil {
-			return map[string]error{containerIDs[0]: apperrors.NewInfra(err)}
+			return map[string]error{containerIDs[0]: apperrors.Wrap(err)}
 		}
 		return nil
 	}
@@ -194,10 +212,10 @@ func (m *manager) ContainerKillMulti(
 	allErrors := map[string]error{}
 	for _, containerID := range containerIDs {
 		wg.Go(func() {
-			err := m.client.ContainerKill(ctx, containerID, signal)
+			_, err := m.ContainerKill(ctx, containerID, signal, options...)
 			if err != nil {
 				mu.Lock()
-				allErrors[containerID] = apperrors.NewInfra(err)
+				allErrors[containerID] = apperrors.Wrap(err)
 				mu.Unlock()
 			}
 		})
@@ -206,21 +224,21 @@ func (m *manager) ContainerKillMulti(
 	return allErrors
 }
 
-type ContainersPruneOption func(options *filters.Args)
+type ContainerPruneOption func(options *client.ContainerPruneOptions)
 
-func (m *manager) ContainersPrune(
+func (m *manager) ContainerPrune(
 	ctx context.Context,
 	onlyObjectsOlderThan time.Duration,
-	options ...ContainersPruneOption,
-) (*container.PruneReport, error) {
-	opts := filters.Args{}
+	options ...ContainerPruneOption,
+) (*client.ContainerPruneResult, error) {
+	opts := client.ContainerPruneOptions{}
 	if onlyObjectsOlderThan > 0 {
-		FilterAdd(&opts, "until", onlyObjectsOlderThan.String())
+		FilterAdd(&opts.Filters, "until", onlyObjectsOlderThan.String())
 	}
 	for _, opt := range options {
 		opt(&opts)
 	}
-	resp, err := m.client.ContainersPrune(ctx, opts)
+	resp, err := m.client.ContainerPrune(ctx, opts)
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
 	}

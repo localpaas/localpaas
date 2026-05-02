@@ -95,7 +95,7 @@ func StartScanningLog(
 	return batchChan.Receiver(), func() error { return reader.Close() }
 }
 
-// NOTE: This code is copied from `github.com/docker/docker/pkg/stdcopy`
+// NOTE: This code is copied from `github.com/moby/moby/v2/pkg/stdcopy`
 // as we need to add some customization.
 
 const (

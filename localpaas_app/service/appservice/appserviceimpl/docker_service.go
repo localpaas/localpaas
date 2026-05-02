@@ -3,7 +3,8 @@ package appserviceimpl
 import (
 	"context"
 
-	"github.com/docker/docker/api/types/swarm"
+	"github.com/moby/moby/api/types/swarm"
+	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/services/docker"
@@ -16,12 +17,12 @@ func (s *service) ServiceInspect(
 ) (*swarm.Service, error) {
 	// TODO: handle caching flag
 
-	service, err := s.dockerManager.ServiceInspect(ctx, serviceID)
+	resp, err := s.dockerManager.ServiceInspect(ctx, serviceID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	return service, nil
+	return &resp.Service, nil
 }
 
 func (s *service) ServiceUpdate(
@@ -30,7 +31,7 @@ func (s *service) ServiceUpdate(
 	version *swarm.Version,
 	service *swarm.ServiceSpec,
 	options ...docker.ServiceUpdateOption,
-) (*swarm.ServiceUpdateResponse, error) {
+) (*client.ServiceUpdateResult, error) {
 	resp, err := s.dockerManager.ServiceUpdate(ctx, serviceID, version, service, options...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)

@@ -3,7 +3,7 @@ package volumedto
 import (
 	"time"
 
-	"github.com/docker/docker/api/types/volume"
+	"github.com/moby/moby/api/types/volume"
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"

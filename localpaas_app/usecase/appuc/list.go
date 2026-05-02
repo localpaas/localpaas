@@ -3,7 +3,8 @@ package appuc
 import (
 	"context"
 
-	"github.com/docker/docker/api/types/swarm"
+	"github.com/moby/moby/api/types/swarm"
+	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -74,32 +75,31 @@ func (uc *UC) loadAppSwarmServices(
 	projectKey string,
 	apps []*entity.App,
 ) (map[string]*swarm.Service, error) {
-	// TODO: implement caching?
-
 	// Special case: only one app
 	if len(apps) == 1 {
 		app := apps[0]
 		if app.ServiceID == "" {
 			return nil, nil
 		}
-		service, err := uc.dockerManager.ServiceInspect(ctx, app.ServiceID)
+		inspect, err := uc.dockerManager.ServiceInspect(ctx, app.ServiceID)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}
-		return map[string]*swarm.Service{app.ID: service}, nil
+		return map[string]*swarm.Service{app.ID: &inspect.Service}, nil
 	}
 
 	// Load all services of the project
-	services, err := uc.dockerManager.ServiceListByStack(ctx, projectKey, func(opts *swarm.ServiceListOptions) {
+	listResp, err := uc.dockerManager.ServiceListByStack(ctx, projectKey, func(opts *client.ServiceListOptions) {
 		opts.Status = true
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
+	services := listResp.Items
 	serviceMap := make(map[string]*swarm.Service, len(services))
-	for _, service := range services {
-		serviceMap[service.ID] = &service
+	for i := range services {
+		serviceMap[services[i].ID] = &services[i]
 	}
 
 	resp := make(map[string]*swarm.Service, len(apps))

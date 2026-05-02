@@ -4,19 +4,19 @@ import (
 	"context"
 	"io"
 
-	"github.com/docker/docker/api/types/build"
+	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
-type ImageBuildOption func(options *build.ImageBuildOptions)
+type ImageBuildOption func(options *client.ImageBuildOptions)
 
 func (m *manager) ImageBuild(
 	ctx context.Context,
 	buildContext io.Reader,
 	options ...ImageBuildOption,
-) (*build.ImageBuildResponse, error) {
-	opts := build.ImageBuildOptions{}
+) (*client.ImageBuildResult, error) {
+	opts := client.ImageBuildOptions{}
 	for _, opt := range options {
 		opt(&opts)
 	}
@@ -27,13 +27,20 @@ func (m *manager) ImageBuild(
 	return &resp, nil
 }
 
+type ImageBuildCancelOption func(options *client.BuildCancelOptions)
+
 func (m *manager) ImageBuildCancel(
 	ctx context.Context,
 	buildID string,
-) error {
-	err := m.client.BuildCancel(ctx, buildID)
-	if err != nil {
-		return apperrors.NewInfra(err)
+	options ...ImageBuildCancelOption,
+) (*client.BuildCancelResult, error) {
+	opts := client.BuildCancelOptions{}
+	for _, opt := range options {
+		opt(&opts)
 	}
-	return nil
+	resp, err := m.client.BuildCancel(ctx, buildID, opts)
+	if err != nil {
+		return nil, apperrors.NewInfra(err)
+	}
+	return &resp, nil
 }

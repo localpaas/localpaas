@@ -9,7 +9,7 @@ import (
 
 func (s *service) DeleteApp(ctx context.Context, app *entity.App) error {
 	// Remove service for the app in docker swarm
-	err := s.dockerManager.ServiceRemove(ctx, app.ServiceID)
+	_, err := s.dockerManager.ServiceRemove(ctx, app.ServiceID)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

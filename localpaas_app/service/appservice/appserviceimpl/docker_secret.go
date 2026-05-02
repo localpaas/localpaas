@@ -5,7 +5,8 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/docker/docker/api/types/swarm"
+	"github.com/moby/moby/api/types/swarm"
+	"github.com/moby/moby/client"
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -42,8 +43,8 @@ func (s *service) CreateSwarmSecret(
 	// Create the secret in docker swarm
 	secretName := app.LocalKey + "_" + strings.ToLower(secret.Key)
 	secretVal := reflectutil.UnsafeStrToBytes(secret.Value.MustGetPlain())
-	secretResp, err := s.dockerManager.SecretCreate(ctx, secretName, secretVal, func(sec *swarm.SecretSpec) {
-		sec.Labels = map[string]string{
+	secretResp, err := s.dockerManager.SecretCreate(ctx, secretName, secretVal, func(opts *client.SecretCreateOptions) {
+		opts.Spec.Labels = map[string]string{
 			docker.StackLabelNamespace: app.Project.Key,
 		}
 	})
@@ -130,7 +131,7 @@ func (s *service) DeleteSwarmSecret(
 	}
 
 	// Now delete the secret
-	err = s.dockerManager.SecretRemove(ctx, secret.SwarmRef.SecretID)
+	_, err = s.dockerManager.SecretRemove(ctx, secret.SwarmRef.SecretID)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}
@@ -170,10 +171,11 @@ func (s *service) addSwarmSecretToService(
 		return nil
 	}
 
-	swarmSvc, err := s.dockerManager.ServiceInspect(ctx, serviceID)
+	inspect, err := s.dockerManager.ServiceInspect(ctx, serviceID)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+	swarmSvc := &inspect.Service
 
 	// Only add the secret to the swarm service when the target file name is not used
 	// by another secret.
@@ -211,10 +213,11 @@ func (s *service) removeSwarmSecretFromService(
 		return nil
 	}
 
-	swarmSvc, err := s.dockerManager.ServiceInspect(ctx, serviceID)
+	inspect, err := s.dockerManager.ServiceInspect(ctx, serviceID)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+	swarmSvc := &inspect.Service
 
 	hasChanges := false
 	updateSecrets := make([]*swarm.SecretReference, 0, len(swarmSvc.Spec.TaskTemplate.ContainerSpec.Secrets))
@@ -247,13 +250,14 @@ func (s *service) deleteOrphanSwarmSecret(
 		return nil
 	}
 
-	orphanSwarmSec, err := s.dockerManager.SecretInspect(ctx, secretNameOrID)
+	inspect, err := s.dockerManager.SecretInspect(ctx, secretNameOrID)
 	if err != nil {
 		if errors.Is(err, apperrors.ErrNotFound) {
 			return nil
 		}
 		return apperrors.Wrap(err)
 	}
+	orphanSwarmSec := &inspect.Secret
 
 	orphanSwarmRef := &entity.SwarmSecretRef{
 		File:       &entity.SwarmRefFileTarget{},
@@ -284,7 +288,7 @@ func (s *service) deleteOrphanSwarmSecret(
 	}
 
 	// Now delete the secret
-	err = s.dockerManager.SecretRemove(ctx, orphanSwarmSec.ID)
+	_, err = s.dockerManager.SecretRemove(ctx, orphanSwarmSec.ID)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}

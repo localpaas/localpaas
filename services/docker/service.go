@@ -2,22 +2,21 @@ package docker
 
 import (
 	"context"
-	"io"
 	"time"
 
-	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/api/types/swarm"
+	"github.com/moby/moby/api/types/swarm"
+	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
-type ServiceListOption func(options *swarm.ServiceListOptions)
+type ServiceListOption func(options *client.ServiceListOptions)
 
 func (m *manager) ServiceList(
 	ctx context.Context,
 	options ...ServiceListOption,
-) ([]swarm.Service, error) {
-	opts := swarm.ServiceListOptions{}
+) (*client.ServiceListResult, error) {
+	opts := client.ServiceListOptions{}
 	for _, opt := range options {
 		opt(&opts)
 	}
@@ -25,20 +24,20 @@ func (m *manager) ServiceList(
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
 	}
-	return resp, nil
+	return &resp, nil
 }
 
 func (m *manager) ServiceListByStack(
 	ctx context.Context,
 	namespace string,
 	options ...ServiceListOption,
-) ([]swarm.Service, error) {
-	options = append(options, func(opts *swarm.ServiceListOptions) {
+) (*client.ServiceListResult, error) {
+	options = append(options, func(opts *client.ServiceListOptions) {
 		FilterAdd(&opts.Filters, "label", StackLabelNamespace+"="+namespace)
 	})
 	resp, err := m.ServiceList(ctx, options...)
 	if err != nil {
-		return nil, apperrors.NewInfra(err)
+		return nil, apperrors.Wrap(err)
 	}
 	return resp, nil
 }
@@ -46,116 +45,39 @@ func (m *manager) ServiceListByStack(
 func (m *manager) ServiceGetByName(
 	ctx context.Context,
 	serviceName string,
-	options ...ServiceListOption,
+	status bool,
 ) (*swarm.Service, error) {
-	options = append(options, func(opts *swarm.ServiceListOptions) {
+	option := func(opts *client.ServiceListOptions) {
 		FilterAdd(&opts.Filters, "name", serviceName)
-	})
-	resp, err := m.ServiceList(ctx, options...)
-	if err != nil {
-		return nil, apperrors.NewInfra(err)
+		opts.Status = status
 	}
-	if len(resp) == 0 {
+	resp, err := m.ServiceList(ctx, option)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	if len(resp.Items) == 0 {
 		return nil, apperrors.New(apperrors.ErrInfraNotFound).
 			WithMsgLog("service '%s' not found", serviceName)
 	}
-	return &resp[0], nil
+	return &resp.Items[0], nil
 }
 
-type ServiceCreateOption func(options *swarm.ServiceCreateOptions)
-
-func (m *manager) ServiceCreate(
-	ctx context.Context,
-	service *swarm.ServiceSpec,
-	options ...ServiceCreateOption,
-) (*swarm.ServiceCreateResponse, error) {
-	if service == nil {
-		return nil, nil
-	}
-	opts := swarm.ServiceCreateOptions{}
-	for _, opt := range options {
-		opt(&opts)
-	}
-	resp, err := m.client.ServiceCreate(ctx, *service, opts)
-	if err != nil {
-		return nil, apperrors.NewInfra(err)
-	}
-	return &resp, nil
-}
-
-type ServiceUpdateOption func(options *swarm.ServiceUpdateOptions)
-
-func (m *manager) ServiceUpdate(
-	ctx context.Context,
-	serviceID string,
-	version *swarm.Version,
-	service *swarm.ServiceSpec,
-	options ...ServiceUpdateOption,
-) (*swarm.ServiceUpdateResponse, error) {
-	if serviceID == "" || service == nil {
-		return nil, nil
-	}
-	opts := swarm.ServiceUpdateOptions{}
-	for _, opt := range options {
-		opt(&opts)
-	}
-
-	if version == nil {
-		resp, _, err := m.client.ServiceInspectWithRaw(ctx, serviceID, swarm.ServiceInspectOptions{})
-		if err != nil {
-			return nil, apperrors.NewInfra(err)
-		}
-		version = &resp.Version
-	}
-
-	resp, err := m.client.ServiceUpdate(ctx, serviceID, *version, *service, opts)
-	if err != nil {
-		return nil, apperrors.NewInfra(err)
-	}
-	return &resp, nil
-}
-
-func (m *manager) ServiceForceUpdate(ctx context.Context, serviceID string) error {
-	service, _, err := m.client.ServiceInspectWithRaw(ctx, serviceID, swarm.ServiceInspectOptions{})
-	if err != nil {
-		return apperrors.NewInfra(err)
-	}
-
-	service.Spec.TaskTemplate.ForceUpdate++
-	_, err = m.client.ServiceUpdate(ctx, serviceID, service.Version, service.Spec, swarm.ServiceUpdateOptions{})
-	if err != nil {
-		return apperrors.NewInfra(err)
-	}
-	return nil
-}
-
-func (m *manager) ServiceRemove(ctx context.Context, serviceID string) error {
-	if serviceID == "" {
-		return nil
-	}
-	err := m.client.ServiceRemove(ctx, serviceID)
-	if err != nil {
-		return apperrors.NewInfra(err)
-	}
-	return nil
-}
-
-type ServiceInspectOption func(*swarm.ServiceInspectOptions)
+type ServiceInspectOption func(*client.ServiceInspectOptions)
 
 func (m *manager) ServiceInspect(
 	ctx context.Context,
 	serviceID string,
 	options ...ServiceInspectOption,
-) (*swarm.Service, error) {
+) (*client.ServiceInspectResult, error) {
 	if serviceID == "" {
 		return nil, nil
 	}
 
-	opts := swarm.ServiceInspectOptions{}
+	opts := client.ServiceInspectOptions{}
 	for _, opt := range options {
 		opt(&opts)
 	}
-	resp, _, err := m.client.ServiceInspectWithRaw(ctx, serviceID, opts)
+	resp, err := m.client.ServiceInspect(ctx, serviceID, opts)
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
 	}
@@ -170,18 +92,143 @@ func (m *manager) ServiceExists(ctx context.Context, serviceID string) bool {
 	return err == nil && resp != nil
 }
 
-type ContainerLogsOption func(*container.LogsOptions)
+type ServiceCreateOption func(options *client.ServiceCreateOptions)
+
+func (m *manager) ServiceCreate(
+	ctx context.Context,
+	spec *swarm.ServiceSpec,
+	options ...ServiceCreateOption,
+) (*client.ServiceCreateResult, error) {
+	if spec == nil {
+		return nil, nil
+	}
+	opts := client.ServiceCreateOptions{
+		Spec: *spec,
+	}
+	for _, opt := range options {
+		opt(&opts)
+	}
+	resp, err := m.client.ServiceCreate(ctx, opts)
+	if err != nil {
+		return nil, apperrors.NewInfra(err)
+	}
+	return &resp, nil
+}
+
+type ServiceUpdateOption func(options *client.ServiceUpdateOptions)
+
+func (m *manager) ServiceUpdate(
+	ctx context.Context,
+	serviceID string,
+	version *swarm.Version,
+	spec *swarm.ServiceSpec,
+	options ...ServiceUpdateOption,
+) (*client.ServiceUpdateResult, error) {
+	if serviceID == "" || spec == nil {
+		return nil, nil
+	}
+	opts := client.ServiceUpdateOptions{
+		Spec: *spec,
+	}
+	for _, opt := range options {
+		opt(&opts)
+	}
+
+	if version == nil {
+		inspectResp, err := m.ServiceInspect(ctx, serviceID)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		version = &inspectResp.Service.Version
+	}
+	opts.Version = *version
+
+	resp, err := m.client.ServiceUpdate(ctx, serviceID, opts)
+	if err != nil {
+		return nil, apperrors.NewInfra(err)
+	}
+	return &resp, nil
+}
+
+func (m *manager) ServiceRollback(
+	ctx context.Context,
+	serviceID string,
+	options ...ServiceUpdateOption,
+) (*client.ServiceUpdateResult, error) {
+	if serviceID == "" {
+		return nil, nil
+	}
+	opts := client.ServiceUpdateOptions{
+		Rollback: "previous",
+	}
+	for _, opt := range options {
+		opt(&opts)
+	}
+
+	inspectResp, err := m.ServiceInspect(ctx, serviceID)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	opts.Version = inspectResp.Service.Version
+
+	resp, err := m.client.ServiceUpdate(ctx, serviceID, opts)
+	if err != nil {
+		return nil, apperrors.NewInfra(err)
+	}
+	return &resp, nil
+}
+
+func (m *manager) ServiceForceUpdate(ctx context.Context, serviceID string) error {
+	if serviceID == "" {
+		return nil
+	}
+	resp, err := m.client.ServiceInspect(ctx, serviceID, client.ServiceInspectOptions{})
+	if err != nil {
+		return apperrors.NewInfra(err)
+	}
+
+	resp.Service.Spec.TaskTemplate.ForceUpdate++
+	_, err = m.ServiceUpdate(ctx, serviceID, &resp.Service.Version, &resp.Service.Spec)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+type ServiceRemoveOption func(options *client.ServiceRemoveOptions)
+
+func (m *manager) ServiceRemove(
+	ctx context.Context,
+	serviceID string,
+	options ...ServiceRemoveOption,
+) (*client.ServiceRemoveResult, error) {
+	if serviceID == "" {
+		return nil, nil
+	}
+	opts := client.ServiceRemoveOptions{}
+	for _, opt := range options {
+		opt(&opts)
+	}
+
+	resp, err := m.client.ServiceRemove(ctx, serviceID, opts)
+	if err != nil {
+		return nil, apperrors.NewInfra(err)
+	}
+	return &resp, nil
+}
+
+type ServiceLogsOption func(*client.ServiceLogsOptions)
 
 func (m *manager) ServiceLogs(
 	ctx context.Context,
 	serviceID string,
-	options ...ContainerLogsOption,
-) (io.ReadCloser, error) {
+	options ...ServiceLogsOption,
+) (client.ServiceLogsResult, error) {
 	if serviceID == "" {
 		return nil, nil
 	}
 
-	opts := container.LogsOptions{}
+	opts := client.ServiceLogsOptions{}
 	for _, opt := range options {
 		opt(&opts)
 	}
@@ -206,10 +253,11 @@ func (m *manager) ServiceWaitUntilRunning(
 	start := time.Now()
 	var isRunningFrom time.Time
 	for time.Since(start) <= timeout {
-		service, _, err := m.client.ServiceInspectWithRaw(ctx, serviceID, swarm.ServiceInspectOptions{})
+		inspectResp, err := m.client.ServiceInspect(ctx, serviceID, client.ServiceInspectOptions{})
 		if err != nil {
 			return false, apperrors.NewInfra(err)
 		}
+		service := &inspectResp.Service
 		if service.Spec.Mode.Replicated == nil || *service.Spec.Mode.Replicated.Replicas == 0 {
 			return false, nil
 		}

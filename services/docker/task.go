@@ -3,34 +3,34 @@ package docker
 import (
 	"context"
 
-	"github.com/docker/docker/api/types/swarm"
+	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
-type TaskListOption func(*swarm.TaskListOptions)
+type TaskListOption func(*client.TaskListOptions)
 
 func (m *manager) TaskList(
 	ctx context.Context,
 	options ...TaskListOption,
-) ([]swarm.Task, error) {
-	opts := swarm.TaskListOptions{}
+) (*client.TaskListResult, error) {
+	opts := client.TaskListOptions{}
 	for _, opt := range options {
 		opt(&opts)
 	}
-	tasks, err := m.client.TaskList(ctx, opts)
+	resp, err := m.client.TaskList(ctx, opts)
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
 	}
-	return tasks, nil
+	return &resp, nil
 }
 
 func (m *manager) ServiceTaskList(
 	ctx context.Context,
 	serviceID string,
 	options ...TaskListOption,
-) ([]swarm.Task, error) {
-	options = append(options, func(opts *swarm.TaskListOptions) {
+) (*client.TaskListResult, error) {
+	options = append(options, func(opts *client.TaskListOptions) {
 		FilterAdd(&opts.Filters, "service", serviceID)
 	})
 	return m.TaskList(ctx, options...)

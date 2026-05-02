@@ -3,16 +3,22 @@ package docker
 import (
 	"context"
 
-	"github.com/docker/docker/api/types/registry"
+	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
+type RegistryLoginOption func(*client.RegistryLoginOptions)
+
 func (m *manager) RegistryLogin(
 	ctx context.Context,
-	auth *registry.AuthConfig,
-) (*registry.AuthenticateOKBody, error) {
-	resp, err := m.client.RegistryLogin(ctx, *auth)
+	options ...RegistryLoginOption,
+) (*client.RegistryLoginResult, error) {
+	opts := client.RegistryLoginOptions{}
+	for _, opt := range options {
+		opt(&opts)
+	}
+	resp, err := m.client.RegistryLogin(ctx, opts)
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
 	}

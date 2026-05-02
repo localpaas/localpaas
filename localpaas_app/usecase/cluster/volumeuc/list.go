@@ -4,8 +4,8 @@ import (
 	"context"
 	"strings"
 
-	"github.com/docker/docker/api/types/filters"
-	"github.com/docker/docker/api/types/volume"
+	"github.com/moby/moby/api/types/volume"
+	"github.com/moby/moby/client"
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -32,27 +32,24 @@ func (uc *UC) ListVolume(
 		}
 	}
 
-	volumes, err := uc.dockerManager.VolumeList(ctx, func(opts *volume.ListOptions) {
-		if opts.Filters.Len() == 0 {
-			opts.Filters = filters.NewArgs()
-		}
+	listResp, err := uc.dockerManager.VolumeList(ctx, func(opts *client.VolumeListOptions) {
 		if !req.ListAll {
-			opts.Filters.Add("label", localpaasVolumeLabel)
+			docker.FilterAdd(&opts.Filters, "label", localpaasVolumeLabel)
 		}
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	filterVolumes := volumes.Volumes
+	filterVolumes := listResp.Items
 	if req.ProjectID != "" {
-		filterVolumes = gofn.Filter(filterVolumes, func(vol *volume.Volume) bool {
+		filterVolumes = gofn.FilterPtr(filterVolumes, func(vol *volume.Volume) bool {
 			label := vol.Labels[docker.StackLabelNamespace]
 			return label == "" || label == project.Key
 		})
 	}
 	if req.Type != "" {
-		filterVolumes = gofn.Filter(filterVolumes, func(vol *volume.Volume) bool {
+		filterVolumes = gofn.FilterPtr(filterVolumes, func(vol *volume.Volume) bool {
 			switch req.Type {
 			case docker.VolumeTypeVolume:
 				return vol.ClusterVolume == nil
@@ -64,12 +61,12 @@ func (uc *UC) ListVolume(
 	}
 	if req.Search != "" {
 		keyword := strings.ToLower(req.Search)
-		filterVolumes = gofn.Filter(filterVolumes, func(vol *volume.Volume) bool {
+		filterVolumes = gofn.FilterPtr(filterVolumes, func(vol *volume.Volume) bool {
 			return strings.Contains(vol.Name, keyword) || strings.Contains(vol.Mountpoint, keyword)
 		})
 	}
 	if len(auth.AllowObjectIDs) > 0 {
-		filterVolumes = gofn.Filter(filterVolumes, func(vol *volume.Volume) bool {
+		filterVolumes = gofn.FilterPtr(filterVolumes, func(vol *volume.Volume) bool {
 			volID := vol.Name
 			if vol.ClusterVolume != nil {
 				volID = vol.ClusterVolume.ID

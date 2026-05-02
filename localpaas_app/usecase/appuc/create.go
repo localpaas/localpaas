@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/docker/docker/api/types/swarm"
+	"github.com/moby/moby/api/types/swarm"
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -64,7 +64,7 @@ func (uc *UC) CreateApp(
 	if err != nil {
 		// Transaction fails, but service is created in docker, need to delete it
 		if createdApp != nil && createdApp.ServiceID != "" {
-			_ = uc.dockerManager.ServiceRemove(ctx, createdApp.ServiceID)
+			_, _ = uc.dockerManager.ServiceRemove(ctx, createdApp.ServiceID)
 		}
 		return nil, apperrors.Wrap(err)
 	}

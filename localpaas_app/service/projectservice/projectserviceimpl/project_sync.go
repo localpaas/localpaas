@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/docker/docker/api/types/swarm"
+	"github.com/moby/moby/api/types/swarm"
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -32,10 +32,11 @@ func (s *service) SyncProject(
 	}
 
 	// Loads all swarm services from docker having the namespace label as project key
-	services, err = s.dockerManager.ServiceListByStack(ctx, project.Key)
+	listResp, err := s.dockerManager.ServiceListByStack(ctx, project.Key)
 	if err != nil {
 		return nil, nil, nil, apperrors.Wrap(err)
 	}
+	services = listResp.Items
 
 	timeNow := timeutil.NowUTC()
 

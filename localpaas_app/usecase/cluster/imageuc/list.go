@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/docker/docker/api/types/image"
+	"github.com/moby/moby/api/types/image"
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -17,12 +17,12 @@ func (uc *UC) ListImage(
 	auth *basedto.Auth,
 	req *imagedto.ListImageReq,
 ) (*imagedto.ListImageResp, error) {
-	images, err := uc.dockerManager.ImageList(ctx)
+	listResp, err := uc.dockerManager.ImageList(ctx)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	filterImages := images
+	filterImages := listResp.Items
 	if req.Search != "" {
 		keyword := strings.ToLower(req.Search)
 		filterImages = gofn.FilterPtr(filterImages, func(img *image.Summary) bool {

@@ -4,8 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/docker/docker/api/types/filters"
-	"github.com/docker/docker/api/types/network"
+	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -23,21 +22,21 @@ func (s *service) FindGlobalRoutingNetworkID(ctx context.Context) (string, error
 		return netID, nil
 	}
 
-	net, err := s.dockerManager.NetworkList(ctx, func(options *network.ListOptions) {
-		options.Filters = filters.NewArgs(filters.Arg("name", base.NetworkGlobalRouting))
+	listResp, err := s.dockerManager.NetworkList(ctx, func(opts *client.NetworkListOptions) {
+		docker.FilterAdd(&opts.Filters, "name", base.NetworkGlobalRouting)
 	})
 	if err != nil {
 		return "", apperrors.Wrap(err)
 	}
 
 	var netID string
-	if len(net) == 0 {
+	if len(listResp.Items) == 0 {
 		netID, err = s.createGlobalRoutingNetwork(ctx)
 		if err != nil {
 			return "", apperrors.New(err).WithMsgLog("failed to create global routing network")
 		}
 	} else {
-		netID = net[0].ID
+		netID = listResp.Items[0].ID
 	}
 
 	// Cache the network ID
@@ -47,14 +46,15 @@ func (s *service) FindGlobalRoutingNetworkID(ctx context.Context) (string, error
 }
 
 func (s *service) createGlobalRoutingNetwork(ctx context.Context) (string, error) {
-	resp, err := s.dockerManager.NetworkCreate(ctx, base.NetworkGlobalRouting, func(options *network.CreateOptions) {
-		options.Driver = docker.NetworkDriverOverlay
-		options.Scope = docker.NetworkScopeSwarm
-		options.Attachable = true
-		options.Labels = map[string]string{
-			"localpaas.network.routing": "true",
-		}
-	})
+	resp, err := s.dockerManager.NetworkCreate(ctx, base.NetworkGlobalRouting,
+		func(options *client.NetworkCreateOptions) {
+			options.Driver = docker.NetworkDriverOverlay
+			options.Scope = docker.NetworkScopeSwarm
+			options.Attachable = true
+			options.Labels = map[string]string{
+				"localpaas.network.routing": "true",
+			}
+		})
 	if err != nil {
 		return "", apperrors.Wrap(err)
 	}

@@ -5,7 +5,8 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/docker/docker/api/types/swarm"
+	"github.com/moby/moby/api/types/swarm"
+	"github.com/moby/moby/client"
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -42,8 +43,8 @@ func (s *service) CreateSwarmConfig(
 	// Create the config in docker swarm
 	configName := app.LocalKey + "_" + strings.ToLower(config.Name)
 	configVal := reflectutil.UnsafeStrToBytes(config.Content)
-	configResp, err := s.dockerManager.ConfigCreate(ctx, configName, configVal, func(cfg *swarm.ConfigSpec) {
-		cfg.Labels = map[string]string{
+	configResp, err := s.dockerManager.ConfigCreate(ctx, configName, configVal, func(opts *client.ConfigCreateOptions) {
+		opts.Spec.Labels = map[string]string{
 			docker.StackLabelNamespace: app.Project.Key,
 		}
 	})
@@ -130,7 +131,7 @@ func (s *service) DeleteSwarmConfig(
 	}
 
 	// Now delete the config
-	err = s.dockerManager.ConfigRemove(ctx, config.SwarmRef.ConfigID)
+	_, err = s.dockerManager.ConfigRemove(ctx, config.SwarmRef.ConfigID)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}
@@ -170,10 +171,11 @@ func (s *service) addSwarmConfigToService(
 		return nil
 	}
 
-	swarmSvc, err := s.dockerManager.ServiceInspect(ctx, serviceID)
+	inspect, err := s.dockerManager.ServiceInspect(ctx, serviceID)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+	swarmSvc := &inspect.Service
 
 	// Only add the config to the swarm service when the target file name is not used
 	// by another config.
@@ -211,10 +213,11 @@ func (s *service) removeSwarmConfigFromService(
 		return nil
 	}
 
-	swarmSvc, err := s.dockerManager.ServiceInspect(ctx, serviceID)
+	inspect, err := s.dockerManager.ServiceInspect(ctx, serviceID)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+	swarmSvc := &inspect.Service
 
 	hasChanges := false
 	updateConfigs := make([]*swarm.ConfigReference, 0, len(swarmSvc.Spec.TaskTemplate.ContainerSpec.Configs))
@@ -247,18 +250,19 @@ func (s *service) deleteOrphanSwarmConfig(
 		return nil
 	}
 
-	orphanSwarmSec, err := s.dockerManager.ConfigInspect(ctx, configNameOrID)
+	inspect, err := s.dockerManager.ConfigInspect(ctx, configNameOrID)
 	if err != nil {
 		if errors.Is(err, apperrors.ErrNotFound) {
 			return nil
 		}
 		return apperrors.Wrap(err)
 	}
+	orphanSwarmConfig := &inspect.Config
 
 	orphanSwarmRef := &entity.SwarmConfigRef{
 		File:       &entity.SwarmRefFileTarget{},
-		ConfigID:   orphanSwarmSec.ID,
-		ConfigName: orphanSwarmSec.Spec.Name,
+		ConfigID:   orphanSwarmConfig.ID,
+		ConfigName: orphanSwarmConfig.Spec.Name,
 	}
 
 	// Remove the config from the swarm service of the app
@@ -284,7 +288,7 @@ func (s *service) deleteOrphanSwarmConfig(
 	}
 
 	// Now delete the config
-	err = s.dockerManager.ConfigRemove(ctx, orphanSwarmSec.ID)
+	_, err = s.dockerManager.ConfigRemove(ctx, orphanSwarmConfig.ID)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return apperrors.Wrap(err)
 	}

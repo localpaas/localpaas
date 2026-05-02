@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/docker/docker/api/types/container"
+	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
@@ -62,17 +62,15 @@ func (e *Executor) cronExecContainerCmd(
 		}
 	}
 
-	execOptions := &container.ExecOptions{
-		AttachStdout: true,
-		AttachStderr: true,
-		Cmd:          cmd,
-		WorkingDir:   command.WorkingDir,
-		Env:          env,
-		Tty:          true,
-		ConsoleSize:  &docker.DefaultConsoleSize,
-	}
-
-	execInfo, logs, err := e.dockerManager.ContainerExecWait(ctx, contSum.ID, execOptions)
+	execInfo, logs, err := e.dockerManager.ContainerExecWait(ctx, contSum.ID, func(opts *client.ExecCreateOptions) {
+		opts.AttachStdout = true
+		opts.AttachStderr = true
+		opts.Cmd = cmd
+		opts.WorkingDir = command.WorkingDir
+		opts.Env = env
+		opts.TTY = true
+		opts.ConsoleSize = docker.DefaultConsoleSize
+	})
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

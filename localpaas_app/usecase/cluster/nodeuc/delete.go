@@ -19,7 +19,7 @@ func (uc *UC) DeleteNode(
 		options = append(options, docker.NodeRemoveForce(true))
 	}
 
-	err := uc.dockerManager.NodeRemove(ctx, req.NodeID, options...)
+	_, err := uc.dockerManager.NodeRemove(ctx, req.NodeID, options...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

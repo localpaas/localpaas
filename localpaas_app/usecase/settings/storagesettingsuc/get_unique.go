@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/docker/docker/api/types/volume"
+	"github.com/moby/moby/api/types/volume"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -29,19 +29,21 @@ func (uc *UC) GetUniqueStorageSettings(
 	//nolint:nestif
 	if storageSetting.ClusterVolumeSettings != nil && len(storageSetting.ClusterVolumeSettings.Volumes) > 0 {
 		if len(storageSetting.ClusterVolumeSettings.Volumes) == 1 {
-			vol, _, err := uc.dockerManager.VolumeInspect(ctx, storageSetting.ClusterVolumeSettings.Volumes[0].ID)
+			inspect, err := uc.dockerManager.VolumeInspect(ctx, storageSetting.ClusterVolumeSettings.Volumes[0].ID)
 			if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 				return nil, apperrors.Wrap(err)
 			}
-			if vol != nil {
-				volumes = append(volumes, vol)
+			if inspect != nil {
+				volumes = append(volumes, &inspect.Volume)
 			}
 		} else {
 			volResp, err := uc.dockerManager.VolumeList(ctx)
 			if err != nil {
 				return nil, apperrors.Wrap(err)
 			}
-			volumes = append(volumes, volResp.Volumes...)
+			for i := range volResp.Items {
+				volumes = append(volumes, &volResp.Items[i])
+			}
 		}
 	}
 

@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"maps"
 
-	"github.com/docker/docker/api/types/filters"
-	"github.com/docker/docker/api/types/volume"
+	"github.com/moby/moby/client"
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -25,13 +24,13 @@ func (uc *UC) CreateVolume(
 	auth *basedto.Auth,
 	req *volumedto.CreateVolumeReq,
 ) (*volumedto.CreateVolumeResp, error) {
-	res, err := uc.dockerManager.VolumeList(ctx, func(options *volume.ListOptions) {
-		options.Filters = filters.NewArgs(filters.Arg("name", req.Name))
+	res, err := uc.dockerManager.VolumeList(ctx, func(options *client.VolumeListOptions) {
+		docker.FilterAdd(&options.Filters, "name", req.Name)
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	if len(res.Volumes) > 0 {
+	if res != nil && len(res.Items) > 0 {
 		return nil, apperrors.New(apperrors.ErrInfraAlreadyExists).
 			WithNTParam("Error", fmt.Sprintf("volume '%s' already exists", req.Name))
 	}
@@ -83,20 +82,19 @@ func (uc *UC) CreateVolume(
 		req.Labels[docker.StackLabelNamespace] = namespaceGlobal
 	}
 
-	options := &volume.CreateOptions{
-		Driver:     string(req.Driver),
-		DriverOpts: driverOpts,
-		Labels:     req.Labels,
-		Name:       req.Name,
-	}
-	vol, err := uc.dockerManager.VolumeCreate(ctx, options)
+	createResp, err := uc.dockerManager.VolumeCreate(ctx, func(opts *client.VolumeCreateOptions) {
+		opts.Driver = string(req.Driver)
+		opts.DriverOpts = driverOpts
+		opts.Labels = req.Labels
+		opts.Name = req.Name
+	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	volID := vol.Name
-	if vol.ClusterVolume != nil {
-		volID = vol.ClusterVolume.ID
+	volID := createResp.Volume.Name
+	if createResp.Volume.ClusterVolume != nil {
+		volID = createResp.Volume.ClusterVolume.ID
 	}
 
 	return &volumedto.CreateVolumeResp{

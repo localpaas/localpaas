@@ -13,12 +13,12 @@ func (uc *UC) GetImage(
 	auth *basedto.Auth,
 	req *imagedto.GetImageReq,
 ) (*imagedto.GetImageResp, error) {
-	img, err := uc.dockerManager.ImageInspect(ctx, req.ImageID)
+	inspect, err := uc.dockerManager.ImageInspect(ctx, req.ImageID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
 	return &imagedto.GetImageResp{
-		Data: imagedto.TransformImageFromResp(img, true),
+		Data: imagedto.TransformImageFromResp(&inspect.InspectResponse, true),
 	}, nil
 }

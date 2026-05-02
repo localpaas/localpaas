@@ -144,10 +144,11 @@ func (uc *UC) applyAppHttpSettings(
 		return apperrors.Wrap(err)
 	}
 
-	service, err := uc.dockerManager.ServiceInspect(ctx, data.App.ServiceID)
+	inspect, err := uc.dockerManager.ServiceInspect(ctx, data.App.ServiceID)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+	service := &inspect.Service
 
 	err = uc.traefikService.ApplyAppConfig(ctx, data.App, service, &traefikservice.AppConfigData{
 		HttpSettings: appHttpSettings,

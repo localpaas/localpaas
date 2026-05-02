@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/docker/docker/api/types/swarm"
+	"github.com/moby/moby/api/types/swarm"
 	"gopkg.in/yaml.v3"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"

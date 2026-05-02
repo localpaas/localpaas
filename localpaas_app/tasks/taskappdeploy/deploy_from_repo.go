@@ -7,13 +7,12 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/docker/docker/api/types/build"
-	"github.com/docker/docker/api/types/image"
-	"github.com/docker/docker/api/types/swarm"
 	"github.com/gitsight/go-vcsurl"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/moby/go-archive"
+	"github.com/moby/moby/api/types/build"
+	"github.com/moby/moby/client"
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -213,7 +212,7 @@ func (e *Executor) repoDeployStepImageBuild(
 	defer tar.Close()
 
 	// Build the image
-	resp, err := e.dockerManager.ImageBuild(ctx, tar, func(opts *build.ImageBuildOptions) {
+	resp, err := e.dockerManager.ImageBuild(ctx, tar, func(opts *client.ImageBuildOptions) {
 		opts.Version = build.BuilderV1
 		opts.BuildID = data.Task.ID
 		opts.Dockerfile = dockerfile
@@ -289,7 +288,7 @@ func (e *Executor) repoDeployStepImagePush(
 		if !strings.Contains(tag, "/") { // only push tag containing `/` in it
 			continue
 		}
-		logsReader, err := e.dockerManager.ImagePush(ctx, tag, func(options *image.PushOptions) {
+		logsReader, err := e.dockerManager.ImagePush(ctx, tag, func(options *client.ImagePushOptions) {
 			options.RegistryAuth = data.RegAuthHeader
 		})
 		if err != nil {
@@ -327,11 +326,11 @@ func (e *Executor) repoDeployStepServiceApply(
 	e.addStepStartLog(ctx, data.taskData, "Applying changes to service...")
 	defer e.addStepEndLog(ctx, data.taskData, timeutil.NowUTC(), err)
 
-	service, err := e.dockerManager.ServiceInspect(ctx, data.App.ServiceID)
+	inspect, err := e.dockerManager.ServiceInspect(ctx, data.App.ServiceID)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-
+	service := &inspect.Service
 	spec := &service.Spec
 	contSpec := spec.TaskTemplate.ContainerSpec
 	contSpec.Image = data.DeploymentOutput.ImageTags[0]
@@ -339,7 +338,7 @@ func (e *Executor) repoDeployStepServiceApply(
 	docker.ContainerCommandApply(contSpec, deployment.Settings.Command)
 
 	_, err = e.dockerManager.ServiceUpdate(ctx, data.App.ServiceID, &service.Version, spec,
-		func(options *swarm.ServiceUpdateOptions) {
+		func(options *client.ServiceUpdateOptions) {
 			options.EncodedRegistryAuth = data.RegAuthHeader
 		})
 	if err != nil {
@@ -396,7 +395,7 @@ func (e *Executor) onRepoDeployCommand(
 	_ ...any,
 ) {
 	if cmd == base.TaskCommandCancel && taskData.Step == stepImageBuild {
-		err := e.dockerManager.ImageBuildCancel(ctx, taskData.Task.ID)
+		_, err := e.dockerManager.ImageBuildCancel(ctx, taskData.Task.ID)
 		if err != nil {
 			_ = taskData.LogStore.Add(ctx, applog.NewErrFrame("failed to cancel image build: "+
 				err.Error(), applog.TsNow))

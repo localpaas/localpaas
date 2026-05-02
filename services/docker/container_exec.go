@@ -4,92 +4,107 @@ import (
 	"context"
 	"io"
 
-	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/container"
+	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 )
 
 var (
-	DefaultConsoleSize = [2]uint{40, 120}
+	DefaultConsoleSize = client.ConsoleSize{
+		Height: 40,  //nolint
+		Width:  120, //nolint
+	}
 )
+
+type ExecCreateOption func(*client.ExecCreateOptions)
 
 func (m *manager) ContainerExec(
 	ctx context.Context,
 	containerID string,
-	options *container.ExecOptions,
-) (string, *types.HijackedResponse, error) {
-	_, err := m.client.ContainerInspect(ctx, containerID)
-	if err != nil {
-		return "", nil, apperrors.NewInfra(err)
+	options ...ExecCreateOption,
+) (*client.ExecCreateResult, *client.ExecAttachResult, *client.ExecStartResult, error) {
+	opts := client.ExecCreateOptions{}
+	for _, opt := range options {
+		opt(&opts)
 	}
 
-	if options.ConsoleSize != nil {
-		options.Tty = true
+	_, err := m.ContainerInspect(ctx, containerID)
+	if err != nil {
+		return nil, nil, nil, apperrors.Wrap(err)
 	}
 
-	resp, err := m.client.ContainerExecCreate(ctx, containerID, *options)
-	if err != nil {
-		return "", nil, apperrors.NewInfra(err)
+	if opts.ConsoleSize.Width > 0 && opts.ConsoleSize.Height > 0 {
+		opts.TTY = true
 	}
-	execID := resp.ID
+
+	createResp, err := m.client.ExecCreate(ctx, containerID, opts)
+	if err != nil {
+		return nil, nil, nil, apperrors.NewInfra(err)
+	}
+	execID := createResp.ID
 	if execID == "" {
-		return "", nil, apperrors.New(apperrors.ErrInfraInternal)
+		return nil, nil, nil, apperrors.New(apperrors.ErrInfraInternal)
 	}
 
-	hijackResp, err := m.client.ContainerExecAttach(ctx, execID, container.ExecAttachOptions{
-		Detach:      false,
-		Tty:         options.Tty,
-		ConsoleSize: options.ConsoleSize,
+	attachResp, err := m.client.ExecAttach(ctx, execID, client.ExecAttachOptions{
+		TTY:         opts.TTY,
+		ConsoleSize: opts.ConsoleSize,
 	})
 	if err != nil {
-		return "", nil, apperrors.NewInfra(err)
+		return nil, nil, nil, apperrors.NewInfra(err)
 	}
 
-	err = m.client.ContainerExecStart(ctx, execID, container.ExecStartOptions{
-		Detach:      options.Detach, //nolint
-		Tty:         options.Tty,
-		ConsoleSize: options.ConsoleSize,
+	startResp, err := m.client.ExecStart(ctx, execID, client.ExecStartOptions{
+		Detach:      false, // TODO: handle this
+		TTY:         opts.TTY,
+		ConsoleSize: opts.ConsoleSize,
 	})
 	if err != nil {
-		return "", nil, apperrors.NewInfra(err)
+		return nil, nil, nil, apperrors.NewInfra(err)
 	}
 
-	return execID, &hijackResp, nil
+	return &createResp, &attachResp, &startResp, nil
 }
 
 func (m *manager) ContainerExecWait(
 	ctx context.Context,
 	containerID string,
-	options *container.ExecOptions,
-) (*container.ExecInspect, []*applog.LogFrame, error) {
-	execID, resp, err := m.ContainerExec(ctx, containerID, options)
+	options ...ExecCreateOption,
+) (*client.ExecInspectResult, []*applog.LogFrame, error) {
+	createResp, attachResp, _, err := m.ContainerExec(ctx, containerID, options...)
 	if err != nil {
 		return nil, nil, apperrors.Wrap(err)
 	}
 
-	logChan, _ := StartScanningLog(ctx, io.NopCloser(resp.Reader), WithParseLogHeader(false))
-	defer resp.Close()
+	logChan, _ := StartScanningLog(ctx, io.NopCloser(attachResp.Reader), WithParseLogHeader(false))
+	defer attachResp.Close()
 
 	logs := make([]*applog.LogFrame, 0, 20) //nolint
 	for msgs := range logChan {
 		logs = append(logs, msgs...)
 	}
 
-	execInfo, err := m.ContainerExecInspect(ctx, execID)
+	inspectResp, err := m.ContainerExecInspect(ctx, createResp.ID)
 	if err != nil {
 		return nil, nil, apperrors.Wrap(err)
 	}
 
-	return execInfo, logs, nil
+	return inspectResp, logs, nil
 }
+
+type ExecInspectOption func(*client.ExecInspectOptions)
 
 func (m *manager) ContainerExecInspect(
 	ctx context.Context,
 	execID string,
-) (*container.ExecInspect, error) {
-	resp, err := m.client.ContainerExecInspect(ctx, execID)
+	options ...ExecInspectOption,
+) (*client.ExecInspectResult, error) {
+	opts := client.ExecInspectOptions{}
+	for _, opt := range options {
+		opt(&opts)
+	}
+	resp, err := m.client.ExecInspect(ctx, execID, opts)
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
 	}

@@ -3,7 +3,7 @@ package networkuc
 import (
 	"context"
 
-	"github.com/docker/docker/api/types/network"
+	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -34,7 +34,7 @@ func (uc *UC) CreateNetwork(
 		req.Labels[docker.StackLabelNamespace] = namespaceGlobal
 	}
 
-	resp, err := uc.dockerManager.NetworkCreate(ctx, req.Name, func(opts *network.CreateOptions) {
+	resp, err := uc.dockerManager.NetworkCreate(ctx, req.Name, func(opts *client.NetworkCreateOptions) {
 		opts.Driver = req.Driver
 		opts.Scope = docker.NetworkScopeSwarm
 		opts.EnableIPv4 = &req.EnableIPv4

@@ -3,7 +3,8 @@ package docker
 import (
 	"context"
 
-	"github.com/docker/docker/api/types/swarm"
+	"github.com/moby/moby/api/types/swarm"
+	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
@@ -45,13 +46,13 @@ var (
 		NodeAvailabilityDrain}
 )
 
-type NodeListOption func(*swarm.NodeListOptions)
+type NodeListOption func(*client.NodeListOptions)
 
 func (m *manager) NodeList(
 	ctx context.Context,
 	options ...NodeListOption,
-) ([]swarm.Node, error) {
-	opts := swarm.NodeListOptions{}
+) (*client.NodeListResult, error) {
+	opts := client.NodeListOptions{}
 	for _, opt := range options {
 		opt(&opts)
 	}
@@ -59,28 +60,35 @@ func (m *manager) NodeList(
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
 	}
-	return resp, nil
+	return &resp, nil
 }
 
 func (m *manager) NodeManagerList(
 	ctx context.Context,
 	options ...NodeListOption,
-) ([]swarm.Node, error) {
-	options = append(options, func(opts *swarm.NodeListOptions) {
+) (*client.NodeListResult, error) {
+	options = append(options, func(opts *client.NodeListOptions) {
 		FilterAdd(&opts.Filters, "role", "manager")
 	})
 	return m.NodeList(ctx, options...)
 }
 
+type NodeInspectOption func(*client.NodeInspectOptions)
+
 func (m *manager) NodeInspect(
 	ctx context.Context,
 	nodeID string,
-) (*swarm.Node, []byte, error) {
-	resp, data, err := m.client.NodeInspectWithRaw(ctx, nodeID)
-	if err != nil {
-		return nil, nil, apperrors.NewInfra(err)
+	options ...NodeInspectOption,
+) (*client.NodeInspectResult, error) {
+	opts := client.NodeInspectOptions{}
+	for _, opt := range options {
+		opt(&opts)
 	}
-	return &resp, data, nil
+	resp, err := m.client.NodeInspect(ctx, nodeID, opts)
+	if err != nil {
+		return nil, apperrors.NewInfra(err)
+	}
+	return &resp, nil
 }
 
 func (m *manager) NodeUpdate(
@@ -88,28 +96,34 @@ func (m *manager) NodeUpdate(
 	nodeID string,
 	version *swarm.Version,
 	spec *swarm.NodeSpec,
-) error {
+) (*client.NodeUpdateResult, error) {
 	if spec == nil {
-		return nil
+		return nil, nil
 	}
+	opts := client.NodeUpdateOptions{
+		Spec: *spec,
+	}
+
 	if version == nil {
-		resp, _, err := m.client.NodeInspectWithRaw(ctx, nodeID)
+		resp, err := m.NodeInspect(ctx, nodeID)
 		if err != nil {
-			return apperrors.NewInfra(err)
+			return nil, apperrors.Wrap(err)
 		}
-		version = &resp.Version
+		version = &resp.Node.Version
 	}
-	err := m.client.NodeUpdate(ctx, nodeID, *version, *spec)
+	opts.Version = *version
+
+	resp, err := m.client.NodeUpdate(ctx, nodeID, opts)
 	if err != nil {
-		return apperrors.NewInfra(err)
+		return nil, apperrors.NewInfra(err)
 	}
-	return nil
+	return &resp, nil
 }
 
-type NodeRemoveOption func(*swarm.NodeRemoveOptions)
+type NodeRemoveOption func(*client.NodeRemoveOptions)
 
 func NodeRemoveForce(force bool) NodeRemoveOption {
-	return func(opts *swarm.NodeRemoveOptions) {
+	return func(opts *client.NodeRemoveOptions) {
 		opts.Force = force
 	}
 }
@@ -118,14 +132,14 @@ func (m *manager) NodeRemove(
 	ctx context.Context,
 	nodeID string,
 	options ...NodeRemoveOption,
-) error {
-	opts := swarm.NodeRemoveOptions{}
+) (*client.NodeRemoveResult, error) {
+	opts := client.NodeRemoveOptions{}
 	for _, opt := range options {
 		opt(&opts)
 	}
-	err := m.client.NodeRemove(ctx, nodeID, opts)
+	resp, err := m.client.NodeRemove(ctx, nodeID, opts)
 	if err != nil {
-		return apperrors.NewInfra(err)
+		return nil, apperrors.NewInfra(err)
 	}
-	return nil
+	return &resp, nil
 }

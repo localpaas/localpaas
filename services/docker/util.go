@@ -1,32 +1,30 @@
 package docker
 
 import (
-	"github.com/docker/docker/api/types/filters"
-	"github.com/docker/docker/api/types/registry"
+	"github.com/moby/moby/api/pkg/authconfig"
+	"github.com/moby/moby/api/types/registry"
+	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
-func GenerateAuthHeader(username string, password string) (string, error) {
-	if username == "" || password == "" {
+func GenerateAuthHeader(auth *registry.AuthConfig) (string, error) {
+	if auth.Username == "" || auth.Password == "" {
 		return "", nil
 	}
-	h, err := registry.EncodeAuthConfig(registry.AuthConfig{
-		Username: username,
-		Password: password,
-	})
+	h, err := authconfig.Encode(*auth)
 	if err != nil {
 		return "", apperrors.NewInfra(err)
 	}
 	return h, nil
 }
 
-func FilterAdd(f *filters.Args, key, value string) {
+func FilterAdd(f *client.Filters, key, value string) {
 	if f == nil {
 		return
 	}
-	if f.Len() == 0 {
-		*f = filters.NewArgs()
+	if len(*f) == 0 {
+		*f = make(client.Filters)
 	}
 	f.Add(key, value)
 }

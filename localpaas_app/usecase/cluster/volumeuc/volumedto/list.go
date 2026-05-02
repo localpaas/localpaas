@@ -1,9 +1,8 @@
 package volumedto
 
 import (
-	"github.com/docker/docker/api/types/volume"
+	"github.com/moby/moby/api/types/volume"
 	vld "github.com/tiendc/go-validator"
-	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -40,8 +39,10 @@ type ListVolumeResp struct {
 	Data []*VolumeResp     `json:"data"`
 }
 
-func TransformVolumes(volumes []*volume.Volume, detailed bool) []*VolumeResp {
-	return gofn.MapSlice(volumes, func(vol *volume.Volume) *VolumeResp {
-		return TransformVolume(vol, detailed)
-	})
+func TransformVolumes(volumes []volume.Volume, detailed bool) (resp []*VolumeResp) {
+	resp = make([]*VolumeResp, 0, len(volumes))
+	for i := range volumes {
+		resp = append(resp, TransformVolume(&volumes[i], detailed))
+	}
+	return resp
 }

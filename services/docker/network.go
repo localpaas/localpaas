@@ -4,8 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/docker/docker/api/types/filters"
-	"github.com/docker/docker/api/types/network"
+	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
@@ -20,13 +19,13 @@ const (
 	NetworkScopeLocal = "local"
 )
 
-type NetworkListOption func(*network.ListOptions)
+type NetworkListOption func(*client.NetworkListOptions)
 
 func (m *manager) NetworkList(
 	ctx context.Context,
 	options ...NetworkListOption,
-) ([]network.Summary, error) {
-	opts := network.ListOptions{}
+) (*client.NetworkListResult, error) {
+	opts := client.NetworkListOptions{}
 	for _, opt := range options {
 		opt(&opts)
 	}
@@ -34,17 +33,17 @@ func (m *manager) NetworkList(
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
 	}
-	return resp, nil
+	return &resp, nil
 }
 
-type NetworkCreateOption func(*network.CreateOptions)
+type NetworkCreateOption func(*client.NetworkCreateOptions)
 
 func (m *manager) NetworkCreate(
 	ctx context.Context,
 	name string,
 	options ...NetworkCreateOption,
-) (*network.CreateResponse, error) {
-	opts := network.CreateOptions{}
+) (*client.NetworkCreateResult, error) {
+	opts := client.NetworkCreateOptions{}
 	for _, opt := range options {
 		opt(&opts)
 	}
@@ -55,22 +54,32 @@ func (m *manager) NetworkCreate(
 	return &resp, nil
 }
 
-func (m *manager) NetworkRemove(ctx context.Context, idOrName string) error {
-	err := m.client.NetworkRemove(ctx, idOrName)
-	if err != nil {
-		return apperrors.NewInfra(err)
+type NetworkRemoveOption func(*client.NetworkRemoveOptions)
+
+func (m *manager) NetworkRemove(
+	ctx context.Context,
+	idOrName string,
+	options ...NetworkRemoveOption,
+) (*client.NetworkRemoveResult, error) {
+	opts := client.NetworkRemoveOptions{}
+	for _, opt := range options {
+		opt(&opts)
 	}
-	return nil
+	resp, err := m.client.NetworkRemove(ctx, idOrName, opts)
+	if err != nil {
+		return nil, apperrors.NewInfra(err)
+	}
+	return &resp, nil
 }
 
-type NetworkInspectOption func(*network.InspectOptions)
+type NetworkInspectOption func(*client.NetworkInspectOptions)
 
 func (m *manager) NetworkInspect(
 	ctx context.Context,
 	name string,
 	options ...NetworkInspectOption,
-) (*network.Inspect, error) {
-	opts := network.InspectOptions{}
+) (*client.NetworkInspectResult, error) {
+	opts := client.NetworkInspectOptions{}
 	for _, opt := range options {
 		opt(&opts)
 	}
@@ -86,21 +95,21 @@ func (m *manager) NetworkExists(ctx context.Context, name string) bool {
 	return err == nil
 }
 
-type NetworksPruneOption func(options *filters.Args)
+type NetworkPruneOption func(*client.NetworkPruneOptions)
 
-func (m *manager) NetworksPrune(
+func (m *manager) NetworkPrune(
 	ctx context.Context,
 	onlyObjectsOlderThan time.Duration,
-	options ...NetworksPruneOption,
-) (*network.PruneReport, error) {
-	opts := filters.Args{}
+	options ...NetworkPruneOption,
+) (*client.NetworkPruneResult, error) {
+	opts := client.NetworkPruneOptions{}
 	if onlyObjectsOlderThan > 0 {
-		FilterAdd(&opts, "until", onlyObjectsOlderThan.String())
+		FilterAdd(&opts.Filters, "until", onlyObjectsOlderThan.String())
 	}
 	for _, opt := range options {
 		opt(&opts)
 	}
-	resp, err := m.client.NetworksPrune(ctx, opts)
+	resp, err := m.client.NetworkPrune(ctx, opts)
 	if err != nil {
 		return nil, apperrors.NewInfra(err)
 	}

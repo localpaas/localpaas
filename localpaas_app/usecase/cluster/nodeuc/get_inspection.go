@@ -2,7 +2,6 @@ package nodeuc
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -15,17 +14,12 @@ func (uc *UC) GetNodeInspection(
 	auth *basedto.Auth,
 	req *nodedto.GetNodeInspectionReq,
 ) (*nodedto.GetNodeInspectionResp, error) {
-	node, _, err := uc.dockerManager.NodeInspect(ctx, req.NodeID)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-
-	resp, err := json.MarshalIndent(node, "", "   ")
+	resp, err := uc.dockerManager.NodeInspect(ctx, req.NodeID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
 	return &nodedto.GetNodeInspectionResp{
-		Data: reflectutil.UnsafeBytesToStr(resp),
+		Data: reflectutil.UnsafeBytesToStr(resp.Raw),
 	}, nil
 }

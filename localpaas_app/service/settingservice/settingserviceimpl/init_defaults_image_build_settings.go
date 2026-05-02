@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/docker/docker/api/types/swarm"
+	"github.com/moby/moby/api/types/swarm"
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -50,12 +50,12 @@ func (s *service) initDefaultImageBuildSettings(
 	}
 
 	// Calculate the best values for resource settings
-	nodes, err := s.dockerManager.NodeManagerList(ctx)
+	listResp, err := s.dockerManager.NodeManagerList(ctx)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 	//nolint
-	if leaderNode, found := gofn.FindPtr(nodes, func(n *swarm.Node) bool {
+	if leaderNode, found := gofn.FindPtr(listResp.Items, func(n *swarm.Node) bool {
 		return n.ManagerStatus != nil && n.ManagerStatus.Leader
 	}); found {
 		// Use half of the leader node's resources for image building

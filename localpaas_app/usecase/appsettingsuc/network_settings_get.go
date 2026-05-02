@@ -3,7 +3,7 @@ package appsettingsuc
 import (
 	"context"
 
-	"github.com/docker/docker/api/types/network"
+	"github.com/moby/moby/api/types/network"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -30,10 +30,11 @@ func (uc *UC) GetAppNetworkSettings(
 	}
 
 	// TODO: query only networks used in the service
-	networks, err := uc.dockerManager.NetworkList(ctx)
+	listResp, err := uc.dockerManager.NetworkList(ctx)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+	networks := listResp.Items
 	refObjects := &appsettingsdto.InfraRefObjects{
 		Networks: make(map[string]*network.Summary, len(networks)),
 	}

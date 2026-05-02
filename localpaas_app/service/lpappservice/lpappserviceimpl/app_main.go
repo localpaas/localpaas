@@ -3,14 +3,14 @@ package lpappserviceimpl
 import (
 	"context"
 
-	"github.com/docker/docker/api/types/swarm"
+	"github.com/moby/moby/api/types/swarm"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
 func (s *service) GetLpAppSwarmService(ctx context.Context) (*swarm.Service, error) {
-	service, err := s.dockerManager.ServiceGetByName(ctx, base.LocalpaasAppServiceName)
+	service, err := s.dockerManager.ServiceGetByName(ctx, base.LocalpaasAppServiceName, false)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -36,9 +36,9 @@ func (s *service) GetLpAppTasks(ctx context.Context) ([]swarm.Task, error) {
 		return nil, apperrors.Wrap(err)
 	}
 
-	tasks, err := s.dockerManager.ServiceTaskList(ctx, service.ID)
+	resp, err := s.dockerManager.ServiceTaskList(ctx, service.ID)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	return tasks, nil
+	return resp.Items, nil
 }
