@@ -228,14 +228,14 @@ func (e *Executor) repoDeployStepImageBuild(
 				if res.CPUs > 0 {
 					opts.CPUPeriod, opts.CPUQuota = res.CPUsAsPeriodAndQuota()
 				}
-				if res.MemMB > 0 {
-					opts.Memory = res.MemMB * docker.UnitMemMB
+				if res.Mem > 0 {
+					opts.Memory = res.Mem.Bytes()
 				}
-				if res.MemSwapMB > 0 {
-					opts.MemorySwap = res.MemSwapMB * docker.UnitMemMB
+				if res.MemSwap > 0 {
+					opts.MemorySwap = res.MemSwap.Bytes()
 				}
-				if res.ShmSizeMB > 0 {
-					opts.ShmSize = res.ShmSizeMB * docker.UnitMemMB
+				if res.ShmSize > 0 {
+					opts.ShmSize = res.ShmSize.Bytes()
 				}
 			}
 		}

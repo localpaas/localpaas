@@ -23566,6 +23566,18 @@
         "required" : [ "domainSuggestion", "domains", "exposePublicly", "internalEndpoints", "updateVer" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.Memory" : {
+        "properties" : {
+          "swap" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_unit.DataSize"
+          },
+          "swappiness" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "swap", "swappiness" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.Mount" : {
         "properties" : {
           "bindOptions" : {
@@ -23726,8 +23738,8 @@
           "cpus" : {
             "type" : "number"
           },
-          "memoryMB" : {
-            "type" : "integer"
+          "memory" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_unit.DataSize"
           },
           "pids" : {
             "type" : "integer"
@@ -23746,8 +23758,8 @@
             },
             "type" : "array"
           },
-          "memoryMB" : {
-            "type" : "integer"
+          "memory" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_unit.DataSize"
           }
         },
         "type" : "object"
@@ -23759,6 +23771,9 @@
           },
           "limits" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.ResourceLimits"
+          },
+          "memory" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.Memory"
           },
           "reservations" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.ResourceReservations"
@@ -23773,7 +23788,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "capabilities", "limits", "reservations", "ulimits", "updateVer" ],
+        "required" : [ "capabilities", "limits", "memory", "reservations", "ulimits", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.RestartPolicy" : {
@@ -24189,6 +24204,9 @@
           "limits" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.ResourceLimits"
           },
+          "memory" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.Memory"
+          },
           "reservations" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.ResourceReservations"
           },
@@ -24202,7 +24220,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "capabilities", "limits", "reservations", "ulimits", "updateVer" ],
+        "required" : [ "capabilities", "limits", "memory", "reservations", "ulimits", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.UpdateAppResourceSettingsResp" : {
@@ -25022,11 +25040,11 @@
           "cpus" : {
             "type" : "integer"
           },
-          "memoryMB" : {
-            "type" : "integer"
+          "memory" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_unit.DataSize"
           }
         },
-        "required" : [ "cpus", "memoryMB" ],
+        "required" : [ "cpus", "memory" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_nodeuc_nodedto.NodeResp" : {
@@ -28999,17 +29017,17 @@
           "cpus" : {
             "type" : "integer"
           },
-          "memMB" : {
-            "type" : "integer"
+          "mem" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_unit.DataSize"
           },
-          "memSwapMB" : {
-            "type" : "integer"
+          "memSwap" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_unit.DataSize"
           },
-          "shmSizeMB" : {
-            "type" : "integer"
+          "shmSize" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_unit.DataSize"
           }
         },
-        "required" : [ "cpus", "memMB", "memSwapMB", "shmSizeMB" ],
+        "required" : [ "cpus", "mem", "memSwap", "shmSize" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.ImageBuildSettingResourcesResp" : {

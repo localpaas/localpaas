@@ -6,6 +6,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/unit"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
@@ -38,18 +39,18 @@ func (req *ImageBuildSettingsBaseReq) validate(field string) (res []vld.Validato
 }
 
 type ImageBuildSettingResourcesReq struct {
-	CPUs      int32 `json:"cpus"`
-	MemMB     int64 `json:"memMB"`
-	MemSwapMB int64 `json:"memSwapMB"`
-	ShmSizeMB int64 `json:"shmSizeMB"`
+	CPUs    int32         `json:"cpus"`
+	Mem     unit.DataSize `json:"mem"`
+	MemSwap unit.DataSize `json:"memSwap"`
+	ShmSize unit.DataSize `json:"shmSize"`
 }
 
 func (req *ImageBuildSettingResourcesReq) ToEntity() *entity.ImageBuildSettingResources {
 	return &entity.ImageBuildSettingResources{
-		CPUs:      req.CPUs,
-		MemMB:     req.MemMB,
-		MemSwapMB: req.MemSwapMB,
-		ShmSizeMB: req.ShmSizeMB,
+		CPUs:    req.CPUs,
+		Mem:     req.Mem,
+		MemSwap: req.MemSwap,
+		ShmSize: req.ShmSize,
 	}
 }
 

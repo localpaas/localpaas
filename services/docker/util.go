@@ -28,3 +28,13 @@ func FilterAdd(f *client.Filters, key, value string) {
 	}
 	f.Add(key, value)
 }
+
+func TruncateCPUs(cpus, chunkSz float64) float64 {
+	return float64(TruncateCPUsAsNano(cpus, chunkSz)) / UnitCPUNano
+}
+
+func TruncateCPUsAsNano(cpus, chunkSz float64) int64 {
+	nanoCPUs := int64(cpus * UnitCPUNano)
+	nanoChunkSz := int64(chunkSz * UnitCPUNano)
+	return (nanoCPUs / nanoChunkSz) * nanoChunkSz
+}

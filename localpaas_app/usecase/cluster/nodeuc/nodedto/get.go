@@ -9,6 +9,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/unit"
 	"github.com/localpaas/localpaas/services/docker"
 )
 
@@ -62,8 +63,8 @@ type NodePlatformResp struct {
 }
 
 type NodeResources struct {
-	CPUs     int64 `json:"cpus"`
-	MemoryMB int64 `json:"memoryMB"`
+	CPUs   int64         `json:"cpus"`
+	Memory unit.DataSize `json:"memory"`
 }
 
 type NodeEngineDescResp struct {
@@ -93,8 +94,8 @@ func TransformNode(node *swarm.Node, detailed bool) *NodeResp {
 			OS:           node.Description.Platform.OS,
 		},
 		Resources: &NodeResources{
-			CPUs:     node.Description.Resources.NanoCPUs / docker.UnitCPUNano,
-			MemoryMB: node.Description.Resources.MemoryBytes / docker.UnitMemMB,
+			CPUs:   node.Description.Resources.NanoCPUs / docker.UnitCPUNano,
+			Memory: unit.DataSize(node.Description.Resources.MemoryBytes),
 		},
 		UpdateVer: int(node.Version.Index), //nolint:gosec
 		CreatedAt: node.CreatedAt,

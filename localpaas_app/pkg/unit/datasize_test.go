@@ -118,3 +118,24 @@ func TestMustParseDataSize(t *testing.T) {
 		MustParseDataSizeString("invalid")
 	})
 }
+
+func TestDataSize_Truncate(t *testing.T) {
+	tests := []struct {
+		b        DataSize
+		sz       DataSize
+		expected DataSize
+	}{
+		{10 * B, 0, 10 * B},
+		{10 * B, 3 * B, 9 * B},
+		{10 * B, 11 * B, 0},
+		{10 * B, -3 * B, 9 * B},
+		{-10 * B, 3 * B, -9 * B},
+		{1 * MB, 100 * KB, 1000 * KB}, // 1024KB truncated by 100KB is 1000KB
+		{1 * GB, 512 * MB, 1 * GB},
+		{1*GB + 100*MB, 512 * MB, 1 * GB},
+	}
+
+	for _, tt := range tests {
+		assert.Equal(t, tt.expected, tt.b.Truncate(tt.sz))
+	}
+}

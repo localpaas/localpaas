@@ -10,6 +10,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/unit"
 	"github.com/localpaas/localpaas/services/docker"
 )
 
@@ -37,6 +38,7 @@ type GetAppResourceSettingsResp struct {
 type ResourceSettingsResp struct {
 	Reservations *ResourceReservations `json:"reservations"`
 	Limits       *ResourceLimits       `json:"limits"`
+	Memory       *Memory               `json:"memory"`
 	Ulimits      []*Ulimit             `json:"ulimits"`
 	Capabilities *Capabilities         `json:"capabilities"`
 
@@ -45,7 +47,7 @@ type ResourceSettingsResp struct {
 
 type ResourceReservations struct {
 	CPUs             float64            `json:"cpus,omitempty"`
-	MemoryMB         int64              `json:"memoryMB,omitempty"`
+	Memory           unit.DataSize      `json:"memory,omitempty"`
 	GenericResources []*GenericResource `json:"genericResources,omitempty"`
 }
 
@@ -55,9 +57,14 @@ type GenericResource struct {
 }
 
 type ResourceLimits struct {
-	CPUs     float64 `json:"cpus,omitempty"`
-	MemoryMB int64   `json:"memoryMB,omitempty"`
-	Pids     int64   `json:"pids,omitempty"`
+	CPUs   float64       `json:"cpus,omitempty"`
+	Memory unit.DataSize `json:"memory,omitempty"`
+	Pids   int64         `json:"pids,omitempty"`
+}
+
+type Memory struct {
+	Swap       unit.DataSize `json:"swap"`
+	Swappiness *int64        `json:"swappiness"`
 }
 
 type Ulimit struct {
@@ -84,6 +91,7 @@ func TransformResourceSettings(
 
 	resp.Reservations = TransformResourceReservations(spec.TaskTemplate.Resources)
 	resp.Limits = TransformResourceLimits(spec.TaskTemplate.Resources)
+	resp.Memory = TransformMemory(spec.TaskTemplate.Resources)
 	resp.Ulimits = TransformUlimits(spec.TaskTemplate.ContainerSpec.Ulimits)
 	resp.Capabilities = TransformCapabilities(spec.TaskTemplate.ContainerSpec)
 
@@ -95,8 +103,8 @@ func TransformResourceReservations(res *swarm.ResourceRequirements) *ResourceRes
 		return nil
 	}
 	resp := &ResourceReservations{
-		CPUs:             float64(res.Reservations.NanoCPUs / docker.UnitCPUNano),
-		MemoryMB:         res.Reservations.MemoryBytes / docker.UnitMemMB,
+		CPUs:             float64(res.Reservations.NanoCPUs) / docker.UnitCPUNano,
+		Memory:           unit.DataSize(res.Reservations.MemoryBytes),
 		GenericResources: make([]*GenericResource, 0, len(res.Reservations.GenericResources)),
 	}
 	for _, r := range res.Reservations.GenericResources {
@@ -121,10 +129,23 @@ func TransformResourceLimits(res *swarm.ResourceRequirements) *ResourceLimits {
 		return nil
 	}
 	return &ResourceLimits{
-		CPUs:     float64(res.Limits.NanoCPUs / docker.UnitCPUNano),
-		MemoryMB: res.Limits.MemoryBytes / docker.UnitMemMB,
-		Pids:     res.Limits.Pids,
+		CPUs:   float64(res.Limits.NanoCPUs) / docker.UnitCPUNano,
+		Memory: unit.DataSize(res.Limits.MemoryBytes),
+		Pids:   res.Limits.Pids,
 	}
+}
+
+func TransformMemory(res *swarm.ResourceRequirements) *Memory {
+	if res == nil {
+		return nil
+	}
+	resp := &Memory{
+		Swappiness: res.MemorySwappiness,
+	}
+	if res.SwapBytes != nil {
+		resp.Swap = unit.DataSize(*res.SwapBytes)
+	}
+	return resp
 }
 
 func TransformUlimits(ulimits []*container.Ulimit) []*Ulimit {

@@ -5,6 +5,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/unit"
 )
 
 const (
@@ -29,10 +30,10 @@ type ImageBuildSettings struct {
 }
 
 type ImageBuildSettingResources struct {
-	CPUs      int32 `json:"cpus"`
-	MemMB     int64 `json:"memMB"`
-	MemSwapMB int64 `json:"memSwapMB,omitempty"`
-	ShmSizeMB int64 `json:"shmSizeMB,omitempty"`
+	CPUs    int32         `json:"cpus"`
+	Mem     unit.DataSize `json:"mem"`
+	MemSwap unit.DataSize `json:"memSwap,omitempty"`
+	ShmSize unit.DataSize `json:"shmSize,omitempty"`
 }
 
 // CPUsAsPeriodAndQuota calculates CPU period and quota from CPUs

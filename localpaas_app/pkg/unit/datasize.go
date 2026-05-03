@@ -69,6 +69,19 @@ func (b DataSize) EBytes() float64 {
 	return float64(v) + float64(r)/float64(EB)
 }
 
+func (b DataSize) Truncate(sz DataSize) DataSize {
+	if sz == 0 {
+		return b
+	}
+	if sz < 0 {
+		sz = -sz
+	}
+	if b < 0 { // NOTE: we don't handle the case b == MinInt64
+		return -((-b / sz) * sz)
+	}
+	return (b / sz) * sz
+}
+
 func (b DataSize) String() string {
 	switch {
 	case b == 0:

@@ -1,8 +1,8 @@
 package docker
 
 const (
-	UnitCPUNano = 1000 * 1000 * 1000
-	UnitMemMB   = 1024 * 1024
+	UnitCPUNano    = 1000 * 1000 * 1000
+	MinCPUFraction = 0.25
 )
 
 type ServiceMode string

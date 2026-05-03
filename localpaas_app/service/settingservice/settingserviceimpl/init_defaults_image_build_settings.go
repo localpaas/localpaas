@@ -12,6 +12,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/unit"
 	"github.com/localpaas/localpaas/services/docker"
 )
 
@@ -20,9 +21,9 @@ const (
 	imageBuildCPUDefault  = 2
 	imageBuildCPUMin      = 1
 	imageBuildCPUMax      = 8
-	imageBuildMemDefault  = 2048      // 2GB
-	imageBuildMemMin      = 1024      // MB
-	imageBuildMemMax      = 16 * 1024 // MB
+	imageBuildMemDefault  = 2 * unit.GB
+	imageBuildMemMin      = 1 * unit.GB
+	imageBuildMemMax      = 16 * unit.GB
 )
 
 func (s *service) initDefaultImageBuildSettings(
@@ -44,8 +45,8 @@ func (s *service) initDefaultImageBuildSettings(
 	}
 	imageBuild := &entity.ImageBuildSettings{
 		Resources: &entity.ImageBuildSettingResources{
-			CPUs:  imageBuildCPUDefault,
-			MemMB: imageBuildMemDefault,
+			CPUs: imageBuildCPUDefault,
+			Mem:  imageBuildMemDefault,
 		},
 	}
 
@@ -61,9 +62,10 @@ func (s *service) initDefaultImageBuildSettings(
 		// Use half of the leader node's resources for image building
 		res := &leaderNode.Description.Resources
 		cpus := max(min(res.NanoCPUs/docker.UnitCPUNano/2, imageBuildCPUMax), imageBuildCPUMin)
-		memMB := max(min(res.MemoryBytes/docker.UnitMemMB/2, imageBuildMemMax), imageBuildMemMin)
+		mem := unit.DataSize(res.MemoryBytes / 2).Truncate(32 * unit.MB)
+		mem = max(min(mem, imageBuildMemMax), imageBuildMemMin)
 		imageBuild.Resources.CPUs = int32(cpus)
-		imageBuild.Resources.MemMB = memMB
+		imageBuild.Resources.Mem = mem
 	}
 
 	imageBuildSetting.MustSetData(imageBuild)

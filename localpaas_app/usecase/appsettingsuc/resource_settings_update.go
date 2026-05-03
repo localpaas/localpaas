@@ -14,6 +14,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/unit"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appsettingsuc/appsettingsdto"
 	"github.com/localpaas/localpaas/services/docker"
 )
@@ -93,6 +94,7 @@ func (uc *UC) prepareUpdatingAppResourceSettings(
 ) {
 	uc.prepareUpdatingAppResourceReservations(req, data)
 	uc.prepareUpdatingAppResourceLimits(req, data)
+	uc.prepareUpdatingAppMemory(req, data)
 	uc.prepareUpdatingAppResourceUlimits(req, data)
 	uc.prepareUpdatingAppCapabilities(req, data)
 }
@@ -116,8 +118,8 @@ func (uc *UC) prepareUpdatingAppResourceReservations(
 		taskSpec.Resources.Reservations = &swarm.Resources{}
 	}
 	reservations := taskSpec.Resources.Reservations
-	reservations.NanoCPUs = int64(req.Reservations.CPUs * docker.UnitCPUNano)
-	reservations.MemoryBytes = req.Reservations.MemoryMB * docker.UnitMemMB
+	reservations.NanoCPUs = docker.TruncateCPUsAsNano(req.Reservations.CPUs, docker.MinCPUFraction)
+	reservations.MemoryBytes = req.Reservations.Memory.Truncate(unit.MB).Bytes()
 	reservations.GenericResources = make([]swarm.GenericResource, 0, len(req.Reservations.GenericResources))
 
 	for _, r := range req.Reservations.GenericResources {
@@ -157,9 +159,25 @@ func (uc *UC) prepareUpdatingAppResourceLimits(
 		taskSpec.Resources.Limits = &swarm.Limit{}
 	}
 	limits := taskSpec.Resources.Limits
-	limits.NanoCPUs = int64(req.Limits.CPUs * docker.UnitCPUNano)
-	limits.MemoryBytes = req.Limits.MemoryMB * docker.UnitMemMB
+	limits.NanoCPUs = docker.TruncateCPUsAsNano(req.Limits.CPUs, docker.MinCPUFraction)
+	limits.MemoryBytes = req.Limits.Memory.Truncate(unit.MB).Bytes()
 	limits.Pids = req.Limits.Pids
+}
+
+func (uc *UC) prepareUpdatingAppMemory(
+	req *appsettingsdto.UpdateAppResourceSettingsReq,
+	data *updateAppResourceSettingsData,
+) {
+	service := data.Service
+	taskSpec := &service.Spec.TaskTemplate
+	if taskSpec.Resources == nil {
+		taskSpec.Resources = &swarm.ResourceRequirements{}
+	}
+
+	if req.Memory != nil {
+		taskSpec.Resources.SwapBytes = new(req.Memory.Swap.Truncate(unit.MB).Bytes())
+		taskSpec.Resources.MemorySwappiness = req.Memory.Swappiness
+	}
 }
 
 func (uc *UC) prepareUpdatingAppResourceUlimits(
