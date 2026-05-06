@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
@@ -16,8 +17,15 @@ func (uc *UC) GetApp(
 	req *appdto.GetAppReq,
 ) (*appdto.GetAppResp, error) {
 	app, err := uc.appRepo.GetByID(ctx, uc.db, req.ProjectID, req.AppID,
-		bunex.SelectRelation("Project"),
-		bunex.SelectRelation("Tags", bunex.SelectOrder("display_order")),
+		bunex.SelectRelation("Project",
+			bunex.SelectExcludeColumns(entity.ProjectDefaultExcludeColumns...),
+		),
+		bunex.SelectRelation("Tags",
+			bunex.SelectOrder("display_order"),
+		),
+		bunex.SelectRelation("Settings",
+			bunex.SelectWhere("setting.type = ?", base.SettingTypeAppHttp),
+		),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)

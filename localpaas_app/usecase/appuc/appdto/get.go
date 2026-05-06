@@ -53,6 +53,9 @@ type AppResp struct {
 	// Stats of app, only returns when req.getStats=true
 	Stats *AppStatsResp `json:"stats"`
 
+	// AccessLinks external links to access the app
+	AccessLinks []string `json:"accessLinks,omitempty"`
+
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 }
@@ -86,6 +89,7 @@ func TransformApp(app *entity.App, input *AppTransformationInput) (resp *AppResp
 	}
 	resp.Tags = gofn.MapSlice(app.Tags, func(t *entity.AppTag) string { return t.Tag })
 	resp.Stats = TransformAppStats(app, input)
+	resp.AccessLinks = TransformAppAccessLinks(app)
 	return resp, nil
 }
 
@@ -103,6 +107,26 @@ func TransformAppStats(app *entity.App, input *AppTransformationInput) *AppStats
 		DesiredTasks:   int(service.ServiceStatus.DesiredTasks),
 		CompletedTasks: int(service.ServiceStatus.CompletedTasks),
 	}
+}
+
+func TransformAppAccessLinks(app *entity.App) []string {
+	resp := make([]string, 0, len(app.Settings))
+	for _, setting := range app.Settings {
+		if setting.Type != base.SettingTypeAppHttp || !setting.IsActive() {
+			continue
+		}
+		httpSettings := setting.MustAsAppHttpSettings()
+		if !httpSettings.ExposePublicly {
+			continue
+		}
+		for _, domain := range httpSettings.Domains {
+			if !domain.Enabled {
+				continue
+			}
+			resp = append(resp, "https://"+domain.Domain)
+		}
+	}
+	return resp
 }
 
 func TransformAppsBase(apps []*entity.App) []*AppBaseResp {
