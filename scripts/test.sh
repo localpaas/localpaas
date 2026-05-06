@@ -8,14 +8,16 @@ PKG_LIST=$(go list ./...\
   | sed -e "s/github.com\/localpaas\/localpaas/./g"\
   | grep -v\
       -e /mock\
-      -e ^./cmd\
       -e ^./config\
-      -e ^./db\
+      -e ^./deployment\
+      -e ^./dist-dashboard\
       -e ^./docs\
       -e ^./scripts\
       -e ^./tests\
       -e ^./test-results\
       -e ^./tools\
+      -e ^./localpaas_app/cmd\
+      -e ^./localpaas_app/db\
   | tr '\n' ',')
 
 echo "---------------------------------------------------------------"
