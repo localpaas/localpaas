@@ -10,7 +10,8 @@ import (
 )
 
 var (
-	ErrPasswordRequired = errors.New("password is required")
+	ErrPasswordRequired     = errors.New("password is required")
+	ErrUnsupportedAlgorithm = errors.New("unsupported hash algorithm")
 )
 
 // HashedPasswords name => hash
@@ -24,7 +25,7 @@ const (
 )
 
 const (
-	fileMode = 0644
+	fileMode = 0o644
 )
 
 // Bytes bytes representation
@@ -51,9 +52,11 @@ func (hp HashedPasswords) SetPassword(name, password string, hashAlgorithm HashA
 		return tracerr.Wrap(ErrPasswordRequired)
 	}
 	hash := ""
-	switch hashAlgorithm { //nolint
+	switch hashAlgorithm {
 	case HashBCrypt:
 		hash, err = hashBcrypt(password)
+	default:
+		return tracerr.Wrap(ErrUnsupportedAlgorithm)
 	}
 	if err != nil {
 		return tracerr.Wrap(err)
