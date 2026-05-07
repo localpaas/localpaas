@@ -120,14 +120,22 @@ func (e *Executor) Execute(
 			return
 		}
 		// Save update task
+		err = e.onAfterSystemUpdate(ctx, data)
+	}()
+	defer func() {
+		if data.Task == nil {
+			return
+		}
+		// Save update task
 		err1 := e.saveUpdateTask(ctx, db, err, data)
 		// Send result notifications
 		err2 := e.sendResultNotifications(ctx, db, data)
 		// Save all logs of the processing
 		err3 := e.saveLogs(ctx, db, data, true)
-		err = errors.Join(err1, err2, err3)
+		// CRITICAL: Must include the existing 'err' so we don't drop panic errors or update errors!
+		err = errors.Join(err, err1, err2, err3)
 	}()
-	defer funcutil.EnsureNoPanic(&err) // Make sure we catch panic before the above defer funcs
+	defer funcutil.EnsureNoPanic(&err) // Early catch panic before the above defers
 
 	err = transaction.Execute(ctx, db, func(db database.Tx) error {
 		// Lock all pending tasks from execution by the app and workers
@@ -147,7 +155,7 @@ func (e *Executor) Execute(
 			return nil
 		}
 
-		// Stop only services which need to be stopped
+		// Stop only services which need to be stopped (main app and workers)
 		err = e.stopServices(ctx, data)
 		if err != nil {
 			return apperrors.Wrap(err)
@@ -168,11 +176,6 @@ func (e *Executor) Execute(
 	}
 
 	err = e.updateSystem(ctx, db, data)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	err = e.onAfterSystemUpdate(ctx, data)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
