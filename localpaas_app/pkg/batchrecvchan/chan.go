@@ -1,13 +1,10 @@
 package batchrecvchan
 
 import (
-	"fmt"
 	"sync"
 	"time"
 
 	"github.com/tiendc/gofn"
-
-	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
 const (
@@ -35,15 +32,22 @@ type Chan[T any] struct {
 }
 
 func (ch *Chan[T]) Send(items ...T) {
-	if !ch.batchMode {
-		ch.channel <- items
+	ch.mu.Lock()
+	if ch.stopped {
+		ch.mu.Unlock()
 		return
 	}
 
-	ch.mu.Lock()
+	if !ch.batchMode {
+		ch.channel <- items
+		ch.mu.Unlock()
+		return
+	}
+
 	ch.currentBatch = append(ch.currentBatch, items...)
 	sendData := len(ch.currentBatch) >= ch.maxItem
 	ch.mu.Unlock()
+
 	if sendData {
 		ch.sendData()
 	}
@@ -52,9 +56,15 @@ func (ch *Chan[T]) Send(items ...T) {
 func (ch *Chan[T]) sendData() {
 	ch.mu.Lock()
 	defer ch.mu.Unlock()
+
+	if ch.stopped {
+		return
+	}
+
 	if len(ch.currentBatch) > 0 {
 		ch.channel <- ch.currentBatch
-		ch.currentBatch = ch.currentBatch[:0]
+		// Allocate a new slice so we don't corrupt data being read by the receiver
+		ch.currentBatch = make([]T, 0, ch.maxItem)
 	}
 }
 
@@ -66,15 +76,23 @@ func (ch *Chan[T]) CloseFunc() func() error {
 	return func() error { return ch.Close() }
 }
 
-func (ch *Chan[T]) Close() (err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			err = apperrors.NewPanic(fmt.Sprintf("%v", r))
-		}
-	}()
+func (ch *Chan[T]) Close() error {
+	ch.mu.Lock()
+	defer ch.mu.Unlock()
+
+	if ch.stopped {
+		return nil
+	}
+
+	// Flush any remaining items before closing
+	if ch.batchMode && len(ch.currentBatch) > 0 {
+		ch.channel <- ch.currentBatch
+		ch.currentBatch = nil
+	}
+
 	ch.stopped = true
 	close(ch.channel)
-	return apperrors.Wrap(err)
+	return nil
 }
 
 func NewChan[T any](options Options) *Chan[T] {
@@ -96,14 +114,20 @@ func NewChan[T any](options Options) *Chan[T] {
 
 	if ch.thresholdPeriod > 0 {
 		go func() {
-			defer func() {
-				_ = recover()
-			}()
-			for range time.Tick(ch.thresholdPeriod) {
-				ch.sendData()
-				if ch.stopped {
+			// Use NewTicker instead of time.Tick to prevent memory leaks
+			ticker := time.NewTicker(ch.thresholdPeriod)
+			defer ticker.Stop()
+
+			for range ticker.C {
+				ch.mu.Lock()
+				isStopped := ch.stopped
+				ch.mu.Unlock()
+
+				if isStopped {
 					return
 				}
+
+				ch.sendData()
 			}
 		}()
 	}
