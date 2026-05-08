@@ -20,6 +20,9 @@ VALUES ('01JAB9XED0GTXBSQDFVYAJ8WA1', 'tiendc', 'tiendc@gmail.com', 'admin', 'ac
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WA7', 'admin1', 'admin1@domain.name', 'admin', 'active', 'Admin 1', 'developer', 'password-only', NULL,
         'VanDSYUU/sHz1w== 3vTE3ZLtpeM23UGllSazQh88/I06G5VrNzHZtBbGjFQ=',
+        '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
+       ('01JAB9XED0GTXBSQDFVYAJ8WA8', 'huudang', 'huudang911998@gmail.com', 'admin', 'active', 'Huu Dang', 'developer', 'password-only', NULL,
+        'VanDSYUU/sHz1w== 3vTE3ZLtpeM23UGllSazQh88/I06G5VrNzHZtBbGjFQ=',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00')
 ON CONFLICT DO NOTHING;
 
