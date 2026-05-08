@@ -1,4 +1,4 @@
-package taskcronjobexec
+package sysbackupserviceimpl
 
 import (
 	"context"
@@ -22,18 +22,17 @@ const (
 	sysBackupFilePrefix = "localpaas_backup_"
 )
 
-func (e *Executor) sysBackupSaveResultInLocal(
+func (s *service) sysBackupSaveResultInLocal(
 	ctx context.Context,
-	sysBackup *entity.SystemBackup,
 	tmpFile *os.File,
-	data *sysBackupTaskData,
+	data *sysBackupData,
 ) (err error) {
 	data.OutFileName = fmt.Sprintf("%s%s.jsonl", sysBackupFilePrefix,
 		data.TimeNow.Truncate(time.Second).Format(time.RFC3339))
-	if sysBackup.Compression {
+	if data.SysBackupSettings.Compression {
 		data.OutFileName += ".gz"
 	}
-	if sysBackup.EncryptionSecret.MustGetPlain() != "" {
+	if data.SysBackupSettings.EncryptionSecret.MustGetPlain() != "" {
 		data.OutFileName += ".age"
 	}
 

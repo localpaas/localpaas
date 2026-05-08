@@ -82,6 +82,22 @@ func (s *Store) GetRemoteData(ctx context.Context, fromIndex int64) ([]*LogFrame
 	return frames, nil
 }
 
+func (s *Store) Reset() (err error) {
+	if s.storeRemote {
+		// Delete log data in redis
+		err = redishelper.Del(context.Background(), s.redisClient, s.Key)
+		if err != nil {
+			return apperrors.New(err).WithMsgLog("failed to remove data from redis")
+		}
+	}
+	if s.storeLocal {
+		s.mu.Lock()
+		s.frames = make([]*LogFrame, 0, 100) //nolint:mnd
+		s.mu.Unlock()
+	}
+	return nil
+}
+
 func (s *Store) Close() (err error) {
 	if s.storeRemote {
 		ctx := context.Background()
@@ -96,7 +112,11 @@ func (s *Store) Close() (err error) {
 			err = errors.Join(err, apperrors.New(err).WithMsgLog("failed to remove data from redis"))
 		}
 	}
-
+	if s.storeLocal {
+		s.mu.Lock()
+		s.frames = make([]*LogFrame, 0, 100) //nolint:mnd
+		s.mu.Unlock()
+	}
 	return err
 }
 

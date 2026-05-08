@@ -49,7 +49,8 @@ func (e *Executor) cronExecSSLRenew(
 	db database.IDB,
 	data *taskData,
 ) error {
-	renewConfig := data.RefObjects.RefSettings[data.CronJob.TargetSetting.ID]
+	cronJob := data.CronJob.MustAsCronJob()
+	renewConfig := data.RefObjects.RefSettings[cronJob.TargetSetting.ID]
 	if renewConfig == nil {
 		return apperrors.NewNotFound("SSL renew settings")
 	}

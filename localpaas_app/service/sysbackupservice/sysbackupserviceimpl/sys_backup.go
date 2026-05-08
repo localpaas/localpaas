@@ -1,4 +1,4 @@
-package taskcronjobexec
+package sysbackupserviceimpl
 
 import (
 	"compress/gzip"
@@ -15,8 +15,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/funcutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/jsonl"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
+	"github.com/localpaas/localpaas/localpaas_app/service/sysbackupservice"
 )
 
 const (
@@ -27,63 +29,63 @@ const (
 	sysBackupDirFileMode = 0o755
 )
 
-type sysBackupTaskData struct {
-	*taskData
-	TaskOutput    *entity.TaskSystemBackupOutput
-	BackupRootDir string
-	BackupSaveDir string
-	OutFileName   string
-	OutFilePath   string
-	TimeNow       time.Time
-	LocalOutFile  *entity.Setting
-	RemoteOutFile *entity.Setting
+type sysBackupData struct {
+	*sysbackupservice.SysBackupReq
+	SysBackupSettings *entity.SystemBackup
+	TaskOutput        *entity.TaskSystemBackupOutput
+	BackupRootDir     string
+	BackupSaveDir     string
+	OutFileName       string
+	OutFilePath       string
+	TimeNow           time.Time
+	LocalOutFile      *entity.Setting
+	RemoteOutFile     *entity.Setting
 }
 
-func (e *Executor) cronExecSystemBackup(
+func (s *service) Backup(
 	ctx context.Context,
-	db database.IDB,
-	data *taskData,
-) error {
-	setting := data.RefObjects.RefSettings[data.CronJob.TargetSetting.ID]
-	if setting == nil {
-		return apperrors.NewNotFound("System backup settings")
-	}
-	sysBackup := setting.MustAsSystemBackup()
+	db database.Tx,
+	req *sysbackupservice.SysBackupReq,
+) (resp *sysbackupservice.SysBackupResp, err error) {
+	defer funcutil.EnsureNoPanic(&err)
 
-	taskData := &sysBackupTaskData{
-		taskData: data,
+	resp = &sysbackupservice.SysBackupResp{}
+	data := &sysBackupData{
+		SysBackupReq: req,
 		TaskOutput: &entity.TaskSystemBackupOutput{
 			DBBackup: &entity.DBBackupOutput{},
 		},
 		TimeNow: timeutil.NowUTC(),
 	}
 
+	cronJob := data.CronJob.MustAsCronJob()
+	setting := data.RefObjects.RefSettings[cronJob.TargetSetting.ID]
+	if setting == nil {
+		return nil, apperrors.NewNotFound("System backup settings")
+	}
+	data.SysBackupSettings = setting.MustAsSystemBackup()
+
 	// Backup DB
-	err := e.sysBackup(ctx, db, sysBackup, taskData)
+	err = s.sysBackup(ctx, db, data)
 
 	// Assign back the result output
-	data.Task.MustSetOutput(taskData.TaskOutput)
+	data.Task.MustSetOutput(data.TaskOutput)
 
-	return err
+	return resp, nil
 }
 
-func (e *Executor) sysBackup(
+func (s *service) sysBackup(
 	ctx context.Context,
 	db database.IDB,
-	sysBackup *entity.SystemBackup,
-	data *sysBackupTaskData,
+	data *sysBackupData,
 ) (err error) {
-	if sysBackup == nil {
-		return nil
-	}
-
 	defer func() {
 		if err != nil {
 			data.TaskOutput.DBBackup.Error = err.Error()
 		}
 	}()
 
-	tmpFile, jsonlW, closer, err := e.sysBackupCreateWriter(sysBackup, data)
+	tmpFile, jsonlW, closer, err := s.sysBackupCreateWriter(data)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -104,12 +106,12 @@ func (e *Executor) sysBackup(
 	}
 
 	// Start the data backup
-	err = e.sysBackupDB(ctx, db, sysBackup, jsonlW, data)
+	err = s.sysBackupDB(ctx, db, jsonlW, data)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	err = e.sysBackupFiles(ctx, db, jsonlW, data)
+	err = s.sysBackupFiles(ctx, db, jsonlW, data)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -118,19 +120,19 @@ func (e *Executor) sysBackup(
 	closer = nil
 
 	// Save the result in a file
-	err = e.sysBackupSaveResultInLocal(ctx, sysBackup, tmpFile, data)
+	err = s.sysBackupSaveResultInLocal(ctx, tmpFile, data)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
 	// Upload backup file to cloud storage if configured
-	err = e.sysBackupSaveResultInStorage(ctx, sysBackup, data)
+	err = s.sysBackupSaveResultInStorage(ctx, data)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
 	// Remove outdated backup files
-	err = e.sysBackupRemoveOldFiles(ctx, db, sysBackup, data)
+	err = s.sysBackupRemoveOldFiles(ctx, db, data)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -138,9 +140,8 @@ func (e *Executor) sysBackup(
 	return nil
 }
 
-func (e *Executor) sysBackupCreateWriter(
-	sysBackup *entity.SystemBackup,
-	data *sysBackupTaskData,
+func (s *service) sysBackupCreateWriter(
+	data *sysBackupData,
 ) (tmpFile *os.File, jsonlW *jsonl.Writer, closer func(bool) error, err error) {
 	// Make sure the backup directory exist
 	data.BackupRootDir = config.Current.DataPathSystemBackup()
@@ -172,7 +173,7 @@ func (e *Executor) sysBackupCreateWriter(
 	var encW, gzW io.WriteCloser
 	w = tmpFile
 
-	encSecret := sysBackup.EncryptionSecret.MustGetPlain()
+	encSecret := data.SysBackupSettings.EncryptionSecret.MustGetPlain()
 	if encSecret != "" {
 		recipient, err := age.NewScryptRecipient(encSecret)
 		if err != nil {
@@ -184,7 +185,7 @@ func (e *Executor) sysBackupCreateWriter(
 		}
 		w = encW
 	}
-	if sysBackup.Compression {
+	if data.SysBackupSettings.Compression {
 		gzW = gzip.NewWriter(w)
 		w = gzW
 	}

@@ -19,7 +19,8 @@ func (e *Executor) cronExecSystemCleanup(
 	db database.IDB,
 	data *taskData,
 ) error {
-	setting := data.RefObjects.RefSettings[data.CronJob.TargetSetting.ID]
+	cronJob := data.CronJob.MustAsCronJob()
+	setting := data.RefObjects.RefSettings[cronJob.TargetSetting.ID]
 	if setting == nil {
 		return apperrors.NewNotFound("System cleanup settings")
 	}

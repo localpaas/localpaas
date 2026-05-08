@@ -1,4 +1,4 @@
-package taskcronjobexec
+package sysbackupserviceimpl
 
 import (
 	"context"
@@ -56,11 +56,11 @@ type sysBackupFileEntry struct {
 }
 
 //nolint:gocognit
-func (e *Executor) sysBackupFiles(
+func (s *service) sysBackupFiles(
 	ctx context.Context,
 	db database.IDB,
 	jsonlW *jsonl.Writer,
-	data *sysBackupTaskData,
+	data *sysBackupData,
 ) (err error) {
 	start := timeutil.NowUTC()
 	_ = data.LogStore.Add(ctx, applog.NewWarnFrame("Start backing up static files...", applog.TsNow))
@@ -76,13 +76,13 @@ func (e *Executor) sysBackupFiles(
 		}
 	}()
 
-	allUsers, _, err := e.userRepo.List(ctx, db, nil, bunex.SelectColumns("id"))
+	allUsers, _, err := s.userRepo.List(ctx, db, nil, bunex.SelectColumns("id"))
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 	allUserIDs := entityutil.SliceToIDMap(allUsers)
 
-	allProjects, _, err := e.projectRepo.List(ctx, db, nil, bunex.SelectColumns("id"))
+	allProjects, _, err := s.projectRepo.List(ctx, db, nil, bunex.SelectColumns("id"))
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

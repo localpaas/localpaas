@@ -32,7 +32,6 @@ type appDeploymentData struct {
 	Deployment       *entity.Deployment
 	DeploymentOutput *entity.AppDeploymentOutput
 	Step             string
-	LogStore         *applog.Store
 	NotifMsgData     *notificationservice.TemplateDataAppDeployment
 }
 
@@ -44,7 +43,10 @@ func (s *service) Deploy(
 	resp = &appdeploymentservice.AppDeploymentResp{}
 	data := &appDeploymentData{
 		AppDeploymentReq: req,
+		DeploymentOutput: &entity.AppDeploymentOutput{},
 	}
+	logStoreKey := fmt.Sprintf("task:%s:log", req.Task.ID)
+	data.LogStore = applog.NewRemoteStore(logStoreKey, true, s.redisClient)
 	data.OnPostTransaction = func() { s.onPostTransaction(data) } //nolint:contextcheck
 
 	err = s.loadDeploymentData(ctx, db, data)
@@ -134,9 +136,6 @@ func (s *service) loadDeploymentData(
 	data.App = deployment.App
 	data.Project = data.App.Project
 	data.Deployment = deployment
-	data.DeploymentOutput = &entity.AppDeploymentOutput{}
-	logStoreKey := fmt.Sprintf("task:%s:log", task.ID)
-	data.LogStore = applog.NewRemoteStore(logStoreKey, true, s.redisClient)
 
 	// Reference setting IDs to load
 	refObjectIDs := data.Deployment.Settings.GetRefObjectIDs()

@@ -24,7 +24,8 @@ func (e *Executor) cronExecContainerCmd(
 	db database.IDB,
 	data *taskData,
 ) (err error) {
-	command := data.CronJob.Command
+	cronJob := data.CronJob.MustAsCronJob()
+	command := cronJob.Command
 	if command == nil || command.Command == "" { // can't continue if this happens
 		data.NonRetryable = true
 		_ = data.LogStore.Add(ctx, applog.NewErrFrame(
@@ -43,7 +44,7 @@ func (e *Executor) cronExecContainerCmd(
 		return nil
 	}
 
-	envVars, err := e.cronJobService.BuildCommandEnv(ctx, db, data.App, data.CronJob)
+	envVars, err := e.cronJobService.BuildCommandEnv(ctx, db, data.App, cronJob)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

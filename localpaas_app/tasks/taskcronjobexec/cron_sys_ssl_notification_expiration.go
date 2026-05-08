@@ -71,13 +71,13 @@ func (e *Executor) sslBuildExpiringNotificationMsgData(
 	switch {
 	case app != nil:
 		msgData.DashboardLink = config.Current.DashboardAppCronTaskDetailsURL(app.ID, app.ProjectID,
-			data.CronJobSetting.ID, data.Task.ID)
+			data.CronJob.ID, data.Task.ID)
 	case project != nil:
 		msgData.DashboardLink = config.Current.DashboardProjectCronTaskDetailsURL(project.ID,
-			data.CronJobSetting.ID, data.Task.ID)
+			data.CronJob.ID, data.Task.ID)
 	default:
 		msgData.DashboardLink = config.Current.DashboardGlobalCronTaskDetailsURL(
-			data.CronJobSetting.ID, data.Task.ID)
+			data.CronJob.ID, data.Task.ID)
 	}
 	item.ExpiringNotifMsgData = msgData
 }

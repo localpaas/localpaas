@@ -1,4 +1,4 @@
-package taskcronjobexec
+package sysbackupserviceimpl
 
 import (
 	"context"
@@ -102,12 +102,11 @@ type sysBackupDBModel struct {
 }
 
 //nolint:gocognit
-func (e *Executor) sysBackupDB(
+func (s *service) sysBackupDB(
 	ctx context.Context,
 	db database.IDB,
-	sysBackup *entity.SystemBackup,
 	jsonlW *jsonl.Writer,
-	data *sysBackupTaskData,
+	data *sysBackupData,
 ) (err error) {
 	start := timeutil.NowUTC()
 	_ = data.LogStore.Add(ctx, applog.NewWarnFrame("Start backing up data from DB...", applog.TsNow))
@@ -124,8 +123,8 @@ func (e *Executor) sysBackupDB(
 	}()
 
 	backupDeletedObjects := true
-	if sysBackup.DBBackupConfig != nil {
-		backupDeletedObjects = sysBackup.DBBackupConfig.BackupDeletedObjects
+	if data.SysBackupSettings.DBBackupConfig != nil {
+		backupDeletedObjects = data.SysBackupSettings.DBBackupConfig.BackupDeletedObjects
 	}
 
 	for _, model := range sysBackupDBModels {

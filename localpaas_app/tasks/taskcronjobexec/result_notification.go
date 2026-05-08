@@ -18,7 +18,8 @@ func (e *Executor) sendNotification(
 	db database.IDB,
 	data *taskData,
 ) (err error) {
-	notifConfig := data.CronJob.Notification
+	cronJob := data.CronJob.MustAsCronJob()
+	notifConfig := cronJob.Notification
 	if notifConfig == nil {
 		return nil
 	}
@@ -62,6 +63,7 @@ func (e *Executor) sendNotification(
 func (e *Executor) buildNotificationMsgData(
 	data *taskData,
 ) {
+	cronJob := data.CronJob.MustAsCronJob()
 	isSucceeded := data.Task.IsDone()
 	msgData := &notificationservice.TemplateDataCronTask{
 		BaseTemplateData: notificationservice.BaseTemplateData{
@@ -69,16 +71,16 @@ func (e *Executor) buildNotificationMsgData(
 				gofn.If(isSucceeded, " Scheduled task succeeded", " Scheduled task failed"),
 		},
 		Succeeded:   isSucceeded,
-		CronJobName: data.CronJobSetting.Name,
-		CreatedAt:   data.CronJob.Schedule.InitialTime,
+		CronJobName: data.CronJob.Name,
+		CreatedAt:   cronJob.Schedule.InitialTime,
 		StartedAt:   data.Task.StartedAt,
 		Duration:    data.Task.GetDuration(),
 		Retries:     data.Task.Config.Retry,
 	}
-	if data.CronJob.Schedule.Interval > 0 {
-		msgData.Schedule = fmt.Sprintf("every %v", data.CronJob.Schedule.Interval.String())
+	if cronJob.Schedule.Interval > 0 {
+		msgData.Schedule = fmt.Sprintf("every %v", cronJob.Schedule.Interval.String())
 	} else {
-		msgData.Schedule = fmt.Sprintf("cron expression %v", data.CronJob.Schedule.CronExpr)
+		msgData.Schedule = fmt.Sprintf("cron expression %v", cronJob.Schedule.CronExpr)
 	}
 	if data.Project != nil {
 		msgData.ProjectName = data.Project.Name
@@ -89,13 +91,13 @@ func (e *Executor) buildNotificationMsgData(
 	switch {
 	case data.App != nil:
 		msgData.DashboardLink = config.Current.DashboardAppCronTaskDetailsURL(data.App.ID, data.App.ProjectID,
-			data.CronJobSetting.ID, data.Task.ID)
+			data.CronJob.ID, data.Task.ID)
 	case data.Project != nil:
 		msgData.DashboardLink = config.Current.DashboardProjectCronTaskDetailsURL(data.Project.ID,
-			data.CronJobSetting.ID, data.Task.ID)
+			data.CronJob.ID, data.Task.ID)
 	default:
 		msgData.DashboardLink = config.Current.DashboardGlobalCronTaskDetailsURL(
-			data.CronJobSetting.ID, data.Task.ID)
+			data.CronJob.ID, data.Task.ID)
 	}
 	data.NotifMsgData = msgData
 }

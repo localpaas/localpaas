@@ -1,4 +1,4 @@
-package taskcronjobexec
+package sysbackupserviceimpl
 
 import (
 	"context"
@@ -16,18 +16,17 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
-func (e *Executor) sysBackupRemoveOldFiles(
+func (s *service) sysBackupRemoveOldFiles(
 	ctx context.Context,
 	db database.IDB,
-	sysBackup *entity.SystemBackup,
-	data *sysBackupTaskData,
+	data *sysBackupData,
 ) (err error) {
 	allBackupFiles, err := os.ReadDir(data.BackupSaveDir)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	backupRetention := sysBackup.LocalBackupRetention.ToDuration()
+	backupRetention := data.SysBackupSettings.LocalBackupRetention.ToDuration()
 	oldestTime := timeutil.NowUTC().Add(-backupRetention)
 	backupFilesToDelete := make([]string, 0)
 	upsertingFileSettings := make([]*entity.Setting, 0)
@@ -56,7 +55,7 @@ func (e *Executor) sysBackupRemoveOldFiles(
 	}
 
 	if len(backupFilesToDelete) > 0 {
-		deletingFileSettings, _, err := e.settingRepo.List(ctx, db, base.NewSettingScopeGlobal(), nil,
+		deletingFileSettings, _, err := s.settingRepo.List(ctx, db, base.NewSettingScopeGlobal(), nil,
 			bunex.SelectWhere("setting.type = ?", base.SettingTypeFile),
 			bunex.SelectWhere("setting.kind = ?", base.FileKindSystemBackup),
 			bunex.SelectWhere("setting.data->>'storageType' = ?", base.FileStorageLocal),
@@ -78,7 +77,7 @@ func (e *Executor) sysBackupRemoveOldFiles(
 		upsertingFileSettings = append(upsertingFileSettings, data.RemoteOutFile)
 	}
 
-	err = e.settingRepo.UpsertMulti(ctx, db, upsertingFileSettings,
+	err = s.settingRepo.UpsertMulti(ctx, db, upsertingFileSettings,
 		entity.SettingUpsertingConflictCols, entity.SettingUpsertingUpdateCols)
 	if err != nil {
 		return apperrors.Wrap(err)

@@ -1,4 +1,4 @@
-package taskcronjobexec
+package sysbackupserviceimpl
 
 import (
 	"context"
@@ -18,15 +18,14 @@ import (
 	"github.com/localpaas/localpaas/services/aws/s3"
 )
 
-func (e *Executor) sysBackupSaveResultInStorage(
+func (s *service) sysBackupSaveResultInStorage(
 	ctx context.Context,
-	sysBackup *entity.SystemBackup,
-	data *sysBackupTaskData,
+	data *sysBackupData,
 ) (err error) {
-	if sysBackup.DestinationStorage.ID == "" {
+	if data.SysBackupSettings.DestinationStorage.ID == "" {
 		return nil
 	}
-	storageSttg := data.RefObjects.RefSettings[sysBackup.DestinationStorage.ID]
+	storageSttg := data.RefObjects.RefSettings[data.SysBackupSettings.DestinationStorage.ID]
 	if storageSttg == nil {
 		return nil
 	}
@@ -46,7 +45,7 @@ func (e *Executor) sysBackupSaveResultInStorage(
 		return apperrors.NewUnsupported("Storage type")
 	}
 
-	targetFilePath := filepath.Join(sysBackup.DestinationStorageDir, data.OutFileName)
+	targetFilePath := filepath.Join(data.SysBackupSettings.DestinationStorageDir, data.OutFileName)
 	backupFile, err := os.Open(data.OutFilePath)
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -60,7 +59,8 @@ func (e *Executor) sysBackupSaveResultInStorage(
 
 	switch base.CloudStorageKind(storageSttg.Kind) {
 	case base.CloudStorageKindS3:
-		err = s3Client.UploadEx(ctx, storageBucket, targetFilePath, 0, 0, backupFile)
+		err = s3Client.UploadEx(ctx, storageBucket, targetFilePath,
+			0, 0, backupFile)
 	default:
 		return apperrors.NewUnsupported("Storage type")
 	}
@@ -89,12 +89,12 @@ func (e *Executor) sysBackupSaveResultInStorage(
 	remoteFile := &entity.File{
 		FileKind:    base.FileKindSystemBackup,
 		StorageType: base.FileStorageCloud,
-		Storage:     entity.ObjectID{ID: sysBackup.DestinationStorage.ID},
+		Storage:     entity.ObjectID{ID: data.SysBackupSettings.DestinationStorage.ID},
 		Bucket:      storageBucket,
 		Mimetype:    localFile.Mimetype,
 		Name:        data.OutFileName,
 		Size:        localFile.Size,
-		Path:        sysBackup.DestinationStorageDir,
+		Path:        data.SysBackupSettings.DestinationStorageDir,
 	}
 
 	remoteFileSetting.MustSetData(remoteFile)

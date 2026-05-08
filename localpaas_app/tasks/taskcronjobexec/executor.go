@@ -21,6 +21,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/sslservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/sysbackupservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/traefikservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
 	"github.com/localpaas/localpaas/localpaas_app/tasks/queue"
@@ -53,6 +54,7 @@ type Executor struct {
 	userService         userservice.Service
 	notificationService notificationservice.Service
 	traefikService      traefikservice.Service
+	sysBackupService    sysbackupservice.Service
 	dockerManager       docker.Manager
 }
 
@@ -81,6 +83,7 @@ func NewExecutor(
 	userService userservice.Service,
 	notificationService notificationservice.Service,
 	traefikService traefikservice.Service,
+	sysBackupService sysbackupservice.Service,
 	dockerManager docker.Manager,
 ) *Executor {
 	e := &Executor{
@@ -107,6 +110,7 @@ func NewExecutor(
 		userService:              userService,
 		notificationService:      notificationService,
 		traefikService:           traefikService,
+		sysBackupService:         sysBackupService,
 		dockerManager:            dockerManager,
 	}
 	taskQueue.RegisterExecutor(base.TaskTypeCronJobExec, e.execute)
@@ -115,12 +119,10 @@ func NewExecutor(
 
 type taskData struct {
 	*queue.TaskExecData
-	CronJobSetting *entity.Setting
-	CronJob        *entity.CronJob
-	Project        *entity.Project
-	App            *entity.App
-	LogStore       *applog.Store
-	NotifMsgData   *notificationservice.TemplateDataCronTask
+	CronJob      *entity.Setting
+	Project      *entity.Project
+	App          *entity.App
+	NotifMsgData *notificationservice.TemplateDataCronTask
 }
 
 func (e *Executor) execute(
@@ -129,10 +131,10 @@ func (e *Executor) execute(
 	task *queue.TaskExecData,
 ) (err error) {
 	data := &taskData{
-		TaskExecData:   task,
-		CronJobSetting: task.Task.TargetJob,
-		CronJob:        task.Task.TargetJob.MustAsCronJob(),
+		TaskExecData: task,
+		CronJob:      task.Task.TargetJob,
 	}
+	data.LogStore = applog.NewLocalStore(fmt.Sprintf("cron:%s:exec", data.CronJob.ID))
 	data.OnPostTransaction = func() { e.onPostTransaction(data) } //nolint:contextcheck
 
 	err = e.loadCronJobData(ctx, db, data)
@@ -145,13 +147,17 @@ func (e *Executor) execute(
 	}()
 	defer funcutil.EnsureNoPanic(&err) // Make sure we catch panic before the above defer
 
-	switch data.CronJob.CronType {
+	cronJob := data.CronJob.MustAsCronJob()
+	switch cronJob.CronType {
 	case base.CronJobTypeContainerCommand:
 		err = e.cronExecContainerCmd(ctx, db, data)
 	case base.CronJobTypeSystemCleanup:
 		err = e.cronExecSystemCleanup(ctx, db, data)
 	case base.CronJobTypeSystemBackup:
-		err = e.cronExecSystemBackup(ctx, db, data)
+		_, err = e.sysBackupService.Backup(ctx, db, &sysbackupservice.SysBackupReq{
+			TaskExecData: data.TaskExecData,
+			CronJob:      data.CronJob,
+		})
 	case base.CronJobTypeSSLRenewal:
 		err = e.cronExecSSLRenew(ctx, db, data)
 	}
@@ -167,20 +173,18 @@ func (e *Executor) loadCronJobData(
 	db database.Tx,
 	data *taskData,
 ) (err error) {
-	logStoreKey := fmt.Sprintf("cron:%s:exec", data.CronJobSetting.ID)
-	data.LogStore = applog.NewLocalStore(logStoreKey)
-
+	cronJob := data.CronJob.MustAsCronJob()
 	// Load reference objects
-	scope := &base.SettingScope{AppID: data.CronJob.App.ID}
+	scope := &base.SettingScope{AppID: cronJob.App.ID} // ID can be empty
 	refObjects, err := e.settingService.LoadReferenceObjects(ctx, db, scope,
-		true, false, data.CronJobSetting)
+		true, false, data.CronJob)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 	data.AddRefObjects(refObjects)
 
-	if data.CronJob.App.ID != "" {
-		data.App = data.RefObjects.RefApps[data.CronJob.App.ID]
+	if cronJob.App.ID != "" {
+		data.App = data.RefObjects.RefApps[cronJob.App.ID]
 		data.Project = data.App.Project
 	}
 
@@ -208,7 +212,7 @@ func (e *Executor) saveLogs(
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	_ = logStore.Close() //nolint
+	_ = logStore.Reset() //nolint
 
 	// Insert data in to DB by chunk to avoid exceeding DBMS limit
 	for _, chunk := range gofn.Chunk(logFrames, 10000) { //nolint
@@ -216,7 +220,7 @@ func (e *Executor) saveLogs(
 		for _, logFrame := range chunk {
 			taskLogs = append(taskLogs, &entity.TaskLog{
 				TaskID:   data.Task.ID,
-				TargetID: data.CronJobSetting.ID,
+				TargetID: data.CronJob.ID,
 				Type:     logFrame.Type,
 				Data:     logFrame.Data,
 				Ts:       logFrame.Ts,
@@ -236,9 +240,6 @@ func (e *Executor) onPostTransaction(
 ) {
 	ctx := context.Background()
 	db := e.db
-
-	// NOTE: We are now outside the transaction, need to reset some data before using them again
-	data.LogStore = applog.NewLocalStore(data.LogStore.Key)
 
 	defer func() {
 		_ = e.saveLogs(ctx, db, data, false)
