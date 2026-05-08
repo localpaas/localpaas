@@ -30,7 +30,7 @@ func (e *Executor) execute(
 	db database.Tx,
 	execData *queue.TaskExecData,
 ) error {
-	err := e.appDeploymentService.Deploy(ctx, db, &appdeploymentservice.DeploymentData{
+	_, err := e.appDeploymentService.Deploy(ctx, db, &appdeploymentservice.AppDeploymentReq{
 		TaskExecData: execData,
 	})
 	if err != nil {

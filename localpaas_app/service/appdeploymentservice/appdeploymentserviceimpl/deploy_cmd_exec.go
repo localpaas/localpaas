@@ -12,7 +12,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/shellutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
-	"github.com/localpaas/localpaas/localpaas_app/service/appdeploymentservice"
 	"github.com/localpaas/localpaas/services/docker"
 )
 
@@ -29,7 +28,7 @@ const (
 
 func (s *service) deployStepExecCmd(
 	ctx context.Context,
-	data *appdeploymentservice.DeploymentData,
+	data *appDeploymentData,
 	preDeployment bool,
 ) (err error) {
 	deployment := data.Deployment

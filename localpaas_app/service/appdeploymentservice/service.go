@@ -7,5 +7,5 @@ import (
 )
 
 type Service interface {
-	Deploy(ctx context.Context, db database.Tx, data *DeploymentData) (err error)
+	Deploy(ctx context.Context, db database.Tx, req *AppDeploymentReq) (*AppDeploymentResp, error)
 }

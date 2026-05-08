@@ -23,7 +23,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/batchrecvchan"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/fileutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
-	"github.com/localpaas/localpaas/localpaas_app/service/appdeploymentservice"
 	"github.com/localpaas/localpaas/services/docker"
 )
 
@@ -34,8 +33,8 @@ const (
 	stepServiceApply = "service-apply"
 )
 
-type repoDeployTaskData struct {
-	*appdeploymentservice.DeploymentData
+type repoDeploymentData struct {
+	*appDeploymentData
 	CredSetting   *entity.Setting
 	CheckoutPath  string
 	RepoURLInfo   *vcsurl.VCS
@@ -45,11 +44,11 @@ type repoDeployTaskData struct {
 func (s *service) deployFromRepo(
 	ctx context.Context,
 	db database.Tx,
-	taskData *appdeploymentservice.DeploymentData,
+	deplData *appDeploymentData,
 ) error {
-	data := &repoDeployTaskData{DeploymentData: taskData}
+	data := &repoDeploymentData{appDeploymentData: deplData}
 	data.OnCommand = func(cmd base.TaskCommand, args ...any) {
-		s.onRepoDeployCommand(ctx, data, cmd, args...)
+		s.repoDeployOnCommand(ctx, data, cmd, args...)
 	}
 
 	// 0. Prepare
@@ -94,7 +93,7 @@ func (s *service) deployFromRepo(
 	}
 
 	// 4. Pre-deployment command execution
-	err = s.deployStepExecCmd(ctx, data.DeploymentData, true)
+	err = s.deployStepExecCmd(ctx, data.appDeploymentData, true)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -106,7 +105,7 @@ func (s *service) deployFromRepo(
 	}
 
 	// 6. Post-deployment command execution
-	err = s.deployStepExecCmd(ctx, data.DeploymentData, false)
+	err = s.deployStepExecCmd(ctx, data.appDeploymentData, false)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -116,7 +115,7 @@ func (s *service) deployFromRepo(
 
 func (s *service) repoDeployStepSourceCheckout(
 	ctx context.Context,
-	data *repoDeployTaskData,
+	data *repoDeploymentData,
 ) (err error) {
 	data.Step = stepCodeCheckout
 	deployment := data.Deployment
@@ -128,8 +127,8 @@ func (s *service) repoDeployStepSourceCheckout(
 			WithExtraDetail("Repo type %s is unsupported", repoSource.RepoType)
 	}
 
-	s.addStepStartLog(ctx, data.DeploymentData, "Start cloning Git repository...")
-	defer s.addStepEndLog(ctx, data.DeploymentData, timeutil.NowUTC(), err)
+	s.addStepStartLog(ctx, data.appDeploymentData, "Start cloning Git repository...")
+	defer s.addStepEndLog(ctx, data.appDeploymentData, timeutil.NowUTC(), err)
 
 	authMethod, err := s.calcGitAuthMethod(ctx, data)
 	if err != nil {
@@ -174,14 +173,14 @@ func (s *service) repoDeployStepSourceCheckout(
 func (s *service) repoDeployStepImageBuild(
 	ctx context.Context,
 	db database.Tx,
-	data *repoDeployTaskData,
+	data *repoDeploymentData,
 ) (err error) {
 	data.Step = stepImageBuild
 	deployment := data.Deployment
 	repoSource := deployment.Settings.RepoSource
 
-	s.addStepStartLog(ctx, data.DeploymentData, "Start building image...")
-	defer s.addStepEndLog(ctx, data.DeploymentData, timeutil.NowUTC(), err)
+	s.addStepStartLog(ctx, data.appDeploymentData, "Start building image...")
+	defer s.addStepEndLog(ctx, data.appDeploymentData, timeutil.NowUTC(), err)
 
 	// TODO: check dockerfile existence
 	dockerfile := gofn.Coalesce(repoSource.DockerfilePath, "Dockerfile")
@@ -269,7 +268,7 @@ func (s *service) repoDeployStepImageBuild(
 
 func (s *service) repoDeployStepImagePush(
 	ctx context.Context,
-	data *repoDeployTaskData,
+	data *repoDeploymentData,
 ) (err error) {
 	deployment := data.Deployment
 	repoSource := deployment.Settings.RepoSource
@@ -278,8 +277,8 @@ func (s *service) repoDeployStepImagePush(
 	}
 	data.Step = stepImagePush
 
-	s.addStepStartLog(ctx, data.DeploymentData, "Start pushing image to registry...")
-	defer s.addStepEndLog(ctx, data.DeploymentData, timeutil.NowUTC(), err)
+	s.addStepStartLog(ctx, data.appDeploymentData, "Start pushing image to registry...")
+	defer s.addStepEndLog(ctx, data.appDeploymentData, timeutil.NowUTC(), err)
 
 	regAuth := data.RefObjects.RefSettings[repoSource.PushToRegistry.ID]
 	data.RegAuthHeader, err = regAuth.MustAsRegistryAuth().GenerateAuthHeader()
@@ -321,13 +320,13 @@ func (s *service) repoDeployStepImagePush(
 
 func (s *service) repoDeployStepServiceApply(
 	ctx context.Context,
-	data *repoDeployTaskData,
+	data *repoDeploymentData,
 ) (err error) {
 	data.Step = stepServiceApply
 	deployment := data.Deployment
 
-	s.addStepStartLog(ctx, data.DeploymentData, "Applying changes to service...")
-	defer s.addStepEndLog(ctx, data.DeploymentData, timeutil.NowUTC(), err)
+	s.addStepStartLog(ctx, data.appDeploymentData, "Applying changes to service...")
+	defer s.addStepEndLog(ctx, data.appDeploymentData, timeutil.NowUTC(), err)
 
 	inspect, err := s.dockerManager.ServiceInspect(ctx, data.App.ServiceID)
 	if err != nil {
@@ -353,7 +352,7 @@ func (s *service) repoDeployStepServiceApply(
 
 func (s *service) repoDeployStepPrepare(
 	_ context.Context,
-	data *repoDeployTaskData,
+	data *repoDeploymentData,
 ) (err error) {
 	deployment := data.Deployment
 	repoSource := deployment.Settings.RepoSource
@@ -382,7 +381,7 @@ func (s *service) repoDeployStepPrepare(
 //nolint:unparam
 func (s *service) repoDeployStepCleanup(
 	_ context.Context,
-	data *repoDeployTaskData,
+	data *repoDeploymentData,
 ) (err error) {
 	if data.CheckoutPath != "" {
 		_ = os.RemoveAll(data.CheckoutPath)
@@ -391,16 +390,16 @@ func (s *service) repoDeployStepCleanup(
 	return nil
 }
 
-func (s *service) onRepoDeployCommand(
+func (s *service) repoDeployOnCommand(
 	ctx context.Context,
-	taskData *repoDeployTaskData,
+	data *repoDeploymentData,
 	cmd base.TaskCommand,
 	_ ...any,
 ) {
-	if cmd == base.TaskCommandCancel && taskData.Step == stepImageBuild {
-		_, err := s.dockerManager.ImageBuildCancel(ctx, taskData.Task.ID)
+	if cmd == base.TaskCommandCancel && data.Step == stepImageBuild {
+		_, err := s.dockerManager.ImageBuildCancel(ctx, data.Task.ID)
 		if err != nil {
-			_ = taskData.LogStore.Add(ctx, applog.NewErrFrame("failed to cancel image build: "+
+			_ = data.LogStore.Add(ctx, applog.NewErrFrame("failed to cancel image build: "+
 				err.Error(), applog.TsNow))
 		}
 	}

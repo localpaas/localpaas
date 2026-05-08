@@ -10,7 +10,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/batchrecvchan"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
-	"github.com/localpaas/localpaas/localpaas_app/service/appdeploymentservice"
 	"github.com/localpaas/localpaas/services/docker"
 )
 
@@ -18,17 +17,17 @@ const (
 	stepImagePull = "image-pull"
 )
 
-type imageDeployTaskData struct {
-	*appdeploymentservice.DeploymentData
+type imageDeploymentData struct {
+	*appDeploymentData
 	RegAuthHeader string
 	Step          string
 }
 
 func (s *service) deployFromImage(
 	ctx context.Context,
-	taskData *appdeploymentservice.DeploymentData,
+	deplData *appDeploymentData,
 ) error {
-	data := &imageDeployTaskData{DeploymentData: taskData}
+	data := &imageDeploymentData{appDeploymentData: deplData}
 
 	// 1. Pull image from the registry
 	err := s.imageDeployStepImagePull(ctx, data)
@@ -41,7 +40,7 @@ func (s *service) deployFromImage(
 	}
 
 	// 2. Pre-deployment command execution
-	err = s.deployStepExecCmd(ctx, data.DeploymentData, true)
+	err = s.deployStepExecCmd(ctx, data.appDeploymentData, true)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -53,7 +52,7 @@ func (s *service) deployFromImage(
 	}
 
 	// 4. Post-deployment command execution
-	err = s.deployStepExecCmd(ctx, data.DeploymentData, false)
+	err = s.deployStepExecCmd(ctx, data.appDeploymentData, false)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -63,13 +62,13 @@ func (s *service) deployFromImage(
 
 func (s *service) imageDeployStepImagePull(
 	ctx context.Context,
-	data *imageDeployTaskData,
+	data *imageDeploymentData,
 ) (err error) {
 	data.Step = stepImagePull
 	imageSource := data.Deployment.Settings.ImageSource
 
-	s.addStepStartLog(ctx, data.DeploymentData, "Start pulling image...")
-	defer s.addStepEndLog(ctx, data.DeploymentData, timeutil.NowUTC(), err)
+	s.addStepStartLog(ctx, data.appDeploymentData, "Start pulling image...")
+	defer s.addStepEndLog(ctx, data.appDeploymentData, timeutil.NowUTC(), err)
 
 	if imageSource.RegistryAuth.ID != "" {
 		regAuth := data.RefObjects.RefSettings[imageSource.RegistryAuth.ID]
@@ -108,14 +107,14 @@ func (s *service) imageDeployStepImagePull(
 
 func (s *service) imageDeployStepServiceApply(
 	ctx context.Context,
-	data *imageDeployTaskData,
+	data *imageDeploymentData,
 ) (err error) {
 	data.Step = stepServiceApply
 	deployment := data.Deployment
 	imageSource := deployment.Settings.ImageSource
 
-	s.addStepStartLog(ctx, data.DeploymentData, "Applying changes to service...")
-	defer s.addStepEndLog(ctx, data.DeploymentData, timeutil.NowUTC(), err)
+	s.addStepStartLog(ctx, data.appDeploymentData, "Applying changes to service...")
+	defer s.addStepEndLog(ctx, data.appDeploymentData, timeutil.NowUTC(), err)
 
 	inspect, err := s.dockerManager.ServiceInspect(ctx, data.App.ServiceID)
 	if err != nil {

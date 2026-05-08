@@ -9,14 +9,13 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/service/appdeploymentservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
 )
 
 func (s *service) notifyForDeployment(
 	ctx context.Context,
 	db database.IDB,
-	data *appdeploymentservice.DeploymentData,
+	data *appDeploymentData,
 ) (err error) {
 	notifConfig := data.Deployment.Settings.Notification
 	if notifConfig == nil {
@@ -49,7 +48,7 @@ func (s *service) notifyForDeployment(
 }
 
 func (s *service) buildDeploymentNotifMsgData(
-	data *appdeploymentservice.DeploymentData,
+	data *appDeploymentData,
 ) {
 	deployment := data.Deployment
 	isSucceeded := deployment.IsDone()

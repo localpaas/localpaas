@@ -13,88 +13,43 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/entity/cacheentity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/infra/logging"
-	"github.com/localpaas/localpaas/localpaas_app/infra/rediscache"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/funcutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
-	"github.com/localpaas/localpaas/localpaas_app/repository"
-	"github.com/localpaas/localpaas/localpaas_app/repository/cacherepository"
 	"github.com/localpaas/localpaas/localpaas_app/service/appdeploymentservice"
-	"github.com/localpaas/localpaas/localpaas_app/service/envvarservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
-	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
-	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
-	"github.com/localpaas/localpaas/services/docker"
 )
 
 const (
 	deploymentInfoCacheExp = 4 * time.Hour
 )
 
-type service struct {
-	logger              logging.Logger
-	db                  *database.DB
-	redisClient         rediscache.Client
-	settingRepo         repository.SettingRepo
-	deploymentRepo      repository.DeploymentRepo
-	taskLogRepo         repository.TaskLogRepo
-	taskRepo            repository.TaskRepo
-	taskInfoRepo        cacherepository.TaskInfoRepo
-	deploymentInfoRepo  cacherepository.DeploymentInfoRepo
-	dockerManager       docker.Manager
-	envVarService       envvarservice.Service
-	settingService      settingservice.Service
-	userService         userservice.Service
-	notificationService notificationservice.Service
-}
-
-func New(
-	logger logging.Logger,
-	db *database.DB,
-	redisClient rediscache.Client,
-	settingRepo repository.SettingRepo,
-	deploymentRepo repository.DeploymentRepo,
-	taskLogRepo repository.TaskLogRepo,
-	taskRepo repository.TaskRepo,
-	taskInfoRepo cacherepository.TaskInfoRepo,
-	deploymentInfoRepo cacherepository.DeploymentInfoRepo,
-	dockerManager docker.Manager,
-	envVarService envvarservice.Service,
-	settingService settingservice.Service,
-	userService userservice.Service,
-	notificationService notificationservice.Service,
-) appdeploymentservice.Service {
-	s := &service{
-		logger:              logger,
-		db:                  db,
-		redisClient:         redisClient,
-		settingRepo:         settingRepo,
-		deploymentRepo:      deploymentRepo,
-		taskLogRepo:         taskLogRepo,
-		taskRepo:            taskRepo,
-		taskInfoRepo:        taskInfoRepo,
-		deploymentInfoRepo:  deploymentInfoRepo,
-		dockerManager:       dockerManager,
-		envVarService:       envVarService,
-		settingService:      settingService,
-		userService:         userService,
-		notificationService: notificationService,
-	}
-	return s
+type appDeploymentData struct {
+	*appdeploymentservice.AppDeploymentReq
+	Project          *entity.Project
+	App              *entity.App
+	Deployment       *entity.Deployment
+	DeploymentOutput *entity.AppDeploymentOutput
+	Step             string
+	LogStore         *applog.Store
+	NotifMsgData     *notificationservice.TemplateDataAppDeployment
 }
 
 func (s *service) Deploy(
 	ctx context.Context,
 	db database.Tx,
-	data *appdeploymentservice.DeploymentData,
-) (err error) {
+	req *appdeploymentservice.AppDeploymentReq,
+) (resp *appdeploymentservice.AppDeploymentResp, err error) {
+	resp = &appdeploymentservice.AppDeploymentResp{}
+	data := &appDeploymentData{
+		AppDeploymentReq: req,
+	}
 	data.OnPostTransaction = func() { s.onPostTransaction(data) } //nolint:contextcheck
 
 	err = s.loadDeploymentData(ctx, db, data)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return nil, apperrors.Wrap(err)
 	}
 
 	defer func() {
@@ -122,16 +77,16 @@ func (s *service) Deploy(
 
 	err = s.deploymentRepo.Update(ctx, db, data.Deployment)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return nil, apperrors.Wrap(err)
 	}
 
-	return nil
+	return resp, nil
 }
 
 func (s *service) loadDeploymentData(
 	ctx context.Context,
 	db database.Tx,
-	data *appdeploymentservice.DeploymentData,
+	data *appDeploymentData,
 ) error {
 	task := data.Task
 	args, err := task.ArgsAsAppDeploy()
@@ -200,7 +155,7 @@ func (s *service) loadDeploymentData(
 func (s *service) saveLogs(
 	ctx context.Context,
 	db database.IDB,
-	data *appdeploymentservice.DeploymentData,
+	data *appDeploymentData,
 	addDurationInfo bool,
 ) error {
 	deployment := data.Deployment
@@ -243,7 +198,7 @@ func (s *service) saveLogs(
 
 func (s *service) addStepStartLog(
 	ctx context.Context,
-	data *appdeploymentservice.DeploymentData,
+	data *appDeploymentData,
 	msg string,
 ) {
 	_ = data.LogStore.Add(ctx,
@@ -253,7 +208,7 @@ func (s *service) addStepStartLog(
 
 func (s *service) addStepEndLog(
 	ctx context.Context,
-	data *appdeploymentservice.DeploymentData,
+	data *appDeploymentData,
 	start time.Time,
 	err error,
 ) {
@@ -268,7 +223,7 @@ func (s *service) addStepEndLog(
 }
 
 func (s *service) onPostTransaction(
-	data *appdeploymentservice.DeploymentData,
+	data *appDeploymentData,
 ) {
 	ctx := context.Background()
 	db := s.db

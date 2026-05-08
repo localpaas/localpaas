@@ -22,7 +22,7 @@ import (
 
 func (s *service) calcGitAuthMethod(
 	ctx context.Context,
-	data *repoDeployTaskData,
+	data *repoDeploymentData,
 ) (auth transport.AuthMethod, err error) {
 	if data.CredSetting == nil {
 		return auth, nil
@@ -73,7 +73,7 @@ func (s *service) calcGitAuthMethod(
 
 func (s *service) calcBuildImageTags(
 	imageTags []string,
-	data *repoDeployTaskData,
+	data *repoDeploymentData,
 ) ([]string, error) {
 	if len(imageTags) > 0 {
 		return imageTags, nil
@@ -108,7 +108,7 @@ func (s *service) calcBuildImageTags(
 func (s *service) calcBuildEnvVars(
 	ctx context.Context,
 	db database.Tx,
-	data *repoDeployTaskData,
+	data *repoDeploymentData,
 ) (map[string]*string, error) {
 	envVars, err := s.envVarService.BuildAppEnvVars(ctx, db, data.App, true)
 	if err != nil {
@@ -126,7 +126,7 @@ func (s *service) calcBuildEnvVars(
 func (s *service) calcBuildRegistryAuths(
 	ctx context.Context,
 	db database.Tx,
-	data *repoDeployTaskData,
+	data *repoDeploymentData,
 ) (map[string]registry.AuthConfig, error) {
 	app := data.App
 
@@ -161,7 +161,7 @@ func (s *service) calcBuildRegistryAuths(
 func (s *service) getBuildSetting(
 	ctx context.Context,
 	db database.Tx,
-	data *repoDeployTaskData,
+	data *repoDeploymentData,
 ) (*entity.ImageBuildSettings, error) {
 	app := data.App
 	setting, err := s.settingRepo.GetSingle(ctx, db, base.NewSettingScopeProject(app.ProjectID),
