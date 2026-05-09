@@ -149,7 +149,7 @@ func (uc *UC) prepareUpdatingAppDeploymentSettings(
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 
 	// Create a deployment and a task for it
-	deployment, deploymentTask, err := uc.appService.CreateDeployment(app, data.NewDeploymentSettings)
+	deployment, deploymentTask, err := uc.appDeploymentService.CreateDeploymentAndTask(app, data.NewDeploymentSettings)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

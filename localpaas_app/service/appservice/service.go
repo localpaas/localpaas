@@ -29,9 +29,6 @@ type Service interface {
 	ServiceUpdate(ctx context.Context, serviceID string, version *swarm.Version, service *swarm.ServiceSpec,
 		options ...docker.ServiceUpdateOption) (*client.ServiceUpdateResult, error)
 
-	CreateDeployment(app *entity.App, deploymentSettings *entity.AppDeploymentSettings) (
-		*entity.Deployment, *entity.Task, error)
-
 	CreateSwarmSecret(ctx context.Context, db database.IDB, app *entity.App, secret *entity.Secret) error
 	UpdateSwarmSecret(ctx context.Context, db database.IDB, app *entity.App, oldSecret, newSecret *entity.Secret) error
 	DeleteSwarmSecret(ctx context.Context, db database.IDB, app *entity.App, secret *entity.Secret) error

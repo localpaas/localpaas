@@ -237,7 +237,7 @@ func (uc *UC) createAppDeploymentByPushEvent(
 		return apperrors.Wrap(err)
 	}
 
-	deployment, task, err := uc.appService.CreateDeployment(app, deploymentSettings)
+	deployment, task, err := uc.appDeploymentService.CreateDeploymentAndTask(app, deploymentSettings)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

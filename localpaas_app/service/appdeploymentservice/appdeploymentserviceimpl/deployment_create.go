@@ -1,4 +1,4 @@
-package appserviceimpl
+package appdeploymentserviceimpl
 
 import (
 	"github.com/tiendc/gofn"
@@ -10,7 +10,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
 )
 
-func (s *service) CreateDeployment(
+func (s *service) CreateDeploymentAndTask(
 	app *entity.App,
 	deploymentSettings *entity.AppDeploymentSettings,
 ) (*entity.Deployment, *entity.Task, error) {
