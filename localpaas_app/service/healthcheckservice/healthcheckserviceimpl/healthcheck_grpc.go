@@ -1,4 +1,4 @@
-package taskhealthcheck
+package healthcheckserviceimpl
 
 import (
 	"context"
@@ -13,9 +13,9 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 )
 
-func (e *Executor) doHealthcheckGRPC(
+func (s *service) doHealthcheckGRPC(
 	ctx context.Context,
-	data *taskData,
+	data *healthcheckData,
 ) (err error) {
 	healthchk := data.Healthcheck.GRPC
 	if data.Output.GRPC == nil {

@@ -35,26 +35,26 @@ func registerSettingParser(typ base.SettingType, parser SettingParser) bool {
 type Setting struct {
 	ID              string                `bun:",pk" json:"id"`
 	Scope           base.SettingScopeType `json:"scope"`
-	ObjectID        string                `bun:",nullzero" json:"objectId"`
+	ObjectID        string                `bun:",nullzero" json:"objectId,omitempty"`
 	Type            base.SettingType      `json:"type"`
-	Kind            string                `bun:",nullzero" json:"kind"`
+	Kind            string                `bun:",nullzero" json:"kind,omitempty"`
 	Status          base.SettingStatus    `json:"status"`
 	Name            string                `bun:",nullzero" json:"name"`
 	Data            string                `bun:",nullzero" json:"data"`
-	AvailInProjects bool                  `json:"availInProjects"`
-	Default         bool                  `bun:"is_default" json:"isDefault"`
+	AvailInProjects bool                  `json:"availInProjects,omitempty"`
+	Default         bool                  `bun:"is_default" json:"isDefault,omitempty"`
 	Version         int                   `json:"version"`
 	UpdateVer       int                   `json:"updateVer"`
 
 	CreatedAt time.Time `bun:",default:current_timestamp" json:"createdAt"`
 	UpdatedAt time.Time `bun:",default:current_timestamp" json:"updatedAt"`
-	ExpireAt  time.Time `bun:",nullzero" json:"expireAt"`
-	DeletedAt time.Time `bun:",soft_delete,nullzero" json:"deletedAt"`
+	ExpireAt  time.Time `bun:",nullzero" json:"expireAt,omitempty"`
+	DeletedAt time.Time `bun:",soft_delete,nullzero" json:"deletedAt,omitzero"`
 
-	BelongToUser    *User    `bun:"rel:belongs-to,join:object_id=id" json:"-"`
-	BelongToProject *Project `bun:"rel:belongs-to,join:object_id=id" json:"-"`
-	BelongToApp     *App     `bun:"rel:belongs-to,join:object_id=id" json:"-"`
-	Tasks           []*Task  `bun:"rel:has-many,join:id=target_id" json:"-"`
+	BelongToUser    *User    `bun:"rel:belongs-to,join:object_id=id" json:"belongToUser,omitempty"`
+	BelongToProject *Project `bun:"rel:belongs-to,join:object_id=id" json:"belongToProject,omitempty"`
+	BelongToApp     *App     `bun:"rel:belongs-to,join:object_id=id" json:"belongToApp,omitempty"`
+	Tasks           []*Task  `bun:"rel:has-many,join:id=target_id" json:"tasks,omitempty"`
 
 	// NOTE: temporary fields
 	parsedData      SettingData

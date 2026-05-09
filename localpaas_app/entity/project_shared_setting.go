@@ -15,5 +15,5 @@ type ProjectSharedSetting struct {
 	DataViewAllowed bool   `json:"dataViewAllowed"`
 
 	CreatedAt time.Time `bun:",default:current_timestamp" json:"createdAt"`
-	DeletedAt time.Time `bun:",soft_delete,nullzero" json:"deletedAt"`
+	DeletedAt time.Time `bun:",soft_delete,nullzero" json:"deletedAt,omitzero"`
 }

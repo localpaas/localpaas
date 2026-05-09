@@ -1,4 +1,4 @@
-package taskhealthcheck
+package healthcheckserviceimpl
 
 import (
 	"context"
@@ -20,9 +20,9 @@ const (
 	defaultRESTContentType = "application/json"
 )
 
-func (e *Executor) doHealthcheckREST(
+func (s *service) doHealthcheckREST(
 	ctx context.Context,
-	data *taskData,
+	data *healthcheckData,
 ) (err error) {
 	healthchk := data.Healthcheck.REST
 	if data.Output.REST == nil {

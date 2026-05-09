@@ -31,8 +31,8 @@ type Task struct {
 	Status    base.TaskStatus `json:"status"`
 	Config    TaskConfig      `bun:",nullzero" json:"config"`
 	Args      string          `bun:",nullzero" json:"args"`
-	Runs      string          `bun:",nullzero" json:"runs"`
-	Output    string          `bun:",nullzero" json:"output"`
+	Runs      string          `bun:",nullzero" json:"runs,omitempty"`
+	Output    string          `bun:",nullzero" json:"output,omitempty"`
 	Version   int             `json:"version"`
 	UpdateVer int             `json:"updateVer"`
 
@@ -43,10 +43,10 @@ type Task struct {
 
 	CreatedAt time.Time `bun:",default:current_timestamp" json:"createdAt"`
 	UpdatedAt time.Time `bun:",default:current_timestamp" json:"updatedAt"`
-	DeletedAt time.Time `bun:",soft_delete,nullzero" json:"deletedAt"`
+	DeletedAt time.Time `bun:",soft_delete,nullzero" json:"deletedAt,omitzero"`
 
-	TargetJob        *Setting    `bun:"rel:belongs-to,join:target_id=id" json:"-"`
-	TargetDeployment *Deployment `bun:"rel:belongs-to,join:target_id=id" json:"-"`
+	TargetJob        *Setting    `bun:"rel:belongs-to,join:target_id=id" json:"targetJob,omitempty"`
+	TargetDeployment *Deployment `bun:"rel:belongs-to,join:target_id=id" json:"targetDeployment,omitempty"`
 
 	// NOTE: temporary fields
 	parsedArgs   any

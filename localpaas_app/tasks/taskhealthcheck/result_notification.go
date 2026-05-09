@@ -12,7 +12,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity/cacheentity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/strutil"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
 )
 
@@ -58,11 +57,8 @@ func (e *Executor) sendNotification(
 	}
 	lastNotifSend := data.NotifEventMap[data.HealthcheckSetting.ID]
 	if lastNotifSend != nil {
-		req.LastSendEvent = lastNotifSend.Event
-		req.LastSendTimestamp = lastNotifSend.Ts
-		req.LastEmailSent = lastNotifSend.EmailSent
-		req.LastSlackSent = lastNotifSend.SlackSent
-		req.LastDiscordSent = lastNotifSend.DiscordSent
+		req.LastEvent = lastNotifSend.Event
+		req.LastSendTs = lastNotifSend.LastSendTs
 	}
 
 	resp, err := e.notificationService.NotifyForTaskResult(ctx, db, req)
@@ -72,13 +68,10 @@ func (e *Executor) sendNotification(
 
 	// Update notification events in redis
 	minSendingInterval := notification.MinSendInterval.ToDuration()
-	if minSendingInterval > 0 {
+	if minSendingInterval > 0 && resp.HasSend() {
 		_ = e.notifEventRepo.Set(ctx, data.HealthcheckSetting.ID, &cacheentity.HealthcheckNotifEvent{
-			Event:       gofn.If(req.ActionSucceeded, "success", "failure"),
-			Ts:          timeutil.NowUTC(),
-			EmailSent:   resp.EmailSent,
-			SlackSent:   resp.SlackSent,
-			DiscordSent: resp.DiscordSent,
+			Event:      gofn.If(req.ActionSucceeded, "success", "failure"),
+			LastSendTs: resp.SendTs,
 		}, minSendingInterval)
 	}
 

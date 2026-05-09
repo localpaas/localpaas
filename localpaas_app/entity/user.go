@@ -21,22 +21,22 @@ type User struct {
 	Email    string          `bun:",nullzero" json:"email"`
 	Role     base.UserRole   `json:"role"`
 	Status   base.UserStatus `json:"status"`
-	FullName string          `json:"fullName"`
-	Position string          `bun:",nullzero" json:"position"`
-	Photo    string          `bun:",nullzero" json:"photo"`
-	Notes    string          `bun:",nullzero" json:"notes"`
+	FullName string          `json:"fullName,omitempty"`
+	Position string          `bun:",nullzero" json:"position,omitempty"`
+	Photo    string          `bun:",nullzero" json:"photo,omitempty"`
+	Notes    string          `bun:",nullzero" json:"notes,omitempty"`
 
 	SecurityOption base.UserSecurityOption `json:"securityOption"`
-	TotpSecret     string                  `bun:",nullzero" json:"totpSecret"`
-	Password       string                  `bun:",nullzero" json:"password"`
+	TotpSecret     string                  `bun:",nullzero" json:"totpSecret,omitempty"`
+	Password       string                  `bun:",nullzero" json:"password,omitempty"`
 
 	CreatedAt      time.Time `bun:",default:current_timestamp" json:"createdAt"`
 	UpdatedAt      time.Time `bun:",default:current_timestamp" json:"updatedAt"`
-	AccessExpireAt time.Time `bun:",nullzero" json:"accessExpireAt"`
-	DeletedAt      time.Time `bun:",soft_delete,nullzero" json:"deletedAt"`
-	LastAccess     time.Time `bun:",nullzero" json:"lastAccess"`
+	AccessExpireAt time.Time `bun:",nullzero" json:"accessExpireAt,omitzero"`
+	DeletedAt      time.Time `bun:",soft_delete,nullzero" json:"deletedAt,omitzero"`
+	LastAccess     time.Time `bun:",nullzero" json:"lastAccess,omitzero"`
 
-	Accesses []*ACLPermission `bun:"rel:has-many,join:id=subject_id" json:"-"`
+	Accesses []*ACLPermission `bun:"rel:has-many,join:id=subject_id" json:"accesses,omitempty"`
 }
 
 // GetID implements IDEntity interface

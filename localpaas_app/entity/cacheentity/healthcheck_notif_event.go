@@ -5,9 +5,6 @@ import (
 )
 
 type HealthcheckNotifEvent struct {
-	Event       string    `json:"event"`
-	Ts          time.Time `json:"ts"`
-	EmailSent   bool      `json:"emailSent"`
-	SlackSent   bool      `json:"slackSent"`
-	DiscordSent bool      `json:"discordSent"`
+	Event      string    `json:"event"`
+	LastSendTs time.Time `json:"lastSendTs"`
 }

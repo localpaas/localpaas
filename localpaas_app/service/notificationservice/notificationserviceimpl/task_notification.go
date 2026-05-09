@@ -9,6 +9,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/strutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
 	"github.com/localpaas/localpaas/services/email"
 )
@@ -18,43 +19,36 @@ func (s *service) NotifyForTaskResult(
 	db database.IDB,
 	data *notificationservice.TaskResultNotificationReq,
 ) (resp *notificationservice.TaskResultNotificationResp, err error) {
-	resp = &notificationservice.TaskResultNotificationResp{}
+	resp = &notificationservice.TaskResultNotificationResp{
+		SendTs: timeutil.NowUTC(),
+	}
 	notification := data.Notification
 	if notification == nil {
 		return resp, nil
 	}
 
-	minSendingInterval := notification.MinSendInterval.ToDuration()
 	currEvent := gofn.If(data.ActionSucceeded, "success", "failure")
-	shouldSkipNotifEmail := false
-	shouldSkipNotifSlack := false
-	shouldSkipNotifDiscord := false
-
-	if minSendingInterval > 0 && !data.LastSendTimestamp.IsZero() && data.LastSendEvent == currEvent {
-		if time.Since(data.LastSendTimestamp) < minSendingInterval {
-			shouldSkipNotifEmail = data.LastEmailSent
-			shouldSkipNotifSlack = data.LastSlackSent
-			shouldSkipNotifDiscord = data.LastDiscordSent
-		}
-	}
+	minSendingInterval := notification.MinSendInterval.ToDuration()
+	shouldSkipNotif := minSendingInterval > 0 && data.LastEvent == currEvent &&
+		!data.LastSendTs.IsZero() && time.Since(data.LastSendTs) < minSendingInterval
 
 	var execFuncs []func(ctx context.Context) error
 
-	if !shouldSkipNotifEmail && notification.HasNotificationViaEmail() {
+	if !shouldSkipNotif && notification.HasNotificationViaEmail() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
 			err := s.notifyForTaskResultViaEmail(ctx, db, data)
 			resp.EmailSent = err == nil
 			return err
 		})
 	}
-	if !shouldSkipNotifSlack && notification.HasNotificationViaSlack() {
+	if !shouldSkipNotif && notification.HasNotificationViaSlack() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
 			err := s.notifyForTaskResultViaSlack(ctx, db, data)
 			resp.SlackSent = err == nil
 			return err
 		})
 	}
-	if !shouldSkipNotifDiscord && notification.HasNotificationViaDiscord() {
+	if !shouldSkipNotif && notification.HasNotificationViaDiscord() {
 		execFuncs = append(execFuncs, func(ctx context.Context) error {
 			err := s.notifyForTaskResultViaDiscord(ctx, db, data)
 			resp.DiscordSent = err == nil

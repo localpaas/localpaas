@@ -14,5 +14,5 @@ type AppTag struct {
 	Tag          string `bun:",pk" json:"tag"`
 	DisplayOrder int    `json:"displayOrder"`
 
-	DeletedAt time.Time `bun:",soft_delete,nullzero" json:"deletedAt"`
+	DeletedAt time.Time `bun:",soft_delete,nullzero" json:"deletedAt,omitzero"`
 }

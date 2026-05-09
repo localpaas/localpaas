@@ -128,6 +128,5 @@ func (q *taskQueue) isAppMode() bool {
 }
 
 func (q *taskQueue) isWorkerMode() bool {
-	return q.config.RunMode == config.RunModeWorker || q.config.RunMode == config.RunModeAppAndWorker ||
-		q.config.RunMode == config.RunModeUpdater
+	return q.config.RunMode == config.RunModeWorker || q.config.RunMode == config.RunModeAppAndWorker
 }

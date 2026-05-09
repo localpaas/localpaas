@@ -50,17 +50,19 @@ type TaskResultNotificationReq struct {
 	TemplateName TemplateName
 	TemplateData TemplateData
 
-	LastSendEvent     string // `success`, `failure`
-	LastSendTimestamp time.Time
-	LastEmailSent     bool
-	LastSlackSent     bool
-	LastDiscordSent   bool
+	LastEvent  string // `success`, `failure`
+	LastSendTs time.Time
 }
 
 type TaskResultNotificationResp struct {
+	SendTs      time.Time
 	EmailSent   bool
 	SlackSent   bool
 	DiscordSent bool
+}
+
+func (r *TaskResultNotificationResp) HasSend() bool { // true if has at least one sending
+	return r.EmailSent || r.SlackSent || r.DiscordSent
 }
 
 //
