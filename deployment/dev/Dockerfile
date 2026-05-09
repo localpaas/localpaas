@@ -45,7 +45,7 @@ RUN go install github.com/rubenv/sql-migrate/...@latest && \
 
 ############################################################
 # Build a small image
-FROM alpine:3.22
+FROM alpine:3.23
 WORKDIR /localpaas
 RUN apk update && \
     apk add --no-cache ca-certificates make openssl postgresql-client && \
