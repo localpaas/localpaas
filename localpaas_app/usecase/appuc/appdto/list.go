@@ -12,6 +12,7 @@ import (
 type ListAppReq struct {
 	ProjectID string           `json:"-"`
 	Status    []base.AppStatus `json:"-" mapstructure:"status"`
+	Env       []string         `json:"-" mapstructure:"env"`
 	Search    string           `json:"-" mapstructure:"search"`
 	GetStats  bool             `json:"-" mapstructure:"getStats"`
 

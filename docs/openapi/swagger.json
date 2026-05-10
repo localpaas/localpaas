@@ -21801,9 +21801,9 @@
   "components" : {
     "schemas" : {
       "github_com_localpaas_localpaas_localpaas_app_apperrors.DisplayLevel" : {
-        "enum" : [ "high", "medium", "low", "medium" ],
+        "enum" : [ "medium", "high", "medium", "low" ],
         "type" : "string",
-        "x-enum-varnames" : [ "DisplayLevelHigh", "DisplayLevelMedium", "DisplayLevelLow", "errVldDisplayLevel" ]
+        "x-enum-varnames" : [ "errVldDisplayLevel", "DisplayLevelHigh", "DisplayLevelMedium", "DisplayLevelLow" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo" : {
         "properties" : {
@@ -21989,9 +21989,9 @@
         "x-enum-varnames" : [ "SettingStatusActive", "SettingStatusPending", "SettingStatusDisabled", "SettingStatusExpired" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.SettingType" : {
-        "enum" : [ "project", "app", "app-deployment", "app-http", "env-var", "secret", "config-file", "cloud-storage", "oauth", "ssh-key", "api-key", "im-service", "registry-auth", "basic-auth", "ssl-cert", "github-app", "access-token", "cron-job", "healthcheck", "email", "repo-webhook", "notification", "system-cleanup", "system-backup", "ssl-renewal", "file", "domain-settings", "storage-settings", "image-build-settings" ],
+        "enum" : [ "project", "project-envs", "app", "app-deployment", "app-http", "env-var", "secret", "config-file", "cloud-storage", "oauth", "ssh-key", "api-key", "im-service", "registry-auth", "basic-auth", "ssl-cert", "github-app", "access-token", "cron-job", "healthcheck", "email", "repo-webhook", "notification", "system-cleanup", "system-backup", "ssl-renewal", "file", "domain-settings", "storage-settings", "image-build-settings" ],
         "type" : "string",
-        "x-enum-varnames" : [ "SettingTypeProject", "SettingTypeApp", "SettingTypeAppDeployment", "SettingTypeAppHttp", "SettingTypeEnvVar", "SettingTypeSecret", "SettingTypeConfigFile", "SettingTypeCloudStorage", "SettingTypeOAuth", "SettingTypeSSHKey", "SettingTypeAPIKey", "SettingTypeIMService", "SettingTypeRegistryAuth", "SettingTypeBasicAuth", "SettingTypeSSLCert", "SettingTypeGithubApp", "SettingTypeAccessToken", "SettingTypeCronJob", "SettingTypeHealthcheck", "SettingTypeEmail", "SettingTypeRepoWebhook", "SettingTypeNotification", "SettingTypeSystemCleanup", "SettingTypeSystemBackup", "SettingTypeSSLRenewal", "SettingTypeFile", "SettingTypeDomainSettings", "SettingTypeStorageSettings", "SettingTypeImageBuildSettings" ]
+        "x-enum-varnames" : [ "SettingTypeProject", "SettingTypeProjectEnvs", "SettingTypeApp", "SettingTypeAppDeployment", "SettingTypeAppHttp", "SettingTypeEnvVar", "SettingTypeSecret", "SettingTypeConfigFile", "SettingTypeCloudStorage", "SettingTypeOAuth", "SettingTypeSSHKey", "SettingTypeAPIKey", "SettingTypeIMService", "SettingTypeRegistryAuth", "SettingTypeBasicAuth", "SettingTypeSSLCert", "SettingTypeGithubApp", "SettingTypeAccessToken", "SettingTypeCronJob", "SettingTypeHealthcheck", "SettingTypeEmail", "SettingTypeRepoWebhook", "SettingTypeNotification", "SettingTypeSystemCleanup", "SettingTypeSystemBackup", "SettingTypeSSLRenewal", "SettingTypeFile", "SettingTypeDomainSettings", "SettingTypeStorageSettings", "SettingTypeImageBuildSettings" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.TaskPriority" : {
         "enum" : [ "low", "default", "critical" ],
@@ -22426,7 +22426,7 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_fileutil.FileMode" : {
-        "enum" : [ 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511, 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511 ],
+        "enum" : [ 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511 ],
         "format" : "int32",
         "type" : "integer",
         "x-enum-comments" : {
@@ -22437,7 +22437,7 @@
           "ModeExclusive" : "l: exclusive use",
           "ModeIrregular" : "?: non-regular file; nothing else is known about this file",
           "ModeNamedPipe" : "p: named pipe (FIFO)",
-          "ModePerm" : "Unix permission bits, 0o777",
+          "ModePerm" : "Unix permission bits",
           "ModeSetgid" : "g: setgid",
           "ModeSetuid" : "u: setuid",
           "ModeSocket" : "S: Unix domain socket",
@@ -22445,7 +22445,7 @@
           "ModeSymlink" : "L: symbolic link",
           "ModeTemporary" : "T: temporary file; Plan 9 only"
         },
-        "x-enum-descriptions" : [ "d: is a directory", "a: append-only", "l: exclusive use", "T: temporary file; Plan 9 only", "L: symbolic link", "D: device file", "p: named pipe (FIFO)", "S: Unix domain socket", "u: setuid", "g: setgid", "c: Unix character device, when ModeDevice is set", "t: sticky", "?: non-regular file; nothing else is known about this file", "", "Unix permission bits, 0o777" ],
+        "x-enum-descriptions" : [ "d: is a directory", "a: append-only", "l: exclusive use", "T: temporary file; Plan 9 only", "L: symbolic link", "D: device file", "p: named pipe (FIFO)", "S: Unix domain socket", "u: setuid", "g: setgid", "c: Unix character device, when ModeDevice is set", "t: sticky", "?: non-regular file; nothing else is known about this file", "", "Unix permission bits" ],
         "x-enum-varnames" : [ "ModeDir", "ModeAppend", "ModeExclusive", "ModeTemporary", "ModeSymlink", "ModeDevice", "ModeNamedPipe", "ModeSocket", "ModeSetuid", "ModeSetgid", "ModeCharDevice", "ModeSticky", "ModeIrregular", "ModeType", "ModePerm" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
@@ -24339,6 +24339,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppBaseResp" : {
         "properties" : {
+          "env" : {
+            "type" : "string"
+          },
           "id" : {
             "type" : "string"
           },
@@ -24355,7 +24358,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.AppStatus"
           }
         },
-        "required" : [ "id", "key", "localKey", "name", "status" ],
+        "required" : [ "env", "id", "key", "localKey", "name", "status" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppResp" : {
@@ -24368,6 +24371,9 @@
             "type" : "array"
           },
           "createdAt" : {
+            "type" : "string"
+          },
+          "env" : {
             "type" : "string"
           },
           "id" : {
@@ -24418,7 +24424,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "id", "key", "localKey", "name", "note", "parentId", "project", "stats", "status", "tags", "token", "updateVer", "updatedAt" ],
+        "required" : [ "createdAt", "env", "id", "key", "localKey", "name", "note", "parentId", "project", "stats", "status", "tags", "token", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppRuntimeLogsDataResp" : {
@@ -24459,6 +24465,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.CreateAppReq" : {
         "properties" : {
+          "env" : {
+            "type" : "string"
+          },
           "name" : {
             "type" : "string"
           },
@@ -24475,7 +24484,7 @@
             "type" : "array"
           }
         },
-        "required" : [ "name", "note", "status", "tags" ],
+        "required" : [ "env", "name", "note", "status", "tags" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.CreateAppResp" : {
@@ -24558,6 +24567,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.UpdateAppReq" : {
         "properties" : {
+          "env" : {
+            "type" : "string"
+          },
           "name" : {
             "type" : "string"
           },
@@ -24577,7 +24589,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "name", "note", "status", "tags", "updateVer" ],
+        "required" : [ "env", "name", "note", "status", "tags", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.UpdateAppResp" : {
@@ -25587,6 +25599,12 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.CreateProjectReq" : {
         "properties" : {
+          "envs" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.ProjectEnvReq"
+            },
+            "type" : "array"
+          },
           "name" : {
             "type" : "string"
           },
@@ -25606,7 +25624,7 @@
             "type" : "array"
           }
         },
-        "required" : [ "name", "note", "owner", "status", "tags" ],
+        "required" : [ "envs", "name", "note", "owner", "status", "tags" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.CreateProjectResp" : {
@@ -25672,18 +25690,6 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.ProjectAppResp" : {
-        "properties" : {
-          "id" : {
-            "type" : "string"
-          },
-          "name" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "id", "name" ],
-        "type" : "object"
-      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.ProjectBaseResp" : {
         "properties" : {
           "id" : {
@@ -25705,16 +25711,40 @@
         "required" : [ "id", "key", "name", "photo", "status" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.ProjectEnvReq" : {
+        "properties" : {
+          "color" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "color", "name" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.ProjectEnvResp" : {
+        "properties" : {
+          "color" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "color", "name" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.ProjectResp" : {
         "properties" : {
-          "apps" : {
-            "items" : {
-              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.ProjectAppResp"
-            },
-            "type" : "array"
-          },
           "createdAt" : {
             "type" : "string"
+          },
+          "envs" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.ProjectEnvResp"
+            },
+            "type" : "array"
           },
           "id" : {
             "type" : "string"
@@ -25757,7 +25787,7 @@
             "type" : "array"
           }
         },
-        "required" : [ "apps", "createdAt", "id", "key", "name", "note", "owner", "photo", "status", "tags", "updateVer", "updatedAt", "userAccesses" ],
+        "required" : [ "createdAt", "envs", "id", "key", "name", "note", "owner", "photo", "status", "tags", "updateVer", "updatedAt", "userAccesses" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.ProjectUserAccessResp" : {
@@ -25813,6 +25843,12 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.UpdateProjectReq" : {
         "properties" : {
+          "envs" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.ProjectEnvReq"
+            },
+            "type" : "array"
+          },
           "name" : {
             "type" : "string"
           },
@@ -25835,7 +25871,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "name", "note", "owner", "status", "tags", "updateVer" ],
+        "required" : [ "envs", "name", "note", "owner", "status", "tags", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.UpdateProjectResp" : {

@@ -148,6 +148,7 @@ func (uc *UC) preparePersistingAppBase(
 ) {
 	app.Name = req.Name
 	app.Status = req.Status
+	app.Env = req.Env
 	app.Note = req.Note
 	app.UpdatedAt = timeNow
 

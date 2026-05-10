@@ -42,17 +42,17 @@ VALUES ('01JAB9XED0GTXBSQDFVYAJ8WB1', 'tag 1', 0),
        ('01JAB9XED0GTXBSQDFVYAJ8WB2', 'my tag', 1)
 ON CONFLICT DO NOTHING;
 
-INSERT INTO apps (id, name, key, local_key, status, project_id, token, created_at, updated_at)
+INSERT INTO apps (id, name, key, local_key, status, project_id, env, token, created_at, updated_at)
 VALUES ('01JAB9XED0GTXBSQDFVYAJ8WD1', 'Backend', 'project_a_backend', 'backend', 'active', '01JAB9XED0GTXBSQDFVYAJ8WB1',
-        'tokena1', '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
+        'development', 'tokena1', '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WD2', 'Frontend', 'project_a_frontend', 'frontend', 'active', '01JAB9XED0GTXBSQDFVYAJ8WB1',
-        'tokena2',  '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
+        'development', 'tokena2',  '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WD3', 'Postgres', 'project_a_db', 'db', 'active', '01JAB9XED0GTXBSQDFVYAJ8WB1',
-        'tokena3',  '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
+        'production', 'tokena3',  '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WD5', 'Backend', 'project_b_backend', 'backend', 'active', '01JAB9XED0GTXBSQDFVYAJ8WB2',
-        'tokenb1',  '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
+        'development', 'tokenb1',  '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WD6', 'Frontend', 'project_b_frontend', 'frontend', 'active', '01JAB9XED0GTXBSQDFVYAJ8WB2',
-        'tokenb2',  '2025-10-01 00:00:00', '2025-10-01 00:00:00')
+        'staging', 'tokenb2',  '2025-10-01 00:00:00', '2025-10-01 00:00:00')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO app_tags (app_id, tag, display_order)
@@ -178,5 +178,8 @@ VALUES ('01JAB9XED0GTXBSQDFVYAJ8WE1', '', NULL, 'oauth', 'github', 'Github', 'ac
         '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
        ('01JAB9XED0GTXBSQDFVYAJ8WR1', '', NULL, 'cloud-storage', 'aws-s3', 'my cloud storage (s3)', 'active', true, true,
         '{"s3": {"secretKey": "lpsalt:HIx2ZGU2ub+0Jg== u6pTNbPq9T5oTeZPN1nnofaFcm6vN1u30OFVsF+fEsSiksyesKjnEeNOg2L4vnMpkUnsoYCiuru5xBEgXQl3Jt4y6Y40evvLVKnyj14lgWO8RWrAKfhhc2vAOEg=", "accessKeyId": "e74c319305880f8ce70dedb4463b4e8a", "bucket": "localpaas-dev", "region": "apac", "endpoint": "https://2d8acc928b0d56d7301b169067ba96af.r2.cloudflarestorage.com"}}',
+        '2025-10-01 00:00:00', '2025-10-01 00:00:00'),
+       ('01JAB9XED0GTXBSQDFVYAJXXX1', 'project', '01JAB9XED0GTXBSQDFVYAJ8WB1', 'project-envs', NULL, 'Project Envs', 'active', false, false,
+        '{"envs":[{"name":"development","color":"#008000"},{"name":"staging","color":"#d19fe8"},{"name":"production","color":"#ed9121"},{"name":"more-env","color":"#12345678"}]}',
         '2025-10-01 00:00:00', '2025-10-01 00:00:00')
 ON CONFLICT DO NOTHING;

@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS projects
 
 CREATE UNIQUE INDEX idx_uq_projects_name ON projects(LOWER(name)) WHERE deleted_at IS NULL;
 CREATE UNIQUE INDEX idx_uq_projects_key ON projects(LOWER(key)) WHERE deleted_at IS NULL;
+CREATE INDEX idx_projects_status ON projects(status);
 CREATE INDEX idx_projects_updated_at ON projects(updated_at);
 CREATE INDEX idx_projects_deleted_at ON projects(deleted_at);
 

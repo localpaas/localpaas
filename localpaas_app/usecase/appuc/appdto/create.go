@@ -16,6 +16,7 @@ type CreateAppReq struct {
 type AppBaseReq struct {
 	Name   string         `json:"name"`
 	Status base.AppStatus `json:"status"`
+	Env    string         `json:"env"`
 	Tags   []string       `json:"tags"`
 	Note   string         `json:"note"`
 }

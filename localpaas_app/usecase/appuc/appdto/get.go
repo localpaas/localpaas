@@ -45,6 +45,7 @@ type AppResp struct {
 	Key       string                      `json:"key"`
 	LocalKey  string                      `json:"localKey"`
 	Status    base.AppStatus              `json:"status"`
+	Env       string                      `json:"env"`
 	Token     string                      `json:"token"`
 	Note      string                      `json:"note"`
 	Tags      []string                    `json:"tags" copy:"-"` // manual copy AppTag -> string
@@ -77,6 +78,7 @@ type AppBaseResp struct {
 	Key      string         `json:"key"`
 	LocalKey string         `json:"localKey"`
 	Status   base.AppStatus `json:"status"`
+	Env      string         `json:"env"`
 }
 
 type AppTransformationInput struct {
@@ -137,6 +139,7 @@ func TransformAppsBase(apps []*entity.App) []*AppBaseResp {
 			Key:      app.Key,
 			LocalKey: app.LocalKey,
 			Status:   app.Status,
+			Env:      app.Env,
 		}
 	})
 }

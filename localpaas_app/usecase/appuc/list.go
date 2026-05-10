@@ -29,6 +29,11 @@ func (uc *UC) ListApp(
 			bunex.SelectWhere("app.status IN (?)", bunex.List(req.Status)),
 		)
 	}
+	if len(req.Env) > 0 {
+		listOpts = append(listOpts,
+			bunex.SelectWhere("app.env IN (?)", bunex.List(req.Env)),
+		)
+	}
 	// Filter by search keyword
 	if req.Search != "" {
 		keyword := bunex.MakeLikeOpStr(req.Search, true)

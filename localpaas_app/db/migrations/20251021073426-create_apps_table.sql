@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS apps
     project_id     VARCHAR(100) NOT NULL,
     parent_id      VARCHAR(100) NULL,
     service_id     VARCHAR(100) NULL,
+    env            VARCHAR(100) NULL,
     status         VARCHAR NOT NULL CONSTRAINT chk_status CHECK
                         (status IN ('active','disabled','deleting')),
     token          VARCHAR(100) NOT NULL,
@@ -25,6 +26,7 @@ CREATE UNIQUE INDEX idx_uq_apps_name ON apps(project_id, LOWER(name)) WHERE dele
 CREATE UNIQUE INDEX idx_uq_apps_key ON apps(project_id, LOWER(key)) WHERE deleted_at IS NULL;
 CREATE INDEX idx_apps_project_id ON apps(project_id);
 CREATE INDEX idx_apps_parent_id ON apps(parent_id);
+CREATE INDEX idx_apps_env ON apps(env);
 CREATE INDEX idx_apps_token ON apps(token);
 CREATE INDEX idx_apps_updated_at ON apps(updated_at);
 CREATE INDEX idx_apps_deleted_at ON apps(deleted_at);

@@ -10,6 +10,7 @@ type SettingType string
 
 const (
 	SettingTypeProject            SettingType = "project"
+	SettingTypeProjectEnvs        SettingType = "project-envs"
 	SettingTypeApp                SettingType = "app"
 	SettingTypeAppDeployment      SettingType = "app-deployment"
 	SettingTypeAppHttp            SettingType = "app-http"

@@ -142,6 +142,7 @@ func (uc *UC) preparePersistingProject(
 	}
 
 	uc.preparePersistingProjectBase(project, req.ProjectBaseReq, timeNow, persistingData)
+	uc.preparePersistingProjectEnvs(project, req.Envs, timeNow, persistingData)
 	uc.preparePersistingProjectTags(project, req.Tags, 0, persistingData)
 	uc.preparePersistingProjectWebhook(project, timeNow, persistingData)
 }
@@ -159,6 +160,40 @@ func (uc *UC) preparePersistingProjectBase(
 	project.UpdatedAt = timeNow
 
 	persistingData.UpsertingProjects = append(persistingData.UpsertingProjects, project)
+}
+
+func (uc *UC) preparePersistingProjectEnvs(
+	project *entity.Project,
+	envs []*projectdto.ProjectEnvReq,
+	timeNow time.Time,
+	persistingData *persistingProjectData,
+) {
+	var envsSetting *entity.Setting
+	for _, setting := range project.Settings {
+		if setting.Type == base.SettingTypeProjectEnvs && setting.IsActive() {
+			envsSetting = setting
+			break
+		}
+	}
+	if envsSetting == nil {
+		envsSetting = &entity.Setting{
+			ID:        gofn.Must(ulid.NewStringULID()),
+			Scope:     base.SettingScopeProject,
+			ObjectID:  project.ID,
+			Type:      base.SettingTypeProjectEnvs,
+			Status:    base.SettingStatusActive,
+			Name:      "Project envs",
+			Version:   entity.CurrentProjectEnvsVersion,
+			CreatedAt: timeNow,
+			UpdatedAt: timeNow,
+		}
+	}
+	envsSetting.MustSetData(&entity.ProjectEnvs{
+		Envs: gofn.MapSlice(envs, func(e *projectdto.ProjectEnvReq) *entity.Env {
+			return e.ToEntity()
+		}),
+	})
+	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, envsSetting)
 }
 
 func (uc *UC) preparePersistingProjectTags(

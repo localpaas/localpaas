@@ -6,6 +6,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 )
 
 type CreateProjectReq struct {
@@ -15,6 +16,7 @@ type CreateProjectReq struct {
 type ProjectBaseReq struct {
 	Name   string              `json:"name"`
 	Status base.ProjectStatus  `json:"status"`
+	Envs   []*ProjectEnvReq    `json:"envs"`
 	Tags   []string            `json:"tags"`
 	Note   string              `json:"note"`
 	Owner  basedto.ObjectIDReq `json:"owner"`
@@ -30,6 +32,21 @@ func (req *ProjectBaseReq) validate(field string) (res []vld.Validator) {
 	res = append(res, validateProjectTags(req.Tags, field+"tags")...)
 	res = append(res, validateProjectOwner(&req.Owner, field+"owner")...)
 	return res
+}
+
+type ProjectEnvReq struct {
+	Name  string `json:"name"`
+	Color string `json:"color"`
+}
+
+func (req *ProjectEnvReq) ToEntity() *entity.Env {
+	if req == nil {
+		return nil
+	}
+	return &entity.Env{
+		Name:  req.Name,
+		Color: req.Color,
+	}
 }
 
 func NewCreateProjectReq() *CreateProjectReq {

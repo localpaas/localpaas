@@ -25,6 +25,12 @@ func (uc *UC) ListAppBase(
 		)
 	}
 
+	if len(req.Env) > 0 {
+		listOpts = append(listOpts,
+			bunex.SelectWhere("app.env IN (?)", bunex.List(req.Env)),
+		)
+	}
+
 	if req.Search != "" {
 		keyword := bunex.MakeLikeOpStr(req.Search, true)
 		listOpts = append(listOpts,

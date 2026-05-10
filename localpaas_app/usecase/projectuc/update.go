@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
@@ -55,6 +56,10 @@ func (uc *UC) loadProjectDataForUpdate(
 ) error {
 	project, err := uc.projectRepo.GetByID(ctx, db, req.ID,
 		bunex.SelectFor("UPDATE"),
+		bunex.SelectRelation("Settings",
+			// NOTE: now we only need to update Envs, expand this list in future
+			bunex.SelectWhere("setting.type = ?", base.SettingTypeProjectEnvs),
+		),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -98,6 +103,7 @@ func (uc *UC) preparePersistingProjectUpdate(
 	timeNow := timeutil.NowUTC()
 
 	uc.preparePersistingProjectBase(project, req.ProjectBaseReq, timeNow, persistingData)
+	uc.preparePersistingProjectEnvs(project, req.Envs, timeNow, persistingData)
 	persistingData.ProjectsToDeleteTags = append(persistingData.ProjectsToDeleteTags, project.ID)
 	uc.preparePersistingProjectTags(project, req.Tags, 0, persistingData)
 }

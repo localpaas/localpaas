@@ -39,8 +39,8 @@ type ProjectResp struct {
 	Status       base.ProjectStatus       `json:"status"`
 	Photo        string                   `json:"photo"`
 	Note         string                   `json:"note"`
+	Envs         []*ProjectEnvResp        `json:"envs"`
 	Tags         []string                 `json:"tags" copy:"-"` // manual copy ProjectTag -> string
-	Apps         []*ProjectAppResp        `json:"apps"`
 	UserAccesses []*ProjectUserAccessResp `json:"userAccesses"`
 	Owner        *basedto.UserBaseResp    `json:"owner"`
 	UpdateVer    int                      `json:"updateVer"`
@@ -52,6 +52,11 @@ type ProjectResp struct {
 type ProjectAppResp struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
+}
+
+type ProjectEnvResp struct {
+	Name  string `json:"name"`
+	Color string `json:"color"`
 }
 
 type ProjectUserAccessResp struct {
@@ -71,10 +76,27 @@ func TransformProject(project *entity.Project) (resp *ProjectResp, err error) {
 	if err = copier.Copy(&resp, &project); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+	resp.Envs = TransformProjectEnvs(project.Settings)
 	resp.Tags = gofn.MapSlice(project.Tags, func(t *entity.ProjectTag) string { return t.Tag })
 	resp.UserAccesses = TransformUserAccesses(project.Accesses)
 	resp.Owner = basedto.TransformUserBase(project.Owner)
 	return resp, nil
+}
+
+func TransformProjectEnvs(settings []*entity.Setting) (resp []*ProjectEnvResp) {
+	for _, setting := range settings {
+		if setting.Type != base.SettingTypeProjectEnvs || !setting.IsActive() {
+			continue
+		}
+		envs := setting.MustAsProjectEnvs()
+		for _, env := range envs.Envs {
+			resp = append(resp, &ProjectEnvResp{
+				Name:  env.Name,
+				Color: env.Color,
+			})
+		}
+	}
+	return resp
 }
 
 func TransformUserAccesses(accesses []*entity.ACLPermission) []*ProjectUserAccessResp {
