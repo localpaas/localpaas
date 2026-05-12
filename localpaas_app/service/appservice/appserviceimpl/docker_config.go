@@ -14,7 +14,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
 	"github.com/localpaas/localpaas/services/docker"
 )
 
@@ -42,12 +41,12 @@ func (s *service) CreateSwarmConfig(
 
 	// Create the config in docker swarm
 	configName := app.LocalKey + "_" + strings.ToLower(config.Name)
-	configVal := reflectutil.UnsafeStrToBytes(config.Content)
-	configResp, err := s.dockerManager.ConfigCreate(ctx, configName, configVal, func(opts *client.ConfigCreateOptions) {
-		opts.Spec.Labels = map[string]string{
-			docker.StackLabelNamespace: app.Project.Key,
-		}
-	})
+	configResp, err := s.dockerManager.ConfigCreate(ctx, configName, config.ContentAsBytes(),
+		func(opts *client.ConfigCreateOptions) {
+			opts.Spec.Labels = map[string]string{
+				docker.StackLabelNamespace: app.Project.Key,
+			}
+		})
 	if err != nil {
 		if errors.Is(err, apperrors.ErrInfraConflict) || errors.Is(err, apperrors.ErrInfraAlreadyExists) {
 			// Delete the orphan config, then retry this action

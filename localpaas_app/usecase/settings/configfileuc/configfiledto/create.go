@@ -12,7 +12,7 @@ import (
 
 const (
 	configFileNameMaxLen    = 200
-	configFileContentMaxLen = 10 * 1024 * 1024 // 10MB
+	configFileContentMaxLen = 1024 * 1024 // 1MB
 )
 
 type CreateConfigFileReq struct {
@@ -44,7 +44,13 @@ func (req *ConfigFileBaseReq) validate(valueRequired bool, field string) (res []
 		field += "."
 	}
 	res = append(res, basedto.ValidateStr(&req.Name, true, 1, configFileNameMaxLen, field+"name")...)
-	res = append(res, basedto.ValidateStr(&req.Content, valueRequired, 1, configFileContentMaxLen, field+"content")...)
+	if req.Base64 {
+		res = append(res, basedto.ValidateStrBase64(&req.Content, valueRequired, 1,
+			configFileContentMaxLen, field+"content")...)
+	} else {
+		res = append(res, basedto.ValidateStr(&req.Content, valueRequired, 1,
+			configFileContentMaxLen, field+"content")...)
+	}
 	res = append(res, req.SwarmRef.validate(field+"swarmRef")...)
 	return res
 }

@@ -1,6 +1,8 @@
 package basedto
 
 import (
+	"encoding/base64"
+
 	vld "github.com/tiendc/go-validator"
 )
 
@@ -61,5 +63,32 @@ func ValidateStrNotIn[T ~string](s *T, required bool, minLen, maxLen int, unallo
 		}
 	}
 
+	return result
+}
+
+func ValidateStrBase64[T ~string](s *T, required bool, minLen, maxLen int, field string) (result []vld.Validator) {
+	if required {
+		result = append(result, vld.Required(s).OnError(
+			vld.SetField(field, nil),
+			vld.SetCustomKey("ERR_VLD_VALUE_REQUIRED"),
+		))
+	}
+	if s != nil && *s != "" {
+		sVal, err := base64.StdEncoding.DecodeString(string(*s))
+		if err == nil {
+			result = append(result, vld.Must(len(sVal) >= minLen && len(sVal) <= maxLen).OnError(
+				vld.SetField(field, nil),
+				vld.SetCustomKey("ERR_VLD_FIELD_LENGTH_INVALID"),
+				vld.SetParam("Min", minLen),
+				vld.SetParam("Max", maxLen),
+			))
+		} else {
+			result = append(result, vld.Must(false).OnError(
+				vld.SetField(field, nil),
+				vld.SetCustomKey("ERR_VLD_VALUE_IS_NOT_OF_TYPE"),
+				vld.SetParam("Type", "base64"),
+			))
+		}
+	}
 	return result
 }

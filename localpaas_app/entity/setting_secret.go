@@ -8,6 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/fileutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
 )
 
 const (
@@ -61,7 +62,7 @@ func (s *Secret) ValueAsBytes() []byte {
 	if s.Base64 {
 		return gofn.Must(base64.StdEncoding.DecodeString(plain))
 	}
-	return []byte(plain)
+	return reflectutil.UnsafeStrToBytes(plain)
 }
 
 func (s *Secret) Migrate(setting *Setting) (hasChange bool, err error) {

@@ -14,7 +14,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
 	"github.com/localpaas/localpaas/services/docker"
 )
 
@@ -42,12 +41,12 @@ func (s *service) CreateSwarmSecret(
 
 	// Create the secret in docker swarm
 	secretName := app.LocalKey + "_" + strings.ToLower(secret.Key)
-	secretVal := reflectutil.UnsafeStrToBytes(secret.Value.MustGetPlain())
-	secretResp, err := s.dockerManager.SecretCreate(ctx, secretName, secretVal, func(opts *client.SecretCreateOptions) {
-		opts.Spec.Labels = map[string]string{
-			docker.StackLabelNamespace: app.Project.Key,
-		}
-	})
+	secretResp, err := s.dockerManager.SecretCreate(ctx, secretName, secret.ValueAsBytes(),
+		func(opts *client.SecretCreateOptions) {
+			opts.Spec.Labels = map[string]string{
+				docker.StackLabelNamespace: app.Project.Key,
+			}
+		})
 	if err != nil {
 		if errors.Is(err, apperrors.ErrInfraConflict) || errors.Is(err, apperrors.ErrInfraAlreadyExists) {
 			// Delete the orphan secret, then retry this action
