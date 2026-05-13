@@ -85,7 +85,7 @@ func (b DataSize) Truncate(sz DataSize) DataSize {
 func (b DataSize) String() string {
 	switch {
 	case b == 0:
-		return "0b"
+		return "0"
 	case b%EB == 0:
 		return fmt.Sprintf("%deb", b/EB)
 	case b%PB == 0:
@@ -109,6 +109,8 @@ func (b DataSize) HR() string {
 
 func (b DataSize) HumanReadable() string {
 	switch {
+	case b == 0:
+		return "0"
 	case b > EB:
 		return fmt.Sprintf("%.1f EB", b.EBytes())
 	case b > PB:

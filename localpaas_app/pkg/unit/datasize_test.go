@@ -23,7 +23,7 @@ func TestDataSize_String(t *testing.T) {
 		size     DataSize
 		expected string
 	}{
-		{0, "0b"},
+		{0, "0"},
 		{B, "1b"},
 		{KB, "1kb"},
 		{MB, "1mb"},
