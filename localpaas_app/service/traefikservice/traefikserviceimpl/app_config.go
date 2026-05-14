@@ -122,7 +122,7 @@ func (s *service) collectDomainConfig(
 	}
 
 	// Main router
-	routerName := fmt.Sprintf("rout-%v-%v", appKey, domainIndex)
+	routerName := fmt.Sprintf("router-%v-%v", appKey, domainIndex)
 	labels[fmt.Sprintf("traefik.http.routers.%s.rule", routerName)] =
 		fmt.Sprintf("Host(`%s`)", domain.Domain)
 	labels[fmt.Sprintf("traefik.http.routers.%s.service", routerName)] = serviceName
@@ -179,7 +179,7 @@ func (s *service) collectPathConfig(
 	labels map[string]string,
 	data *appConfigData,
 ) {
-	if pathCfg.Path == "" {
+	if !pathCfg.Enabled || pathCfg.Path == "" {
 		return
 	}
 
@@ -302,7 +302,7 @@ func (s *service) createHeaderConfig(
 	labels map[string]string,
 	middlewares *[]string,
 ) {
-	if headerCfg == nil || (len(headerCfg.ToAddToRequests) == 0 && len(headerCfg.ToRemoveFromRequests) == 0) {
+	if headerCfg == nil || !headerCfg.Enabled {
 		return
 	}
 	mwName := fmt.Sprintf("%s-headers", routerName)
@@ -325,13 +325,13 @@ func (s *service) createHeaderConfig(
 }
 
 func (s *service) createBasicAuthConfig(
-	basicAuth entity.ObjectID,
+	basicAuth *entity.HTTPBasicAuthConfig,
 	refObjects *entity.RefObjects,
 	routerName string,
 	labels map[string]string,
 	middlewares *[]string,
 ) {
-	if basicAuth.ID == "" {
+	if basicAuth == nil || !basicAuth.Enabled || basicAuth.ID == "" {
 		return
 	}
 	if s := refObjects.RefSettings[basicAuth.ID]; s != nil {

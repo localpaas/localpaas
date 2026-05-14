@@ -39,7 +39,7 @@ type AppDomain struct {
 	ContainerPort     int                    `json:"containerPort,omitempty"`
 	ForceHttps        bool                   `json:"forceHttps,omitempty"`
 	LBConfig          *HTTPLBConfig          `json:"lbConfig,omitempty"`
-	BasicAuth         ObjectID               `json:"basicAuth,omitzero"`
+	BasicAuth         *HTTPBasicAuthConfig   `json:"basicAuth,omitempty"`
 	ClientConfig      *HTTPClientConfig      `json:"clientConfig,omitempty"`
 	CompressionConfig *HTTPCompressionConfig `json:"compressionConfig,omitempty"`
 	RateLimitConfig   *HTTPRateLimitConfig   `json:"rateLimitConfig,omitempty"`
@@ -51,6 +51,11 @@ type HTTPLBConfig struct {
 	Strategy traefik.LBStrategy `json:"strategy"`
 }
 
+type HTTPBasicAuthConfig struct {
+	Enabled bool   `json:"enabled"`
+	ID      string `json:"id"`
+}
+
 type HTTPClientConfig struct {
 	Enabled        bool          `json:"enabled"`
 	MaxRequestBody unit.DataSize `json:"maxRequestBody,omitempty"`
@@ -59,6 +64,7 @@ type HTTPClientConfig struct {
 }
 
 type HTTPHeaderConfig struct {
+	Enabled               bool              `json:"enabled"`
 	ToAddToRequests       map[string]string `json:"toAddToRequests,omitempty"`
 	ToRemoveFromRequests  []string          `json:"toRemoveFromRequests,omitempty"`
 	ToAddToResponses      map[string]string `json:"toAddToResponses,omitempty"`
@@ -82,9 +88,10 @@ type HTTPRateLimitConfig struct {
 }
 
 type HTTPPathConfig struct {
+	Enabled           bool                   `json:"enabled"`
 	Path              string                 `json:"path"`
 	Mode              base.HTTPPathMode      `json:"mode"`
-	BasicAuth         ObjectID               `json:"basicAuth,omitzero"`
+	BasicAuth         *HTTPBasicAuthConfig   `json:"basicAuth,omitempty"`
 	ClientConfig      *HTTPClientConfig      `json:"clientConfig,omitempty"`
 	RateLimitConfig   *HTTPRateLimitConfig   `json:"rateLimitConfig,omitempty"`
 	HeaderConfig      *HTTPHeaderConfig      `json:"headerConfig,omitempty"`
@@ -129,11 +136,11 @@ func (s *AppHttpSettings) GetBasicAuthIDs() (res []string) {
 		if !domain.Enabled {
 			continue
 		}
-		if domain.BasicAuth.ID != "" {
+		if domain.BasicAuth != nil && domain.BasicAuth.ID != "" {
 			res = append(res, domain.BasicAuth.ID)
 		}
 		for _, pathConfig := range domain.Paths {
-			if pathConfig.BasicAuth.ID != "" {
+			if pathConfig.BasicAuth != nil && pathConfig.BasicAuth.ID != "" {
 				res = append(res, pathConfig.BasicAuth.ID)
 			}
 		}

@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	startTimeoutDefault = 30 * time.Second
+	startTimeoutDefault = 60 * time.Second
 )
 
 func main() {

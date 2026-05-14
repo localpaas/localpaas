@@ -55,7 +55,7 @@ type DomainResp struct {
 	ContainerPort     int                        `json:"containerPort"`
 	ForceHttps        bool                       `json:"forceHttps,omitempty"`
 	LBConfig          *HTTPLBConfigResp          `json:"lbConfig,omitempty"`
-	BasicAuth         *settings.BaseSettingResp  `json:"basicAuth,omitempty"`
+	BasicAuth         *HTTPBasicAuthConfigResp   `json:"basicAuth,omitempty"`
 	ClientConfig      *HTTPClientConfigResp      `json:"clientConfig,omitempty"`
 	HeaderConfig      *HTTPHeaderConfigResp      `json:"headerConfig,omitempty"`
 	CompressionConfig *HTTPCompressionConfigResp `json:"compressionConfig,omitempty"`
@@ -67,6 +67,11 @@ type HTTPLBConfigResp struct {
 	Strategy traefik.LBStrategy `json:"strategy"`
 }
 
+type HTTPBasicAuthConfigResp struct {
+	Enabled bool `json:"enabled"`
+	*settings.BaseSettingResp
+}
+
 type HTTPClientConfigResp struct {
 	Enabled        bool          `json:"enabled"`
 	MaxRequestBody unit.DataSize `json:"maxRequestBody"`
@@ -75,6 +80,7 @@ type HTTPClientConfigResp struct {
 }
 
 type HTTPHeaderConfigResp struct {
+	Enabled               bool              `json:"enabled"`
 	ToAddToRequests       map[string]string `json:"toAddToRequests"`
 	ToRemoveFromRequests  []string          `json:"toRemoveFromRequests"`
 	ToAddToResponses      map[string]string `json:"toAddToResponses"`
@@ -98,12 +104,14 @@ type HTTPCompressionConfigResp struct {
 }
 
 type HTTPPathConfigResp struct {
+	Enabled           bool                       `json:"enabled"`
 	Path              string                     `json:"path"`
 	Mode              base.HTTPPathMode          `json:"mode"`
-	BasicAuth         *settings.BaseSettingResp  `json:"basicAuth,omitzero"`
-	ClientConfig      *HTTPClientConfigResp      `json:"clientConfig"`
-	RateLimitConfig   *HTTPRateLimitConfigResp   `json:"rateLimitConfig"`
-	CompressionConfig *HTTPCompressionConfigResp `json:"compressionConfig"`
+	BasicAuth         *HTTPBasicAuthConfigResp   `json:"basicAuth,omitempty"`
+	ClientConfig      *HTTPClientConfigResp      `json:"clientConfig,omitempty"`
+	HeaderConfig      *HTTPHeaderConfigResp      `json:"headerConfig,omitempty"`
+	CompressionConfig *HTTPCompressionConfigResp `json:"compressionConfig,omitempty"`
+	RateLimitConfig   *HTTPRateLimitConfigResp   `json:"rateLimitConfig,omitempty"`
 }
 
 type AppHttpSettingsTransformInput struct {
@@ -141,7 +149,7 @@ func TransformHttpSettings(input *AppHttpSettingsTransformInput) (resp *HttpSett
 		}
 		if domain.BasicAuth != nil && domain.BasicAuth.ID != "" {
 			setting := input.RefSettingMap[domain.BasicAuth.ID]
-			domain.BasicAuth, _ = settings.TransformSettingBase(setting)
+			domain.BasicAuth.BaseSettingResp, _ = settings.TransformSettingBase(setting)
 		} else {
 			domain.BasicAuth = nil
 		}
@@ -149,7 +157,7 @@ func TransformHttpSettings(input *AppHttpSettingsTransformInput) (resp *HttpSett
 		for _, pathConfig := range domain.Paths {
 			setting := input.RefSettingMap[pathConfig.BasicAuth.ID]
 			if pathConfig.BasicAuth != nil && pathConfig.BasicAuth.ID != "" {
-				pathConfig.BasicAuth, _ = settings.TransformSettingBase(setting)
+				pathConfig.BasicAuth.BaseSettingResp, _ = settings.TransformSettingBase(setting)
 			} else {
 				pathConfig.BasicAuth = nil
 			}

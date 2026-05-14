@@ -21830,9 +21830,9 @@
   "components" : {
     "schemas" : {
       "github_com_localpaas_localpaas_localpaas_app_apperrors.DisplayLevel" : {
-        "enum" : [ "high", "medium", "low", "medium" ],
+        "enum" : [ "medium", "high", "medium", "low" ],
         "type" : "string",
-        "x-enum-varnames" : [ "DisplayLevelHigh", "DisplayLevelMedium", "DisplayLevelLow", "errVldDisplayLevel" ]
+        "x-enum-varnames" : [ "errVldDisplayLevel", "DisplayLevelHigh", "DisplayLevelMedium", "DisplayLevelLow" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo" : {
         "properties" : {
@@ -22458,7 +22458,7 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_fileutil.FileMode" : {
-        "enum" : [ 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511 ],
+        "enum" : [ 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511, 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511 ],
         "format" : "int32",
         "type" : "integer",
         "x-enum-comments" : {
@@ -22469,7 +22469,7 @@
           "ModeExclusive" : "l: exclusive use",
           "ModeIrregular" : "?: non-regular file; nothing else is known about this file",
           "ModeNamedPipe" : "p: named pipe (FIFO)",
-          "ModePerm" : "Unix permission bits",
+          "ModePerm" : "Unix permission bits, 0o777",
           "ModeSetgid" : "g: setgid",
           "ModeSetuid" : "u: setuid",
           "ModeSocket" : "S: Unix domain socket",
@@ -22477,11 +22477,11 @@
           "ModeSymlink" : "L: symbolic link",
           "ModeTemporary" : "T: temporary file; Plan 9 only"
         },
-        "x-enum-descriptions" : [ "d: is a directory", "a: append-only", "l: exclusive use", "T: temporary file; Plan 9 only", "L: symbolic link", "D: device file", "p: named pipe (FIFO)", "S: Unix domain socket", "u: setuid", "g: setgid", "c: Unix character device, when ModeDevice is set", "t: sticky", "?: non-regular file; nothing else is known about this file", "", "Unix permission bits" ],
+        "x-enum-descriptions" : [ "d: is a directory", "a: append-only", "l: exclusive use", "T: temporary file; Plan 9 only", "L: symbolic link", "D: device file", "p: named pipe (FIFO)", "S: Unix domain socket", "u: setuid", "g: setgid", "c: Unix character device, when ModeDevice is set", "t: sticky", "?: non-regular file; nothing else is known about this file", "", "Unix permission bits, 0o777" ],
         "x-enum-varnames" : [ "ModeDir", "ModeAppend", "ModeExclusive", "ModeTemporary", "ModeSymlink", "ModeDevice", "ModeNamedPipe", "ModeSocket", "ModeSetuid", "ModeSetgid", "ModeCharDevice", "ModeSticky", "ModeIrregular", "ModeType", "ModePerm" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 86400000000000, 604800000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 86400000000000, 604800000000000 ],
         "format" : "int64",
         "type" : "integer",
         "x-enum-varnames" : [ "Day", "Week" ]
@@ -23007,7 +23007,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.DomainReq" : {
         "properties" : {
           "basicAuth" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPBasicAuthConfigReq"
           },
           "clientConfig" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPClientConfigReq"
@@ -23055,7 +23055,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.DomainResp" : {
         "properties" : {
           "basicAuth" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPBasicAuthConfigResp"
           },
           "clientConfig" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPClientConfigResp"
@@ -23255,6 +23255,63 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPBasicAuthConfigReq" : {
+        "properties" : {
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "enabled", "id" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPBasicAuthConfigResp" : {
+        "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
+          "createdAt" : {
+            "type" : "string"
+          },
+          "default" : {
+            "type" : "boolean"
+          },
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "expireAt" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "inherited" : {
+            "type" : "boolean"
+          },
+          "kind" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingType"
+          },
+          "updateVer" : {
+            "type" : "integer"
+          },
+          "updatedAt" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "createdAt", "enabled", "id", "name", "status", "type", "updateVer", "updatedAt" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPClientConfigReq" : {
         "properties" : {
           "allowedIPs" : {
@@ -23353,6 +23410,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPHeaderConfigReq" : {
         "properties" : {
+          "enabled" : {
+            "type" : "boolean"
+          },
           "toAddToRequests" : {
             "additionalProperties" : {
               "type" : "string"
@@ -23378,11 +23438,14 @@
             "type" : "array"
           }
         },
-        "required" : [ "toAddToRequests", "toAddToResponses", "toRemoveFromRequests", "toRemoveFromResponses" ],
+        "required" : [ "enabled", "toAddToRequests", "toAddToResponses", "toRemoveFromRequests", "toRemoveFromResponses" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPHeaderConfigResp" : {
         "properties" : {
+          "enabled" : {
+            "type" : "boolean"
+          },
           "toAddToRequests" : {
             "additionalProperties" : {
               "type" : "string"
@@ -23408,7 +23471,7 @@
             "type" : "array"
           }
         },
-        "required" : [ "toAddToRequests", "toAddToResponses", "toRemoveFromRequests", "toRemoveFromResponses" ],
+        "required" : [ "enabled", "toAddToRequests", "toAddToResponses", "toRemoveFromRequests", "toRemoveFromResponses" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPLBConfigReq" : {
@@ -23432,13 +23495,16 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPPathConfigReq" : {
         "properties" : {
           "basicAuth" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPBasicAuthConfigReq"
           },
           "clientConfig" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPClientConfigReq"
           },
           "compressionConfig" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPCompressionConfigReq"
+          },
+          "enabled" : {
+            "type" : "boolean"
           },
           "mode" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.HTTPPathMode"
@@ -23450,19 +23516,25 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPRateLimitConfigReq"
           }
         },
-        "required" : [ "basicAuth", "clientConfig", "compressionConfig", "mode", "path", "rateLimitConfig" ],
+        "required" : [ "basicAuth", "clientConfig", "compressionConfig", "enabled", "mode", "path", "rateLimitConfig" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPPathConfigResp" : {
         "properties" : {
           "basicAuth" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPBasicAuthConfigResp"
           },
           "clientConfig" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPClientConfigResp"
           },
           "compressionConfig" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPCompressionConfigResp"
+          },
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "headerConfig" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPHeaderConfigResp"
           },
           "mode" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.HTTPPathMode"
@@ -23474,7 +23546,7 @@
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPRateLimitConfigResp"
           }
         },
-        "required" : [ "basicAuth", "clientConfig", "compressionConfig", "mode", "path", "rateLimitConfig" ],
+        "required" : [ "enabled", "mode", "path" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.HTTPRateLimitConfigReq" : {

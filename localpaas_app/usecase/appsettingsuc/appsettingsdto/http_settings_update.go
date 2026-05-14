@@ -40,7 +40,7 @@ type DomainReq struct {
 	ContainerPort     int                       `json:"containerPort"`
 	ForceHttps        bool                      `json:"forceHttps"`
 	LBConfig          *HTTPLBConfigReq          `json:"lbConfig"`
-	BasicAuth         basedto.ObjectIDReq       `json:"basicAuth"`
+	BasicAuth         *HTTPBasicAuthConfigReq   `json:"basicAuth"`
 	ClientConfig      *HTTPClientConfigReq      `json:"clientConfig"`
 	HeaderConfig      *HTTPHeaderConfigReq      `json:"headerConfig"`
 	CompressionConfig *HTTPCompressionConfigReq `json:"compressionConfig"`
@@ -57,7 +57,7 @@ func (req *DomainReq) ToEntity() *entity.AppDomain {
 		ContainerPort:     req.ContainerPort,
 		ForceHttps:        req.ForceHttps,
 		LBConfig:          req.LBConfig.ToEntity(),
-		BasicAuth:         entity.ObjectID{ID: req.BasicAuth.ID},
+		BasicAuth:         req.BasicAuth.ToEntity(),
 		ClientConfig:      req.ClientConfig.ToEntity(),
 		HeaderConfig:      req.HeaderConfig.ToEntity(),
 		CompressionConfig: req.CompressionConfig.ToEntity(),
@@ -99,6 +99,21 @@ func (r *HTTPLBConfigReq) ToEntity() *entity.HTTPLBConfig {
 	}
 }
 
+type HTTPBasicAuthConfigReq struct {
+	Enabled bool   `json:"enabled"`
+	ID      string `json:"id"`
+}
+
+func (r *HTTPBasicAuthConfigReq) ToEntity() *entity.HTTPBasicAuthConfig {
+	if r == nil {
+		return nil
+	}
+	return &entity.HTTPBasicAuthConfig{
+		Enabled: r.Enabled,
+		ID:      r.ID,
+	}
+}
+
 type HTTPClientConfigReq struct {
 	Enabled        bool          `json:"enabled"`
 	MaxRequestBody unit.DataSize `json:"maxRequestBody"`
@@ -119,6 +134,7 @@ func (r *HTTPClientConfigReq) ToEntity() *entity.HTTPClientConfig {
 }
 
 type HTTPHeaderConfigReq struct {
+	Enabled               bool              `json:"enabled"`
 	ToAddToRequests       map[string]string `json:"toAddToRequests"`
 	ToRemoveFromRequests  []string          `json:"toRemoveFromRequests"`
 	ToAddToResponses      map[string]string `json:"toAddToResponses"`
@@ -130,6 +146,7 @@ func (r *HTTPHeaderConfigReq) ToEntity() *entity.HTTPHeaderConfig {
 		return nil
 	}
 	return &entity.HTTPHeaderConfig{
+		Enabled:               r.Enabled,
 		ToAddToRequests:       r.ToAddToRequests,
 		ToRemoveFromRequests:  r.ToRemoveFromRequests,
 		ToAddToResponses:      r.ToAddToResponses,
@@ -180,9 +197,10 @@ func (r *HTTPRateLimitConfigReq) ToEntity() *entity.HTTPRateLimitConfig {
 }
 
 type HTTPPathConfigReq struct {
+	Enabled           bool                      `json:"enabled"`
 	Path              string                    `json:"path"`
 	Mode              base.HTTPPathMode         `json:"mode"`
-	BasicAuth         basedto.ObjectIDReq       `json:"basicAuth"`
+	BasicAuth         *HTTPBasicAuthConfigReq   `json:"basicAuth"`
 	ClientConfig      *HTTPClientConfigReq      `json:"clientConfig"`
 	RateLimitConfig   *HTTPRateLimitConfigReq   `json:"rateLimitConfig"`
 	CompressionConfig *HTTPCompressionConfigReq `json:"compressionConfig"`
@@ -193,9 +211,10 @@ func (r *HTTPPathConfigReq) ToEntity() *entity.HTTPPathConfig {
 		return nil
 	}
 	return &entity.HTTPPathConfig{
+		Enabled:           r.Enabled,
 		Path:              r.Path,
 		Mode:              r.Mode,
-		BasicAuth:         entity.ObjectID{ID: r.BasicAuth.ID},
+		BasicAuth:         r.BasicAuth.ToEntity(),
 		ClientConfig:      r.ClientConfig.ToEntity(),
 		RateLimitConfig:   r.RateLimitConfig.ToEntity(),
 		CompressionConfig: r.CompressionConfig.ToEntity(),
