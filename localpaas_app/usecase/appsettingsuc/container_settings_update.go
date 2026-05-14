@@ -13,11 +13,11 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/dockerhelper"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/shellutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appsettingsuc/appsettingsdto"
-	"github.com/localpaas/localpaas/services/docker"
 )
 
 func (uc *UC) UpdateAppContainerSettings(
@@ -93,17 +93,11 @@ func (uc *UC) prepareUpdatingAppContainerSettings(
 	req *appsettingsdto.UpdateAppContainerSettingsReq,
 	data *updateAppContainerSettingsData,
 ) {
-	uc.prepareUpdatingAppContainerSpec(req, data)
-}
-
-func (uc *UC) prepareUpdatingAppContainerSpec(
-	req *appsettingsdto.UpdateAppContainerSettingsReq,
-	data *updateAppContainerSettingsData,
-) {
 	service := data.Service
-	containerSpec := service.Spec.TaskTemplate.ContainerSpec
+	service.Spec.Labels = dockerhelper.ApplyUserLabels(service.Spec.Labels, req.ServiceLabels)
 
-	containerSpec.Labels = docker.ApplyUserLabels(containerSpec.Labels, req.Labels)
+	containerSpec := service.Spec.TaskTemplate.ContainerSpec
+	containerSpec.Labels = dockerhelper.ApplyUserLabels(containerSpec.Labels, req.ContainerLabels)
 	containerSpec.Image = req.Image
 	containerSpec.Command = gofn.If(req.Command == "", nil, gofn.Must(shellutil.CmdSplit(req.Command)))
 	containerSpec.Dir = req.WorkingDir

@@ -30,17 +30,6 @@ func (req *UpdateNodeReq) Validate() apperrors.ValidationErrors {
 	validators = append(validators, basedto.ValidateStrIn(&req.Role, false, docker.AllNodeRoles, "role")...)
 	validators = append(validators, basedto.ValidateStrIn(&req.Availability, false, docker.AllNodeAvailabilities,
 		"availability")...)
-
-	// Validate node labels
-	unallowedLabels := docker.ValidateUserLabels(req.Labels, true)
-	if len(unallowedLabels) > 0 {
-		validators = append(validators, vld.Must(false).OnError(
-			vld.SetField("labels", nil),
-			vld.SetCustomKey("ERR_VLD_DOCKER_LABEL_UNALLOWED"),
-			vld.SetParam("Label", unallowedLabels[0]),
-		))
-	}
-
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 

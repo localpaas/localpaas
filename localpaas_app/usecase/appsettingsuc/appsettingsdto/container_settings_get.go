@@ -37,13 +37,13 @@ type GetAppContainerSettingsResp struct {
 }
 
 type ContainerSettingsResp struct {
-	*ContainerSpec
-
+	*BaseContainerSettings
 	UpdateVer int `json:"updateVer"`
 }
 
-type ContainerSpec struct {
-	Labels          map[string]string  `json:"labels"`
+type BaseContainerSettings struct {
+	ServiceLabels   map[string]string  `json:"serviceLabels"`
+	ContainerLabels map[string]string  `json:"containerLabels"`
 	Image           string             `json:"image"`
 	Command         string             `json:"command"`
 	WorkingDir      string             `json:"workingDir"`
@@ -58,8 +58,6 @@ type ContainerSpec struct {
 	Privileges      *Privileges        `json:"privileges"`
 	Healthcheck     *Healthcheck       `json:"healthcheck"`
 	RestartPolicy   *RestartPolicy     `json:"restartPolicy"`
-
-	UpdateVer int `json:"updateVer"`
 }
 
 type RestartPolicy struct {
@@ -125,31 +123,32 @@ func TransformContainerSettings(
 		UpdateVer: int(service.Version.Index), //nolint:gosec
 	}
 
-	resp.ContainerSpec = TransformContainerSpec(&spec.TaskTemplate)
+	resp.BaseContainerSettings = TransformContainerSettingsBase(spec)
 
 	return resp, nil
 }
 
-func TransformContainerSpec(taskSpec *swarm.TaskSpec) *ContainerSpec {
-	containerSpec := taskSpec.ContainerSpec
+func TransformContainerSettingsBase(spec *swarm.ServiceSpec) *BaseContainerSettings {
+	containerSpec := spec.TaskTemplate.ContainerSpec
 	if containerSpec == nil {
 		return nil
 	}
-	res := &ContainerSpec{
-		Labels:        docker.FilterOutSystemLabels(containerSpec.Labels),
-		Image:         containerSpec.Image,
-		Command:       strings.Join(gofn.Concat(containerSpec.Command, containerSpec.Args), " "),
-		WorkingDir:    containerSpec.Dir,
-		Hostname:      containerSpec.Hostname,
-		User:          containerSpec.User,
-		Groups:        containerSpec.Groups,
-		StopSignal:    containerSpec.StopSignal,
-		TTY:           containerSpec.TTY,
-		OpenStdin:     containerSpec.OpenStdin,
-		ReadOnly:      containerSpec.ReadOnly,
-		Privileges:    TransformContainerPrivileges(containerSpec.Privileges),
-		Healthcheck:   TransformContainerHealthcheck(containerSpec.Healthcheck),
-		RestartPolicy: TransformContainerRestartPolicy(taskSpec.RestartPolicy),
+	res := &BaseContainerSettings{
+		ServiceLabels:   spec.Labels,
+		ContainerLabels: containerSpec.Labels,
+		Image:           containerSpec.Image,
+		Command:         strings.Join(gofn.Concat(containerSpec.Command, containerSpec.Args), " "),
+		WorkingDir:      containerSpec.Dir,
+		Hostname:        containerSpec.Hostname,
+		User:            containerSpec.User,
+		Groups:          containerSpec.Groups,
+		StopSignal:      containerSpec.StopSignal,
+		TTY:             containerSpec.TTY,
+		OpenStdin:       containerSpec.OpenStdin,
+		ReadOnly:        containerSpec.ReadOnly,
+		Privileges:      TransformContainerPrivileges(containerSpec.Privileges),
+		Healthcheck:     TransformContainerHealthcheck(containerSpec.Healthcheck),
+		RestartPolicy:   TransformContainerRestartPolicy(spec.TaskTemplate.RestartPolicy),
 	}
 	if containerSpec.StopGracePeriod != nil {
 		res.StopGracePeriod = new(timeutil.Duration(*containerSpec.StopGracePeriod))

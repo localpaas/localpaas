@@ -10,6 +10,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/dockerhelper"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/unit"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/volumeuc/volumedto"
 	"github.com/localpaas/localpaas/services/docker"
@@ -66,26 +67,24 @@ func (uc *UC) CreateVolume(
 	// Overwrite the driver opts with the extra values from the client
 	maps.Copy(driverOpts, req.Options)
 
-	// Setup default labels
-	if req.Labels == nil {
-		req.Labels = map[string]string{}
-	}
-	req.Labels[localpaasVolumeLabel] = ""
+	// Setup labels
+	labels := dockerhelper.ApplyUserLabels(map[string]string{}, req.Labels)
+	labels[localpaasVolumeLabel] = ""
 
 	if req.ProjectID != "" {
 		project, err := uc.projectService.LoadProject(ctx, uc.db, req.ProjectID, true)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}
-		req.Labels[docker.StackLabelNamespace] = project.Key
+		labels[docker.StackLabelNamespace] = project.Key
 	} else if !req.AvailInProjects {
-		req.Labels[docker.StackLabelNamespace] = namespaceGlobal
+		labels[docker.StackLabelNamespace] = namespaceGlobal
 	}
 
 	createResp, err := uc.dockerManager.VolumeCreate(ctx, func(opts *client.VolumeCreateOptions) {
 		opts.Driver = string(req.Driver)
 		opts.DriverOpts = driverOpts
-		opts.Labels = req.Labels
+		opts.Labels = labels
 		opts.Name = req.Name
 	})
 	if err != nil {

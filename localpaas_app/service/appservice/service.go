@@ -29,10 +29,12 @@ type Service interface {
 	ServiceUpdate(ctx context.Context, serviceID string, version *swarm.Version, service *swarm.ServiceSpec,
 		options ...docker.ServiceUpdateOption) (*client.ServiceUpdateResult, error)
 
+	// Docker secrets
 	CreateSwarmSecret(ctx context.Context, db database.IDB, app *entity.App, secret *entity.Secret) error
 	UpdateSwarmSecret(ctx context.Context, db database.IDB, app *entity.App, oldSecret, newSecret *entity.Secret) error
 	DeleteSwarmSecret(ctx context.Context, db database.IDB, app *entity.App, secret *entity.Secret) error
 
+	// Docker config
 	CreateSwarmConfig(ctx context.Context, db database.IDB, app *entity.App, secret *entity.ConfigFile) error
 	UpdateSwarmConfig(ctx context.Context, db database.IDB, app *entity.App, oldSecret, newSecret *entity.ConfigFile) error
 	DeleteSwarmConfig(ctx context.Context, db database.IDB, app *entity.App, secret *entity.ConfigFile) error

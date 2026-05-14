@@ -7,6 +7,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/dockerhelper"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/nodeuc/nodedto"
 )
 
@@ -31,9 +32,7 @@ func (uc *UC) UpdateNode(
 	if req.Name != "" {
 		spec.Annotations.Name = req.Name //nolint
 	}
-	if req.Labels != nil {
-		spec.Annotations.Labels = req.Labels //nolint
-	}
+	spec.Labels = dockerhelper.ApplyUserLabels(spec.Labels, req.Labels)
 	if req.Role != "" {
 		spec.Role = swarm.NodeRole(req.Role)
 	}
