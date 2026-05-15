@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	storageSettingName        = "Storage settings"
-	storageSettingBaseSubpath = "project_data"
+	storageSettingName            = "Storage settings"
+	storageSettingSubpathTemplate = "project_data/{{project}}/{{env}}/{{app}}"
 )
 
 func (s *service) initDefaultStorageSettings(
@@ -38,20 +38,15 @@ func (s *service) initDefaultStorageSettings(
 	}
 	storage := &entity.StorageSettings{
 		BindSettings: &entity.StorageBindSettings{
-			BaseSubpath:         storageSettingBaseSubpath,
-			AppsMustUseSubPaths: true,
+			SubpathTemplate: storageSettingSubpathTemplate,
 		},
 		VolumeSettings: &entity.StorageVolumeSettings{
-			BaseSubpath:         storageSettingBaseSubpath,
-			AppsMustUseSubPaths: true,
+			SubpathTemplate: storageSettingSubpathTemplate,
 		},
 		ClusterVolumeSettings: &entity.StorageClusterVolumeSettings{
-			BaseSubpath:         storageSettingBaseSubpath,
-			AppsMustUseSubPaths: true,
+			SubpathTemplate: storageSettingSubpathTemplate,
 		},
-		TmpfsSettings: &entity.StorageTmpfsSettings{
-			Enabled: true,
-		},
+		TmpfsSettings: &entity.StorageTmpfsSettings{},
 	}
 
 	storageCfg := &config.Current.Storage

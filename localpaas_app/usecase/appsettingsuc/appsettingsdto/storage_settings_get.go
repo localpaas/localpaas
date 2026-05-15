@@ -5,6 +5,7 @@ import (
 
 	"github.com/moby/moby/api/types/mount"
 	"github.com/moby/moby/api/types/swarm"
+	"github.com/moby/moby/api/types/volume"
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -14,11 +15,13 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/fileutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/strutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/unit"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/storagesettingsuc/storagesettingsdto"
 )
 
 type GetAppStorageSettingsReq struct {
 	ProjectID string `json:"-"`
 	AppID     string `json:"-"`
+	GetMounts bool   `json:"-" mapstructure:"getMounts"`
 }
 
 func NewGetAppStorageSettingsReq() *GetAppStorageSettingsReq {
@@ -38,7 +41,8 @@ type GetAppStorageSettingsResp struct {
 }
 
 type StorageSettingsResp struct {
-	Mounts []*Mount `json:"mounts"`
+	Settings *storagesettingsdto.StorageSettingsResp `json:"settings"`
+	Mounts   []*Mount                                `json:"mounts,omitempty"`
 
 	UpdateVer int `json:"updateVer"`
 }
@@ -91,17 +95,34 @@ type ClusterOptions struct {
 	VolumeOptions
 }
 
+type StorageSettingsTransformInput struct {
+	App             *entity.App
+	Project         *entity.Project
+	Setting         *entity.Setting
+	Service         *swarm.Service
+	ReturningMounts []*mount.Mount
+	Volumes         []*volume.Volume
+}
+
 func TransformStorageSettings(
-	app *entity.App,
-	storageSettings *entity.StorageSettings,
-	service *swarm.Service,
+	input *StorageSettingsTransformInput,
 ) (resp *StorageSettingsResp, err error) {
-	spec := &service.Spec
 	resp = &StorageSettingsResp{
-		UpdateVer: int(service.Version.Index), //nolint:gosec
+		UpdateVer: int(input.Service.Version.Index), //nolint:gosec
 	}
 
-	resp.Mounts, err = TransformStorageMounts(app, storageSettings, spec.TaskTemplate.ContainerSpec.Mounts)
+	resp.Settings, err = storagesettingsdto.TransformStorageSettings(
+		&storagesettingsdto.StorageSettingsTransformInput{
+			Project: input.Project,
+			App:     input.App,
+			Setting: input.Setting,
+			Volumes: input.Volumes,
+		})
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	resp.Mounts, err = TransformStorageMounts(input, resp.Settings)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -109,9 +130,23 @@ func TransformStorageSettings(
 	return resp, nil
 }
 
+func TransformStorageMounts(
+	input *StorageSettingsTransformInput,
+	storageSettings *storagesettingsdto.StorageSettingsResp,
+) ([]*Mount, error) {
+	resp := make([]*Mount, 0, len(input.ReturningMounts))
+	for _, mnt := range input.ReturningMounts {
+		itemResp, err := TransformStorageMount(storageSettings, mnt)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		resp = append(resp, itemResp)
+	}
+	return resp, nil
+}
+
 func TransformStorageMount(
-	app *entity.App,
-	storageSettings *entity.StorageSettings,
+	storageSettings *storagesettingsdto.StorageSettingsResp,
 	mnt *mount.Mount,
 ) (resp *Mount, err error) {
 	if err = copier.Copy(&resp, mnt); err != nil {
@@ -124,12 +159,7 @@ func TransformStorageMount(
 			resp.BindOptions = &BindOptions{}
 		}
 		mntResp := resp.BindOptions
-		mntSettings := storageSettings.BindSettings
-		if mntSettings == nil {
-			mntSettings = &entity.StorageBindSettings{}
-		}
-
-		mntResp.SubpathRequired = mntSettings.CaclRequiredSubpath(app)
+		mntResp.SubpathRequired = storageSettings.BindSettings.SubpathRequired
 		baseDir, _, found := strutil.Cut(mnt.Source, mntResp.SubpathRequired)
 		if found {
 			mntResp.BaseDir = baseDir
@@ -144,13 +174,8 @@ func TransformStorageMount(
 			resp.VolumeOptions = &VolumeOptions{}
 		}
 		mntResp := resp.VolumeOptions
-		mntSettings := storageSettings.VolumeSettings
-		if mntSettings == nil {
-			mntSettings = &entity.StorageVolumeSettings{}
-		}
-
 		mntResp.Volume = mnt.Source
-		mntResp.SubpathRequired = mntSettings.CaclRequiredSubpath(app)
+		mntResp.SubpathRequired = storageSettings.VolumeSettings.SubpathRequired
 		if mnt.VolumeOptions != nil {
 			mntResp.Subpath = mnt.VolumeOptions.Subpath
 		}
@@ -160,33 +185,12 @@ func TransformStorageMount(
 			resp.ClusterOptions = &ClusterOptions{}
 		}
 		mntResp := resp.ClusterOptions
-		mntSettings := storageSettings.ClusterVolumeSettings
-		if mntSettings == nil {
-			mntSettings = &entity.StorageClusterVolumeSettings{}
-		}
-
 		mntResp.Volume = mnt.Source
-		mntResp.SubpathRequired = mntSettings.CaclRequiredSubpath(app)
+		mntResp.SubpathRequired = storageSettings.ClusterVolumeSettings.SubpathRequired
 		if mnt.VolumeOptions != nil {
 			mntResp.Subpath = mnt.VolumeOptions.Subpath
 		}
 	}
 
-	return resp, nil
-}
-
-func TransformStorageMounts(
-	app *entity.App,
-	storageSettings *entity.StorageSettings,
-	mounts []mount.Mount,
-) ([]*Mount, error) {
-	resp := make([]*Mount, 0, len(mounts))
-	for _, mnt := range mounts {
-		itemResp, err := TransformStorageMount(app, storageSettings, &mnt)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-		resp = append(resp, itemResp)
-	}
 	return resp, nil
 }

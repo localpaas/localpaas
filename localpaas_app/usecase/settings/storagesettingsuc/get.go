@@ -2,9 +2,6 @@ package storagesettingsuc
 
 import (
 	"context"
-	"errors"
-
-	"github.com/moby/moby/api/types/volume"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -23,31 +20,25 @@ func (uc *UC) GetStorageSettings(
 		return nil, apperrors.Wrap(err)
 	}
 
+	input := &storagesettingsdto.StorageSettingsTransformInput{
+		Setting: resp.Data,
+	}
+
 	storageSetting := resp.Data.MustAsStorageSettings()
-	// Load ref cluster volumes as their IDs are different from their names
-	var volumes []*volume.Volume
-	//nolint:nestif
+
+	// Load reference cluster volumes as their IDs are different from their names
 	if storageSetting.ClusterVolumeSettings != nil && len(storageSetting.ClusterVolumeSettings.Volumes) > 0 {
-		if len(storageSetting.ClusterVolumeSettings.Volumes) == 1 {
-			inspect, err := uc.dockerManager.VolumeInspect(ctx, storageSetting.ClusterVolumeSettings.Volumes[0].ID)
-			if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-				return nil, apperrors.Wrap(err)
-			}
-			if inspect != nil {
-				volumes = append(volumes, &inspect.Volume)
-			}
-		} else {
-			volResp, err := uc.dockerManager.VolumeList(ctx)
-			if err != nil {
-				return nil, apperrors.Wrap(err)
-			}
-			for i := range volResp.Items {
-				volumes = append(volumes, &volResp.Items[i])
-			}
+		volResp, err := uc.dockerManager.VolumeListByIDs(ctx,
+			storageSetting.ClusterVolumeSettings.Volumes.ToIDStringSlice())
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		for i := range volResp.Items {
+			input.Volumes = append(input.Volumes, &volResp.Items[i])
 		}
 	}
 
-	respData, err := storagesettingsdto.TransformStorageSettings(resp.Data, volumes)
+	respData, err := storagesettingsdto.TransformStorageSettings(input)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

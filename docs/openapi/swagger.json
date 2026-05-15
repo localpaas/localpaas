@@ -24249,11 +24249,14 @@
             },
             "type" : "array"
           },
+          "storageSettings" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_storagesettingsuc_storagesettingsdto.StorageSettingsResp"
+          },
           "updateVer" : {
             "type" : "integer"
           }
         },
-        "required" : [ "mounts", "updateVer" ],
+        "required" : [ "storageSettings", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.TmpfsOptions" : {
@@ -31608,56 +31611,51 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_storagesettingsuc_storagesettingsdto.StorageBindSettingsReq" : {
         "properties" : {
-          "appsMustUseSubPaths" : {
-            "type" : "boolean"
-          },
           "baseDirs" : {
             "items" : {
               "type" : "string"
             },
             "type" : "array"
           },
-          "baseSubpath" : {
-            "type" : "string"
-          },
           "enabled" : {
             "type" : "boolean"
+          },
+          "subpathTemplate" : {
+            "type" : "string"
           }
         },
-        "required" : [ "appsMustUseSubPaths", "baseDirs", "baseSubpath", "enabled" ],
+        "required" : [ "baseDirs", "enabled", "subpathTemplate" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_storagesettingsuc_storagesettingsdto.StorageBindSettingsResp" : {
         "properties" : {
-          "appsMustUseSubPaths" : {
-            "type" : "boolean"
-          },
           "baseDirs" : {
             "items" : {
               "type" : "string"
             },
             "type" : "array"
           },
-          "baseSubpath" : {
-            "type" : "string"
-          },
           "enabled" : {
             "type" : "boolean"
+          },
+          "subpathRequired" : {
+            "description" : "computed field",
+            "type" : "string"
+          },
+          "subpathTemplate" : {
+            "type" : "string"
           }
         },
-        "required" : [ "appsMustUseSubPaths", "baseDirs", "baseSubpath" ],
+        "required" : [ "baseDirs", "subpathTemplate" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_storagesettingsuc_storagesettingsdto.StorageClusterVolumeSettingsReq" : {
         "properties" : {
-          "appsMustUseSubPaths" : {
-            "type" : "boolean"
-          },
-          "baseSubpath" : {
-            "type" : "string"
-          },
           "enabled" : {
             "type" : "boolean"
+          },
+          "subpathTemplate" : {
+            "type" : "string"
           },
           "volumes" : {
             "items" : {
@@ -31666,19 +31664,20 @@
             "type" : "array"
           }
         },
-        "required" : [ "appsMustUseSubPaths", "baseSubpath", "enabled", "volumes" ],
+        "required" : [ "enabled", "subpathTemplate", "volumes" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_storagesettingsuc_storagesettingsdto.StorageClusterVolumeSettingsResp" : {
         "properties" : {
-          "appsMustUseSubPaths" : {
-            "type" : "boolean"
-          },
-          "baseSubpath" : {
-            "type" : "string"
-          },
           "enabled" : {
             "type" : "boolean"
+          },
+          "subpathRequired" : {
+            "description" : "computed field",
+            "type" : "string"
+          },
+          "subpathTemplate" : {
+            "type" : "string"
           },
           "volumes" : {
             "items" : {
@@ -31687,7 +31686,7 @@
             "type" : "array"
           }
         },
-        "required" : [ "appsMustUseSubPaths", "baseSubpath", "volumes" ],
+        "required" : [ "subpathTemplate", "volumes" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_storagesettingsuc_storagesettingsdto.StorageSettingsResp" : {
@@ -31770,14 +31769,11 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_storagesettingsuc_storagesettingsdto.StorageVolumeSettingsReq" : {
         "properties" : {
-          "appsMustUseSubPaths" : {
-            "type" : "boolean"
-          },
-          "baseSubpath" : {
-            "type" : "string"
-          },
           "enabled" : {
             "type" : "boolean"
+          },
+          "subpathTemplate" : {
+            "type" : "string"
           },
           "volumes" : {
             "items" : {
@@ -31786,19 +31782,20 @@
             "type" : "array"
           }
         },
-        "required" : [ "appsMustUseSubPaths", "baseSubpath", "enabled", "volumes" ],
+        "required" : [ "enabled", "subpathTemplate", "volumes" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_storagesettingsuc_storagesettingsdto.StorageVolumeSettingsResp" : {
         "properties" : {
-          "appsMustUseSubPaths" : {
-            "type" : "boolean"
-          },
-          "baseSubpath" : {
-            "type" : "string"
-          },
           "enabled" : {
             "type" : "boolean"
+          },
+          "subpathRequired" : {
+            "description" : "computed field",
+            "type" : "string"
+          },
+          "subpathTemplate" : {
+            "type" : "string"
           },
           "volumes" : {
             "items" : {
@@ -31807,7 +31804,7 @@
             "type" : "array"
           }
         },
-        "required" : [ "appsMustUseSubPaths", "baseSubpath", "volumes" ],
+        "required" : [ "subpathTemplate", "volumes" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_storagesettingsuc_storagesettingsdto.UpdateStorageSettingsReq" : {

@@ -2,10 +2,12 @@ package docker
 
 import (
 	"context"
+	"errors"
 
 	"github.com/moby/moby/api/types/swarm"
 	"github.com/moby/moby/api/types/volume"
 	"github.com/moby/moby/client"
+	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
@@ -53,6 +55,46 @@ func (m *manager) VolumeList(
 		return nil, apperrors.NewInfra(err)
 	}
 	return &resp, nil
+}
+
+func (m *manager) VolumeListByIDs(
+	ctx context.Context,
+	volumes []string,
+	options ...VolumeListOption,
+) (*client.VolumeListResult, error) {
+	resp := &client.VolumeListResult{}
+	if len(volumes) == 0 {
+		return resp, nil
+	}
+
+	if len(volumes) == 1 {
+		inspect, err := m.VolumeInspect(ctx, volumes[0])
+		if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
+			return nil, apperrors.Wrap(err)
+		}
+		if inspect != nil {
+			resp.Items = append(resp.Items, inspect.Volume)
+		}
+		return resp, nil
+	}
+
+	volResp, err := m.VolumeList(ctx, options...)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	for i := range volResp.Items {
+		vol := &volResp.Items[i]
+		if gofn.Contain(volumes, vol.Name) {
+			resp.Items = append(resp.Items, *vol)
+			continue
+		}
+		if vol.ClusterVolume != nil && gofn.Contain(volumes, vol.ClusterVolume.ID) {
+			resp.Items = append(resp.Items, *vol)
+			continue
+		}
+	}
+
+	return resp, nil
 }
 
 type VolumeCreateOption func(options *client.VolumeCreateOptions)

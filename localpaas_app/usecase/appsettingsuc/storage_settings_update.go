@@ -14,6 +14,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/apphelper"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/fileutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
@@ -66,6 +67,7 @@ func (uc *UC) UpdateAppStorageSettings(
 
 type updateAppStorageSettingsData struct {
 	App               *entity.App
+	Project           *entity.Project
 	Service           *swarm.Service
 	ExistingMountKeys map[string]struct{}
 	StorageSettings   *entity.StorageSettings
@@ -88,6 +90,7 @@ func (uc *UC) loadAppStorageSettingsForUpdate(
 		return apperrors.Wrap(err)
 	}
 	data.App = app
+	data.Project = app.Project
 
 	service, err := uc.appService.ServiceInspect(ctx, app.ServiceID, false)
 	if err != nil {
@@ -120,11 +123,11 @@ func (uc *UC) loadAppStorageSettingsForUpdate(
 		}
 		switch reqMnt.Type { //nolint:exhaustive
 		case mount.TypeBind:
-			err = uc.validateStorageSettingsBindMount(app, reqMnt, data)
+			err = uc.validateStorageSettingsBindMount(reqMnt, data)
 		case mount.TypeVolume:
-			err = uc.validateStorageSettingsVolumeMount(app, reqMnt, data)
+			err = uc.validateStorageSettingsVolumeMount(reqMnt, data)
 		case mount.TypeCluster:
-			err = uc.validateStorageSettingsClusterVolumeMount(app, reqMnt, data)
+			err = uc.validateStorageSettingsClusterVolumeMount(reqMnt, data)
 		case mount.TypeTmpfs:
 			err = uc.validateStorageSettingsTmpfsMount(reqMnt, data)
 		}
@@ -212,7 +215,6 @@ func (uc *UC) calcRequestingMountKey(mnt *appsettingsdto.Mount) string {
 }
 
 func (uc *UC) validateStorageSettingsBindMount(
-	app *entity.App,
 	mnt *appsettingsdto.Mount,
 	data *updateAppStorageSettingsData,
 ) error {
@@ -234,7 +236,7 @@ func (uc *UC) validateStorageSettingsBindMount(
 		}
 	}
 
-	subpathRequired := bindSettings.CaclRequiredSubpath(app)
+	subpathRequired := apphelper.CalcMountSubpath(data.Project, data.App, bindSettings.SubpathTemplate)
 	if subpathRequired != "" {
 		isSubpath, _ := fileutil.IsEqualOrSubpath(subpathRequired, mnt.BindOptions.Subpath)
 		if !isSubpath {
@@ -247,7 +249,6 @@ func (uc *UC) validateStorageSettingsBindMount(
 }
 
 func (uc *UC) validateStorageSettingsVolumeMount(
-	app *entity.App,
 	mnt *appsettingsdto.Mount,
 	data *updateAppStorageSettingsData,
 ) error {
@@ -267,7 +268,7 @@ func (uc *UC) validateStorageSettingsVolumeMount(
 			WithParam("Name", fmt.Sprintf("Use of volume '%v'", mnt.VolumeOptions.Volume))
 	}
 
-	subpathRequired := volumeSettings.CaclRequiredSubpath(app)
+	subpathRequired := apphelper.CalcMountSubpath(data.Project, data.App, volumeSettings.SubpathTemplate)
 	if subpathRequired != "" {
 		isSubpath, _ := fileutil.IsEqualOrSubpath(subpathRequired, mnt.VolumeOptions.Subpath)
 		if !isSubpath {
@@ -280,7 +281,6 @@ func (uc *UC) validateStorageSettingsVolumeMount(
 }
 
 func (uc *UC) validateStorageSettingsClusterVolumeMount(
-	app *entity.App,
 	mnt *appsettingsdto.Mount,
 	data *updateAppStorageSettingsData,
 ) error {
@@ -300,7 +300,7 @@ func (uc *UC) validateStorageSettingsClusterVolumeMount(
 			WithParam("Name", fmt.Sprintf("Use of volume '%v'", mnt.ClusterOptions.Volume))
 	}
 
-	subpathRequired := volumeSettings.CaclRequiredSubpath(app)
+	subpathRequired := apphelper.CalcMountSubpath(data.Project, data.App, volumeSettings.SubpathTemplate)
 	if subpathRequired != "" {
 		isSubpath, _ := fileutil.IsEqualOrSubpath(subpathRequired, mnt.ClusterOptions.Subpath)
 		if !isSubpath {

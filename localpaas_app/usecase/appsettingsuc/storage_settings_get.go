@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 
-	"github.com/moby/moby/api/types/mount"
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -30,9 +29,22 @@ func (uc *UC) GetAppStorageSettings(
 		return nil, apperrors.Wrap(err)
 	}
 
+	input := &appsettingsdto.StorageSettingsTransformInput{
+		App:     app,
+		Project: app.Project,
+	}
+
 	service, err := uc.appService.ServiceInspect(ctx, app.ServiceID, true)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
+	}
+	input.Service = service
+
+	// Filter out unsupported mount types
+	for _, mnt := range service.Spec.TaskTemplate.ContainerSpec.Mounts {
+		if gofn.Contain(supportedMountTypes, mnt.Type) {
+			input.ReturningMounts = append(input.ReturningMounts, &mnt)
+		}
 	}
 
 	// Load project storage settings to make sure these app settings comply with
@@ -41,23 +53,22 @@ func (uc *UC) GetAppStorageSettings(
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
 		return nil, apperrors.Wrap(err)
 	}
-	var storageSettings *entity.StorageSettings
-	if storageSttg != nil {
-		storageSettings = storageSttg.MustAsStorageSettings()
-	} else {
-		storageSettings = &entity.StorageSettings{}
-	}
+	input.Setting = storageSttg
 
-	// Filter out unsupported mount types
-	returningMounts := make([]mount.Mount, 0, len(service.Spec.TaskTemplate.ContainerSpec.Mounts))
-	for _, mnt := range service.Spec.TaskTemplate.ContainerSpec.Mounts {
-		if gofn.Contain(supportedMountTypes, mnt.Type) {
-			returningMounts = append(returningMounts, mnt)
+	// Load reference cluster volumes as their IDs are different from their names
+	if storageSttg != nil {
+		storageSettings := storageSttg.MustAsStorageSettings()
+		volResp, err := uc.dockerManager.VolumeListByIDs(ctx,
+			storageSettings.ClusterVolumeSettings.Volumes.ToIDStringSlice())
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		for i := range volResp.Items {
+			input.Volumes = append(input.Volumes, &volResp.Items[i])
 		}
 	}
-	service.Spec.TaskTemplate.ContainerSpec.Mounts = returningMounts
 
-	resp, err := appsettingsdto.TransformStorageSettings(app, storageSettings, service)
+	resp, err := appsettingsdto.TransformStorageSettings(input)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

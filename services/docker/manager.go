@@ -159,6 +159,8 @@ type Manager interface {
 	// Volumes
 	VolumeList(ctx context.Context, options ...VolumeListOption) (
 		*client.VolumeListResult, error)
+	VolumeListByIDs(ctx context.Context, volumes []string, options ...VolumeListOption) (
+		*client.VolumeListResult, error)
 
 	VolumeCreate(ctx context.Context, options ...VolumeCreateOption) (
 		*client.VolumeCreateResult, error)

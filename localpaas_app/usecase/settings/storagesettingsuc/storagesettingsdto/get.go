@@ -8,6 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/apphelper"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/unit"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
@@ -41,24 +42,24 @@ type StorageSettingsResp struct {
 }
 
 type StorageBindSettingsResp struct {
-	Enabled             bool     `json:"enabled,omitempty"`
-	BaseDirs            []string `json:"baseDirs"`
-	BaseSubpath         string   `json:"baseSubpath"`
-	AppsMustUseSubPaths bool     `json:"appsMustUseSubPaths"`
+	Enabled         bool     `json:"enabled,omitempty"`
+	BaseDirs        []string `json:"baseDirs"`
+	SubpathTemplate string   `json:"subpathTemplate"`
+	SubpathRequired string   `json:"subpathRequired,omitempty"` // computed field
 }
 
 type StorageVolumeSettingsResp struct {
-	Enabled             bool                         `json:"enabled,omitempty"`
-	Volumes             basedto.NamedObjectSliceResp `json:"volumes"`
-	BaseSubpath         string                       `json:"baseSubpath"`
-	AppsMustUseSubPaths bool                         `json:"appsMustUseSubPaths"`
+	Enabled         bool                         `json:"enabled,omitempty"`
+	Volumes         basedto.NamedObjectSliceResp `json:"volumes"`
+	SubpathTemplate string                       `json:"subpathTemplate"`
+	SubpathRequired string                       `json:"subpathRequired,omitempty"` // computed field
 }
 
 type StorageClusterVolumeSettingsResp struct {
-	Enabled             bool                         `json:"enabled,omitempty"`
-	Volumes             basedto.NamedObjectSliceResp `json:"volumes"`
-	BaseSubpath         string                       `json:"baseSubpath"`
-	AppsMustUseSubPaths bool                         `json:"appsMustUseSubPaths"`
+	Enabled         bool                         `json:"enabled,omitempty"`
+	Volumes         basedto.NamedObjectSliceResp `json:"volumes"`
+	SubpathTemplate string                       `json:"subpathTemplate"`
+	SubpathRequired string                       `json:"subpathRequired,omitempty"` // computed field
 }
 
 type StorageTmpfsSettingsResp struct {
@@ -66,26 +67,46 @@ type StorageTmpfsSettingsResp struct {
 	MaxSize unit.DataSize `json:"maxSize"`
 }
 
+type StorageSettingsTransformInput struct {
+	Project *entity.Project
+	App     *entity.App
+	Setting *entity.Setting
+	Volumes []*volume.Volume
+}
+
 func TransformStorageSettings(
-	setting *entity.Setting,
-	volumes []*volume.Volume,
+	input *StorageSettingsTransformInput,
 ) (resp *StorageSettingsResp, err error) {
-	config := setting.MustAsStorageSettings()
+	config := input.Setting.MustAsStorageSettings()
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	// Docker named volume, the name is the same as the id
-	if resp.VolumeSettings != nil {
-		for _, vol := range resp.VolumeSettings.Volumes {
-			vol.Name = vol.ID
+	if resp.BindSettings != nil {
+		// Compute subpath required for scope app
+		if input.Project != nil && input.App != nil {
+			resp.BindSettings.SubpathRequired = apphelper.CalcMountSubpath(input.Project, input.App,
+				resp.BindSettings.SubpathTemplate)
 		}
 	}
 
-	// Docker cluster volumes have both IDs and names
+	if resp.VolumeSettings != nil {
+		// Docker named volume, the name is the same as the id
+		for _, vol := range resp.VolumeSettings.Volumes {
+			vol.Name = vol.ID
+		}
+
+		// Compute subpath required for scope app
+		if input.Project != nil && input.App != nil {
+			resp.VolumeSettings.SubpathRequired = apphelper.CalcMountSubpath(input.Project, input.App,
+				resp.VolumeSettings.SubpathTemplate)
+		}
+	}
+
 	if resp.ClusterVolumeSettings != nil {
+		// Docker cluster volumes have both IDs and names
 		for _, vol := range resp.ClusterVolumeSettings.Volumes {
-			v, _ := gofn.Find(volumes, func(v *volume.Volume) bool {
+			v, _ := gofn.Find(input.Volumes, func(v *volume.Volume) bool {
 				return v.ClusterVolume != nil && v.ClusterVolume.ID == vol.ID
 			})
 			if v != nil {
@@ -94,9 +115,15 @@ func TransformStorageSettings(
 				vol.Name = "<missing-volume>"
 			}
 		}
+
+		// Compute subpath required for scope app
+		if input.Project != nil && input.App != nil {
+			resp.ClusterVolumeSettings.SubpathRequired = apphelper.CalcMountSubpath(input.Project, input.App,
+				resp.ClusterVolumeSettings.SubpathTemplate)
+		}
 	}
 
-	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
+	resp.BaseSettingResp, err = settings.TransformSettingBase(input.Setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
