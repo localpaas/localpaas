@@ -8,6 +8,8 @@ import (
 	"github.com/markbates/goth/providers/github"
 	"github.com/markbates/goth/providers/gitlab"
 	"github.com/markbates/goth/providers/google"
+	"github.com/markbates/goth/providers/microsoftonline"
+	"github.com/markbates/goth/providers/openidConnect"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -46,6 +48,16 @@ func (uc *UC) InitOAuthProvider(
 
 	case base.OAuthKindGoogle:
 		provider = google.New(oauth.ClientID, clientSecret, callbackURL, oauth.Scopes...)
+
+	case base.OAuthKindMicrosoftOnline:
+		provider = microsoftonline.New(oauth.ClientID, clientSecret, callbackURL, oauth.Scopes...)
+
+	case base.OAuthKindOpenIDConnect:
+		provider, err = openidConnect.New(oauth.ClientID, clientSecret, callbackURL,
+			oauth.AutoDiscoveryURL, oauth.Scopes...)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
 	provider.SetName(req.Provider)
 	goth.UseProviders(provider)

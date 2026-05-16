@@ -35,15 +35,16 @@ type GetOAuthResp struct {
 
 type OAuthResp struct {
 	*settings.BaseSettingResp
-	ClientID     string   `json:"clientId"`
-	ClientSecret string   `json:"clientSecret"`
-	Organization string   `json:"organization"`
-	CallbackURL  string   `json:"callbackURL"`
-	AuthURL      string   `json:"authURL,omitempty"`
-	TokenURL     string   `json:"tokenURL,omitempty"`
-	ProfileURL   string   `json:"profileURL,omitempty"`
-	Scopes       []string `json:"scopes,omitempty"`
-	SecretMasked bool     `json:"secretMasked,omitempty"`
+	ClientID         string   `json:"clientId"`
+	ClientSecret     string   `json:"clientSecret"`
+	Organization     string   `json:"organization"`
+	CallbackURL      string   `json:"callbackURL"`
+	AuthURL          string   `json:"authURL,omitempty"`
+	TokenURL         string   `json:"tokenURL,omitempty"`
+	ProfileURL       string   `json:"profileURL,omitempty"`
+	AutoDiscoveryURL string   `json:"autoDiscoveryURL,omitempty"`
+	Scopes           []string `json:"scopes,omitempty"`
+	SecretMasked     bool     `json:"secretMasked,omitempty"`
 }
 
 func (resp *OAuthResp) CopyClientSecret(field entity.EncryptedField) error {

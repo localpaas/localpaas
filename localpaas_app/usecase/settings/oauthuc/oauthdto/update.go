@@ -17,6 +17,10 @@ func NewUpdateOAuthReq() *UpdateOAuthReq {
 	return &UpdateOAuthReq{}
 }
 
+func (req *UpdateOAuthReq) ModifyRequest() error {
+	return req.modifyRequest()
+}
+
 // Validate implements interface basedto.ReqValidator
 func (req *UpdateOAuthReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator

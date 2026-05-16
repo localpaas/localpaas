@@ -22180,9 +22180,9 @@
   "components" : {
     "schemas" : {
       "github_com_localpaas_localpaas_localpaas_app_apperrors.DisplayLevel" : {
-        "enum" : [ "high", "medium", "low", "medium" ],
+        "enum" : [ "medium", "high", "medium", "low" ],
         "type" : "string",
-        "x-enum-varnames" : [ "DisplayLevelHigh", "DisplayLevelMedium", "DisplayLevelLow", "errVldDisplayLevel" ]
+        "x-enum-varnames" : [ "errVldDisplayLevel", "DisplayLevelHigh", "DisplayLevelMedium", "DisplayLevelLow" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo" : {
         "properties" : {
@@ -22338,9 +22338,9 @@
         "x-enum-varnames" : [ "MFATypeTOTP", "MFATypeEmail" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.OAuthKind" : {
-        "enum" : [ "github", "github-app", "gitlab", "gitea", "google" ],
+        "enum" : [ "github", "github-app", "gitlab", "gitea", "google", "microsoft-online", "openid-connect" ],
         "type" : "string",
-        "x-enum-varnames" : [ "OAuthKindGithub", "OAuthKindGithubApp", "OAuthKindGitlab", "OAuthKindGitea", "OAuthKindGoogle" ]
+        "x-enum-varnames" : [ "OAuthKindGithub", "OAuthKindGithubApp", "OAuthKindGitlab", "OAuthKindGitea", "OAuthKindGoogle", "OAuthKindMicrosoftOnline", "OAuthKindOpenIDConnect" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.ProjectStatus" : {
         "enum" : [ "active", "disabled", "deleting" ],
@@ -22831,7 +22831,7 @@
         "x-enum-varnames" : [ "ModeDir", "ModeAppend", "ModeExclusive", "ModeTemporary", "ModeSymlink", "ModeDevice", "ModeNamedPipe", "ModeSocket", "ModeSetuid", "ModeSetgid", "ModeCharDevice", "ModeSticky", "ModeIrregular", "ModeType", "ModePerm", "ModeDir", "ModeAppend", "ModeExclusive", "ModeTemporary", "ModeSymlink", "ModeDevice", "ModeNamedPipe", "ModeSocket", "ModeSetuid", "ModeSetgid", "ModeCharDevice", "ModeSticky", "ModeIrregular", "ModeType", "ModePerm" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 86400000000000, 604800000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 86400000000000, 604800000000000 ],
         "format" : "int64",
         "type" : "integer",
         "x-enum-varnames" : [ "Day", "Week" ]
@@ -30279,6 +30279,9 @@
           "authURL" : {
             "type" : "string"
           },
+          "autoDiscoveryURL" : {
+            "type" : "string"
+          },
           "availableInProjects" : {
             "type" : "boolean"
           },
@@ -30313,7 +30316,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "authURL", "availableInProjects", "clientId", "clientSecret", "default", "kind", "name", "organization", "profileURL", "scopes", "tokenURL" ],
+        "required" : [ "authURL", "autoDiscoveryURL", "availableInProjects", "clientId", "clientSecret", "default", "kind", "name", "organization", "profileURL", "scopes", "tokenURL" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.CreateOAuthResp" : {
@@ -30379,6 +30382,9 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.OAuthResp" : {
         "properties" : {
           "authURL" : {
+            "type" : "string"
+          },
+          "autoDiscoveryURL" : {
             "type" : "string"
           },
           "availableInProjects" : {
@@ -30453,6 +30459,9 @@
           "authURL" : {
             "type" : "string"
           },
+          "autoDiscoveryURL" : {
+            "type" : "string"
+          },
           "availableInProjects" : {
             "type" : "boolean"
           },
@@ -30490,7 +30499,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "authURL", "availableInProjects", "clientId", "clientSecret", "default", "kind", "name", "organization", "profileURL", "scopes", "tokenURL", "updateVer" ],
+        "required" : [ "authURL", "autoDiscoveryURL", "availableInProjects", "clientId", "clientSecret", "default", "kind", "name", "organization", "profileURL", "scopes", "tokenURL", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_oauthuc_oauthdto.UpdateOAuthResp" : {

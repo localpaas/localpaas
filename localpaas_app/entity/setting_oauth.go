@@ -21,13 +21,14 @@ func (s *oauthParser) New() SettingData {
 }
 
 type OAuth struct {
-	ClientID     string         `json:"clientId"`
-	ClientSecret EncryptedField `json:"clientSecret"`
-	Organization string         `json:"org,omitempty"`
-	AuthURL      string         `json:"authURL,omitempty"`
-	TokenURL     string         `json:"tokenURL,omitempty"`
-	ProfileURL   string         `json:"profileURL,omitempty"`
-	Scopes       []string       `json:"scopes,omitempty"`
+	ClientID         string         `json:"clientId"`
+	ClientSecret     EncryptedField `json:"clientSecret"`
+	Organization     string         `json:"org,omitempty"`
+	AuthURL          string         `json:"authURL,omitempty"`
+	TokenURL         string         `json:"tokenURL,omitempty"`
+	ProfileURL       string         `json:"profileURL,omitempty"`
+	AutoDiscoveryURL string         `json:"autoDiscoveryURL,omitempty"`
+	Scopes           []string       `json:"scopes,omitempty"`
 }
 
 func (s *OAuth) GetType() base.SettingType {
