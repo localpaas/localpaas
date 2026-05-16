@@ -35,9 +35,10 @@ type GetSSHKeyResp struct {
 
 type SSHKeyResp struct {
 	*settings.BaseSettingResp
-	PrivateKey   string `json:"privateKey"`
-	Passphrase   string `json:"passphrase,omitempty"`
-	SecretMasked bool   `json:"secretMasked,omitempty"`
+	PrivateKey   string   `json:"privateKey"`
+	Passphrase   string   `json:"passphrase,omitempty"`
+	Targets      []string `json:"targets,omitempty"`
+	SecretMasked bool     `json:"secretMasked,omitempty"`
 }
 
 func (resp *SSHKeyResp) CopyPrivateKey(field entity.EncryptedField) error {
