@@ -40,6 +40,9 @@ func (s *CloudStorage) GetRefObjectIDs() *RefObjectIDs {
 }
 
 func (s *CloudStorage) MustDecrypt() *CloudStorage {
+	if s.S3 != nil {
+		s.S3.SecretKey.MustGetPlain()
+	}
 	return s
 }
 

@@ -40,7 +40,7 @@ type CloudStorageResp struct {
 }
 
 type CloudStorageS3Resp struct {
-	*CloudProviderAWSResp
+	CloudProviderAWSResp
 	Region   string `json:"region"`
 	Bucket   string `json:"bucket"`
 	Endpoint string `json:"endpoint"`
@@ -50,6 +50,11 @@ type CloudProviderAWSResp struct {
 	AccessKeyID string `json:"accessKeyId"`
 	SecretKey   string `json:"secretKey"`
 	Region      string `json:"region"`
+}
+
+func (resp *CloudProviderAWSResp) CopySecretKey(field entity.EncryptedField) error {
+	resp.SecretKey = field.String()
+	return nil
 }
 
 func TransformCloudStorage(
