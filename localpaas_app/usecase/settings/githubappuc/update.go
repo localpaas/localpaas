@@ -25,7 +25,7 @@ func (uc *UC) UpdateGithubApp(
 			pData *settings.PersistingSettingData,
 		) error {
 			githubApp := req.ToEntity()
-			err := uc.installGithubAppWebhook(ctx, githubApp, true)
+			err := uc.installGithubAppWebhook(ctx, pData.Setting.ID, githubApp, true)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

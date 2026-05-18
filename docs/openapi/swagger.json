@@ -22107,14 +22107,14 @@
         "x-codegen-request-body-name" : "body"
       }
     },
-    "/webhooks/{kind}/{secret}" : {
+    "/webhooks/{webhookID}/{secret}" : {
       "post" : {
         "description" : "Handles Repo webhook",
         "operationId" : "handleRepoWebhook",
         "parameters" : [ {
-          "description" : "webhook kind",
+          "description" : "ID of repo-webhook or github-app",
           "in" : "path",
-          "name" : "kind",
+          "name" : "webhookID",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -22841,7 +22841,7 @@
         "x-enum-varnames" : [ "ModeDir", "ModeAppend", "ModeExclusive", "ModeTemporary", "ModeSymlink", "ModeDevice", "ModeNamedPipe", "ModeSocket", "ModeSetuid", "ModeSetgid", "ModeCharDevice", "ModeSticky", "ModeIrregular", "ModeType", "ModePerm", "ModeDir", "ModeAppend", "ModeExclusive", "ModeTemporary", "ModeSymlink", "ModeDevice", "ModeNamedPipe", "ModeSocket", "ModeSetuid", "ModeSetgid", "ModeCharDevice", "ModeSticky", "ModeIrregular", "ModeType", "ModePerm" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 86400000000000, 604800000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 86400000000000, 604800000000000 ],
         "format" : "int64",
         "type" : "integer",
         "x-enum-varnames" : [ "Day", "Week" ]
@@ -30824,7 +30824,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_repowebhookuc_repowebhookdto.CreateRepoWebhookResp" : {
         "properties" : {
           "data" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_repowebhookuc_repowebhookdto.RepoWebhookDataResp"
           },
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
@@ -30867,6 +30867,21 @@
           }
         },
         "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_repowebhookuc_repowebhookdto.RepoWebhookDataResp" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "secret" : {
+            "type" : "string"
+          },
+          "webhookURL" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "id", "secret", "webhookURL" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_repowebhookuc_repowebhookdto.RepoWebhookResp" : {

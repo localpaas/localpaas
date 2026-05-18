@@ -15,3 +15,7 @@ var (
 	AllWebhookKinds = []WebhookKind{WebhookKindGithub, WebhookKindGitlab, WebhookKindGitea,
 		WebhookKindBitbucket, WebhookKindGogs, WebhookKindAzureDevOps}
 )
+
+const (
+	DefaultWebhookSecretLen = 20
+)

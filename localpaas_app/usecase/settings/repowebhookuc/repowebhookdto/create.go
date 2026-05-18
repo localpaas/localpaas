@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	webhookSecretMaxLen = 200
+	webhookSecretMaxLen = 100
 )
 
 type CreateRepoWebhookReq struct {
@@ -54,6 +54,12 @@ func (req *CreateRepoWebhookReq) Validate() apperrors.ValidationErrors {
 }
 
 type CreateRepoWebhookResp struct {
-	Meta *basedto.Meta         `json:"meta"`
-	Data *basedto.ObjectIDResp `json:"data"`
+	Meta *basedto.Meta        `json:"meta"`
+	Data *RepoWebhookDataResp `json:"data"`
+}
+
+type RepoWebhookDataResp struct {
+	ID         string `json:"id"`
+	Secret     string `json:"secret"`
+	WebhookURL string `json:"webhookURL"`
 }

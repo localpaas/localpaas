@@ -23,17 +23,15 @@ func (uc *UC) HandleRepoWebhook(
 ) (*webhookdto.HandleRepoWebhookResp, error) {
 	var persistingData *appservice.PersistingAppData
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
+		data := &handleRepoWebhookData{}
 		persistingData = &appservice.PersistingAppData{}
 
-		webhookSettings, err := uc.loadWebhookSettings(ctx, db, req)
+		err := uc.loadWebhookSettings(ctx, db, req, data)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
-		if len(webhookSettings) == 0 { // no matching webhook setting found
-			return nil
-		}
 
-		err = uc.processRepoWebhook(ctx, db, req, persistingData)
+		err = uc.processRepoWebhook(ctx, db, req, data, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -56,6 +54,10 @@ func (uc *UC) HandleRepoWebhook(
 	return &webhookdto.HandleRepoWebhookResp{}, nil
 }
 
+type handleRepoWebhookData struct {
+	RepoWebhook *entity.RepoWebhook
+}
+
 type repoEventData struct {
 	Push *repoPushEventData
 }
@@ -72,37 +74,38 @@ func (uc *UC) processRepoWebhook(
 	ctx context.Context,
 	db database.IDB,
 	req *webhookdto.HandleRepoWebhookReq,
+	data *handleRepoWebhookData,
 	persistingData *appservice.PersistingAppData,
 ) (err error) {
-	data := &repoEventData{}
-	switch req.WebhookKind {
+	eventData := &repoEventData{}
+	switch data.RepoWebhook.Kind {
 	case base.WebhookKindGithub:
-		err = uc.processGithubWebhook(req, data)
+		err = uc.processGithubWebhook(req, eventData)
 	case base.WebhookKindGitlab:
-		err = uc.processGitlabWebhook(req, data)
+		err = uc.processGitlabWebhook(req, eventData)
 	case base.WebhookKindGitea:
-		err = uc.processGiteaWebhook(req, data)
+		err = uc.processGiteaWebhook(req, eventData)
 	case base.WebhookKindBitbucket:
-		err = uc.processBitbucketWebhook(req, data)
+		err = uc.processBitbucketWebhook(req, eventData)
 	case base.WebhookKindGogs:
-		err = uc.processGogsWebhook(req, data)
+		err = uc.processGogsWebhook(req, eventData)
 	case base.WebhookKindAzureDevOps:
-		err = uc.processAzureDevOpsWebhook(req, data)
+		err = uc.processAzureDevOpsWebhook(req, eventData)
 	default:
 		return apperrors.New(apperrors.ErrUnsupported).
-			WithMsgLog("webhook kind '%s' not supported", req.WebhookKind)
+			WithMsgLog("webhook kind '%s' not supported", data.RepoWebhook.Kind)
 	}
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	if data.Push != nil {
-		apps, err := uc.findAppsToRedeployByPushEvent(ctx, db, data.Push)
+	if eventData.Push != nil {
+		apps, err := uc.findAppsToRedeployByPushEvent(ctx, db, eventData.Push)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
 		for _, app := range apps {
-			err = uc.createAppDeploymentByPushEvent(app, data.Push, persistingData)
+			err = uc.createAppDeploymentByPushEvent(app, eventData.Push, persistingData)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}
@@ -115,22 +118,29 @@ func (uc *UC) loadWebhookSettings(
 	ctx context.Context,
 	db database.IDB,
 	req *webhookdto.HandleRepoWebhookReq,
-) ([]*entity.Setting, error) {
+	data *handleRepoWebhookData,
+) error {
 	settings, _, err := uc.settingRepo.List(ctx, db, nil, nil,
+		bunex.SelectWhere("setting.id = ?", req.ID),
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
-		bunex.SelectWhereGroup(
-			bunex.SelectWhere("setting.type = ?", base.SettingTypeRepoWebhook),
-			bunex.SelectWhere("setting.data->>'secret' = ?", req.Secret),
-		),
-		bunex.SelectWhereOrGroup(
-			bunex.SelectWhere("setting.type = ?", base.SettingTypeGithubApp),
-			bunex.SelectWhere("setting.data->>'webhook_secret' = ?", req.Secret),
-		),
+		bunex.SelectWhereIn("setting.type IN (?)", base.SettingTypeRepoWebhook, base.SettingTypeGithubApp),
 	)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return apperrors.Wrap(err)
 	}
-	return settings, nil
+
+	for _, setting := range settings {
+		repoWebhook := setting.MustAsRepoWebhook()
+		if repoWebhook.Secret != req.Secret {
+			continue
+		}
+		data.RepoWebhook = repoWebhook
+	}
+	if data.RepoWebhook == nil {
+		return apperrors.NewNotFound("Repo webhook settings")
+	}
+
+	return nil
 }
 
 func (uc *UC) findAppsToRedeployByPushEvent(

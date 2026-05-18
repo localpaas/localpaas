@@ -12,7 +12,7 @@ func (s *HTTPServer) registerWebhookRoutes(apiGroup *gin.RouterGroup) *gin.Route
 	webhookGroup.POST("/apps/:appToken/deploy", webhookHandler.WebhookDeployApp)
 
 	// Repo webhook
-	webhookGroup.POST("/:kind/:secret", webhookHandler.HandleRepoWebhook)
+	webhookGroup.POST("/:webhookID/:secret", webhookHandler.HandleRepoWebhook)
 
 	return webhookGroup
 }

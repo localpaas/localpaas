@@ -7,8 +7,6 @@ import (
 	"path/filepath"
 
 	"github.com/tiendc/gofn"
-
-	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
 const (
@@ -98,8 +96,8 @@ func (cfg *Config) SsoCallbackURL(id string) string {
 	return gofn.Must(url.JoinPath(cfg.SsoBaseCallbackURL(), id))
 }
 
-func (cfg *Config) RepoWebhookURL(kind base.WebhookKind, secret string) string {
-	return gofn.Must(url.JoinPath(cfg.BaseAPIURL(), "webhooks", string(kind), secret))
+func (cfg *Config) RepoWebhookURL(webhookID, secret string) string {
+	return gofn.Must(url.JoinPath(cfg.BaseAPIURL(), "webhooks", webhookID, secret))
 }
 
 func (cfg *Config) GlobalGithubAppManifestFlowBeginURL(settingID, state string) string {

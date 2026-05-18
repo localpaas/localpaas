@@ -3,8 +3,12 @@ package repowebhookuc
 import (
 	"context"
 
+	"github.com/tiendc/gofn"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/repowebhookuc/repowebhookdto"
@@ -16,6 +20,7 @@ func (uc *UC) CreateRepoWebhook(
 	req *repowebhookdto.CreateRepoWebhookReq,
 ) (*repowebhookdto.CreateRepoWebhookResp, error) {
 	req.Type = currentSettingType
+	webhookData := req.ToEntity()
 	resp, err := uc.CreateSetting(ctx, &req.CreateSettingReq, &settings.CreateSettingData{
 		VerifyingName: req.Name,
 		Version:       currentSettingVersion,
@@ -26,7 +31,10 @@ func (uc *UC) CreateRepoWebhook(
 			pData *settings.PersistingSettingCreationData,
 		) error {
 			pData.Setting.Kind = string(req.Kind)
-			err := pData.Setting.SetData(req.ToEntity())
+			if webhookData.Secret == "" { // generate secret if empty
+				webhookData.Secret = gofn.RandTokenAsHex(base.DefaultWebhookSecretLen)
+			}
+			err := pData.Setting.SetData(webhookData)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}
@@ -38,6 +46,10 @@ func (uc *UC) CreateRepoWebhook(
 	}
 
 	return &repowebhookdto.CreateRepoWebhookResp{
-		Data: resp.Data,
+		Data: &repowebhookdto.RepoWebhookDataResp{
+			ID:         resp.Data.ID,
+			Secret:     webhookData.Secret,
+			WebhookURL: config.Current.RepoWebhookURL(resp.Data.ID, webhookData.Secret),
+		},
 	}, nil
 }

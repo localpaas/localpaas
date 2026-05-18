@@ -25,7 +25,7 @@ type GithubApp struct {
 	ClientSecret   EncryptedField `json:"clientSecret"`
 	Organization   string         `json:"org"`
 	WebhookURL     string         `json:"webhookURL"`
-	WebhookSecret  string         `json:"webhookSecret"`
+	WebhookSecret  string         `json:"webhookSecret"` // NOTE: don't encrypt this, it's used in queries
 	AppID          int64          `json:"appId"`
 	InstallationID int64          `json:"installationId"`
 	PrivateKey     EncryptedField `json:"privateKey"`
@@ -54,6 +54,13 @@ func (s *GithubApp) ConvertAsOAuth() *OAuth {
 		ClientID:     s.ClientID,
 		ClientSecret: s.ClientSecret,
 		Organization: s.Organization,
+	}
+}
+
+func (s *GithubApp) ConvertAsRepoWebhook() *RepoWebhook {
+	return &RepoWebhook{
+		Kind:   base.WebhookKindGithub,
+		Secret: s.WebhookSecret,
 	}
 }
 

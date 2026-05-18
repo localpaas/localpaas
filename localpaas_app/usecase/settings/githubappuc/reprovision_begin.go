@@ -40,8 +40,8 @@ func (uc *UC) BeginReprovisionGithubApp(
 		githubApp.WebhookSecret = webhookSecretLocal
 		githubApp.WebhookURL = webhookURLLocal
 	} else {
-		githubApp.WebhookSecret = gofn.RandTokenAsHex(webhookSecretLen)
-		githubApp.WebhookURL = cfg.RepoWebhookURL(base.WebhookKindGithub, githubApp.WebhookURL)
+		githubApp.WebhookSecret = gofn.RandTokenAsHex(base.DefaultWebhookSecretLen)
+		githubApp.WebhookURL = cfg.RepoWebhookURL(appSetting.ID, githubApp.WebhookSecret)
 	}
 	appSetting.MustSetData(githubApp)
 

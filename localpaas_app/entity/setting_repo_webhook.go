@@ -54,6 +54,14 @@ func (s *RepoWebhook) Migrate(setting *Setting) (hasChange bool, err error) {
 }
 
 func (s *Setting) AsRepoWebhook() (*RepoWebhook, error) {
+	// Github-app setting can be parsed as RepoWebhook
+	if s.Type == base.SettingTypeGithubApp {
+		ghApp, err := s.AsGithubApp()
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		return ghApp.ConvertAsRepoWebhook(), nil
+	}
 	return parseSettingAs[*RepoWebhook](s)
 }
 

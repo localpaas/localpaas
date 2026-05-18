@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 
 	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/webhookuc/webhookdto"
 )
 
@@ -16,15 +15,15 @@ import (
 // @Tags    webhooks
 // @Produce json
 // @Id      handleRepoWebhook
-// @Param   kind path string true "webhook kind"
+// @Param   webhookID path string true "ID of repo-webhook or github-app"
 // @Param   secret path string true "webhook secret"
 // @Param   body body webhookdto.HandleRepoWebhookReq true "request data"
 // @Success 200 {object} webhookdto.HandleRepoWebhookResp
 // @Failure 400 {object} apperrors.ErrorInfo
 // @Failure 500 {object} apperrors.ErrorInfo
-// @Router  /webhooks/{kind}/{secret} [post]
+// @Router  /webhooks/{webhookID}/{secret} [post]
 func (h *Handler) HandleRepoWebhook(ctx *gin.Context) {
-	kind, err := h.ParseStringParam(ctx, "kind")
+	webhookID, err := h.ParseStringParam(ctx, "webhookID")
 	if err != nil {
 		h.RenderError(ctx, err)
 		return
@@ -37,7 +36,7 @@ func (h *Handler) HandleRepoWebhook(ctx *gin.Context) {
 
 	req := webhookdto.NewHandleRepoWebhookReq()
 	req.Request = ctx.Request
-	req.WebhookKind = base.WebhookKind(kind)
+	req.ID = webhookID
 	req.Secret = secret
 
 	resp, err := h.webhookUC.HandleRepoWebhook(h.RequestCtx(ctx), req)

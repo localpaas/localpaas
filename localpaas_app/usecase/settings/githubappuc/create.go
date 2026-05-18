@@ -18,10 +18,6 @@ import (
 	"github.com/localpaas/localpaas/services/git/github"
 )
 
-const (
-	webhookSecretLen = 24
-)
-
 func (uc *UC) CreateGithubApp(
 	ctx context.Context,
 	auth *basedto.Auth,
@@ -39,7 +35,7 @@ func (uc *UC) CreateGithubApp(
 		) error {
 			pData.Setting.Kind = string(base.SettingTypeGithubApp)
 			githubApp := req.ToEntity()
-			err := uc.installGithubAppWebhook(ctx, githubApp, false)
+			err := uc.installGithubAppWebhook(ctx, pData.Setting.ID, githubApp, false)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}
@@ -64,18 +60,19 @@ func (uc *UC) CreateGithubApp(
 
 func (uc *UC) installGithubAppWebhook(
 	ctx context.Context,
+	settingID string,
 	githubApp *entity.GithubApp,
 	update bool,
 ) error {
 	if !update {
-		githubApp.WebhookSecret = gofn.RandTokenAsHex(webhookSecretLen)
+		githubApp.WebhookSecret = gofn.RandTokenAsHex(base.DefaultWebhookSecretLen)
 	}
 
 	if config.Current.IsDevEnv() && config.Current.Platform == config.PlatformLocal {
 		githubApp.WebhookSecret = "abc123"
 		githubApp.WebhookURL = "https://smee.io/RBNiNjxieUIWZ6Ej"
 	} else {
-		githubApp.WebhookURL = config.Current.RepoWebhookURL(base.WebhookKindGithub, githubApp.WebhookSecret)
+		githubApp.WebhookURL = config.Current.RepoWebhookURL(settingID, githubApp.WebhookSecret)
 	}
 
 	client, err := github.NewFromApp(githubApp.AppID, githubApp.InstallationID,
