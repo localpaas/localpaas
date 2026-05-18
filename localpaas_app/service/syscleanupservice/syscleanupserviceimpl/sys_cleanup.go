@@ -28,6 +28,7 @@ func (s *service) Cleanup(
 		TaskOutput: &entity.TaskSystemCleanupOutput{
 			DBCleanup:      &entity.DBCleanupOutput{},
 			ClusterCleanup: &entity.ClusterCleanupOutput{},
+			BackupCleanup:  &entity.BackupCleanupOutput{},
 			FileCleanup:    &entity.FileCleanupOutput{},
 		},
 	}
@@ -38,11 +39,14 @@ func (s *service) Cleanup(
 	// Cleanup unused cluster data (docker)
 	err2 := s.sysCleanupCluster(ctx, data)
 
+	// Cleanup old backup files
+	err3 := s.sysCleanupBackups(ctx, db, data)
+
 	// Cleanup orphaned files
-	err3 := s.sysCleanupFiles(ctx, data)
+	err4 := s.sysCleanupFiles(ctx, data)
 
 	// Assign back the result output
 	data.Task.MustSetOutput(data.TaskOutput)
 
-	return resp, errors.Join(err1, err2, err3)
+	return resp, errors.Join(err1, err2, err3, err4)
 }

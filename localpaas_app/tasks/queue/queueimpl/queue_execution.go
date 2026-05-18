@@ -120,8 +120,8 @@ func (q *taskQueue) executeTask(
 				task.Status = gofn.If(taskData.Canceled, base.TaskStatusCanceled, base.TaskStatusDone)
 			}
 			// Post execution event
-			if taskData.OnEndTransaction != nil {
-				taskData.OnEndTransaction()
+			if taskData.OnEndTransactionFunc != nil {
+				taskData.OnEndTransactionFunc()
 			}
 			// Delete data in cache
 			_ = q.taskInfoRepo.Del(ctx, task.ID)
@@ -138,8 +138,8 @@ func (q *taskQueue) executeTask(
 	}
 
 	// Post transaction event
-	if taskData != nil && taskData.OnPostTransaction != nil {
-		taskData.OnPostTransaction()
+	if taskData != nil && taskData.OnPostTransactionFunc != nil {
+		taskData.OnPostTransactionFunc()
 	}
 
 	return rescheduleAt
@@ -211,8 +211,8 @@ func (q *taskQueue) taskControlCheck(
 			continue
 		}
 		cmd := taskControl.Cmd
-		if taskData.OnCommand != nil {
-			taskData.OnCommand(cmd)
+		if taskData.OnCommandFunc != nil {
+			taskData.OnCommandFunc(cmd)
 		}
 		if !taskData.NonCancelable && cmd == base.TaskCommandCancel {
 			taskData.Canceled = true

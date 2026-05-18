@@ -15,15 +15,14 @@ import (
 )
 
 const (
-	sysBackupSettingName          = "System backup settings"
-	sysBackupJobName              = "System backup job"
-	sysBackupDefaultStatus        = base.SettingStatusDisabled        // Default to Disabled
-	sysBackupInterval             = timeutil.Duration(time.Hour * 24) // daily
-	sysBackupMaxRetry             = 1
-	sysBackupRetryDelay           = timeutil.Duration(time.Second * 60)
-	sysBackupCompression          = true
-	sysBackupDeletedObjects       = true
-	sysBackupLocalBackupRetention = timeutil.Duration(time.Hour * 24 * 30) // 30 days
+	sysBackupSettingName       = "System backup settings"
+	sysBackupJobName           = "System backup job"
+	sysBackupDefaultStatus     = base.SettingStatusDisabled        // Default to Disabled
+	sysBackupInterval          = timeutil.Duration(time.Hour * 24) // daily
+	sysBackupMaxRetry          = 1
+	sysBackupRetryDelay        = timeutil.Duration(time.Second * 60)
+	sysBackupCompressionFormat = base.FileCompressionFormatGzip
+	sysBackupDeletedObjects    = true
 )
 
 func (s *service) initDefaultSystemBackup(
@@ -45,11 +44,15 @@ func (s *service) initDefaultSystemBackup(
 	backup := &entity.SystemBackup{
 		ScheduleInterval: sysBackupInterval,
 		ScheduleFrom:     timeNow.Truncate(sysBackupInterval.ToDuration()),
-		DBBackupConfig: &entity.DBBackupConfig{
+		DBBackupConfig: entity.SystemBackupDBConfig{
 			BackupDeletedObjects: sysBackupDeletedObjects,
 		},
-		Compression:          sysBackupCompression,
-		LocalBackupRetention: sysBackupLocalBackupRetention,
+		Compression: entity.SystemBackupCompression{
+			Format: sysBackupCompressionFormat,
+		},
+		Encryption: entity.SystemBackupEncryption{
+			Format: base.FileEncryptionNone,
+		},
 		Notification: &entity.BaseEventNotification{
 			SuccessUseDefault: true,
 			FailureUseDefault: true,

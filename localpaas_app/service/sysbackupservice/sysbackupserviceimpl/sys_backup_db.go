@@ -122,10 +122,7 @@ func (s *service) sysBackupDB(
 		}
 	}()
 
-	backupDeletedObjects := true
-	if data.SysBackupSettings.DBBackupConfig != nil {
-		backupDeletedObjects = data.SysBackupSettings.DBBackupConfig.BackupDeletedObjects
-	}
+	backupDeletedObjects := data.SysBackupSettings.DBBackupConfig.BackupDeletedObjects
 
 	for _, model := range sysBackupDBModels {
 		// NOTE: use cursor to speed up the SQL queries when possible

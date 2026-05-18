@@ -35,9 +35,9 @@ type DownloadFileResp struct {
 }
 
 type DownloadFileDataResp struct {
-	RedirectURL   string            `json:"redirectURL"`
-	ContentType   string            `json:"contentType"`
-	ContentLength int64             `json:"contentLength"`
-	ExtraHeaders  map[string]string `json:"headers"`
-	Content       io.ReadCloser     `json:"content"`
+	RedirectURL   string
+	ContentType   string
+	ContentLength int64
+	ExtraHeaders  map[string]string
+	Content       io.ReadCloser
 }

@@ -14,6 +14,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
 )
@@ -24,16 +25,29 @@ const (
 
 func (s *service) sysBackupSaveResultInLocal(
 	ctx context.Context,
+	db database.IDB,
 	tmpFile *os.File,
 	data *sysBackupData,
 ) (err error) {
 	data.OutFileName = fmt.Sprintf("%s%s.jsonl", sysBackupFilePrefix,
 		data.TimeNow.Truncate(time.Second).Format(time.RFC3339))
-	if data.SysBackupSettings.Compression {
+
+	switch data.SysBackupSettings.Compression.Format {
+	case base.FileCompressionFormatGzip:
 		data.OutFileName += ".gz"
+	case base.FileCompressionNone: // Do nothing
+	default:
+		return apperrors.NewUnsupported(
+			fmt.Sprintf("Compression format '%v'", data.SysBackupSettings.Compression.Format))
 	}
-	if data.SysBackupSettings.EncryptionSecret.MustGetPlain() != "" {
+
+	switch data.SysBackupSettings.Encryption.Format {
+	case base.FileEncryptionFormatAge:
 		data.OutFileName += ".age"
+	case base.FileEncryptionNone: // Do nothing
+	default:
+		return apperrors.NewUnsupported(
+			fmt.Sprintf("Encryption format '%v'", data.SysBackupSettings.Encryption.Format))
 	}
 
 	data.OutFilePath = filepath.Join(data.BackupSaveDir, data.OutFileName)
@@ -71,6 +85,13 @@ func (s *service) sysBackupSaveResultInLocal(
 
 	localFileSetting.MustSetData(localFile)
 	data.LocalOutFile = localFileSetting
+
+	err = s.settingRepo.Insert(ctx, db, localFileSetting)
+	if err != nil {
+		_ = data.LogStore.Add(ctx, applog.NewOutFrame("Failed to save file record into DB with error: "+
+			err.Error(), applog.TsNow))
+		return apperrors.Wrap(err)
+	}
 
 	_ = data.LogStore.Add(ctx, applog.NewOutFrame("Backup data saved into file: "+data.OutFileName,
 		applog.TsNow))

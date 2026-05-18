@@ -24,18 +24,30 @@ func (s *systemBackupParser) New() SettingData {
 }
 
 type SystemBackup struct {
-	ScheduleInterval      timeutil.Duration      `json:"scheduleInterval"`
-	ScheduleFrom          time.Time              `json:"scheduleFrom"`
-	DBBackupConfig        *DBBackupConfig        `json:"dbBackupConfig"`
-	Compression           bool                   `json:"compression,omitempty"`
-	EncryptionSecret      EncryptedField         `json:"encryptionSecret,omitzero"`
-	DestinationStorage    ObjectID               `json:"destinationStorage,omitzero"` // can be S3 setting ID
-	DestinationStorageDir string                 `json:"destinationStorageDir,omitempty"`
-	LocalBackupRetention  timeutil.Duration      `json:"localBackupRetention,omitempty"`
-	Notification          *BaseEventNotification `json:"notification,omitempty"`
+	ScheduleInterval timeutil.Duration        `json:"scheduleInterval"`
+	ScheduleFrom     time.Time                `json:"scheduleFrom"`
+	Compression      SystemBackupCompression  `json:"compression,omitempty"`
+	Encryption       SystemBackupEncryption   `json:"encryption,omitempty"`
+	CloudStorage     SystemBackupCloudStorage `json:"cloudStorage,omitempty"`
+	DBBackupConfig   SystemBackupDBConfig     `json:"dbBackupConfig"`
+	Notification     *BaseEventNotification   `json:"notification,omitempty"`
 }
 
-type DBBackupConfig struct {
+type SystemBackupCompression struct {
+	Format base.FileCompressionFormat `json:"format,omitempty"`
+}
+
+type SystemBackupEncryption struct {
+	Format base.FileEncryptionFormat `json:"format,omitempty"`
+	Secret EncryptedField            `json:"secret,omitzero"`
+}
+
+type SystemBackupCloudStorage struct {
+	ID             string `json:"id,omitempty"` // can be S3 setting ID
+	DestinationDir string `json:"destinationDir,omitempty"`
+}
+
+type SystemBackupDBConfig struct {
 	BackupDeletedObjects bool `json:"backupDeletedObjects"`
 }
 
@@ -45,8 +57,8 @@ func (s *SystemBackup) GetType() base.SettingType {
 
 func (s *SystemBackup) GetRefObjectIDs() *RefObjectIDs {
 	refIDs := &RefObjectIDs{}
-	if s.DestinationStorage.ID != "" {
-		refIDs.RefSettingIDs = append(refIDs.RefSettingIDs, s.DestinationStorage.ID)
+	if s.CloudStorage.ID != "" {
+		refIDs.RefSettingIDs = append(refIDs.RefSettingIDs, s.CloudStorage.ID)
 	}
 	if s.Notification != nil {
 		refIDs.AddRefIDs(s.Notification.GetRefObjectIDs())
@@ -55,7 +67,7 @@ func (s *SystemBackup) GetRefObjectIDs() *RefObjectIDs {
 }
 
 func (s *SystemBackup) MustDecrypt() *SystemBackup {
-	s.EncryptionSecret.MustGetPlain()
+	s.Encryption.Secret.MustGetPlain()
 	return s
 }
 

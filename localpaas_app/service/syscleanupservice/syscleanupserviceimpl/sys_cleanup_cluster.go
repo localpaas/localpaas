@@ -12,7 +12,7 @@ func (s *service) sysCleanupCluster(
 	data *sysCleanupData,
 ) (err error) {
 	clusterCleanup := data.SysCleanupSettings.ClusterCleanup
-	if clusterCleanup == nil || !clusterCleanup.Enabled {
+	if !clusterCleanup.Enabled {
 		return nil
 	}
 

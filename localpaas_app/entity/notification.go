@@ -1,9 +1,9 @@
 package entity
 
 type BaseEventNotification struct {
-	Success           ObjectID `json:"success"`
+	Success           ObjectID `json:"success,omitzero"`
 	SuccessUseDefault bool     `json:"successUseDefault,omitempty"`
-	Failure           ObjectID `json:"failure"`
+	Failure           ObjectID `json:"failure,omitzero"`
 	FailureUseDefault bool     `json:"failureUseDefault,omitempty"`
 }
 

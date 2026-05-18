@@ -6,6 +6,7 @@ import (
 	vld "github.com/tiendc/go-validator"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
@@ -34,24 +35,36 @@ type GetSystemBackupResp struct {
 
 type SystemBackupResp struct {
 	*settings.BaseSettingResp
-	ScheduleInterval      timeutil.Duration                  `json:"scheduleInterval"`
-	ScheduleFrom          time.Time                          `json:"scheduleFrom"`
-	DBBackupConfig        *DBBackupConfigResp                `json:"dbBackupConfig"`
-	Compression           bool                               `json:"compression"`
-	EncryptionSecret      string                             `json:"encryptionSecret"`
-	DestinationStorage    *settings.BaseSettingResp          `json:"destinationStorage"`
-	DestinationStorageDir string                             `json:"destinationStorageDir"`
-	LocalBackupRetention  timeutil.Duration                  `json:"localBackupRetention"`
-	Notification          *basedto.BaseEventNotificationResp `json:"notification"`
+	ScheduleInterval timeutil.Duration                  `json:"scheduleInterval"`
+	ScheduleFrom     time.Time                          `json:"scheduleFrom"`
+	Compression      *SystemBackupCompressionResp       `json:"compression"`
+	Encryption       *SystemBackupEncryptionResp        `json:"encryption"`
+	CloudStorage     *SystemBackupCloudStorageResp      `json:"cloudStorage"`
+	DBBackupConfig   *SystemBackupDBConfigResp          `json:"dbBackupConfig"`
+	Notification     *basedto.BaseEventNotificationResp `json:"notification"`
 }
 
-type DBBackupConfigResp struct {
-	BackupDeletedObjects bool `json:"backupDeletedObjects"`
+type SystemBackupCompressionResp struct {
+	Format base.FileCompressionFormat `json:"format,omitempty"`
 }
 
-func (resp *SystemBackupResp) CopyEncryptionSecret(field entity.EncryptedField) error {
-	resp.EncryptionSecret = field.String()
+type SystemBackupEncryptionResp struct {
+	Format base.FileEncryptionFormat `json:"format,omitempty"`
+	Secret string                    `json:"secret,omitzero"`
+}
+
+func (resp *SystemBackupEncryptionResp) CopySecret(field entity.EncryptedField) error {
+	resp.Secret = field.String()
 	return nil
+}
+
+type SystemBackupCloudStorageResp struct {
+	*settings.BaseSettingResp
+	DestinationDir string `json:"destinationDir,omitempty"`
+}
+
+type SystemBackupDBConfigResp struct {
+	BackupDeletedObjects bool `json:"backupDeletedObjects"`
 }
 
 func TransformSystemBackup(
@@ -68,11 +81,11 @@ func TransformSystemBackup(
 		return nil, apperrors.Wrap(err)
 	}
 
-	if config.DestinationStorage.ID != "" {
-		setting := refObjects.RefSettings[config.DestinationStorage.ID]
-		resp.DestinationStorage, _ = settings.TransformSettingBase(setting)
+	if config.CloudStorage.ID != "" {
+		setting := refObjects.RefSettings[config.CloudStorage.ID]
+		resp.CloudStorage.BaseSettingResp, _ = settings.TransformSettingBase(setting)
 	} else {
-		resp.DestinationStorage = nil
+		resp.CloudStorage = nil
 	}
 
 	resp.Notification = basedto.TransformBaseEventNotification(config.Notification, refObjects)

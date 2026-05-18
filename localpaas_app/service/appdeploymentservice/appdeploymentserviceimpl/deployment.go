@@ -47,7 +47,7 @@ func (s *service) Deploy(
 	}
 	logStoreKey := fmt.Sprintf("task:%s:log", req.Task.ID)
 	data.LogStore = applog.NewRemoteStore(logStoreKey, true, s.redisClient)
-	data.OnPostTransaction = func() { s.onPostTransaction(context.Background(), data) } //nolint:contextcheck
+	data.OnPostTransaction(func() { s.onPostTransaction(context.Background(), data) }) //nolint:contextcheck
 
 	err = s.loadDeploymentData(ctx, db, data)
 	if err != nil {

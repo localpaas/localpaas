@@ -12,6 +12,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
@@ -20,12 +21,13 @@ import (
 
 func (s *service) sysBackupSaveResultInStorage(
 	ctx context.Context,
+	db database.IDB,
 	data *sysBackupData,
 ) (err error) {
-	if data.SysBackupSettings.DestinationStorage.ID == "" {
+	if data.SysBackupSettings.CloudStorage.ID == "" {
 		return nil
 	}
-	storageSttg := data.RefObjects.RefSettings[data.SysBackupSettings.DestinationStorage.ID]
+	storageSttg := data.RefObjects.RefSettings[data.SysBackupSettings.CloudStorage.ID]
 	if storageSttg == nil {
 		return nil
 	}
@@ -45,7 +47,7 @@ func (s *service) sysBackupSaveResultInStorage(
 		return apperrors.NewUnsupported("Storage type")
 	}
 
-	targetFilePath := filepath.Join(data.SysBackupSettings.DestinationStorageDir, data.OutFileName)
+	targetFilePath := filepath.Join(data.SysBackupSettings.CloudStorage.DestinationDir, data.OutFileName)
 	backupFile, err := os.Open(data.OutFilePath)
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -89,16 +91,23 @@ func (s *service) sysBackupSaveResultInStorage(
 	remoteFile := &entity.File{
 		FileKind:    base.FileKindSystemBackup,
 		StorageType: base.FileStorageCloud,
-		Storage:     entity.ObjectID{ID: data.SysBackupSettings.DestinationStorage.ID},
+		Storage:     entity.ObjectID{ID: data.SysBackupSettings.CloudStorage.ID},
 		Bucket:      storageBucket,
 		Mimetype:    localFile.Mimetype,
 		Name:        data.OutFileName,
 		Size:        localFile.Size,
-		Path:        data.SysBackupSettings.DestinationStorageDir,
+		Path:        data.SysBackupSettings.CloudStorage.DestinationDir,
 	}
 
 	remoteFileSetting.MustSetData(remoteFile)
 	data.RemoteOutFile = remoteFileSetting
+
+	err = s.settingRepo.Insert(ctx, db, remoteFileSetting)
+	if err != nil {
+		_ = data.LogStore.Add(ctx, applog.NewOutFrame("Failed to save file record into DB with error: "+
+			err.Error(), applog.TsNow))
+		return apperrors.Wrap(err)
+	}
 
 	return nil
 }

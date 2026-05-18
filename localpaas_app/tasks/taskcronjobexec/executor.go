@@ -42,6 +42,7 @@ func NewExecutor(
 	taskQueue queue.TaskQueue,
 	taskLogRepo repository.TaskLogRepo,
 	settingService settingservice.Service,
+	notificationService notificationservice.Service,
 	containerExecService containerexecservice.Service,
 	sysBackupService sysbackupservice.Service,
 	sysCleanupService syscleanupservice.Service,
@@ -52,6 +53,7 @@ func NewExecutor(
 		db:                   db,
 		taskLogRepo:          taskLogRepo,
 		settingService:       settingService,
+		notificationService:  notificationService,
 		containerExecService: containerExecService,
 		sysBackupService:     sysBackupService,
 		sysCleanupService:    sysCleanupService,
@@ -81,7 +83,7 @@ func (e *Executor) execute(
 		CronJob:      task.Task.TargetJob,
 	}
 	data.LogStore = applog.NewLocalStore(fmt.Sprintf("cron:%s:exec", data.CronJob.ID))
-	data.OnPostTransaction = func() { e.onPostTransaction(context.Background(), data) } //nolint:contextcheck
+	data.OnPostTransaction(func() { e.onPostTransaction(context.Background(), data) }) //nolint:contextcheck
 
 	err = e.loadCronJobData(ctx, db, data)
 	if err != nil {

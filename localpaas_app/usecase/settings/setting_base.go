@@ -17,6 +17,7 @@ import (
 
 type BaseSettingReq struct {
 	Type  base.SettingType   `json:"-" mapstructure:"-"`
+	Kind  string             `json:"-" mapstructure:"-"`
 	Scope *base.SettingScope `json:"-" mapstructure:"-"`
 }
 
@@ -95,11 +96,13 @@ func (uc *BaseUC) loadSettingByID(
 	requireActive bool,
 	opts ...bunex.SelectQueryOption,
 ) (setting *entity.Setting, err error) {
+	if req.Kind != "" {
+		opts = append(opts, bunex.SelectWhere("setting.kind = ?", req.Kind))
+	}
 	setting, err = uc.SettingRepo.GetByID(ctx, db, req.Scope, req.Type, id, requireActive, opts...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-
 	return setting, nil
 }
 

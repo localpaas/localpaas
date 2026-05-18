@@ -22180,9 +22180,9 @@
   "components" : {
     "schemas" : {
       "github_com_localpaas_localpaas_localpaas_app_apperrors.DisplayLevel" : {
-        "enum" : [ "high", "medium", "low", "medium" ],
+        "enum" : [ "medium", "high", "medium", "low" ],
         "type" : "string",
-        "x-enum-varnames" : [ "DisplayLevelHigh", "DisplayLevelMedium", "DisplayLevelLow", "errVldDisplayLevel" ]
+        "x-enum-varnames" : [ "errVldDisplayLevel", "DisplayLevelHigh", "DisplayLevelMedium", "DisplayLevelLow" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo" : {
         "properties" : {
@@ -22295,6 +22295,16 @@
         "enum" : [ "smtp", "http" ],
         "type" : "string",
         "x-enum-varnames" : [ "EmailKindSMTP", "EmailKindHTTP" ]
+      },
+      "github_com_localpaas_localpaas_localpaas_app_base.FileCompressionFormat" : {
+        "enum" : [ "", "gzip" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "FileCompressionNone", "FileCompressionFormatGzip" ]
+      },
+      "github_com_localpaas_localpaas_localpaas_app_base.FileEncryptionFormat" : {
+        "enum" : [ "", "age" ],
+        "type" : "string",
+        "x-enum-varnames" : [ "FileEncryptionNone", "FileEncryptionFormatAge" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_base.FileStorageType" : {
         "enum" : [ "local", "cloud" ],
@@ -22808,7 +22818,7 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_fileutil.FileMode" : {
-        "enum" : [ 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511, 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511 ],
+        "enum" : [ 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511, 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511, 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511, 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511 ],
         "format" : "int32",
         "type" : "integer",
         "x-enum-comments" : {
@@ -22827,11 +22837,11 @@
           "ModeSymlink" : "L: symbolic link",
           "ModeTemporary" : "T: temporary file; Plan 9 only"
         },
-        "x-enum-descriptions" : [ "d: is a directory", "a: append-only", "l: exclusive use", "T: temporary file; Plan 9 only", "L: symbolic link", "D: device file", "p: named pipe (FIFO)", "S: Unix domain socket", "u: setuid", "g: setgid", "c: Unix character device, when ModeDevice is set", "t: sticky", "?: non-regular file; nothing else is known about this file", "", "Unix permission bits, 0o777" ],
-        "x-enum-varnames" : [ "ModeDir", "ModeAppend", "ModeExclusive", "ModeTemporary", "ModeSymlink", "ModeDevice", "ModeNamedPipe", "ModeSocket", "ModeSetuid", "ModeSetgid", "ModeCharDevice", "ModeSticky", "ModeIrregular", "ModeType", "ModePerm" ]
+        "x-enum-descriptions" : [ "d: is a directory", "a: append-only", "l: exclusive use", "T: temporary file; Plan 9 only", "L: symbolic link", "D: device file", "p: named pipe (FIFO)", "S: Unix domain socket", "u: setuid", "g: setgid", "c: Unix character device, when ModeDevice is set", "t: sticky", "?: non-regular file; nothing else is known about this file", "", "Unix permission bits, 0o777", "d: is a directory", "a: append-only", "l: exclusive use", "T: temporary file; Plan 9 only", "L: symbolic link", "D: device file", "p: named pipe (FIFO)", "S: Unix domain socket", "u: setuid", "g: setgid", "c: Unix character device, when ModeDevice is set", "t: sticky", "?: non-regular file; nothing else is known about this file", "", "Unix permission bits, 0o777" ],
+        "x-enum-varnames" : [ "ModeDir", "ModeAppend", "ModeExclusive", "ModeTemporary", "ModeSymlink", "ModeDevice", "ModeNamedPipe", "ModeSocket", "ModeSetuid", "ModeSetgid", "ModeCharDevice", "ModeSticky", "ModeIrregular", "ModeType", "ModePerm", "ModeDir", "ModeAppend", "ModeExclusive", "ModeTemporary", "ModeSymlink", "ModeDevice", "ModeNamedPipe", "ModeSocket", "ModeSetuid", "ModeSetgid", "ModeCharDevice", "ModeSticky", "ModeIrregular", "ModeType", "ModePerm" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 86400000000000, 604800000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 86400000000000, 604800000000000 ],
         "format" : "int64",
         "type" : "integer",
         "x-enum-varnames" : [ "Day", "Week" ]
@@ -32599,24 +32609,6 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systembackupuc_systembackupdto.DBBackupConfigReq" : {
-        "properties" : {
-          "backupDeletedObjects" : {
-            "type" : "boolean"
-          }
-        },
-        "required" : [ "backupDeletedObjects" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systembackupuc_systembackupdto.DBBackupConfigResp" : {
-        "properties" : {
-          "backupDeletedObjects" : {
-            "type" : "boolean"
-          }
-        },
-        "required" : [ "backupDeletedObjects" ],
-        "type" : "object"
-      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systembackupuc_systembackupdto.ExecuteSystemBackupDataResp" : {
         "properties" : {
           "task" : {
@@ -32653,30 +32645,30 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systembackupuc_systembackupdto.SystemBackupResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systembackupuc_systembackupdto.SystemBackupCloudStorageReq" : {
+        "properties" : {
+          "destinationDir" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "destinationDir", "id" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systembackupuc_systembackupdto.SystemBackupCloudStorageResp" : {
         "properties" : {
           "availableInProjects" : {
-            "type" : "boolean"
-          },
-          "compression" : {
             "type" : "boolean"
           },
           "createdAt" : {
             "type" : "string"
           },
-          "dbBackupConfig" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systembackupuc_systembackupdto.DBBackupConfigResp"
-          },
           "default" : {
             "type" : "boolean"
           },
-          "destinationStorage" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
-          },
-          "destinationStorageDir" : {
-            "type" : "string"
-          },
-          "encryptionSecret" : {
+          "destinationDir" : {
             "type" : "string"
           },
           "expireAt" : {
@@ -32691,8 +32683,117 @@
           "kind" : {
             "type" : "string"
           },
-          "localBackupRetention" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
+          "name" : {
+            "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingType"
+          },
+          "updateVer" : {
+            "type" : "integer"
+          },
+          "updatedAt" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "createdAt", "id", "name", "status", "type", "updateVer", "updatedAt" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systembackupuc_systembackupdto.SystemBackupCompressionReq" : {
+        "properties" : {
+          "format" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.FileCompressionFormat"
+          }
+        },
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systembackupuc_systembackupdto.SystemBackupCompressionResp" : {
+        "properties" : {
+          "format" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.FileCompressionFormat"
+          }
+        },
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systembackupuc_systembackupdto.SystemBackupDBConfigReq" : {
+        "properties" : {
+          "backupDeletedObjects" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "backupDeletedObjects" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systembackupuc_systembackupdto.SystemBackupDBConfigResp" : {
+        "properties" : {
+          "backupDeletedObjects" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "backupDeletedObjects" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systembackupuc_systembackupdto.SystemBackupEncryptionReq" : {
+        "properties" : {
+          "format" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.FileEncryptionFormat"
+          },
+          "secret" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "secret" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systembackupuc_systembackupdto.SystemBackupEncryptionResp" : {
+        "properties" : {
+          "format" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.FileEncryptionFormat"
+          },
+          "secret" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "secret" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systembackupuc_systembackupdto.SystemBackupResp" : {
+        "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
+          "cloudStorage" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systembackupuc_systembackupdto.SystemBackupCloudStorageResp"
+          },
+          "compression" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systembackupuc_systembackupdto.SystemBackupCompressionResp"
+          },
+          "createdAt" : {
+            "type" : "string"
+          },
+          "dbBackupConfig" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systembackupuc_systembackupdto.SystemBackupDBConfigResp"
+          },
+          "default" : {
+            "type" : "boolean"
+          },
+          "encryption" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systembackupuc_systembackupdto.SystemBackupEncryptionResp"
+          },
+          "expireAt" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "inherited" : {
+            "type" : "boolean"
+          },
+          "kind" : {
+            "type" : "string"
           },
           "name" : {
             "type" : "string"
@@ -32719,7 +32820,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "compression", "createdAt", "dbBackupConfig", "destinationStorage", "destinationStorageDir", "encryptionSecret", "id", "localBackupRetention", "name", "notification", "scheduleFrom", "scheduleInterval", "status", "type", "updateVer", "updatedAt" ],
+        "required" : [ "cloudStorage", "compression", "createdAt", "dbBackupConfig", "encryption", "id", "name", "notification", "scheduleFrom", "scheduleInterval", "status", "type", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systembackupuc_systembackupdto.UpdateSystemBackupReq" : {
@@ -32727,26 +32828,20 @@
           "availableInProjects" : {
             "type" : "boolean"
           },
+          "cloudStorage" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systembackupuc_systembackupdto.SystemBackupCloudStorageReq"
+          },
           "compression" : {
-            "type" : "boolean"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systembackupuc_systembackupdto.SystemBackupCompressionReq"
           },
           "dbBackupConfig" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systembackupuc_systembackupdto.DBBackupConfigReq"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systembackupuc_systembackupdto.SystemBackupDBConfigReq"
           },
           "default" : {
             "type" : "boolean"
           },
-          "destinationStorage" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
-          },
-          "destinationStorageDir" : {
-            "type" : "string"
-          },
-          "encryptionSecret" : {
-            "type" : "string"
-          },
-          "localBackupRetention" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
+          "encryption" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systembackupuc_systembackupdto.SystemBackupEncryptionReq"
           },
           "notification" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.BaseEventNotificationReq"
@@ -32764,7 +32859,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "availableInProjects", "compression", "dbBackupConfig", "default", "destinationStorage", "destinationStorageDir", "encryptionSecret", "localBackupRetention", "notification", "scheduleFrom", "scheduleInterval", "status", "updateVer" ],
+        "required" : [ "availableInProjects", "cloudStorage", "compression", "dbBackupConfig", "default", "encryption", "notification", "scheduleFrom", "scheduleInterval", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systembackupuc_systembackupdto.UpdateSystemBackupResp" : {
@@ -32774,48 +32869,6 @@
           }
         },
         "required" : [ "meta" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systemcleanupuc_systemcleanupdto.ClusterCleanupReq" : {
-        "properties" : {
-          "enabled" : {
-            "type" : "boolean"
-          },
-          "pruneContainers" : {
-            "type" : "boolean"
-          },
-          "pruneImages" : {
-            "type" : "boolean"
-          },
-          "pruneNetworks" : {
-            "type" : "boolean"
-          },
-          "pruneVolumes" : {
-            "type" : "boolean"
-          }
-        },
-        "required" : [ "enabled", "pruneContainers", "pruneImages", "pruneNetworks", "pruneVolumes" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systemcleanupuc_systemcleanupdto.ClusterCleanupResp" : {
-        "properties" : {
-          "enabled" : {
-            "type" : "boolean"
-          },
-          "pruneContainers" : {
-            "type" : "boolean"
-          },
-          "pruneImages" : {
-            "type" : "boolean"
-          },
-          "pruneNetworks" : {
-            "type" : "boolean"
-          },
-          "pruneVolumes" : {
-            "type" : "boolean"
-          }
-        },
-        "required" : [ "enabled", "pruneContainers", "pruneImages", "pruneNetworks", "pruneVolumes" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systemcleanupuc_systemcleanupdto.DBObjectRetentionReq" : {
@@ -32896,13 +32949,46 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systemcleanupuc_systemcleanupdto.SystemBackupCleanupReq" : {
+        "properties" : {
+          "cloudBackupRetention" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
+          },
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "localBackupRetention" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
+          }
+        },
+        "required" : [ "cloudBackupRetention", "enabled", "localBackupRetention" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systemcleanupuc_systemcleanupdto.SystemBackupCleanupResp" : {
+        "properties" : {
+          "cloudBackupRetention" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
+          },
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "localBackupRetention" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration"
+          }
+        },
+        "required" : [ "cloudBackupRetention", "enabled", "localBackupRetention" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systemcleanupuc_systemcleanupdto.SystemCleanupResp" : {
         "properties" : {
           "availableInProjects" : {
             "type" : "boolean"
           },
+          "backupCleanup" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systemcleanupuc_systemcleanupdto.SystemBackupCleanupResp"
+          },
           "clusterCleanup" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systemcleanupuc_systemcleanupdto.ClusterCleanupResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systemcleanupuc_systemcleanupdto.SystemClusterCleanupResp"
           },
           "createdAt" : {
             "type" : "string"
@@ -32950,7 +33036,49 @@
             "type" : "string"
           }
         },
-        "required" : [ "clusterCleanup", "createdAt", "dbObjectRetention", "id", "name", "notification", "scheduleFrom", "scheduleInterval", "status", "type", "updateVer", "updatedAt" ],
+        "required" : [ "backupCleanup", "clusterCleanup", "createdAt", "dbObjectRetention", "id", "name", "notification", "scheduleFrom", "scheduleInterval", "status", "type", "updateVer", "updatedAt" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systemcleanupuc_systemcleanupdto.SystemClusterCleanupReq" : {
+        "properties" : {
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "pruneContainers" : {
+            "type" : "boolean"
+          },
+          "pruneImages" : {
+            "type" : "boolean"
+          },
+          "pruneNetworks" : {
+            "type" : "boolean"
+          },
+          "pruneVolumes" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "enabled", "pruneContainers", "pruneImages", "pruneNetworks", "pruneVolumes" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systemcleanupuc_systemcleanupdto.SystemClusterCleanupResp" : {
+        "properties" : {
+          "enabled" : {
+            "type" : "boolean"
+          },
+          "pruneContainers" : {
+            "type" : "boolean"
+          },
+          "pruneImages" : {
+            "type" : "boolean"
+          },
+          "pruneNetworks" : {
+            "type" : "boolean"
+          },
+          "pruneVolumes" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "enabled", "pruneContainers", "pruneImages", "pruneNetworks", "pruneVolumes" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systemcleanupuc_systemcleanupdto.UpdateSystemCleanupReq" : {
@@ -32958,8 +33086,11 @@
           "availableInProjects" : {
             "type" : "boolean"
           },
+          "backupCleanup" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systemcleanupuc_systemcleanupdto.SystemBackupCleanupReq"
+          },
           "clusterCleanup" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systemcleanupuc_systemcleanupdto.ClusterCleanupReq"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systemcleanupuc_systemcleanupdto.SystemClusterCleanupReq"
           },
           "dbObjectRetention" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systemcleanupuc_systemcleanupdto.DBObjectRetentionReq"
@@ -32983,7 +33114,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "availableInProjects", "clusterCleanup", "dbObjectRetention", "default", "notification", "scheduleFrom", "scheduleInterval", "status", "updateVer" ],
+        "required" : [ "availableInProjects", "backupCleanup", "clusterCleanup", "dbObjectRetention", "default", "notification", "scheduleFrom", "scheduleInterval", "status", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_systemsettings_systemcleanupuc_systemcleanupdto.UpdateSystemCleanupResp" : {

@@ -37,7 +37,8 @@ type SystemCleanupResp struct {
 	ScheduleInterval  timeutil.Duration                  `json:"scheduleInterval"`
 	ScheduleFrom      time.Time                          `json:"scheduleFrom"`
 	DBObjectRetention *DBObjectRetentionResp             `json:"dbObjectRetention"`
-	ClusterCleanup    *ClusterCleanupResp                `json:"clusterCleanup"`
+	ClusterCleanup    *SystemClusterCleanupResp          `json:"clusterCleanup"`
+	BackupCleanup     *SystemBackupCleanupResp           `json:"backupCleanup"`
 	Notification      *basedto.BaseEventNotificationResp `json:"notification"`
 }
 
@@ -49,12 +50,18 @@ type DBObjectRetentionResp struct {
 	DeletedObjects timeutil.Duration `json:"deletedObjects"`
 }
 
-type ClusterCleanupResp struct {
+type SystemClusterCleanupResp struct {
 	Enabled         bool `json:"enabled"`
 	PruneImages     bool `json:"pruneImages"`
 	PruneVolumes    bool `json:"pruneVolumes"`
 	PruneNetworks   bool `json:"pruneNetworks"`
 	PruneContainers bool `json:"pruneContainers"`
+}
+
+type SystemBackupCleanupResp struct {
+	Enabled              bool              `json:"enabled"`
+	CloudBackupRetention timeutil.Duration `json:"cloudBackupRetention"`
+	LocalBackupRetention timeutil.Duration `json:"localBackupRetention"`
 }
 
 func TransformSystemCleanup(

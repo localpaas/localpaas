@@ -4,6 +4,7 @@ import (
 	"compress/gzip"
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -12,6 +13,7 @@ import (
 	"filippo.io/age"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
@@ -31,12 +33,14 @@ const (
 
 type sysBackupData struct {
 	*sysbackupservice.SysBackupReq
-	TaskOutput    *entity.TaskSystemBackupOutput
+	TaskOutput *entity.TaskSystemBackupOutput
+	TimeNow    time.Time
+
 	BackupRootDir string
 	BackupSaveDir string
+
 	OutFileName   string
 	OutFilePath   string
-	TimeNow       time.Time
 	LocalOutFile  *entity.Setting
 	RemoteOutFile *entity.Setting
 }
@@ -111,20 +115,14 @@ func (s *service) sysBackup(
 	_ = closer(false) // Flush data in writers, but not remove the temp file
 	closer = nil
 
-	// Save the result in a file
-	err = s.sysBackupSaveResultInLocal(ctx, tmpFile, data)
+	// Save the result in a local file
+	err = s.sysBackupSaveResultInLocal(ctx, db, tmpFile, data)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
 	// Upload backup file to cloud storage if configured
-	err = s.sysBackupSaveResultInStorage(ctx, data)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	// Remove outdated backup files
-	err = s.sysBackupRemoveOldFiles(ctx, db, data)
+	err = s.sysBackupSaveResultInStorage(ctx, db, data)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -165,8 +163,12 @@ func (s *service) sysBackupCreateWriter(
 	var encW, gzW io.WriteCloser
 	w = tmpFile
 
-	encSecret := data.SysBackupSettings.EncryptionSecret.MustGetPlain()
-	if encSecret != "" {
+	switch data.SysBackupSettings.Encryption.Format {
+	case base.FileEncryptionFormatAge:
+		encSecret := data.SysBackupSettings.Encryption.Secret.MustGetPlain()
+		if encSecret == "" {
+			return nil, nil, nil, apperrors.NewMissing("Encryption secret")
+		}
 		recipient, err := age.NewScryptRecipient(encSecret)
 		if err != nil {
 			return nil, nil, nil, apperrors.Wrap(err)
@@ -176,10 +178,20 @@ func (s *service) sysBackupCreateWriter(
 			return nil, nil, nil, apperrors.Wrap(err)
 		}
 		w = encW
+	case base.FileEncryptionNone: // Do nothing
+	default:
+		return nil, nil, nil, apperrors.NewUnsupported(
+			fmt.Sprintf("Encryption format '%v'", data.SysBackupSettings.Encryption.Format))
 	}
-	if data.SysBackupSettings.Compression {
+
+	switch data.SysBackupSettings.Compression.Format {
+	case base.FileCompressionFormatGzip:
 		gzW = gzip.NewWriter(w)
 		w = gzW
+	case base.FileCompressionNone: // Do nothing
+	default:
+		return nil, nil, nil, apperrors.NewUnsupported(
+			fmt.Sprintf("Compression format '%v'", data.SysBackupSettings.Compression.Format))
 	}
 
 	jsonlW = jsonl.NewWriter(w)

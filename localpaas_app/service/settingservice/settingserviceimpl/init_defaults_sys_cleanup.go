@@ -22,6 +22,8 @@ const (
 	sysCleanupMaxRetry      = 1
 	sysCleanupRetryDelay    = timeutil.Duration(time.Second * 30)
 
+	sysCleanupBackupRetention = timeutil.Duration(time.Hour * 24 * 30) // 30 days
+
 	dbObjectRetentionOfTasks          = timeutil.Duration(time.Hour * 24 * 180) // 180 days
 	dbObjectRetentionOfSysErrors      = timeutil.Duration(time.Hour * 24 * 180)
 	dbObjectRetentionOfDeployments    = timeutil.Duration(time.Hour * 24 * 180)
@@ -47,19 +49,24 @@ func (s *service) initDefaultSystemCleanup(
 	cleanup := &entity.SystemCleanup{
 		ScheduleInterval: sysCleanupInterval,
 		ScheduleFrom:     timeNow.Truncate(sysCleanupInterval.ToDuration()),
-		DBObjectRetention: &entity.DBObjectRetention{
+		DBObjectRetention: entity.DBObjectRetention{
 			Enabled:        true,
 			Tasks:          dbObjectRetentionOfTasks,
 			SysErrors:      dbObjectRetentionOfSysErrors,
 			Deployments:    dbObjectRetentionOfDeployments,
 			DeletedObjects: dbObjectRetentionOfDeletedObjects,
 		},
-		ClusterCleanup: &entity.ClusterCleanup{
+		ClusterCleanup: entity.SystemClusterCleanup{
 			Enabled:         true,
 			PruneImages:     true,
 			PruneVolumes:    true,
 			PruneNetworks:   true,
 			PruneContainers: true,
+		},
+		BackupCleanup: entity.SystemBackupCleanup{
+			Enabled:              true,
+			LocalBackupRetention: sysCleanupBackupRetention,
+			CloudBackupRetention: sysCleanupBackupRetention,
 		},
 		Notification: &entity.BaseEventNotification{
 			SuccessUseDefault: true,

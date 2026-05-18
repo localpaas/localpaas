@@ -83,8 +83,8 @@ func (s *service) sysCleanupDB(
 	db database.IDB,
 	data *sysCleanupData,
 ) (err error) {
-	retentionSetting := data.SysCleanupSettings.DBObjectRetention
-	if retentionSetting == nil || !retentionSetting.Enabled {
+	retentionSetting := &data.SysCleanupSettings.DBObjectRetention
+	if !retentionSetting.Enabled {
 		return nil
 	}
 	timeNow := timeutil.NowUTC()

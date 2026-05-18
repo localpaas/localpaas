@@ -47,9 +47,9 @@ func (s *service) deployFromRepo(
 	deplData *appDeploymentData,
 ) error {
 	data := &repoDeploymentData{appDeploymentData: deplData}
-	data.OnCommand = func(cmd base.TaskCommand, args ...any) {
+	data.OnCommand(func(cmd base.TaskCommand, args ...any) {
 		s.repoDeployOnCommand(ctx, data, cmd, args...)
-	}
+	})
 
 	// 0. Prepare
 	err := s.repoDeployStepPrepare(ctx, data)

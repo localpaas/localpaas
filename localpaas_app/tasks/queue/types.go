@@ -23,9 +23,9 @@ type TaskExecData struct {
 	Done          bool
 
 	// Callback functions
-	OnCommand         func(base.TaskCommand, ...any)
-	OnEndTransaction  func()
-	OnPostTransaction func()
+	OnCommandFunc         func(base.TaskCommand, ...any)
+	OnEndTransactionFunc  func()
+	OnPostTransactionFunc func()
 }
 
 func (t *TaskExecData) IsCanceled() bool {
@@ -41,6 +41,42 @@ func (t *TaskExecData) AddRefObjects(refObjects *entity.RefObjects) {
 		t.RefObjects = refObjects
 	} else {
 		t.RefObjects.AddRefObjects(refObjects)
+	}
+}
+
+func (t *TaskExecData) OnCommand(fn func(base.TaskCommand, ...any)) {
+	if t.OnCommandFunc == nil {
+		t.OnCommandFunc = fn
+		return
+	}
+	currFunc := t.OnCommandFunc
+	t.OnCommandFunc = func(cmd base.TaskCommand, args ...any) {
+		currFunc(cmd, args...)
+		fn(cmd, args...)
+	}
+}
+
+func (t *TaskExecData) OnEndTransaction(fn func()) {
+	if t.OnEndTransactionFunc == nil {
+		t.OnEndTransactionFunc = fn
+		return
+	}
+	currFunc := t.OnEndTransactionFunc
+	t.OnEndTransactionFunc = func() {
+		currFunc()
+		fn()
+	}
+}
+
+func (t *TaskExecData) OnPostTransaction(fn func()) {
+	if t.OnPostTransactionFunc == nil {
+		t.OnPostTransactionFunc = fn
+		return
+	}
+	currFunc := t.OnPostTransactionFunc
+	t.OnPostTransactionFunc = func() {
+		currFunc()
+		fn()
 	}
 }
 

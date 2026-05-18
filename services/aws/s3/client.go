@@ -40,6 +40,9 @@ func NewClient(ctx context.Context, cfg *Config) (*Client, error) {
 	}
 
 	s3Client := s3.NewFromConfig(awsCfg, func(opts *s3.Options) {
+		if cfg.Region != "" {
+			opts.Region = cfg.Region
+		}
 		if cfg.Endpoint != "" {
 			opts.BaseEndpoint = aws.String(cfg.Endpoint)
 		}

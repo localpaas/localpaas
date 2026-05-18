@@ -22,8 +22,9 @@ type SystemCleanupBaseReq struct {
 	Status            base.SettingStatus                `json:"status"`
 	ScheduleInterval  timeutil.Duration                 `json:"scheduleInterval"`
 	ScheduleFrom      time.Time                         `json:"scheduleFrom"`
-	DBObjectRetention *DBObjectRetentionReq             `json:"dbObjectRetention"`
-	ClusterCleanup    *ClusterCleanupReq                `json:"clusterCleanup"`
+	DBObjectRetention DBObjectRetentionReq              `json:"dbObjectRetention"`
+	ClusterCleanup    SystemClusterCleanupReq           `json:"clusterCleanup"`
+	BackupCleanup     SystemBackupCleanupReq            `json:"backupCleanup"`
 	Notification      *basedto.BaseEventNotificationReq `json:"notification"`
 }
 
@@ -33,6 +34,7 @@ func (req *SystemCleanupBaseReq) ToEntity() *entity.SystemCleanup {
 		ScheduleFrom:      req.ScheduleFrom,
 		DBObjectRetention: req.DBObjectRetention.ToEntity(),
 		ClusterCleanup:    req.ClusterCleanup.ToEntity(),
+		BackupCleanup:     req.BackupCleanup.ToEntity(),
 		Notification:      req.Notification.ToEntity(),
 	}
 }
@@ -45,11 +47,8 @@ type DBObjectRetentionReq struct {
 	DeletedObjects timeutil.Duration `json:"deletedObjects"`
 }
 
-func (req *DBObjectRetentionReq) ToEntity() *entity.DBObjectRetention {
-	if req == nil {
-		return nil
-	}
-	return &entity.DBObjectRetention{
+func (req *DBObjectRetentionReq) ToEntity() entity.DBObjectRetention {
+	return entity.DBObjectRetention{
 		Enabled:        req.Enabled,
 		Tasks:          req.Tasks,
 		SysErrors:      req.SysErrors,
@@ -58,7 +57,7 @@ func (req *DBObjectRetentionReq) ToEntity() *entity.DBObjectRetention {
 	}
 }
 
-type ClusterCleanupReq struct {
+type SystemClusterCleanupReq struct {
 	Enabled         bool `json:"enabled"`
 	PruneImages     bool `json:"pruneImages"`
 	PruneVolumes    bool `json:"pruneVolumes"`
@@ -66,16 +65,27 @@ type ClusterCleanupReq struct {
 	PruneContainers bool `json:"pruneContainers"`
 }
 
-func (req *ClusterCleanupReq) ToEntity() *entity.ClusterCleanup {
-	if req == nil {
-		return nil
-	}
-	return &entity.ClusterCleanup{
+func (req *SystemClusterCleanupReq) ToEntity() entity.SystemClusterCleanup {
+	return entity.SystemClusterCleanup{
 		Enabled:         req.Enabled,
 		PruneImages:     req.PruneImages,
 		PruneVolumes:    req.PruneVolumes,
 		PruneNetworks:   req.PruneNetworks,
 		PruneContainers: req.PruneContainers,
+	}
+}
+
+type SystemBackupCleanupReq struct {
+	Enabled              bool              `json:"enabled"`
+	CloudBackupRetention timeutil.Duration `json:"cloudBackupRetention"`
+	LocalBackupRetention timeutil.Duration `json:"localBackupRetention"`
+}
+
+func (req *SystemBackupCleanupReq) ToEntity() entity.SystemBackupCleanup {
+	return entity.SystemBackupCleanup{
+		Enabled:              req.Enabled,
+		CloudBackupRetention: req.CloudBackupRetention,
+		LocalBackupRetention: req.LocalBackupRetention,
 	}
 }
 

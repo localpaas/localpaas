@@ -19,41 +19,68 @@ type UpdateSystemBackupReq struct {
 }
 
 type SystemBackupBaseReq struct {
-	Status                base.SettingStatus                `json:"status"`
-	ScheduleInterval      timeutil.Duration                 `json:"scheduleInterval"`
-	ScheduleFrom          time.Time                         `json:"scheduleFrom"`
-	DBBackupConfig        *DBBackupConfigReq                `json:"dbBackupConfig"`
-	Compression           bool                              `json:"compression"`
-	EncryptionSecret      string                            `json:"encryptionSecret"`
-	DestinationStorage    basedto.ObjectIDReq               `json:"destinationStorage"`
-	DestinationStorageDir string                            `json:"destinationStorageDir"`
-	LocalBackupRetention  timeutil.Duration                 `json:"localBackupRetention"`
-	Notification          *basedto.BaseEventNotificationReq `json:"notification"`
+	Status           base.SettingStatus                `json:"status"`
+	ScheduleInterval timeutil.Duration                 `json:"scheduleInterval"`
+	ScheduleFrom     time.Time                         `json:"scheduleFrom"`
+	Compression      SystemBackupCompressionReq        `json:"compression"`
+	Encryption       SystemBackupEncryptionReq         `json:"encryption"`
+	CloudStorage     SystemBackupCloudStorageReq       `json:"cloudStorage"`
+	DBBackupConfig   SystemBackupDBConfigReq           `json:"dbBackupConfig"`
+	Notification     *basedto.BaseEventNotificationReq `json:"notification"`
 }
 
 func (req *SystemBackupBaseReq) ToEntity() *entity.SystemBackup {
 	return &entity.SystemBackup{
-		ScheduleInterval:      req.ScheduleInterval,
-		ScheduleFrom:          req.ScheduleFrom,
-		DBBackupConfig:        req.DBBackupConfig.ToEntity(),
-		Compression:           req.Compression,
-		EncryptionSecret:      entity.NewEncryptedField(req.EncryptionSecret),
-		DestinationStorage:    entity.ObjectID{ID: req.DestinationStorage.ID},
-		DestinationStorageDir: req.DestinationStorageDir,
-		LocalBackupRetention:  req.LocalBackupRetention,
-		Notification:          req.Notification.ToEntity(),
+		ScheduleInterval: req.ScheduleInterval,
+		ScheduleFrom:     req.ScheduleFrom,
+		Compression:      req.Compression.ToEntity(),
+		Encryption:       req.Encryption.ToEntity(),
+		CloudStorage:     req.CloudStorage.ToEntity(),
+		DBBackupConfig:   req.DBBackupConfig.ToEntity(),
+		Notification:     req.Notification.ToEntity(),
 	}
 }
 
-type DBBackupConfigReq struct {
+type SystemBackupCompressionReq struct {
+	Format base.FileCompressionFormat `json:"format,omitempty"`
+}
+
+func (req *SystemBackupCompressionReq) ToEntity() entity.SystemBackupCompression {
+	return entity.SystemBackupCompression{
+		Format: req.Format,
+	}
+}
+
+type SystemBackupEncryptionReq struct {
+	Format base.FileEncryptionFormat `json:"format,omitempty"`
+	Secret string                    `json:"secret,omitzero"`
+}
+
+func (req *SystemBackupEncryptionReq) ToEntity() entity.SystemBackupEncryption {
+	return entity.SystemBackupEncryption{
+		Format: req.Format,
+		Secret: entity.NewEncryptedField(req.Secret),
+	}
+}
+
+type SystemBackupCloudStorageReq struct {
+	ID             string `json:"id"`
+	DestinationDir string `json:"destinationDir"`
+}
+
+func (req *SystemBackupCloudStorageReq) ToEntity() entity.SystemBackupCloudStorage {
+	return entity.SystemBackupCloudStorage{
+		ID:             req.ID,
+		DestinationDir: req.DestinationDir,
+	}
+}
+
+type SystemBackupDBConfigReq struct {
 	BackupDeletedObjects bool `json:"backupDeletedObjects"`
 }
 
-func (req *DBBackupConfigReq) ToEntity() *entity.DBBackupConfig {
-	if req == nil {
-		return nil
-	}
-	return &entity.DBBackupConfig{
+func (req *SystemBackupDBConfigReq) ToEntity() entity.SystemBackupDBConfig {
+	return entity.SystemBackupDBConfig{
 		BackupDeletedObjects: req.BackupDeletedObjects,
 	}
 }
