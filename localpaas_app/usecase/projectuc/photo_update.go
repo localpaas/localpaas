@@ -2,14 +2,22 @@ package projectuc
 
 import (
 	"context"
+	"fmt"
+	"math/rand"
+
+	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/fileutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc/projectdto"
 )
 
@@ -26,7 +34,7 @@ func (uc *UC) UpdateProjectPhoto(
 		}
 
 		persistingData := &persistingProjectPhotoData{}
-		uc.preparePersistingProjectPhotoData(req, profileData, persistingData)
+		uc.preparePersistingProjectPhoto(req, profileData, persistingData)
 
 		return uc.persistProjectPhotoData(ctx, db, persistingData)
 	})
@@ -42,7 +50,9 @@ type updateProjectPhotoData struct {
 }
 
 type persistingProjectPhotoData struct {
-	UpdatingProject *entity.Project
+	UpdatingProject          *entity.Project
+	UpsertingBinObjects      []*entity.BinObject
+	HardDeletingBinObjectIDs []string
 }
 
 func (uc *UC) loadProjectPhotoDataForUpdate(
@@ -52,38 +62,54 @@ func (uc *UC) loadProjectPhotoDataForUpdate(
 	data *updateProjectPhotoData,
 ) error {
 	project, err := uc.projectRepo.GetByID(ctx, db, req.ID,
-		bunex.SelectFor("UPDATE"),
+		bunex.SelectFor("UPDATE OF project"),
 		bunex.SelectExcludeColumns(entity.ProjectDefaultExcludeColumns...),
+		bunex.SelectRelation("PhotoData"),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 	data.Project = project
 
-	// Save photo to local disk and set photo field of the project
-	if req.FileExt != "" && len(req.DataBytes) > 0 {
-		err = uc.projectService.SaveProjectPhoto(ctx, project, req.DataBytes, req.FileExt)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
-	}
-
 	return nil
 }
 
-func (uc *UC) preparePersistingProjectPhotoData(
+func (uc *UC) preparePersistingProjectPhoto(
 	req *projectdto.UpdateProjectPhotoReq,
 	data *updateProjectPhotoData,
 	persistingData *persistingProjectPhotoData,
 ) {
 	timeNow := timeutil.NowUTC()
 	project := data.Project
-	persistingData.UpdatingProject = project
-	project.UpdatedAt = timeNow
+	photoData := project.PhotoData
 
 	if req.Delete {
+		if photoData != nil && photoData.ID != "" {
+			// Project photo may take a remarkable space, so we hard-delete it
+			persistingData.HardDeletingBinObjectIDs = append(persistingData.HardDeletingBinObjectIDs, photoData.ID)
+		}
 		project.Photo = ""
+		return
 	}
+
+	if photoData == nil {
+		photoData = &entity.BinObject{
+			ID:        gofn.Must(ulid.NewStringULID()),
+			CreatedAt: timeNow,
+		}
+	}
+	photoData.UpdatedAt = timeNow
+	photoData.Type = base.BinObjectTypeProjectPhoto
+	photoData.Status = base.BinObjectStatusActive
+	photoData.Name = req.FileName
+	photoData.ContentType = fileutil.TypeByExtension(req.FileExt)
+	photoData.Data = req.DataBytes
+	persistingData.UpsertingBinObjects = append(persistingData.UpsertingBinObjects, photoData)
+
+	project.PhotoID = photoData.ID
+	project.Photo = fmt.Sprintf("%v/images/%v-%v", config.Current.HTTPServer.BasePath,
+		project.PhotoID, rand.Int31n(1000)) //nolint
+	project.UpdatedAt = timeNow
 }
 
 func (uc *UC) persistProjectPhotoData(
@@ -92,8 +118,20 @@ func (uc *UC) persistProjectPhotoData(
 	persistingData *persistingProjectPhotoData,
 ) error {
 	err := uc.projectRepo.Update(ctx, db, persistingData.UpdatingProject,
-		bunex.UpdateColumns("updated_at", "photo"),
+		bunex.UpdateColumns("updated_at", "photo", "photo_id"),
 	)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	err = uc.binObjectRepo.UpsertMulti(ctx, db, persistingData.UpsertingBinObjects,
+		entity.BinObjectUpsertingConflictCols, entity.BinObjectUpsertingUpdateCols)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	err = uc.binObjectRepo.DeleteByIDs(ctx, db, persistingData.HardDeletingBinObjectIDs,
+		bunex.DeleteWithForceDelete())
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

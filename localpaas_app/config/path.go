@@ -120,22 +120,6 @@ func (cfg *Config) ProjectGithubAppManifestFlowProgressURL(projectID, settingID 
 		"github-apps", settingID, "manifest-flow/progress"))
 }
 
-/// OBJECT PHOTOS
-
-func (cfg *Config) DataPathPhoto() string {
-	return filepath.Join(cfg.AppPath, "files", "photo")
-}
-func (cfg *Config) HttpPathPhoto() string {
-	return "/files/photo/"
-}
-
-func (cfg *Config) DataPathUserPhoto() string {
-	return filepath.Join(cfg.DataPathPhoto(), "user")
-}
-func (cfg *Config) DataPathProjectPhoto() string {
-	return filepath.Join(cfg.DataPathPhoto(), "project")
-}
-
 /// SSL CERTS
 
 func (cfg *Config) DataPathSsl() string {
@@ -180,9 +164,6 @@ func (cfg *Config) DataPathsToInitAtStartup() map[string]os.FileMode {
 		cfg.DataPathSslLetsEncrypt(): defaultDirMode,
 
 		cfg.DataPathTraefikEtcDynamic(): defaultDirMode,
-
-		cfg.DataPathUserPhoto():    defaultDirMode,
-		cfg.DataPathProjectPhoto(): defaultDirMode,
 
 		cfg.DataPathSystemBackupFiles(): defaultDirMode,
 	}

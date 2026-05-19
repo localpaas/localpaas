@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -15,6 +14,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/clusterhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/devhelperhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/filehandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/imagehandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/localpaashandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projecthandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projectsettingshandler"
@@ -26,11 +26,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/userhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/usersettingshandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/webhookhandler"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
-)
-
-var (
-	defaultPhotoCacheHeader = fmt.Sprintf("public, max-age=%v", int(timeutil.Week.Seconds()))
 )
 
 type HandlerRegistry struct {
@@ -51,6 +46,7 @@ type HandlerRegistry struct {
 	traefikHandler         *traefikhandler.Handler
 	webhookHandler         *webhookhandler.Handler
 	fileHandler            *filehandler.Handler
+	imageHandler           *imagehandler.Handler
 	devHelperHandler       *devhelperhandler.Handler
 }
 
@@ -72,6 +68,7 @@ func NewHandlerRegistry(
 	traefikHandler *traefikhandler.Handler,
 	webhookHandler *webhookhandler.Handler,
 	fileHandler *filehandler.Handler,
+	imageHandler *imagehandler.Handler,
 	devHelperHandler *devhelperhandler.Handler,
 ) *HandlerRegistry {
 	return &HandlerRegistry{
@@ -92,6 +89,7 @@ func NewHandlerRegistry(
 		traefikHandler:         traefikHandler,
 		webhookHandler:         webhookHandler,
 		fileHandler:            fileHandler,
+		imageHandler:           imageHandler,
 		devHelperHandler:       devHelperHandler,
 	}
 }
@@ -108,8 +106,6 @@ func (s *HTTPServer) registerRoutes() {
 	}
 
 	// STATIC FILES
-	s.engine.Use(StaticServe(s.config.HttpPathPhoto(),
-		localFile(s.config.DataPathPhoto(), false, defaultPhotoCacheHeader)))
 	s.engine.Use(StaticServe(s.config.HttpPathSslLetsEncrypt(),
 		localFile(s.config.DataPathSslLetsEncrypt(), false, "")))
 	// Serve the static files from the "dist-dashboard" directory at the root URL "/"
@@ -133,15 +129,16 @@ func (s *HTTPServer) registerRoutes() {
 	// PUBLIC ROUTES
 	apiGroup := s.engine.Group(s.config.HTTPServer.BasePath)
 
-	_, _ = s.registerSessionRoutes(apiGroup)
-	_, _ = s.registerUserRoutes(apiGroup)
-	_ = s.registerProjectRoutes(apiGroup)
-	_ = s.registerSettingRoutes(apiGroup)
-	_, _ = s.registerSystemRoutes(apiGroup)
-	_ = s.registerClusterRoutes(apiGroup)
-	_ = s.registerWebhookRoutes(apiGroup)
-	_ = s.registerFileRoutes(apiGroup)
-	_ = s.registerDevRoutes(apiGroup)
+	s.registerSessionRoutes(apiGroup)
+	s.registerUserRoutes(apiGroup)
+	s.registerProjectRoutes(apiGroup)
+	s.registerSettingRoutes(apiGroup)
+	s.registerSystemRoutes(apiGroup)
+	s.registerClusterRoutes(apiGroup)
+	s.registerWebhookRoutes(apiGroup)
+	s.registerFileRoutes(apiGroup)
+	s.registerImageRoutes(apiGroup)
+	s.registerDevRoutes(apiGroup)
 }
 
 func routePing(c *gin.Context) {

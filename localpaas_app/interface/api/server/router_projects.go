@@ -5,7 +5,7 @@ import (
 )
 
 //nolint:funlen
-func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.RouterGroup {
+func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) {
 	projectGroup := apiGroup.Group("/projects")
 	projectHandler := s.handlerRegistry.projectHandler
 	projectSettingsHandler := s.handlerRegistry.projectSettingsHandler
@@ -227,6 +227,4 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) *gin.Route
 	}
 
 	_ = s.registerAppRoutes(projectGroup)
-
-	return projectGroup
 }

@@ -40,6 +40,13 @@ type UserPhotoReq struct {
 	FileExt   string `json:"-"`
 }
 
+func (req *UserPhotoReq) IsChanged() bool {
+	if req == nil {
+		return false
+	}
+	return req.Delete || (req.FileExt != "" && len(req.FileName) > 0)
+}
+
 func NewCompleteUserSignupReq() *CompleteUserSignupReq {
 	return &CompleteUserSignupReq{}
 }

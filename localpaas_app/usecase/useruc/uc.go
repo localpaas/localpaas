@@ -8,22 +8,25 @@ import (
 )
 
 type UC struct {
-	db           *database.DB
-	userRepo     repository.UserRepo
-	userService  userservice.Service
-	emailService emailservice.Service
+	db            *database.DB
+	userRepo      repository.UserRepo
+	binObjectRepo repository.BinObjectRepo
+	userService   userservice.Service
+	emailService  emailservice.Service
 }
 
 func New(
 	db *database.DB,
 	userRepo repository.UserRepo,
+	binObjectRepo repository.BinObjectRepo,
 	userService userservice.Service,
 	emailService emailservice.Service,
 ) *UC {
 	return &UC{
-		db:           db,
-		userRepo:     userRepo,
-		userService:  userService,
-		emailService: emailService,
+		db:            db,
+		userRepo:      userRepo,
+		binObjectRepo: binObjectRepo,
+		userService:   userService,
+		emailService:  emailService,
 	}
 }

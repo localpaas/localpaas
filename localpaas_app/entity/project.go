@@ -8,7 +8,7 @@ import (
 
 var (
 	ProjectUpsertingConflictCols = []string{"id"}
-	ProjectUpsertingUpdateCols   = []string{"name", "key", "photo", "status", "note", "owner_id",
+	ProjectUpsertingUpdateCols   = []string{"name", "key", "photo", "photo_id", "status", "note", "owner_id",
 		"update_ver", "updated_at", "deleted_at"}
 	ProjectDefaultExcludeColumns = []string{"note"}
 )
@@ -18,6 +18,7 @@ type Project struct {
 	Name      string             `json:"name"`
 	Key       string             `json:"key"`
 	Photo     string             `bun:",nullzero" json:"photo,omitempty"`
+	PhotoID   string             `bun:",nullzero" json:"photoId,omitempty"`
 	Status    base.ProjectStatus `json:"status"`
 	Note      string             `bun:",nullzero" json:"note,omitempty"`
 	OwnerID   string             `json:"ownerId"`
@@ -27,11 +28,12 @@ type Project struct {
 	UpdatedAt time.Time `bun:",default:current_timestamp" json:"updatedAt"`
 	DeletedAt time.Time `bun:",soft_delete,nullzero" json:"deletedAt,omitzero"`
 
-	Owner    *User            `bun:"rel:has-one,join:owner_id=id" json:"owner,omitempty"`
-	Settings []*Setting       `bun:"rel:has-many,join:id=object_id" json:"settings,omitempty"`
-	Apps     []*App           `bun:"rel:has-many,join:id=project_id" json:"apps,omitempty"`
-	Tags     []*ProjectTag    `bun:"rel:has-many,join:id=project_id" json:"tags,omitempty"`
-	Accesses []*ACLPermission `bun:"rel:has-many,join:id=resource_id" json:"accesses,omitempty"`
+	PhotoData *BinObject       `bun:"rel:has-one,join:photo_id=id" json:"photoData,omitempty"`
+	Owner     *User            `bun:"rel:has-one,join:owner_id=id" json:"owner,omitempty"`
+	Settings  []*Setting       `bun:"rel:has-many,join:id=object_id" json:"settings,omitempty"`
+	Apps      []*App           `bun:"rel:has-many,join:id=project_id" json:"apps,omitempty"`
+	Tags      []*ProjectTag    `bun:"rel:has-many,join:id=project_id" json:"tags,omitempty"`
+	Accesses  []*ACLPermission `bun:"rel:has-many,join:id=resource_id" json:"accesses,omitempty"`
 }
 
 // GetID implements IDEntity interface

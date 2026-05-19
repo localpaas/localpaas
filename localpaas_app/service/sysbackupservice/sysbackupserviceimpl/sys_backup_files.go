@@ -4,23 +4,14 @@ import (
 	"context"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/entityutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/jsonl"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
-)
-
-const (
-	fileModelUserPhoto    = "files/user-photo"
-	fileModelProjectPhoto = "files/project-photo"
 )
 
 const (
@@ -28,20 +19,7 @@ const (
 )
 
 var (
-	sysBackupFileModels = []*sysBackupFileModel{
-		{
-			Type: fileModelUserPhoto,
-			DirPath: func() string {
-				return config.Current.DataPathUserPhoto()
-			},
-		},
-		{
-			Type: fileModelProjectPhoto,
-			DirPath: func() string {
-				return config.Current.DataPathProjectPhoto()
-			},
-		},
-	}
+	sysBackupFileModels = []*sysBackupFileModel{}
 )
 
 type sysBackupFileModel struct {
@@ -55,10 +33,9 @@ type sysBackupFileEntry struct {
 	Data []byte `json:"data"`
 }
 
-//nolint:gocognit
 func (s *service) sysBackupFiles(
 	ctx context.Context,
-	db database.IDB,
+	_ database.IDB,
 	jsonlW *jsonl.Writer,
 	data *sysBackupData,
 ) (err error) {
@@ -76,18 +53,6 @@ func (s *service) sysBackupFiles(
 		}
 	}()
 
-	allUsers, _, err := s.userRepo.List(ctx, db, nil, bunex.SelectColumns("id"))
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	allUserIDs := entityutil.SliceToIDMap(allUsers)
-
-	allProjects, _, err := s.projectRepo.List(ctx, db, nil, bunex.SelectColumns("id"))
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	allProjectIDs := entityutil.SliceToIDMap(allProjects)
-
 	for _, model := range sysBackupFileModels {
 		dirPath := model.DirPath()
 		entries, err := os.ReadDir(dirPath)
@@ -103,21 +68,6 @@ func (s *service) sysBackupFiles(
 				continue
 			}
 			fileName := entry.Name()
-			switch model.Type {
-			case fileModelUserPhoto:
-				userID, _, _ := strings.Cut(fileName, ".")
-				if _, exists := allUserIDs[userID]; !exists {
-					continue
-				}
-			case fileModelProjectPhoto:
-				projectID, _, _ := strings.Cut(fileName, ".")
-				if _, exists := allProjectIDs[projectID]; !exists {
-					continue
-				}
-			default:
-				// Allow
-			}
-
 			fileData, err := os.ReadFile(filepath.Join(dirPath, fileName))
 			if err != nil {
 				return apperrors.Wrap(err)

@@ -10,8 +10,9 @@ const (
 )
 
 type PersistingUserData struct {
-	UpsertingUsers    []*entity.User
-	UpsertingSettings []*entity.Setting
-	UpsertingAccesses []*entity.ACLPermission
-	DeletingAccesses  []*base.PermissionResource
+	UpsertingUsers      []*entity.User
+	UpsertingSettings   []*entity.Setting
+	UpsertingBinObjects []*entity.BinObject
+	UpsertingAccesses   []*entity.ACLPermission
+	DeletingAccesses    []*base.PermissionResource
 }

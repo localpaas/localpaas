@@ -49,7 +49,7 @@ func (s *service) migrateDBSchema(
 		"/localpaas",
 	})
 	if migBin == "" {
-		return apperrors.NewNotFound("Binary 'sql-migrate'")
+		return apperrors.NewNotFound("BinObject 'sql-migrate'")
 	}
 
 	migConfigFile, _ := fileutil.Lookup("localpaas_app/db/dbconfig.yml", []string{

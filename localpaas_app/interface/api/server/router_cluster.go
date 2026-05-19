@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (s *HTTPServer) registerClusterRoutes(apiGroup *gin.RouterGroup) *gin.RouterGroup {
+func (s *HTTPServer) registerClusterRoutes(apiGroup *gin.RouterGroup) {
 	clusterGroup := apiGroup.Group("/cluster")
 	clusterHandler := s.handlerRegistry.clusterHandler
 
@@ -50,6 +50,4 @@ func (s *HTTPServer) registerClusterRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		networkGroup.POST("", clusterHandler.CreateNetwork)
 		networkGroup.DELETE("/:networkID", clusterHandler.DeleteNetwork)
 	}
-
-	return clusterGroup
 }

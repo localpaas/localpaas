@@ -15,6 +15,7 @@ type UC struct {
 	db                       *database.DB
 	projectRepo              repository.ProjectRepo
 	settingRepo              repository.SettingRepo
+	binObjectRepo            repository.BinObjectRepo
 	projectSharedSettingRepo repository.ProjectSharedSettingRepo
 	permissionManager        permission.Manager
 	userService              userservice.Service
@@ -28,6 +29,7 @@ func New(
 	db *database.DB,
 	projectRepo repository.ProjectRepo,
 	settingRepo repository.SettingRepo,
+	binObjectRepo repository.BinObjectRepo,
 	projectSharedSettingRepo repository.ProjectSharedSettingRepo,
 	permissionManager permission.Manager,
 	userService userservice.Service,
@@ -40,6 +42,7 @@ func New(
 		db:                       db,
 		projectRepo:              projectRepo,
 		settingRepo:              settingRepo,
+		binObjectRepo:            binObjectRepo,
 		projectSharedSettingRepo: projectSharedSettingRepo,
 		permissionManager:        permissionManager,
 		userService:              userService,

@@ -26,6 +26,13 @@ func (s *service) PersistUserData(ctx context.Context, db database.IDB,
 		return apperrors.Wrap(err)
 	}
 
+	// Binaries
+	err = s.binObjectRepo.UpsertMulti(ctx, db, persistingData.UpsertingBinObjects,
+		entity.BinObjectUpsertingConflictCols, entity.BinObjectUpsertingUpdateCols)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
 	// Remove accesses
 	err = s.permissionManager.RemoveACLPermissions(ctx, db, persistingData.DeletingAccesses)
 	if err != nil {

@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (s *HTTPServer) registerSystemRoutes(apiGroup *gin.RouterGroup) (*gin.RouterGroup, *gin.RouterGroup) {
+func (s *HTTPServer) registerSystemRoutes(apiGroup *gin.RouterGroup) {
 	systemGroup := apiGroup.Group("/system")
 	systemHandler := s.handlerRegistry.systemHandler
 
@@ -54,6 +54,4 @@ func (s *HTTPServer) registerSystemRoutes(apiGroup *gin.RouterGroup) (*gin.Route
 
 	_ = s.registerLocalPaaSRoutes(systemGroup)
 	_ = s.registerTraefikRoutes(systemGroup)
-
-	return systemGroup, systemSettingGroup
 }

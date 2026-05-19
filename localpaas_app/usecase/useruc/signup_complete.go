@@ -47,7 +47,7 @@ type userSignupData struct {
 }
 
 type persistingUserSignupData struct {
-	UpdatingUser *entity.User
+	persistingUserProfileData
 }
 
 func (uc *UC) loadUserSignupData(
@@ -62,7 +62,8 @@ func (uc *UC) loadUserSignupData(
 	}
 
 	user, err := uc.userRepo.GetByID(ctx, db, inviteToken.UserID,
-		bunex.SelectFor("UPDATE"),
+		bunex.SelectFor("UPDATE OF \"user\""),
+		bunex.SelectRelationIf(req.Photo.IsChanged(), "PhotoData"),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -86,12 +87,6 @@ func (uc *UC) loadUserSignupData(
 		}
 	}
 
-	// Save user photo to local disk
-	err = uc.userService.SaveUserPhoto(ctx, user, req.Photo.DataBytes, req.Photo.FileExt)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
 	return nil
 }
 
@@ -102,7 +97,6 @@ func (uc *UC) preparePersistingUserSignupData(
 ) error {
 	timeNow := timeutil.NowUTC()
 	user := signupData.User
-	persistingData.UpdatingUser = user
 
 	user.UpdatedAt = timeNow
 	user.Username = req.Username
@@ -116,7 +110,8 @@ func (uc *UC) preparePersistingUserSignupData(
 			return apperrors.NewParamInvalid("Password").
 				WithMsgLog("password is required")
 		}
-		if err := uc.userService.ChangePassword(user, req.Password, userservice.SkipCheckingCurrentPassword); err != nil {
+		err := uc.userService.ChangePassword(user, req.Password, userservice.SkipCheckingCurrentPassword)
+		if err != nil {
 			return apperrors.Wrap(err)
 		}
 	}
@@ -131,6 +126,11 @@ func (uc *UC) preparePersistingUserSignupData(
 		user.TotpSecret = req.MFATotpSecret
 	}
 
+	if req.Photo.IsChanged() {
+		uc.preparePersistingUserPhoto(req.Photo, user, timeNow, &persistingData.persistingUserProfileData)
+	}
+
+	persistingData.UpdatingUser = user
 	return nil
 }
 
@@ -139,9 +139,5 @@ func (uc *UC) persistUserSignupData(
 	db database.IDB,
 	persistingData *persistingUserSignupData,
 ) error {
-	err := uc.userRepo.Update(ctx, db, persistingData.UpdatingUser)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	return nil
+	return uc.persistUserProfileData(ctx, db, &persistingData.persistingUserProfileData)
 }

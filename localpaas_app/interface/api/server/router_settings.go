@@ -5,7 +5,7 @@ import (
 )
 
 //nolint:funlen
-func (s *HTTPServer) registerSettingRoutes(apiGroup *gin.RouterGroup) *gin.RouterGroup {
+func (s *HTTPServer) registerSettingRoutes(apiGroup *gin.RouterGroup) {
 	settingGroup := apiGroup.Group("/settings")
 	settingHandler := s.handlerRegistry.settingHandler
 
@@ -185,6 +185,4 @@ func (s *HTTPServer) registerSettingRoutes(apiGroup *gin.RouterGroup) *gin.Route
 		imageBuildSettingsGroup.PUT("/status", settingHandler.UpdateImageBuildSettingsStatus)
 		imageBuildSettingsGroup.DELETE("", settingHandler.DeleteImageBuildSettings)
 	}
-
-	return settingGroup
 }

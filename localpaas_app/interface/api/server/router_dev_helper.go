@@ -4,9 +4,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (s *HTTPServer) registerDevRoutes(apiGroup *gin.RouterGroup) *gin.RouterGroup {
+func (s *HTTPServer) registerDevRoutes(apiGroup *gin.RouterGroup) {
 	if !s.config.IsDevEnv() {
-		return nil
+		return
 	}
 	devHelperGroup := apiGroup.Group("/dev-helper")
 	devHelperHandler := s.handlerRegistry.devHelperHandler
@@ -14,6 +14,4 @@ func (s *HTTPServer) registerDevRoutes(apiGroup *gin.RouterGroup) *gin.RouterGro
 	devHelperGroup.POST("/lock-task", devHelperHandler.LockTask)
 	devHelperGroup.POST("/long-req", devHelperHandler.SimulateLongRequest)
 	devHelperGroup.POST("/exec-cmd", devHelperHandler.ExecuteCmd)
-
-	return devHelperGroup
 }

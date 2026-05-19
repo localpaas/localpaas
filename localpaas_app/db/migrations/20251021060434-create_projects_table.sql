@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS projects
     id           VARCHAR(100) PRIMARY KEY,
     name         VARCHAR(100) NOT NULL,
     key          VARCHAR(100) NOT NULL,
+    photo_id     VARCHAR(100) NULL,
     photo        VARCHAR(255) NULL,
     status       VARCHAR NOT NULL CONSTRAINT chk_status CHECK
                     (status IN ('active','disabled','deleting')),

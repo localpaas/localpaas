@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (s *HTTPServer) registerSessionRoutes(apiGroup *gin.RouterGroup) (*gin.RouterGroup, *gin.RouterGroup) {
+func (s *HTTPServer) registerSessionRoutes(apiGroup *gin.RouterGroup) {
 	sessionGroup := apiGroup.Group("/sessions")
 	sessionHandler := s.handlerRegistry.sessionHandler
 
@@ -31,6 +31,4 @@ func (s *HTTPServer) registerSessionRoutes(apiGroup *gin.RouterGroup) (*gin.Rout
 		// Password forgot
 		authGroup.POST("/login-password-forgot", sessionHandler.LoginPasswordForgot)
 	}
-
-	return sessionGroup, authGroup
 }

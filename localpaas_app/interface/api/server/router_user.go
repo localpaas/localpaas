@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (s *HTTPServer) registerUserRoutes(apiGroup *gin.RouterGroup) (*gin.RouterGroup, *gin.RouterGroup) {
+func (s *HTTPServer) registerUserRoutes(apiGroup *gin.RouterGroup) {
 	userGroup := apiGroup.Group("/users")
 	userHandler := s.handlerRegistry.userHandler
 
@@ -45,6 +45,4 @@ func (s *HTTPServer) registerUserRoutes(apiGroup *gin.RouterGroup) (*gin.RouterG
 		apiKeyGroup.PUT("/:itemID/status", userSettingsHandler.UpdateAPIKeyStatus)
 		apiKeyGroup.DELETE("/:itemID", userSettingsHandler.DeleteAPIKey)
 	}
-
-	return userGroup, userSettingGroup
 }

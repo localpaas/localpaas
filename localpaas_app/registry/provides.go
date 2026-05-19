@@ -15,6 +15,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/clusterhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/devhelperhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/filehandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/imagehandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/localpaashandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projectbasehandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projecthandler"
@@ -66,6 +67,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appdeploymentuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appsettingsuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/binobjectuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/imageuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/networkuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/cluster/nodeuc"
@@ -168,6 +170,7 @@ var Provides = []any{
 	traefikhandler.New,
 	webhookhandler.New,
 	filehandler.New,
+	imagehandler.New,
 	devhelperhandler.New,
 
 	// Use case
@@ -216,6 +219,7 @@ var Provides = []any{
 	devhelperuc.New,
 	lpappsettingsuc.New,
 	traefiksettingsuc.New,
+	binobjectuc.New,
 
 	// Service
 	clusterserviceimpl.New,
@@ -269,6 +273,7 @@ var Provides = []any{
 	// Others
 	repository.NewLoginTrustedDeviceRepo,
 	repository.NewLockRepo,
+	repository.NewBinObjectRepo,
 
 	// Cache Repo
 	cacherepository.NewUserTokenRepo,

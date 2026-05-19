@@ -69,6 +69,10 @@ var (
 			Model:        (*entity.SysError)(nil),
 			NoSoftDelete: true,
 		},
+		{
+			Type:  "db/bin-object",
+			Model: (*entity.BinObject)(nil),
+		},
 	}
 )
 

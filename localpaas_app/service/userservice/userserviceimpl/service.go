@@ -9,11 +9,13 @@ import (
 func New(
 	userRepo repository.UserRepo,
 	settingRepo repository.SettingRepo,
+	binObjectRepo repository.BinObjectRepo,
 	permissionManager permission.Manager,
 ) userservice.Service {
 	return &service{
 		userRepo:          userRepo,
 		settingRepo:       settingRepo,
+		binObjectRepo:     binObjectRepo,
 		permissionManager: permissionManager,
 	}
 }
@@ -21,5 +23,6 @@ func New(
 type service struct {
 	userRepo          repository.UserRepo
 	settingRepo       repository.SettingRepo
+	binObjectRepo     repository.BinObjectRepo
 	permissionManager permission.Manager
 }

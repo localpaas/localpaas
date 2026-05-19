@@ -90,6 +90,11 @@ var (
 			Orders:       []string{"id"},
 			NoSoftDelete: true,
 		},
+		{
+			Type:   "db/bin-object",
+			Model:  new([]*entity.BinObject),
+			Orders: []string{"id"},
+		},
 	}
 )
 

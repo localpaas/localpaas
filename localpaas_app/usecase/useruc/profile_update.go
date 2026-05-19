@@ -4,15 +4,22 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math/rand"
+	"time"
+
+	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/fileutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc/userdto"
 )
 
@@ -45,7 +52,9 @@ type userProfileData struct {
 }
 
 type persistingUserProfileData struct {
-	UpdatingUser *entity.User
+	UpdatingUser             *entity.User
+	UpsertingBinObjects      []*entity.BinObject
+	HardDeletingBinObjectIDs []string
 }
 
 func (uc *UC) loadUserProfileData(
@@ -57,7 +66,8 @@ func (uc *UC) loadUserProfileData(
 ) error {
 	user, err := uc.userRepo.GetByID(ctx, db, auth.User.ID,
 		bunex.SelectExcludeColumns(entity.UserDefaultExcludeColumns...),
-		bunex.SelectFor("UPDATE"),
+		bunex.SelectFor("UPDATE OF \"user\""),
+		bunex.SelectRelationIf(req.Photo.IsChanged(), "PhotoData"),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -97,14 +107,6 @@ func (uc *UC) loadUserProfileData(
 		}
 	}
 
-	// Save user photo to local disk
-	if req.Photo != nil && req.Photo.FileExt != "" && len(req.Photo.DataBytes) > 0 {
-		err = uc.userService.SaveUserPhoto(ctx, user, req.Photo.DataBytes, req.Photo.FileExt)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
-	}
-
 	return nil
 }
 
@@ -115,7 +117,6 @@ func (uc *UC) preparePersistingUserProfileData(
 ) {
 	timeNow := timeutil.NowUTC()
 	user := profileData.User
-	persistingData.UpdatingUser = user
 
 	user.UpdatedAt = timeNow
 	if req.Username != "" {
@@ -130,12 +131,53 @@ func (uc *UC) preparePersistingUserProfileData(
 	if req.Position != nil {
 		user.Position = *req.Position
 	}
-	if req.Photo != nil && req.Photo.Delete {
-		user.Photo = ""
-	}
 	if req.Notes != nil {
 		user.Notes = *req.Notes
 	}
+	if req.Photo.IsChanged() {
+		uc.preparePersistingUserPhoto(req.Photo, user, timeNow, persistingData)
+	}
+
+	persistingData.UpdatingUser = user
+}
+
+func (uc *UC) preparePersistingUserPhoto(
+	req *userdto.UserPhotoReq,
+	user *entity.User,
+	timeNow time.Time,
+	persistingData *persistingUserProfileData,
+) {
+	if !req.IsChanged() {
+		return
+	}
+	photoData := user.PhotoData
+
+	if req.Delete {
+		if photoData != nil && photoData.ID != "" {
+			// User photo may take a remarkable space, so we hard-delete it
+			persistingData.HardDeletingBinObjectIDs = append(persistingData.HardDeletingBinObjectIDs, photoData.ID)
+		}
+		user.Photo = ""
+		return
+	}
+
+	if photoData == nil {
+		photoData = &entity.BinObject{
+			ID:        gofn.Must(ulid.NewStringULID()),
+			CreatedAt: timeNow,
+		}
+	}
+	photoData.UpdatedAt = timeNow
+	photoData.Type = base.BinObjectTypeUserPhoto
+	photoData.Status = base.BinObjectStatusActive
+	photoData.Name = req.FileName
+	photoData.ContentType = fileutil.TypeByExtension(req.FileExt)
+	photoData.Data = req.DataBytes
+	persistingData.UpsertingBinObjects = append(persistingData.UpsertingBinObjects, photoData)
+
+	user.PhotoID = photoData.ID
+	user.Photo = fmt.Sprintf("%v/images/%v-%v", config.Current.HTTPServer.BasePath,
+		user.PhotoID, rand.Int31n(1000)) //nolint
 }
 
 func (uc *UC) persistUserProfileData(
@@ -144,10 +186,24 @@ func (uc *UC) persistUserProfileData(
 	persistingData *persistingUserProfileData,
 ) error {
 	err := uc.userRepo.Update(ctx, db, persistingData.UpdatingUser,
-		bunex.UpdateColumns("updated_at", "username", "email", "full_name", "position", "photo", "notes"),
+		bunex.UpdateColumns("updated_at", "username", "email", "full_name", "position",
+			"photo", "photo_id", "notes"),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+
+	err = uc.binObjectRepo.UpsertMulti(ctx, db, persistingData.UpsertingBinObjects,
+		entity.BinObjectUpsertingConflictCols, entity.BinObjectUpsertingUpdateCols)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	err = uc.binObjectRepo.DeleteByIDs(ctx, db, persistingData.HardDeletingBinObjectIDs,
+		bunex.DeleteWithForceDelete())
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
 	return nil
 }

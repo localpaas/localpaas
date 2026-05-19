@@ -20,6 +20,4 @@ type Service interface {
 	DeleteProject(ctx context.Context, project *entity.Project) error
 	SyncProject(ctx context.Context, db database.IDB, project *entity.Project) (
 		newApps, updateApps []*entity.App, _ []swarm.Service, _ error)
-
-	SaveProjectPhoto(ctx context.Context, project *entity.Project, data []byte, fileExt string) error
 }
