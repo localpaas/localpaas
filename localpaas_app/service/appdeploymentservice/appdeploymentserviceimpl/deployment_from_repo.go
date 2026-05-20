@@ -58,7 +58,7 @@ func (s *service) deployFromRepo(
 	}
 	defer s.repoDeployStepCleanup(ctx, data) //nolint:errcheck
 
-	if data.IsCanceled() {
+	if data.IsTaskCanceled() {
 		return nil
 	}
 
@@ -68,7 +68,7 @@ func (s *service) deployFromRepo(
 		return apperrors.Wrap(err)
 	}
 
-	if data.IsCanceled() {
+	if data.IsTaskCanceled() {
 		return nil
 	}
 
@@ -78,7 +78,7 @@ func (s *service) deployFromRepo(
 		return apperrors.Wrap(err)
 	}
 
-	if data.IsCanceled() {
+	if data.IsTaskCanceled() {
 		return nil
 	}
 
@@ -88,7 +88,20 @@ func (s *service) deployFromRepo(
 		return apperrors.Wrap(err)
 	}
 
-	if data.IsCanceled() {
+	if data.IsTaskCanceled() {
+		return nil
+	}
+
+	// From now until the end of the deployment, we need to lock the app
+	// to prevent unexpected behavior in case there are multiple deployments
+	// happen at the same time.
+
+	shouldContinue, err := s.lockDockerServiceForDeployment(ctx, db, data.appDeploymentData)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	if !shouldContinue {
+		data.DeploymentCanceled = true
 		return nil
 	}
 

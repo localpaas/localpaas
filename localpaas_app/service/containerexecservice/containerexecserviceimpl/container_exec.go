@@ -33,7 +33,7 @@ func (s *service) ContainerExec(
 	cronJob := data.CronJob.MustAsCronJob()
 	command := cronJob.Command
 	if command == nil || command.Command == "" { // can't continue if this happens
-		data.NonRetryable = true
+		data.TaskNonRetryable = true
 		_ = data.LogStore.Add(ctx, applog.NewErrFrame(
 			"Execution command is empty, aborted", applog.TsNow))
 		return nil, apperrors.New(apperrors.ErrInternalServer).WithMsgLog("cron job command is empty")

@@ -17,10 +17,10 @@ type TaskExecData struct {
 	RefObjects *entity.RefObjects
 	LogStore   *applog.Store
 
-	NonCancelable bool
-	NonRetryable  bool
-	Canceled      bool
-	Done          bool
+	TaskNonCancelable bool
+	TaskNonRetryable  bool
+	TaskCanceled      bool
+	TaskDone          bool
 
 	// Callback functions
 	OnCommandFunc         func(base.TaskCommand, ...any)
@@ -28,12 +28,12 @@ type TaskExecData struct {
 	OnPostTransactionFunc func()
 }
 
-func (t *TaskExecData) IsCanceled() bool {
-	return t.Canceled
+func (t *TaskExecData) IsTaskCanceled() bool {
+	return t.TaskCanceled
 }
 
-func (t *TaskExecData) IsDone() bool {
-	return t.Done
+func (t *TaskExecData) IsTaskDone() bool {
+	return t.TaskDone
 }
 
 func (t *TaskExecData) AddRefObjects(refObjects *entity.RefObjects) {

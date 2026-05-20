@@ -18,6 +18,8 @@ type service struct {
 	logger              logging.Logger
 	db                  *database.DB
 	redisClient         rediscache.Client
+	redisLock           rediscache.Lock
+	lockRepo            repository.LockRepo
 	settingRepo         repository.SettingRepo
 	deploymentRepo      repository.DeploymentRepo
 	taskLogRepo         repository.TaskLogRepo
@@ -35,6 +37,8 @@ func New(
 	logger logging.Logger,
 	db *database.DB,
 	redisClient rediscache.Client,
+	redisLock rediscache.Lock,
+	lockRepo repository.LockRepo,
 	settingRepo repository.SettingRepo,
 	deploymentRepo repository.DeploymentRepo,
 	taskLogRepo repository.TaskLogRepo,
@@ -51,6 +55,8 @@ func New(
 		logger:              logger,
 		db:                  db,
 		redisClient:         redisClient,
+		redisLock:           redisLock,
+		lockRepo:            lockRepo,
 		settingRepo:         settingRepo,
 		deploymentRepo:      deploymentRepo,
 		taskLogRepo:         taskLogRepo,

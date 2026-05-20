@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS deployments
 CREATE INDEX idx_deployments_app_id ON deployments(app_id);
 CREATE INDEX idx_deployments_status ON deployments(status);
 CREATE INDEX idx_deployments_created_at ON deployments(created_at);
+CREATE INDEX idx_deployments_updated_at ON deployments(updated_at);
 CREATE INDEX idx_deployments_deleted_at ON deployments(deleted_at);
 
 -- +migrate Down

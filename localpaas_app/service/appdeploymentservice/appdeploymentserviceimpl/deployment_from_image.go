@@ -7,6 +7,7 @@ import (
 	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/batchrecvchan"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
@@ -25,6 +26,7 @@ type imageDeploymentData struct {
 
 func (s *service) deployFromImage(
 	ctx context.Context,
+	db database.Tx,
 	deplData *appDeploymentData,
 ) error {
 	data := &imageDeploymentData{appDeploymentData: deplData}
@@ -35,7 +37,20 @@ func (s *service) deployFromImage(
 		return apperrors.Wrap(err)
 	}
 
-	if data.IsCanceled() {
+	if data.IsTaskCanceled() {
+		return nil
+	}
+
+	// From now until the end of the deployment, we need to lock the app
+	// to prevent unexpected behavior in case there are multiple deployments
+	// happen at the same time.
+
+	shouldContinue, err := s.lockDockerServiceForDeployment(ctx, db, data.appDeploymentData)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	if !shouldContinue {
+		data.DeploymentCanceled = true
 		return nil
 	}
 

@@ -27,6 +27,7 @@ require (
 	github.com/go-errors/errors v1.5.1
 	github.com/go-git/go-git/v5 v5.19.0
 	github.com/go-playground/webhooks/v6 v6.4.0
+	github.com/go-redsync/redsync/v4 v4.16.0
 	github.com/gogits/go-gogs-client v0.0.0-20210131175652-1d7215cd8d85
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/google/go-github/v79 v79.0.0

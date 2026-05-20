@@ -7,7 +7,7 @@ import (
 )
 
 func NormalizeRepoRef(ref string) plumbing.ReferenceName {
-	if ref == "" {
+	if ref == "" || ref == "HEAD" {
 		return "HEAD"
 	}
 	if strings.HasPrefix(ref, "refs/") {

@@ -125,6 +125,7 @@ var Provides = []any{
 
 	// cache
 	rediscache.NewClient,
+	rediscache.NewLock,
 
 	// http server
 	server.NewHTTPServer,

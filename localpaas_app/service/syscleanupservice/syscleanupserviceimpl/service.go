@@ -33,6 +33,7 @@ type service struct {
 	settingRepo              repository.SettingRepo
 	taskRepo                 repository.TaskRepo
 	sysErrorRepo             repository.SysErrorRepo
+	lockRepo                 repository.LockRepo
 	loginTrustedDeviceRepo   repository.LoginTrustedDeviceRepo
 
 	cronJobService      cronjobservice.Service
@@ -61,6 +62,7 @@ func New(
 	settingRepo repository.SettingRepo,
 	taskRepo repository.TaskRepo,
 	sysErrorRepo repository.SysErrorRepo,
+	lockRepo repository.LockRepo,
 	loginTrustedDeviceRepo repository.LoginTrustedDeviceRepo,
 	cronJobService cronjobservice.Service,
 	appService appservice.Service,
@@ -87,6 +89,7 @@ func New(
 		settingRepo:              settingRepo,
 		taskRepo:                 taskRepo,
 		sysErrorRepo:             sysErrorRepo,
+		lockRepo:                 lockRepo,
 		loginTrustedDeviceRepo:   loginTrustedDeviceRepo,
 		cronJobService:           cronJobService,
 		appService:               appService,

@@ -95,14 +95,14 @@ func (q *taskQueue) executeTask(
 
 		var execErr error
 		defer func() {
-			taskData.Done = true
+			taskData.TaskDone = true
 			if err != nil {
 				return
 			}
 			task.EndedAt = timeutil.NowUTC()
 			if execErr != nil {
 				task.Status = base.TaskStatusFailed
-				if taskData.NonRetryable {
+				if taskData.TaskNonRetryable {
 					task.Config.MaxRetry = task.Config.Retry
 				}
 				if task.CanRetry() {
@@ -117,7 +117,7 @@ func (q *taskQueue) executeTask(
 					Error:     execErr.Error(),
 				})
 			} else {
-				task.Status = gofn.If(taskData.Canceled, base.TaskStatusCanceled, base.TaskStatusDone)
+				task.Status = gofn.If(taskData.TaskCanceled, base.TaskStatusCanceled, base.TaskStatusDone)
 			}
 			// Post execution event
 			if taskData.OnEndTransactionFunc != nil {
@@ -202,7 +202,7 @@ func (q *taskQueue) taskControlCheck(
 	}()
 
 	for {
-		if taskData.Done || taskData.Canceled || ctx.Err() != nil {
+		if taskData.TaskDone || taskData.TaskCanceled || ctx.Err() != nil {
 			return
 		}
 		taskControl, err := redishelper.BLPopOne[*cacheentity.TaskControl](ctx, q.redisClient,
@@ -214,8 +214,8 @@ func (q *taskQueue) taskControlCheck(
 		if taskData.OnCommandFunc != nil {
 			taskData.OnCommandFunc(cmd)
 		}
-		if !taskData.NonCancelable && cmd == base.TaskCommandCancel {
-			taskData.Canceled = true
+		if !taskData.TaskNonCancelable && cmd == base.TaskCommandCancel {
+			taskData.TaskCanceled = true
 			return
 		}
 	}

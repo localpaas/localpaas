@@ -27,12 +27,13 @@ const (
 
 type appDeploymentData struct {
 	*appdeploymentservice.AppDeploymentReq
-	Project          *entity.Project
-	App              *entity.App
-	Deployment       *entity.Deployment
-	DeploymentOutput *entity.AppDeploymentOutput
-	Step             string
-	NotifMsgData     *notificationservice.TemplateDataAppDeployment
+	Project            *entity.Project
+	App                *entity.App
+	Deployment         *entity.Deployment
+	DeploymentOutput   *entity.AppDeploymentOutput
+	DeploymentCanceled bool
+	Step               string
+	NotifMsgData       *notificationservice.TemplateDataAppDeployment
 }
 
 func (s *service) Deploy(
@@ -64,15 +65,17 @@ func (s *service) Deploy(
 	depSettings := data.Deployment.Settings
 	switch depSettings.ActiveMethod {
 	case base.DeploymentMethodImage:
-		depErr = s.deployFromImage(ctx, data)
+		depErr = s.deployFromImage(ctx, db, data)
 	case base.DeploymentMethodRepo:
 		depErr = s.deployFromRepo(ctx, db, data)
 	}
 
-	data.Deployment.EndedAt = timeutil.NowUTC()
-	if data.Canceled {
+	data.Deployment.UpdatedAt = timeutil.NowUTC()
+	data.Deployment.EndedAt = data.Deployment.UpdatedAt
+	switch {
+	case data.TaskCanceled, data.DeploymentCanceled:
 		data.Deployment.Status = base.DeploymentStatusCanceled
-	} else {
+	default:
 		data.Deployment.Status = gofn.If(depErr != nil, base.DeploymentStatusFailed, base.DeploymentStatusDone)
 		data.Deployment.Output = data.DeploymentOutput
 	}

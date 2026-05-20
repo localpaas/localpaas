@@ -9,6 +9,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/entityutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
@@ -122,6 +123,12 @@ func (s *service) sysCleanupDB(
 		return apperrors.Wrap(err)
 	}
 
+	// Hard delete all old locks from the DB
+	err = s.sysCleanupDBOldLocks(ctx, db, timeNow)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
 	return nil
 }
 
@@ -225,6 +232,30 @@ func (s *service) sysCleanupDBOldSysErrors(
 	err = s.sysErrorRepo.DeleteHard(ctx, db,
 		bunex.DeleteWhere("created_at < ?", oldestTs),
 	)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	return nil
+}
+
+func (s *service) sysCleanupDBOldLocks(
+	ctx context.Context,
+	db database.IDB,
+	timeNow time.Time,
+) (err error) {
+	oldestTs := timeNow.Add(-90 * 24 * time.Hour) //nolint:mnd
+
+	// Find all old locks with skipping locked ones
+	deletingLocks, _, err := s.lockRepo.List(ctx, db, nil,
+		bunex.SelectWhere("created_at < ?", oldestTs),
+		bunex.SelectFor("UPDATE SKIP LOCKED"),
+	)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	err = s.lockRepo.DeleteByIDs(ctx, db, entityutil.ExtractIDs(deletingLocks))
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

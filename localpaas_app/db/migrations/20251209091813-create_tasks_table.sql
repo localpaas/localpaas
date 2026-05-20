@@ -28,6 +28,7 @@ CREATE INDEX idx_tasks_type ON tasks(type);
 CREATE INDEX idx_tasks_status ON tasks(status);
 CREATE INDEX idx_tasks_run_at ON tasks(run_at);
 CREATE INDEX idx_tasks_created_at ON tasks(created_at);
+CREATE INDEX idx_tasks_updated_at ON tasks(updated_at);
 CREATE INDEX idx_tasks_deleted_at ON tasks(deleted_at);
 
 -- +migrate Down
