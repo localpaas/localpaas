@@ -13,7 +13,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
@@ -158,19 +157,19 @@ func (s *service) calcBuildRegistryAuths(
 	return result, nil
 }
 
-func (s *service) getBuildSetting(
+func (s *service) loadImageBuildSettings(
 	ctx context.Context,
-	db database.Tx,
+	db database.IDB,
 	data *repoDeploymentData,
-) (*entity.ImageBuildSettings, error) {
+) error {
 	app := data.App
 	setting, err := s.settingRepo.GetSingle(ctx, db, base.NewSettingScopeProject(app.ProjectID),
 		base.SettingTypeImageBuildSettings, true)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-		return nil, apperrors.Wrap(err)
+		return apperrors.Wrap(err)
 	}
 	if setting != nil {
-		return setting.MustAsImageBuildSettings(), nil
+		data.ImageBuildSettings = setting.MustAsImageBuildSettings()
 	}
-	return nil, nil
+	return nil
 }

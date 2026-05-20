@@ -90,6 +90,7 @@ type DeploymentRepoSourceReq struct {
 	RepoType       base.RepoType       `json:"repoType"`
 	RepoURL        string              `json:"repoURL"`
 	RepoRef        string              `json:"repoRef"` // can be branch name, tag...
+	CommitHash     string              `json:"commitHash"`
 	Credentials    basedto.ObjectIDReq `json:"credentials"`
 	DockerfilePath string              `json:"dockerfilePath"` // for BuildToolDockerfile only
 	ImageName      string              `json:"imageName"`
@@ -112,11 +113,12 @@ func (req *DeploymentRepoSourceReq) ToEntity() (*entity.DeploymentRepoSource, er
 	repoID := parsedRepoURL.ID
 
 	return &entity.DeploymentRepoSource{
-		BuildTool: req.BuildTool,
-		RepoType:  req.RepoType,
-		RepoID:    repoID,
-		RepoURL:   req.RepoURL,
-		RepoRef:   req.RepoRef,
+		BuildTool:  req.BuildTool,
+		RepoType:   req.RepoType,
+		RepoID:     repoID,
+		RepoURL:    req.RepoURL,
+		RepoRef:    req.RepoRef,
+		CommitHash: req.CommitHash,
 		Credentials: entity.RepoCredentials{
 			ID: req.Credentials.ID,
 		},
@@ -136,8 +138,9 @@ func (req *DeploymentRepoSourceReq) validate(field string) (res []vld.Validator)
 	}
 	res = append(res, basedto.ValidateStrIn(&req.BuildTool, true, base.AllBuildTools, field+"buildTool")...)
 	res = append(res, basedto.ValidateStrIn(&req.RepoType, true, base.AllRepoTypes, field+"repoType")...)
-	res = append(res, basedto.ValidateRepoURL(&req.RepoURL, true, field+"repoURL")...)
+	res = append(res, basedto.ValidateGitRepoURL(&req.RepoURL, true, field+"repoURL")...)
 	res = append(res, basedto.ValidateStr(&req.RepoRef, false, 1, repoRefMaxLen, field+"repoRef")...)
+	res = append(res, basedto.ValidateGitCommitHash(&req.CommitHash, false, field+"commitHash")...)
 	res = append(res, basedto.ValidateObjectIDReq(&req.Credentials, false, field+"credentials")...)
 	res = append(res, basedto.ValidateStr(&req.ImageName, false, 1, base.ImageNameMaxLen, field+"imageName")...)
 	res = append(res, basedto.ValidateObjectIDReq(&req.PushToRegistry, false, field+"pushToRegistry")...)

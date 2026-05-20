@@ -60,6 +60,7 @@ type DeploymentRepoSourceResp struct {
 	RepoID         string                    `json:"repoId"`
 	RepoURL        string                    `json:"repoURL"`
 	RepoRef        string                    `json:"repoRef"` // can be branch name, tag...
+	CommitHash     string                    `json:"commitHash"`
 	Credentials    *settings.BaseSettingResp `json:"credentials"`
 	DockerfilePath string                    `json:"dockerfilePath"` // for BuildToolDockerfile only
 	ImageName      string                    `json:"imageName"`

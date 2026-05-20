@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	deploymentLockKeyInApp = "deployment:docker:service:%v"
+	deploymentLockKeyForDockerService = "deployment:docker:service:%v"
 )
 
 func (s *service) lockDockerServiceForDeployment(
@@ -22,7 +22,7 @@ func (s *service) lockDockerServiceForDeployment(
 	data *appDeploymentData,
 ) (shouldContinue bool, err error) {
 	// Put a lock record in DB for acquiring after (must use separate `db`, not this transaction)
-	lockKey := fmt.Sprintf(deploymentLockKeyInApp, data.App.ServiceID)
+	lockKey := fmt.Sprintf(deploymentLockKeyForDockerService, data.App.ServiceID)
 	_ = s.lockRepo.Insert(ctx, s.db, &entity.Lock{ID: lockKey})
 
 	// Acquire the lock

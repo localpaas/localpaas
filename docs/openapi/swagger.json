@@ -22223,9 +22223,9 @@
   "components" : {
     "schemas" : {
       "github_com_localpaas_localpaas_localpaas_app_apperrors.DisplayLevel" : {
-        "enum" : [ "high", "medium", "low", "medium" ],
+        "enum" : [ "medium", "high", "medium", "low" ],
         "type" : "string",
-        "x-enum-varnames" : [ "DisplayLevelHigh", "DisplayLevelMedium", "DisplayLevelLow", "errVldDisplayLevel" ]
+        "x-enum-varnames" : [ "errVldDisplayLevel", "DisplayLevelHigh", "DisplayLevelMedium", "DisplayLevelLow" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_apperrors.ErrorInfo" : {
         "properties" : {
@@ -22740,6 +22740,9 @@
           "buildTool" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.BuildTool"
           },
+          "commitHash" : {
+            "type" : "string"
+          },
           "credentials" : {
             "allOf" : [ {
               "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.RepoCredentials"
@@ -22777,7 +22780,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "buildTool", "credentials", "dockerfilePath", "imageName", "imageTags", "pushToRegistry", "repoId", "repoRef", "repoType", "repoURL" ],
+        "required" : [ "buildTool", "credentials", "pushToRegistry", "repoId", "repoRef", "repoType", "repoURL" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_entity.EmailHTTPFieldMapping" : {
@@ -22864,7 +22867,7 @@
         "x-enum-varnames" : [ "LogTypeIn", "LogTypeOut", "LogTypeErr", "LogTypeWarn" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_fileutil.FileMode" : {
-        "enum" : [ 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511, 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511 ],
+        "enum" : [ 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511, 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511, 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511, 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511 ],
         "format" : "int32",
         "type" : "integer",
         "x-enum-comments" : {
@@ -22883,11 +22886,11 @@
           "ModeSymlink" : "L: symbolic link",
           "ModeTemporary" : "T: temporary file; Plan 9 only"
         },
-        "x-enum-descriptions" : [ "d: is a directory", "a: append-only", "l: exclusive use", "T: temporary file; Plan 9 only", "L: symbolic link", "D: device file", "p: named pipe (FIFO)", "S: Unix domain socket", "u: setuid", "g: setgid", "c: Unix character device, when ModeDevice is set", "t: sticky", "?: non-regular file; nothing else is known about this file", "", "Unix permission bits, 0o777" ],
-        "x-enum-varnames" : [ "ModeDir", "ModeAppend", "ModeExclusive", "ModeTemporary", "ModeSymlink", "ModeDevice", "ModeNamedPipe", "ModeSocket", "ModeSetuid", "ModeSetgid", "ModeCharDevice", "ModeSticky", "ModeIrregular", "ModeType", "ModePerm" ]
+        "x-enum-descriptions" : [ "d: is a directory", "a: append-only", "l: exclusive use", "T: temporary file; Plan 9 only", "L: symbolic link", "D: device file", "p: named pipe (FIFO)", "S: Unix domain socket", "u: setuid", "g: setgid", "c: Unix character device, when ModeDevice is set", "t: sticky", "?: non-regular file; nothing else is known about this file", "", "Unix permission bits, 0o777", "d: is a directory", "a: append-only", "l: exclusive use", "T: temporary file; Plan 9 only", "L: symbolic link", "D: device file", "p: named pipe (FIFO)", "S: Unix domain socket", "u: setuid", "g: setgid", "c: Unix character device, when ModeDevice is set", "t: sticky", "?: non-regular file; nothing else is known about this file", "", "Unix permission bits, 0o777" ],
+        "x-enum-varnames" : [ "ModeDir", "ModeAppend", "ModeExclusive", "ModeTemporary", "ModeSymlink", "ModeDevice", "ModeNamedPipe", "ModeSocket", "ModeSetuid", "ModeSetgid", "ModeCharDevice", "ModeSticky", "ModeIrregular", "ModeType", "ModePerm", "ModeDir", "ModeAppend", "ModeExclusive", "ModeTemporary", "ModeSymlink", "ModeDevice", "ModeNamedPipe", "ModeSocket", "ModeSetuid", "ModeSetgid", "ModeCharDevice", "ModeSticky", "ModeIrregular", "ModeType", "ModePerm" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 86400000000000, 604800000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 86400000000000, 604800000000000 ],
         "format" : "int64",
         "type" : "integer",
         "x-enum-varnames" : [ "Day", "Week" ]
@@ -23309,6 +23312,9 @@
           "buildTool" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.BuildTool"
           },
+          "commitHash" : {
+            "type" : "string"
+          },
           "credentials" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDReq"
           },
@@ -23342,13 +23348,16 @@
             "type" : "string"
           }
         },
-        "required" : [ "buildTool", "credentials", "dockerfilePath", "enabled", "imageName", "imageTags", "pushToRegistry", "repoRef", "repoType", "repoURL" ],
+        "required" : [ "buildTool", "commitHash", "credentials", "dockerfilePath", "enabled", "imageName", "imageTags", "pushToRegistry", "repoRef", "repoType", "repoURL" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.DeploymentRepoSourceResp" : {
         "properties" : {
           "buildTool" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.BuildTool"
+          },
+          "commitHash" : {
+            "type" : "string"
           },
           "credentials" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings.BaseSettingResp"
@@ -23383,7 +23392,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "buildTool", "credentials", "dockerfilePath", "imageName", "imageTags", "pushToRegistry", "repoId", "repoRef", "repoType", "repoURL" ],
+        "required" : [ "buildTool", "commitHash", "credentials", "dockerfilePath", "imageName", "imageTags", "pushToRegistry", "repoId", "repoRef", "repoType", "repoURL" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.DeploymentSettingsResp" : {
@@ -29646,7 +29655,7 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.ImageBuildSettingResourcesReq" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.ImageBuildResourceSettingsReq" : {
         "properties" : {
           "cpus" : {
             "type" : "integer"
@@ -29664,22 +29673,22 @@
         "required" : [ "cpus", "mem", "memSwap", "shmSize" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.ImageBuildSettingResourcesResp" : {
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.ImageBuildResourceSettingsResp" : {
         "properties" : {
           "cpus" : {
             "type" : "integer"
           },
-          "memMB" : {
-            "type" : "integer"
+          "mem" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_unit.DataSize"
           },
-          "memSwapMB" : {
-            "type" : "integer"
+          "memSwap" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_unit.DataSize"
           },
-          "shmSizeMB" : {
-            "type" : "integer"
+          "shmSize" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_unit.DataSize"
           }
         },
-        "required" : [ "cpus", "memMB", "memSwapMB", "shmSizeMB" ],
+        "required" : [ "cpus", "mem", "memSwap", "shmSize" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.ImageBuildSettingsResp" : {
@@ -29715,7 +29724,10 @@
             "type" : "boolean"
           },
           "resources" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.ImageBuildSettingResourcesResp"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.ImageBuildResourceSettingsResp"
+          },
+          "sources" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.ImageBuildSourceSettingsResp"
           },
           "status" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_base.SettingStatus"
@@ -29730,7 +29742,25 @@
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "id", "name", "noCache", "noVerbose", "resources", "status", "type", "updateVer", "updatedAt" ],
+        "required" : [ "createdAt", "id", "name", "noCache", "noVerbose", "resources", "sources", "status", "type", "updateVer", "updatedAt" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.ImageBuildSourceSettingsReq" : {
+        "properties" : {
+          "checkoutMaxDepth" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "checkoutMaxDepth" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.ImageBuildSourceSettingsResp" : {
+        "properties" : {
+          "checkoutMaxDepth" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "checkoutMaxDepth" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.UpdateImageBuildSettingsReq" : {
@@ -29748,13 +29778,16 @@
             "type" : "boolean"
           },
           "resources" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.ImageBuildSettingResourcesReq"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.ImageBuildResourceSettingsReq"
+          },
+          "sources" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.ImageBuildSourceSettingsReq"
           },
           "updateVer" : {
             "type" : "integer"
           }
         },
-        "required" : [ "availableInProjects", "default", "noCache", "noVerbose", "resources", "updateVer" ],
+        "required" : [ "availableInProjects", "default", "noCache", "noVerbose", "resources", "sources", "updateVer" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_imagebuildsettingsuc_imagebuildsettingsdto.UpdateImageBuildSettingsResp" : {

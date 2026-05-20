@@ -225,12 +225,21 @@ func (uc *UC) createAppDeploymentByPushEvent(
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+	if deploymentSettings.RepoSource != nil && deploymentSettings.RepoSource.CommitHash != "" {
+		deploymentSettings.RepoSource.CommitHash = ""
+		setting.MustSetData(deploymentSettings)
+		setting.UpdateVer++
+		setting.UpdatedAt = timeutil.NowUTC()
+		persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
+	}
 
 	app := setting.BelongToApp
 	deployment, task, err := uc.appDeploymentService.CreateDeploymentAndTask(app, deploymentSettings)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+	// Override target commit hash
+	deployment.Settings.RepoSource.CommitHash = pushEvent.ChangeID
 	// Set trigger for the deployment
 	deployment.Trigger = &entity.AppDeploymentTrigger{
 		Source: base.DeploymentTriggerSourceRepoWebhook,

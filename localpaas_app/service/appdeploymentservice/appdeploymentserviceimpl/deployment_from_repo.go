@@ -22,6 +22,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/batchrecvchan"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/fileutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/githelper"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/services/docker"
 )
@@ -35,10 +36,11 @@ const (
 
 type repoDeploymentData struct {
 	*appDeploymentData
-	CredSetting   *entity.Setting
-	CheckoutPath  string
-	RepoURLInfo   *vcsurl.VCS
-	RegAuthHeader string
+	CredSetting        *entity.Setting
+	CheckoutPath       string
+	RepoURLInfo        *vcsurl.VCS
+	RegAuthHeader      string
+	ImageBuildSettings *entity.ImageBuildSettings
 }
 
 func (s *service) deployFromRepo(
@@ -52,7 +54,7 @@ func (s *service) deployFromRepo(
 	})
 
 	// 0. Prepare
-	err := s.repoDeployStepPrepare(ctx, data)
+	err := s.repoDeployStepPrepare(ctx, db, data)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
@@ -136,8 +138,10 @@ func (s *service) repoDeployStepSourceCheckout(
 
 	// NOTE: currently supports repo of git type only
 	if repoSource.RepoType != base.RepoTypeGit {
+		_ = data.LogStore.Add(ctx, applog.NewErrFrame("failed to checkout source: "+
+			"unsupported repository type: "+string(repoSource.RepoType), applog.TsNow))
 		return apperrors.New(apperrors.ErrUnsupported).
-			WithExtraDetail("Repo type %s is unsupported", repoSource.RepoType)
+			WithExtraDetail("Repository type %v is unsupported", repoSource.RepoType)
 	}
 
 	s.addStepStartLog(ctx, data.appDeploymentData, "Start cloning Git repository...")
@@ -148,7 +152,12 @@ func (s *service) repoDeployStepSourceCheckout(
 		return apperrors.Wrap(err)
 	}
 
-	repo, err := git.PlainCloneContext(ctx, data.CheckoutPath, false, &git.CloneOptions{
+	checkoutMaxDepth := uint(0)
+	if data.ImageBuildSettings != nil {
+		checkoutMaxDepth = data.ImageBuildSettings.Sources.CheckoutMaxDepth
+	}
+
+	_, commit, err := githelper.Checkout(ctx, data.CheckoutPath, &git.CloneOptions{
 		URL:               repoSource.RepoURL,
 		ReferenceName:     plumbing.ReferenceName(repoSource.RepoRef),
 		Auth:              authMethod,
@@ -156,19 +165,17 @@ func (s *service) repoDeployStepSourceCheckout(
 		SingleBranch:      true,
 		RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
 		ShallowSubmodules: true,
-	})
+	}, repoSource.CommitHash, checkoutMaxDepth)
 	if err != nil {
+		if repoSource.CommitHash != "" && githelper.IsErrObjectNotFound(err) {
+			_ = data.LogStore.Add(ctx, applog.NewErrFrame("failed to checkout commit: "+
+				repoSource.CommitHash+", commit is too deep or doesn't exist.", applog.TsNow))
+		}
+		_ = data.LogStore.Add(ctx, applog.NewErrFrame("failed to checkout repository with error: "+
+			err.Error(), applog.TsNow))
 		return apperrors.Wrap(err)
 	}
 
-	commitIter, err := repo.CommitObjects()
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	commit, err := commitIter.Next()
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
 	data.DeploymentOutput.CommitHash = commit.Hash.String()
 	data.DeploymentOutput.CommitMessage = commit.Message
 
@@ -182,7 +189,6 @@ func (s *service) repoDeployStepSourceCheckout(
 	return nil
 }
 
-//nolint:gocognit
 func (s *service) repoDeployStepImageBuild(
 	ctx context.Context,
 	db database.Tx,
@@ -191,17 +197,13 @@ func (s *service) repoDeployStepImageBuild(
 	data.Step = stepImageBuild
 	deployment := data.Deployment
 	repoSource := deployment.Settings.RepoSource
+	buildSetting := data.ImageBuildSettings
 
 	s.addStepStartLog(ctx, data.appDeploymentData, "Start building image...")
 	defer s.addStepEndLog(ctx, data.appDeploymentData, timeutil.NowUTC(), err)
 
 	// TODO: check dockerfile existence
 	dockerfile := gofn.Coalesce(repoSource.DockerfilePath, "Dockerfile")
-
-	buildSetting, err := s.getBuildSetting(ctx, db, data)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
 
 	imageTags, err := s.calcBuildImageTags(repoSource.ImageTags, data)
 	if err != nil {
@@ -235,23 +237,21 @@ func (s *service) repoDeployStepImageBuild(
 		opts.BuildArgs = envVars
 		opts.AuthConfigs = authConfigs
 
-		if buildSetting != nil { //nolint:nestif
+		if buildSetting != nil {
 			opts.NoCache = buildSetting.NoCache
 			opts.SuppressOutput = buildSetting.NoVerbose
-			if buildSetting.Resources != nil {
-				res := buildSetting.Resources
-				if res.CPUs > 0 {
-					opts.CPUPeriod, opts.CPUQuota = res.CPUsAsPeriodAndQuota()
-				}
-				if res.Mem > 0 {
-					opts.Memory = res.Mem.Bytes()
-				}
-				if res.MemSwap > 0 {
-					opts.MemorySwap = res.MemSwap.Bytes()
-				}
-				if res.ShmSize > 0 {
-					opts.ShmSize = res.ShmSize.Bytes()
-				}
+			res := buildSetting.Resources
+			if res.CPUs > 0 {
+				opts.CPUPeriod, opts.CPUQuota = res.CPUsAsPeriodAndQuota()
+			}
+			if res.Mem > 0 {
+				opts.Memory = res.Mem.Bytes()
+			}
+			if res.MemSwap > 0 {
+				opts.MemorySwap = res.MemSwap.Bytes()
+			}
+			if res.ShmSize > 0 {
+				opts.ShmSize = res.ShmSize.Bytes()
 			}
 		}
 	})
@@ -364,7 +364,8 @@ func (s *service) repoDeployStepServiceApply(
 }
 
 func (s *service) repoDeployStepPrepare(
-	_ context.Context,
+	ctx context.Context,
+	db database.IDB,
 	data *repoDeploymentData,
 ) (err error) {
 	deployment := data.Deployment
@@ -387,6 +388,12 @@ func (s *service) repoDeployStepPrepare(
 		return apperrors.Wrap(err)
 	}
 	data.RepoURLInfo = repoURLInfo
+
+	// Load build settings
+	err = s.loadImageBuildSettings(ctx, db, data)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
 
 	return nil
 }

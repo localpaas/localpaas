@@ -17,13 +17,14 @@ import (
 )
 
 const (
-	imageBuildSettingName = "Image build settings"
-	imageBuildCPUDefault  = 2
-	imageBuildCPUMin      = 1
-	imageBuildCPUMax      = 8
-	imageBuildMemDefault  = 2 * unit.GB
-	imageBuildMemMin      = 1 * unit.GB
-	imageBuildMemMax      = 16 * unit.GB
+	imageBuildSettingName      = "Image build settings"
+	imageBuildCPUDefault       = 2
+	imageBuildCPUMin           = 1
+	imageBuildCPUMax           = 8
+	imageBuildMemDefault       = 2 * unit.GB
+	imageBuildMemMin           = 1 * unit.GB
+	imageBuildMemMax           = 16 * unit.GB
+	imageBuildCheckoutMaxDepth = 100
 )
 
 func (s *service) initDefaultImageBuildSettings(
@@ -44,9 +45,12 @@ func (s *service) initDefaultImageBuildSettings(
 		UpdatedAt:       timeNow,
 	}
 	imageBuild := &entity.ImageBuildSettings{
-		Resources: &entity.ImageBuildSettingResources{
+		Resources: entity.ImageBuildResourceSettings{
 			CPUs: imageBuildCPUDefault,
 			Mem:  imageBuildMemDefault,
+		},
+		Sources: entity.ImageBuildSourceSettings{
+			CheckoutMaxDepth: imageBuildCheckoutMaxDepth,
 		},
 	}
 
@@ -64,7 +68,7 @@ func (s *service) initDefaultImageBuildSettings(
 		cpus := max(min(res.NanoCPUs/docker.UnitCPUNano/2, imageBuildCPUMax), imageBuildCPUMin)
 		mem := unit.DataSize(res.MemoryBytes / 2).Truncate(32 * unit.MB)
 		mem = max(min(mem, imageBuildMemMax), imageBuildMemMin)
-		imageBuild.Resources.CPUs = int32(cpus)
+		imageBuild.Resources.CPUs = uint(cpus)
 		imageBuild.Resources.Mem = mem
 	}
 

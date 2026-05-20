@@ -24,25 +24,30 @@ func (s *imageBuildSettingsParser) New() SettingData {
 }
 
 type ImageBuildSettings struct {
-	Resources *ImageBuildSettingResources `json:"resources"`
-	NoCache   bool                        `json:"noCache,omitempty"`
-	NoVerbose bool                        `json:"noVerbose,omitempty"`
+	Resources ImageBuildResourceSettings `json:"resources"`
+	Sources   ImageBuildSourceSettings   `json:"sources"`
+	NoCache   bool                       `json:"noCache,omitempty"`
+	NoVerbose bool                       `json:"noVerbose,omitempty"`
 }
 
-type ImageBuildSettingResources struct {
-	CPUs    int32         `json:"cpus"`
+type ImageBuildResourceSettings struct {
+	CPUs    uint          `json:"cpus"`
 	Mem     unit.DataSize `json:"mem"`
 	MemSwap unit.DataSize `json:"memSwap,omitempty"`
 	ShmSize unit.DataSize `json:"shmSize,omitempty"`
 }
 
+type ImageBuildSourceSettings struct {
+	CheckoutMaxDepth uint `json:"checkoutMaxDepth"`
+}
+
 // CPUsAsPeriodAndQuota calculates CPU period and quota from CPUs
 // Ref: https://docs.docker.com/engine/containers/resource_constraints
-func (s *ImageBuildSettingResources) CPUsAsPeriodAndQuota() (int64, int64) {
+func (s *ImageBuildResourceSettings) CPUsAsPeriodAndQuota() (int64, int64) {
 	if s.CPUs == 0 {
 		return 0, 0
 	}
-	return defaultCPUPeriod, int64(defaultCPUPeriod * s.CPUs)
+	return defaultCPUPeriod, int64(defaultCPUPeriod * s.CPUs) //nolint
 }
 
 func (s *ImageBuildSettings) GetType() base.SettingType {

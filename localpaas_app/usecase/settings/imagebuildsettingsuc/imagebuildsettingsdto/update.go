@@ -16,7 +16,8 @@ type UpdateImageBuildSettingsReq struct {
 }
 
 type ImageBuildSettingsBaseReq struct {
-	Resources *ImageBuildSettingResourcesReq `json:"resources"`
+	Resources *ImageBuildResourceSettingsReq `json:"resources"`
+	Sources   *ImageBuildSourceSettingsReq   `json:"sources"`
 	NoCache   bool                           `json:"noCache"`
 	NoVerbose bool                           `json:"noVerbose"`
 }
@@ -24,13 +25,39 @@ type ImageBuildSettingsBaseReq struct {
 func (req *ImageBuildSettingsBaseReq) ToEntity() *entity.ImageBuildSettings {
 	return &entity.ImageBuildSettings{
 		Resources: req.Resources.ToEntity(),
+		Sources:   req.Sources.ToEntity(),
 		NoCache:   req.NoCache,
 		NoVerbose: req.NoVerbose,
 	}
 }
 
-// nolint
 func (req *ImageBuildSettingsBaseReq) validate(field string) (res []vld.Validator) {
+	if field != "" {
+		field += "."
+	}
+	res = append(res, req.Resources.validate(field+"resources")...)
+	res = append(res, req.Sources.validate(field+"sources")...)
+	return res
+}
+
+type ImageBuildResourceSettingsReq struct {
+	CPUs    uint          `json:"cpus"`
+	Mem     unit.DataSize `json:"mem"`
+	MemSwap unit.DataSize `json:"memSwap"`
+	ShmSize unit.DataSize `json:"shmSize"`
+}
+
+func (req *ImageBuildResourceSettingsReq) ToEntity() entity.ImageBuildResourceSettings {
+	return entity.ImageBuildResourceSettings{
+		CPUs:    req.CPUs,
+		Mem:     req.Mem,
+		MemSwap: req.MemSwap,
+		ShmSize: req.ShmSize,
+	}
+}
+
+// nolint
+func (req *ImageBuildResourceSettingsReq) validate(field string) (res []vld.Validator) {
 	if field != "" {
 		field += "."
 	}
@@ -38,20 +65,23 @@ func (req *ImageBuildSettingsBaseReq) validate(field string) (res []vld.Validato
 	return res
 }
 
-type ImageBuildSettingResourcesReq struct {
-	CPUs    int32         `json:"cpus"`
-	Mem     unit.DataSize `json:"mem"`
-	MemSwap unit.DataSize `json:"memSwap"`
-	ShmSize unit.DataSize `json:"shmSize"`
+type ImageBuildSourceSettingsReq struct {
+	CheckoutMaxDepth uint `json:"checkoutMaxDepth"`
 }
 
-func (req *ImageBuildSettingResourcesReq) ToEntity() *entity.ImageBuildSettingResources {
-	return &entity.ImageBuildSettingResources{
-		CPUs:    req.CPUs,
-		Mem:     req.Mem,
-		MemSwap: req.MemSwap,
-		ShmSize: req.ShmSize,
+func (req *ImageBuildSourceSettingsReq) ToEntity() entity.ImageBuildSourceSettings {
+	return entity.ImageBuildSourceSettings{
+		CheckoutMaxDepth: req.CheckoutMaxDepth,
 	}
+}
+
+// nolint
+func (req *ImageBuildSourceSettingsReq) validate(field string) (res []vld.Validator) {
+	if field != "" {
+		field += "."
+	}
+	// TODO: add validation
+	return res
 }
 
 func NewUpdateImageBuildSettingsReq() *UpdateImageBuildSettingsReq {

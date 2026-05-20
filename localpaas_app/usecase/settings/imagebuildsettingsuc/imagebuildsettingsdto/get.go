@@ -7,6 +7,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/unit"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
 
@@ -31,16 +32,21 @@ type GetImageBuildSettingsResp struct {
 
 type ImageBuildSettingsResp struct {
 	*settings.BaseSettingResp
-	Resources *ImageBuildSettingResourcesResp `json:"resources"`
+	Resources *ImageBuildResourceSettingsResp `json:"resources"`
+	Sources   *ImageBuildSourceSettingsResp   `json:"sources"`
 	NoCache   bool                            `json:"noCache"`
 	NoVerbose bool                            `json:"noVerbose"`
 }
 
-type ImageBuildSettingResourcesResp struct {
-	CPUs      int32 `json:"cpus"`
-	MemMB     int64 `json:"memMB"`
-	MemSwapMB int64 `json:"memSwapMB"`
-	ShmSizeMB int64 `json:"shmSizeMB"`
+type ImageBuildResourceSettingsResp struct {
+	CPUs    uint          `json:"cpus"`
+	Mem     unit.DataSize `json:"mem"`
+	MemSwap unit.DataSize `json:"memSwap"`
+	ShmSize unit.DataSize `json:"shmSize"`
+}
+
+type ImageBuildSourceSettingsResp struct {
+	CheckoutMaxDepth uint `json:"checkoutMaxDepth"`
 }
 
 func TransformImageBuild(

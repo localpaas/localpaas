@@ -29,10 +29,11 @@ func (uc *UC) parseBitbucketWebhook(
 	switch payload.(type) { //nolint
 	case bitbucket.RepoPushPayload:
 		push, _ := payload.(bitbucket.RepoPushPayload) //nolint
+		lastChange := push.Push.Changes[len(push.Push.Changes)-1]
 		data.Push = &repoPushEventData{
-			RepoRef:  string(githelper.NormalizeRepoRef(push.Push.Changes[0].New.Name)),
+			RepoRef:  string(githelper.NormalizeRepoRef(lastChange.New.Name)),
 			RepoURL:  push.Repository.Links.HTML.Href,
-			ChangeID: push.Push.Changes[len(push.Push.Changes)-1].New.Target.Hash,
+			ChangeID: lastChange.New.Target.Hash,
 		}
 	}
 	return nil

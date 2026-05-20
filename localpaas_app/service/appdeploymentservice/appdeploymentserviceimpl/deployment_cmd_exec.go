@@ -19,11 +19,11 @@ const (
 	stepPreDeployCmd  = "pre-deploy-cmd-exec"
 	stepPostDeployCmd = "post-deploy-cmd-exec"
 
-	preDeploymentContainerFindRetryMax   = 1
+	preDeploymentContainerFindRetryMax   = 3
 	preDeploymentContainerFindRetryDelay = time.Second * 5
 
-	postDeploymentContainerFindRetryMax   = 3
-	postDeploymentContainerFindRetryDelay = time.Second * 10
+	postDeploymentContainerFindRetryMax   = 10
+	postDeploymentContainerFindRetryDelay = time.Second * 5
 )
 
 func (s *service) deployStepExecCmd(

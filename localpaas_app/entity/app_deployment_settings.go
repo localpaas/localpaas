@@ -43,11 +43,12 @@ type DeploymentRepoSource struct {
 	RepoType       base.RepoType   `json:"repoType"`
 	RepoID         string          `json:"repoId"`
 	RepoURL        string          `json:"repoURL"`
-	RepoRef        string          `json:"repoRef"`              // can be branch name, tag...
-	Credentials    RepoCredentials `json:"credentials,omitzero"` // contains setting id of github app/git token/ssh key
-	DockerfilePath string          `json:"dockerfilePath"`       // for BuildToolDockerfile only
-	ImageName      string          `json:"imageName"`
-	ImageTags      []string        `json:"imageTags"`
+	RepoRef        string          `json:"repoRef"` // can be branch name, tag...
+	CommitHash     string          `json:"commitHash,omitempty"`
+	Credentials    RepoCredentials `json:"credentials,omitzero"`     // contains setting id of github app/git token/ssh key
+	DockerfilePath string          `json:"dockerfilePath,omitempty"` // for BuildToolDockerfile only
+	ImageName      string          `json:"imageName,omitempty"`
+	ImageTags      []string        `json:"imageTags,omitempty"`
 	PushToRegistry ObjectID        `json:"pushToRegistry,omitzero"`
 }
 
