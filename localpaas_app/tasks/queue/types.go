@@ -7,7 +7,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/entity/cacheentity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 )
 
 type TaskExecData struct {
@@ -15,7 +15,7 @@ type TaskExecData struct {
 
 	// RefObjects can be used as a cache to store objects
 	RefObjects *entity.RefObjects
-	LogStore   *applog.Store
+	LogStore   *tasklog.Store
 
 	TaskNonCancelable bool
 	TaskNonRetryable  bool

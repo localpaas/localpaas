@@ -12,9 +12,9 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/fileutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/services/aws/s3"
 )
@@ -90,11 +90,11 @@ func (s *service) sysCleanupLocalBackupFiles(
 		filePath := filepath.Join(file.Path, file.Name)
 		err := os.Remove(filePath)
 		if err != nil {
-			_ = data.LogStore.Add(ctx, applog.NewOutFrame("Failed to remove outdated backup file: "+
-				filePath+" with error: "+err.Error(), applog.TsNow))
+			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Failed to remove outdated backup file: "+
+				filePath+" with error: "+err.Error(), tasklog.TsNow))
 		} else {
-			_ = data.LogStore.Add(ctx, applog.NewOutFrame("Outdated backup file removed: "+filePath,
-				applog.TsNow))
+			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Outdated backup file removed: "+filePath,
+				tasklog.TsNow))
 		}
 	}
 
@@ -175,17 +175,17 @@ func (s *service) sysCleanupCloudBackupFiles(
 
 		delFunc, err := getDelFunc(file)
 		if err != nil {
-			_ = data.LogStore.Add(ctx, applog.NewOutFrame("Failed to remove backup file in cloud: "+
-				filePath+" with creating client error: "+err.Error(), applog.TsNow))
+			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Failed to remove backup file in cloud: "+
+				filePath+" with creating client error: "+err.Error(), tasklog.TsNow))
 		}
 
 		err = delFunc(file)
 		if err != nil {
-			_ = data.LogStore.Add(ctx, applog.NewOutFrame("Failed to remove backup file in cloud: "+
-				filePath+" with error: "+err.Error(), applog.TsNow))
+			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Failed to remove backup file in cloud: "+
+				filePath+" with error: "+err.Error(), tasklog.TsNow))
 		} else {
-			_ = data.LogStore.Add(ctx, applog.NewOutFrame("Outdated backup file removed from cloud: "+filePath,
-				applog.TsNow))
+			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Outdated backup file removed from cloud: "+filePath,
+				tasklog.TsNow))
 		}
 	}
 	return nil

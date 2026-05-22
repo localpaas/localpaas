@@ -9,7 +9,7 @@ import (
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
@@ -75,15 +75,15 @@ func (s *service) updateMainAppService(
 	args := gofn.Must(data.Task.ArgsAsSystemUpdate())
 
 	start := timeutil.NowUTC()
-	_ = data.LogStore.Add(ctx, applog.NewOutFrame("Updating localpaas service...", applog.TsNow))
+	_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Updating localpaas service...", tasklog.TsNow))
 	defer func() {
 		duration := timeutil.NowUTC().Sub(start)
 		if err != nil {
-			_ = data.LogStore.Add(ctx, applog.NewOutFrame("Updating localpaas service finished in "+
-				duration.String()+" with error: "+err.Error(), applog.TsNow))
+			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Updating localpaas service finished in "+
+				duration.String()+" with error: "+err.Error(), tasklog.TsNow))
 		} else {
-			_ = data.LogStore.Add(ctx, applog.NewOutFrame("Updating localpaas service finished in "+
-				duration.String(), applog.TsNow))
+			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Updating localpaas service finished in "+
+				duration.String(), tasklog.TsNow))
 		}
 	}()
 
@@ -106,8 +106,8 @@ func (s *service) updateMainAppService(
 		return apperrors.Wrap(err)
 	}
 	if appSvc.UpdateStatus != nil && appSvc.UpdateStatus.State == swarm.UpdateStateRollbackCompleted {
-		_ = data.LogStore.Add(ctx, applog.NewWarnFrame("service localpaas is rolled back",
-			applog.TsNow))
+		_ = data.LogStore.Add(ctx, tasklog.NewWarnFrame("service localpaas is rolled back",
+			tasklog.TsNow))
 		return apperrors.Wrap(apperrors.ErrActionFailed)
 	}
 
@@ -121,15 +121,15 @@ func (s *service) updateWorkerService(
 	args := gofn.Must(data.Task.ArgsAsSystemUpdate())
 
 	start := timeutil.NowUTC()
-	_ = data.LogStore.Add(ctx, applog.NewOutFrame("Updating localpaas worker service...", applog.TsNow))
+	_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Updating localpaas worker service...", tasklog.TsNow))
 	defer func() {
 		duration := timeutil.NowUTC().Sub(start)
 		if err != nil {
-			_ = data.LogStore.Add(ctx, applog.NewOutFrame("Updating localpaas worker service finished in "+
-				duration.String()+" with error: "+err.Error(), applog.TsNow))
+			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Updating localpaas worker service finished in "+
+				duration.String()+" with error: "+err.Error(), tasklog.TsNow))
 		} else {
-			_ = data.LogStore.Add(ctx, applog.NewOutFrame("Updating localpaas worker service finished in "+
-				duration.String(), applog.TsNow))
+			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Updating localpaas worker service finished in "+
+				duration.String(), tasklog.TsNow))
 		}
 	}()
 
@@ -155,8 +155,8 @@ func (s *service) updateWorkerService(
 		return apperrors.Wrap(err)
 	}
 	if workerSvc.UpdateStatus != nil && workerSvc.UpdateStatus.State == swarm.UpdateStateRollbackCompleted {
-		_ = data.LogStore.Add(ctx, applog.NewWarnFrame("service localpaas worker is rolled back",
-			applog.TsNow))
+		_ = data.LogStore.Add(ctx, tasklog.NewWarnFrame("service localpaas worker is rolled back",
+			tasklog.TsNow))
 		return apperrors.Wrap(apperrors.ErrActionFailed)
 	}
 

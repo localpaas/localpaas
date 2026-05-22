@@ -8,7 +8,7 @@ import (
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
@@ -26,15 +26,15 @@ func (s *service) updateRedisService(
 	}
 
 	start := timeutil.NowUTC()
-	_ = data.LogStore.Add(ctx, applog.NewOutFrame("Updating redis service...", applog.TsNow))
+	_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Updating redis service...", tasklog.TsNow))
 	defer func() {
 		duration := timeutil.NowUTC().Sub(start)
 		if err != nil {
-			_ = data.LogStore.Add(ctx, applog.NewOutFrame("Updating redis service finished in "+duration.String()+
-				" with error: "+err.Error(), applog.TsNow))
+			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Updating redis service finished in "+duration.String()+
+				" with error: "+err.Error(), tasklog.TsNow))
 		} else {
-			_ = data.LogStore.Add(ctx, applog.NewOutFrame("Updating redis service finished in "+duration.String(),
-				applog.TsNow))
+			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Updating redis service finished in "+duration.String(),
+				tasklog.TsNow))
 		}
 	}()
 
@@ -62,8 +62,8 @@ func (s *service) updateRedisService(
 		return apperrors.Wrap(err)
 	}
 	if redisSvc.UpdateStatus != nil && redisSvc.UpdateStatus.State == swarm.UpdateStateRollbackCompleted {
-		_ = data.LogStore.Add(ctx, applog.NewWarnFrame("service redis is rolled back",
-			applog.TsNow))
+		_ = data.LogStore.Add(ctx, tasklog.NewWarnFrame("service redis is rolled back",
+			tasklog.TsNow))
 		return apperrors.Wrap(apperrors.ErrActionFailed)
 	}
 

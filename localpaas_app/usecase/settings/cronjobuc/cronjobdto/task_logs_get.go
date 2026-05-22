@@ -8,7 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
@@ -39,15 +39,15 @@ type GetCronJobTaskLogsResp struct {
 }
 
 type CronJobTaskLogsDataResp struct {
-	Logs          []*applog.LogFrame        `json:"logs"`
-	LogChan       <-chan []*applog.LogFrame `json:"-"`
-	LogChanCloser func() error              `json:"-"`
+	Logs          []*tasklog.LogFrame        `json:"logs"`
+	LogChan       <-chan []*tasklog.LogFrame `json:"-"`
+	LogChanCloser func() error               `json:"-"`
 }
 
-func TransformCronJobTaskLogs(logs []*entity.TaskLog) (resp []*applog.LogFrame) {
-	resp = make([]*applog.LogFrame, 0, len(logs))
+func TransformCronJobTaskLogs(logs []*entity.TaskLog) (resp []*tasklog.LogFrame) {
+	resp = make([]*tasklog.LogFrame, 0, len(logs))
 	for _, log := range logs {
-		resp = append(resp, &applog.LogFrame{
+		resp = append(resp, &tasklog.LogFrame{
 			Type: log.Type,
 			Data: log.Data,
 			Ts:   log.Ts,

@@ -9,8 +9,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/jsonl"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
@@ -114,16 +114,16 @@ func (s *service) sysBackupDB(
 	data *sysBackupData,
 ) (err error) {
 	start := timeutil.NowUTC()
-	_ = data.LogStore.Add(ctx, applog.NewWarnFrame("Start backing up data from DB...", applog.TsNow))
+	_ = data.LogStore.Add(ctx, tasklog.NewWarnFrame("Start backing up data from DB...", tasklog.TsNow))
 
 	defer func() {
 		duration := timeutil.NowUTC().Sub(start)
 		if err != nil {
-			_ = data.LogStore.Add(ctx, applog.NewWarnFrame("DB backup finished in "+duration.String()+
-				" with error: "+err.Error(), applog.TsNow))
+			_ = data.LogStore.Add(ctx, tasklog.NewWarnFrame("DB backup finished in "+duration.String()+
+				" with error: "+err.Error(), tasklog.TsNow))
 		} else {
-			_ = data.LogStore.Add(ctx, applog.NewOutFrame("DB backup finished in "+duration.String(),
-				applog.TsNow))
+			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("DB backup finished in "+duration.String(),
+				tasklog.TsNow))
 		}
 	}()
 

@@ -12,9 +12,9 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/infra/logging"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/funcutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
@@ -70,7 +70,7 @@ func (e *Executor) Execute(
 		TaskExecData: &queue.TaskExecData{
 			Task:       task,
 			RefObjects: &entity.RefObjects{},
-			LogStore:   applog.NewLocalStore(fmt.Sprintf("task:%s:log", task.ID)),
+			LogStore:   tasklog.NewLocalStore(fmt.Sprintf("task:%s:log", task.ID)),
 		},
 	}
 
@@ -178,8 +178,8 @@ func (e *Executor) saveLogs(
 	}
 
 	if addDurationInfo {
-		_ = logStore.Add(ctx, applog.NewOutFrame("System update finished in "+
-			task.GetDuration().String(), applog.TsNow))
+		_ = logStore.Add(ctx, tasklog.NewOutFrame("System update finished in "+
+			task.GetDuration().String(), tasklog.TsNow))
 	}
 
 	logFrames, err := logStore.GetData(ctx, 0)

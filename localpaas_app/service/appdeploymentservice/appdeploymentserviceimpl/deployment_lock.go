@@ -8,8 +8,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 )
 
 const (
@@ -28,8 +28,8 @@ func (s *service) lockDockerServiceForDeployment(
 	// Acquire the lock
 	_, err = s.lockRepo.GetByID(ctx, db, lockKey, bunex.SelectFor("UPDATE"))
 	if err != nil {
-		_ = data.LogStore.Add(ctx, applog.NewErrFrame("failed to create a lock for the app service",
-			applog.TsNow))
+		_ = data.LogStore.Add(ctx, tasklog.NewErrFrame("failed to create a lock for the app service",
+			tasklog.TsNow))
 		return false, apperrors.Wrap(err)
 	}
 

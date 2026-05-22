@@ -7,7 +7,7 @@ import (
 	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 )
 
 var (
@@ -71,7 +71,7 @@ func (m *manager) ContainerExecWait(
 	ctx context.Context,
 	containerID string,
 	options ...ExecCreateOption,
-) (*client.ExecInspectResult, []*applog.LogFrame, error) {
+) (*client.ExecInspectResult, []*tasklog.LogFrame, error) {
 	createResp, attachResp, _, err := m.ContainerExec(ctx, containerID, options...)
 	if err != nil {
 		return nil, nil, apperrors.Wrap(err)
@@ -80,7 +80,7 @@ func (m *manager) ContainerExecWait(
 	logChan, _ := StartScanningLog(ctx, io.NopCloser(attachResp.Reader), WithParseLogHeader(false))
 	defer attachResp.Close()
 
-	logs := make([]*applog.LogFrame, 0, 20) //nolint
+	logs := make([]*tasklog.LogFrame, 0, 20) //nolint
 	for msgs := range logChan {
 		logs = append(logs, msgs...)
 	}

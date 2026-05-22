@@ -7,8 +7,8 @@ import (
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/batchrecvchan"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/services/docker"
 )
@@ -51,15 +51,15 @@ func (s *service) pullImage(
 	}
 
 	start := timeutil.NowUTC()
-	_ = data.LogStore.Add(ctx, applog.NewOutFrame("Pulling image "+image, applog.TsNow))
+	_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Pulling image "+image, tasklog.TsNow))
 	defer func() {
 		duration := timeutil.NowUTC().Sub(start)
 		if err != nil {
-			_ = data.LogStore.Add(ctx, applog.NewOutFrame("Pulling image "+image+" finished in "+duration.String()+
-				" with error: "+err.Error(), applog.TsNow))
+			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Pulling image "+image+" finished in "+duration.String()+
+				" with error: "+err.Error(), tasklog.TsNow))
 		} else {
-			_ = data.LogStore.Add(ctx, applog.NewOutFrame("Pulling image "+image+" finished in "+duration.String(),
-				applog.TsNow))
+			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Pulling image "+image+" finished in "+duration.String(),
+				tasklog.TsNow))
 		}
 	}()
 
@@ -71,13 +71,13 @@ func (s *service) pullImage(
 	logsChan, _ := docker.StartScanningJSONMsg(ctx, logsReader, batchrecvchan.Options{})
 	for msgs := range logsChan {
 		for _, msg := range msgs {
-			frameCreator := applog.NewOutFrame
+			frameCreator := tasklog.NewOutFrame
 			if msg.Error != nil {
 				err = errors.Join(err, msg.Error)
-				frameCreator = applog.NewErrFrame
+				frameCreator = tasklog.NewErrFrame
 			}
 			if msg.String() != "" {
-				_ = data.LogStore.Add(ctx, frameCreator(msg.String(), applog.TsNow))
+				_ = data.LogStore.Add(ctx, frameCreator(msg.String(), tasklog.TsNow))
 			}
 		}
 	}

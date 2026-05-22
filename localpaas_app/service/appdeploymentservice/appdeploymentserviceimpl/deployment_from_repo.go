@@ -18,10 +18,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/batchrecvchan"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/fileutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/githelper"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/services/docker"
 )
@@ -138,8 +138,8 @@ func (s *service) repoDeployStepSourceCheckout(
 
 	// NOTE: currently supports repo of git type only
 	if repoSource.RepoType != base.RepoTypeGit {
-		_ = data.LogStore.Add(ctx, applog.NewErrFrame("failed to checkout source: "+
-			"unsupported repository type: "+string(repoSource.RepoType), applog.TsNow))
+		_ = data.LogStore.Add(ctx, tasklog.NewErrFrame("failed to checkout source: "+
+			"unsupported repository type: "+string(repoSource.RepoType), tasklog.TsNow))
 		return apperrors.New(apperrors.ErrUnsupported).
 			WithExtraDetail("Repository type %v is unsupported", repoSource.RepoType)
 	}
@@ -172,11 +172,11 @@ func (s *service) repoDeployStepSourceCheckout(
 	})
 	if err != nil {
 		if repoSource.CommitHash != "" && githelper.IsErrObjectNotFound(err) {
-			_ = data.LogStore.Add(ctx, applog.NewErrFrame("failed to checkout commit: "+
-				repoSource.CommitHash+", commit is too deep or doesn't exist.", applog.TsNow))
+			_ = data.LogStore.Add(ctx, tasklog.NewErrFrame("failed to checkout commit: "+
+				repoSource.CommitHash+", commit is too deep or doesn't exist.", tasklog.TsNow))
 		}
-		_ = data.LogStore.Add(ctx, applog.NewErrFrame("failed to checkout repository with error: "+
-			err.Error(), applog.TsNow))
+		_ = data.LogStore.Add(ctx, tasklog.NewErrFrame("failed to checkout repository with error: "+
+			err.Error(), tasklog.TsNow))
 		return apperrors.Wrap(err)
 	}
 
@@ -186,8 +186,8 @@ func (s *service) repoDeployStepSourceCheckout(
 	// Remove .git dir within the source dir
 	ee := os.RemoveAll(filepath.Join(data.CheckoutPath, ".git"))
 	if ee != nil { // Just log
-		_ = data.LogStore.Add(ctx, applog.NewErrFrame("failed to remove .git folder",
-			applog.TsNow))
+		_ = data.LogStore.Add(ctx, tasklog.NewErrFrame("failed to remove .git folder",
+			tasklog.TsNow))
 	}
 
 	return nil
@@ -266,13 +266,13 @@ func (s *service) repoDeployStepImageBuild(
 	logsChan, _ := docker.StartScanningJSONMsg(ctx, resp.Body, batchrecvchan.Options{})
 	for msgs := range logsChan {
 		for _, msg := range msgs {
-			frameCreator := applog.NewOutFrame
+			frameCreator := tasklog.NewOutFrame
 			if msg.Error != nil {
 				err = errors.Join(err, msg.Error)
-				frameCreator = applog.NewErrFrame
+				frameCreator = tasklog.NewErrFrame
 			}
 			if msg.String() != "" {
-				_ = data.LogStore.Add(ctx, frameCreator(msg.String(), applog.TsNow))
+				_ = data.LogStore.Add(ctx, frameCreator(msg.String(), tasklog.TsNow))
 			}
 		}
 	}
@@ -317,13 +317,13 @@ func (s *service) repoDeployStepImagePush(
 		logsChan, _ := docker.StartScanningJSONMsg(ctx, logsReader, batchrecvchan.Options{})
 		for msgs := range logsChan {
 			for _, msg := range msgs {
-				frameCreator := applog.NewOutFrame
+				frameCreator := tasklog.NewOutFrame
 				if msg.Error != nil {
 					err = errors.Join(err, msg.Error)
-					frameCreator = applog.NewErrFrame
+					frameCreator = tasklog.NewErrFrame
 				}
 				if msg.String() != "" {
-					_ = data.LogStore.Add(ctx, frameCreator(msg.String(), applog.TsNow))
+					_ = data.LogStore.Add(ctx, frameCreator(msg.String(), tasklog.TsNow))
 				}
 			}
 		}
@@ -416,8 +416,8 @@ func (s *service) repoDeployOnCommand(
 	if cmd == base.TaskCommandCancel && data.Step == stepImageBuild {
 		_, err := s.dockerManager.ImageBuildCancel(ctx, data.Task.ID)
 		if err != nil {
-			_ = data.LogStore.Add(ctx, applog.NewErrFrame("failed to cancel image build: "+
-				err.Error(), applog.TsNow))
+			_ = data.LogStore.Add(ctx, tasklog.NewErrFrame("failed to cancel image build: "+
+				err.Error(), tasklog.TsNow))
 		}
 	}
 }

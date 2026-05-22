@@ -11,7 +11,7 @@ import (
 	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 )
 
 const (
@@ -65,7 +65,7 @@ type Manager interface {
 	ContainerExec(ctx context.Context, containerID string, options ...ExecCreateOption) (
 		*client.ExecCreateResult, *client.ExecAttachResult, *client.ExecStartResult, error)
 	ContainerExecWait(ctx context.Context, containerID string, options ...ExecCreateOption) (
-		*client.ExecInspectResult, []*applog.LogFrame, error)
+		*client.ExecInspectResult, []*tasklog.LogFrame, error)
 	ContainerExecInspect(ctx context.Context, execID string, options ...ExecInspectOption) (
 		*client.ExecInspectResult, error)
 

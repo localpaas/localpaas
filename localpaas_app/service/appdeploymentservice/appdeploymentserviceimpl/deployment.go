@@ -13,9 +13,9 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/entity/cacheentity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/funcutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/service/appdeploymentservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
@@ -47,7 +47,7 @@ func (s *service) Deploy(
 		DeploymentOutput: &entity.AppDeploymentOutput{},
 	}
 	logStoreKey := fmt.Sprintf("task:%s:log", req.Task.ID)
-	data.LogStore = applog.NewRemoteStore(logStoreKey, true, s.redisClient)
+	data.LogStore = tasklog.NewRemoteStore(logStoreKey, true, s.redisClient)
 	data.OnPostTransaction(func() { s.onPostTransaction(context.Background(), data) }) //nolint:contextcheck
 
 	err = s.loadDeploymentData(ctx, db, data)
@@ -167,8 +167,8 @@ func (s *service) saveLogs(
 	}
 
 	if addDurationInfo {
-		_ = logStore.Add(ctx, applog.NewOutFrame("Deployment finished in "+
-			deployment.GetDuration().String(), applog.TsNow))
+		_ = logStore.Add(ctx, tasklog.NewOutFrame("Deployment finished in "+
+			deployment.GetDuration().String(), tasklog.TsNow))
 	}
 
 	logFrames, err := logStore.GetData(ctx, 0)
@@ -204,8 +204,8 @@ func (s *service) addStepStartLog(
 	msg string,
 ) {
 	_ = data.LogStore.Add(ctx,
-		applog.NewOutFrame("---------------------------------", applog.TsNow),
-		applog.NewOutFrame(msg, applog.TsNow))
+		tasklog.NewOutFrame("---------------------------------", tasklog.TsNow),
+		tasklog.NewOutFrame(msg, tasklog.TsNow))
 }
 
 func (s *service) addStepEndLog(
@@ -216,11 +216,11 @@ func (s *service) addStepEndLog(
 ) {
 	duration := timeutil.NowUTC().Sub(start)
 	if err != nil {
-		_ = data.LogStore.Add(ctx, applog.NewOutFrame("Task finished in "+duration.String()+
-			" with error: "+err.Error(), applog.TsNow))
+		_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Task finished in "+duration.String()+
+			" with error: "+err.Error(), tasklog.TsNow))
 	} else {
-		_ = data.LogStore.Add(ctx, applog.NewOutFrame("Task finished in "+duration.String(),
-			applog.TsNow))
+		_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Task finished in "+duration.String(),
+			tasklog.TsNow))
 	}
 }
 
@@ -236,8 +236,8 @@ func (s *service) onPostTransaction(
 	if data.Task.IsDone() || data.Task.IsFailedCompletely() {
 		err := s.notifyForDeployment(ctx, db, data)
 		if err != nil {
-			_ = data.LogStore.Add(ctx, applog.NewOutFrame("Failed to send deployment notification"+
-				" with error: "+err.Error(), applog.TsNow))
+			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Failed to send deployment notification"+
+				" with error: "+err.Error(), tasklog.TsNow))
 		}
 	}
 }

@@ -13,9 +13,9 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/fileutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
@@ -30,15 +30,15 @@ func (s *service) migrateDBSchema(
 ) (err error) {
 	cfg := config.Current
 	start := timeutil.NowUTC()
-	_ = data.LogStore.Add(ctx, applog.NewOutFrame("Start migrating db schema...", applog.TsNow))
+	_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Start migrating db schema...", tasklog.TsNow))
 	defer func() {
 		duration := timeutil.NowUTC().Sub(start)
 		if err != nil {
-			_ = data.LogStore.Add(ctx, applog.NewOutFrame("Migrating db schema finished in "+duration.String()+
-				" with error: "+err.Error(), applog.TsNow))
+			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Migrating db schema finished in "+duration.String()+
+				" with error: "+err.Error(), tasklog.TsNow))
 		} else {
-			_ = data.LogStore.Add(ctx, applog.NewOutFrame("Migrating db schema finished in "+duration.String(),
-				applog.TsNow))
+			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Migrating db schema finished in "+duration.String(),
+				tasklog.TsNow))
 		}
 	}()
 
@@ -71,7 +71,7 @@ func (s *service) migrateDBSchema(
 
 	res, err := cmd.CombinedOutput()
 	for _, line := range strings.Split(reflectutil.UnsafeBytesToStr(res), "\n") {
-		_ = data.LogStore.Add(ctx, applog.NewOutFrame(line, applog.TsNow))
+		_ = data.LogStore.Add(ctx, tasklog.NewOutFrame(line, tasklog.TsNow))
 	}
 
 	return apperrors.Wrap(err)
@@ -83,15 +83,15 @@ func (s *service) migrateDBData(
 	data *sysUpdateData,
 ) (err error) {
 	start := timeutil.NowUTC()
-	_ = data.LogStore.Add(ctx, applog.NewOutFrame("Start migrating db data...", applog.TsNow))
+	_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Start migrating db data...", tasklog.TsNow))
 	defer func() {
 		duration := timeutil.NowUTC().Sub(start)
 		if err != nil {
-			_ = data.LogStore.Add(ctx, applog.NewOutFrame("Migrating db data finished in "+duration.String()+
-				" with error: "+err.Error(), applog.TsNow))
+			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Migrating db data finished in "+duration.String()+
+				" with error: "+err.Error(), tasklog.TsNow))
 		} else {
-			_ = data.LogStore.Add(ctx, applog.NewOutFrame("Migrating db data finished in "+duration.String(),
-				applog.TsNow))
+			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Migrating db data finished in "+duration.String(),
+				tasklog.TsNow))
 		}
 	}()
 
@@ -110,15 +110,15 @@ func (s *service) updateDbService(
 	}
 
 	start := timeutil.NowUTC()
-	_ = data.LogStore.Add(ctx, applog.NewOutFrame("Updating db service...", applog.TsNow))
+	_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Updating db service...", tasklog.TsNow))
 	defer func() {
 		duration := timeutil.NowUTC().Sub(start)
 		if err != nil {
-			_ = data.LogStore.Add(ctx, applog.NewOutFrame("Updating db service finished in "+duration.String()+
-				" with error: "+err.Error(), applog.TsNow))
+			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Updating db service finished in "+duration.String()+
+				" with error: "+err.Error(), tasklog.TsNow))
 		} else {
-			_ = data.LogStore.Add(ctx, applog.NewOutFrame("Updating db service finished in "+duration.String(),
-				applog.TsNow))
+			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Updating db service finished in "+duration.String(),
+				tasklog.TsNow))
 		}
 	}()
 
@@ -146,8 +146,8 @@ func (s *service) updateDbService(
 		return apperrors.Wrap(err)
 	}
 	if dbSvc.UpdateStatus != nil && dbSvc.UpdateStatus.State == swarm.UpdateStateRollbackCompleted {
-		_ = data.LogStore.Add(ctx, applog.NewWarnFrame("service db is rolled back",
-			applog.TsNow))
+		_ = data.LogStore.Add(ctx, tasklog.NewWarnFrame("service db is rolled back",
+			tasklog.TsNow))
 		return apperrors.Wrap(apperrors.ErrActionFailed)
 	}
 

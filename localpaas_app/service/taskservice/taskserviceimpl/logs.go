@@ -10,9 +10,9 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/batchrecvchan"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/service/taskservice"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/taskuc/taskdto"
@@ -66,7 +66,7 @@ func (s *service) queryRealtimeLogs(
 	}
 
 	key := fmt.Sprintf("task:%s:log", task.ID)
-	consumer := applog.NewConsumer(key, s.redisClient)
+	consumer := tasklog.NewConsumer(key, s.redisClient)
 
 	if req.Follow {
 		// NOTE: we don't want to keep the log stream session forever

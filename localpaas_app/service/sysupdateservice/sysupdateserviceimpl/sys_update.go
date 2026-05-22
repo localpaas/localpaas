@@ -8,8 +8,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/funcutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/sysupdateservice"
@@ -185,8 +185,8 @@ func (s *service) sendResultNotifications(
 	if task.IsDone() || task.IsFailedCompletely() {
 		err := s.notifyForSystemUpdate(ctx, db, data)
 		if err != nil {
-			_ = data.LogStore.Add(ctx, applog.NewOutFrame("Failed to send system update notification"+
-				" with error: "+err.Error(), applog.TsNow))
+			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Failed to send system update notification"+
+				" with error: "+err.Error(), tasklog.TsNow))
 			return apperrors.Wrap(err)
 		}
 	}

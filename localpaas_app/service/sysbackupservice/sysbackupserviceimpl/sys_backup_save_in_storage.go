@@ -13,7 +13,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
 	"github.com/localpaas/localpaas/services/aws/s3"
@@ -55,9 +55,9 @@ func (s *service) sysBackupSaveResultInStorage(
 	defer backupFile.Close()
 
 	start := timeutil.NowUTC()
-	_ = data.LogStore.Add(ctx, applog.NewOutFrame(fmt.Sprintf(
+	_ = data.LogStore.Add(ctx, tasklog.NewOutFrame(fmt.Sprintf(
 		"Start uploading file '%v' to '%v' bucket '%v'...",
-		data.OutFileName, storageName, storageBucket), applog.TsNow))
+		data.OutFileName, storageName, storageBucket), tasklog.TsNow))
 
 	switch base.CloudStorageKind(storageSttg.Kind) {
 	case base.CloudStorageKindS3:
@@ -68,12 +68,12 @@ func (s *service) sysBackupSaveResultInStorage(
 	}
 
 	if err != nil {
-		_ = data.LogStore.Add(ctx, applog.NewWarnFrame(
-			"Failed to upload backup file to "+storageName+" with error: "+err.Error(), applog.TsNow))
+		_ = data.LogStore.Add(ctx, tasklog.NewWarnFrame(
+			"Failed to upload backup file to "+storageName+" with error: "+err.Error(), tasklog.TsNow))
 		return apperrors.Wrap(err)
 	}
-	_ = data.LogStore.Add(ctx, applog.NewOutFrame("Backup file uploaded to "+storageName+
-		" in "+time.Since(start).String(), applog.TsNow))
+	_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Backup file uploaded to "+storageName+
+		" in "+time.Since(start).String(), tasklog.TsNow))
 
 	localFile := data.LocalOutFile.MustAsFile()
 	remoteFileSetting := &entity.Setting{
@@ -104,8 +104,8 @@ func (s *service) sysBackupSaveResultInStorage(
 
 	err = s.settingRepo.Insert(ctx, db, remoteFileSetting)
 	if err != nil {
-		_ = data.LogStore.Add(ctx, applog.NewOutFrame("Failed to save file record into DB with error: "+
-			err.Error(), applog.TsNow))
+		_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Failed to save file record into DB with error: "+
+			err.Error(), tasklog.TsNow))
 		return apperrors.Wrap(err)
 	}
 

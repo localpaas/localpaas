@@ -7,7 +7,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/entity/cacheentity"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 )
 
 type GetTaskReq struct {
@@ -51,7 +51,7 @@ type GetTaskLogsReq struct {
 }
 
 type GetTaskLogsResp struct {
-	Logs          []*applog.LogFrame
-	LogChan       <-chan []*applog.LogFrame
+	Logs          []*tasklog.LogFrame
+	LogChan       <-chan []*tasklog.LogFrame
 	LogChanCloser func() error
 }

@@ -9,9 +9,9 @@ import (
 	"io"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/batchrecvchan"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 )
 
 type ScanningLogOptions struct {
@@ -44,7 +44,7 @@ func StartScanningLog(
 	ctx context.Context,
 	reader io.ReadCloser,
 	options ...ScanningLogOption,
-) (logChan <-chan []*applog.LogFrame, closeFunc func() error) {
+) (logChan <-chan []*tasklog.LogFrame, closeFunc func() error) {
 	opts := &ScanningLogOptions{
 		ParseLogHeader: true,
 	}
@@ -52,7 +52,7 @@ func StartScanningLog(
 		o(opts)
 	}
 
-	batchChan := batchrecvchan.NewChan[*applog.LogFrame](opts.BatchRecvOptions)
+	batchChan := batchrecvchan.NewChan[*tasklog.LogFrame](opts.BatchRecvOptions)
 
 	_, hasDeadline := ctx.Deadline()
 	if hasDeadline {
@@ -75,8 +75,8 @@ func StartScanningLog(
 		} else {
 			scanner := bufio.NewScanner(reader)
 			for scanner.Scan() {
-				logFrame := &applog.LogFrame{
-					Type: applog.LogTypeOut,
+				logFrame := &tasklog.LogFrame{
+					Type: tasklog.LogTypeOut,
 					Data: reflectutil.UnsafeBytesToStr(scanner.Bytes()),
 				}
 				if opts.ParseLogTimestamp {
@@ -120,7 +120,7 @@ const (
 func parseLogs(
 	ctx context.Context,
 	src io.Reader,
-	dst *batchrecvchan.Chan[*applog.LogFrame],
+	dst *batchrecvchan.Chan[*tasklog.LogFrame],
 	parseTimestamp bool,
 ) (err error) {
 	var (
@@ -147,16 +147,16 @@ func parseLogs(
 			}
 		}
 
-		logFrame := &applog.LogFrame{}
+		logFrame := &tasklog.LogFrame{}
 
 		// Check the first byte to know where to write
 		switch buf[stdWriterFdIndex] {
 		case Stdin:
-			logFrame.Type = applog.LogTypeIn
+			logFrame.Type = tasklog.LogTypeIn
 		case Stdout:
-			logFrame.Type = applog.LogTypeOut
+			logFrame.Type = tasklog.LogTypeOut
 		case Stderr, Systemerr:
-			logFrame.Type = applog.LogTypeErr
+			logFrame.Type = tasklog.LogTypeErr
 		default:
 			return fmt.Errorf("%w: Unrecognized input header: %d",
 				apperrors.ErrInfraInternal, buf[stdWriterFdIndex])

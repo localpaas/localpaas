@@ -12,10 +12,10 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/entityutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/funcutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
@@ -198,14 +198,14 @@ func (s *service) sslRenew(
 	startTime := timeutil.NowUTC()
 	defer func() {
 		if err != nil {
-			_ = data.LogStore.Add(ctx, applog.NewWarnFrame(fmt.Sprintf(
+			_ = data.LogStore.Add(ctx, tasklog.NewWarnFrame(fmt.Sprintf(
 				"Obtaining certificate from %v for SSL %v failed with error: %v",
-				ssl.CertType, setting.ID, err.Error()), applog.TsNow))
+				ssl.CertType, setting.ID, err.Error()), tasklog.TsNow))
 		} else {
 			duration := timeutil.NowUTC().Sub(startTime)
-			_ = data.LogStore.Add(ctx, applog.NewOutFrame(fmt.Sprintf(
+			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame(fmt.Sprintf(
 				"Obtaining certificate from %v for SSL %v finished in %v",
-				ssl.CertType, setting.ID, duration), applog.TsNow))
+				ssl.CertType, setting.ID, duration), tasklog.TsNow))
 		}
 	}()
 
@@ -265,8 +265,8 @@ func (s *service) sslSaveUpdatedSettings(
 		for _, setting := range sslSettings {
 			reloadedSetting := reloadedSettingMap[setting.ID]
 			if reloadedSetting == nil || reloadedSetting.UpdateVer != setting.UpdateVer {
-				_ = data.LogStore.Add(ctx, applog.NewWarnFrame(fmt.Sprintf(
-					"Skip renewing SSL %v as of concurrent modification", setting.ID), applog.TsNow))
+				_ = data.LogStore.Add(ctx, tasklog.NewWarnFrame(fmt.Sprintf(
+					"Skip renewing SSL %v as of concurrent modification", setting.ID), tasklog.TsNow))
 				continue
 			}
 			setting.UpdatedAt = timeNow
@@ -310,9 +310,9 @@ func (s *service) sslNotifyOfResult(
 			if item.ExpiringNotifyOnly {
 				err := s.sslNotifyForExpiration(ctx, db, item, data)
 				if err != nil {
-					_ = data.LogStore.Add(ctx, applog.NewWarnFrame(fmt.Sprintf(
+					_ = data.LogStore.Add(ctx, tasklog.NewWarnFrame(fmt.Sprintf(
 						"Notifying of expiring SSL %v failed with error: %v",
-						item.Setting.ID, err.Error()), applog.TsNow))
+						item.Setting.ID, err.Error()), tasklog.TsNow))
 					return apperrors.Wrap(err)
 				}
 				return nil
@@ -320,9 +320,9 @@ func (s *service) sslNotifyOfResult(
 			if item.Renewal {
 				err := s.sslNotifyForRenewal(ctx, db, item, data)
 				if err != nil {
-					_ = data.LogStore.Add(ctx, applog.NewWarnFrame(fmt.Sprintf(
+					_ = data.LogStore.Add(ctx, tasklog.NewWarnFrame(fmt.Sprintf(
 						"Notifying of renewed SSL %v failed with error: %v",
-						item.Setting.ID, err.Error()), applog.TsNow))
+						item.Setting.ID, err.Error()), tasklog.TsNow))
 					return apperrors.Wrap(err)
 				}
 				return nil

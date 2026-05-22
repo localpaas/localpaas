@@ -18,9 +18,9 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/config"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/httputil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/strutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/translation"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/unit"
@@ -339,8 +339,8 @@ func (h *BaseHandler) ParseRequestLang(ctx *gin.Context) translation.Lang {
 
 func (h *BaseHandler) StreamAppLogs(
 	ctx *gin.Context,
-	staticLogs []*applog.LogFrame, // static logs are in DB
-	logChan <-chan []*applog.LogFrame, // realtime logs are in redis
+	staticLogs []*tasklog.LogFrame, // static logs are in DB
+	logChan <-chan []*tasklog.LogFrame, // realtime logs are in redis
 	logChanCloser func() error,
 	mel *melody.Melody,
 ) {

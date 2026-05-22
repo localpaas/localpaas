@@ -9,8 +9,8 @@ import (
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/shellutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/services/docker"
 )
@@ -63,8 +63,8 @@ func (s *service) deployStepExecCmd(
 		return apperrors.Wrap(err)
 	}
 	if contSum == nil {
-		_ = data.LogStore.Add(ctx, applog.NewWarnFrame(
-			"No running container found, execution skipped", applog.TsNow))
+		_ = data.LogStore.Add(ctx, tasklog.NewWarnFrame(
+			"No running container found, execution skipped", tasklog.TsNow))
 		return nil
 	}
 
@@ -89,8 +89,8 @@ func (s *service) deployStepExecCmd(
 	_ = data.LogStore.Add(ctx, logs...)
 
 	if execInfo.ExitCode != 0 {
-		_ = data.LogStore.Add(ctx, applog.NewErrFrame(fmt.Sprintf(
-			"Command execution failed with exit code: %v", execInfo.ExitCode), applog.TsNow))
+		_ = data.LogStore.Add(ctx, tasklog.NewErrFrame(fmt.Sprintf(
+			"Command execution failed with exit code: %v", execInfo.ExitCode), tasklog.TsNow))
 		return apperrors.Wrap(apperrors.ErrInfraActionFailed)
 	}
 

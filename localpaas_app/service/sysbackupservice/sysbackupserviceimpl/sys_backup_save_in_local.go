@@ -15,7 +15,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
 )
 
@@ -53,8 +53,8 @@ func (s *service) sysBackupSaveResultInLocal(
 	data.OutFilePath = filepath.Join(data.BackupSaveDir, data.OutFileName)
 	err = os.Rename(tmpFile.Name(), data.OutFilePath)
 	if err != nil {
-		_ = data.LogStore.Add(ctx, applog.NewErrFrame(
-			"Failed to save backup data in file with error: "+err.Error(), applog.TsNow))
+		_ = data.LogStore.Add(ctx, tasklog.NewErrFrame(
+			"Failed to save backup data in file with error: "+err.Error(), tasklog.TsNow))
 		return apperrors.Wrap(err)
 	}
 
@@ -88,12 +88,12 @@ func (s *service) sysBackupSaveResultInLocal(
 
 	err = s.settingRepo.Insert(ctx, db, localFileSetting)
 	if err != nil {
-		_ = data.LogStore.Add(ctx, applog.NewOutFrame("Failed to save file record into DB with error: "+
-			err.Error(), applog.TsNow))
+		_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Failed to save file record into DB with error: "+
+			err.Error(), tasklog.TsNow))
 		return apperrors.Wrap(err)
 	}
 
-	_ = data.LogStore.Add(ctx, applog.NewOutFrame("Backup data saved into file: "+data.OutFileName,
-		applog.TsNow))
+	_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Backup data saved into file: "+data.OutFileName,
+		tasklog.TsNow))
 	return nil
 }

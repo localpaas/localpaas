@@ -1,4 +1,4 @@
-package applog
+package tasklog
 
 import (
 	"strings"

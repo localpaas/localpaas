@@ -11,8 +11,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/infra/logging"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/applog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/funcutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 	"github.com/localpaas/localpaas/localpaas_app/service/containerexecservice"
@@ -82,7 +82,7 @@ func (e *Executor) execute(
 		TaskExecData: task,
 		CronJob:      task.Task.TargetJob,
 	}
-	data.LogStore = applog.NewLocalStore(fmt.Sprintf("cron:%s:exec", data.CronJob.ID))
+	data.LogStore = tasklog.NewLocalStore(fmt.Sprintf("cron:%s:exec", data.CronJob.ID))
 	data.OnPostTransaction(func() { e.onPostTransaction(context.Background(), data) }) //nolint:contextcheck
 
 	err = e.loadCronJobData(ctx, db, data)
@@ -192,8 +192,8 @@ func (e *Executor) saveLogs(
 
 	if addDurationInfo {
 		duration := timeutil.NowUTC().Sub(data.Task.StartedAt)
-		_ = logStore.Add(ctx, applog.NewOutFrame("Cron execution finished in "+duration.String(),
-			applog.TsNow))
+		_ = logStore.Add(ctx, tasklog.NewOutFrame("Cron execution finished in "+duration.String(),
+			tasklog.TsNow))
 	}
 
 	logFrames, err := logStore.GetData(ctx, 0)
@@ -235,8 +235,8 @@ func (e *Executor) onPostTransaction(
 	if !data.SkipResultNotification && (data.Task.IsDone() || data.Task.IsFailedCompletely()) {
 		err := e.sendNotification(ctx, db, data)
 		if err != nil {
-			_ = data.LogStore.Add(ctx, applog.NewOutFrame("Failed to send result notification"+
-				" with error: "+err.Error(), applog.TsNow))
+			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Failed to send result notification"+
+				" with error: "+err.Error(), tasklog.TsNow))
 		}
 	}
 }
