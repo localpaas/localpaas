@@ -9,12 +9,12 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/go-git/go-git/v5/plumbing/transport/ssh"
 	"github.com/moby/moby/api/types/registry"
-	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/githelper"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
 	"github.com/localpaas/localpaas/services/git/github"
 )
@@ -23,12 +23,13 @@ func (s *service) calcGitAuthMethod(
 	ctx context.Context,
 	data *repoDeploymentData,
 ) (auth transport.AuthMethod, err error) {
-	if data.CredSetting == nil {
+	credSetting := data.CredSetting
+	if credSetting == nil {
 		return auth, nil
 	}
-	switch data.CredSetting.Type { //nolint:exhaustive
+	switch credSetting.Type { //nolint:exhaustive
 	case base.SettingTypeGithubApp:
-		client, err := github.NewFromSetting(data.CredSetting)
+		client, err := github.NewFromSetting(credSetting)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}
@@ -42,7 +43,7 @@ func (s *service) calcGitAuthMethod(
 		}
 
 	case base.SettingTypeAccessToken:
-		token, err := data.CredSetting.MustAsAccessToken().Token.GetPlain()
+		token, err := credSetting.MustAsAccessToken().Token.GetPlain()
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}
@@ -52,7 +53,7 @@ func (s *service) calcGitAuthMethod(
 		}
 
 	case base.SettingTypeSSHKey:
-		sshKey := data.CredSetting.MustAsSSHKey()
+		sshKey := credSetting.MustAsSSHKey()
 		privateKey, err := sshKey.PrivateKey.GetPlain()
 		if err != nil {
 			return nil, apperrors.Wrap(err)
@@ -61,10 +62,13 @@ func (s *service) calcGitAuthMethod(
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}
-		gitUser := gofn.Coalesce(data.RepoURLInfo.Username, "git")
-		auth, err = ssh.NewPublicKeys(gitUser, reflectutil.UnsafeStrToBytes(privateKey), passphrase)
+		authRaw, err := ssh.NewPublicKeys("git", reflectutil.UnsafeStrToBytes(privateKey), passphrase)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
+		}
+		auth = &githelper.AuthSSHKey{
+			PublicKeys: authRaw,
+			PEMBytes:   reflectutil.UnsafeStrToBytes(privateKey),
 		}
 	}
 	return auth, nil

@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/gitsight/go-vcsurl"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/moby/go-archive"
@@ -37,10 +36,11 @@ const (
 type repoDeploymentData struct {
 	*appDeploymentData
 	CredSetting        *entity.Setting
-	CheckoutPath       string
-	RepoURLInfo        *vcsurl.VCS
 	RegAuthHeader      string
 	ImageBuildSettings *entity.ImageBuildSettings
+
+	TempDir      string
+	CheckoutPath string
 }
 
 func (s *service) deployFromRepo(
@@ -52,13 +52,13 @@ func (s *service) deployFromRepo(
 	data.OnCommand(func(cmd base.TaskCommand, args ...any) {
 		s.repoDeployOnCommand(ctx, data, cmd, args...)
 	})
+	defer s.repoDeployStepCleanup(data) //nolint:errcheck
 
 	// 0. Prepare
 	err := s.repoDeployStepPrepare(ctx, db, data)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	defer s.repoDeployStepCleanup(ctx, data) //nolint:errcheck
 
 	if data.IsTaskCanceled() {
 		return nil
@@ -157,7 +157,7 @@ func (s *service) repoDeployStepSourceCheckout(
 		checkoutMaxDepth = data.ImageBuildSettings.Sources.CheckoutMaxDepth
 	}
 
-	_, commit, err := githelper.Checkout(ctx, data.CheckoutPath, &git.CloneOptions{
+	_, commit, err := githelper.CheckoutWithGitCli(ctx, &githelper.CheckoutOptions{
 		URL:               repoSource.RepoURL,
 		ReferenceName:     plumbing.ReferenceName(repoSource.RepoRef),
 		Auth:              authMethod,
@@ -165,7 +165,11 @@ func (s *service) repoDeployStepSourceCheckout(
 		SingleBranch:      true,
 		RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
 		ShallowSubmodules: true,
-	}, repoSource.CommitHash, checkoutMaxDepth)
+		CommitHash:        repoSource.CommitHash,
+		MaxDepth:          checkoutMaxDepth,
+		TempDir:           data.TempDir,
+		CheckoutPath:      data.CheckoutPath,
+	})
 	if err != nil {
 		if repoSource.CommitHash != "" && githelper.IsErrObjectNotFound(err) {
 			_ = data.LogStore.Add(ctx, applog.NewErrFrame("failed to checkout commit: "+
@@ -376,18 +380,13 @@ func (s *service) repoDeployStepPrepare(
 		data.CredSetting = data.RefObjects.RefSettings[repoSource.Credentials.ID]
 	}
 
-	// Creates checkout dir
-	data.CheckoutPath, err = fileutil.CreateTempDir("", "*", 0)
+	// Creates temp dir and checkout dir
+	data.TempDir, err = fileutil.CreateTempDir("", "*", 0)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-
-	// Parse repo URL
-	repoURLInfo, err := vcsurl.Parse(repoSource.RepoURL)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	data.RepoURLInfo = repoURLInfo
+	data.TempDir, _ = filepath.Abs(data.TempDir)
+	data.CheckoutPath = filepath.Join(data.TempDir, "checkout")
 
 	// Load build settings
 	err = s.loadImageBuildSettings(ctx, db, data)
@@ -400,13 +399,11 @@ func (s *service) repoDeployStepPrepare(
 
 //nolint:unparam
 func (s *service) repoDeployStepCleanup(
-	_ context.Context,
 	data *repoDeploymentData,
 ) (err error) {
-	if data.CheckoutPath != "" {
-		_ = os.RemoveAll(data.CheckoutPath)
+	if data.TempDir != "" {
+		_ = os.RemoveAll(data.TempDir)
 	}
-
 	return nil
 }
 
