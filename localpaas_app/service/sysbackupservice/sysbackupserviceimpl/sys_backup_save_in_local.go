@@ -26,10 +26,10 @@ const (
 func (s *service) sysBackupSaveResultInLocal(
 	ctx context.Context,
 	db database.IDB,
-	tmpFile *os.File,
+	bakTmpFile string,
 	data *sysBackupData,
 ) (err error) {
-	data.OutFileName = fmt.Sprintf("%s%s.jsonl", sysBackupFilePrefix,
+	data.OutFileName = fmt.Sprintf("%s%s.tar", sysBackupFilePrefix,
 		data.TimeNow.Truncate(time.Second).Format(time.RFC3339))
 
 	switch data.SysBackupSettings.Compression.Format {
@@ -51,7 +51,7 @@ func (s *service) sysBackupSaveResultInLocal(
 	}
 
 	data.OutFilePath = filepath.Join(data.BackupSaveDir, data.OutFileName)
-	err = os.Rename(tmpFile.Name(), data.OutFilePath)
+	err = os.Rename(bakTmpFile, data.OutFilePath)
 	if err != nil {
 		_ = data.LogStore.Add(ctx, tasklog.NewErrFrame(
 			"Failed to save backup data in file with error: "+err.Error(), tasklog.TsNow))

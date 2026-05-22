@@ -83,7 +83,7 @@ func (p *manager) CheckAccess(
 	return hasPerm, nil
 }
 
-// checkProjectAccess owners of a project have all permissions on the project and the belonged apps
+// checkProjectAccess owners of a project have all permissions on the project and the belonging apps
 func (p *manager) checkProjectAccess(
 	ctx context.Context,
 	db database.IDB,

@@ -1,21 +1,15 @@
 package sysbackupserviceimpl
 
 import (
+	"archive/tar"
 	"context"
+	"io"
 	"os"
 	"path/filepath"
 
-	"github.com/tiendc/gofn"
-
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/jsonl"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
-)
-
-const (
-	sysBackupFilePageDataSize = 10 * 1024 * 1024 // KB
 )
 
 var (
@@ -23,20 +17,15 @@ var (
 )
 
 type sysBackupFileModel struct {
-	Type         string
-	PageDataSize int
-	DirPath      func() string
-}
-
-type sysBackupFileEntry struct {
-	Name string `json:"name"`
-	Data []byte `json:"data"`
+	Type          string
+	PageDataSize  int
+	DirPath       func() string
+	TargetDirPath string
 }
 
 func (s *service) sysBackupFiles(
 	ctx context.Context,
-	_ database.IDB,
-	jsonlW *jsonl.Writer,
+	tarW *tar.Writer,
 	data *sysBackupData,
 ) (err error) {
 	start := timeutil.NowUTC()
@@ -55,43 +44,41 @@ func (s *service) sysBackupFiles(
 
 	for _, model := range sysBackupFileModels {
 		dirPath := model.DirPath()
+		targetDirPath := model.TargetDirPath
 		entries, err := os.ReadDir(dirPath)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
-
-		maxPageDataSize := gofn.Coalesce(model.PageDataSize, sysBackupFilePageDataSize)
-		pageDataSize := 0
-		savingData := make([]*sysBackupFileEntry, 0, 20) //nolint:mnd
 		for _, entry := range entries {
 			if entry.IsDir() {
 				continue
 			}
 			fileName := entry.Name()
-			fileData, err := os.ReadFile(filepath.Join(dirPath, fileName))
+			fileInfo, err := entry.Info()
 			if err != nil {
 				return apperrors.Wrap(err)
 			}
-			savingData = append(savingData, &sysBackupFileEntry{
-				Name: entry.Name(),
-				Data: fileData,
-			})
-			pageDataSize += len(fileData)
-			if pageDataSize >= maxPageDataSize {
-				err = jsonlW.WriteChunk(jsonl.NewChunk(model.Type, savingData))
-				if err != nil {
-					return apperrors.Wrap(err)
-				}
-				savingData = savingData[:0]
-				pageDataSize = 0
-			}
-		}
-		// Last page of data
-		if len(savingData) > 0 {
-			err = jsonlW.WriteChunk(jsonl.NewChunk(model.Type, savingData))
+
+			header, err := tar.FileInfoHeader(fileInfo, "")
 			if err != nil {
 				return apperrors.Wrap(err)
 			}
+			header.Name = filepath.ToSlash(filepath.Join(targetDirPath, fileName))
+
+			if err := tarW.WriteHeader(header); err != nil {
+				return apperrors.Wrap(err)
+			}
+
+			file, err := os.Open(filepath.Join(dirPath, fileName))
+			if err != nil {
+				return apperrors.Wrap(err)
+			}
+
+			if _, err := io.Copy(tarW, file); err != nil {
+				file.Close()
+				return apperrors.Wrap(err)
+			}
+			file.Close()
 		}
 	}
 

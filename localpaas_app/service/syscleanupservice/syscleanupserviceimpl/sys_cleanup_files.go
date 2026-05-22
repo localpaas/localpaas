@@ -9,6 +9,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/config"
 )
 
 func (s *service) sysCleanupFiles(
@@ -30,29 +31,31 @@ func (s *service) sysCleanupFiles(
 }
 
 func (s *service) sysCleanupTempFiles() (err error) {
-	baseDir := base.BaseTempDirDefault
-	entries, err := os.ReadDir(baseDir)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return nil
-		}
-		return apperrors.Wrap(err)
-	}
-
+	baseDirs := []string{base.BaseTempDirDefault, filepath.Join(config.Current.AppPath, "tmp")}
 	threshold := time.Now().AddDate(0, 0, -3) //nolint:mnd
 
-	for _, entry := range entries {
-		if !entry.IsDir() {
-			continue
-		}
-
-		dirTime, err := time.Parse(time.DateOnly, entry.Name())
+	for _, baseDir := range baseDirs {
+		entries, err := os.ReadDir(baseDir)
 		if err != nil {
-			continue
+			if os.IsNotExist(err) {
+				return nil
+			}
+			return apperrors.Wrap(err)
 		}
 
-		if dirTime.Before(threshold) {
-			_ = os.RemoveAll(filepath.Join(baseDir, entry.Name()))
+		for _, entry := range entries {
+			if !entry.IsDir() {
+				continue
+			}
+
+			dirTime, err := time.Parse(time.DateOnly, entry.Name())
+			if err != nil {
+				continue
+			}
+
+			if dirTime.Before(threshold) {
+				_ = os.RemoveAll(filepath.Join(baseDir, entry.Name()))
+			}
 		}
 	}
 
