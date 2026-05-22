@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
@@ -16,8 +15,7 @@ func CreateTempDir(baseDir, pattern string, perm os.FileMode) (dir string, err e
 	if perm == 0 {
 		perm = defaultDirMode
 	}
-	dateStr := timeutil.NowUTC().Format(time.DateOnly)
-	dir = path.Join(config.Current.AppPath, "temp", dateStr, baseDir)
+	dir = path.Join(baseDir, timeutil.NowUTC().Format(time.DateOnly))
 
 	err = os.MkdirAll(dir, perm)
 	if err != nil {

@@ -381,7 +381,7 @@ func (s *service) repoDeployStepPrepare(
 	}
 
 	// Creates temp dir and checkout dir
-	data.TempDir, err = fileutil.CreateTempDir("", "*", 0)
+	data.TempDir, err = fileutil.CreateTempDir(base.BaseTempDirDefault, "*", 0)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
