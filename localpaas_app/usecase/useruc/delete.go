@@ -30,9 +30,13 @@ func (uc *UC) DeleteUser(
 		persistingData := &userservice.PersistingUserData{}
 		uc.prepareDeletingUser(userData, persistingData)
 
-		return uc.userService.PersistUserData(ctx, db, persistingData)
+		// Remove all ACLs of the user
+		err = uc.permissionManager.RemoveACLPermissionsOfUsers(ctx, db, []string{userData.User.ID})
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 
-		// TODO: remove all ACLs of the user
+		return uc.userService.PersistUserData(ctx, db, persistingData)
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
