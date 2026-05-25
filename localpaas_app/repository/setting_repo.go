@@ -48,7 +48,7 @@ type SettingRepo interface {
 	Update(ctx context.Context, db database.IDB, setting *entity.Setting,
 		opts ...bunex.UpdateQueryOption) error
 	UpdateClearDefaultFlag(ctx context.Context, db database.IDB, scope *base.SettingScope, typ base.SettingType,
-		exceptID string, opts ...bunex.UpdateQueryOption) error
+		kind *string, exceptID string, opts ...bunex.UpdateQueryOption) error
 
 	DeleteHard(ctx context.Context, db database.IDB, opts ...bunex.DeleteQueryOption) error
 }
@@ -432,11 +432,18 @@ func (repo *settingRepo) Update(ctx context.Context, db database.IDB, setting *e
 }
 
 func (repo *settingRepo) UpdateClearDefaultFlag(ctx context.Context, db database.IDB, scope *base.SettingScope,
-	typ base.SettingType, exceptID string, opts ...bunex.UpdateQueryOption) error {
+	typ base.SettingType, kind *string, exceptID string, opts ...bunex.UpdateQueryOption) error {
 	query := db.NewUpdate().Model((*entity.Setting)(nil)).
 		Where("setting.type = ?", typ).
 		Where("setting.is_default = true").
 		Set("is_default = false")
+	if kind != nil {
+		if *kind == "" {
+			query = query.Where("(setting.kind IS NULL OR setting.kind = '')")
+		} else {
+			query = query.Where("setting.kind = ?", *kind)
+		}
+	}
 	if exceptID != "" {
 		query = query.Where("setting.id != ?", exceptID)
 	}

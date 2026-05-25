@@ -158,7 +158,7 @@ func (uc *BaseUC) ensureSettingDefaultUniqueness(
 	req *BaseSettingReq,
 	setting *entity.Setting,
 ) error {
-	err := uc.SettingRepo.UpdateClearDefaultFlag(ctx, db, req.Scope, req.Type, setting.ID,
+	err := uc.SettingRepo.UpdateClearDefaultFlag(ctx, db, req.Scope, req.Type, &setting.Kind, setting.ID,
 		bunex.UpdateWithDeleted(),
 	)
 	if err != nil {
