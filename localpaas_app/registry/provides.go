@@ -77,6 +77,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/sessionuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accessiblebyprojectsuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accesstokenuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cloudstorageuc"
@@ -221,6 +222,7 @@ var Provides = []any{
 	lpappsettingsuc.New,
 	traefiksettingsuc.New,
 	binobjectuc.New,
+	accessiblebyprojectsuc.New,
 
 	// Service
 	clusterserviceimpl.New,

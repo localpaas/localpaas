@@ -16,4 +16,7 @@ type ProjectSharedSetting struct {
 
 	CreatedAt time.Time `bun:",default:current_timestamp" json:"createdAt"`
 	DeletedAt time.Time `bun:",soft_delete,nullzero" json:"deletedAt,omitzero"`
+
+	Project *Project `bun:"rel:has-one,join:project_id=id" json:"project"`
+	Setting *Setting `bun:"rel:has-one,join:setting_id=id" json:"setting"`
 }

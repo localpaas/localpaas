@@ -3,6 +3,7 @@ package basesettinghandler
 import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accessiblebyprojectsuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accesstokenuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cloudstorageuc"
@@ -32,37 +33,39 @@ import (
 
 type Handler struct {
 	*handler.BaseHandler
-	AuthHandler       *authhandler.Handler
-	OAuthUC           *oauthuc.UC
-	CloudStorageUC    *cloudstorageuc.UC
-	SSHKeyUC          *sshkeyuc.UC
-	IMServiceUC       *imserviceuc.UC
-	RegistryAuthUC    *registryauthuc.UC
-	BasicAuthUC       *basicauthuc.UC
-	SSLCertUC         *sslcertuc.UC
-	DomainSettingsUC  *domainsettingsuc.UC
-	GithubAppUC       *githubappuc.UC
-	AccessTokenUC     *accesstokenuc.UC
-	CronJobUC         *cronjobuc.UC
-	HealthcheckUC     *healthcheckuc.UC
-	SecretUC          *secretuc.UC
-	ConfigFileUC      *configfileuc.UC
-	EmailUC           *emailuc.UC
-	APIKeyUC          *apikeyuc.UC
-	RepoWebhookUC     *repowebhookuc.UC
-	NotificationUC    *notificationuc.UC
-	ImageBuildUC      *imagebuildsettingsuc.UC
-	SystemCleanupUC   *systemcleanupuc.UC
-	SystemBackupUC    *systembackupuc.UC
-	GitCredentialUC   *gitcredentialuc.UC
-	SSLRenewalUC      *sslrenewaluc.UC
-	FileUC            *fileuc.UC
-	StorageSettingsUC *storagesettingsuc.UC
+	AuthHandler            *authhandler.Handler
+	AccessibleByProjectsUC *accessiblebyprojectsuc.UC
+	OAuthUC                *oauthuc.UC
+	CloudStorageUC         *cloudstorageuc.UC
+	SSHKeyUC               *sshkeyuc.UC
+	IMServiceUC            *imserviceuc.UC
+	RegistryAuthUC         *registryauthuc.UC
+	BasicAuthUC            *basicauthuc.UC
+	SSLCertUC              *sslcertuc.UC
+	DomainSettingsUC       *domainsettingsuc.UC
+	GithubAppUC            *githubappuc.UC
+	AccessTokenUC          *accesstokenuc.UC
+	CronJobUC              *cronjobuc.UC
+	HealthcheckUC          *healthcheckuc.UC
+	SecretUC               *secretuc.UC
+	ConfigFileUC           *configfileuc.UC
+	EmailUC                *emailuc.UC
+	APIKeyUC               *apikeyuc.UC
+	RepoWebhookUC          *repowebhookuc.UC
+	NotificationUC         *notificationuc.UC
+	ImageBuildUC           *imagebuildsettingsuc.UC
+	SystemCleanupUC        *systemcleanupuc.UC
+	SystemBackupUC         *systembackupuc.UC
+	GitCredentialUC        *gitcredentialuc.UC
+	SSLRenewalUC           *sslrenewaluc.UC
+	FileUC                 *fileuc.UC
+	StorageSettingsUC      *storagesettingsuc.UC
 }
 
 func New(
 	baseHandler *handler.BaseHandler,
 	authHandler *authhandler.Handler,
+	accessibleByProjectsUC *accessiblebyprojectsuc.UC,
 	oauthUC *oauthuc.UC,
 	cloudStorageUC *cloudstorageuc.UC,
 	sshKeyUC *sshkeyuc.UC,
@@ -90,32 +93,33 @@ func New(
 	storageSettingsUC *storagesettingsuc.UC,
 ) *Handler {
 	return &Handler{
-		BaseHandler:       baseHandler,
-		AuthHandler:       authHandler,
-		OAuthUC:           oauthUC,
-		CloudStorageUC:    cloudStorageUC,
-		SSHKeyUC:          sshKeyUC,
-		IMServiceUC:       imServiceUC,
-		RegistryAuthUC:    registryAuthUC,
-		BasicAuthUC:       basicAuthUC,
-		SSLCertUC:         sslCertUC,
-		DomainSettingsUC:  domainSettingsUC,
-		GithubAppUC:       githubAppUC,
-		AccessTokenUC:     accessTokenUC,
-		CronJobUC:         cronJobUC,
-		HealthcheckUC:     healthcheckUC,
-		SecretUC:          secretUC,
-		ConfigFileUC:      configFileUC,
-		EmailUC:           emailUC,
-		APIKeyUC:          apiKeyUC,
-		RepoWebhookUC:     repoWebhookUC,
-		NotificationUC:    notificationUC,
-		ImageBuildUC:      imageBuildUC,
-		SystemCleanupUC:   systemCleanupUC,
-		SystemBackupUC:    systemBackupUC,
-		GitCredentialUC:   gitCredentialUC,
-		SSLRenewalUC:      sslRenewalUC,
-		FileUC:            fileUC,
-		StorageSettingsUC: storageSettingsUC,
+		BaseHandler:            baseHandler,
+		AuthHandler:            authHandler,
+		AccessibleByProjectsUC: accessibleByProjectsUC,
+		OAuthUC:                oauthUC,
+		CloudStorageUC:         cloudStorageUC,
+		SSHKeyUC:               sshKeyUC,
+		IMServiceUC:            imServiceUC,
+		RegistryAuthUC:         registryAuthUC,
+		BasicAuthUC:            basicAuthUC,
+		SSLCertUC:              sslCertUC,
+		DomainSettingsUC:       domainSettingsUC,
+		GithubAppUC:            githubAppUC,
+		AccessTokenUC:          accessTokenUC,
+		CronJobUC:              cronJobUC,
+		HealthcheckUC:          healthcheckUC,
+		SecretUC:               secretUC,
+		ConfigFileUC:           configFileUC,
+		EmailUC:                emailUC,
+		APIKeyUC:               apiKeyUC,
+		RepoWebhookUC:          repoWebhookUC,
+		NotificationUC:         notificationUC,
+		ImageBuildUC:           imageBuildUC,
+		SystemCleanupUC:        systemCleanupUC,
+		SystemBackupUC:         systemBackupUC,
+		GitCredentialUC:        gitCredentialUC,
+		SSLRenewalUC:           sslRenewalUC,
+		FileUC:                 fileUC,
+		StorageSettingsUC:      storageSettingsUC,
 	}
 }

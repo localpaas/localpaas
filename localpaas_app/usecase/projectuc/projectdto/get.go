@@ -118,13 +118,15 @@ func TransformUserAccesses(accesses []*entity.ACLPermission) []*ProjectUserAcces
 }
 
 func TransformProjectsBase(projects []*entity.Project) []*ProjectBaseResp {
-	return gofn.MapSlice(projects, func(project *entity.Project) *ProjectBaseResp {
-		return &ProjectBaseResp{
-			ID:     project.ID,
-			Name:   project.Name,
-			Key:    project.Key,
-			Photo:  project.Photo,
-			Status: project.Status,
-		}
-	})
+	return gofn.MapSlice(projects, TransformProjectBase)
+}
+
+func TransformProjectBase(project *entity.Project) *ProjectBaseResp {
+	return &ProjectBaseResp{
+		ID:     project.ID,
+		Name:   project.Name,
+		Key:    project.Key,
+		Photo:  project.Photo,
+		Status: project.Status,
+	}
 }

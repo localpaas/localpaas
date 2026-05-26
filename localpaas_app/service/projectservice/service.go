@@ -13,6 +13,8 @@ import (
 type Service interface {
 	LoadProject(ctx context.Context, db database.IDB, projectID string, requireActive bool,
 		extraLoadOpts ...bunex.SelectQueryOption) (*entity.Project, error)
+	LoadProjects(ctx context.Context, db database.IDB, projectIDs []string, requireActive bool,
+		extraLoadOpts ...bunex.SelectQueryOption) ([]*entity.Project, error)
 
 	InitRootProject(ctx context.Context, db database.IDB) (postInitFunc func() error, err error)
 
