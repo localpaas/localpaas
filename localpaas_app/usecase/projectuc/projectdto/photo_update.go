@@ -14,11 +14,15 @@ import (
 )
 
 const (
-	maxProjectPhotoSize = 300 * 1024 // 300KB
+	projectPhotoMaxSize = 300 * 1024 // 300KB
 )
 
 type UpdateProjectPhotoReq struct {
-	ID         string `json:"id"`
+	ID string `json:"id"`
+	*ProjectPhotoReq
+}
+
+type ProjectPhotoReq struct {
 	Delete     bool   `json:"delete"`
 	FileName   string `json:"fileName"`
 	DataBase64 string `json:"dataBase64"`
@@ -27,43 +31,62 @@ type UpdateProjectPhotoReq struct {
 	DataBytes []byte `json:"-"`
 }
 
-func NewUpdateProjectPhotoReq() *UpdateProjectPhotoReq {
-	return &UpdateProjectPhotoReq{}
+func (req *ProjectPhotoReq) IsChanged() bool {
+	if req == nil {
+		return false
+	}
+	return req.Delete || req.FileName != ""
 }
 
-func (req *UpdateProjectPhotoReq) ModifyRequest() error {
-	if req.FileName != "" && req.DataBase64 != "" {
-		req.DataBytes, _ = base64.StdEncoding.DecodeString(req.DataBase64)
+func (req *ProjectPhotoReq) modifyRequest() error {
+	if req != nil && req.DataBase64 != "" {
+		dataBase64 := req.DataBase64
+		// Image base64 from FE can be in form: `data:image/png;base64,<data-in-base64>`
+		if strings.HasPrefix(dataBase64, "data:") {
+			dataBase64 = dataBase64[strings.Index(dataBase64, ",")+1:]
+		}
+		req.DataBytes, _ = base64.StdEncoding.DecodeString(dataBase64)
 	}
 	return nil
 }
 
-func validateProjectPhoto(photo *UpdateProjectPhotoReq) []vld.Validator {
-	if photo == nil || photo.FileName == "" {
+func (req *ProjectPhotoReq) validate(field string) []vld.Validator {
+	if req == nil || req.FileName == "" {
 		return nil
 	}
-	fileExt := strings.ToLower(filepath.Ext(photo.FileName))
+	if field != "" {
+		field += "."
+	}
+	fileExt := strings.ToLower(filepath.Ext(req.FileName))
 	return []vld.Validator{
 		vld.Must(gofn.Contain(base.AllPhotoFileExts, fileExt)).OnError(
-			vld.SetField("fileName", nil),
+			vld.SetField(field+"fileName", nil),
 			vld.SetCustomKey("ERR_VLD_USER_PHOTO_FILE_EXT_UNSUPPORTED"),
 		),
-		vld.Must(len(photo.DataBytes) > 0).OnError(
-			vld.SetField("dataBase64", nil),
+		vld.Must(len(req.DataBytes) > 0).OnError(
+			vld.SetField(field+"dataBase64", nil),
 			vld.SetCustomKey("ERR_VLD_USER_PHOTO_FILE_INVALID"),
 		),
-		vld.When(len(photo.DataBytes) > 0).Then(
-			vld.Must(len(photo.DataBytes) <= maxProjectPhotoSize).OnError(
-				vld.SetField("dataBase64", nil),
+		vld.When(len(req.DataBytes) > 0).Then(
+			vld.Must(len(req.DataBytes) <= projectPhotoMaxSize).OnError(
+				vld.SetField(field+"dataBase64", nil),
 				vld.SetCustomKey("ERR_VLD_USER_PHOTO_FILE_TOO_BIG"),
 			),
 		),
 	}
 }
 
+func NewUpdateProjectPhotoReq() *UpdateProjectPhotoReq {
+	return &UpdateProjectPhotoReq{}
+}
+
+func (req *UpdateProjectPhotoReq) ModifyRequest() error {
+	return req.modifyRequest()
+}
+
 func (req *UpdateProjectPhotoReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
-	validators = append(validators, validateProjectPhoto(req)...)
+	validators = append(validators, req.validate("")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 

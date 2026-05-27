@@ -45,6 +45,18 @@ func (req *UserPhotoReq) IsChanged() bool {
 	return req.Delete || req.FileName != ""
 }
 
+func (req *UserPhotoReq) modifyRequest() error {
+	if req != nil && req.DataBase64 != "" {
+		dataBase64 := req.DataBase64
+		// Image base64 from FE can be in form: `data:image/png;base64,<data-in-base64>`
+		if strings.HasPrefix(dataBase64, "data:") {
+			dataBase64 = dataBase64[strings.Index(dataBase64, ",")+1:]
+		}
+		req.DataBytes, _ = base64.StdEncoding.DecodeString(dataBase64)
+	}
+	return nil
+}
+
 func NewCompleteUserSignupReq() *CompleteUserSignupReq {
 	return &CompleteUserSignupReq{}
 }
@@ -52,11 +64,7 @@ func NewCompleteUserSignupReq() *CompleteUserSignupReq {
 func (req *CompleteUserSignupReq) ModifyRequest() error {
 	req.Username = strings.TrimSpace(req.Username)
 	req.FullName = strings.TrimSpace(req.FullName)
-	// Parse photo
-	if req.Photo != nil && req.Photo.DataBase64 != "" {
-		req.Photo.DataBytes, _ = base64.StdEncoding.DecodeString(req.Photo.DataBase64)
-	}
-	return nil
+	return req.Photo.modifyRequest()
 }
 
 func (req *CompleteUserSignupReq) Validate() apperrors.ValidationErrors {

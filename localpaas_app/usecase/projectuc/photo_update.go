@@ -36,7 +36,7 @@ func (uc *UC) UpdateProjectPhoto(
 		}
 
 		persistingData := &persistingProjectPhotoData{}
-		uc.preparePersistingProjectPhoto(req, profileData, persistingData)
+		uc.preparePersistingProjectPhoto(req.ProjectPhotoReq, profileData.Project, persistingData)
 
 		return uc.persistProjectPhotoData(ctx, db, persistingData)
 	})
@@ -77,12 +77,14 @@ func (uc *UC) loadProjectPhotoDataForUpdate(
 }
 
 func (uc *UC) preparePersistingProjectPhoto(
-	req *projectdto.UpdateProjectPhotoReq,
-	data *updateProjectPhotoData,
+	req *projectdto.ProjectPhotoReq,
+	project *entity.Project,
 	persistingData *persistingProjectPhotoData,
 ) {
+	if !req.IsChanged() {
+		return
+	}
 	timeNow := timeutil.NowUTC()
-	project := data.Project
 	photoData := project.PhotoData
 
 	if req.Delete {
@@ -114,6 +116,7 @@ func (uc *UC) preparePersistingProjectPhoto(
 	project.Photo = fmt.Sprintf("%v/images/%v-%v", config.Current.HTTPServer.BasePath,
 		project.PhotoID, rand.Int31n(1000)) //nolint
 	project.UpdatedAt = timeNow
+	persistingData.UpdatingProject = project
 }
 
 func (uc *UC) persistProjectPhotoData(
