@@ -19,6 +19,9 @@ func (uc *UC) GetUserAccesses(
 ) (*projectsettingsdto.GetUserAccessesResp, error) {
 	project, err := uc.projectRepo.GetByID(ctx, uc.db, req.ProjectID,
 		bunex.SelectExcludeColumns(entity.ProjectDefaultExcludeColumns...),
+		bunex.SelectRelation("Owner",
+			bunex.SelectExcludeColumns(entity.UserDefaultExcludeColumns...),
+		),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)

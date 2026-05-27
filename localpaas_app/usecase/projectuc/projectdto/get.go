@@ -82,8 +82,20 @@ func TransformProject(project *entity.Project) (resp *ProjectResp, err error) {
 	resp.Envs = TransformProjectEnvs(project.Settings)
 	resp.Tags = gofn.MapSlice(project.Tags, func(t *entity.ProjectTag) string { return t.Tag })
 	resp.UserAccesses = TransformUserAccesses(project.Accesses)
-	resp.Owner = basedto.TransformUserBase(project.Owner)
+	resp.Owner = TransformProjectOwner(project)
 	return resp, nil
+}
+
+func TransformProjectOwner(project *entity.Project) *basedto.UserBaseResp {
+	if project.Owner == nil {
+		return &basedto.UserBaseResp{
+			ID:       project.OwnerID,
+			Email:    "<missing>",
+			FullName: "<missing>",
+			Role:     "<missing>",
+		}
+	}
+	return basedto.TransformUserBase(project.Owner)
 }
 
 func TransformProjectEnvs(settings []*entity.Setting) (resp []*ProjectEnvResp) {

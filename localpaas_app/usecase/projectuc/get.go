@@ -6,6 +6,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/projectuc/projectdto"
@@ -20,7 +21,9 @@ func (uc *UC) GetProject(
 		bunex.SelectRelation("Tags",
 			bunex.SelectOrder("display_order"),
 		),
-		bunex.SelectRelation("Owner"),
+		bunex.SelectRelation("Owner",
+			bunex.SelectExcludeColumns(entity.UserDefaultExcludeColumns...),
+		),
 		bunex.SelectRelation("Settings",
 			// NOTE: for now, we only need to load Envs settings
 			bunex.SelectWhereIn("setting.type IN (?)", base.SettingTypeProjectEnvs),

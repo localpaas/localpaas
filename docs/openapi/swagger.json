@@ -26609,14 +26609,17 @@
             },
             "type" : "array"
           },
-          "projectUserAccesses" : {
+          "ownerAccess" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectsettingsuc_projectsettingsdto.ProjectUserAccessResp"
+          },
+          "userAccesses" : {
             "items" : {
               "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_projectsettingsuc_projectsettingsdto.ProjectUserAccessResp"
             },
             "type" : "array"
           }
         },
-        "required" : [ "currentUserActions", "moduleUserAccesses", "projectUserAccesses" ],
+        "required" : [ "currentUserActions", "moduleUserAccesses", "ownerAccess", "userAccesses" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_projectuc_projectdto.CreateProjectReq" : {

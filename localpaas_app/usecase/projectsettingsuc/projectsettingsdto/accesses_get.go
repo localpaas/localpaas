@@ -32,9 +32,10 @@ type GetUserAccessesResp struct {
 }
 
 type UserAccessesDataResp struct {
-	ProjectUserAccesses []*ProjectUserAccessResp `json:"projectUserAccesses"`
-	ModuleUserAccesses  []*ModuleUserAccessResp  `json:"moduleUserAccesses"`
-	CurrentUserActions  *CurrentUserActionsResp  `json:"currentUserActions"`
+	OwnerAccess        *ProjectUserAccessResp   `json:"ownerAccess"`
+	UserAccesses       []*ProjectUserAccessResp `json:"userAccesses"`
+	ModuleUserAccesses []*ModuleUserAccessResp  `json:"moduleUserAccesses"`
+	CurrentUserActions *CurrentUserActionsResp  `json:"currentUserActions"`
 }
 
 type ProjectUserAccessResp struct {
@@ -61,11 +62,33 @@ type UserAccessesTransformInput struct {
 
 func TransformUserAccesses(input *UserAccessesTransformInput) *UserAccessesDataResp {
 	resp := &UserAccessesDataResp{
-		ProjectUserAccesses: TransformUserAccessesOnProject(input),
-		ModuleUserAccesses:  TransformUserAccessesOnModule(input),
+		OwnerAccess:        TransformOwnerAccessOnProject(input),
+		UserAccesses:       TransformUserAccessesOnProject(input),
+		ModuleUserAccesses: TransformUserAccessesOnModule(input),
 	}
 	TransformCurrentUserActions(input, resp)
 	return resp
+}
+
+func TransformOwnerAccessOnProject(input *UserAccessesTransformInput) *ProjectUserAccessResp {
+	var userResp *basedto.UserBaseResp
+	if input.Project.Owner == nil {
+		userResp = &basedto.UserBaseResp{
+			ID:       input.Project.OwnerID,
+			Email:    "<missing>",
+			FullName: "<missing>",
+		}
+	} else {
+		userResp = basedto.TransformUserBase(input.Project.Owner)
+	}
+	return &ProjectUserAccessResp{
+		UserBaseResp: userResp,
+		Access: base.AccessActions{
+			Read:   true,
+			Write:  true,
+			Delete: true,
+		},
+	}
 }
 
 func TransformUserAccessesOnProject(input *UserAccessesTransformInput) []*ProjectUserAccessResp {
