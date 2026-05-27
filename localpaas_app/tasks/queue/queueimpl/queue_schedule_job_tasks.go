@@ -65,7 +65,7 @@ func (q *taskQueue) createTasksForJobs(
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}
-		nextRuns, err := cronJob.Schedule.CalcNextRuns(timeNow, timeNow.Add(withinDuration), 0)
+		nextRuns, err := cronJob.Schedule.CalcNextRunsInRange(timeNow, timeNow.Add(withinDuration))
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

@@ -1,11 +1,14 @@
 package settinghandler
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 
 	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	_ "github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc/cronjobdto"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc/cronjobdto"
 )
 
 // ListCronJob Lists cron-jobs
@@ -101,4 +104,37 @@ func (h *Handler) UpdateCronJobStatus(ctx *gin.Context) {
 // @Router  /settings/cron-jobs/{itemID} [delete]
 func (h *Handler) DeleteCronJob(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeCronJob, base.SettingScopeGlobal)
+}
+
+// CronJobCalcNextRuns Calculates next runs of the job
+// @Summary Calculates next runs of the job
+// @Description Calculates next runs of the job
+// @Tags    settings
+// @Produce json
+// @Id      cronJobCalcNextRuns
+// @Param   body body cronjobdto.CalcNextRunsReq true "request data"
+// @Success 200 {object} cronjobdto.CalcNextRunsResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /settings/cron-jobs/calc-next-runs [post]
+func (h *Handler) CronJobCalcNextRuns(ctx *gin.Context) {
+	auth, err := h.AuthHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := cronjobdto.NewCalcNextRunsReq()
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.CronJobUC.CalcNextRuns(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
 }

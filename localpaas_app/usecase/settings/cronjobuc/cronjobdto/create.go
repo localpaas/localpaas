@@ -81,7 +81,7 @@ func (req *ScheduleReq) validate(field string) (res []vld.Validator) {
 	}
 	res = append(res, basedto.ValidateValue(req.ToEntity().IsValid() == nil, field+"cronExpr|interval")...)
 	res = append(res, basedto.ValidateTime(&req.InitialTime, true,
-		timeutil.NowUTC(), time.Time{}, field+"initialTime")...)
+		timeutil.NowUTC().Add(-time.Second), time.Time{}, field+"initialTime")...)
 	return res
 }
 

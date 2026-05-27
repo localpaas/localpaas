@@ -87,10 +87,9 @@ func (s *CronJobSchedule) ParseCronExpr() (cron.Schedule, error) {
 	return sched, nil
 }
 
-//nolint:gocognit
-func (s *CronJobSchedule) CalcNextRuns(fromTime, toTime time.Time, count int) (res []time.Time, err error) {
+func (s *CronJobSchedule) CalcNextRuns(fromTime time.Time, count int) (res []time.Time, err error) {
 	nextRunAt := gofn.Coalesce(s.LastSchedTime, s.InitialTime)
-	if toTime.IsZero() && count == 0 {
+	if count == 0 {
 		return nil, apperrors.NewValueInvalid()
 	}
 
@@ -101,11 +100,8 @@ func (s *CronJobSchedule) CalcNextRuns(fromTime, toTime time.Time, count int) (r
 				nextRunAt = nextRunAt.Add(interval)
 				continue
 			}
-			if !toTime.IsZero() && nextRunAt.After(toTime) {
-				break
-			}
 			res = append(res, nextRunAt)
-			if count > 0 && len(res) >= count {
+			if len(res) >= count {
 				break
 			}
 			nextRunAt = nextRunAt.Add(interval)
@@ -123,13 +119,53 @@ func (s *CronJobSchedule) CalcNextRuns(fromTime, toTime time.Time, count int) (r
 			if nextRunAt.Before(fromTime) {
 				continue
 			}
-			if !toTime.IsZero() && nextRunAt.After(toTime) {
+			res = append(res, nextRunAt)
+			if len(res) >= count {
+				break
+			}
+		}
+		return res, nil
+	}
+
+	return nil, apperrors.NewValueInvalid()
+}
+
+func (s *CronJobSchedule) CalcNextRunsInRange(fromTime, toTime time.Time) (res []time.Time, err error) {
+	nextRunAt := gofn.Coalesce(s.LastSchedTime, s.InitialTime)
+	if toTime.IsZero() {
+		return nil, apperrors.NewValueInvalid()
+	}
+
+	if s.Interval > 0 {
+		interval := s.Interval.ToDuration()
+		for {
+			if nextRunAt.Before(fromTime) {
+				nextRunAt = nextRunAt.Add(interval)
+				continue
+			}
+			if nextRunAt.After(toTime) {
 				break
 			}
 			res = append(res, nextRunAt)
-			if count > 0 && len(res) >= count {
+			nextRunAt = nextRunAt.Add(interval)
+		}
+		return res, nil
+	}
+
+	if s.CronExpr != "" {
+		cronSched, err := parser.Parse(s.CronExpr)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		for {
+			nextRunAt = cronSched.Next(nextRunAt)
+			if nextRunAt.Before(fromTime) {
+				continue
+			}
+			if nextRunAt.After(toTime) {
 				break
 			}
+			res = append(res, nextRunAt)
 		}
 		return res, nil
 	}

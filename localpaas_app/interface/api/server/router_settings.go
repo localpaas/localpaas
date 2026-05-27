@@ -172,6 +172,7 @@ func (s *HTTPServer) registerSettingRoutes(apiGroup *gin.RouterGroup) {
 		cronJobGroup.PUT("/:itemID", settingHandler.UpdateCronJob)
 		cronJobGroup.PUT("/:itemID/status", settingHandler.UpdateCronJobStatus)
 		cronJobGroup.DELETE("/:itemID", settingHandler.DeleteCronJob)
+		cronJobGroup.POST("calc-next-runs", settingHandler.CronJobCalcNextRuns)
 	}
 
 	{ // notification group

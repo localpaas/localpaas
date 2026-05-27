@@ -45,6 +45,8 @@ type CronJobResp struct {
 	ControlDisabled bool                               `json:"controlDisabled"`
 	Command         *ContainerCommandResp              `json:"command"`
 	Notification    *basedto.BaseEventNotificationResp `json:"notification"`
+
+	NextRuns []time.Time `json:"nextRuns,omitempty"`
 }
 
 type ScheduleResp struct {

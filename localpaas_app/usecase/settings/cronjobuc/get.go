@@ -5,8 +5,13 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cronjobuc/cronjobdto"
+)
+
+const (
+	cronJobNextRunsCalculation = 5
 )
 
 func (uc *UC) GetCronJob(
@@ -24,6 +29,10 @@ func (uc *UC) GetCronJob(
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+
+	// Return few next runs of the job
+	sched := resp.Data.MustAsCronJob().Schedule
+	respData.NextRuns, _ = sched.CalcNextRuns(timeutil.NowUTC(), cronJobNextRunsCalculation)
 
 	return &cronjobdto.GetCronJobResp{
 		Data: respData,
