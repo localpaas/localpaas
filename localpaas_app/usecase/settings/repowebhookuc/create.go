@@ -22,8 +22,9 @@ func (uc *UC) CreateRepoWebhook(
 	req.Type = currentSettingType
 	webhookData := req.ToEntity()
 	resp, err := uc.CreateSetting(ctx, &req.CreateSettingReq, &settings.CreateSettingData{
-		VerifyingName: req.Name,
-		Version:       currentSettingVersion,
+		VerifyingName:   req.Name,
+		VerifyingRefIDs: webhookData.GetRefObjectIDs(),
+		Version:         currentSettingVersion,
 		PrepareCreation: func(
 			ctx context.Context,
 			db database.Tx,

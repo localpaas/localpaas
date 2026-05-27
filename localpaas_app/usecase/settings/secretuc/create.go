@@ -16,16 +16,17 @@ func (uc *UC) CreateSecret(
 	req *secretdto.CreateSecretReq,
 ) (*secretdto.CreateSecretResp, error) {
 	req.Type = currentSettingType
+	secret := req.ToEntity()
 	resp, err := uc.CreateSetting(ctx, &req.CreateSettingReq, &settings.CreateSettingData{
-		VerifyingName: req.Key,
-		Version:       currentSettingVersion,
+		VerifyingName:   req.Key,
+		VerifyingRefIDs: secret.GetRefObjectIDs(),
+		Version:         currentSettingVersion,
 		PrepareCreation: func(
 			ctx context.Context,
 			db database.Tx,
 			data *settings.CreateSettingData,
 			pData *settings.PersistingSettingCreationData,
 		) error {
-			secret := req.ToEntity()
 			if data.ScopeApp != nil {
 				// Create a secret in docker swarm
 				err := uc.AppService.CreateSwarmSecret(ctx, db, data.ScopeApp, secret)

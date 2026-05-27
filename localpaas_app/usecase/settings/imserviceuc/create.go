@@ -16,9 +16,11 @@ func (uc *UC) CreateIMService(
 	req *imservicedto.CreateIMServiceReq,
 ) (*imservicedto.CreateIMServiceResp, error) {
 	req.Type = currentSettingType
+	imPlatform := req.ToEntity()
 	resp, err := uc.CreateSetting(ctx, &req.CreateSettingReq, &settings.CreateSettingData{
-		VerifyingName: req.Name,
-		Version:       currentSettingVersion,
+		VerifyingName:   req.Name,
+		VerifyingRefIDs: imPlatform.GetRefObjectIDs(),
+		Version:         currentSettingVersion,
 		PrepareCreation: func(
 			ctx context.Context,
 			db database.Tx,
@@ -26,7 +28,7 @@ func (uc *UC) CreateIMService(
 			pData *settings.PersistingSettingCreationData,
 		) error {
 			pData.Setting.Kind = string(req.Kind)
-			err := pData.Setting.SetData(req.ToEntity())
+			err := pData.Setting.SetData(imPlatform)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

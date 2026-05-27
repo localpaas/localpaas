@@ -16,9 +16,11 @@ func (uc *UC) CreateSSLCert(
 	req *sslcertdto.CreateSSLCertReq,
 ) (*sslcertdto.CreateSSLCertResp, error) {
 	req.Type = currentSettingType
+	sslCert := req.ToEntity()
 	resp, err := uc.CreateSetting(ctx, &req.CreateSettingReq, &settings.CreateSettingData{
-		VerifyingName: req.Domain,
-		Version:       currentSettingVersion,
+		VerifyingName:   req.Domain,
+		VerifyingRefIDs: sslCert.GetRefObjectIDs(),
+		Version:         currentSettingVersion,
 		PrepareCreation: func(
 			ctx context.Context,
 			db database.Tx,
@@ -26,7 +28,7 @@ func (uc *UC) CreateSSLCert(
 			pData *settings.PersistingSettingCreationData,
 		) error {
 			pData.Setting.Kind = string(req.CertType)
-			err := pData.Setting.SetData(req.ToEntity())
+			err := pData.Setting.SetData(sslCert)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

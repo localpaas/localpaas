@@ -16,9 +16,11 @@ func (uc *UC) CreateAccessToken(
 	req *accesstokendto.CreateAccessTokenReq,
 ) (*accesstokendto.CreateAccessTokenResp, error) {
 	req.Type = currentSettingType
+	accessToken := req.ToEntity()
 	resp, err := uc.CreateSetting(ctx, &req.CreateSettingReq, &settings.CreateSettingData{
-		VerifyingName: req.Name,
-		Version:       currentSettingVersion,
+		VerifyingName:   req.Name,
+		VerifyingRefIDs: accessToken.GetRefObjectIDs(),
+		Version:         currentSettingVersion,
 		PrepareCreation: func(
 			ctx context.Context,
 			db database.Tx,
@@ -27,7 +29,7 @@ func (uc *UC) CreateAccessToken(
 		) error {
 			pData.Setting.Kind = string(req.Kind)
 			pData.Setting.ExpireAt = req.ExpireAt
-			err := pData.Setting.SetData(req.ToEntity())
+			err := pData.Setting.SetData(accessToken)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

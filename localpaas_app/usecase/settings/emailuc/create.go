@@ -16,9 +16,11 @@ func (uc *UC) CreateEmail(
 	req *emaildto.CreateEmailReq,
 ) (*emaildto.CreateEmailResp, error) {
 	req.Type = currentSettingType
+	emailAcc := req.ToEntity()
 	resp, err := uc.CreateSetting(ctx, &req.CreateSettingReq, &settings.CreateSettingData{
-		VerifyingName: req.Name,
-		Version:       currentSettingVersion,
+		VerifyingName:   req.Name,
+		VerifyingRefIDs: emailAcc.GetRefObjectIDs(),
+		Version:         currentSettingVersion,
 		PrepareCreation: func(
 			ctx context.Context,
 			db database.Tx,
@@ -26,7 +28,7 @@ func (uc *UC) CreateEmail(
 			pData *settings.PersistingSettingCreationData,
 		) error {
 			pData.Setting.Kind = string(req.Kind)
-			err := pData.Setting.SetData(req.ToEntity())
+			err := pData.Setting.SetData(emailAcc)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

@@ -16,8 +16,10 @@ func (uc *UC) UpdateIMService(
 	req *imservicedto.UpdateIMServiceReq,
 ) (*imservicedto.UpdateIMServiceResp, error) {
 	req.Type = currentSettingType
+	imPlatform := req.ToEntity()
 	_, err := uc.UpdateSetting(ctx, &req.UpdateSettingReq, &settings.UpdateSettingData{
-		VerifyingName: req.Name,
+		VerifyingName:   req.Name,
+		VerifyingRefIDs: imPlatform.GetRefObjectIDs(),
 		PrepareUpdate: func(
 			ctx context.Context,
 			db database.Tx,
@@ -25,7 +27,7 @@ func (uc *UC) UpdateIMService(
 			pData *settings.PersistingSettingData,
 		) error {
 			pData.Setting.Kind = string(req.Kind)
-			err := pData.Setting.SetData(req.ToEntity())
+			err := pData.Setting.SetData(imPlatform)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

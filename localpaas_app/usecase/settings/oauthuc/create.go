@@ -19,9 +19,11 @@ func (uc *UC) CreateOAuth(
 	req *oauthdto.CreateOAuthReq,
 ) (*oauthdto.CreateOAuthResp, error) {
 	req.Type = currentSettingType
+	oauth := req.ToEntity()
 	resp, err := uc.CreateSetting(ctx, &req.CreateSettingReq, &settings.CreateSettingData{
-		VerifyingName: gofn.Coalesce(req.Name, req.Organization),
-		Version:       currentSettingVersion,
+		VerifyingName:   gofn.Coalesce(req.Name, req.Organization),
+		VerifyingRefIDs: oauth.GetRefObjectIDs(),
+		Version:         currentSettingVersion,
 		PrepareCreation: func(
 			ctx context.Context,
 			db database.Tx,
@@ -29,7 +31,7 @@ func (uc *UC) CreateOAuth(
 			pData *settings.PersistingSettingCreationData,
 		) error {
 			pData.Setting.Kind = string(req.Kind)
-			err := pData.Setting.SetData(req.ToEntity())
+			err := pData.Setting.SetData(oauth)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

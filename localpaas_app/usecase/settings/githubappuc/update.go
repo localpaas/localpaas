@@ -16,15 +16,16 @@ func (uc *UC) UpdateGithubApp(
 	req *githubappdto.UpdateGithubAppReq,
 ) (*githubappdto.UpdateGithubAppResp, error) {
 	req.Type = currentSettingType
+	githubApp := req.ToEntity()
 	_, err := uc.UpdateSetting(ctx, &req.UpdateSettingReq, &settings.UpdateSettingData{
-		VerifyingName: req.Name,
+		VerifyingName:   req.Name,
+		VerifyingRefIDs: githubApp.GetRefObjectIDs(),
 		PrepareUpdate: func(
 			ctx context.Context,
 			db database.Tx,
 			data *settings.UpdateSettingData,
 			pData *settings.PersistingSettingData,
 		) error {
-			githubApp := req.ToEntity()
 			err := uc.installGithubAppWebhook(ctx, pData.Setting.ID, githubApp, true)
 			if err != nil {
 				return apperrors.Wrap(err)

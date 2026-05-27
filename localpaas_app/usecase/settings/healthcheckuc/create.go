@@ -16,16 +16,18 @@ func (uc *UC) CreateHealthcheck(
 	req *healthcheckdto.CreateHealthcheckReq,
 ) (*healthcheckdto.CreateHealthcheckResp, error) {
 	req.Type = currentSettingType
+	healthcheck := req.ToEntity()
 	resp, err := uc.CreateSetting(ctx, &req.CreateSettingReq, &settings.CreateSettingData{
-		VerifyingName: req.Name,
-		Version:       currentSettingVersion,
+		VerifyingName:   req.Name,
+		VerifyingRefIDs: healthcheck.GetRefObjectIDs(),
+		Version:         currentSettingVersion,
 		PrepareCreation: func(
 			ctx context.Context,
 			db database.Tx,
 			data *settings.CreateSettingData,
 			pData *settings.PersistingSettingCreationData,
 		) error {
-			if err := pData.Setting.SetData(req.ToEntity()); err != nil {
+			if err := pData.Setting.SetData(healthcheck); err != nil {
 				return apperrors.Wrap(err)
 			}
 			return nil

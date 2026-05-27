@@ -16,8 +16,10 @@ func (uc *UC) UpdateCloudStorage(
 	req *cloudstoragedto.UpdateCloudStorageReq,
 ) (*cloudstoragedto.UpdateCloudStorageResp, error) {
 	req.Type = currentSettingType
+	cloudStorage := req.ToEntity()
 	_, err := uc.UpdateSetting(ctx, &req.UpdateSettingReq, &settings.UpdateSettingData{
-		VerifyingName: req.Name,
+		VerifyingName:   req.Name,
+		VerifyingRefIDs: cloudStorage.GetRefObjectIDs(),
 		PrepareUpdate: func(
 			ctx context.Context,
 			db database.Tx,
@@ -25,7 +27,7 @@ func (uc *UC) UpdateCloudStorage(
 			pData *settings.PersistingSettingData,
 		) error {
 			pData.Setting.Kind = string(req.Kind)
-			err := pData.Setting.SetData(req.ToEntity())
+			err := pData.Setting.SetData(cloudStorage)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

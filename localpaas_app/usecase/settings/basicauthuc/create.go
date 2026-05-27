@@ -16,16 +16,18 @@ func (uc *UC) CreateBasicAuth(
 	req *basicauthdto.CreateBasicAuthReq,
 ) (*basicauthdto.CreateBasicAuthResp, error) {
 	req.Type = currentSettingType
+	basicAuth := req.ToEntity()
 	resp, err := uc.CreateSetting(ctx, &req.CreateSettingReq, &settings.CreateSettingData{
-		VerifyingName: req.Name,
-		Version:       currentSettingVersion,
+		VerifyingName:   req.Name,
+		VerifyingRefIDs: basicAuth.GetRefObjectIDs(),
+		Version:         currentSettingVersion,
 		PrepareCreation: func(
 			ctx context.Context,
 			db database.Tx,
 			data *settings.CreateSettingData,
 			pData *settings.PersistingSettingCreationData,
 		) error {
-			err := pData.Setting.SetData(req.ToEntity())
+			err := pData.Setting.SetData(basicAuth)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

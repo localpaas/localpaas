@@ -16,15 +16,17 @@ func (uc *UC) UpdateHealthcheck(
 	req *healthcheckdto.UpdateHealthcheckReq,
 ) (*healthcheckdto.UpdateHealthcheckResp, error) {
 	req.Type = currentSettingType
+	healthcheck := req.ToEntity()
 	_, err := uc.UpdateSetting(ctx, &req.UpdateSettingReq, &settings.UpdateSettingData{
-		VerifyingName: req.Name,
+		VerifyingName:   req.Name,
+		VerifyingRefIDs: healthcheck.GetRefObjectIDs(),
 		PrepareUpdate: func(
 			ctx context.Context,
 			db database.Tx,
 			data *settings.UpdateSettingData,
 			pData *settings.PersistingSettingData,
 		) error {
-			if err := pData.Setting.SetData(req.ToEntity()); err != nil {
+			if err := pData.Setting.SetData(healthcheck); err != nil {
 				return apperrors.Wrap(err)
 			}
 			return nil

@@ -16,16 +16,17 @@ func (uc *UC) CreateConfigFile(
 	req *configfiledto.CreateConfigFileReq,
 ) (*configfiledto.CreateConfigFileResp, error) {
 	req.Type = currentSettingType
+	configFile := req.ToEntity()
 	resp, err := uc.CreateSetting(ctx, &req.CreateSettingReq, &settings.CreateSettingData{
-		VerifyingName: req.Name,
-		Version:       currentSettingVersion,
+		VerifyingName:   req.Name,
+		VerifyingRefIDs: configFile.GetRefObjectIDs(),
+		Version:         currentSettingVersion,
 		PrepareCreation: func(
 			ctx context.Context,
 			db database.Tx,
 			data *settings.CreateSettingData,
 			pData *settings.PersistingSettingCreationData,
 		) error {
-			configFile := req.ToEntity()
 			if data.ScopeApp != nil {
 				// Create a config in docker swarm
 				err := uc.AppService.CreateSwarmConfig(ctx, db, data.ScopeApp, configFile)

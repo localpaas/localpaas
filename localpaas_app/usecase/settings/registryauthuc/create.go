@@ -16,9 +16,11 @@ func (uc *UC) CreateRegistryAuth(
 	req *registryauthdto.CreateRegistryAuthReq,
 ) (*registryauthdto.CreateRegistryAuthResp, error) {
 	req.Type = currentSettingType
+	regAuth := req.ToEntity()
 	resp, err := uc.CreateSetting(ctx, &req.CreateSettingReq, &settings.CreateSettingData{
-		VerifyingName: req.Name,
-		Version:       currentSettingVersion,
+		VerifyingName:   req.Name,
+		VerifyingRefIDs: regAuth.GetRefObjectIDs(),
+		Version:         currentSettingVersion,
 		PrepareCreation: func(
 			ctx context.Context,
 			db database.Tx,
@@ -26,7 +28,7 @@ func (uc *UC) CreateRegistryAuth(
 			pData *settings.PersistingSettingCreationData,
 		) error {
 			pData.Setting.Kind = req.Address
-			err := pData.Setting.SetData(req.ToEntity())
+			err := pData.Setting.SetData(regAuth)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

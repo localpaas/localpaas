@@ -18,8 +18,10 @@ func (uc *UC) UpdateAccessToken(
 	req *accesstokendto.UpdateAccessTokenReq,
 ) (*accesstokendto.UpdateAccessTokenResp, error) {
 	req.Type = currentSettingType
+	accessToken := req.ToEntity()
 	_, err := uc.UpdateSetting(ctx, &req.UpdateSettingReq, &settings.UpdateSettingData{
-		VerifyingName: req.Name,
+		VerifyingName:   req.Name,
+		VerifyingRefIDs: accessToken.GetRefObjectIDs(),
 		PrepareUpdate: func(
 			ctx context.Context,
 			db database.Tx,
@@ -28,7 +30,7 @@ func (uc *UC) UpdateAccessToken(
 		) error {
 			pData.Setting.Kind = gofn.Coalesce(string(req.Kind), pData.Setting.Kind)
 			pData.Setting.ExpireAt = req.ExpireAt
-			err := pData.Setting.SetData(req.ToEntity())
+			err := pData.Setting.SetData(accessToken)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

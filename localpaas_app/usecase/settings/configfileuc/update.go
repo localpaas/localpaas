@@ -16,7 +16,9 @@ func (uc *UC) UpdateConfigFile(
 	req *configfiledto.UpdateConfigFileReq,
 ) (*configfiledto.UpdateConfigFileResp, error) {
 	req.Type = currentSettingType
+	updatedConfigFile := req.ToEntity()
 	_, err := uc.UpdateSetting(ctx, &req.UpdateSettingReq, &settings.UpdateSettingData{
+		VerifyingRefIDs: updatedConfigFile.GetRefObjectIDs(),
 		PrepareUpdate: func(
 			ctx context.Context,
 			db database.Tx,
@@ -27,7 +29,6 @@ func (uc *UC) UpdateConfigFile(
 			if err != nil {
 				return apperrors.Wrap(err)
 			}
-			updatedConfigFile := req.ToEntity()
 			if oldConfigFile != nil {
 				updatedConfigFile.Name = oldConfigFile.Name // when update, keep the old NAME of the config
 				if req.Content == "" {

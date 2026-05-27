@@ -20,16 +20,17 @@ func (uc *UC) CreateSSHKey(
 	req *sshkeydto.CreateSSHKeyReq,
 ) (*sshkeydto.CreateSSHKeyResp, error) {
 	req.Type = currentSettingType
+	sshKey := req.ToEntity()
 	resp, err := uc.CreateSetting(ctx, &req.CreateSettingReq, &settings.CreateSettingData{
-		VerifyingName: req.Name,
-		Version:       currentSettingVersion,
+		VerifyingName:   req.Name,
+		VerifyingRefIDs: sshKey.GetRefObjectIDs(),
+		Version:         currentSettingVersion,
 		PrepareCreation: func(
 			ctx context.Context,
 			db database.Tx,
 			data *settings.CreateSettingData,
 			pData *settings.PersistingSettingCreationData,
 		) error {
-			sshKey := req.ToEntity()
 			if err := generateKey(sshKey); err != nil {
 				return apperrors.Wrap(err)
 			}

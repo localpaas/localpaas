@@ -24,9 +24,11 @@ func (uc *UC) CreateGithubApp(
 	req *githubappdto.CreateGithubAppReq,
 ) (*githubappdto.CreateGithubAppResp, error) {
 	req.Type = currentSettingType
+	githubApp := req.ToEntity()
 	resp, err := uc.CreateSetting(ctx, &req.CreateSettingReq, &settings.CreateSettingData{
-		VerifyingName: gofn.Coalesce(req.Name, req.Organization),
-		Version:       currentSettingVersion,
+		VerifyingName:   gofn.Coalesce(req.Name, req.Organization),
+		VerifyingRefIDs: githubApp.GetRefObjectIDs(),
+		Version:         currentSettingVersion,
 		PrepareCreation: func(
 			ctx context.Context,
 			db database.Tx,
@@ -34,7 +36,6 @@ func (uc *UC) CreateGithubApp(
 			pData *settings.PersistingSettingCreationData,
 		) error {
 			pData.Setting.Kind = string(base.SettingTypeGithubApp)
-			githubApp := req.ToEntity()
 			err := uc.installGithubAppWebhook(ctx, pData.Setting.ID, githubApp, false)
 			if err != nil {
 				return apperrors.Wrap(err)

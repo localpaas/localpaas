@@ -16,16 +16,18 @@ func (uc *UC) CreateNotification(
 	req *notificationdto.CreateNotificationReq,
 ) (*notificationdto.CreateNotificationResp, error) {
 	req.Type = currentSettingType
+	notification := req.ToEntity()
 	resp, err := uc.CreateSetting(ctx, &req.CreateSettingReq, &settings.CreateSettingData{
-		VerifyingName: req.Name,
-		Version:       currentSettingVersion,
+		VerifyingName:   req.Name,
+		VerifyingRefIDs: notification.GetRefObjectIDs(),
+		Version:         currentSettingVersion,
 		PrepareCreation: func(
 			ctx context.Context,
 			db database.Tx,
 			data *settings.CreateSettingData,
 			pData *settings.PersistingSettingCreationData,
 		) error {
-			err := pData.Setting.SetData(req.ToEntity())
+			err := pData.Setting.SetData(notification)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

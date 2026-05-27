@@ -16,8 +16,10 @@ func (uc *UC) UpdateRepoWebhook(
 	req *repowebhookdto.UpdateRepoWebhookReq,
 ) (*repowebhookdto.UpdateRepoWebhookResp, error) {
 	req.Type = currentSettingType
+	webhookData := req.ToEntity()
 	_, err := uc.UpdateSetting(ctx, &req.UpdateSettingReq, &settings.UpdateSettingData{
-		VerifyingName: req.Name,
+		VerifyingName:   req.Name,
+		VerifyingRefIDs: webhookData.GetRefObjectIDs(),
 		PrepareUpdate: func(
 			ctx context.Context,
 			db database.Tx,
@@ -25,7 +27,7 @@ func (uc *UC) UpdateRepoWebhook(
 			pData *settings.PersistingSettingData,
 		) error {
 			pData.Setting.Kind = string(req.Kind)
-			err := pData.Setting.SetData(req.ToEntity())
+			err := pData.Setting.SetData(webhookData)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

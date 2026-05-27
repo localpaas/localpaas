@@ -16,15 +16,16 @@ func (uc *UC) UpdateSSHKey(
 	req *sshkeydto.UpdateSSHKeyReq,
 ) (*sshkeydto.UpdateSSHKeyResp, error) {
 	req.Type = currentSettingType
+	sshKey := req.ToEntity()
 	_, err := uc.UpdateSetting(ctx, &req.UpdateSettingReq, &settings.UpdateSettingData{
-		VerifyingName: req.Name,
+		VerifyingName:   req.Name,
+		VerifyingRefIDs: sshKey.GetRefObjectIDs(),
 		PrepareUpdate: func(
 			ctx context.Context,
 			db database.Tx,
 			data *settings.UpdateSettingData,
 			pData *settings.PersistingSettingData,
 		) error {
-			sshKey := req.ToEntity()
 			if err := generateKey(sshKey); err != nil {
 				return apperrors.Wrap(err)
 			}

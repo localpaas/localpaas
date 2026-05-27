@@ -16,9 +16,11 @@ func (uc *UC) CreateCloudStorage(
 	req *cloudstoragedto.CreateCloudStorageReq,
 ) (*cloudstoragedto.CreateCloudStorageResp, error) {
 	req.Type = currentSettingType
+	cloudStorage := req.ToEntity()
 	resp, err := uc.CreateSetting(ctx, &req.CreateSettingReq, &settings.CreateSettingData{
-		VerifyingName: req.Name,
-		Version:       currentSettingVersion,
+		VerifyingName:   req.Name,
+		VerifyingRefIDs: cloudStorage.GetRefObjectIDs(),
+		Version:         currentSettingVersion,
 		PrepareCreation: func(
 			ctx context.Context,
 			db database.Tx,
@@ -26,7 +28,7 @@ func (uc *UC) CreateCloudStorage(
 			pData *settings.PersistingSettingCreationData,
 		) error {
 			pData.Setting.Kind = string(req.Kind)
-			err := pData.Setting.SetData(req.ToEntity())
+			err := pData.Setting.SetData(cloudStorage)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}

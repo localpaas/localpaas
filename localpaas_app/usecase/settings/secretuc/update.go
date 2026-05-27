@@ -16,7 +16,9 @@ func (uc *UC) UpdateSecret(
 	req *secretdto.UpdateSecretReq,
 ) (*secretdto.UpdateSecretResp, error) {
 	req.Type = currentSettingType
+	updatedSecret := req.ToEntity()
 	_, err := uc.UpdateSetting(ctx, &req.UpdateSettingReq, &settings.UpdateSettingData{
+		VerifyingRefIDs: updatedSecret.GetRefObjectIDs(),
 		PrepareUpdate: func(
 			ctx context.Context,
 			db database.Tx,
@@ -27,7 +29,6 @@ func (uc *UC) UpdateSecret(
 			if err != nil {
 				return apperrors.Wrap(err)
 			}
-			updatedSecret := req.ToEntity()
 			if oldSecret != nil {
 				updatedSecret.Key = oldSecret.Key // when update, keep the old KEY of the secret
 				if req.Value == "" {

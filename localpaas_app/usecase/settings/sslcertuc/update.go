@@ -20,7 +20,8 @@ func (uc *UC) UpdateSSLCert(
 	newCert := req.ToEntity()
 	reObtainCert := false
 	_, err := uc.UpdateSetting(ctx, &req.UpdateSettingReq, &settings.UpdateSettingData{
-		VerifyingName: req.Domain,
+		VerifyingName:   req.Domain,
+		VerifyingRefIDs: newCert.GetRefObjectIDs(),
 		AfterLoading: func(ctx context.Context, db database.Tx, data *settings.UpdateSettingData) error {
 			currCert, err := data.Setting.AsSSLCert()
 			if err != nil {

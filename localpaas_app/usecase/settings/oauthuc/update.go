@@ -18,8 +18,10 @@ func (uc *UC) UpdateOAuth(
 	req *oauthdto.UpdateOAuthReq,
 ) (*oauthdto.UpdateOAuthResp, error) {
 	req.Type = currentSettingType
+	oauth := req.ToEntity()
 	_, err := uc.UpdateSetting(ctx, &req.UpdateSettingReq, &settings.UpdateSettingData{
-		VerifyingName: req.Name,
+		VerifyingName:   req.Name,
+		VerifyingRefIDs: oauth.GetRefObjectIDs(),
 		PrepareUpdate: func(
 			ctx context.Context,
 			db database.Tx,
@@ -27,7 +29,7 @@ func (uc *UC) UpdateOAuth(
 			pData *settings.PersistingSettingData,
 		) error {
 			pData.Setting.Kind = gofn.Coalesce(string(req.Kind), pData.Setting.Kind)
-			err := pData.Setting.SetData(req.ToEntity())
+			err := pData.Setting.SetData(oauth)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}
