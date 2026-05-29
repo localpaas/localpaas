@@ -94,11 +94,11 @@ func TransformHealthcheck(
 				resp.REST.ReturnJSON = &HealthcheckRESTReturnJSONResp{}
 			}
 			if config.REST.ReturnJSON.Exact != nil {
-				exact := gofn.Must(json.Marshal(config.REST.ReturnJSON.Exact))
+				exact := gofn.Must(json.MarshalIndent(config.REST.ReturnJSON.Exact, "", "   "))
 				resp.REST.ReturnJSON.Exact = reflectutil.UnsafeBytesToStr(exact)
 			}
 			if config.REST.ReturnJSON.Contain != nil {
-				contain := gofn.Must(json.Marshal(config.REST.ReturnJSON.Contain))
+				contain := gofn.Must(json.MarshalIndent(config.REST.ReturnJSON.Contain, "", "   "))
 				resp.REST.ReturnJSON.Contain = reflectutil.UnsafeBytesToStr(contain)
 			}
 		}

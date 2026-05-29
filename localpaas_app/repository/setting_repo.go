@@ -307,7 +307,8 @@ func (repo *settingRepo) applyAppFilter(opts []bunex.SelectQueryOption,
 				bunex.SelectWhereOrIf(parentAppID != "", "setting.object_id = ?", parentAppID),
 				bunex.SelectWhereOr("setting.object_id = ?", projectID),
 				bunex.SelectWhereOr("(setting.object_id IS NULL AND setting.avail_in_projects = TRUE)"),
-				bunex.SelectWhereOr("(setting.object_id IS NULL AND pss.project_id = ?)", projectID),
+				bunex.SelectWhereOr("(setting.object_id IS NULL AND pss.project_id = ? AND pss.deleted_at IS NULL)",
+					projectID),
 			),
 		)
 	} else if appID != "" {
@@ -328,7 +329,8 @@ func (repo *settingRepo) applyProjectFilter(opts []bunex.SelectQueryOption,
 		bunex.SelectWhereGroup(
 			bunex.SelectWhere("setting.object_id = ?", projectID),
 			bunex.SelectWhereOr("(setting.object_id IS NULL AND setting.avail_in_projects = TRUE)"),
-			bunex.SelectWhereOr("(setting.object_id IS NULL AND pss.project_id = ?)", projectID),
+			bunex.SelectWhereOr("(setting.object_id IS NULL AND pss.project_id = ? AND pss.deleted_at IS NULL)",
+				projectID),
 		),
 	)
 	return opts

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	vld "github.com/tiendc/go-validator"
+	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
@@ -83,7 +84,10 @@ func (uc *BaseUC) DeleteSetting(
 		}
 
 		// Fire delete event
-		err = uc.SettingService.OnDelete(ctx, db, &settingservice.DeleteEvent{Setting: persistingData.Setting})
+		err = uc.SettingService.OnDelete(ctx, db, &settingservice.DeleteEvent{
+			// persistingData.Setting can be nil if the setting is imported
+			Setting: gofn.Coalesce(persistingData.Setting, data.Setting),
+		})
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
