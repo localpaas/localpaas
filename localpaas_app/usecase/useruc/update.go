@@ -42,6 +42,9 @@ func (uc *UC) UpdateUser(
 		return nil, apperrors.Wrap(err)
 	}
 
+	// Revoke target user's JWT, user needs to re-login
+	_ = uc.userTokenRepo.DelAll(ctx, req.ID)
+
 	return &userdto.UpdateUserResp{}, nil
 }
 
