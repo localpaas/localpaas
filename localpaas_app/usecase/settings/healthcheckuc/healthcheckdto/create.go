@@ -66,6 +66,8 @@ func (req *HealthcheckBaseReq) validate(field string) (res []vld.Validator) {
 	if field != "" {
 		field += "."
 	}
+	res = append(res, basedto.ValidateStrIn(&req.HealthcheckType, true,
+		base.AllHealthcheckTypes, field+"healthcheckType")...)
 	switch req.HealthcheckType {
 	case base.HealthcheckTypeREST:
 		res = append(res, basedto.ValidateValue(req.REST != nil, field+"rest")...)

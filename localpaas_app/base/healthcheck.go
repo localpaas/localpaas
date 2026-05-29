@@ -5,8 +5,8 @@ import "google.golang.org/grpc/health/grpc_health_v1"
 type HealthcheckType string
 
 const (
-	HealthcheckTypeREST HealthcheckType = "REST"
-	HealthcheckTypeGRPC HealthcheckType = "gRPC"
+	HealthcheckTypeREST HealthcheckType = "rest"
+	HealthcheckTypeGRPC HealthcheckType = "grpc"
 )
 
 var (
