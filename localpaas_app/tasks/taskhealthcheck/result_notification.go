@@ -39,12 +39,15 @@ func (e *Executor) sendNotification(
 	}
 
 	notification, err := e.notificationService.GetNotificationForEvent(ctx, db,
-		scope, notifConfig, data.Task.IsDone(), data.RefObjects)
+		scope, notifConfig.BaseEventNotification, data.Task.IsDone(), data.RefObjects)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 	if notification == nil {
 		return nil
+	}
+	if notifConfig.MinSendInterval > 0 {
+		notification.MinSendInterval = notifConfig.MinSendInterval
 	}
 
 	e.buildNotificationMsgData(data)

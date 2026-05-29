@@ -22,15 +22,15 @@ func (s *healthcheckParser) New() SettingData {
 }
 
 type Healthcheck struct {
-	HealthcheckType base.HealthcheckType   `json:"healthcheckType"`
-	Interval        timeutil.Duration      `json:"interval"`
-	MaxRetry        int                    `json:"maxRetry,omitempty"`
-	RetryDelay      timeutil.Duration      `json:"retryDelay,omitempty"`
-	Timeout         timeutil.Duration      `json:"timeout,omitempty"`
-	SaveResultTasks bool                   `json:"saveResultTasks,omitempty"`
-	REST            *HealthcheckREST       `json:"rest,omitempty"`
-	GRPC            *HealthcheckGRPC       `json:"grpc,omitempty"`
-	Notification    *BaseEventNotification `json:"notification,omitempty"`
+	HealthcheckType base.HealthcheckType     `json:"healthcheckType"`
+	Interval        timeutil.Duration        `json:"interval"`
+	MaxRetry        int                      `json:"maxRetry,omitempty"`
+	RetryDelay      timeutil.Duration        `json:"retryDelay,omitempty"`
+	Timeout         timeutil.Duration        `json:"timeout,omitempty"`
+	SaveResultTasks bool                     `json:"saveResultTasks,omitempty"`
+	REST            *HealthcheckREST         `json:"rest,omitempty"`
+	GRPC            *HealthcheckGRPC         `json:"grpc,omitempty"`
+	Notification    *HealthcheckNotification `json:"notification,omitempty"`
 }
 
 type HealthcheckREST struct {
@@ -58,6 +58,11 @@ type HealthcheckGRPC struct {
 	Addr         string                      `json:"addr"`
 	Service      string                      `json:"service"`
 	ReturnStatus base.HealthcheckGRPCStatus  `json:"returnStatus"`
+}
+
+type HealthcheckNotification struct {
+	*BaseEventNotification
+	MinSendInterval timeutil.Duration `json:"minSendInterval,omitempty"`
 }
 
 func (s *Healthcheck) GetType() base.SettingType {

@@ -38,15 +38,15 @@ type GetHealthcheckResp struct {
 
 type HealthcheckResp struct {
 	*settings.BaseSettingResp
-	HealthcheckType base.HealthcheckType               `json:"healthcheckType"`
-	Interval        timeutil.Duration                  `json:"interval"`
-	MaxRetry        int                                `json:"maxRetry"`
-	RetryDelay      timeutil.Duration                  `json:"retryDelay"`
-	Timeout         timeutil.Duration                  `json:"timeout"`
-	SaveResultTasks bool                               `json:"saveResultTasks"`
-	REST            *HealthcheckRESTResp               `json:"rest"`
-	GRPC            *HealthcheckGRPCResp               `json:"grpc"`
-	Notification    *basedto.BaseEventNotificationResp `json:"notification"`
+	HealthcheckType base.HealthcheckType         `json:"healthcheckType"`
+	Interval        timeutil.Duration            `json:"interval"`
+	MaxRetry        int                          `json:"maxRetry"`
+	RetryDelay      timeutil.Duration            `json:"retryDelay"`
+	Timeout         timeutil.Duration            `json:"timeout"`
+	SaveResultTasks bool                         `json:"saveResultTasks"`
+	REST            *HealthcheckRESTResp         `json:"rest"`
+	GRPC            *HealthcheckGRPCResp         `json:"grpc"`
+	Notification    *HealthcheckNotificationResp `json:"notification"`
 }
 
 type HealthcheckRESTResp struct {
@@ -76,6 +76,11 @@ type HealthcheckGRPCResp struct {
 	ReturnStatus base.HealthcheckGRPCStatus  `json:"returnStatus"`
 }
 
+type HealthcheckNotificationResp struct {
+	*basedto.BaseEventNotificationResp
+	MinSendInterval timeutil.Duration `json:"minSendInterval"`
+}
+
 func TransformHealthcheck(
 	setting *entity.Setting,
 	refObjects *entity.RefObjects,
@@ -85,30 +90,53 @@ func TransformHealthcheck(
 		return nil, apperrors.Wrap(err)
 	}
 
-	if config.REST != nil { //nolint:nestif
-		if len(config.REST.ReturnCode) > 0 {
-			resp.REST.ReturnCode = gofn.StringJoinBy(config.REST.ReturnCode, ", ", strconv.Itoa)
-		}
-		if config.REST.ReturnJSON != nil {
-			if resp.REST.ReturnJSON == nil {
-				resp.REST.ReturnJSON = &HealthcheckRESTReturnJSONResp{}
-			}
-			if config.REST.ReturnJSON.Exact != nil {
-				exact := gofn.Must(json.MarshalIndent(config.REST.ReturnJSON.Exact, "", "   "))
-				resp.REST.ReturnJSON.Exact = reflectutil.UnsafeBytesToStr(exact)
-			}
-			if config.REST.ReturnJSON.Contain != nil {
-				contain := gofn.Must(json.MarshalIndent(config.REST.ReturnJSON.Contain, "", "   "))
-				resp.REST.ReturnJSON.Contain = reflectutil.UnsafeBytesToStr(contain)
-			}
-		}
-	}
-
 	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp.Notification = basedto.TransformBaseEventNotification(config.Notification, refObjects)
+	TransformHealthcheckREST(config.REST, resp.REST)
+
+	resp.Notification = TransformHealthcheckNotification(config.Notification, refObjects)
 	return resp, nil
+}
+
+func TransformHealthcheckREST(
+	config *entity.HealthcheckREST,
+	resp *HealthcheckRESTResp,
+) {
+	if config == nil || resp == nil {
+		return
+	}
+
+	if len(config.ReturnCode) > 0 {
+		resp.ReturnCode = gofn.StringJoinBy(config.ReturnCode, ", ", strconv.Itoa)
+	}
+
+	if config.ReturnJSON != nil {
+		if resp.ReturnJSON == nil {
+			resp.ReturnJSON = &HealthcheckRESTReturnJSONResp{}
+		}
+		if config.ReturnJSON.Exact != nil {
+			exact := gofn.Must(json.MarshalIndent(config.ReturnJSON.Exact, "", "   "))
+			resp.ReturnJSON.Exact = reflectutil.UnsafeBytesToStr(exact)
+		}
+		if config.ReturnJSON.Contain != nil {
+			contain := gofn.Must(json.MarshalIndent(config.ReturnJSON.Contain, "", "   "))
+			resp.ReturnJSON.Contain = reflectutil.UnsafeBytesToStr(contain)
+		}
+	}
+}
+
+func TransformHealthcheckNotification(
+	config *entity.HealthcheckNotification,
+	refObjects *entity.RefObjects,
+) *HealthcheckNotificationResp {
+	if config == nil {
+		return nil
+	}
+	return &HealthcheckNotificationResp{
+		BaseEventNotificationResp: basedto.TransformBaseEventNotification(config.BaseEventNotification, refObjects),
+		MinSendInterval:           config.MinSendInterval,
+	}
 }

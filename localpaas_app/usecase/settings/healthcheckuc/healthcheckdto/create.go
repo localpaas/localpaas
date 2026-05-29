@@ -31,16 +31,16 @@ type CreateHealthcheckReq struct {
 }
 
 type HealthcheckBaseReq struct {
-	Name            string                            `json:"name"`
-	HealthcheckType base.HealthcheckType              `json:"healthcheckType"`
-	Interval        timeutil.Duration                 `json:"interval"`
-	MaxRetry        int                               `json:"maxRetry"`
-	RetryDelay      timeutil.Duration                 `json:"retryDelay"`
-	Timeout         timeutil.Duration                 `json:"timeout"`
-	SaveResultTasks bool                              `json:"saveResultTasks"`
-	REST            *HealthcheckRESTReq               `json:"rest"`
-	GRPC            *HealthcheckGRPCReq               `json:"grpc"`
-	Notification    *basedto.BaseEventNotificationReq `json:"notification"`
+	Name            string                      `json:"name"`
+	HealthcheckType base.HealthcheckType        `json:"healthcheckType"`
+	Interval        timeutil.Duration           `json:"interval"`
+	MaxRetry        int                         `json:"maxRetry"`
+	RetryDelay      timeutil.Duration           `json:"retryDelay"`
+	Timeout         timeutil.Duration           `json:"timeout"`
+	SaveResultTasks bool                        `json:"saveResultTasks"`
+	REST            *HealthcheckRESTReq         `json:"rest"`
+	GRPC            *HealthcheckGRPCReq         `json:"grpc"`
+	Notification    *HealthcheckNotificationReq `json:"notification"`
 }
 
 func (req *HealthcheckBaseReq) ToEntity() *entity.Healthcheck {
@@ -58,6 +58,21 @@ func (req *HealthcheckBaseReq) ToEntity() *entity.Healthcheck {
 		res.REST = req.REST.ToEntity()
 	case base.HealthcheckTypeGRPC:
 		res.GRPC = req.GRPC.ToEntity()
+	}
+	return res
+}
+
+func (req *HealthcheckBaseReq) validate(field string) (res []vld.Validator) {
+	if field != "" {
+		field += "."
+	}
+	switch req.HealthcheckType {
+	case base.HealthcheckTypeREST:
+		res = append(res, basedto.ValidateValue(req.REST != nil, field+"rest")...)
+		res = append(res, req.REST.validate(field+"rest")...)
+	case base.HealthcheckTypeGRPC:
+		res = append(res, basedto.ValidateValue(req.GRPC != nil, field+"grpc")...)
+		res = append(res, req.GRPC.validate(field+"grpc")...)
 	}
 	return res
 }
@@ -195,19 +210,19 @@ func (req *HealthcheckGRPCReq) validate(field string) (res []vld.Validator) {
 	return res
 }
 
-func (req *HealthcheckBaseReq) validate(field string) (res []vld.Validator) {
-	if field != "" {
-		field += "."
+type HealthcheckNotificationReq struct {
+	*basedto.BaseEventNotificationReq
+	MinSendInterval timeutil.Duration `json:"minSendInterval"`
+}
+
+func (req *HealthcheckNotificationReq) ToEntity() *entity.HealthcheckNotification {
+	if req == nil {
+		return nil
 	}
-	switch req.HealthcheckType {
-	case base.HealthcheckTypeREST:
-		res = append(res, basedto.ValidateValue(req.REST != nil, field+"rest")...)
-		res = append(res, req.REST.validate(field+"rest")...)
-	case base.HealthcheckTypeGRPC:
-		res = append(res, basedto.ValidateValue(req.GRPC != nil, field+"grpc")...)
-		res = append(res, req.GRPC.validate(field+"grpc")...)
+	return &entity.HealthcheckNotification{
+		BaseEventNotification: req.BaseEventNotificationReq.ToEntity(),
+		MinSendInterval:       req.MinSendInterval,
 	}
-	return res
 }
 
 func NewCreateHealthcheckReq() *CreateHealthcheckReq {
