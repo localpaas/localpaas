@@ -81,7 +81,7 @@ func TransformProject(project *entity.Project) (resp *ProjectResp, err error) {
 	}
 	resp.Envs = TransformProjectEnvs(project.Settings)
 	resp.Tags = gofn.MapSlice(project.Tags, func(t *entity.ProjectTag) string { return t.Tag })
-	resp.UserAccesses = TransformUserAccesses(project.Accesses)
+	resp.UserAccesses = TransformUserAccesses(project)
 	resp.Owner = TransformProjectOwner(project)
 	return resp, nil
 }
@@ -114,10 +114,33 @@ func TransformProjectEnvs(settings []*entity.Setting) (resp []*ProjectEnvResp) {
 	return resp
 }
 
-func TransformUserAccesses(accesses []*entity.ACLPermission) []*ProjectUserAccessResp {
+func TransformUserAccesses(project *entity.Project) []*ProjectUserAccessResp {
+	accesses := project.Accesses
 	slices.SortStableFunc(accesses, func(a, b *entity.ACLPermission) int {
 		return strings.Compare(a.SubjectUser.FullName, b.SubjectUser.FullName)
 	})
+
+	// Add owner to the list if not exist
+	if project.Owner != nil {
+		var ownerAccess *entity.ACLPermission
+		for _, access := range accesses {
+			if access.SubjectID == project.OwnerID {
+				ownerAccess = access
+				break
+			}
+		}
+		if ownerAccess == nil {
+			ownerAccess = &entity.ACLPermission{
+				SubjectID:    project.OwnerID,
+				SubjectType:  base.SubjectTypeUser,
+				SubjectUser:  project.Owner,
+				ResourceType: base.ResourceTypeProject,
+				ResourceID:   project.ID,
+			}
+			accesses = append([]*entity.ACLPermission{ownerAccess}, accesses...)
+		}
+		ownerAccess.Actions = base.AccessActions{Read: true, Write: true, Delete: true}
+	}
 
 	resp := make([]*ProjectUserAccessResp, 0, len(accesses))
 	for _, access := range accesses {
