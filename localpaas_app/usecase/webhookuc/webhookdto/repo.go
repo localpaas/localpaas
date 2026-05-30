@@ -10,14 +10,12 @@ import (
 )
 
 const (
-	idMaxLen     = 100
-	secretMaxLen = 100
+	idMaxLen = 100
 )
 
 type HandleRepoWebhookReq struct {
 	Request *http.Request `json:"-"`
 	ID      string        `json:"-"`
-	Secret  string        `json:"-"`
 }
 
 func NewHandleRepoWebhookReq() *HandleRepoWebhookReq {
@@ -29,8 +27,6 @@ func (req *HandleRepoWebhookReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, basedto.ValidateStr(&req.ID, true,
 		1, idMaxLen, "id")...)
-	validators = append(validators, basedto.ValidateStr(&req.Secret, true,
-		1, secretMaxLen, "secret")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 

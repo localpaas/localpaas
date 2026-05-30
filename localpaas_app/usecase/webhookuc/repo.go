@@ -81,17 +81,15 @@ func (uc *UC) processRepoWebhook(
 	eventData := &repoEventData{}
 	switch data.RepoWebhook.Kind {
 	case base.WebhookKindGithub:
-		err = uc.parseGithubWebhook(req, eventData)
+		err = uc.parseGithubWebhook(req.Request, data.RepoWebhook.Secret, eventData)
 	case base.WebhookKindGitlab:
-		err = uc.parseGitlabWebhook(req, eventData)
+		err = uc.parseGitlabWebhook(req.Request, data.RepoWebhook.Secret, eventData)
 	case base.WebhookKindGitea:
-		err = uc.parseGiteaWebhook(req, eventData)
+		err = uc.parseGiteaWebhook(req.Request, data.RepoWebhook.Secret, eventData)
 	case base.WebhookKindBitbucket:
-		err = uc.parseBitbucketWebhook(req, eventData)
+		err = uc.parseBitbucketWebhook(req.Request, data.RepoWebhook.Secret, eventData)
 	case base.WebhookKindGogs:
-		err = uc.parseGogsWebhook(req, eventData)
-	case base.WebhookKindAzureDevOps:
-		err = uc.parseAzureDevOpsWebhook(req, eventData)
+		err = uc.parseGogsWebhook(req.Request, data.RepoWebhook.Secret, eventData)
 	default:
 		return apperrors.NewUnsupported(fmt.Sprintf("Webhook kind '%v'", data.RepoWebhook.Kind))
 	}
@@ -125,26 +123,16 @@ func (uc *UC) loadWebhookSettings(
 	req *webhookdto.HandleRepoWebhookReq,
 	data *handleRepoWebhookData,
 ) error {
-	settings, _, err := uc.settingRepo.List(ctx, db, nil, nil,
-		bunex.SelectWhere("setting.id = ?", req.ID),
-		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
+	setting, err := uc.settingRepo.GetByID(ctx, db, nil, "", req.ID, true,
 		bunex.SelectWhereIn("setting.type IN (?)", base.SettingTypeRepoWebhook, base.SettingTypeGithubApp),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-
-	for _, setting := range settings {
-		repoWebhook := setting.MustAsRepoWebhook()
-		if repoWebhook.Secret != req.Secret {
-			continue
-		}
-		data.RepoWebhook = repoWebhook
+	data.RepoWebhook, err = setting.AsRepoWebhook()
+	if err != nil {
+		return apperrors.Wrap(err)
 	}
-	if data.RepoWebhook == nil {
-		return apperrors.NewNotFound("Repo webhook settings")
-	}
-
 	return nil
 }
 

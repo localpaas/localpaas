@@ -2,22 +2,23 @@ package webhookuc
 
 import (
 	"errors"
+	"net/http"
 
 	"github.com/go-playground/webhooks/v6/gitlab"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/webhookuc/webhookdto"
 )
 
 func (uc *UC) parseGitlabWebhook(
-	req *webhookdto.HandleRepoWebhookReq,
+	req *http.Request,
+	secret string,
 	data *repoEventData,
 ) error {
-	hook, err := gitlab.New()
+	hook, err := gitlab.New(gitlab.Options.Secret(secret))
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	payload, err := hook.Parse(req.Request, gitlab.PushEvents)
+	payload, err := hook.Parse(req, gitlab.PushEvents)
 	if err != nil {
 		if errors.Is(err, gitlab.ErrEventNotFound) { // ok event wasn't one of the ones asked to be parsed
 			return nil

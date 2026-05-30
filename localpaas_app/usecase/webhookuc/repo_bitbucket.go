@@ -2,23 +2,24 @@ package webhookuc
 
 import (
 	"errors"
+	"net/http"
 
 	"github.com/go-playground/webhooks/v6/bitbucket"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/githelper"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/webhookuc/webhookdto"
 )
 
 func (uc *UC) parseBitbucketWebhook(
-	req *webhookdto.HandleRepoWebhookReq,
+	req *http.Request,
+	secret string,
 	data *repoEventData,
 ) error {
-	hook, err := bitbucket.New()
+	hook, err := bitbucket.New(bitbucket.Options.UUID(secret))
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	payload, err := hook.Parse(req.Request, bitbucket.RepoPushEvent)
+	payload, err := hook.Parse(req, bitbucket.RepoPushEvent)
 	if err != nil {
 		if errors.Is(err, bitbucket.ErrEventNotFound) { // ok event wasn't one of the ones asked to be parsed
 			return nil

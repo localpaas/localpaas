@@ -3,19 +3,18 @@ package base
 type WebhookKind string
 
 const (
-	WebhookKindGithub      WebhookKind = "github"
-	WebhookKindGitlab      WebhookKind = "gitlab"
-	WebhookKindGitea       WebhookKind = "gitea"
-	WebhookKindBitbucket   WebhookKind = "bitbucket"
-	WebhookKindGogs        WebhookKind = "gogs"
-	WebhookKindAzureDevOps WebhookKind = "azuredevops"
+	WebhookKindGithub    WebhookKind = "github"
+	WebhookKindGitlab    WebhookKind = "gitlab"
+	WebhookKindGitea     WebhookKind = "gitea"
+	WebhookKindBitbucket WebhookKind = "bitbucket"
+	WebhookKindGogs      WebhookKind = "gogs"
 )
 
 var (
 	AllWebhookKinds = []WebhookKind{WebhookKindGithub, WebhookKindGitlab, WebhookKindGitea,
-		WebhookKindBitbucket, WebhookKindGogs, WebhookKindAzureDevOps}
+		WebhookKindBitbucket, WebhookKindGogs}
 )
 
 const (
-	DefaultWebhookSecretLen = 20
+	DefaultWebhookSecretByteLen = 20 // string length should be double
 )

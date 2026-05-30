@@ -155,6 +155,16 @@ func (s *HTTPServer) registerSettingRoutes(apiGroup *gin.RouterGroup) {
 		emailGroup.POST("/test-send-mail", settingHandler.TestSendMail)
 	}
 
+	{ // repo webhook group
+		repoWebhookGroup := settingGroup.Group("/repo-webhooks")
+		repoWebhookGroup.GET("/:itemID", settingHandler.GetRepoWebhook)
+		repoWebhookGroup.GET("", settingHandler.ListRepoWebhook)
+		repoWebhookGroup.POST("", settingHandler.CreateRepoWebhook)
+		repoWebhookGroup.PUT("/:itemID", settingHandler.UpdateRepoWebhook)
+		repoWebhookGroup.PUT("/:itemID/status", settingHandler.UpdateRepoWebhookStatus)
+		repoWebhookGroup.DELETE("/:itemID", settingHandler.DeleteRepoWebhook)
+	}
+
 	{ // secrets group
 		secretGroup := settingGroup.Group("/secrets")
 		secretGroup.GET("", settingHandler.ListSecret)

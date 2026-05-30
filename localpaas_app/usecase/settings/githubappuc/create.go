@@ -66,14 +66,14 @@ func (uc *UC) installGithubAppWebhook(
 	update bool,
 ) error {
 	if !update {
-		githubApp.WebhookSecret = gofn.RandTokenAsHex(base.DefaultWebhookSecretLen)
+		githubApp.WebhookSecret = gofn.RandTokenAsHex(base.DefaultWebhookSecretByteLen)
 	}
 
 	if config.Current.IsDevEnv() && config.Current.Platform == config.PlatformLocal {
 		githubApp.WebhookSecret = "abc123"
 		githubApp.WebhookURL = "https://smee.io/RBNiNjxieUIWZ6Ej"
 	} else {
-		githubApp.WebhookURL = config.Current.RepoWebhookURL(settingID, githubApp.WebhookSecret)
+		githubApp.WebhookURL = config.Current.RepoWebhookURL(settingID)
 	}
 
 	client, err := github.NewFromApp(githubApp.AppID, githubApp.InstallationID,

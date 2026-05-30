@@ -17,6 +17,10 @@ func NewUpdateRepoWebhookReq() *UpdateRepoWebhookReq {
 	return &UpdateRepoWebhookReq{}
 }
 
+func (req *UpdateRepoWebhookReq) ModifyRequest() error {
+	return req.modifyRequest()
+}
+
 // Validate implements interface basedto.ReqValidator
 func (req *UpdateRepoWebhookReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator

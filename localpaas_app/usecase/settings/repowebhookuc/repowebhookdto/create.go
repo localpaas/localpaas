@@ -2,6 +2,7 @@ package repowebhookdto
 
 import (
 	vld "github.com/tiendc/go-validator"
+	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -32,6 +33,13 @@ func (req *RepoWebhookBaseReq) ToEntity() *entity.RepoWebhook {
 	}
 }
 
+func (req *RepoWebhookBaseReq) modifyRequest() error {
+	if req.Secret == "" {
+		req.Secret = gofn.RandTokenAsHex(base.DefaultWebhookSecretByteLen)
+	}
+	return nil
+}
+
 func (req *RepoWebhookBaseReq) validate(field string) (res []vld.Validator) {
 	if field != "" {
 		field += "."
@@ -44,6 +52,10 @@ func (req *RepoWebhookBaseReq) validate(field string) (res []vld.Validator) {
 
 func NewCreateRepoWebhookReq() *CreateRepoWebhookReq {
 	return &CreateRepoWebhookReq{}
+}
+
+func (req *CreateRepoWebhookReq) ModifyRequest() error {
+	return req.modifyRequest()
 }
 
 // Validate implements interface basedto.ReqValidator

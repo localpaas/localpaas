@@ -2,22 +2,23 @@ package webhookuc
 
 import (
 	"errors"
+	"net/http"
 
 	"github.com/go-playground/webhooks/v6/github"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/usecase/webhookuc/webhookdto"
 )
 
 func (uc *UC) parseGithubWebhook(
-	req *webhookdto.HandleRepoWebhookReq,
+	req *http.Request,
+	secret string,
 	data *repoEventData,
 ) error {
-	hook, err := github.New()
+	hook, err := github.New(github.Options.Secret(secret))
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	payload, err := hook.Parse(req.Request, github.PushEvent)
+	payload, err := hook.Parse(req, github.PushEvent)
 	if err != nil {
 		if errors.Is(err, github.ErrEventNotFound) { // ok event wasn't one of the ones asked to be parsed
 			return nil

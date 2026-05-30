@@ -6,6 +6,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
@@ -32,16 +33,17 @@ type GetRepoWebhookResp struct {
 
 type RepoWebhookResp struct {
 	*settings.BaseSettingResp
-	Kind   base.WebhookKind `json:"kind"`
-	Secret string           `json:"secret"`
+	Kind       base.WebhookKind `json:"kind"`
+	Secret     string           `json:"secret"`
+	WebhookURL string           `json:"webhookURL"`
 }
 
 func TransformRepoWebhook(
 	setting *entity.Setting,
 	_ *entity.RefObjects,
 ) (resp *RepoWebhookResp, err error) {
-	config := setting.MustAsRepoWebhook()
-	if err = copier.Copy(&resp, config); err != nil {
+	conf := setting.MustAsRepoWebhook()
+	if err = copier.Copy(&resp, conf); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 	resp.Kind = base.WebhookKind(setting.Kind)
@@ -50,5 +52,9 @@ func TransformRepoWebhook(
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+
+	// Computed field
+	resp.WebhookURL = config.Current.RepoWebhookURL(setting.ID)
+
 	return resp, nil
 }

@@ -33,7 +33,7 @@ func (uc *UC) CreateRepoWebhook(
 		) error {
 			pData.Setting.Kind = string(req.Kind)
 			if webhookData.Secret == "" { // generate secret if empty
-				webhookData.Secret = gofn.RandTokenAsHex(base.DefaultWebhookSecretLen)
+				webhookData.Secret = gofn.RandTokenAsHex(base.DefaultWebhookSecretByteLen)
 			}
 			err := pData.Setting.SetData(webhookData)
 			if err != nil {
@@ -50,7 +50,7 @@ func (uc *UC) CreateRepoWebhook(
 		Data: &repowebhookdto.RepoWebhookDataResp{
 			ID:         resp.Data.ID,
 			Secret:     webhookData.Secret,
-			WebhookURL: config.Current.RepoWebhookURL(resp.Data.ID, webhookData.Secret),
+			WebhookURL: config.Current.RepoWebhookURL(resp.Data.ID),
 		},
 	}, nil
 }

@@ -73,8 +73,8 @@ func (uc *UC) BeginGithubAppManifestFlow(
 		githubApp.WebhookSecret = webhookSecretLocal
 		githubApp.WebhookURL = webhookURLLocal
 	} else {
-		githubApp.WebhookSecret = gofn.RandTokenAsHex(base.DefaultWebhookSecretLen)
-		githubApp.WebhookURL = cfg.RepoWebhookURL(appSetting.ID, githubApp.WebhookSecret)
+		githubApp.WebhookSecret = gofn.RandTokenAsHex(base.DefaultWebhookSecretByteLen)
+		githubApp.WebhookURL = cfg.RepoWebhookURL(appSetting.ID)
 	}
 	appSetting.MustSetData(githubApp)
 
