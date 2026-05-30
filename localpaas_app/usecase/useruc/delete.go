@@ -36,6 +36,12 @@ func (uc *UC) DeleteUser(
 			return apperrors.Wrap(err)
 		}
 
+		// Revoke target user's JWT, user can't access with the old token
+		err = uc.userTokenRepo.DelAll(ctx, req.ID)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+
 		return uc.userService.PersistUserData(ctx, db, persistingData)
 	})
 	if err != nil {

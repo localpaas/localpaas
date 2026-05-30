@@ -36,14 +36,17 @@ func (uc *UC) UpdateUser(
 		persistingData := &userservice.PersistingUserData{}
 		uc.prepareUpdatingUserData(req, userData, persistingData)
 
+		// Revoke target user's JWT, user needs to re-login
+		err = uc.userTokenRepo.DelAll(ctx, req.ID)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+
 		return uc.userService.PersistUserData(ctx, db, persistingData)
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-
-	// Revoke target user's JWT, user needs to re-login
-	_ = uc.userTokenRepo.DelAll(ctx, req.ID)
 
 	return &userdto.UpdateUserResp{}, nil
 }
