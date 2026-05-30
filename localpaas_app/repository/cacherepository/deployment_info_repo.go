@@ -57,7 +57,7 @@ func (repo *deploymentInfoRepo) GetAllOfApp(
 	ctx context.Context,
 	appID string,
 ) (map[string]*cacheentity.DeploymentInfo, error) {
-	keys, err := redishelper.Keys(ctx, repo.client, repo.formatKey("*"))
+	keys, err := redishelper.ScanKeys(ctx, repo.client, repo.formatKey("*"))
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -81,7 +81,7 @@ func (repo *deploymentInfoRepo) GetAllOfApp(
 func (repo *deploymentInfoRepo) GetAll(
 	ctx context.Context,
 ) (map[string]*cacheentity.DeploymentInfo, error) {
-	keys, err := redishelper.Keys(ctx, repo.client, repo.formatKey("*"))
+	keys, err := redishelper.ScanKeys(ctx, repo.client, repo.formatKey("*"))
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

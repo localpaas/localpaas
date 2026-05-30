@@ -58,7 +58,7 @@ func (repo *taskInfoRepo) MGet(
 func (repo *taskInfoRepo) GetAll(
 	ctx context.Context,
 ) (map[string]*cacheentity.TaskInfo, error) {
-	keys, err := redishelper.Keys(ctx, repo.client, repo.formatKey("*"))
+	keys, err := redishelper.ScanKeys(ctx, repo.client, repo.formatKey("*"))
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

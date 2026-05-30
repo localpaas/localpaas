@@ -54,7 +54,7 @@ func (repo *userTokenRepo) Del(ctx context.Context, userID, uid string) error {
 }
 
 func (repo *userTokenRepo) DelAll(ctx context.Context, userID string) error {
-	keys, err := repo.client.Keys(ctx, repo.formatKey(userID, "*")).Result()
+	keys, err := redishelper.ScanKeys(ctx, repo.client, repo.formatKey(userID, "*"))
 	if err != nil {
 		return apperrors.New(err)
 	}

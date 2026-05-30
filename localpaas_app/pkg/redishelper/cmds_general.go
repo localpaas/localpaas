@@ -10,19 +10,24 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
 
-func Keys(
+func ScanKeys(
 	ctx context.Context,
 	cmder Cmdable,
 	pattern string,
-) ([]string, error) {
-	slice, err := cmder.Keys(ctx, pattern).Result()
-	if err != nil {
-		if errors.Is(err, redis.Nil) {
-			return nil, nil
+) (allKeys []string, err error) {
+	var cursor uint64
+	for {
+		var keys []string
+		keys, cursor, err = cmder.Scan(ctx, cursor, pattern, 100).Result() //nolint:mnd
+		if err != nil {
+			return nil, apperrors.Wrap(err)
 		}
-		return nil, apperrors.Wrap(err)
+		allKeys = append(allKeys, keys...)
+		if cursor == 0 {
+			break
+		}
 	}
-	return slice, nil
+	return allKeys, nil
 }
 
 func Get[T any](
