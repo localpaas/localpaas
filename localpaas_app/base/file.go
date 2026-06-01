@@ -21,11 +21,11 @@ type FileType string
 
 const (
 	FileTypeSystemBackup FileType = "system-backup"
-	FileTypeCache        FileType = "cache"
+	FileTypeRepoCache    FileType = "repo-cache"
 )
 
 var (
-	AllFileTypes = []FileType{FileTypeSystemBackup, FileTypeCache}
+	AllFileTypes = []FileType{FileTypeSystemBackup, FileTypeRepoCache}
 )
 
 type FileStorageType string

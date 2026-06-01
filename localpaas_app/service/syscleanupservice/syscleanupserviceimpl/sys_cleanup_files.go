@@ -25,7 +25,7 @@ func (s *service) sysCleanupFiles(
 	// Remove outdated temp files
 	err1 := s.sysCleanupTempFiles()
 
-	// TODO: add implementation
+	// TODO: add more cleanup
 
 	return errors.Join(err1)
 }

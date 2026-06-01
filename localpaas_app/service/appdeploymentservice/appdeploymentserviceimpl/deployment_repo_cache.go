@@ -59,7 +59,7 @@ func (s *service) repoCheckoutLoadCache(
 		repoID := data.Deployment.Settings.RepoSource.RepoID
 		file, err := s.fileRepo.GetByKey(ctx, db, repoID,
 			bunex.SelectFor("SHARE OF file"),
-			bunex.SelectWhere("file.type = ?", base.FileTypeCache),
+			bunex.SelectWhere("file.type = ?", base.FileTypeRepoCache),
 			bunex.SelectWhere("file.status = ?", base.FileStatusActive),
 			bunex.SelectWhere("file.object_id = ?", data.Project.ID),
 		)
@@ -125,7 +125,7 @@ func (s *service) repoCheckoutSaveCache(
 			ID:          gofn.Must(ulid.NewStringULID()),
 			Scope:       base.ObjectScopeProject,
 			ObjectID:    data.Project.ID,
-			Type:        base.FileTypeCache,
+			Type:        base.FileTypeRepoCache,
 			Status:      base.FileStatusActive,
 			Key:         data.Deployment.Settings.RepoSource.RepoID,
 			Path:        config.Current.DataPathSystemCacheRepos().RelPath(),
@@ -177,7 +177,7 @@ func (s *service) repoCheckoutSaveCache(
 		repoID := data.Deployment.Settings.RepoSource.RepoID
 		file, err := s.fileRepo.GetByKey(ctx, db, repoID,
 			bunex.SelectFor("UPDATE OF file"),
-			bunex.SelectWhere("file.type = ?", base.FileTypeCache),
+			bunex.SelectWhere("file.type = ?", base.FileTypeRepoCache),
 			bunex.SelectWhere("file.status = ?", base.FileStatusActive),
 			bunex.SelectWhere("file.object_id = ?", data.Project.ID),
 		)

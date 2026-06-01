@@ -13,7 +13,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/fileutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/services/aws/s3"
@@ -57,7 +56,6 @@ func (s *service) sysCleanupLocalBackupFiles(
 
 	deletingFiles, _, err := s.fileRepo.List(ctx, db, nil,
 		bunex.SelectWhere("file.type = ?", base.FileTypeSystemBackup),
-		bunex.SelectWhere("file.status = ?", base.FileStatusActive),
 		bunex.SelectWhere("file.storage_type = ?", base.FileStorageLocal),
 		bunex.SelectWhere("file.created_at < ?", timeNow.Add(-retention)),
 	)
@@ -67,6 +65,7 @@ func (s *service) sysCleanupLocalBackupFiles(
 
 	for _, file := range deletingFiles {
 		file.DeletedAt = timeNow
+		data.TaskOutput.BackupCleanup.LocalBackupsDeleted++
 	}
 	err = s.fileRepo.UpsertMulti(ctx, db, deletingFiles, entity.FileUpsertingConflictCols,
 		[]string{"deleted_at"})
@@ -75,18 +74,11 @@ func (s *service) sysCleanupLocalBackupFiles(
 	}
 
 	// Delete real files in local
-	backupSaveDir := config.Current.DataPathSystemBackupFiles().AbsPath()
-	exists, err := fileutil.FileExists(backupSaveDir, false)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	if !exists {
-		return nil
-	}
-
+	rootDir := config.Current.AppPath
 	for _, file := range deletingFiles {
 		filePath := filepath.Join(file.Path, file.Name)
-		err := os.Remove(filePath)
+		filePathAbs := filepath.Join(rootDir, filePath)
+		err := os.Remove(filePathAbs)
 		if err != nil {
 			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Failed to remove outdated backup file: "+
 				filePath+" with error: "+err.Error(), tasklog.TsNow))
@@ -124,6 +116,7 @@ func (s *service) sysCleanupCloudBackupFiles(
 
 	for _, file := range deletingFiles {
 		file.DeletedAt = timeNow
+		data.TaskOutput.BackupCleanup.CloudBackupsDeleted++
 	}
 	err = s.fileRepo.UpsertMulti(ctx, db, deletingFiles, entity.SettingUpsertingConflictCols,
 		[]string{"deleted_at"})

@@ -30,7 +30,8 @@ type BackupCleanupOutput struct {
 }
 
 type FileCleanupOutput struct {
-	Error string `json:"error,omitempty"`
+	Error                 string `json:"error,omitempty"`
+	RepoCacheFilesDeleted int    `json:"repoCacheFilesDeleted"`
 }
 
 func (t *Task) OutputAsSystemCleanup() (*TaskSystemCleanupOutput, error) {

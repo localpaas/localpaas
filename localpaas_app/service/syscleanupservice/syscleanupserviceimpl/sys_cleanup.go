@@ -42,11 +42,14 @@ func (s *service) Cleanup(
 	// Cleanup old backup files
 	err3 := s.sysCleanupBackups(ctx, db, data)
 
+	// Cleanup outdated cache files
+	err4 := s.sysCleanupCache(ctx, db, data)
+
 	// Cleanup orphaned files
-	err4 := s.sysCleanupFiles(ctx, data)
+	err5 := s.sysCleanupFiles(ctx, data)
 
 	// Assign back the result output
 	data.Task.MustSetOutput(data.TaskOutput)
 
-	return resp, errors.Join(err1, err2, err3, err4)
+	return resp, errors.Join(err1, err2, err3, err4, err5)
 }
