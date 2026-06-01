@@ -138,6 +138,8 @@ func (s *HTTPServer) registerAppRoutes(projectGroup *gin.RouterGroup) *gin.Route
 		appActionGroup := appGroup.Group("/:appID")
 		// Re-deploy app
 		appActionGroup.POST("/deploy", appActionHandler.DeployApp)
+		// Restart app
+		appActionGroup.POST("/restart", appActionHandler.RestartApp)
 	}
 
 	return appGroup
