@@ -25,12 +25,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/sysbackupservice"
 )
 
-const (
-	// 0755 grants read/write/execute for owner, read/execute for group/others
-	// 0644 grants read/write for owner, read-only for group/others
-	sysBackupDirFileMode = 0o755
-)
-
 type sysBackupData struct {
 	*sysbackupservice.SysBackupReq
 	TaskOutput *entity.TaskSystemBackupOutput
@@ -134,9 +128,9 @@ func (s *service) sysBackupCreateWriter(
 	data *sysBackupData,
 ) (tmpFileName string, tarW *tar.Writer, closer func() error, err error) {
 	// Make sure the backup directory exist
-	data.BackupSaveDir = config.Current.DataPathSystemBackupFiles()
+	data.BackupSaveDir = config.Current.DataPathSystemBackupFiles().AbsPath()
 
-	err = os.MkdirAll(data.BackupSaveDir, sysBackupDirFileMode)
+	err = os.MkdirAll(data.BackupSaveDir, base.DirModeDefault)
 	if err != nil {
 		return "", nil, nil, apperrors.Wrap(err)
 	}

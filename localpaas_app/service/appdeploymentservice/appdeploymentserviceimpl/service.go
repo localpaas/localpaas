@@ -24,6 +24,7 @@ type service struct {
 	deploymentRepo      repository.DeploymentRepo
 	taskLogRepo         repository.TaskLogRepo
 	taskRepo            repository.TaskRepo
+	fileRepo            repository.FileRepo
 	taskInfoRepo        cacherepository.TaskInfoRepo
 	deploymentInfoRepo  cacherepository.DeploymentInfoRepo
 	dockerManager       docker.Manager
@@ -43,6 +44,7 @@ func New(
 	deploymentRepo repository.DeploymentRepo,
 	taskLogRepo repository.TaskLogRepo,
 	taskRepo repository.TaskRepo,
+	fileRepo repository.FileRepo,
 	taskInfoRepo cacherepository.TaskInfoRepo,
 	deploymentInfoRepo cacherepository.DeploymentInfoRepo,
 	dockerManager docker.Manager,
@@ -61,6 +63,7 @@ func New(
 		deploymentRepo:      deploymentRepo,
 		taskLogRepo:         taskLogRepo,
 		taskRepo:            taskRepo,
+		fileRepo:            fileRepo,
 		taskInfoRepo:        taskInfoRepo,
 		deploymentInfoRepo:  deploymentInfoRepo,
 		dockerManager:       dockerManager,

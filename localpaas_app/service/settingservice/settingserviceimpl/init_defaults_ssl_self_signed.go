@@ -33,7 +33,7 @@ func (s *service) initDefaultSSLSelfSigned(
 	db database.IDB,
 	timeNow time.Time,
 ) (err error) {
-	certDir := config.Current.DataPathSslCerts()
+	certDir := config.Current.DataPathSslCerts().AbsPath()
 	certFile := filepath.Join(certDir, sslSelfSignedBaseName+".crt")
 	keyFile := filepath.Join(certDir, sslSelfSignedBaseName+".key")
 	certFileExists, _ := fileutil.FileExists(certFile, true)

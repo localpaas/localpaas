@@ -47,6 +47,7 @@ type ImageBuildResourceSettingsResp struct {
 
 type ImageBuildSourceSettingsResp struct {
 	CheckoutMaxDepth uint `json:"checkoutMaxDepth"`
+	RepoCache        bool `json:"repoCache"`
 }
 
 func TransformImageBuild(

@@ -7,9 +7,11 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/moby/go-archive"
 	"github.com/moby/moby/api/types/build"
 	"github.com/moby/moby/client"
@@ -39,6 +41,10 @@ type repoDeploymentData struct {
 	CredSetting        *entity.Setting
 	RegAuthHeader      string
 	ImageBuildSettings *entity.ImageBuildSettings
+
+	RepoCache        *entity.File
+	RepoCacheLoaded  bool
+	CheckoutDuration time.Duration
 
 	TempDir     string
 	CheckoutDir string
@@ -147,44 +153,84 @@ func (s *service) repoDeployStepSourceCheckout(
 	s.addStepStartLog(ctx, data.appDeploymentData, "Start cloning Git repository...")
 	defer s.addStepEndLog(ctx, data.appDeploymentData, timeutil.NowUTC(), err)
 
+	err = s.repoCheckoutLoadCache(ctx, data)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
 	authMethod, err := s.calcGitAuthMethod(ctx, data)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+
+	recurseSubmodules := gofn.If(repoSource.RepoOptions.GitSubmodulesEnabled, git.DefaultSubmoduleRecursionDepth,
+		git.NoRecurseSubmodules)
+	lfsEnabled := repoSource.RepoOptions.GitLFSEnabled
 
 	checkoutMaxDepth := uint(0)
 	if data.ImageBuildSettings != nil {
 		checkoutMaxDepth = data.ImageBuildSettings.Sources.CheckoutMaxDepth
 	}
 
-	_, commit, err := githelper.CheckoutWithGitCli(ctx, &githelper.CheckoutOptions{
-		URL:               repoSource.RepoURL,
-		ReferenceName:     plumbing.ReferenceName(repoSource.RepoRef),
-		Auth:              authMethod,
-		Depth:             1,
-		SingleBranch:      true,
-		RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
+	checkoutOptions := &githelper.CheckoutOptions{
+		URL:           repoSource.RepoURL,
+		ReferenceName: plumbing.ReferenceName(repoSource.RepoRef),
+		Auth:          authMethod,
+		SingleBranch:  true,
+		CommitHash:    repoSource.CommitHash,
+
+		Depth:    1,
+		MaxDepth: checkoutMaxDepth,
+
+		RecurseSubmodules: recurseSubmodules,
 		ShallowSubmodules: true,
-		CommitHash:        repoSource.CommitHash,
-		MaxDepth:          checkoutMaxDepth,
-		TempDir:           data.TempDir,
-		CheckoutDir:       data.CheckoutDir,
-		LogStore:          data.LogStore,
-	})
-	if err != nil {
+
+		LFSEnabled: lfsEnabled,
+
+		TempDir:     data.TempDir,
+		CheckoutDir: data.CheckoutDir,
+		CacheLoaded: data.RepoCacheLoaded,
+		LogStore:    data.LogStore,
+	}
+
+	var commit *object.Commit
+	checkoutStart := time.Now()
+	for {
+		_, commit, err = githelper.CheckoutWithGitCli(ctx, checkoutOptions)
+		if err == nil {
+			break
+		}
+		if checkoutOptions.CacheLoaded {
+			if err := s.resetRepoCheckoutDir(data); err != nil {
+				return apperrors.Wrap(err)
+			}
+			_ = data.LogStore.Add(ctx, tasklog.NewWarnFrame("Failed to checkout repository with error: "+
+				err.Error()+". Try to do a fresh clone (not using cache)...", tasklog.TsNow))
+			checkoutOptions.CacheLoaded = false
+			data.RepoCacheLoaded = false
+			continue
+		}
 		_ = data.LogStore.Add(ctx, tasklog.NewErrFrame("Failed to checkout repository with error: "+
 			err.Error(), tasklog.TsNow))
 		return apperrors.Wrap(err)
 	}
 
+	data.CheckoutDuration = time.Since(checkoutStart)
 	data.DeploymentOutput.CommitHash = commit.Hash.String()
 	data.DeploymentOutput.CommitMessage = commit.Message
 
-	// Remove .git dir within the source dir
-	ee := os.RemoveAll(filepath.Join(data.CheckoutDir, ".git"))
+	// Cache the latest repo source if satisfied our condition
+	ee := s.repoCheckoutSaveCache(ctx, data)
 	if ee != nil { // Just log
-		_ = data.LogStore.Add(ctx, tasklog.NewErrFrame("Failed to remove .git folder",
-			tasklog.TsNow))
+		_ = data.LogStore.Add(ctx, tasklog.NewErrFrame("Failed to cache repository source: "+
+			ee.Error(), tasklog.TsNow))
+	}
+
+	// Remove .git dir within the source dir before building image
+	ee = os.RemoveAll(filepath.Join(data.CheckoutDir, ".git"))
+	if ee != nil { // Just log
+		_ = data.LogStore.Add(ctx, tasklog.NewErrFrame("Failed to remove .git directory from source: "+
+			ee.Error(), tasklog.TsNow))
 	}
 
 	return nil
@@ -384,6 +430,11 @@ func (s *service) repoDeployStepPrepare(
 	}
 	data.TempDir, _ = filepath.Abs(data.TempDir)
 	data.CheckoutDir = filepath.Join(data.TempDir, "checkout")
+
+	err = os.MkdirAll(data.CheckoutDir, base.DirModeDefault)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
 
 	// Load build settings
 	err = s.loadImageBuildSettings(ctx, db, data)

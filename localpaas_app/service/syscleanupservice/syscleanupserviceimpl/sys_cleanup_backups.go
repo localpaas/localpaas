@@ -75,7 +75,7 @@ func (s *service) sysCleanupLocalBackupFiles(
 	}
 
 	// Delete real files in local
-	backupSaveDir := config.Current.DataPathSystemBackupFiles()
+	backupSaveDir := config.Current.DataPathSystemBackupFiles().AbsPath()
 	exists, err := fileutil.FileExists(backupSaveDir, false)
 	if err != nil {
 		return apperrors.Wrap(err)

@@ -51,6 +51,7 @@ func (s *service) initDefaultImageBuildSettings(
 		},
 		Sources: entity.ImageBuildSourceSettings{
 			CheckoutMaxDepth: imageBuildCheckoutMaxDepth,
+			RepoCache:        true,
 		},
 	}
 

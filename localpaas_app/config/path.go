@@ -7,10 +7,8 @@ import (
 	"path/filepath"
 
 	"github.com/tiendc/gofn"
-)
 
-const (
-	defaultDirMode = 0755
+	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
 func (cfg *Config) BaseAPIURL() string {
@@ -120,16 +118,30 @@ func (cfg *Config) ProjectGithubAppManifestFlowProgressURL(projectID, settingID 
 		"github-apps", settingID, "manifest-flow/progress"))
 }
 
+/// LOCAL PATH
+
+type LocalPath string
+
+func (lp LocalPath) RelPath() string {
+	return string(lp)
+}
+func (lp LocalPath) AbsPath() string {
+	return filepath.Join(Current.AppPath, string(lp))
+}
+func (lp LocalPath) Join(elem ...string) LocalPath {
+	return LocalPath(filepath.Join(append([]string{string(lp)}, elem...)...))
+}
+
 /// SSL CERTS
 
-func (cfg *Config) DataPathSsl() string {
-	return filepath.Join(cfg.AppPath, "ssl")
+func (cfg *Config) DataPathSsl() LocalPath {
+	return "ssl"
 }
-func (cfg *Config) DataPathSslCerts() string {
-	return filepath.Join(cfg.DataPathSsl(), "certs")
+func (cfg *Config) DataPathSslCerts() LocalPath {
+	return cfg.DataPathSsl().Join("certs")
 }
-func (cfg *Config) DataPathSslLetsEncrypt() string {
-	return filepath.Join(cfg.DataPathSsl(), "letsencrypt")
+func (cfg *Config) DataPathSslLetsEncrypt() LocalPath {
+	return cfg.DataPathSsl().Join("letsencrypt")
 }
 func (cfg *Config) HttpPathSslLetsEncrypt() string {
 	return "/letsencrypt/"
@@ -137,34 +149,44 @@ func (cfg *Config) HttpPathSslLetsEncrypt() string {
 
 /// TRAEFIK
 
-func (cfg *Config) DataPathTraefik() string {
-	return filepath.Join(cfg.AppPath, "traefik")
+func (cfg *Config) DataPathTraefik() LocalPath {
+	return "traefik"
 }
-func (cfg *Config) DataPathTraefikEtc() string {
-	return filepath.Join(cfg.DataPathTraefik(), "etc")
+func (cfg *Config) DataPathTraefikEtc() LocalPath {
+	return cfg.DataPathTraefik().Join("etc")
 }
-func (cfg *Config) DataPathTraefikEtcDynamic() string {
-	return filepath.Join(cfg.DataPathTraefikEtc(), "dynamic")
+func (cfg *Config) DataPathTraefikEtcDynamic() LocalPath {
+	return cfg.DataPathTraefikEtc().Join("dynamic")
 }
 
 /// SYSTEM BACKUP
 
-func (cfg *Config) DataPathSystemBackup() string {
-	return filepath.Join(cfg.AppPath, "system", "backup")
+func (cfg *Config) DataPathSystemBackup() LocalPath {
+	return LocalPath(filepath.Join("system", "backup"))
 }
-func (cfg *Config) DataPathSystemBackupFiles() string {
-	return filepath.Join(cfg.DataPathSystemBackup(), "files")
+func (cfg *Config) DataPathSystemBackupFiles() LocalPath {
+	return cfg.DataPathSystemBackup().Join("files")
+}
+
+/// SYSTEM CACHE
+
+func (cfg *Config) DataPathSystemCache() LocalPath {
+	return LocalPath(filepath.Join("system", "cache"))
+}
+func (cfg *Config) DataPathSystemCacheRepos() LocalPath {
+	return cfg.DataPathSystemCache().Join("repos")
 }
 
 /// DIRS TO CREATE AT STARTUP
 
 func (cfg *Config) DataPathsToInitAtStartup() map[string]os.FileMode {
 	return map[string]os.FileMode{
-		cfg.DataPathSslCerts():       defaultDirMode,
-		cfg.DataPathSslLetsEncrypt(): defaultDirMode,
+		cfg.DataPathSslCerts().AbsPath():       base.DirModeDefault,
+		cfg.DataPathSslLetsEncrypt().AbsPath(): base.DirModeDefault,
 
-		cfg.DataPathTraefikEtcDynamic(): defaultDirMode,
+		cfg.DataPathTraefikEtcDynamic().AbsPath(): base.DirModeDefault,
 
-		cfg.DataPathSystemBackupFiles(): defaultDirMode,
+		cfg.DataPathSystemBackupFiles().AbsPath(): base.DirModeDefault,
+		cfg.DataPathSystemCacheRepos().AbsPath():  base.DirModeDefault,
 	}
 }

@@ -66,9 +66,10 @@ type Config struct {
 	SystemInfo SystemInfo `toml:"-"`
 }
 
-func (cfg *Config) IsDevEnv() bool  { return cfg.Env == EnvDev }
-func (cfg *Config) IsBetaEnv() bool { return cfg.Env == EnvBeta }
-func (cfg *Config) IsProdEnv() bool { return cfg.Env == EnvProd }
+func (cfg *Config) IsDevEnv() bool   { return cfg.Env == EnvDev }
+func (cfg *Config) IsLocalEnv() bool { return cfg.Platform == PlatformLocal }
+func (cfg *Config) IsBetaEnv() bool  { return cfg.Env == EnvBeta }
+func (cfg *Config) IsProdEnv() bool  { return cfg.Env == EnvProd }
 
 /// LOAD CONFIG
 

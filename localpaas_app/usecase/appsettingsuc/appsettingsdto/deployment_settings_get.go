@@ -55,17 +55,23 @@ type DeploymentImageSourceResp struct {
 }
 
 type DeploymentRepoSourceResp struct {
-	BuildTool      base.BuildTool            `json:"buildTool"`
-	RepoType       base.RepoType             `json:"repoType"`
-	RepoID         string                    `json:"repoId"`
-	RepoURL        string                    `json:"repoURL"`
-	RepoRef        string                    `json:"repoRef"` // can be branch name, tag...
-	CommitHash     string                    `json:"commitHash"`
-	Credentials    *settings.BaseSettingResp `json:"credentials"`
-	DockerfilePath string                    `json:"dockerfilePath"` // for BuildToolDockerfile only
-	ImageName      string                    `json:"imageName"`
-	ImageTags      []string                  `json:"imageTags"`
-	PushToRegistry *settings.BaseSettingResp `json:"pushToRegistry"`
+	BuildTool      base.BuildTool             `json:"buildTool"`
+	RepoType       base.RepoType              `json:"repoType"`
+	RepoID         string                     `json:"repoId"`
+	RepoURL        string                     `json:"repoURL"`
+	RepoRef        string                     `json:"repoRef"` // can be branch name, tag...
+	CommitHash     string                     `json:"commitHash"`
+	RepoOptions    *DeploymentRepoOptionsResp `json:"repoOptions"`
+	Credentials    *settings.BaseSettingResp  `json:"credentials"`
+	DockerfilePath string                     `json:"dockerfilePath"` // for BuildToolDockerfile only
+	ImageName      string                     `json:"imageName"`
+	ImageTags      []string                   `json:"imageTags"`
+	PushToRegistry *settings.BaseSettingResp  `json:"pushToRegistry"`
+}
+
+type DeploymentRepoOptionsResp struct {
+	GitSubmodulesEnabled bool `json:"gitSubmodulesEnabled"`
+	GitLFSEnabled        bool `json:"gitLfsEnabled"`
 }
 
 type AppDeploymentSettingsTransformInput struct {

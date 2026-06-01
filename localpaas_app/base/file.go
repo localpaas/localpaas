@@ -1,5 +1,10 @@
 package base
 
+const (
+	// 0755 grants read/write/execute for owner, read/execute for group/others
+	DirModeDefault = 0755
+)
+
 type FileStatus string
 
 const (
@@ -16,10 +21,11 @@ type FileType string
 
 const (
 	FileTypeSystemBackup FileType = "system-backup"
+	FileTypeCache        FileType = "cache"
 )
 
 var (
-	AllFileTypes = []FileType{FileTypeSystemBackup}
+	AllFileTypes = []FileType{FileTypeSystemBackup, FileTypeCache}
 )
 
 type FileStorageType string

@@ -84,5 +84,5 @@ func (app *App) GetAutoImageName() string {
 }
 
 func (app *App) TraefikConfigPath() string {
-	return filepath.Join(config.Current.DataPathTraefikEtcDynamic(), app.Key+".yml")
+	return filepath.Join(config.Current.DataPathTraefikEtcDynamic().AbsPath(), app.Key+".yml")
 }

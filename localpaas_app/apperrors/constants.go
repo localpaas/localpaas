@@ -18,6 +18,7 @@ var (
 	ErrPanic                = errors.New("ERR_PANIC")
 	ErrAlreadyExist         = errors.New("ERR_ALREADY_EXIST")
 	ErrUnsupported          = errors.New("ERR_UNSUPPORTED")
+	ErrUnrecognized         = errors.New("ERR_UNRECOGNIZED")
 	ErrNonEditable          = errors.New("ERR_NON_EDITABLE")
 	ErrNonDeletable         = errors.New("ERR_NON_DELETABLE")
 	ErrResourceInUse        = errors.New("ERR_RESOURCE_IN_USE")
@@ -138,6 +139,7 @@ var errorStatusMap = map[error]int{
 	ErrPanic:                http.StatusInternalServerError,
 	ErrAlreadyExist:         http.StatusConflict,
 	ErrUnsupported:          http.StatusUnprocessableEntity,
+	ErrUnrecognized:         http.StatusUnprocessableEntity,
 	ErrNonEditable:          http.StatusUnprocessableEntity,
 	ErrNonDeletable:         http.StatusUnprocessableEntity,
 	ErrResourceInUse:        http.StatusUnprocessableEntity,

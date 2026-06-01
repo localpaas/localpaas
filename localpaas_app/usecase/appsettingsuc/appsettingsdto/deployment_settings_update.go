@@ -85,17 +85,18 @@ func (req *DeploymentImageSourceReq) validate(field string) (res []vld.Validator
 }
 
 type DeploymentRepoSourceReq struct {
-	Enabled        bool                `json:"enabled"`
-	BuildTool      base.BuildTool      `json:"buildTool"`
-	RepoType       base.RepoType       `json:"repoType"`
-	RepoURL        string              `json:"repoURL"`
-	RepoRef        string              `json:"repoRef"` // can be branch name, tag...
-	CommitHash     string              `json:"commitHash"`
-	Credentials    basedto.ObjectIDReq `json:"credentials"`
-	DockerfilePath string              `json:"dockerfilePath"` // for BuildToolDockerfile only
-	ImageName      string              `json:"imageName"`
-	ImageTags      []string            `json:"imageTags"`
-	PushToRegistry basedto.ObjectIDReq `json:"pushToRegistry"`
+	Enabled        bool                     `json:"enabled"`
+	BuildTool      base.BuildTool           `json:"buildTool"`
+	RepoType       base.RepoType            `json:"repoType"`
+	RepoURL        string                   `json:"repoURL"`
+	RepoRef        string                   `json:"repoRef"` // can be branch name, tag...
+	CommitHash     string                   `json:"commitHash"`
+	RepoOptions    DeploymentRepoOptionsReq `json:"repoOptions"`
+	Credentials    basedto.ObjectIDReq      `json:"credentials"`
+	DockerfilePath string                   `json:"dockerfilePath"` // for BuildToolDockerfile only
+	ImageName      string                   `json:"imageName"`
+	ImageTags      []string                 `json:"imageTags"`
+	PushToRegistry basedto.ObjectIDReq      `json:"pushToRegistry"`
 }
 
 func (req *DeploymentRepoSourceReq) ToEntity() (*entity.DeploymentRepoSource, error) {
@@ -113,12 +114,13 @@ func (req *DeploymentRepoSourceReq) ToEntity() (*entity.DeploymentRepoSource, er
 	repoID := parsedRepoURL.ID
 
 	return &entity.DeploymentRepoSource{
-		BuildTool:  req.BuildTool,
-		RepoType:   req.RepoType,
-		RepoID:     repoID,
-		RepoURL:    req.RepoURL,
-		RepoRef:    req.RepoRef,
-		CommitHash: req.CommitHash,
+		BuildTool:   req.BuildTool,
+		RepoType:    req.RepoType,
+		RepoID:      repoID,
+		RepoURL:     req.RepoURL,
+		RepoRef:     req.RepoRef,
+		CommitHash:  req.CommitHash,
+		RepoOptions: req.RepoOptions.ToEntity(),
 		Credentials: entity.RepoCredentials{
 			ID: req.Credentials.ID,
 		},
@@ -145,6 +147,18 @@ func (req *DeploymentRepoSourceReq) validate(field string) (res []vld.Validator)
 	res = append(res, basedto.ValidateStr(&req.ImageName, false, 1, base.ImageNameMaxLen, field+"imageName")...)
 	res = append(res, basedto.ValidateObjectIDReq(&req.PushToRegistry, false, field+"pushToRegistry")...)
 	return res
+}
+
+type DeploymentRepoOptionsReq struct {
+	GitSubmodulesEnabled bool `json:"gitSubmodulesEnabled"`
+	GitLFSEnabled        bool `json:"gitLfsEnabled"`
+}
+
+func (req *DeploymentRepoOptionsReq) ToEntity() entity.DeploymentRepoOptions {
+	return entity.DeploymentRepoOptions{
+		GitSubmodulesEnabled: req.GitSubmodulesEnabled,
+		GitLFSEnabled:        req.GitLFSEnabled,
+	}
 }
 
 func NewUpdateAppDeploymentSettingsReq() *UpdateAppDeploymentSettingsReq {

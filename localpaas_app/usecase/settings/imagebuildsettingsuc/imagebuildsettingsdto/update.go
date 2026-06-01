@@ -67,11 +67,13 @@ func (req *ImageBuildResourceSettingsReq) validate(field string) (res []vld.Vali
 
 type ImageBuildSourceSettingsReq struct {
 	CheckoutMaxDepth uint `json:"checkoutMaxDepth"`
+	RepoCache        bool `json:"repoCache"`
 }
 
 func (req *ImageBuildSourceSettingsReq) ToEntity() entity.ImageBuildSourceSettings {
 	return entity.ImageBuildSourceSettings{
 		CheckoutMaxDepth: req.CheckoutMaxDepth,
+		RepoCache:        req.RepoCache,
 	}
 }
 

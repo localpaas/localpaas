@@ -39,6 +39,7 @@ type ImageBuildResourceSettings struct {
 
 type ImageBuildSourceSettings struct {
 	CheckoutMaxDepth uint `json:"checkoutMaxDepth"`
+	RepoCache        bool `json:"repoCache"`
 }
 
 // CPUsAsPeriodAndQuota calculates CPU period and quota from CPUs

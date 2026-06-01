@@ -29,7 +29,7 @@ func (s *service) sslGetLeClient(
 		return client, nil
 	}
 
-	client, err := letsencrypt.NewClient(email, keyType, config.Current.DataPathSslLetsEncrypt())
+	client, err := letsencrypt.NewClient(email, keyType, config.Current.DataPathSslLetsEncrypt().AbsPath())
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

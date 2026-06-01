@@ -107,7 +107,7 @@ func (s *HTTPServer) registerRoutes() {
 
 	// STATIC FILES
 	s.engine.Use(StaticServe(s.config.HttpPathSslLetsEncrypt(),
-		localFile(s.config.DataPathSslLetsEncrypt(), false, "")))
+		localFile(s.config.DataPathSslLetsEncrypt().AbsPath(), false, "")))
 	// Serve the static files from the "dist-dashboard" directory at the root URL "/"
 	s.engine.Use(StaticServe("/",
 		localFile("./dist-dashboard", true, "")))

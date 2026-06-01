@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"runtime"
+	"strings"
 	"syscall"
 
 	"go.uber.org/fx"
@@ -26,6 +28,7 @@ func InitConfig(lc fx.Lifecycle, cfg *config.Config, logger logging.Logger) {
 				return apperrors.Wrap(err)
 			}
 			exportEnvVars(cfg, logger)
+			exportDevEnvVars(cfg)
 			if err := createSystemDataDirs(cfg, logger); err != nil {
 				return apperrors.Wrap(err)
 			}
@@ -95,6 +98,26 @@ func exportEnvVars(cfg *config.Config, logger logging.Logger) {
 	}
 
 	// TODO: More to export?
+}
+
+func exportDevEnvVars(cfg *config.Config) {
+	if !cfg.IsLocalEnv() {
+		return
+	}
+
+	// Add extra paths if running on Mac OS in order to make some commands work
+	if runtime.GOOS == "darwin" {
+		path := os.Getenv("PATH")
+		extraPaths := []string{"/opt/homebrew/bin", "/usr/local/bin"}
+
+		for _, p := range extraPaths {
+			if !strings.Contains(path, p) {
+				path = p + string(os.PathListSeparator) + path
+			}
+		}
+
+		_ = os.Setenv("PATH", path)
+	}
 }
 
 func createSystemDataDirs(cfg *config.Config, logger logging.Logger) error {
