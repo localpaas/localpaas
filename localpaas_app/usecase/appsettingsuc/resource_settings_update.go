@@ -13,6 +13,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/dockerhelper"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/unit"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appsettingsuc/appsettingsdto"
@@ -177,6 +178,10 @@ func (uc *UC) prepareUpdatingAppMemory(
 	if req.Memory != nil {
 		taskSpec.Resources.SwapBytes = new(req.Memory.Swap.Truncate(unit.MB).Bytes())
 		taskSpec.Resources.MemorySwappiness = req.Memory.Swappiness
+
+		if req.Memory.ShmSize > unit.MB {
+			dockerhelper.SetShmSize(taskSpec, req.Memory.ShmSize.Truncate(unit.MB).Bytes())
+		}
 	}
 }
 

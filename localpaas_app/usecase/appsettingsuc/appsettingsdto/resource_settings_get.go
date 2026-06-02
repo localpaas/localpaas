@@ -10,6 +10,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/dockerhelper"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/unit"
 	"github.com/localpaas/localpaas/services/docker"
 )
@@ -65,6 +66,7 @@ type ResourceLimits struct {
 type Memory struct {
 	Swap       unit.DataSize `json:"swap"`
 	Swappiness *int64        `json:"swappiness"`
+	ShmSize    unit.DataSize `json:"shmSize"`
 }
 
 type Ulimit struct {
@@ -91,7 +93,7 @@ func TransformResourceSettings(
 
 	resp.Reservations = TransformResourceReservations(spec.TaskTemplate.Resources)
 	resp.Limits = TransformResourceLimits(spec.TaskTemplate.Resources)
-	resp.Memory = TransformMemory(spec.TaskTemplate.Resources)
+	resp.Memory = TransformMemory(&spec.TaskTemplate)
 	resp.Ulimits = TransformUlimits(spec.TaskTemplate.ContainerSpec.Ulimits)
 	resp.Capabilities = TransformCapabilities(spec.TaskTemplate.ContainerSpec)
 
@@ -135,15 +137,24 @@ func TransformResourceLimits(res *swarm.ResourceRequirements) *ResourceLimits {
 	}
 }
 
-func TransformMemory(res *swarm.ResourceRequirements) *Memory {
-	if res == nil {
+func TransformMemory(taskSpec *swarm.TaskSpec) *Memory {
+	if taskSpec == nil {
 		return nil
 	}
-	resp := &Memory{
-		Swappiness: res.MemorySwappiness,
+	resp := &Memory{}
+	// Resource requirements
+	if taskSpec.Resources != nil {
+		if taskSpec.Resources.SwapBytes != nil {
+			resp.Swappiness = taskSpec.Resources.MemorySwappiness
+		}
+		if taskSpec.Resources.SwapBytes != nil {
+			resp.Swap = unit.DataSize(*taskSpec.Resources.SwapBytes)
+		}
 	}
-	if res.SwapBytes != nil {
-		resp.Swap = unit.DataSize(*res.SwapBytes)
+	// Shm size (extract from Tmpfs mount)
+	shmMount := dockerhelper.GetShmMount(taskSpec)
+	if shmMount != nil && shmMount.TmpfsOptions != nil {
+		resp.ShmSize = unit.DataSize(shmMount.TmpfsOptions.SizeBytes)
 	}
 	return resp
 }

@@ -24898,6 +24898,9 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.Memory" : {
         "properties" : {
+          "shmSize" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_unit.DataSize"
+          },
           "swap" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_unit.DataSize"
           },
@@ -24905,7 +24908,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "swap", "swappiness" ],
+        "required" : [ "shmSize", "swap", "swappiness" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.Mount" : {
