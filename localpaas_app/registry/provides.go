@@ -23,6 +23,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projectsettingshandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/settinghandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/supporthandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/systemhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/systemsettingshandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/traefikhandler"
@@ -101,6 +102,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sshkeyuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sslcertuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/storagesettingsuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/supportuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/lpappsettingsuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/lpappuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/system/syserroruc"
@@ -177,6 +179,7 @@ var Provides = []any{
 	filehandler.New,
 	imagehandler.New,
 	devhelperhandler.New,
+	supporthandler.New,
 
 	// Use case
 	syserroruc.New,
@@ -227,6 +230,7 @@ var Provides = []any{
 	traefiksettingsuc.New,
 	binobjectuc.New,
 	accessiblebyprojectsuc.New,
+	supportuc.New,
 
 	// Service
 	clusterserviceimpl.New,

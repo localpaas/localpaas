@@ -21,6 +21,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/projectsettingshandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/sessionhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/settinghandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/supporthandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/systemhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/systemsettingshandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/traefikhandler"
@@ -49,6 +50,7 @@ type HandlerRegistry struct {
 	webhookHandler         *webhookhandler.Handler
 	fileHandler            *filehandler.Handler
 	imageHandler           *imagehandler.Handler
+	supportHandler         *supporthandler.Handler
 	devHelperHandler       *devhelperhandler.Handler
 }
 
@@ -72,6 +74,7 @@ func NewHandlerRegistry(
 	webhookHandler *webhookhandler.Handler,
 	fileHandler *filehandler.Handler,
 	imageHandler *imagehandler.Handler,
+	supportHandler *supporthandler.Handler,
 	devHelperHandler *devhelperhandler.Handler,
 ) *HandlerRegistry {
 	return &HandlerRegistry{
@@ -94,6 +97,7 @@ func NewHandlerRegistry(
 		webhookHandler:         webhookHandler,
 		fileHandler:            fileHandler,
 		imageHandler:           imageHandler,
+		supportHandler:         supportHandler,
 		devHelperHandler:       devHelperHandler,
 	}
 }
@@ -142,6 +146,7 @@ func (s *HTTPServer) registerRoutes() {
 	s.registerWebhookRoutes(apiGroup)
 	s.registerFileRoutes(apiGroup)
 	s.registerImageRoutes(apiGroup)
+	s.registerSupportRoutes(apiGroup)
 	s.registerDevRoutes(apiGroup)
 }
 
