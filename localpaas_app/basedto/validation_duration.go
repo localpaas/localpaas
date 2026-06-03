@@ -16,7 +16,7 @@ func ValidateDuration[T time.Duration | timeutil.Duration](v *T, required bool, 
 			vld.SetCustomKey("ERR_VLD_VALUE_REQUIRED"),
 		))
 	}
-	if v != nil {
+	if v != nil && (required || *v != 0) {
 		result = append(result, vld.NumRange(v, min, max).OnError(
 			vld.SetField(field, nil),
 			vld.SetCustomKey("ERR_VLD_VALUE_NOT_IN_RANGE"),
