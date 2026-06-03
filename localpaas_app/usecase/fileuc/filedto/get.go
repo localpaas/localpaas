@@ -44,7 +44,7 @@ type FileResp struct {
 	Bucket      string                    `json:"bucket,omitempty"`
 	Mimetype    string                    `json:"mimetype"`
 	Size        int64                     `json:"size"`
-	SizeStr     unit.DataSize             `json:"sizeStr"`
+	SizeStr     unit.DataSizeHR           `json:"sizeStr"`
 	StorageType base.FileStorageType      `json:"storageType"`
 	Storage     *settings.BaseSettingResp `json:"storage,omitempty"`
 	UpdateVer   int                       `json:"updateVer"`
@@ -59,7 +59,7 @@ func TransformFile(file *entity.File) (resp *FileResp, err error) {
 	}
 
 	// Extra fields
-	resp.SizeStr = unit.DataSize(resp.Size)
+	resp.SizeStr = unit.DataSizeHR(resp.Size)
 
 	return resp, nil
 }
