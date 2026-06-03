@@ -47,7 +47,7 @@ func TestDataSize_HumanReadable(t *testing.T) {
 	}{
 		{500 * B, "500 B"},
 		{1500 * B, "1.5 KB"},
-		{1 * MB, "1024.0 KB"}, // Note: case b > KB returns KBytes() if not > MB
+		{1 * MB, "1.0 MB"},
 		{1025 * KB, "1.0 MB"},
 		{2 * GB, "2.0 GB"},
 	}
