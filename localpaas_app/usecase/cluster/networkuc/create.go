@@ -32,6 +32,11 @@ func (uc *UC) CreateNetwork(
 			return nil, apperrors.Wrap(err)
 		}
 		labels[docker.StackLabelNamespace] = project.Key
+
+		// If network is for a project, need to apply some restrictions
+		req.Driver = docker.NetworkDriverOverlay
+		req.Attachable = false
+		req.Name = project.Key + "_" + req.Name
 	} else if !req.AvailInProjects {
 		labels[docker.StackLabelNamespace] = namespaceGlobal
 	}
@@ -43,7 +48,6 @@ func (uc *UC) CreateNetwork(
 		opts.EnableIPv6 = &req.EnableIPv6
 		opts.Internal = req.Internal
 		opts.Attachable = req.Attachable
-		opts.Ingress = req.Ingress
 		opts.Options = req.Options
 		opts.Labels = labels
 	})

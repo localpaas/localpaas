@@ -22,7 +22,6 @@ type CreateNetworkReq struct {
 	EnableIPv6      bool              `json:"enableIPv6"`
 	Internal        bool              `json:"internal"`
 	Attachable      bool              `json:"attachable"`
-	Ingress         bool              `json:"ingress"`
 	Options         map[string]string `json:"options"`
 	Labels          map[string]string `json:"labels"`
 }

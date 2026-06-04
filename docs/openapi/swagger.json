@@ -26331,9 +26331,6 @@
           "enableIPv6" : {
             "type" : "boolean"
           },
-          "ingress" : {
-            "type" : "boolean"
-          },
           "internal" : {
             "type" : "boolean"
           },
@@ -26356,7 +26353,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "attachable", "availableInProjects", "driver", "enableIPv4", "enableIPv6", "ingress", "internal", "labels", "name", "options", "projectId" ],
+        "required" : [ "attachable", "availableInProjects", "driver", "enableIPv4", "enableIPv6", "internal", "labels", "name", "options", "projectId" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_cluster_networkuc_networkdto.CreateNetworkResp" : {
@@ -27047,7 +27044,7 @@
             "type" : "integer"
           },
           "sizeStr" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_unit.DataSize"
+            "type" : "integer"
           },
           "status" : {
             "type" : "string"
@@ -35793,10 +35790,10 @@
         "x-enum-varnames" : [ "SeccompModeDefault", "SeccompModeUnconfined", "SeccompModeCustom" ]
       },
       "timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
         "format" : "int64",
         "type" : "integer",
-        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
+        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
       }
     },
     "securitySchemes" : {
