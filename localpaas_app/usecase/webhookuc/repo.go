@@ -55,7 +55,7 @@ func (uc *UC) HandleRepoWebhook(
 }
 
 type handleRepoWebhookData struct {
-	RepoWebhook *entity.RepoWebhook
+	WebhookSetting *entity.Setting
 }
 
 type repoEventData struct {
@@ -77,20 +77,21 @@ func (uc *UC) processRepoWebhook(
 	data *handleRepoWebhookData,
 	persistingData *appservice.PersistingAppData,
 ) (err error) {
+	webhook := data.WebhookSetting.MustAsRepoWebhook()
 	eventData := &repoEventData{}
-	switch data.RepoWebhook.Kind {
+	switch webhook.Kind {
 	case base.WebhookKindGithub:
-		err = uc.parseGithubWebhook(req.Request, data.RepoWebhook.Secret, eventData)
+		err = uc.parseGithubWebhook(req.Request, webhook.Secret, eventData)
 	case base.WebhookKindGitlab:
-		err = uc.parseGitlabWebhook(req.Request, data.RepoWebhook.Secret, eventData)
+		err = uc.parseGitlabWebhook(req.Request, webhook.Secret, eventData)
 	case base.WebhookKindGitea:
-		err = uc.parseGiteaWebhook(req.Request, data.RepoWebhook.Secret, eventData)
+		err = uc.parseGiteaWebhook(req.Request, webhook.Secret, eventData)
 	case base.WebhookKindBitbucket:
-		err = uc.parseBitbucketWebhook(req.Request, data.RepoWebhook.Secret, eventData)
+		err = uc.parseBitbucketWebhook(req.Request, webhook.Secret, eventData)
 	case base.WebhookKindGogs:
-		err = uc.parseGogsWebhook(req.Request, data.RepoWebhook.Secret, eventData)
+		err = uc.parseGogsWebhook(req.Request, webhook.Secret, eventData)
 	default:
-		return apperrors.NewUnsupported(apperrors.Fmt("Webhook kind '%v'", data.RepoWebhook.Kind))
+		return apperrors.NewUnsupported(apperrors.Fmt("Webhook kind '%v'", webhook.Kind))
 	}
 	if err != nil {
 		return apperrors.Wrap(err)
@@ -107,7 +108,7 @@ func (uc *UC) processRepoWebhook(
 			return apperrors.Wrap(err)
 		}
 		for _, setting := range settings {
-			err = uc.createAppDeploymentByPushEvent(setting, eventData.Push, persistingData)
+			err = uc.createAppDeploymentByPushEvent(setting, eventData.Push, data, persistingData)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}
@@ -128,10 +129,11 @@ func (uc *UC) loadWebhookSettings(
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	data.RepoWebhook, err = setting.AsRepoWebhook()
+	_, err = setting.AsRepoWebhook()
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+	data.WebhookSetting = setting
 	return nil
 }
 
@@ -206,6 +208,7 @@ func (uc *UC) shouldRedeployAppByPushEvent(
 func (uc *UC) createAppDeploymentByPushEvent(
 	setting *entity.Setting, // deployment setting
 	pushEvent *repoPushEventData,
+	data *handleRepoWebhookData,
 	persistingData *appservice.PersistingAppData,
 ) error {
 	deploymentSettings, err := setting.AsAppDeploymentSettings()
@@ -230,6 +233,7 @@ func (uc *UC) createAppDeploymentByPushEvent(
 	// Set trigger for the deployment
 	deployment.Trigger = &entity.AppDeploymentTrigger{
 		Source:   base.DeploymentTriggerSourceRepoWebhook,
+		SourceID: data.WebhookSetting.ID,
 		ChangeID: pushEvent.ChangeID,
 	}
 

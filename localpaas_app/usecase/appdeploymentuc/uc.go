@@ -8,6 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/appdeploymentservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/appservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/taskservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
 	"github.com/localpaas/localpaas/localpaas_app/tasks/queue"
 	"github.com/localpaas/localpaas/services/docker"
 )
@@ -21,6 +22,7 @@ type UC struct {
 	taskLogRepo          repository.TaskLogRepo
 	deploymentInfoRepo   cacherepository.DeploymentInfoRepo
 	taskControlRepo      cacherepository.TaskControlRepo
+	userService          userservice.Service
 	appService           appservice.Service
 	appDeploymentService appdeploymentservice.Service
 	taskService          taskservice.Service
@@ -37,6 +39,7 @@ func New(
 	taskLogRepo repository.TaskLogRepo,
 	deploymentInfoRepo cacherepository.DeploymentInfoRepo,
 	taskControlRepo cacherepository.TaskControlRepo,
+	userService userservice.Service,
 	appService appservice.Service,
 	appDeploymentService appdeploymentservice.Service,
 	taskService taskservice.Service,
@@ -52,6 +55,7 @@ func New(
 		taskLogRepo:          taskLogRepo,
 		deploymentInfoRepo:   deploymentInfoRepo,
 		taskControlRepo:      taskControlRepo,
+		userService:          userService,
 		appService:           appService,
 		appDeploymentService: appDeploymentService,
 		taskService:          taskService,

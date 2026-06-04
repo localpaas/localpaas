@@ -9,8 +9,13 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
-	"github.com/localpaas/localpaas/localpaas_app/entity/cacheentity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/copier"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/githelper"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/strutil"
+)
+
+const (
+	commitHashShortLen = 7
 )
 
 type GetDeploymentReq struct {
@@ -41,7 +46,8 @@ type DeploymentResp struct {
 	Status    base.DeploymentStatus         `json:"status"`
 	UpdateVer int                           `json:"updateVer"`
 	Settings  *entity.AppDeploymentSettings `json:"settings"`
-	Output    *entity.AppDeploymentOutput   `json:"output"`
+	Trigger   *DeploymentTriggerResp        `json:"trigger"`
+	Output    *DeploymentOutputResp         `json:"output"`
 
 	StartedAt time.Time `json:"startedAt"`
 	EndedAt   time.Time `json:"endedAt"`
@@ -49,18 +55,57 @@ type DeploymentResp struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
+type DeploymentTriggerResp struct {
+	Source     base.DeploymentTriggerSource `json:"source"`
+	SourceUser *basedto.UserBaseResp        `json:"sourceUser,omitempty"`
+}
+
+type DeploymentOutputResp struct {
+	CommitHash      string `json:"commitHash,omitempty"`
+	CommitHashShort string `json:"commitHashShort,omitempty"`
+	CommitURL       string `json:"commitURL,omitempty"`
+	CommitTitle     string `json:"commitTitle,omitempty"`
+	CommitMessage   string `json:"commitMessage,omitempty"`
+}
+
 func TransformDeployment(
 	deployment *entity.Deployment,
-	deploymentInfo *cacheentity.DeploymentInfo,
+	input *DeploymentTransformInput,
 ) (resp *DeploymentResp, err error) {
 	if err = copier.Copy(&resp, &deployment); err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+
+	deploymentInfo := input.DeploymentInfoMap[deployment.ID]
 	if deploymentInfo != nil {
 		resp.Status = deploymentInfo.Status
 		if deploymentInfo.Status == base.DeploymentStatusInProgress {
 			resp.StartedAt = deploymentInfo.StartedAt
 		}
 	}
+
+	if deployment.Trigger != nil && (deployment.Trigger.Source == base.DeploymentTriggerSourceUser ||
+		deployment.Trigger.Source == base.DeploymentTriggerSourceAPI) {
+		triggerUser := input.TriggerUserMap[deployment.Trigger.SourceID]
+		if triggerUser != nil {
+			resp.Trigger.SourceUser = basedto.TransformUserBase(triggerUser)
+		} else {
+			resp.Trigger.SourceUser = basedto.NewMissingUserResp(deployment.Trigger.SourceID)
+		}
+	}
+
+	if resp.Output != nil {
+		resp.Output.CommitHashShort = resp.Output.CommitHash
+		if len(resp.Output.CommitHashShort) > commitHashShortLen { // shorten to some characters if possible
+			resp.Output.CommitHashShort = resp.Output.CommitHashShort[:commitHashShortLen]
+		}
+		resp.Output.CommitTitle = strutil.GetFirstLine(resp.Output.CommitMessage)
+
+		if resp.Output.CommitHash != "" && deployment.Settings.RepoSource != nil {
+			repoURL := deployment.Settings.RepoSource.RepoID
+			resp.Output.CommitURL = githelper.GetCommitHttpsUrl(repoURL, resp.Output.CommitHash)
+		}
+	}
+
 	return resp, nil
 }

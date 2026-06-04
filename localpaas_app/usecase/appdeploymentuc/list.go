@@ -8,6 +8,8 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appdeploymentuc/appdeploymentdto"
 )
@@ -64,7 +66,16 @@ func (uc *UC) ListDeployment(
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := appdeploymentdto.TransformDeployments(deployments, deploymentInfoMap)
+	triggerUserMap, err := uc.loadDeploymentTriggerUsers(ctx, uc.db, deployments)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	input := &appdeploymentdto.DeploymentTransformInput{
+		DeploymentInfoMap: deploymentInfoMap,
+		TriggerUserMap:    triggerUserMap,
+	}
+	resp, err := appdeploymentdto.TransformDeployments(deployments, input)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -73,4 +84,26 @@ func (uc *UC) ListDeployment(
 		Meta: &basedto.ListMeta{Page: paging},
 		Data: resp,
 	}, nil
+}
+
+func (uc *UC) loadDeploymentTriggerUsers(
+	ctx context.Context,
+	db database.IDB,
+	deployments []*entity.Deployment,
+) (map[string]*entity.User, error) {
+	userIDs := make([]string, 0, len(deployments))
+	for _, deployment := range deployments {
+		if deployment.Trigger == nil {
+			continue
+		}
+		if deployment.Trigger.Source == base.DeploymentTriggerSourceUser ||
+			deployment.Trigger.Source == base.DeploymentTriggerSourceAPI {
+			userIDs = append(userIDs, deployment.Trigger.SourceID)
+		}
+	}
+	userMap, err := uc.userService.LoadUsers(ctx, db, userIDs, false)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return userMap, nil
 }

@@ -6,6 +6,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/entity/cacheentity"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appdeploymentuc/appdeploymentdto"
 )
@@ -28,7 +29,19 @@ func (uc *UC) GetDeployment(
 		}
 	}
 
-	resp, err := appdeploymentdto.TransformDeployment(deployment, deploymentInfo)
+	triggerUserMap, err := uc.loadDeploymentTriggerUsers(ctx, uc.db, []*entity.Deployment{deployment})
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	input := &appdeploymentdto.DeploymentTransformInput{
+		DeploymentInfoMap: map[string]*cacheentity.DeploymentInfo{
+			req.DeploymentID: deploymentInfo,
+		},
+		TriggerUserMap: triggerUserMap,
+	}
+
+	resp, err := appdeploymentdto.TransformDeployment(deployment, input)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

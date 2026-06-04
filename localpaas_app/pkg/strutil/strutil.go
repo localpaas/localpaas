@@ -53,3 +53,10 @@ func Cut(s, sep string) (string, string, bool) {
 	}
 	return strings.Cut(s, sep)
 }
+
+func GetFirstLine(input string) string {
+	if idx := strings.IndexByte(input, '\n'); idx >= 0 {
+		return strings.TrimSuffix(input[:idx], "\r")
+	}
+	return input
+}

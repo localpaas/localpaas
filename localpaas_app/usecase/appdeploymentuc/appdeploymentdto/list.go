@@ -41,11 +41,18 @@ type ListDeploymentResp struct {
 	Data []*DeploymentResp `json:"data"`
 }
 
-func TransformDeployments(deployments []*entity.Deployment, deploymentInfoMap map[string]*cacheentity.DeploymentInfo) (
-	resp []*DeploymentResp, err error) {
+type DeploymentTransformInput struct {
+	DeploymentInfoMap map[string]*cacheentity.DeploymentInfo
+	TriggerUserMap    map[string]*entity.User
+}
+
+func TransformDeployments(
+	deployments []*entity.Deployment,
+	input *DeploymentTransformInput,
+) (resp []*DeploymentResp, err error) {
 	resp = make([]*DeploymentResp, 0, len(deployments))
-	for _, task := range deployments {
-		item, err := TransformDeployment(task, deploymentInfoMap[task.ID])
+	for _, deployment := range deployments {
+		item, err := TransformDeployment(deployment, input)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

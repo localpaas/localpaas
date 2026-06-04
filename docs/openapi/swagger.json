@@ -23552,26 +23552,6 @@
         "required" : [ "email", "fullName", "id", "photo", "role", "username" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_entity.AppDeploymentOutput" : {
-        "properties" : {
-          "commitHash" : {
-            "type" : "string"
-          },
-          "commitMessage" : {
-            "type" : "string"
-          },
-          "error" : {
-            "type" : "string"
-          },
-          "imageTags" : {
-            "items" : {
-              "type" : "string"
-            },
-            "type" : "array"
-          }
-        },
-        "type" : "object"
-      },
       "github_com_localpaas_localpaas_localpaas_app_entity.AppDeploymentSettings" : {
         "properties" : {
           "activeMethod" : {
@@ -23940,6 +23920,26 @@
         "required" : [ "logs" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.DeploymentOutputResp" : {
+        "properties" : {
+          "commitHash" : {
+            "type" : "string"
+          },
+          "commitHashShort" : {
+            "type" : "string"
+          },
+          "commitMessage" : {
+            "type" : "string"
+          },
+          "commitTitle" : {
+            "type" : "string"
+          },
+          "commitURL" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.DeploymentResp" : {
         "properties" : {
           "createdAt" : {
@@ -23952,7 +23952,7 @@
             "type" : "string"
           },
           "output" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.AppDeploymentOutput"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.DeploymentOutputResp"
           },
           "settings" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_entity.AppDeploymentSettings"
@@ -23963,6 +23963,9 @@
           "status" : {
             "type" : "string"
           },
+          "trigger" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.DeploymentTriggerResp"
+          },
           "updateVer" : {
             "type" : "integer"
           },
@@ -23970,7 +23973,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "createdAt", "endedAt", "id", "output", "settings", "startedAt", "status", "updateVer", "updatedAt" ],
+        "required" : [ "createdAt", "endedAt", "id", "output", "settings", "startedAt", "status", "trigger", "updateVer", "updatedAt" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.DeploymentStatusResp" : {
@@ -23980,6 +23983,18 @@
           }
         },
         "required" : [ "status" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.DeploymentTriggerResp" : {
+        "properties" : {
+          "source" : {
+            "type" : "string"
+          },
+          "sourceUser" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.UserBaseResp"
+          }
+        },
+        "required" : [ "source" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.GetDeploymentLogsResp" : {
@@ -35793,10 +35808,10 @@
         "x-enum-varnames" : [ "SeccompModeDefault", "SeccompModeUnconfined", "SeccompModeCustom" ]
       },
       "timeutil.Duration" : {
-        "enum" : [ 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
         "format" : "int64",
         "type" : "integer",
-        "x-enum-varnames" : [ "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
+        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
       }
     },
     "securitySchemes" : {

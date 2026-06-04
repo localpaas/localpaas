@@ -152,8 +152,8 @@ func (uc *UC) prepareUpdatingAppDeploymentSettings(
 	}
 	// Set trigger for the deployment
 	deployment.Trigger = &entity.AppDeploymentTrigger{
-		Source: base.DeploymentTriggerSourceUser,
-		ID:     auth.User.ID,
+		Source:   base.DeploymentTriggerSourceUser,
+		SourceID: auth.User.ID,
 	}
 
 	persistingData.UpsertingDeployments = append(persistingData.UpsertingDeployments, deployment)

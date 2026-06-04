@@ -149,7 +149,7 @@ func (uc *UC) prepareUpdatingAppDeploymentSettings(
 	// Set trigger for the deployment
 	deployment.Trigger = &entity.AppDeploymentTrigger{
 		Source:   base.DeploymentTriggerSourceAPI,
-		ID:       auth.User.ID,
+		SourceID: auth.User.ID,
 		ChangeID: req.ChangeID,
 	}
 

@@ -88,13 +88,7 @@ func TransformProject(project *entity.Project) (resp *ProjectResp, err error) {
 
 func TransformProjectOwner(project *entity.Project) *basedto.UserBaseResp {
 	if project.Owner == nil {
-		return &basedto.UserBaseResp{
-			ID:       project.OwnerID,
-			Username: "<missing>",
-			Email:    "<missing>",
-			FullName: "<missing>",
-			Role:     base.UserRoleMember,
-		}
+		return basedto.NewMissingUserResp(project.OwnerID)
 	}
 	return basedto.TransformUserBase(project.Owner)
 }

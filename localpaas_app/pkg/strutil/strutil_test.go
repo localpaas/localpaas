@@ -36,3 +36,25 @@ func TestRemoveEmptyLines(t *testing.T) {
 	expectedNoTrim := "line1\n line2 \n   \nline3"
 	assert.Equal(t, expectedNoTrim, RemoveEmptyLines(input, false))
 }
+
+func TestGetFirstLine(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  string
+	}{
+		{"empty string", "", ""},
+		{"single line no newline", "hello world", "hello world"},
+		{"multiline unix", "first line\nsecond line\nthird", "first line"},
+		{"multiline windows", "first line\r\nsecond line\r\nthird", "first line"},
+		{"starts with newline", "\nsecond line", ""},
+		{"only newline", "\n", ""},
+		{"only carriage return and newline", "\r\n", ""},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, GetFirstLine(tt.input))
+		})
+	}
+}

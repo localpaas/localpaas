@@ -34,3 +34,13 @@ func TransformUsersBase(users []*entity.User) []*UserBaseResp {
 	})
 	return resp
 }
+
+func NewMissingUserResp(id string) *UserBaseResp {
+	return &UserBaseResp{
+		ID:       id,
+		Username: "<missing>",
+		Email:    "<missing>",
+		FullName: "<missing>",
+		Role:     base.UserRoleMember,
+	}
+}
