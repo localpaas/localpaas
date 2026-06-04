@@ -69,6 +69,9 @@ func (uc *UC) loadProjectDataForUpdate(
 	}
 	data.Project = project
 
+	// To update project status, use a separate API, so we don't update it
+	req.Status = project.Status
+
 	// If name changes, need to verify it uniqueness
 	if !strings.EqualFold(req.Name, project.Name) {
 		conflictProject, err := uc.projectRepo.GetByName(ctx, db, req.Name, bunex.SelectColumns("id"))

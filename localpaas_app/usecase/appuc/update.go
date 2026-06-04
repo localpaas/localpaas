@@ -68,6 +68,9 @@ func (uc *UC) loadAppDataForUpdate(
 	}
 	data.App = app
 
+	// To update app status, use a separate API, so we don't update it
+	req.Status = app.Status
+
 	// If name changes, need to verify its uniqueness
 	if !strings.EqualFold(req.Name, app.Name) {
 		conflictApp, err := uc.appRepo.GetByName(ctx, db, req.ProjectID, req.Name, bunex.SelectColumns("id"))
