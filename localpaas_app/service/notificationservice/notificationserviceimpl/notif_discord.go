@@ -10,7 +10,7 @@ import (
 
 func (s *service) discordSendMsg(
 	ctx context.Context,
-	setting *entity.Discord,
+	setting *entity.IMDiscord,
 	msg string,
 ) error {
 	webhookURL, err := setting.Webhook.GetPlain()

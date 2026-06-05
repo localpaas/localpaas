@@ -11,9 +11,10 @@ import (
 type TemplateType string
 
 const (
-	TemplateTypeEmail   TemplateType = "email"
-	TemplateTypeSlack   TemplateType = "slack"
-	TemplateTypeDiscord TemplateType = "discord"
+	TemplateTypeEmail    TemplateType = "email"
+	TemplateTypeSlack    TemplateType = "slack"
+	TemplateTypeDiscord  TemplateType = "discord"
+	TemplateTypeTelegram TemplateType = "telegram"
 )
 
 type TemplateName string
@@ -55,14 +56,15 @@ type TaskResultNotificationReq struct {
 }
 
 type TaskResultNotificationResp struct {
-	SendTs      time.Time
-	EmailSent   bool
-	SlackSent   bool
-	DiscordSent bool
+	SendTs       time.Time
+	EmailSent    bool
+	SlackSent    bool
+	DiscordSent  bool
+	TelegramSent bool
 }
 
 func (r *TaskResultNotificationResp) HasSend() bool { // true if has at least one sending
-	return r.EmailSent || r.SlackSent || r.DiscordSent
+	return r.EmailSent || r.SlackSent || r.DiscordSent || r.TelegramSent
 }
 
 //

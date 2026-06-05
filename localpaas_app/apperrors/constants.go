@@ -36,6 +36,8 @@ var (
 	ErrStatusNotAllowAction = errors.New("ERR_STATUS_NOT_ALLOW_ACTION")
 	ErrURLInvalid           = errors.New("ERR_URL_INVALID")
 	ErrValidation           = errors.New("ERR_VALIDATION")
+
+	ErrHTTPRequestFailed = errors.New("ERR_HTTP_REQUEST_FAILED")
 )
 
 // Errors for session
@@ -157,6 +159,8 @@ var errorStatusMap = map[error]int{
 	ErrStatusNotAllowAction: http.StatusUnprocessableEntity,
 	ErrURLInvalid:           http.StatusUnprocessableEntity,
 	ErrValidation:           http.StatusBadRequest,
+
+	ErrHTTPRequestFailed: http.StatusUnprocessableEntity,
 
 	// Session errors
 	ErrNoSession:                   http.StatusUnauthorized,

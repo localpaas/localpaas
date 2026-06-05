@@ -22,6 +22,12 @@ var (
 			return bytes.NewBuffer(make([]byte, 0, buffSize))
 		},
 	}
+
+	telegramBufPool = sync.Pool{
+		New: func() any {
+			return bytes.NewBuffer(make([]byte, 0, buffSize))
+		},
+	}
 )
 
 func (s *service) getEmailBuildBuf() (buf *bytes.Buffer, cleanup func()) {
@@ -44,6 +50,16 @@ func (s *service) getDiscordBuildBuf() (buf *bytes.Buffer, cleanup func()) {
 	return buf, func() {
 		if buf.Cap() <= buffSizeMax {
 			discordBufPool.Put(buf)
+		}
+	}
+}
+
+func (s *service) getTelegramBuildBuf() (buf *bytes.Buffer, cleanup func()) {
+	buf = telegramBufPool.Get().(*bytes.Buffer) //nolint:forcetypeassert
+	buf.Reset()
+	return buf, func() {
+		if buf.Cap() <= buffSizeMax {
+			telegramBufPool.Put(buf)
 		}
 	}
 }

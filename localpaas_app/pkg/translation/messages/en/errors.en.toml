@@ -29,6 +29,8 @@ ERR_STATUS_NOT_ALLOW_ACTION = "Status of object does not allow the action"
 ERR_URL_INVALID = "URL '{{.URL}}' is invalid or unsupported"
 ERR_VALIDATION = "Validation failed"
 
+ERR_HTTP_REQUEST_FAILED = "HTTP request failed with status code {{.StatusCode}}"
+
 # Session errors
 ERR_NO_SESSION = "No session found"
 ERR_SESSION_JWT_INVALID = "Session JWT is invalid"

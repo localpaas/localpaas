@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	maskedWebhook = "****************"
+	maskedSecret = "****************"
 )
 
 type GetIMServiceReq struct {
@@ -37,26 +37,37 @@ type GetIMServiceResp struct {
 type IMServiceResp struct {
 	*settings.BaseSettingResp
 	Kind         base.IMServiceKind `json:"kind"`
-	Slack        *SlackResp         `json:"slack,omitempty"`
-	Discord      *DiscordResp       `json:"discord,omitempty"`
+	Slack        *IMSlackResp       `json:"slack,omitempty"`
+	Discord      *IMDiscordResp     `json:"discord,omitempty"`
+	Telegram     *IMTelegramResp    `json:"telegram,omitempty"`
 	SecretMasked bool               `json:"secretMasked,omitempty"`
 }
 
-type SlackResp struct {
+type IMSlackResp struct {
 	Webhook string `json:"webhook"`
 }
 
-func (resp *SlackResp) CopyWebhook(field entity.EncryptedField) error {
+func (resp *IMSlackResp) CopyWebhook(field entity.EncryptedField) error {
 	resp.Webhook = field.String()
 	return nil
 }
 
-type DiscordResp struct {
+type IMDiscordResp struct {
 	Webhook string `json:"webhook"`
 }
 
-func (resp *DiscordResp) CopyWebhook(field entity.EncryptedField) error {
+func (resp *IMDiscordResp) CopyWebhook(field entity.EncryptedField) error {
 	resp.Webhook = field.String()
+	return nil
+}
+
+type IMTelegramResp struct {
+	BotToken string `json:"botToken"`
+	ChatID   string `json:"chatId"`
+}
+
+func (resp *IMTelegramResp) CopyBotToken(field entity.EncryptedField) error {
+	resp.BotToken = field.String()
 	return nil
 }
 
@@ -79,12 +90,17 @@ func TransformIMService(
 	case config.Slack != nil:
 		resp.SecretMasked = config.Slack.Webhook.IsEncrypted() || resp.Inherited
 		if resp.SecretMasked {
-			resp.Slack.Webhook = maskedWebhook
+			resp.Slack.Webhook = maskedSecret
 		}
 	case config.Discord != nil:
 		resp.SecretMasked = config.Discord.Webhook.IsEncrypted() || resp.Inherited
 		if resp.SecretMasked {
-			resp.Discord.Webhook = maskedWebhook
+			resp.Discord.Webhook = maskedSecret
+		}
+	case config.Telegram != nil:
+		resp.SecretMasked = config.Telegram.BotToken.IsEncrypted() || resp.Inherited
+		if resp.SecretMasked {
+			resp.Telegram.BotToken = maskedSecret
 		}
 	}
 

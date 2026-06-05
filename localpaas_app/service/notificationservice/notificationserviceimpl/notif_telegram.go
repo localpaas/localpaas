@@ -5,19 +5,19 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
-	"github.com/localpaas/localpaas/services/im/slack"
+	"github.com/localpaas/localpaas/services/im/telegram"
 )
 
-func (s *service) slackSendMsg(
+func (s *service) telegramSendMsg(
 	ctx context.Context,
-	setting *entity.IMSlack,
+	setting *entity.IMTelegram,
 	msg string,
 ) error {
-	webhookURL, err := setting.Webhook.GetPlain()
+	botToken, err := setting.BotToken.GetPlain()
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	err = slack.NewClient().PostWebhook(ctx, webhookURL, "", msg)
+	err = telegram.NewClient().SendMessage(ctx, botToken, setting.ChatID, msg, "HTML")
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

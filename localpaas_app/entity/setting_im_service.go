@@ -21,16 +21,22 @@ func (s *imServiceParser) New() SettingData {
 }
 
 type IMService struct {
-	Slack   *Slack   `json:"slack,omitempty"`
-	Discord *Discord `json:"discord,omitempty"`
+	Slack    *IMSlack    `json:"slack,omitempty"`
+	Discord  *IMDiscord  `json:"discord,omitempty"`
+	Telegram *IMTelegram `json:"telegram,omitempty"`
 }
 
-type Slack struct {
+type IMSlack struct {
 	Webhook EncryptedField `json:"webhook"`
 }
 
-type Discord struct {
+type IMDiscord struct {
 	Webhook EncryptedField `json:"webhook"`
+}
+
+type IMTelegram struct {
+	BotToken EncryptedField `json:"botToken"`
+	ChatID   string         `json:"chatId"`
 }
 
 func (s *IMService) GetType() base.SettingType {
@@ -47,6 +53,9 @@ func (s *IMService) MustDecrypt() *IMService {
 	}
 	if s.Discord != nil {
 		s.Discord.Webhook.MustGetPlain()
+	}
+	if s.Telegram != nil {
+		s.Telegram.BotToken.MustGetPlain()
 	}
 	return s
 }

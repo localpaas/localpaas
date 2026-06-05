@@ -22,16 +22,17 @@ func (s *notificationParser) New() SettingData {
 }
 
 type Notification struct {
-	ViaEmail        *NotificationViaEmail   `json:"viaEmail,omitempty"`
-	ViaSlack        *NotificationViaSlack   `json:"viaSlack,omitempty"`
-	ViaDiscord      *NotificationViaDiscord `json:"viaDiscord,omitempty"`
-	MinSendInterval timeutil.Duration       `json:"minSendInterval,omitempty"`
+	ViaEmail        *NotificationViaEmail    `json:"viaEmail,omitempty"`
+	ViaSlack        *NotificationViaSlack    `json:"viaSlack,omitempty"`
+	ViaDiscord      *NotificationViaDiscord  `json:"viaDiscord,omitempty"`
+	ViaTelegram     *NotificationViaTelegram `json:"viaTelegram,omitempty"`
+	MinSendInterval timeutil.Duration        `json:"minSendInterval,omitempty"`
 }
 
 func (s *Notification) GetRefObjectIDs() *RefObjectIDs {
 	return &RefObjectIDs{
 		RefSettingIDs: gofn.Flatten(s.ViaEmail.GetRefSettingIDs(), s.ViaSlack.GetRefSettingIDs(),
-			s.ViaDiscord.GetRefSettingIDs()),
+			s.ViaDiscord.GetRefSettingIDs(), s.ViaTelegram.GetRefSettingIDs()),
 	}
 }
 
@@ -45,6 +46,10 @@ func (s *Notification) HasNotificationViaSlack() bool {
 
 func (s *Notification) HasNotificationViaDiscord() bool {
 	return s.ViaDiscord != nil
+}
+
+func (s *Notification) HasNotificationViaTelegram() bool {
+	return s.ViaTelegram != nil
 }
 
 type NotificationViaEmail struct {
@@ -87,6 +92,19 @@ func (s *NotificationViaDiscord) GetRefSettingIDs() (res []string) {
 		return res
 	}
 	res = append(res, s.Webhook.ID)
+	return res
+}
+
+type NotificationViaTelegram struct {
+	Enabled bool     `json:"enabled"`
+	Setting ObjectID `json:"setting"`
+}
+
+func (s *NotificationViaTelegram) GetRefSettingIDs() (res []string) {
+	if s == nil {
+		return res
+	}
+	res = append(res, s.Setting.ID)
 	return res
 }
 

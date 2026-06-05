@@ -54,6 +54,13 @@ func (s *service) NotifyForTaskResult(
 			return err
 		})
 	}
+	if !shouldSkipNotif && notification.HasNotificationViaTelegram() {
+		execFuncs = append(execFuncs, func(ctx context.Context) error {
+			err := s.notifyForTaskResultViaTelegram(ctx, db, data)
+			resp.TelegramSent = err == nil
+			return err
+		})
+	}
 	if len(execFuncs) == 0 {
 		return resp, nil
 	}
@@ -196,6 +203,44 @@ func (s *service) notifyForTaskResultViaDiscord(
 	}
 
 	err = s.discordSendMsg(ctx, imService.Discord, buf.String())
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (s *service) notifyForTaskResultViaTelegram(
+	ctx context.Context,
+	db database.IDB,
+	data *notificationservice.TaskResultNotificationReq,
+) error {
+	notification := data.Notification
+	if notification == nil || notification.ViaTelegram == nil || !notification.ViaTelegram.Enabled {
+		return nil
+	}
+
+	imSetting := data.RefObjects.RefSettings[notification.ViaTelegram.Setting.ID]
+	if imSetting == nil {
+		return apperrors.NewMissing("Telegram configuration")
+	}
+	imService := imSetting.MustAsIMService()
+	if imService == nil || imService.Telegram == nil {
+		return apperrors.NewMissing("Telegram configuration")
+	}
+
+	template, err := s.GetTemplate(ctx, db, notificationservice.TemplateTypeTelegram, data.TemplateName)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	buf, cleanup := s.getTelegramBuildBuf()
+	defer cleanup()
+	err = template.Execute(buf, data.TemplateData)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	err = s.telegramSendMsg(ctx, imService.Telegram, buf.String())
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

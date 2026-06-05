@@ -1,4 +1,4 @@
-package slack
+package telegram
 
 import (
 	"net/http"

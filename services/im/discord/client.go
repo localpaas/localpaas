@@ -4,25 +4,32 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/infra/httpclient"
+)
+
+const (
+	defaultHttpClientTimeout = 10 * time.Second
 )
 
 type Client struct {
 	httpClient *http.Client
 }
 
-func (c *Client) getHttpClient() *http.Client {
-	if c.httpClient == nil {
-		return httpclient.DefaultClient
-	}
-	return c.httpClient
+func NewClient() *Client {
+	return &Client{}
 }
 
-func NewClient() *Client {
-	client := &Client{}
-	return client
+func (c *Client) getHttpClient() *http.Client {
+	if c.httpClient == nil {
+		return &http.Client{
+			Timeout:   defaultHttpClientTimeout,
+			Transport: httpclient.DefaultClient.Transport,
+		}
+	}
+	return c.httpClient
 }
 
 func parseWebhookURL(webhook string) (webhookID, token string, err error) {

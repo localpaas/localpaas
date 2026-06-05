@@ -9,6 +9,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/imserviceuc/imservicedto"
 	"github.com/localpaas/localpaas/services/im/discord"
 	"github.com/localpaas/localpaas/services/im/slack"
+	"github.com/localpaas/localpaas/services/im/telegram"
 )
 
 func (uc *UC) TestSendInstantMsg(
@@ -21,6 +22,9 @@ func (uc *UC) TestSendInstantMsg(
 		err = slack.NewClient().PostWebhook(ctx, req.Slack.Webhook, "", req.TestMsg)
 	case base.IMServiceKindDiscord:
 		_, err = discord.NewClient().WebhookExecute(ctx, req.Discord.Webhook, true, req.TestMsg)
+	case base.IMServiceKindTelegram:
+		err = telegram.NewClient().SendMessage(ctx, req.Telegram.BotToken, req.Telegram.ChatID,
+			req.TestMsg, "")
 	}
 	if err != nil {
 		return nil, apperrors.Wrap(err)

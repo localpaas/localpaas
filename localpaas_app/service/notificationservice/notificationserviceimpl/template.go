@@ -13,9 +13,10 @@ import (
 )
 
 const (
-	emailTemplateDir   = "config/email/templates/" // NOTE: must end with /
-	slackTemplateDir   = "config/slack/templates/"
-	discordTemplateDir = "config/discord/templates/"
+	emailTemplateDir    = "config/email/templates/" // NOTE: must end with /
+	slackTemplateDir    = "config/slack/templates/"
+	discordTemplateDir  = "config/discord/templates/"
+	telegramTemplateDir = "config/telegram/templates/"
 )
 
 type Template interface {
@@ -54,6 +55,8 @@ func (s *service) GetTemplate(
 		tpl, err = s.loadSlackTemplate(ctx, db, name)
 	case notificationservice.TemplateTypeDiscord:
 		tpl, err = s.loadDiscordTemplate(ctx, db, name)
+	case notificationservice.TemplateTypeTelegram:
+		tpl, err = s.loadTelegramTemplate(ctx, db, name)
 	}
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -133,6 +136,32 @@ func (s *service) loadDiscordTemplate(
 		tpl, err = texttemplate.ParseFiles(discordTemplateDir + "ssl_renewal_notification.tpl")
 	case notificationservice.TemplateSystemUpdateNotification:
 		tpl, err = texttemplate.ParseFiles(discordTemplateDir + "system_update_notification.tpl")
+	}
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	return tpl, nil
+}
+
+func (s *service) loadTelegramTemplate(
+	_ context.Context,
+	_ database.IDB,
+	name notificationservice.TemplateName,
+) (tpl Template, err error) {
+	switch name {
+	case notificationservice.TemplateAppDeploymentNotification:
+		tpl, err = htmltemplate.ParseFiles(telegramTemplateDir + "app_deployment_notification.tpl")
+	case notificationservice.TemplateSchedTaskNotification:
+		tpl, err = htmltemplate.ParseFiles(telegramTemplateDir + "sched_task_notification.tpl")
+	case notificationservice.TemplateHealthcheckNotification:
+		tpl, err = htmltemplate.ParseFiles(telegramTemplateDir + "healthcheck_notification.tpl")
+	case notificationservice.TemplateSSLExpiringNotification:
+		tpl, err = htmltemplate.ParseFiles(telegramTemplateDir + "ssl_expiring_notification.tpl")
+	case notificationservice.TemplateSSLRenewalNotification:
+		tpl, err = htmltemplate.ParseFiles(telegramTemplateDir + "ssl_renewal_notification.tpl")
+	case notificationservice.TemplateSystemUpdateNotification:
+		tpl, err = htmltemplate.ParseFiles(telegramTemplateDir + "system_update_notification.tpl")
 	}
 	if err != nil {
 		return nil, apperrors.Wrap(err)
