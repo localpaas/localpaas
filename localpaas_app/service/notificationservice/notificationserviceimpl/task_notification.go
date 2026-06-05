@@ -8,7 +8,6 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/strutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
 	"github.com/localpaas/localpaas/services/email"
@@ -158,7 +157,7 @@ func (s *service) notifyForTaskResultViaSlack(
 		return apperrors.Wrap(err)
 	}
 
-	err = s.slackSendMsg(ctx, imService.Slack, strutil.RemoveEmptyLines(buf.String(), false))
+	err = s.slackSendMsg(ctx, imService.Slack, buf.String())
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

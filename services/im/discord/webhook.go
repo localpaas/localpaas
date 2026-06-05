@@ -8,6 +8,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
 )
 
 type WebhookMessageOption func(webhook *discordgo.WebhookParams)
@@ -27,7 +28,7 @@ func (c *Client) WebhookExecute(_ context.Context, webhookURL string, wait bool,
 	msg := &discordgo.WebhookParams{}
 	trimmed := strings.TrimSpace(content)
 	if strings.HasPrefix(trimmed, "{") && strings.HasSuffix(trimmed, "}") {
-		if err := json.Unmarshal([]byte(content), msg); err != nil {
+		if err := json.Unmarshal(reflectutil.UnsafeStrToBytes(content), msg); err != nil {
 			msg.Content = content
 		}
 	} else {

@@ -2,20 +2,32 @@ package slack
 
 import (
 	"context"
+	"encoding/json"
+	"strings"
 
 	"github.com/slack-go/slack"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
 )
 
 type WebhookMessageOption func(*slack.WebhookMessage)
 
 func (c *Client) PostWebhook(ctx context.Context, webhookURL, channel, text string,
 	options ...WebhookMessageOption) error {
-	msg := &slack.WebhookMessage{
-		Channel: channel,
-		Text:    text,
+	msg := &slack.WebhookMessage{}
+	trimmed := strings.TrimSpace(text)
+	if strings.HasPrefix(trimmed, "{") && strings.HasSuffix(trimmed, "}") {
+		if err := json.Unmarshal(reflectutil.UnsafeStrToBytes(text), msg); err != nil {
+			msg.Text = text
+		}
+	} else {
+		msg.Text = text
 	}
+	if channel != "" {
+		msg.Channel = channel
+	}
+
 	for _, opt := range options {
 		opt(msg)
 	}
