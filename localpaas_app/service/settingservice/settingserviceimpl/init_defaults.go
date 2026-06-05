@@ -36,6 +36,16 @@ func (s *service) InitDefaults(
 		}
 	}
 
+	// Notification settings
+	if !gofn.ContainBy(settings, func(item *entity.Setting) bool {
+		return item.Type == base.SettingTypeNotification
+	}) {
+		err = s.initDefaultNotificationSettings(ctx, db, timeNow)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+	}
+
 	// Domain settings
 	if !gofn.ContainBy(settings, func(item *entity.Setting) bool {
 		return item.Type == base.SettingTypeDomainSettings

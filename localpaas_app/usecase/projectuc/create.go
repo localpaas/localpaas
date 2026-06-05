@@ -24,6 +24,8 @@ import (
 const (
 	projectWebhookName      = "default"
 	projectWebhookSecretLen = 24
+
+	projectNotificationName = "default"
 )
 
 func (uc *UC) CreateProject(
@@ -127,6 +129,7 @@ func (uc *UC) preparePersistingProject(
 	uc.preparePersistingProjectEnvs(project, req.Envs, timeNow, persistingData)
 	uc.preparePersistingProjectTags(project, req.Tags, 0, persistingData)
 	uc.preparePersistingProjectWebhook(project, timeNow, persistingData)
+	uc.preparePersistingProjectNotificationDefault(project, timeNow, persistingData)
 }
 
 func (uc *UC) preparePersistingProjectBase(
@@ -216,6 +219,27 @@ func (uc *UC) preparePersistingProjectWebhook(
 	setting.MustSetData(&entity.RepoWebhook{
 		Secret: gofn.RandTokenAsHex(projectWebhookSecretLen),
 	})
+	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
+}
+
+func (uc *UC) preparePersistingProjectNotificationDefault(
+	project *entity.Project,
+	timeNow time.Time,
+	persistingData *persistingProjectData,
+) {
+	setting := &entity.Setting{
+		ID:        gofn.Must(ulid.NewStringULID()),
+		Scope:     base.ObjectScopeProject,
+		ObjectID:  project.ID,
+		Type:      base.SettingTypeNotification,
+		Status:    base.SettingStatusActive,
+		Name:      projectNotificationName,
+		Default:   true,
+		Version:   entity.CurrentNotificationVersion,
+		CreatedAt: timeNow,
+		UpdatedAt: timeNow,
+	}
+	setting.MustSetData(entity.NewNotificationDefaultForScope(base.NewObjectScopeProject(project.ID)))
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
 }
 

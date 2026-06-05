@@ -54,8 +54,8 @@ func (s *Notification) HasNotificationViaTelegram() bool {
 
 type NotificationViaEmail struct {
 	Enabled          bool     `json:"enabled"`
-	UseDefault       bool     `json:"useDefault"`
-	Sender           ObjectID `json:"sender"`
+	UseDefault       bool     `json:"useDefault"` // If true, use the default email account in current scope
+	Sender           ObjectID `json:"sender,omitzero"`
 	ToProjectMembers bool     `json:"toProjectMembers,omitempty"`
 	ToProjectOwners  bool     `json:"toProjectOwners,omitempty"`
 	ToAllAdmins      bool     `json:"toAllAdmins,omitempty"`
@@ -72,8 +72,8 @@ func (s *NotificationViaEmail) GetRefSettingIDs() (res []string) {
 
 type NotificationViaSlack struct {
 	Enabled    bool     `json:"enabled"`
-	UseDefault bool     `json:"useDefault"`
-	Webhook    ObjectID `json:"webhook"`
+	UseDefault bool     `json:"useDefault"` // If true, use the default slack webhook in current scope
+	Webhook    ObjectID `json:"webhook,omitzero"`
 }
 
 func (s *NotificationViaSlack) GetRefSettingIDs() (res []string) {
@@ -86,8 +86,8 @@ func (s *NotificationViaSlack) GetRefSettingIDs() (res []string) {
 
 type NotificationViaDiscord struct {
 	Enabled    bool     `json:"enabled"`
-	UseDefault bool     `json:"useDefault"`
-	Webhook    ObjectID `json:"webhook"`
+	UseDefault bool     `json:"useDefault"` // If true, use the default discord webhook in current scope
+	Webhook    ObjectID `json:"webhook,omitzero"`
 }
 
 func (s *NotificationViaDiscord) GetRefSettingIDs() (res []string) {
@@ -100,8 +100,8 @@ func (s *NotificationViaDiscord) GetRefSettingIDs() (res []string) {
 
 type NotificationViaTelegram struct {
 	Enabled    bool     `json:"enabled"`
-	UseDefault bool     `json:"useDefault"`
-	Setting    ObjectID `json:"setting"`
+	UseDefault bool     `json:"useDefault"` // If true, use the default telegram config in current scope
+	Setting    ObjectID `json:"setting,omitzero"`
 }
 
 func (s *NotificationViaTelegram) GetRefSettingIDs() (res []string) {
@@ -142,4 +142,33 @@ func (s *Setting) AsNotification() (*Notification, error) {
 
 func (s *Setting) MustAsNotification() *Notification {
 	return gofn.Must(s.AsNotification())
+}
+
+func NewNotificationDefaultForScope(scope *base.ObjectScope) *Notification {
+	notif := &Notification{
+		ViaEmail: &NotificationViaEmail{
+			Enabled:    true,
+			UseDefault: true,
+		},
+		ViaSlack: &NotificationViaSlack{
+			Enabled:    true,
+			UseDefault: true,
+		},
+		ViaDiscord: &NotificationViaDiscord{
+			Enabled:    true,
+			UseDefault: true,
+		},
+		ViaTelegram: &NotificationViaTelegram{
+			Enabled:    true,
+			UseDefault: true,
+		},
+	}
+	switch scope.ScopeType() { //nolint:exhaustive
+	case base.ObjectScopeProject, base.ObjectScopeApp:
+		notif.ViaEmail.ToProjectOwners = true
+		notif.ViaEmail.ToProjectMembers = true
+	case base.ObjectScopeGlobal:
+		notif.ViaEmail.ToAllAdmins = true
+	}
+	return notif
 }
