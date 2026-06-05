@@ -6,7 +6,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/netutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/domainhelper"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sslcertuc/sslcertdto"
 )
@@ -20,7 +20,7 @@ func (uc *UC) ListSSLCert(
 	var extraLoadOpts []bunex.SelectQueryOption
 	if req.Domain != "" {
 		extraLoadOpts = append(extraLoadOpts,
-			bunex.SelectWhereIn("setting.name IN (?)", netutil.CalcMatchingDomains(req.Domain)...))
+			bunex.SelectWhereIn("setting.name IN (?)", domainhelper.CalcMatchingDomains(req.Domain)...))
 	}
 
 	resp, err := uc.ListSetting(ctx, auth, &req.ListSettingReq, &settings.ListSettingData{

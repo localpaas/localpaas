@@ -12,7 +12,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/netutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/domainhelper"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
@@ -86,7 +86,7 @@ func (req *SSLCertBaseReq) validate(field string) (res []vld.Validator) {
 	res = append(res, basedto.ValidateStr(&req.PrivateKey, requireCert, 1, keyMaxLen, field+"privateKey")...)
 	res = append(res, basedto.ValidateEmail(&req.Email, false, field+"email")...)
 
-	res = append(res, vld.Must(netutil.IsSubdomainOrEqual(cfg.RootDomain, req.Domain)).OnError(
+	res = append(res, vld.Must(domainhelper.IsSubdomainOrEqual(cfg.RootDomain, req.Domain)).OnError(
 		vld.SetField(field+"domain", nil),
 		vld.SetCustomKey("ERR_VLD_SUBDOMAIN_REQUIRED"),
 		vld.SetParam("Domain", cfg.RootDomain),

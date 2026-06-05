@@ -1,4 +1,4 @@
-package netutil
+package domainhelper
 
 import "strings"
 
@@ -9,7 +9,9 @@ func IsSubdomain(domain, sub string) bool {
 }
 
 func IsSubdomainOrEqual(domain, sub string) bool {
-	return domain == sub || IsSubdomain(domain, sub)
+	domain, _ = strings.CutPrefix(domain, "*.")
+	sub, _ = strings.CutPrefix(sub, "*.")
+	return domain == sub || strings.HasSuffix(sub, "."+domain)
 }
 
 func CalcMatchingDomains(subdomain string) (res []string) {
