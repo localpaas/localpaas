@@ -151,5 +151,8 @@ func (s *service) imageDeployStepServiceApply(
 		return apperrors.Wrap(err)
 	}
 
+	// Save the used image in the output
+	data.DeploymentOutput.ImageTags = append(data.DeploymentOutput.ImageTags, imageSource.Image)
+
 	return nil
 }
