@@ -2,6 +2,7 @@ package appdeploymentserviceimpl
 
 import (
 	"context"
+	"time"
 
 	"github.com/tiendc/gofn"
 
@@ -61,8 +62,8 @@ func (s *service) buildDeploymentNotifMsgData(
 		AppName:       data.App.Name,
 		Succeeded:     isSucceeded,
 		Method:        deployment.Settings.ActiveMethod,
-		StartedAt:     deployment.StartedAt,
-		Duration:      deployment.GetDuration(),
+		StartedAt:     deployment.StartedAt.Truncate(time.Second),
+		Duration:      deployment.GetDuration().Truncate(time.Millisecond),
 		DashboardLink: config.Current.DashboardDeploymentDetailsURL(deployment.ID),
 	}
 	data.NotifMsgData = msgData

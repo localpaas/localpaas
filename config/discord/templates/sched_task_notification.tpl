@@ -7,43 +7,38 @@
         {{if .ProjectName | ne ""}}{
           "name": "Project",
           "value": {{printf "%q" .ProjectName}},
-          "inline": true
+          "inline": false
         },{{end}}
         {{if .AppName | ne ""}}{
           "name": "App",
           "value": {{printf "%q" .AppName}},
-          "inline": true
+          "inline": false
         },{{end}}
         {"name": "\u200b", "value": "\u200b", "inline": true},
         {
           "name": "Scheduled Job",
           "value": {{printf "%q" .SchedJobName}},
-          "inline": true
+          "inline": false
         },
         {
           "name": "Schedule",
           "value": {{printf "%q" .Schedule}},
-          "inline": true
-        },
-        {
-          "name": "Retries",
-          "value": {{printf "%d" .Retries}},
-          "inline": true
-        },
-        {
-          "name": "Created At",
-          "value": {{printf "%q" .CreatedAt}},
-          "inline": true
+          "inline": false
         },
         {
           "name": "Started At",
           "value": {{printf "%q" .StartedAt}},
-          "inline": true
+          "inline": false
         },
         {
           "name": "Duration",
           "value": {{printf "%q" .Duration}},
-          "inline": true
+          "inline": false
+        },
+        {
+          "name": "Retries",
+          "value": "{{.Retries}}",
+          "inline": false
         },
         {"name": "\u200b", "value": "\u200b", "inline": true},
         {

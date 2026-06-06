@@ -58,8 +58,8 @@ func (s *service) sslBuildExpiringNotificationMsgData(
 		SSLName:   item.Setting.Name,
 		SSLType:   string(ssl.CertType),
 		Domain:    ssl.Domain,
-		CreatedAt: item.Setting.CreatedAt,
-		ExpireAt:  ssl.ExpireAt,
+		CreatedAt: item.Setting.CreatedAt.Truncate(time.Second),
+		ExpireAt:  ssl.ExpireAt.Truncate(time.Second),
 		ExpireIn:  timeutil.Duration(ssl.ExpireAt.Sub(timeutil.NowUTC()).Truncate(time.Hour)),
 	}
 	if project != nil {

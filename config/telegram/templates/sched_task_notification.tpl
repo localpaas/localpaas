@@ -4,9 +4,8 @@
 {{end}}{{if .AppName}}<b>• App:</b> {{.AppName}}
 {{end}}<b>• Scheduled Job:</b> <code>{{.SchedJobName}}</code>
 <b>• Schedule:</b> <code>{{.Schedule}}</code>
-<b>• Retries:</b> <code>{{.Retries}}</code>
-<b>• Created At:</b> <code>{{.CreatedAt}}</code>
 <b>• Started At:</b> <code>{{.StartedAt}}</code>
 <b>• Duration:</b> <code>{{.Duration}}</code>
+<b>• Retries:</b> <code>{{.Retries}}</code>
 
 🔗 <a href="{{.DashboardLink}}">Go to Dashboard</a>

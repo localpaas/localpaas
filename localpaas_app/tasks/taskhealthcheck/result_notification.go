@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/tiendc/gofn"
 
@@ -97,8 +98,8 @@ func (e *Executor) buildNotificationMsgData(
 		Succeeded:       isSucceeded,
 		HealthcheckName: data.HealthcheckSetting.Name,
 		HealthcheckType: data.Healthcheck.HealthcheckType,
-		StartedAt:       data.Task.StartedAt,
-		Duration:        data.Task.GetDuration(),
+		StartedAt:       data.Task.StartedAt.Truncate(time.Second),
+		Duration:        data.Task.GetDuration().Truncate(time.Millisecond),
 		Retries:         data.Task.Config.Retry,
 	}
 	if data.Project != nil {

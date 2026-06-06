@@ -25,16 +25,6 @@
           "short": true
         },
         {
-          "title": "Retries",
-          "value": {{printf "%d" .Retries}},
-          "short": true
-        },
-        {
-          "title": "Created At",
-          "value": {{printf "%q" .CreatedAt}},
-          "short": true
-        },
-        {
           "title": "Started At",
           "value": {{printf "%q" .StartedAt}},
           "short": true
@@ -42,6 +32,11 @@
         {
           "title": "Duration",
           "value": {{printf "%q" .Duration}},
+          "short": true
+        },
+        {
+          "title": "Retries",
+          "value": "{{.Retries}}",
           "short": true
         },
         {

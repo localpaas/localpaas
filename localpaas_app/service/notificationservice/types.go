@@ -98,7 +98,6 @@ type TemplateDataSchedTask struct {
 	Succeeded     bool
 	SchedJobName  string
 	Schedule      string
-	CreatedAt     time.Time
 	StartedAt     time.Time
 	Duration      time.Duration
 	Retries       int

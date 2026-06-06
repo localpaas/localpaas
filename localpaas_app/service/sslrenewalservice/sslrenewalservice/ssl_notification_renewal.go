@@ -63,8 +63,8 @@ func (s *service) sslBuildRenewalNotificationMsgData(
 		SSLName:   item.Setting.Name,
 		SSLType:   string(ssl.CertType),
 		Domain:    ssl.Domain,
-		CreatedAt: item.Setting.CreatedAt,
-		ExpireAt:  ssl.ExpireAt,
+		CreatedAt: item.Setting.CreatedAt.Truncate(time.Second),
+		ExpireAt:  ssl.ExpireAt.Truncate(time.Second),
 	}
 	if project != nil {
 		msgData.ProjectName = project.Name

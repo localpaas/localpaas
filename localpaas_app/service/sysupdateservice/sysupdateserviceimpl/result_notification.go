@@ -2,6 +2,7 @@ package sysupdateserviceimpl
 
 import (
 	"context"
+	"time"
 
 	"github.com/tiendc/gofn"
 
@@ -53,8 +54,8 @@ func (s *service) buildSystemUpdateNotifMsgData(
 		CurrentVersion: args.CurrentVersion.AppVersion,
 		TargetVersion:  args.TargetVersion.AppVersion,
 		Succeeded:      isSucceeded,
-		StartedAt:      task.StartedAt,
-		Duration:       task.GetDuration(),
+		StartedAt:      task.StartedAt.Truncate(time.Second),
+		Duration:       task.GetDuration().Truncate(time.Millisecond),
 		DashboardLink:  config.Current.DashboardTaskDetailsURL(task.ID),
 	}
 	data.NotifMsgData = msgData

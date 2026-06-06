@@ -1,190 +1,72 @@
-<!doctype html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
-	<title> LocalPaaS Notification </title>
-	<!--[if !mso]><!-->
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<!--<![endif]-->
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,700" rel="stylesheet" type="text/css">
-	<!--[if !mso]><!-->
-	<style>
-		@import url(https://fonts.googleapis.com/css?family=Roboto:100,300,400,700);
-	</style>
-	<!--<![endif]-->
-	<style>
-		body {
-			-webkit-text-size-adjust: 100%;
-			-ms-text-size-adjust: 100%;
-		}
-
-		a, span {
-			-webkit-font-smoothing: antialiased !important;
-			-moz-osx-font-smoothing: grayscale !important;
-		}
-
-		b {
-			font-weight:500;
-		}
-
-		.title {
-			font-family:Roboto, Helvetica, Arial, sans-serif;
-			font-size:20px;
-			font-weight:400;
-			line-height:30px;
-			text-align:left;
-			color:#252525;
-		}
-
-		.p_default {
-			padding:12px 0;
-			word-break:break-word;
-		}
-
-		.text_default {
-			font-family:Roboto, Helvetica, Arial, sans-serif;
-			font-size:15px;
-			line-height:20px;
-			text-align:left;
-			color:#252525;
-		}
-
-		.button {
-			background-color:#4E46B4;
-			border:1px solid #4E46B4;
-			border-radius:6px;
-			color:#ffffff;
-			display:inline-block;
-			font-family:Roboto, Helvetica, Arial, sans-serif;
-			font-size:15px;
-			font-weight:700;
-			letter-spacing:0px;
-			line-height:16px;
-			padding:12px 18px 12px 18px;
-			text-align:center;
-			text-decoration:none;
-		}
-		.button_text {
-			color:#ffffff;
-		}
-
-		.col_left {
-			text-align:left;
-			max-width:30%;
-		}
-		.col_main {
-			text-align:left;
-			padding-left:10px;
-		}
-	</style>
+	<meta charset="utf-8"/>
+	<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+	<title>LocalPaaS Notification</title>
+	<style>body { margin: 0; padding: 20px; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b; display: flex; justify-content: center; }
+	.card { width: 100%; max-width: 600px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; padding: 24px; box-sizing: border-box; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); }
+	.hdr { width: 100%; border-collapse: collapse; margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; }
+	.icon-box { width: 32px; height: 32px; background-color: #d1fae5; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+	.icon-box svg { width: 20px; height: 20px; stroke: #059669; }
+	.title { font-size: 18px; font-weight: 600; margin: 0; line-height: 1.2; color: #0f172a; }
+	.sub { font-size: 13px; color: #64748b; margin: 4px 0 0; }
+	.badge { display: inline-block; white-space: nowrap; background-color: #d1fae5; color: #065f46; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+	table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+	td { padding: 8px 0; font-size: 13px; vertical-align: top; }
+	.label { color: #64748b; width: 35%; }
+	.value { font-weight: 500; color: #1e293b; word-break: break-all; }
+	.btn-wrap { text-align: center; margin-bottom: 24px; }
+	.btn { display: inline-block; background-color: #6366f1; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600; transition: opacity 0.2s; }
+	.footer-note { font-size: 13px; color: #64748b; margin-bottom: 12px; }
+	.link-box { background-color: #f1f5f9; border: 1px solid #e2e8f0; padding: 12px; border-radius: 4px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11px; color: #4f46e5; word-break: break-all; margin-bottom: 24px; line-height: 1.5; }
+	.sig { font-size: 13px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 20px; }
+	.sig b { color: #1e293b; font-weight: 600; display: block; margin-top: 4px; }</style>
 </head>
-
 <body>
-<div style="padding:4px 0;">
-	<div style="background-color:#ffffff;margin:0 auto;border:1px solid #e1e4e8;border-radius:8px;max-width:600px;">
-		<div style="padding:12px 20px;">
-			<div>
+<div class="card">
+	<table class="hdr">
+		<tr>
+			<td style="padding-bottom: 20px; vertical-align: middle; text-align: left;">
 				{{if .Succeeded}}
-				<span class="title">Scheduled task succeeded</span>
+				<h1 class="title">Scheduled task succeeded</h1>
+				<p class="sub">Your scheduled task executed successfully.</p>
 				{{else}}
-				<span class="title">Scheduled task failed</span>
+				<h1 class="title">Scheduled task failed</h1>
+				<p class="sub">Your scheduled task failed to run.</p>
 				{{end}}
-			</div>
-		</div>
-		<hr style="border:none; height:1px; background-color:#e1e4e8;">
-		<div style="padding:12px 20px;">
-			<table style="width:100%;border:0;border-spacing:0;text-align:left;">
-				<tbody>
-				{{if .ProjectName | ne ""}}
-				<tr class="text_default">
-					<td class="col_left">
-						<b>Project:</b>
-					</td>
-					<td class="col_main">
-						{{.ProjectName}}
-					</td>
-				</tr>
+			</td>
+			<td style="padding-bottom: 20px; vertical-align: middle; text-align: right; width: 100px;">
+				{{if .Succeeded}}
+				<span class="badge">Succeeded</span>
+				{{else}}
+				<span class="badge" style="background-color: #eb6d25; color: #f3f1ec;">Failed</span>
 				{{end}}
-				{{if .AppName | ne ""}}
-				<tr class="text_default">
-					<td class="col_left">
-						<b>App:</b>
-					</td>
-					<td class="col_main">
-						{{.AppName}}
-					</td>
-				</tr>
-				{{end}}
-
-				<tr class="text_default">
-					<td class="col_left">
-						<b>Scheduled job:</b>
-					</td>
-					<td class="col_main">
-						{{.SchedJobName}}
-					</td>
-				</tr>
-				<tr class="text_default">
-					<td class="col_left">
-						<b>Schedule:</b>
-					</td>
-					<td class="col_main">
-						{{.Schedule}}
-					</td>
-				</tr>
-				<tr class="text_default">
-					<td class="col_left">
-						<b>Created at:</b>
-					</td>
-					<td class="col_main">
-						{{.CreatedAt}}
-					</td>
-				</tr>
-
-				<tr class="text_default">
-					<td class="col_left">
-						<b>Started at:</b>
-					</td>
-					<td class="col_main">
-						{{.StartedAt}}
-					</td>
-				</tr>
-				<tr class="text_default">
-					<td class="col_left">
-						<b>Duration:</b>
-					</td>
-					<td class="col_main">
-						{{.Duration}}
-					</td>
-				</tr>
-				<tr class="text_default">
-					<td class="col_left">
-						<b>Retries:</b>
-					</td>
-					<td class="col_main">
-						{{.Retries}}
-					</td>
-				</tr>
-				</tbody>
-			</table>
-
-			<div class="p_default" style="text-align:center;">
-				<a href="{{.DashboardLink}}" class="button" target="_blank">
-					<span class="button_text">See Details</span>
-				</a>
-			</div>
-			<div class="p_default">
-				<div class="text_default">Or copy and paste this link into your browser:</div>
-				<a class="text_default" href="{{.DashboardLink}}" target="_blank">{{.DashboardLink}}</a>
-			</div>
-			<div class="p_default">
-				<span class="text_default">Cheers,<br/>LocalPaaS</span>
-			</div>
-		</div>
+			</td>
+		</tr>
+	</table>
+	<table>
+		{{if .ProjectName | ne ""}}
+		<tbody><tr><td class="label">Project:</td><td class="value">{{.ProjectName}}</td></tr>
+		{{end}}
+		{{if .AppName | ne ""}}
+		<tr><td class="label">App:</td><td class="value">{{.AppName}}</td></tr>
+		{{end}}
+		<tr><td class="label">Scheduled Job:</td><td class="value">{{.SchedJobName}}</td></tr>
+		<tr><td class="label">Schedule:</td><td class="value">{{.Schedule}}</td></tr>
+		<tr><td class="label">Started At:</td><td class="value">{{.StartedAt}}</td></tr>
+		<tr><td class="label">Duration:</td><td class="value">{{.Duration}}</td></tr>
+		<tr><td class="label">Retries:</td><td class="value">{{.Retries}}</td></tr>
+		</tbody></table>
+	<div class="btn-wrap">
+		<a class="btn" href="{{.DashboardLink}}" style="color: #ffffff; text-decoration: none;">See Details</a>
+	</div>
+	<div class="footer-note">Or copy and paste this link into your browser:</div>
+	<div class="link-box">{{.DashboardLink}}</div>
+	<div class="sig">
+		Cheers,
+		<b>LocalPaaS</b>
 	</div>
 </div>
 </body>
-
 </html>

@@ -3,6 +3,7 @@ package taskschedjobexec
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/tiendc/gofn"
 
@@ -72,9 +73,8 @@ func (e *Executor) buildNotificationMsgData(
 		},
 		Succeeded:    isSucceeded,
 		SchedJobName: data.SchedJob.Name,
-		CreatedAt:    schedJob.Schedule.InitialTime,
-		StartedAt:    data.Task.StartedAt,
-		Duration:     data.Task.GetDuration(),
+		StartedAt:    data.Task.StartedAt.Truncate(time.Second),
+		Duration:     data.Task.GetDuration().Truncate(time.Millisecond),
 		Retries:      data.Task.Config.Retry,
 	}
 	if schedJob.Schedule.Interval > 0 {

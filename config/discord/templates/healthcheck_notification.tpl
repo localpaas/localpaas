@@ -27,7 +27,7 @@
         },
         {
           "name": "Retries",
-          "value": {{printf "%d" .Retries}},
+          "value": "{{.Retries}}",
           "inline": true
         },
         {{if not .Succeeded}}{
