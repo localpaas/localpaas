@@ -146,8 +146,8 @@ func (uc *UC) findAppDeploymentSettingsByPushEvent(
 		bunex.SelectWhere("setting.type = ?", base.SettingTypeAppDeployment),
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
 		bunex.SelectWhere("setting.data->>'activeMethod' = ?", base.DeploymentMethodRepo),
-		bunex.SelectWhere("setting.data->>'repoRef' = ?", pushEvent.RepoRef),
-		bunex.SelectWhere("setting.data->>'repoId' = ?", pushEvent.parsedURL.ID),
+		bunex.SelectWhere("setting.data->'repoSource'->>'repoRef' = ?", pushEvent.RepoRef),
+		bunex.SelectWhere("setting.data->'repoSource'->>'repoId' = ?", pushEvent.parsedURL.ID),
 
 		bunex.SelectRelation("BelongToApp",
 			bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
