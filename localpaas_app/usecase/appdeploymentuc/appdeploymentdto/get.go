@@ -60,12 +60,13 @@ type DeploymentTriggerResp struct {
 }
 
 type DeploymentOutputResp struct {
-	CommitHash      string `json:"commitHash,omitempty"`
-	CommitHashShort string `json:"commitHashShort,omitempty"`
-	CommitURL       string `json:"commitURL,omitempty"`
-	CommitTitle     string `json:"commitTitle,omitempty"`
-	CommitMessage   string `json:"commitMessage,omitempty"`
-	CommitAuthor    string `json:"commitAuthor,omitempty"`
+	CommitHash      string   `json:"commitHash,omitempty"`
+	CommitHashShort string   `json:"commitHashShort,omitempty"`
+	CommitURL       string   `json:"commitURL,omitempty"`
+	CommitTitle     string   `json:"commitTitle,omitempty"`
+	CommitMessage   string   `json:"commitMessage,omitempty"`
+	CommitAuthor    string   `json:"commitAuthor,omitempty"`
+	ImageTags       []string `json:"imageTags,omitempty"`
 }
 
 func TransformDeployment(
