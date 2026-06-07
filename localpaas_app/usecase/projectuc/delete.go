@@ -59,7 +59,7 @@ func (uc *UC) loadProjectDataForDelete(
 	data *deleteProjectData,
 ) error {
 	project, err := uc.projectRepo.GetByID(ctx, db, req.ProjectID,
-		bunex.SelectFor("UPDATE OF project"),
+		bunex.SelectFor("UPDATE"),
 		bunex.SelectRelation("Apps",
 			bunex.SelectWhere("app.deleted_at IS NULL"),
 		),

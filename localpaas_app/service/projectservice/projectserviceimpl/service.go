@@ -15,7 +15,10 @@ func New(
 	appRepo repository.AppRepo,
 	projectTagRepo repository.ProjectTagRepo,
 	settingRepo repository.SettingRepo,
+	resLinkRepo repository.ResLinkRepo,
+	fileRepo repository.FileRepo,
 	userRepo repository.UserRepo,
+	taskRepo repository.TaskRepo,
 	permissionManager permission.Manager,
 	userService userservice.Service,
 	appService appservice.Service,
@@ -27,7 +30,10 @@ func New(
 		appRepo:           appRepo,
 		projectTagRepo:    projectTagRepo,
 		settingRepo:       settingRepo,
+		resLinkRepo:       resLinkRepo,
+		fileRepo:          fileRepo,
 		userRepo:          userRepo,
+		taskRepo:          taskRepo,
 		permissionManager: permissionManager,
 		userService:       userService,
 		appService:        appService,
@@ -41,7 +47,10 @@ type service struct {
 	appRepo           repository.AppRepo
 	projectTagRepo    repository.ProjectTagRepo
 	settingRepo       repository.SettingRepo
+	resLinkRepo       repository.ResLinkRepo
+	fileRepo          repository.FileRepo
 	userRepo          repository.UserRepo
+	taskRepo          repository.TaskRepo
 	permissionManager permission.Manager
 	userService       userservice.Service
 	appService        appservice.Service

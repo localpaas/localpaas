@@ -34,8 +34,12 @@ type TaskRepo interface {
 	Update(ctx context.Context, db database.IDB, task *entity.Task,
 		opts ...bunex.UpdateQueryOption) error
 
-	DeleteAllByApps(ctx context.Context, db database.IDB, appIDs []string, opts ...bunex.DeleteQueryOption) error
-	DeleteHard(ctx context.Context, db database.IDB, opts ...bunex.DeleteQueryOption) error
+	DeleteAllByApps(ctx context.Context, db database.IDB, appIDs []string,
+		opts ...bunex.DeleteQueryOption) error
+	DeleteAllByProjects(ctx context.Context, db database.IDB, projectIDs []string,
+		opts ...bunex.DeleteQueryOption) error
+	DeleteHard(ctx context.Context, db database.IDB,
+		opts ...bunex.DeleteQueryOption) error
 }
 
 type taskRepo struct {
@@ -179,9 +183,28 @@ func (repo *taskRepo) UpdateMulti(ctx context.Context, db database.IDB, tasks []
 
 func (repo *taskRepo) DeleteAllByApps(ctx context.Context, db database.IDB, appIDs []string,
 	opts ...bunex.DeleteQueryOption) error {
+	if len(appIDs) == 0 {
+		return nil
+	}
 	query := db.NewDelete().Model((*entity.Task)(nil)).
 		Where("(task.target_id IN (?) OR EXISTS(SELECT 1 FROM deployments WHERE "+
 			"deployments.id = task.target_id AND deployments.app_id IN (?)))", bun.List(appIDs), bun.List(appIDs))
+	query = bunex.ApplyDelete(query, opts...)
+
+	_, err := query.Exec(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
+}
+
+func (repo *taskRepo) DeleteAllByProjects(ctx context.Context, db database.IDB, projectIDs []string,
+	opts ...bunex.DeleteQueryOption) error {
+	if len(projectIDs) == 0 {
+		return nil
+	}
+	query := db.NewDelete().Model((*entity.Task)(nil)).
+		Where("task.target_id IN (?)", bun.List(projectIDs))
 	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)
