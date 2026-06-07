@@ -65,9 +65,8 @@ type repoEventData struct {
 type repoPushEventData struct {
 	RepoRef  string
 	RepoURL  string
+	RepoID   string
 	ChangeID string
-
-	parsedURL *vcsurl.VCS
 }
 
 func (uc *UC) processRepoWebhook(
@@ -98,17 +97,18 @@ func (uc *UC) processRepoWebhook(
 	}
 
 	if eventData.Push != nil {
-		eventData.Push.parsedURL, err = vcsurl.Parse(eventData.Push.RepoURL)
+		parsedURL, err := vcsurl.Parse(eventData.Push.RepoURL)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
+		eventData.Push.RepoID = parsedURL.ID
 
-		settings, err := uc.findAppDeploymentSettingsByPushEvent(ctx, db, eventData.Push)
+		apps, err := uc.findAppsToRedeployByPushEvent(ctx, db, eventData.Push)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
-		for _, setting := range settings {
-			err = uc.createAppDeploymentByPushEvent(setting, eventData.Push, data, persistingData)
+		for _, app := range apps {
+			err = uc.createAppDeploymentByPushEvent(app, eventData.Push, data, persistingData)
 			if err != nil {
 				return apperrors.Wrap(err)
 			}
@@ -137,37 +137,39 @@ func (uc *UC) loadWebhookSettings(
 	return nil
 }
 
-func (uc *UC) findAppDeploymentSettingsByPushEvent(
+func (uc *UC) findAppsToRedeployByPushEvent(
 	ctx context.Context,
 	db database.IDB,
 	pushEvent *repoPushEventData,
-) ([]*entity.Setting, error) {
-	settings, _, err := uc.settingRepo.List(ctx, db, nil, nil,
-		bunex.SelectWhere("setting.type = ?", base.SettingTypeAppDeployment),
-		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
-		bunex.SelectWhere("setting.data->>'activeMethod' = ?", base.DeploymentMethodRepo),
-		bunex.SelectWhere("setting.data->'repoSource'->>'repoRef' = ?", pushEvent.RepoRef),
-		bunex.SelectWhere("setting.data->'repoSource'->>'repoId' = ?", pushEvent.parsedURL.ID),
-
-		bunex.SelectRelation("BelongToApp",
-			bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
-		),
-		bunex.SelectRelation("BelongToApp.Project",
+) ([]*entity.App, error) {
+	apps, _, err := uc.appRepo.List(ctx, db, "", nil,
+		bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
+		bunex.SelectFor("UPDATE OF app"),
+		bunex.SelectWhere("app.status = ?", base.AppStatusActive),
+		bunex.SelectRelation("Project",
 			bunex.SelectExcludeColumns(entity.ProjectDefaultExcludeColumns...),
+			bunex.SelectWhere("project.status = ?", base.ProjectStatusActive),
 		),
+		bunex.SelectRelation("Settings",
+			bunex.SelectWhere("setting.type = ?", base.SettingTypeAppDeployment),
+			bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
+		),
+
+		bunex.SelectJoin("JOIN res_links ON res_links.src_id = app.id"),
+		bunex.SelectWhere("res_links.deleted_at IS NULL"),
+		bunex.SelectWhere("res_links.dst_type = ?", base.ResourceTypeRepo),
+		bunex.SelectWhere("res_links.dst_id = ?", pushEvent.RepoID),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	if len(settings) == 0 {
+	if len(apps) == 0 {
 		return nil, nil
 	}
 
-	validSettings := make([]*entity.Setting, 0, len(settings))
-	for _, setting := range settings {
-		app := setting.BelongToApp
-		if app == nil || app.Status != base.AppStatusActive ||
-			app.Project == nil || app.Project.Status != base.ProjectStatusActive {
+	matchingApps := make([]*entity.App, 0, len(apps))
+	for _, app := range apps {
+		if app.Project == nil || app.Project.Status != base.ProjectStatusActive {
 			continue
 		}
 		shouldRedeploy, err := uc.shouldRedeployAppByPushEvent(ctx, db, app, pushEvent)
@@ -175,11 +177,10 @@ func (uc *UC) findAppDeploymentSettingsByPushEvent(
 			return nil, apperrors.Wrap(err)
 		}
 		if shouldRedeploy {
-			validSettings = append(validSettings, setting)
+			matchingApps = append(matchingApps, app)
 		}
 	}
-
-	return validSettings, nil
+	return matchingApps, nil
 }
 
 func (uc *UC) shouldRedeployAppByPushEvent(
@@ -188,6 +189,15 @@ func (uc *UC) shouldRedeployAppByPushEvent(
 	app *entity.App,
 	pushEvent *repoPushEventData,
 ) (bool, error) {
+	deploymentStg := app.GetSettingByType(base.SettingTypeAppDeployment)
+	if deploymentStg == nil {
+		return false, nil
+	}
+	deploymentSettings := deploymentStg.MustAsAppDeploymentSettings()
+	if deploymentSettings.ActiveMethod != base.DeploymentMethodRepo {
+		return false, nil
+	}
+
 	// Make sure there is no duplicated deployment having the same `change id`
 	if pushEvent.ChangeID == "" {
 		return true, nil
@@ -206,24 +216,24 @@ func (uc *UC) shouldRedeployAppByPushEvent(
 }
 
 func (uc *UC) createAppDeploymentByPushEvent(
-	setting *entity.Setting, // deployment setting
+	app *entity.App,
 	pushEvent *repoPushEventData,
 	data *handleRepoWebhookData,
 	persistingData *appservice.PersistingAppData,
 ) error {
-	deploymentSettings, err := setting.AsAppDeploymentSettings()
+	deploymentStg := app.GetSettingByType(base.SettingTypeAppDeployment)
+	deploymentSettings, err := deploymentStg.AsAppDeploymentSettings()
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 	if deploymentSettings.RepoSource != nil && deploymentSettings.RepoSource.CommitHash != "" {
 		deploymentSettings.RepoSource.CommitHash = ""
-		setting.MustSetData(deploymentSettings)
-		setting.UpdateVer++
-		setting.UpdatedAt = timeutil.NowUTC()
-		persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
+		deploymentStg.MustSetData(deploymentSettings)
+		deploymentStg.UpdateVer++
+		deploymentStg.UpdatedAt = timeutil.NowUTC()
+		persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, deploymentStg)
 	}
 
-	app := setting.BelongToApp
 	deployment, task, err := uc.appDeploymentService.CreateDeploymentAndTask(app, deploymentSettings)
 	if err != nil {
 		return apperrors.Wrap(err)

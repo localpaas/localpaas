@@ -62,6 +62,9 @@ type updateAppDeploymentSettingsData struct {
 	RegistryAuth          *entity.Setting
 	Errors                []string // stores errors
 	Warnings              []string // stores warnings
+
+	RepoLinksToDelete []*entity.ResLink
+	RepoLinksToAdd    []string
 }
 
 func (uc *UC) loadAppDeploymentSettingsForUpdate(
@@ -73,16 +76,22 @@ func (uc *UC) loadAppDeploymentSettingsForUpdate(
 	app, err := uc.appService.LoadApp(ctx, db, req.ProjectID, req.AppID, true, true,
 		bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
 		bunex.SelectFor("UPDATE OF app"),
-		bunex.SelectRelation("Project"),
+		bunex.SelectRelation("Project",
+			bunex.SelectExcludeColumns(entity.ProjectDefaultExcludeColumns...),
+		),
 		bunex.SelectRelation("Settings",
 			bunex.SelectWhere("setting.type = ?", base.SettingTypeAppDeployment),
+		),
+		bunex.SelectRelation("DstResLinks",
+			// NOTE: for now, we only need repo links
+			bunex.SelectWhereIn("res_link.dst_type IN (?)", base.ResourceTypeRepo),
 		),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 	data.App = app
-	data.DeploymentSettings, _ = gofn.First(app.Settings)
+	data.DeploymentSettings = app.GetSettingByType(base.SettingTypeAppDeployment)
 
 	deploymentSettings := data.DeploymentSettings
 	if deploymentSettings != nil && deploymentSettings.UpdateVer != req.UpdateVer {
@@ -112,6 +121,27 @@ func (uc *UC) loadAppDeploymentSettingsForUpdate(
 		if isMultiNode && newDeploymentSettings.RepoSource.PushToRegistry.ID == "" {
 			return apperrors.Wrap(apperrors.ErrMultiNodeClusterRequireRegistryForImages)
 		}
+	}
+
+	// Calculate repo links update
+	mapCurrentRepoLinks := make(map[string]*entity.ResLink, len(app.DstResLinks))
+	for _, repoLink := range app.DstResLinks {
+		if repoLink.DstType != base.ResourceTypeRepo {
+			continue
+		}
+		mapCurrentRepoLinks[repoLink.DstID] = repoLink
+	}
+	if newDeploymentSettings.ActiveMethod == base.DeploymentMethodRepo {
+		repoID := newDeploymentSettings.RepoSource.RepoID
+		repoLink := mapCurrentRepoLinks[repoID]
+		if repoLink == nil {
+			data.RepoLinksToAdd = append(data.RepoLinksToAdd, repoID)
+		} else {
+			delete(mapCurrentRepoLinks, repoID)
+		}
+	}
+	for _, repoLink := range mapCurrentRepoLinks {
+		data.RepoLinksToDelete = append(data.RepoLinksToDelete, repoLink)
 	}
 
 	return nil
@@ -158,6 +188,20 @@ func (uc *UC) prepareUpdatingAppDeploymentSettings(
 
 	persistingData.UpsertingDeployments = append(persistingData.UpsertingDeployments, deployment)
 	persistingData.UpsertingTasks = append(persistingData.UpsertingTasks, deploymentTask)
+
+	// Repo links
+	for _, repoLink := range data.RepoLinksToDelete {
+		repoLink.DeletedAt = timeNow
+		persistingData.UpsertingResLinks = append(persistingData.UpsertingResLinks, repoLink)
+	}
+	for _, repoID := range data.RepoLinksToAdd {
+		persistingData.UpsertingResLinks = append(persistingData.UpsertingResLinks, &entity.ResLink{
+			SrcType: base.ResourceTypeApp,
+			SrcID:   app.ID,
+			DstType: base.ResourceTypeRepo,
+			DstID:   repoID,
+		})
+	}
 
 	return nil
 }

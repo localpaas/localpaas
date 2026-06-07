@@ -77,13 +77,16 @@ func (uc *UC) loadAppHttpSettingsForUpdate(
 		bunex.SelectRelation("Settings",
 			bunex.SelectWhere("setting.type = ?", base.SettingTypeAppHttp),
 		),
-		bunex.SelectRelation("DstResLinks"),
+		bunex.SelectRelation("DstResLinks",
+			// NOTE: for now, we only need domain links
+			bunex.SelectWhereIn("res_link.dst_type IN (?)", base.ResourceTypeDomain),
+		),
 	)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 	data.App = app
-	data.HttpSettings, _ = gofn.First(app.Settings)
+	data.HttpSettings = app.GetSettingByType(base.SettingTypeAppHttp)
 
 	if data.HttpSettings != nil && data.HttpSettings.UpdateVer != req.UpdateVer {
 		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
