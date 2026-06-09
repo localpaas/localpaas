@@ -35,6 +35,11 @@ func (uc *UC) UpdateProjectEnvVars(
 		persistingData = &persistingProjectData{}
 		uc.prepareUpdatingProjectEnvVars(req, data, persistingData)
 
+		// TODO: Do we need to re-apply the ENVs to the apps?
+
+		// TODO: how to make sure the changes not break apps
+		// if they use any of ENVs within the project.
+
 		err = uc.persistData(ctx, db, persistingData)
 		if err != nil {
 			return apperrors.Wrap(err)

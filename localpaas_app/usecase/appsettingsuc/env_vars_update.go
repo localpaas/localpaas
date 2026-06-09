@@ -2,6 +2,7 @@ package appsettingsuc
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/moby/moby/api/types/swarm"
@@ -55,10 +56,8 @@ func (uc *UC) UpdateAppEnvVars(
 }
 
 type updateAppEnvVarsData struct {
-	App      *entity.App
-	EnvVars  *entity.Setting
-	Errors   []string // stores errors
-	Warnings []string // stores warnings
+	App     *entity.App
+	EnvVars *entity.Setting
 }
 
 func (uc *UC) loadAppEnvVarsForUpdate(
@@ -138,9 +137,15 @@ func (uc *UC) applyAppEnvVars(
 	}
 
 	envVars := make([]string, 0, len(envs))
+	var errors []string
 	for _, env := range envs {
 		envVars = append(envVars, env.ToString("="))
-		data.Errors = append(data.Errors, env.Errors...)
+		errors = append(errors, env.Errors...)
+	}
+
+	if len(errors) > 0 {
+		return apperrors.New(apperrors.ErrValueInvalid).WithDisplayLevelHigh().
+			WithExtraDetail(strings.Join(errors, "\n")) //nolint:govet
 	}
 
 	service, err := uc.appService.ServiceInspect(ctx, app.ServiceID, false)

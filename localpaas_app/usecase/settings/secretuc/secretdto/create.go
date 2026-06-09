@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	secretKeyMaxLen   = 200
 	secretValueMaxLen = 500 * 1024 // 500Kb
+	fileNameMaxLen    = 200
 )
 
 type CreateSecretReq struct {
@@ -40,7 +40,7 @@ func (req *SecretBaseReq) validate(valueRequired bool, field string) (res []vld.
 	if field != "" {
 		field += "."
 	}
-	res = append(res, basedto.ValidateStr(&req.Key, true, 1, secretKeyMaxLen, field+"key")...)
+	res = append(res, basedto.ValidateEnvName(&req.Key, true, field+"key")...)
 	if req.Base64 {
 		res = append(res, basedto.ValidateStrBase64(&req.Value, valueRequired, 1,
 			secretValueMaxLen, field+"value")...)
@@ -102,7 +102,7 @@ func (req *SwarmRefFileTargetReq) validate(field string) (res []vld.Validator) {
 	if field != "" {
 		field += "."
 	}
-	res = append(res, basedto.ValidateStr(&req.Name, false, 1, secretKeyMaxLen, field+"name")...)
+	res = append(res, basedto.ValidateStr(&req.Name, false, 1, fileNameMaxLen, field+"name")...)
 	return res
 }
 
