@@ -10,6 +10,7 @@ import (
 	"github.com/redis/go-redis/v9"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/redact"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/redishelper"
 )
 
@@ -23,8 +24,21 @@ type Store struct {
 	storeLocal        bool
 	storeRemote       bool
 	remoteInitialized atomic.Bool
+	redactor          *redact.Redactor
 	mu                sync.RWMutex
 	frames            []*LogFrame
+}
+
+func (s *Store) GetRedactor() *redact.Redactor {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.redactor
+}
+
+func (s *Store) SetRedactor(redactor *redact.Redactor) {
+	s.mu.Lock()
+	s.redactor = redactor
+	s.mu.Unlock()
 }
 
 func (s *Store) Add(ctx context.Context, frames ...*LogFrame) error {
@@ -53,6 +67,27 @@ func (s *Store) Add(ctx context.Context, frames ...*LogFrame) error {
 	}
 
 	return nil
+}
+
+func (s *Store) AddRedacted(ctx context.Context, frames ...*LogFrame) error {
+	s.mu.RLock()
+	r := s.redactor
+	s.mu.RUnlock()
+
+	if r == nil {
+		return s.Add(ctx, frames...)
+	}
+
+	input := make([]string, len(frames))
+	for i, frame := range frames {
+		input[i] = frame.Data
+	}
+
+	input = r.Slice(input)
+	for i, frame := range frames {
+		frame.Data = input[i]
+	}
+	return s.Add(ctx, frames...)
 }
 
 func (s *Store) GetData(ctx context.Context, fromIndex int64) ([]*LogFrame, error) {

@@ -12,15 +12,19 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/envvarservice"
 )
 
+const (
+	refSecretMaxSize = 10 * 1024 // 10 KB
+)
+
 func (s *service) BuildAppEnvVars(
 	ctx context.Context,
 	db database.IDB,
 	app *entity.App,
 	buildPhase bool,
-) (res []*envvarservice.EnvVar, err error) {
+) (res []*envvarservice.EnvVar, usedSecrets []*entity.Secret, err error) {
 	vars, secrets, err := s.LoadAppEnvVarsAndSecrets(ctx, db, app, true, true, buildPhase)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, nil, apperrors.Wrap(err)
 	}
 
 	// App inherits ENV vars in order from the parent app, then the project, and then from global
@@ -34,11 +38,15 @@ func (s *service) BuildAppEnvVars(
 	}
 
 	// Process all references within the ENV values
+	usedSecrets = make([]*entity.Secret, 0)
 	for _, env := range res {
-		s.processRefs(env, envStore, secretStore)
+		if env.IsLiteral {
+			continue
+		}
+		s.processRefs(env, envStore, secretStore, &usedSecrets)
 	}
 
-	return res, nil
+	return res, usedSecrets, nil
 }
 
 func (s *service) ProcessEnvRefs(
@@ -49,13 +57,13 @@ func (s *service) ProcessEnvRefs(
 	loadEnvVars bool,
 	loadSecrets bool,
 	buildPhase bool,
-) (res []*envvarservice.EnvVar, err error) {
+) (res []*envvarservice.EnvVar, usedSecrets []*entity.Secret, err error) {
 	if len(envVars) == 0 {
-		return nil, nil
+		return nil, nil, nil
 	}
 	vars, secrets, err := s.LoadAppEnvVarsAndSecrets(ctx, db, app, loadEnvVars, loadSecrets, buildPhase)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, nil, apperrors.Wrap(err)
 	}
 
 	// Construct result
@@ -72,10 +80,14 @@ func (s *service) ProcessEnvRefs(
 	}
 	secretStore := secrets.FinalSecrets()
 	// Process all references within the ENV values
+	usedSecrets = make([]*entity.Secret, 0)
 	for _, env := range res {
-		s.processRefs(env, envStore, secretStore)
+		if env.IsLiteral {
+			continue
+		}
+		s.processRefs(env, envStore, secretStore, &usedSecrets)
 	}
-	return res, nil
+	return res, usedSecrets, nil
 }
 
 type AppEnvVars struct {
@@ -90,7 +102,7 @@ func (ev *AppEnvVars) FinalEnvVars() map[string]*entity.EnvVar {
 	maps.Copy(res, ev.Global)
 	maps.Copy(res, ev.Project)
 	maps.Copy(res, ev.ParentApp)
-	maps.Copy(res, ev.Project)
+	maps.Copy(res, ev.App)
 	return res
 }
 
@@ -119,9 +131,10 @@ func (s *service) LoadAppEnvVarsAndSecrets(
 	loadSecrets bool,
 	buildPhase bool,
 ) (envVars *AppEnvVars, secrets *AppSecrets, err error) {
-	var settingTypes []base.SettingType
+	if !loadEnvVars && !loadSecrets {
+		return nil, nil, nil
+	}
 	if loadEnvVars {
-		settingTypes = append(settingTypes, base.SettingTypeEnvVar)
 		//nolint:mnd
 		envVars = &AppEnvVars{
 			App:       make(map[string]*entity.EnvVar, 20),
@@ -131,7 +144,6 @@ func (s *service) LoadAppEnvVarsAndSecrets(
 		}
 	}
 	if loadSecrets {
-		settingTypes = append(settingTypes, base.SettingTypeSecret)
 		//nolint:mnd
 		secrets = &AppSecrets{
 			App:       make(map[string]*entity.Secret, 10),
@@ -140,12 +152,14 @@ func (s *service) LoadAppEnvVarsAndSecrets(
 			Global:    make(map[string]*entity.Secret, 10),
 		}
 	}
-	if len(settingTypes) == 0 {
-		return nil, nil, nil
-	}
 
 	settings, _, err := s.settingRepo.List(ctx, db, app.GetSettingScope(), nil,
-		bunex.SelectWhereIn("setting.type IN (?)", settingTypes...),
+		bunex.SelectWhereGroup(
+			bunex.SelectWhereIf(loadEnvVars, "setting.type = ?", base.SettingTypeEnvVar),
+			bunex.SelectWhereIf(!loadEnvVars, "1=1"),
+			bunex.SelectWhereOrIf(loadSecrets, "(setting.type = ? AND setting.size <= ?)",
+				base.SettingTypeSecret, refSecretMaxSize),
+		),
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
 	)
 	if err != nil {

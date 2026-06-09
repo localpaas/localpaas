@@ -11,7 +11,7 @@ import (
 
 type Service interface {
 	BuildCommandEnv(ctx context.Context, db database.IDB, app *entity.App, schedJob *entity.SchedJob) (
-		res []*envvarservice.EnvVar, err error)
+		res []*envvarservice.EnvVar, usedSecrets []*entity.Secret, err error)
 
 	CreateSchedJobTask(job *entity.Setting, runAt, timeNow time.Time) (*entity.Task, error)
 }

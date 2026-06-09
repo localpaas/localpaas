@@ -18,7 +18,7 @@ func (s *service) BuildCommandEnv(
 	db database.IDB,
 	app *entity.App,
 	schedJob *entity.SchedJob,
-) (res []*envvarservice.EnvVar, err error) {
+) (res []*envvarservice.EnvVar, usedSecrets []*entity.Secret, err error) {
 	envVars := schedJob.Command.EnvVars
 
 	for _, argGroup := range schedJob.Command.ArgGroups {
@@ -27,28 +27,21 @@ func (s *service) BuildCommandEnv(
 		}
 	}
 
-	// Quick check to see if we need to replace all references in the ENV values
-	needReplaceRefs := false
+	// Quick check to see if we need to load secrets
+	loadSecrets := false
 	for _, env := range envVars {
-		if strings.Contains(env.Value, "${secrets.") {
-			needReplaceRefs = true
+		if !env.IsLiteral && s.envVarService.HasSecretRef(env.Value) {
+			loadSecrets = true
 			break
 		}
 	}
 
-	if needReplaceRefs {
-		res, err = s.envVarService.ProcessEnvRefs(ctx, db, app, envVars, false, true, false)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-		return res, nil
+	res, usedSecrets, err = s.envVarService.ProcessEnvRefs(ctx, db, app, envVars,
+		false, loadSecrets, false)
+	if err != nil {
+		return nil, nil, apperrors.Wrap(err)
 	}
-
-	res = make([]*envvarservice.EnvVar, 0, len(envVars))
-	for _, env := range envVars {
-		res = append(res, &envvarservice.EnvVar{EnvVar: env})
-	}
-	return res, nil
+	return res, usedSecrets, nil
 }
 
 func (s *service) buildEnvForArgs(

@@ -10,6 +10,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/funcutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/redact"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/shellutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 	"github.com/localpaas/localpaas/localpaas_app/service/containerexecservice"
@@ -50,13 +51,21 @@ func (s *service) ContainerExec(
 		return resp, nil
 	}
 
-	envVars, err := s.schedJobService.BuildCommandEnv(ctx, db, data.App, schedJob)
+	envVars, refSecrets, err := s.schedJobService.BuildCommandEnv(ctx, db, data.App, schedJob)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 	env := make([]string, 0, len(envVars))
 	for _, v := range envVars {
 		env = append(env, v.ToString("="))
+	}
+
+	if len(refSecrets) > 0 && data.LogStore != nil {
+		secrets := make([]string, 0, len(refSecrets))
+		for _, secret := range refSecrets {
+			secrets = append(secrets, secret.Value.MustGetPlain())
+		}
+		data.LogStore.SetRedactor(redact.New(secrets))
 	}
 
 	var cmd []string
@@ -81,10 +90,10 @@ func (s *service) ContainerExec(
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	_ = data.LogStore.Add(ctx, logs...)
+	_ = data.LogStore.AddRedacted(ctx, logs...)
 
 	if execInfo.ExitCode != 0 {
-		_ = data.LogStore.Add(ctx, tasklog.NewErrFrame(fmt.Sprintf(
+		_ = data.LogStore.AddRedacted(ctx, tasklog.NewErrFrame(fmt.Sprintf(
 			"Command execution failed with exit code: %v", execInfo.ExitCode), tasklog.TsNow))
 		return nil, apperrors.Wrap(apperrors.ErrInfraActionFailed)
 	}

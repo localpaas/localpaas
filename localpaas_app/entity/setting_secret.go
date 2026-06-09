@@ -65,6 +65,10 @@ func (s *Secret) ValueAsBytes() []byte {
 	return reflectutil.UnsafeStrToBytes(plain)
 }
 
+func (s *Secret) ValueSize() int32 {
+	return int32(len(s.Value.MustGetPlain())) //nolint:gosec
+}
+
 func (s *Secret) Migrate(setting *Setting) (hasChange bool, err error) {
 	if setting.Version == CurrentSecretVersion {
 		return false, nil

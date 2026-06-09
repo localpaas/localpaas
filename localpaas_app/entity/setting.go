@@ -13,8 +13,8 @@ import (
 
 var (
 	SettingUpsertingConflictCols = []string{"id"}
-	SettingUpsertingUpdateCols   = []string{"scope", "object_id", "type", "kind", "status", "name", "data",
-		"avail_in_projects", "is_default", "version", "update_ver",
+	SettingUpsertingUpdateCols   = []string{"scope", "object_id", "type", "kind", "status", "name", "size",
+		"data", "avail_in_projects", "is_default", "version", "update_ver",
 		"updated_at", "expire_at", "deleted_at"}
 )
 
@@ -40,6 +40,7 @@ type Setting struct {
 	Kind            string               `bun:",nullzero" json:"kind,omitempty"`
 	Status          base.SettingStatus   `json:"status"`
 	Name            string               `bun:",nullzero" json:"name"`
+	Size            int32                `bun:",nullzero" json:"size"`
 	Data            string               `bun:",nullzero" json:"data"`
 	AvailInProjects bool                 `json:"availInProjects,omitempty"`
 	Default         bool                 `bun:"is_default" json:"isDefault,omitempty"`

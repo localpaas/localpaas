@@ -17,6 +17,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/githelper"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/redact"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 	"github.com/localpaas/localpaas/services/git/github"
@@ -116,9 +117,18 @@ func (s *service) calcBuildEnvVars(
 	db database.Tx,
 	data *repoDeploymentData,
 ) (map[string]*string, error) {
-	envVars, err := s.envVarService.BuildAppEnvVars(ctx, db, data.App, true)
+	envVars, refSecrets, err := s.envVarService.BuildAppEnvVars(ctx, db, data.App, true)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
+	}
+	data.SecretsToRedact = refSecrets
+
+	if data.LogStore != nil && len(refSecrets) > 0 {
+		secrets := make([]string, 0, len(refSecrets))
+		for _, secret := range refSecrets {
+			secrets = append(secrets, secret.Value.MustGetPlain())
+		}
+		data.LogStore.SetRedactor(redact.New(secrets))
 	}
 
 	result := make(map[string]*string, len(envVars))

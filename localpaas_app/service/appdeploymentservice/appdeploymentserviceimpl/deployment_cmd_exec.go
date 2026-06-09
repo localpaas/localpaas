@@ -86,7 +86,7 @@ func (s *service) deployStepExecCmd(
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	_ = data.LogStore.Add(ctx, logs...)
+	_ = data.LogStore.AddRedacted(ctx, logs...)
 
 	if execInfo.ExitCode != 0 {
 		_ = data.LogStore.Add(ctx, tasklog.NewErrFrame(fmt.Sprintf(

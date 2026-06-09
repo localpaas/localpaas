@@ -41,6 +41,7 @@ type repoDeploymentData struct {
 	CredSetting        *entity.Setting
 	RegAuthHeader      string
 	ImageBuildSettings *entity.ImageBuildSettings
+	SecretsToRedact    []*entity.Secret
 
 	RepoCache        *entity.File
 	RepoCacheLoaded  bool
@@ -317,7 +318,7 @@ func (s *service) repoDeployStepImageBuild(
 				frameCreator = tasklog.NewErrFrame
 			}
 			if msg.String() != "" {
-				_ = data.LogStore.Add(ctx, frameCreator(msg.String(), tasklog.TsNow))
+				_ = data.LogStore.AddRedacted(ctx, frameCreator(msg.String(), tasklog.TsNow))
 			}
 		}
 	}

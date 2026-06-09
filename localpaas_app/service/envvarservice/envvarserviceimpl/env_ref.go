@@ -18,14 +18,16 @@ func (s *service) processRefs(
 	env *envvarservice.EnvVar,
 	envStore map[string]*entity.EnvVar,
 	secretStore map[string]*entity.Secret,
+	usedSecrets *[]*entity.Secret,
 ) {
-	processRefs(env, envStore, secretStore, make(map[string]struct{}))
+	processRefs(env, envStore, secretStore, usedSecrets, make(map[string]struct{}))
 }
 
 func processRefs(
 	env *envvarservice.EnvVar,
 	envStore map[string]*entity.EnvVar,
 	secretStore map[string]*entity.Secret,
+	usedSecrets *[]*entity.Secret,
 	visitMap map[string]struct{},
 ) {
 	if env.IsLiteral {
@@ -45,6 +47,7 @@ func processRefs(
 				env.Errors = append(env.Errors, fmt.Sprintf("failed to parse secret '%s'", envName))
 				return match
 			}
+			*usedSecrets = append(*usedSecrets, refSecret)
 			return value
 		}
 
@@ -61,7 +64,7 @@ func processRefs(
 			return match
 		}
 		refEnv := &envvarservice.EnvVar{EnvVar: val}
-		processRefs(refEnv, envStore, secretStore, visitMap)
+		processRefs(refEnv, envStore, secretStore, usedSecrets, visitMap)
 		if len(refEnv.Errors) > 0 {
 			env.Errors = append(env.Errors, refEnv.Errors...)
 			return match

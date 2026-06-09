@@ -8,7 +8,11 @@ import (
 )
 
 type Service interface {
-	BuildAppEnvVars(ctx context.Context, db database.IDB, app *entity.App, buildPhase bool) ([]*EnvVar, error)
+	HasSecretRef(v string) bool
+
+	BuildAppEnvVars(ctx context.Context, db database.IDB, app *entity.App, buildPhase bool) (
+		res []*EnvVar, refSecrets []*entity.Secret, err error)
 	ProcessEnvRefs(ctx context.Context, db database.IDB, app *entity.App, envVars []*entity.EnvVar,
-		loadEnvVars bool, loadSecrets bool, buildPhase bool) (res []*EnvVar, err error)
+		loadEnvVars bool, loadSecrets bool, buildPhase bool) (
+		res []*EnvVar, refSecrets []*entity.Secret, err error)
 }

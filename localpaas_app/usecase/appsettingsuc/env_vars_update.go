@@ -132,7 +132,7 @@ func (uc *UC) applyAppEnvVars(
 	data *updateAppEnvVarsData,
 ) error {
 	app := data.App
-	envs, err := uc.envVarService.BuildAppEnvVars(ctx, db, app, false)
+	envs, _, err := uc.envVarService.BuildAppEnvVars(ctx, db, app, false)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
