@@ -17,14 +17,13 @@ import (
 )
 
 const (
-	imageBuildSettingName      = "Image build settings"
-	imageBuildCPUDefault       = 2
-	imageBuildCPUMin           = 1
-	imageBuildCPUMax           = 8
-	imageBuildMemDefault       = 2 * unit.GB
-	imageBuildMemMin           = 1 * unit.GB
-	imageBuildMemMax           = 16 * unit.GB
-	imageBuildCheckoutMaxDepth = 100
+	imageBuildSettingName = "Image build settings"
+	imageBuildCPUDefault  = 2
+	imageBuildCPUMin      = 1
+	imageBuildCPUMax      = 8
+	imageBuildMemDefault  = 2 * unit.GB
+	imageBuildMemMin      = 1 * unit.GB
+	imageBuildMemMax      = 16 * unit.GB
 )
 
 func (s *service) initDefaultImageBuildSettings(
@@ -50,8 +49,7 @@ func (s *service) initDefaultImageBuildSettings(
 			Mem:  imageBuildMemDefault,
 		},
 		Sources: entity.ImageBuildSourceSettings{
-			CheckoutMaxDepth: imageBuildCheckoutMaxDepth,
-			RepoCache:        true,
+			RepoCache: true,
 		},
 	}
 

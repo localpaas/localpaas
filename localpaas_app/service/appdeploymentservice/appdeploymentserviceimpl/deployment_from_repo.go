@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/moby/go-archive"
@@ -22,7 +21,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/batchrecvchan"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/fileutil"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/githelper"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/gittool"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/strutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
@@ -159,34 +158,14 @@ func (s *service) repoDeployStepSourceCheckout(
 		return apperrors.Wrap(err)
 	}
 
-	authMethod, err := s.calcGitAuthMethod(ctx, data)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
+	checkoutOptions := &gittool.CheckoutOptions{
+		URL:         repoSource.RepoURL,
+		Credentials: data.CredSetting,
 
-	recurseSubmodules := gofn.If(repoSource.RepoOptions.GitSubmodulesEnabled, git.DefaultSubmoduleRecursionDepth,
-		git.NoRecurseSubmodules)
-	lfsEnabled := repoSource.RepoOptions.GitLFSEnabled
-
-	checkoutMaxDepth := uint(0)
-	if data.ImageBuildSettings != nil {
-		checkoutMaxDepth = data.ImageBuildSettings.Sources.CheckoutMaxDepth
-	}
-
-	checkoutOptions := &githelper.CheckoutOptions{
-		URL:           repoSource.RepoURL,
-		ReferenceName: plumbing.ReferenceName(repoSource.RepoRef),
-		Auth:          authMethod,
-		SingleBranch:  true,
-		CommitHash:    repoSource.CommitHash,
-
-		Depth:    1,
-		MaxDepth: checkoutMaxDepth,
-
-		RecurseSubmodules: recurseSubmodules,
-		ShallowSubmodules: true,
-
-		LFSEnabled: lfsEnabled,
+		ReferenceName:     plumbing.ReferenceName(repoSource.RepoRef),
+		CommitHash:        repoSource.CommitHash,
+		SubmodulesEnabled: repoSource.RepoOptions.GitSubmodulesEnabled,
+		LFSEnabled:        repoSource.RepoOptions.GitLFSEnabled,
 
 		TempDir:     data.TempDir,
 		CheckoutDir: data.CheckoutDir,
@@ -197,7 +176,7 @@ func (s *service) repoDeployStepSourceCheckout(
 	var commit *object.Commit
 	checkoutStart := time.Now()
 	for {
-		_, commit, err = githelper.CheckoutWithGitCli(ctx, checkoutOptions)
+		_, commit, err = gittool.CheckoutWithGitCli(ctx, checkoutOptions)
 		if err == nil {
 			break
 		}

@@ -1,0 +1,76 @@
+package gittool
+
+import (
+	"context"
+	"fmt"
+	"os/exec"
+
+	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing/object"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
+)
+
+func (cli *checkoutCli) checkoutTargetCommit(
+	ctx context.Context,
+	repo *git.Repository,
+) (commit *object.Commit, err error) {
+	commitHash := cli.opts.CommitHash
+	if commitHash != "" {
+		// Fetch the commit
+		cmd := exec.CommandContext(ctx, "git", "fetch", "--depth=1", "origin", commitHash)
+		cmd.Dir = cli.opts.CheckoutDir
+		cmd.Env = cli.sharedEnv
+
+		out, err := cmd.CombinedOutput()
+		addLog(ctx, reflectutil.UnsafeBytesToStr(out), err != nil, cli.opts.LogStore)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+
+		// Make sure the commit belongs to the branch
+		cmd = exec.CommandContext(ctx, "git", "merge-base", "--is-ancestor", commitHash,
+			fmt.Sprintf("%s/%s", cli.opts.RemoteName, cli.opts.branch))
+		cmd.Dir = cli.opts.CheckoutDir
+		cmd.Env = []string{}
+		out, err = cmd.CombinedOutput()
+		addLog(ctx, reflectutil.UnsafeBytesToStr(out), err != nil, cli.opts.LogStore)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	} else {
+		//nolint:gosec
+		cmd := exec.CommandContext(ctx, "git", "fetch", "--depth=1",
+			cli.opts.RemoteName, cli.opts.branch)
+		cmd.Dir = cli.opts.CheckoutDir
+		cmd.Env = cli.sharedEnv
+
+		out, err := cmd.CombinedOutput()
+		addLog(ctx, reflectutil.UnsafeBytesToStr(out), err != nil, cli.opts.LogStore)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	}
+
+	// Hard reset the branch to make it point to the last fetched commit
+	cmd := exec.CommandContext(ctx, "git", "checkout", "-B", cli.opts.branch, "FETCH_HEAD") //nolint:gosec
+	cmd.Dir = cli.opts.CheckoutDir
+	cmd.Env = cli.sharedEnv
+
+	out, err := cmd.CombinedOutput()
+	addLog(ctx, reflectutil.UnsafeBytesToStr(out), err != nil, cli.opts.LogStore)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	head, err := repo.Head()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	commit, err = repo.CommitObject(head.Hash())
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return commit, nil
+}

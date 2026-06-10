@@ -1,4 +1,4 @@
-package githelper
+package gittool
 
 import (
 	"context"
@@ -12,11 +12,11 @@ func addLog(
 	ctx context.Context,
 	msg string,
 	isErr bool,
-	checkoutOpts *CheckoutOptions,
+	log *tasklog.Store,
 ) {
-	if checkoutOpts.LogStore == nil || len(msg) == 0 {
+	if log == nil || len(msg) == 0 {
 		return
 	}
 	fn := gofn.If(isErr, tasklog.NewErrFrame, tasklog.NewDebugFrame)
-	_ = checkoutOpts.LogStore.Add(ctx, fn(msg, tasklog.TsNow))
+	_ = log.Add(ctx, fn(msg, tasklog.TsNow))
 }

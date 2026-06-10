@@ -6,9 +6,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/go-git/go-git/v5/plumbing/transport"
-	"github.com/go-git/go-git/v5/plumbing/transport/http"
-	"github.com/go-git/go-git/v5/plumbing/transport/ssh"
 	"github.com/moby/moby/api/types/registry"
 	"github.com/tiendc/gofn"
 
@@ -16,67 +13,9 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/githelper"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/redact"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
-	"github.com/localpaas/localpaas/services/git/github"
 )
-
-func (s *service) calcGitAuthMethod(
-	ctx context.Context,
-	data *repoDeploymentData,
-) (auth transport.AuthMethod, err error) {
-	credSetting := data.CredSetting
-	if credSetting == nil {
-		return auth, nil
-	}
-	switch credSetting.Type { //nolint:exhaustive
-	case base.SettingTypeGithubApp:
-		client, err := github.NewFromSetting(credSetting)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-		token, err := client.CreateAppToken(ctx)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-		auth = &http.BasicAuth{
-			Username: "default", // this can be anything except an empty string
-			Password: token,
-		}
-
-	case base.SettingTypeAccessToken:
-		token, err := credSetting.MustAsAccessToken().Token.GetPlain()
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-		auth = &http.BasicAuth{
-			Username: "default", // this can be anything except an empty string
-			Password: token,
-		}
-
-	case base.SettingTypeSSHKey:
-		sshKey := credSetting.MustAsSSHKey()
-		privateKey, err := sshKey.PrivateKey.GetPlain()
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-		passphrase, err := sshKey.Passphrase.GetPlain()
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-		authRaw, err := ssh.NewPublicKeys("git", reflectutil.UnsafeStrToBytes(privateKey), passphrase)
-		if err != nil {
-			return nil, apperrors.Wrap(err)
-		}
-		auth = &githelper.AuthSSHKey{
-			PublicKeys: authRaw,
-			PEMBytes:   reflectutil.UnsafeStrToBytes(privateKey),
-		}
-	}
-	return auth, nil
-}
 
 func (s *service) calcBuildImageTags(
 	imageTags []string,
@@ -212,6 +151,6 @@ func (s *service) addCmdOutToLogs(
 	if logStore == nil || len(msg) == 0 {
 		return
 	}
-	fn := gofn.If(isErr, tasklog.NewErrFrame, tasklog.NewOutFrame)
+	fn := gofn.If(isErr, tasklog.NewErrFrame, tasklog.NewDebugFrame)
 	_ = logStore.Add(ctx, fn(msg, tasklog.TsNow))
 }

@@ -14,7 +14,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity/cacheentity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/funcutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/service/appdeploymentservice"
@@ -54,41 +53,38 @@ func (s *service) Deploy(
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+	resp.Deployment = data.Deployment
 
 	defer func() {
+		if r := recover(); r != nil {
+			err = errors.Join(err, apperrors.NewPanic(apperrors.Fmt("%v", r)))
+		}
+		data.Deployment.UpdatedAt = timeutil.NowUTC()
+		data.Deployment.EndedAt = data.Deployment.UpdatedAt
+		switch {
+		case data.TaskCanceled, data.DeploymentCanceled:
+			data.Deployment.Status = base.DeploymentStatusCanceled
+		default:
+			data.Deployment.Status = gofn.If(err != nil, base.DeploymentStatusFailed, base.DeploymentStatusDone)
+			data.Deployment.Output = data.DeploymentOutput
+			if err != nil {
+				data.Deployment.Output.Error = err.Error()
+			}
+		}
+		err = s.deploymentRepo.Update(ctx, db, data.Deployment)
+		// Make cleanup with ignoring errors
 		_ = s.deploymentInfoRepo.Del(ctx, data.Deployment.ID)
 		_ = s.saveLogs(ctx, db, data, true)
 	}()
-	defer funcutil.EnsureNoPanic(&err) // Make sure we catch panic before the above defer
 
-	var depErr error
-	depSettings := data.Deployment.Settings
-	switch depSettings.ActiveMethod {
+	switch data.Deployment.Settings.ActiveMethod {
 	case base.DeploymentMethodImage:
-		depErr = s.deployFromImage(ctx, db, data)
+		err = s.deployFromImage(ctx, db, data)
 	case base.DeploymentMethodRepo:
-		depErr = s.deployFromRepo(ctx, db, data)
+		err = s.deployFromRepo(ctx, db, data)
 	}
 
-	data.Deployment.UpdatedAt = timeutil.NowUTC()
-	data.Deployment.EndedAt = data.Deployment.UpdatedAt
-	switch {
-	case data.TaskCanceled, data.DeploymentCanceled:
-		data.Deployment.Status = base.DeploymentStatusCanceled
-	default:
-		data.Deployment.Status = gofn.If(depErr != nil, base.DeploymentStatusFailed, base.DeploymentStatusDone)
-		data.Deployment.Output = data.DeploymentOutput
-		if depErr != nil {
-			data.Deployment.Output.Error = depErr.Error()
-		}
-	}
-
-	err = s.deploymentRepo.Update(ctx, db, data.Deployment)
-	if err != nil {
-		return nil, apperrors.Wrap(err)
-	}
-
-	return resp, nil
+	return resp, err
 }
 
 func (s *service) loadDeploymentData(

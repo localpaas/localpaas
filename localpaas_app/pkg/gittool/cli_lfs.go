@@ -1,4 +1,4 @@
-package githelper
+package gittool
 
 import (
 	"context"
@@ -9,20 +9,19 @@ import (
 )
 
 //nolint:unused
-func gitCliPullLfs(
+func (cli *checkoutCli) gitCliPullLfs(
 	ctx context.Context,
-	checkoutOpts *CheckoutOptions,
 ) (err error) {
-	if !checkoutOpts.LFSEnabled {
+	if !cli.opts.LFSEnabled {
 		return nil
 	}
 
 	cmd := exec.CommandContext(ctx, "git", "lfs", "pull")
-	cmd.Dir = checkoutOpts.CheckoutDir
-	cmd.Env = checkoutOpts.sharedEnv
+	cmd.Dir = cli.opts.CheckoutDir
+	cmd.Env = cli.sharedEnv
 
 	out, err := cmd.CombinedOutput()
-	addLog(ctx, reflectutil.UnsafeBytesToStr(out), err != nil, checkoutOpts)
+	addLog(ctx, reflectutil.UnsafeBytesToStr(out), err != nil, cli.opts.LogStore)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
