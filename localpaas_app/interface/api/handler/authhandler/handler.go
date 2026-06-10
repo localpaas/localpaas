@@ -115,14 +115,27 @@ func (h *Handler) getCurrentAuth(ctx *gin.Context) (*basedto.Auth, error) {
 // The value should be in form of `Bearer <token-data>`.
 func (h *Handler) getAuthToken(ctx *gin.Context) (token string, err error) {
 	authHeader := ctx.GetHeader("Authorization")
-	if authHeader == "" {
-		return "", nil
+	if authHeader != "" {
+		tokenParts := strings.SplitN(authHeader, " ", 2) //nolint:mnd
+		if len(tokenParts) != 2 || tokenParts[1] == "" {
+			return "", apperrors.New(apperrors.ErrSessionJWTInvalid)
+		}
+		return tokenParts[1], nil
 	}
-	tokenParts := strings.SplitN(authHeader, " ", 2) //nolint:mnd
-	if len(tokenParts) != 2 || tokenParts[1] == "" {
-		return "", apperrors.New(apperrors.ErrSessionJWTInvalid)
+
+	wsProtoHeader := ctx.GetHeader("Sec-WebSocket-Protocol")
+	if wsProtoHeader != "" {
+		// Header has format: "some_proto, access_token, <token>"
+		parts := strings.Split(wsProtoHeader, ",")
+		for i := 0; i < len(parts)-1; i++ {
+			key := strings.TrimSpace(parts[i])
+			if key == "access_token" {
+				return strings.TrimSpace(parts[i+1]), nil // The token is the next element
+			}
+		}
 	}
-	return tokenParts[1], nil
+
+	return "", nil
 }
 
 func (h *Handler) getAuthAPIKey(ctx *gin.Context) (keyID, secret string, err error) {

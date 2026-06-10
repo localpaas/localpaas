@@ -37,6 +37,7 @@ type TaskResp struct {
 	Type      base.TaskType     `json:"type"`
 	Status    base.TaskStatus   `json:"status"`
 	Config    entity.TaskConfig `json:"config"` // NOTE: use entity's type directly here, may need refactor
+	LastError string            `json:"lastError"`
 	UpdateVer int               `json:"updateVer"`
 
 	RunAt     *time.Time `json:"runAt" copy:",nilonzero"`
@@ -58,5 +59,13 @@ func TransformTask(task *entity.Task, taskInfo *cacheentity.TaskInfo) (resp *Tas
 			resp.StartedAt = &taskInfo.StartedAt
 		}
 	}
+
+	if resp.Status == base.TaskStatusInProgress || resp.Status == base.TaskStatusFailed {
+		runs, _ := task.GetRuns()
+		if len(runs) > 0 {
+			resp.LastError = runs[len(runs)-1].Error
+		}
+	}
+
 	return resp, nil
 }

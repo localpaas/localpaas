@@ -36,7 +36,7 @@ func (uc *UC) GetAppLogsToken(
 			WithMsgLog("service not exist for app")
 	}
 
-	token := fmt.Sprintf("app:%s:log:%s", app.ID, gofn.RandTokenAsHex(consoleUIDByteLen))
+	token := fmt.Sprintf("app:%s:svclog:%s", app.ID, gofn.RandTokenAsHex(consoleUIDByteLen))
 
 	err = uc.consoleTicketRepo.Set(ctx, token, &cacheentity.ConsoleTicket{
 		AppID:    req.AppID,

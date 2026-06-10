@@ -37,9 +37,9 @@ func (uc *UC) GetTaskLogs(
 
 	return &taskdto.GetTaskLogsResp{
 		Data: &taskdto.TaskLogsDataResp{
-			Logs:          resp.StaticLogs,
-			LogChan:       resp.LogsStream,
-			LogChanCloser: resp.LogsStreamCloser,
+			StaticLogs:       resp.StaticLogs,
+			LogsStream:       resp.LogsStream,
+			LogsStreamCloser: resp.LogsStreamCloser,
 		},
 	}, nil
 }

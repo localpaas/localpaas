@@ -61,7 +61,10 @@ func NewHTTPServer(
 func (s *HTTPServer) init() {
 	engine := gin.New()
 	s.engine = engine
+
 	s.websocket = melody.New()
+	s.websocket.Upgrader.Subprotocols = []string{"access_token"}
+
 	s.Server = &http.Server{
 		Addr:           s.config.HTTPServer.BindingAddress(),
 		ReadTimeout:    180 * time.Second, //nolint:mnd

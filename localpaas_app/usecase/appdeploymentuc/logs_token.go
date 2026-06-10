@@ -28,7 +28,7 @@ func (uc *UC) GetDeploymentLogsToken(
 		return nil, apperrors.Wrap(err)
 	}
 
-	token := fmt.Sprintf("app:%s:log:%s", deployment.AppID, gofn.RandTokenAsHex(consoleUIDByteLen))
+	token := fmt.Sprintf("app:%s:dpllog:%s", deployment.AppID, gofn.RandTokenAsHex(consoleUIDByteLen))
 
 	err = uc.consoleTicketRepo.Set(ctx, token, &cacheentity.ConsoleTicket{
 		AppID:    req.AppID,
