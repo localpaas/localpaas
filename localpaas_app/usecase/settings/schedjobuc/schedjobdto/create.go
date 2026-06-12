@@ -86,11 +86,13 @@ func (req *ScheduleReq) validate(field string) (res []vld.Validator) {
 }
 
 type ContainerCommandReq struct {
-	RunInShell string                `json:"runInShell"`
-	Command    string                `json:"command"`
-	WorkingDir string                `json:"workingDir"`
-	EnvVars    []*basedto.EnvVarReq  `json:"envVars"`
-	ArgGroups  []*CommandArgGroupReq `json:"argGroups"`
+	RunInShell  string                 `json:"runInShell"`
+	Command     string                 `json:"command"`
+	WorkingDir  string                 `json:"workingDir"`
+	EnvVars     []*basedto.EnvVarReq   `json:"envVars"`
+	ArgGroups   []*CommandArgGroupReq  `json:"argGroups"`
+	ConsoleSize *CommandConsoleSizeReq `json:"consoleSize"`
+	TTY         bool                   `json:"tty"`
 }
 
 func (req *ContainerCommandReq) ToEntity() *entity.SchedJobContainerCommand {
@@ -103,6 +105,8 @@ func (req *ContainerCommandReq) ToEntity() *entity.SchedJobContainerCommand {
 		ArgGroups: gofn.MapSlice(req.ArgGroups, func(item *CommandArgGroupReq) *entity.SchedJobCommandArgGroup {
 			return item.ToEntity()
 		}),
+		ConsoleSize: req.ConsoleSize.ToEntity(),
+		TTY:         req.TTY,
 	}
 }
 
@@ -150,6 +154,21 @@ func (req *CommandArgReq) ToEntity() *entity.SchedJobCommandArg {
 		Use:   req.Use,
 		Name:  req.Name,
 		Value: req.Value,
+	}
+}
+
+type CommandConsoleSizeReq struct {
+	Width  uint `json:"width"`
+	Height uint `json:"height"`
+}
+
+func (req *CommandConsoleSizeReq) ToEntity() entity.SchedJobCommandConsoleSize {
+	if req == nil {
+		return entity.SchedJobCommandConsoleSize{}
+	}
+	return entity.SchedJobCommandConsoleSize{
+		Width:  req.Width,
+		Height: req.Height,
 	}
 }
 

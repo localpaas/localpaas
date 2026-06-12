@@ -4224,13 +4224,6 @@
             "type" : "string"
           }
         }, {
-          "description" : "`token=console-token`",
-          "in" : "query",
-          "name" : "token",
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
           "description" : "`follow=true/false`",
           "in" : "query",
           "name" : "follow",
@@ -4292,71 +4285,6 @@
           }
         },
         "summary" : "Stream app deployment logs via websocket",
-        "tags" : [ "app_deployments" ]
-      }
-    },
-    "/projects/{projectID}/apps/{appID}/deployments/{deploymentID}/logs/token" : {
-      "get" : {
-        "description" : "Gets a token for getting logs via websocket",
-        "operationId" : "getAppDeploymentLogsToken",
-        "parameters" : [ {
-          "description" : "project ID",
-          "in" : "path",
-          "name" : "projectID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "app ID",
-          "in" : "path",
-          "name" : "appID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "deployment ID",
-          "in" : "path",
-          "name" : "deploymentID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appdeploymentuc_appdeploymentdto.GetDeploymentLogsResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Gets a token for getting logs via websocket",
         "tags" : [ "app_deployments" ]
       }
     },
@@ -5359,63 +5287,6 @@
           }
         },
         "summary" : "Gets log info",
-        "tags" : [ "apps" ]
-      }
-    },
-    "/projects/{projectID}/apps/{appID}/logs/token" : {
-      "get" : {
-        "description" : "Gets a token for getting logs via websocket",
-        "operationId" : "getAppLogsToken",
-        "parameters" : [ {
-          "description" : "project ID",
-          "in" : "path",
-          "name" : "projectID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "description" : "app ID",
-          "in" : "path",
-          "name" : "appID",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.GetAppLogsTokenResp"
-                }
-              }
-            },
-            "description" : "OK"
-          },
-          "400" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Bad Request"
-          },
-          "500" : {
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
-                }
-              }
-            },
-            "description" : "Internal Server Error"
-          }
-        },
-        "summary" : "Gets a token for getting logs via websocket",
         "tags" : [ "apps" ]
       }
     },
@@ -24786,6 +24657,29 @@
         "required" : [ "priority" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_pkg_fileutil.FileMode" : {
+        "enum" : [ 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511, 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511 ],
+        "format" : "int32",
+        "type" : "integer",
+        "x-enum-comments" : {
+          "ModeAppend" : "a: append-only",
+          "ModeCharDevice" : "c: Unix character device, when ModeDevice is set",
+          "ModeDevice" : "D: device file",
+          "ModeDir" : "d: is a directory",
+          "ModeExclusive" : "l: exclusive use",
+          "ModeIrregular" : "?: non-regular file; nothing else is known about this file",
+          "ModeNamedPipe" : "p: named pipe (FIFO)",
+          "ModePerm" : "Unix permission bits, 0o777",
+          "ModeSetgid" : "g: setgid",
+          "ModeSetuid" : "u: setuid",
+          "ModeSocket" : "S: Unix domain socket",
+          "ModeSticky" : "t: sticky",
+          "ModeSymlink" : "L: symbolic link",
+          "ModeTemporary" : "T: temporary file; Plan 9 only"
+        },
+        "x-enum-descriptions" : [ "d: is a directory", "a: append-only", "l: exclusive use", "T: temporary file; Plan 9 only", "L: symbolic link", "D: device file", "p: named pipe (FIFO)", "S: Unix domain socket", "u: setuid", "g: setgid", "c: Unix character device, when ModeDevice is set", "t: sticky", "?: non-regular file; nothing else is known about this file", "", "Unix permission bits, 0o777" ],
+        "x-enum-varnames" : [ "ModeDir", "ModeAppend", "ModeExclusive", "ModeTemporary", "ModeSymlink", "ModeDevice", "ModeNamedPipe", "ModeSocket", "ModeSetuid", "ModeSetgid", "ModeCharDevice", "ModeSticky", "ModeIrregular", "ModeType", "ModePerm" ]
+      },
       "github_com_localpaas_localpaas_localpaas_app_pkg_tasklog.LogFrame" : {
         "properties" : {
           "data" : {
@@ -26541,7 +26435,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.TmpfsOptions" : {
         "properties" : {
           "mode" : {
-            "type" : "integer"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_fileutil.FileMode"
           },
           "options" : {
             "items" : {
@@ -27026,15 +26920,6 @@
         "required" : [ "tasks" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppLogsTokenDataResp" : {
-        "properties" : {
-          "token" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "token" ],
-        "type" : "object"
-      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppResp" : {
         "properties" : {
           "accessLinks" : {
@@ -27180,18 +27065,6 @@
         "properties" : {
           "data" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppLogsDataResp"
-          },
-          "meta" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
-          }
-        },
-        "required" : [ "data", "meta" ],
-        "type" : "object"
-      },
-      "github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.GetAppLogsTokenResp" : {
-        "properties" : {
-          "data" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_appuc_appdto.AppLogsTokenDataResp"
           },
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
@@ -30046,7 +29919,7 @@
             "type" : "string"
           },
           "mode" : {
-            "type" : "integer"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_fileutil.FileMode"
           },
           "name" : {
             "type" : "string"
@@ -30064,7 +29937,7 @@
             "type" : "string"
           },
           "mode" : {
-            "type" : "integer"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_fileutil.FileMode"
           },
           "name" : {
             "type" : "string"
@@ -33333,6 +33206,30 @@
         "required" : [ "name", "use", "value" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_schedjobuc_schedjobdto.CommandConsoleSizeReq" : {
+        "properties" : {
+          "height" : {
+            "type" : "integer"
+          },
+          "width" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "height", "width" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_schedjobuc_schedjobdto.CommandConsoleSizeResp" : {
+        "properties" : {
+          "height" : {
+            "type" : "integer"
+          },
+          "width" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "height", "width" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_schedjobuc_schedjobdto.ContainerCommandReq" : {
         "properties" : {
           "argGroups" : {
@@ -33344,6 +33241,9 @@
           "command" : {
             "type" : "string"
           },
+          "consoleSize" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_schedjobuc_schedjobdto.CommandConsoleSizeReq"
+          },
           "envVars" : {
             "items" : {
               "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.EnvVarReq"
@@ -33353,11 +33253,14 @@
           "runInShell" : {
             "type" : "string"
           },
+          "tty" : {
+            "type" : "boolean"
+          },
           "workingDir" : {
             "type" : "string"
           }
         },
-        "required" : [ "argGroups", "command", "envVars", "runInShell", "workingDir" ],
+        "required" : [ "argGroups", "command", "consoleSize", "envVars", "runInShell", "tty", "workingDir" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_schedjobuc_schedjobdto.ContainerCommandResp" : {
@@ -33371,6 +33274,9 @@
           "command" : {
             "type" : "string"
           },
+          "consoleSize" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_schedjobuc_schedjobdto.CommandConsoleSizeResp"
+          },
           "envVars" : {
             "items" : {
               "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.EnvVarResp"
@@ -33380,11 +33286,14 @@
           "runInShell" : {
             "type" : "string"
           },
+          "tty" : {
+            "type" : "boolean"
+          },
           "workingDir" : {
             "type" : "string"
           }
         },
-        "required" : [ "argGroups", "command", "envVars", "runInShell", "workingDir" ],
+        "required" : [ "argGroups", "command", "consoleSize", "envVars", "runInShell", "tty", "workingDir" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_schedjobuc_schedjobdto.CreateSchedJobReq" : {
@@ -33936,7 +33845,7 @@
             "type" : "string"
           },
           "mode" : {
-            "type" : "integer"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_fileutil.FileMode"
           },
           "name" : {
             "type" : "string"
@@ -33954,7 +33863,7 @@
             "type" : "string"
           },
           "mode" : {
-            "type" : "integer"
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_fileutil.FileMode"
           },
           "name" : {
             "type" : "string"
@@ -37338,10 +37247,10 @@
         "x-enum-varnames" : [ "SeccompModeDefault", "SeccompModeUnconfined", "SeccompModeCustom" ]
       },
       "timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
         "format" : "int64",
         "type" : "integer",
-        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
+        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
       }
     },
     "securitySchemes" : {

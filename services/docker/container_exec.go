@@ -34,10 +34,6 @@ func (m *manager) ContainerExec(
 		return nil, nil, nil, apperrors.Wrap(err)
 	}
 
-	if opts.ConsoleSize.Width > 0 && opts.ConsoleSize.Height > 0 {
-		opts.TTY = true
-	}
-
 	createResp, err := m.client.ExecCreate(ctx, containerID, opts)
 	if err != nil {
 		return nil, nil, nil, apperrors.NewInfra(err)

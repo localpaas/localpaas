@@ -58,11 +58,13 @@ type ScheduleResp struct {
 }
 
 type ContainerCommandResp struct {
-	RunInShell string                 `json:"runInShell"`
-	Command    string                 `json:"command"`
-	WorkingDir string                 `json:"workingDir"`
-	EnvVars    []*basedto.EnvVarResp  `json:"envVars"`
-	ArgGroups  []*CommandArgGroupResp `json:"argGroups"`
+	RunInShell  string                  `json:"runInShell"`
+	Command     string                  `json:"command"`
+	WorkingDir  string                  `json:"workingDir"`
+	EnvVars     []*basedto.EnvVarResp   `json:"envVars"`
+	ArgGroups   []*CommandArgGroupResp  `json:"argGroups"`
+	ConsoleSize *CommandConsoleSizeResp `json:"consoleSize"`
+	TTY         bool                    `json:"tty"`
 }
 
 type CommandArgGroupResp struct {
@@ -76,6 +78,11 @@ type CommandArgResp struct {
 	Use   bool   `json:"use"`
 	Name  string `json:"name"`
 	Value string `json:"value"`
+}
+
+type CommandConsoleSizeResp struct {
+	Width  uint `json:"width"`
+	Height uint `json:"height"`
 }
 
 func TransformSchedJob(

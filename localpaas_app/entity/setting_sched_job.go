@@ -203,11 +203,13 @@ func (s *SchedJobSchedule) AdjustInitialTime(initialTimeAdj time.Time) bool {
 }
 
 type SchedJobContainerCommand struct {
-	RunInShell string                     `json:"runInShell,omitempty"`
-	Command    string                     `json:"command"`
-	WorkingDir string                     `json:"workingDir,omitempty"`
-	EnvVars    []*EnvVar                  `json:"envVars,omitempty"`
-	ArgGroups  []*SchedJobCommandArgGroup `json:"argGroups,omitempty"`
+	RunInShell  string                     `json:"runInShell,omitempty"`
+	Command     string                     `json:"command"`
+	WorkingDir  string                     `json:"workingDir,omitempty"`
+	EnvVars     []*EnvVar                  `json:"envVars,omitempty"`
+	ArgGroups   []*SchedJobCommandArgGroup `json:"argGroups,omitempty"`
+	ConsoleSize SchedJobCommandConsoleSize `json:"consoleSize"`
+	TTY         bool                       `json:"tty,omitempty"`
 }
 
 type SchedJobCommandArgGroup struct {
@@ -221,6 +223,11 @@ type SchedJobCommandArg struct {
 	Use   bool   `json:"use"`
 	Name  string `json:"name"`
 	Value string `json:"value"`
+}
+
+type SchedJobCommandConsoleSize struct {
+	Width  uint `json:"w"`
+	Height uint `json:"h"`
 }
 
 func (s *SchedJob) GetType() base.SettingType {

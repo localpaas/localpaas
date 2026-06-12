@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/moby/moby/client"
+	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
@@ -84,8 +85,9 @@ func (s *service) ContainerExec(
 		opts.Cmd = cmd
 		opts.WorkingDir = command.WorkingDir
 		opts.Env = env
-		opts.TTY = true
-		opts.ConsoleSize = docker.DefaultConsoleSize
+		opts.TTY = command.TTY
+		opts.ConsoleSize.Width = gofn.Coalesce(command.ConsoleSize.Width, docker.DefaultConsoleSize.Width)
+		opts.ConsoleSize.Height = gofn.Coalesce(command.ConsoleSize.Height, docker.DefaultConsoleSize.Height)
 	})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
