@@ -14,9 +14,10 @@ func (uc *UC) CancelTask(
 	ctx context.Context,
 	auth *basedto.Auth,
 	req *taskdto.CancelTaskReq,
-) (*taskdto.CancelTaskResp, error) {
-	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
-		err := uc.taskService.CancelTask(ctx, db, req.ID)
+) (_ *taskdto.CancelTaskResp, err error) {
+	var canceled bool
+	err = transaction.Execute(ctx, uc.db, func(db database.Tx) error {
+		canceled, err = uc.taskService.CancelTask(ctx, db, req.ID, nil)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -26,5 +27,7 @@ func (uc *UC) CancelTask(
 		return nil, apperrors.Wrap(err)
 	}
 
-	return &taskdto.CancelTaskResp{}, nil
+	return &taskdto.CancelTaskResp{
+		Data: &taskdto.CancelTaskDataResp{Canceled: canceled},
+	}, nil
 }

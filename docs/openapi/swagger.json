@@ -6411,6 +6411,91 @@
         "tags" : [ "app_settings" ]
       }
     },
+    "/projects/{projectID}/apps/{appID}/sched-jobs/{itemID}/tasks/{taskID}/cancel" : {
+      "post" : {
+        "description" : "Cancels job task",
+        "operationId" : "cancelAppSchedJobTask",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "app ID",
+          "in" : "path",
+          "name" : "appID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "task ID",
+          "in" : "path",
+          "name" : "taskID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_schedjobuc_schedjobdto.CancelSchedJobTaskReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_schedjobuc_schedjobdto.CancelSchedJobTaskResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Cancels job task",
+        "tags" : [ "app_settings" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
     "/projects/{projectID}/apps/{appID}/sched-jobs/{itemID}/tasks/{taskID}/logs" : {
       "get" : {
         "description" : "Gets logs of a sched-job task",
@@ -13836,6 +13921,390 @@
         "x-codegen-request-body-name" : "body"
       }
     },
+    "/projects/{projectID}/ssl-providers" : {
+      "get" : {
+        "description" : "Lists SSL providers",
+        "operationId" : "listProjectSSLProvider",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`search=<target> (support *)`",
+          "in" : "query",
+          "name" : "search",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`pageOffset=offset`",
+          "in" : "query",
+          "name" : "pageOffset",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`pageLimit=limit`",
+          "in" : "query",
+          "name" : "pageLimit",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`sort=[-]field1|field2...`",
+          "in" : "query",
+          "name" : "sort",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.ListSSLProviderResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Lists SSL providers",
+        "tags" : [ "project_settings" ]
+      },
+      "post" : {
+        "description" : "Creates a new SSL provider",
+        "operationId" : "createProjectSSLProvider",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.CreateSSLProviderReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.CreateSSLProviderResp"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Creates a new SSL provider",
+        "tags" : [ "project_settings" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/projects/{projectID}/ssl-providers/{itemID}" : {
+      "delete" : {
+        "description" : "Deletes an SSL provider",
+        "operationId" : "deleteProjectSSLProvider",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.DeleteSSLProviderResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Deletes an SSL provider",
+        "tags" : [ "project_settings" ]
+      },
+      "get" : {
+        "description" : "Gets SSL provider details",
+        "operationId" : "getProjectSSLProvider",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.GetSSLProviderResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Gets SSL provider details",
+        "tags" : [ "project_settings" ]
+      },
+      "put" : {
+        "description" : "Updates an SSL provider",
+        "operationId" : "updateProjectSSLProvider",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.UpdateSSLProviderReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.UpdateSSLProviderResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates an SSL provider",
+        "tags" : [ "project_settings" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/projects/{projectID}/ssl-providers/{itemID}/status" : {
+      "put" : {
+        "description" : "Updates SSL provider status",
+        "operationId" : "updateProjectSSLProviderStatus",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.UpdateSSLProviderStatusReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.UpdateSSLProviderStatusResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates SSL provider status",
+        "tags" : [ "project_settings" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
     "/projects/{projectID}/status" : {
       "put" : {
         "description" : "Updates project status",
@@ -20342,6 +20811,341 @@
         "x-codegen-request-body-name" : "body"
       }
     },
+    "/settings/ssl-providers" : {
+      "get" : {
+        "description" : "Lists SSL providers",
+        "operationId" : "listSettingSSLProvider",
+        "parameters" : [ {
+          "description" : "`search=<target> (support *)`",
+          "in" : "query",
+          "name" : "search",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`pageOffset=offset`",
+          "in" : "query",
+          "name" : "pageOffset",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`pageLimit=limit`",
+          "in" : "query",
+          "name" : "pageLimit",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`sort=[-]field1|field2...`",
+          "in" : "query",
+          "name" : "sort",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.ListSSLProviderResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Lists SSL providers",
+        "tags" : [ "settings" ]
+      },
+      "post" : {
+        "description" : "Creates a new SSL provider",
+        "operationId" : "createSettingSSLProvider",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.CreateSSLProviderReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.CreateSSLProviderResp"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Creates a new SSL provider",
+        "tags" : [ "settings" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/settings/ssl-providers/{itemID}" : {
+      "delete" : {
+        "description" : "Deletes SSL provider",
+        "operationId" : "deleteSettingSSLProvider",
+        "parameters" : [ {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.DeleteSSLProviderResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Deletes SSL provider",
+        "tags" : [ "settings" ]
+      },
+      "get" : {
+        "description" : "Gets SSL provider details",
+        "operationId" : "getSettingSSLProvider",
+        "parameters" : [ {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.GetSSLProviderResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Gets SSL provider details",
+        "tags" : [ "settings" ]
+      },
+      "put" : {
+        "description" : "Updates SSL provider",
+        "operationId" : "updateSettingSSLProvider",
+        "parameters" : [ {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.UpdateSSLProviderReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.UpdateSSLProviderResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates SSL provider",
+        "tags" : [ "settings" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/settings/ssl-providers/{itemID}/status" : {
+      "put" : {
+        "description" : "Updates SSL provider status",
+        "operationId" : "updateSettingSSLProviderStatus",
+        "parameters" : [ {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.UpdateSSLProviderStatusReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.UpdateSSLProviderStatusResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates SSL provider status",
+        "tags" : [ "settings" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
     "/settings/storage-settings" : {
       "delete" : {
         "description" : "Deletes storage settings setting",
@@ -23982,29 +24786,6 @@
         "required" : [ "priority" ],
         "type" : "object"
       },
-      "github_com_localpaas_localpaas_localpaas_app_pkg_fileutil.FileMode" : {
-        "enum" : [ 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511, 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511, 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511 ],
-        "format" : "int32",
-        "type" : "integer",
-        "x-enum-comments" : {
-          "ModeAppend" : "a: append-only",
-          "ModeCharDevice" : "c: Unix character device, when ModeDevice is set",
-          "ModeDevice" : "D: device file",
-          "ModeDir" : "d: is a directory",
-          "ModeExclusive" : "l: exclusive use",
-          "ModeIrregular" : "?: non-regular file; nothing else is known about this file",
-          "ModeNamedPipe" : "p: named pipe (FIFO)",
-          "ModePerm" : "Unix permission bits, 0o777",
-          "ModeSetgid" : "g: setgid",
-          "ModeSetuid" : "u: setuid",
-          "ModeSocket" : "S: Unix domain socket",
-          "ModeSticky" : "t: sticky",
-          "ModeSymlink" : "L: symbolic link",
-          "ModeTemporary" : "T: temporary file; Plan 9 only"
-        },
-        "x-enum-descriptions" : [ "d: is a directory", "a: append-only", "l: exclusive use", "T: temporary file; Plan 9 only", "L: symbolic link", "D: device file", "p: named pipe (FIFO)", "S: Unix domain socket", "u: setuid", "g: setgid", "c: Unix character device, when ModeDevice is set", "t: sticky", "?: non-regular file; nothing else is known about this file", "", "Unix permission bits, 0o777" ],
-        "x-enum-varnames" : [ "ModeDir", "ModeAppend", "ModeExclusive", "ModeTemporary", "ModeSymlink", "ModeDevice", "ModeNamedPipe", "ModeSocket", "ModeSetuid", "ModeSetgid", "ModeCharDevice", "ModeSticky", "ModeIrregular", "ModeType", "ModePerm" ]
-      },
       "github_com_localpaas_localpaas_localpaas_app_pkg_tasklog.LogFrame" : {
         "properties" : {
           "data" : {
@@ -25760,7 +26541,7 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_appsettingsuc_appsettingsdto.TmpfsOptions" : {
         "properties" : {
           "mode" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_fileutil.FileMode"
+            "type" : "integer"
           },
           "options" : {
             "items" : {
@@ -29265,7 +30046,7 @@
             "type" : "string"
           },
           "mode" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_fileutil.FileMode"
+            "type" : "integer"
           },
           "name" : {
             "type" : "string"
@@ -29283,7 +30064,7 @@
             "type" : "string"
           },
           "mode" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_fileutil.FileMode"
+            "type" : "integer"
           },
           "name" : {
             "type" : "string"
@@ -32456,6 +33237,30 @@
         "required" : [ "data", "meta" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_schedjobuc_schedjobdto.CancelSchedJobTaskDataResp" : {
+        "properties" : {
+          "canceled" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "canceled" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_schedjobuc_schedjobdto.CancelSchedJobTaskReq" : {
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_schedjobuc_schedjobdto.CancelSchedJobTaskResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_schedjobuc_schedjobdto.CancelSchedJobTaskDataResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_schedjobuc_schedjobdto.CommandArgGroupReq" : {
         "properties" : {
           "args" : {
@@ -33131,7 +33936,7 @@
             "type" : "string"
           },
           "mode" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_fileutil.FileMode"
+            "type" : "integer"
           },
           "name" : {
             "type" : "string"
@@ -33149,7 +33954,7 @@
             "type" : "string"
           },
           "mode" : {
-            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_pkg_fileutil.FileMode"
+            "type" : "integer"
           },
           "name" : {
             "type" : "string"
@@ -33735,6 +34540,276 @@
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslcertuc_sslcertdto.UpdateSSLCertStatusResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.CreateSSLProviderReq" : {
+        "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
+          "default" : {
+            "type" : "boolean"
+          },
+          "defaultKeyType" : {
+            "type" : "string"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "googleTS" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.SSLProviderGoogleTSReq"
+          },
+          "kind" : {
+            "type" : "string"
+          },
+          "letsEncrypt" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.SSLProviderLetsEncryptReq"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "zeroSSL" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.SSLProviderZeroSSLReq"
+          }
+        },
+        "required" : [ "availableInProjects", "default", "email", "googleTS", "kind", "letsEncrypt", "name", "zeroSSL" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.CreateSSLProviderResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.DeleteSSLProviderResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.GetSSLProviderResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.SSLProviderResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.ListSSLProviderResp" : {
+        "properties" : {
+          "data" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.SSLProviderResp"
+            },
+            "type" : "array"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.SSLProviderGoogleTSReq" : {
+        "properties" : {
+          "eabHmacKey" : {
+            "type" : "string"
+          },
+          "eabKid" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "eabHmacKey", "eabKid" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.SSLProviderGoogleTSResp" : {
+        "properties" : {
+          "eabHmacKey" : {
+            "type" : "string"
+          },
+          "eabKid" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "eabHmacKey", "eabKid" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.SSLProviderLetsEncryptReq" : {
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.SSLProviderLetsEncryptResp" : {
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.SSLProviderResp" : {
+        "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
+          "createdAt" : {
+            "type" : "string"
+          },
+          "default" : {
+            "type" : "boolean"
+          },
+          "defaultKeyType" : {
+            "type" : "string"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "expireAt" : {
+            "type" : "string"
+          },
+          "googleTS" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.SSLProviderGoogleTSResp"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "inherited" : {
+            "type" : "boolean"
+          },
+          "kind" : {
+            "type" : "string"
+          },
+          "letsEncrypt" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.SSLProviderLetsEncryptResp"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "secretMasked" : {
+            "type" : "boolean"
+          },
+          "status" : {
+            "type" : "string"
+          },
+          "type" : {
+            "type" : "string"
+          },
+          "updateVer" : {
+            "type" : "integer"
+          },
+          "updatedAt" : {
+            "type" : "string"
+          },
+          "zeroSSL" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.SSLProviderZeroSSLResp"
+          }
+        },
+        "required" : [ "createdAt", "defaultKeyType", "email", "id", "kind", "name", "status", "type", "updateVer", "updatedAt" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.SSLProviderZeroSSLReq" : {
+        "properties" : {
+          "eabHmacKey" : {
+            "type" : "string"
+          },
+          "eabKid" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "eabHmacKey", "eabKid" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.SSLProviderZeroSSLResp" : {
+        "properties" : {
+          "eabHmacKey" : {
+            "type" : "string"
+          },
+          "eabKid" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "eabHmacKey", "eabKid" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.UpdateSSLProviderReq" : {
+        "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
+          "default" : {
+            "type" : "boolean"
+          },
+          "defaultKeyType" : {
+            "type" : "string"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "googleTS" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.SSLProviderGoogleTSReq"
+          },
+          "kind" : {
+            "type" : "string"
+          },
+          "letsEncrypt" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.SSLProviderLetsEncryptReq"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "updateVer" : {
+            "type" : "integer"
+          },
+          "zeroSSL" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.SSLProviderZeroSSLReq"
+          }
+        },
+        "required" : [ "availableInProjects", "default", "email", "googleTS", "kind", "letsEncrypt", "name", "updateVer", "zeroSSL" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.UpdateSSLProviderResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.UpdateSSLProviderStatusReq" : {
+        "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
+          "default" : {
+            "type" : "boolean"
+          },
+          "expireAt" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string"
+          },
+          "updateVer" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "availableInProjects", "default", "expireAt", "status", "updateVer" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_sslprovideruc_sslproviderdto.UpdateSSLProviderStatusResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
@@ -35277,16 +36352,28 @@
         "required" : [ "meta" ],
         "type" : "object"
       },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_taskuc_taskdto.CancelTaskDataResp" : {
+        "properties" : {
+          "canceled" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "canceled" ],
+        "type" : "object"
+      },
       "github_com_localpaas_localpaas_localpaas_app_usecase_taskuc_taskdto.CancelTaskReq" : {
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_taskuc_taskdto.CancelTaskResp" : {
         "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_taskuc_taskdto.CancelTaskDataResp"
+          },
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
           }
         },
-        "required" : [ "meta" ],
+        "required" : [ "data", "meta" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_taskuc_taskdto.GetTaskResp" : {
@@ -36251,10 +37338,10 @@
         "x-enum-varnames" : [ "SeccompModeDefault", "SeccompModeUnconfined", "SeccompModeCustom" ]
       },
       "timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
         "format" : "int64",
         "type" : "integer",
-        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
+        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
       }
     },
     "securitySchemes" : {

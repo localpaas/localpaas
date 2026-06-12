@@ -25,6 +25,6 @@ type Service interface {
 		extraOpts ...bunex.SelectQueryOption) ([]*entity.Task, error)
 
 	// Cancel a task
-	CancelTask(ctx context.Context, db database.Tx, taskID string) error
+	CancelTask(ctx context.Context, db database.Tx, taskID string, validatingTargetID *string) (canceled bool, _ error)
 	CancelInProgressTask(ctx context.Context, taskID string) error
 }

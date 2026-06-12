@@ -15,18 +15,32 @@ func (h *Handler) GetAuthGlobalSettings(
 	action base.ActionType,
 	paramName string,
 ) (auth *basedto.Auth, itemID string, err error) {
+	return h.GetAuthGlobalSettingsAnyAction(ctx, resourceType, []base.ActionType{action}, paramName)
+}
+
+func (h *Handler) GetAuthGlobalSettingsAnyAction(
+	ctx *gin.Context,
+	resourceType base.ResourceType,
+	anyActions []base.ActionType,
+	paramName string,
+) (auth *basedto.Auth, itemID string, err error) {
 	if paramName != "" {
 		itemID, err = h.ParseStringParam(ctx, paramName)
 		if err != nil {
 			return
 		}
 	}
-	auth, err = h.AuthHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+	accessCheck := &permission.AccessCheck{
 		ResourceModule: base.ResourceModuleSettings,
 		ResourceType:   resourceType,
 		ResourceID:     itemID,
-		Action:         action,
-	})
+	}
+	if len(anyActions) == 1 {
+		accessCheck.Action = anyActions[0]
+	} else {
+		accessCheck.AnyOf = anyActions
+	}
+	auth, err = h.AuthHandler.GetCurrentAuth(ctx, accessCheck)
 	if err != nil {
 		return
 	}
@@ -57,6 +71,14 @@ func (h *Handler) GetAuthProjectSettings(
 	action base.ActionType,
 	paramName string,
 ) (auth *basedto.Auth, projectID, itemID string, err error) {
+	return h.GetAuthProjectSettingsAnyAction(ctx, []base.ActionType{action}, paramName)
+}
+
+func (h *Handler) GetAuthProjectSettingsAnyAction(
+	ctx *gin.Context,
+	anyActions []base.ActionType,
+	paramName string,
+) (auth *basedto.Auth, projectID, itemID string, err error) {
 	projectID, err = h.ParseStringParam(ctx, "projectID")
 	if err != nil {
 		return
@@ -67,22 +89,35 @@ func (h *Handler) GetAuthProjectSettings(
 			return
 		}
 	}
-	auth, err = h.AuthHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+	accessCheck := &permission.AccessCheck{
 		ResourceModule: base.ResourceModuleProject,
 		ResourceType:   base.ResourceTypeProject,
 		ResourceID:     projectID,
-		Action:         action,
-	})
+	}
+	if len(anyActions) == 1 {
+		accessCheck.Action = anyActions[0]
+	} else {
+		accessCheck.AnyOf = anyActions
+	}
+	auth, err = h.AuthHandler.GetCurrentAuth(ctx, accessCheck)
 	if err != nil {
 		return
 	}
 	return
 }
 
-//nolint:nakedret
 func (h *Handler) GetAuthAppSettings(
 	ctx *gin.Context,
 	action base.ActionType,
+	paramName string,
+) (auth *basedto.Auth, projectID, appID, itemID string, err error) {
+	return h.GetAuthAppSettingsAnyAction(ctx, []base.ActionType{action}, paramName)
+}
+
+//nolint:nakedret
+func (h *Handler) GetAuthAppSettingsAnyAction(
+	ctx *gin.Context,
+	anyActions []base.ActionType,
 	paramName string,
 ) (auth *basedto.Auth, projectID, appID, itemID string, err error) {
 	projectID, err = h.ParseStringParam(ctx, "projectID")
@@ -99,14 +134,19 @@ func (h *Handler) GetAuthAppSettings(
 			return
 		}
 	}
-	auth, err = h.AuthHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+	accessCheck := &permission.AccessCheck{
 		ResourceModule:     base.ResourceModuleProject,
 		ParentResourceType: base.ResourceTypeProject,
 		ParentResourceID:   projectID,
 		ResourceType:       base.ResourceTypeApp,
 		ResourceID:         appID,
-		Action:             action,
-	})
+	}
+	if len(anyActions) == 1 {
+		accessCheck.Action = anyActions[0]
+	} else {
+		accessCheck.AnyOf = anyActions
+	}
+	auth, err = h.AuthHandler.GetCurrentAuth(ctx, accessCheck)
 	if err != nil {
 		return
 	}

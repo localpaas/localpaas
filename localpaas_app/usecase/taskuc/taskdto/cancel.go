@@ -22,5 +22,10 @@ func (req *CancelTaskReq) Validate() apperrors.ValidationErrors {
 }
 
 type CancelTaskResp struct {
-	Meta *basedto.Meta `json:"meta"`
+	Meta *basedto.Meta       `json:"meta"`
+	Data *CancelTaskDataResp `json:"data"`
+}
+
+type CancelTaskDataResp struct {
+	Canceled bool `json:"canceled"`
 }

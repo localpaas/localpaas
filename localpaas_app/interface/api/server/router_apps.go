@@ -100,6 +100,7 @@ func (s *HTTPServer) registerAppRoutes(projectGroup *gin.RouterGroup) *gin.Route
 		// Sched job task group
 		schedJobGroup.GET("/:itemID/tasks", appSettingsHandler.ListAppSchedJobTask)
 		schedJobGroup.GET("/:itemID/tasks/:taskID", appSettingsHandler.GetAppSchedJobTask)
+		schedJobGroup.POST("/:itemID/tasks/:taskID/cancel", appSettingsHandler.CancelAppSchedJobTask)
 		schedJobGroup.GET("/:itemID/tasks/:taskID/logs", func(ctx *gin.Context) {
 			appSettingsHandler.GetAppSchedJobTaskLogs(ctx, s.websocket)
 		})

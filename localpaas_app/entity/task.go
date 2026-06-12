@@ -71,6 +71,10 @@ func (t *Task) IsNotStarted() bool {
 	return t.Status == base.TaskStatusNotStarted
 }
 
+func (t *Task) IsInProgress() bool {
+	return t.Status == base.TaskStatusInProgress
+}
+
 func (t *Task) IsDone() bool {
 	return t.Status == base.TaskStatusDone
 }
@@ -84,10 +88,7 @@ func (t *Task) IsCanceled() bool {
 }
 
 func (t *Task) CanCancel() bool {
-	if t.IsDone() || t.IsCanceled() || !t.CanRetry() {
-		return false
-	}
-	return true
+	return t.IsNotStarted() || t.IsInProgress()
 }
 
 func (t *Task) CanRetry() bool {

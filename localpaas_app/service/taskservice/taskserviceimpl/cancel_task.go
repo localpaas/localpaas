@@ -16,17 +16,21 @@ func (s *service) CancelTask(
 	ctx context.Context,
 	db database.Tx,
 	taskID string,
-) error {
+	validatingTargetID *string,
+) (canceled bool, err error) {
 	task, err := s.taskRepo.GetByID(ctx, db, "", taskID,
 		bunex.SelectFor("UPDATE OF task SKIP LOCKED"),
 	)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-		return apperrors.Wrap(err)
+		return false, apperrors.Wrap(err)
 	}
 
 	if task != nil {
+		if validatingTargetID != nil && *validatingTargetID != task.TargetID {
+			return false, apperrors.NewNotFound("Task").WithMsgLog("unmatched task target id")
+		}
 		if !task.CanCancel() {
-			return apperrors.New(apperrors.ErrActionNotAllowedByStatus)
+			return false, apperrors.New(apperrors.ErrActionNotAllowedByStatus)
 		}
 		task.Status = base.TaskStatusCanceled
 		task.UpdatedAt = timeutil.NowUTC()
@@ -34,18 +38,18 @@ func (s *service) CancelTask(
 			bunex.UpdateColumns("status", "updated_at"),
 		)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return false, apperrors.Wrap(err)
 		}
-		return nil
+		return true, nil
 	}
 
 	// Task is in-progress, send `cancel` command to the task executor
 	err = s.CancelInProgressTask(ctx, taskID)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return false, apperrors.Wrap(err)
 	}
 
-	return nil
+	return false, nil
 }
 
 func (s *service) CancelInProgressTask(

@@ -97,6 +97,52 @@ func (h *Handler) GetAppSchedJobTask(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
+// CancelAppSchedJobTask Cancels job task
+// @Summary Cancels job task
+// @Description Cancels job task
+// @Tags    app_settings
+// @Produce json
+// @Id      cancelAppSchedJobTask
+// @Param   projectID path string true "project ID"
+// @Param   appID path string true "app ID"
+// @Param   itemID path string true "setting ID"
+// @Param   taskID path string true "task ID"
+// @Param   body body schedjobdto.CancelSchedJobTaskReq true "request data"
+// @Success 200 {object} schedjobdto.CancelSchedJobTaskResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /projects/{projectID}/apps/{appID}/sched-jobs/{itemID}/tasks/{taskID}/cancel [post]
+func (h *Handler) CancelAppSchedJobTask(ctx *gin.Context) {
+	auth, projectID, appID, jobID, err := h.GetAuthAppSettings(ctx, base.ActionTypeExecute, "itemID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	taskID, err := h.ParseStringParam(ctx, "taskID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := schedjobdto.NewCancelSchedJobTaskReq()
+	req.TaskID = taskID
+	req.JobID = jobID
+	req.Scope = base.NewObjectScopeApp(appID, projectID)
+	if err = h.ParseAndValidateJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.SchedJobUC.CancelSchedJobTask(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
+}
+
 // GetAppSchedJobTaskLogs Gets logs of a sched-job task
 // @Summary Gets logs of a sched-job task
 // @Description Gets logs of a sched-job task
