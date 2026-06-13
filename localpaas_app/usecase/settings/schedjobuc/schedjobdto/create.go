@@ -79,7 +79,7 @@ func (req *ScheduleReq) validate(field string) (res []vld.Validator) {
 	if field != "" {
 		field += "."
 	}
-	res = append(res, basedto.ValidateValue(req.ToEntity().IsValid() == nil, field+"cronExpr|interval")...)
+	res = append(res, basedto.ValidateCond(req.ToEntity().IsValid() == nil, field+"cronExpr|interval")...)
 	res = append(res, basedto.ValidateTime(&req.InitialTime, true,
 		timeutil.NowUTC().Add(-timeutil.Dur365Days), time.Time{}, field+"initialTime")...)
 	return res

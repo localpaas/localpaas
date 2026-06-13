@@ -70,10 +70,10 @@ func (req *HealthcheckBaseReq) validate(field string) (res []vld.Validator) {
 		base.AllHealthcheckTypes, field+"healthcheckType")...)
 	switch req.HealthcheckType {
 	case base.HealthcheckTypeREST:
-		res = append(res, basedto.ValidateValue(req.REST != nil, field+"rest")...)
+		res = append(res, basedto.ValidateCond(req.REST != nil, field+"rest")...)
 		res = append(res, req.REST.validate(field+"rest")...)
 	case base.HealthcheckTypeGRPC:
-		res = append(res, basedto.ValidateValue(req.GRPC != nil, field+"grpc")...)
+		res = append(res, basedto.ValidateCond(req.GRPC != nil, field+"grpc")...)
 		res = append(res, req.GRPC.validate(field+"grpc")...)
 	}
 	return res
@@ -147,7 +147,7 @@ func (req *HealthcheckRESTReq) validate(field string) (res []vld.Validator) {
 	}
 	res = append(res, basedto.ValidateStr(&req.URL, true, 1, urlMaxLen, field+"url")...)
 	res = append(res, basedto.ValidateStrIn(&req.Method, true, base.AllHTTPMethods, field+"method")...)
-	res = append(res, basedto.ValidateValue(len(req.ReturnCode) > 0 || req.ReturnText != nil ||
+	res = append(res, basedto.ValidateCond(len(req.ReturnCode) > 0 || req.ReturnText != nil ||
 		req.ReturnJSON != nil, field+"returnCode|returnText|returnJSON")...)
 
 	if len(req.ReturnCode) > 0 {
@@ -155,7 +155,7 @@ func (req *HealthcheckRESTReq) validate(field string) (res []vld.Validator) {
 		for _, item := range items {
 			code, err := strconv.Atoi(strings.TrimSpace(item))
 			if err != nil || code < 1 || code > math.MaxInt32 {
-				res = append(res, basedto.ValidateValue(false, field+"returnCode")...)
+				res = append(res, basedto.ValidateCond(false, field+"returnCode")...)
 				break
 			} else {
 				req.returnCode = append(req.returnCode, code)
@@ -165,17 +165,17 @@ func (req *HealthcheckRESTReq) validate(field string) (res []vld.Validator) {
 
 	if req.ReturnText != nil && req.ReturnText.Regex != "" {
 		_, err := regexp.Compile(req.ReturnText.Regex)
-		res = append(res, basedto.ValidateValue(err == nil, field+"returnText.regex")...)
+		res = append(res, basedto.ValidateCond(err == nil, field+"returnText.regex")...)
 	}
 
 	if req.ReturnJSON != nil {
 		if req.ReturnJSON.Exact != "" {
 			err := json.Unmarshal(reflectutil.UnsafeStrToBytes(req.ReturnJSON.Exact), &req.ReturnJSON.exactJSON)
-			res = append(res, basedto.ValidateValue(err == nil, field+"returnJSON.exact")...)
+			res = append(res, basedto.ValidateCond(err == nil, field+"returnJSON.exact")...)
 		}
 		if req.ReturnJSON.Contain != "" {
 			err := json.Unmarshal(reflectutil.UnsafeStrToBytes(req.ReturnJSON.Contain), &req.ReturnJSON.containJSON)
-			res = append(res, basedto.ValidateValue(err == nil, field+"returnJSON.contain")...)
+			res = append(res, basedto.ValidateCond(err == nil, field+"returnJSON.contain")...)
 		}
 	}
 

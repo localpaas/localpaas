@@ -237,7 +237,7 @@ func (uc *UC) validateStorageSettingsBindMount(
 	if len(bindSettings.BaseDirs) > 0 {
 		contain, _ := fileutil.PathContain(bindSettings.BaseDirs, mnt.BindOptions.BaseDir)
 		if !contain {
-			return apperrors.New(apperrors.ErrSettingViolated).
+			return apperrors.New(apperrors.ErrSettingViolation).
 				WithParam("Name", fmt.Sprintf("Use of base dir '%v'", mnt.BindOptions.BaseDir))
 		}
 	}
@@ -246,7 +246,7 @@ func (uc *UC) validateStorageSettingsBindMount(
 	if subpathRequired != "" {
 		isSubpath, _ := fileutil.IsEqualOrSubpath(subpathRequired, mnt.BindOptions.Subpath)
 		if !isSubpath {
-			return apperrors.New(apperrors.ErrSettingViolated).
+			return apperrors.New(apperrors.ErrSettingViolation).
 				WithParam("Name", fmt.Sprintf("Use of subpath '%v'", mnt.BindOptions.Subpath))
 		}
 	}
@@ -270,7 +270,7 @@ func (uc *UC) validateStorageSettingsVolumeMount(
 
 	if len(volumeSettings.Volumes) > 0 &&
 		!gofn.Contain(volumeSettings.Volumes.ToIDStringSlice(), mnt.VolumeOptions.Volume) {
-		return apperrors.New(apperrors.ErrSettingViolated).
+		return apperrors.New(apperrors.ErrSettingViolation).
 			WithParam("Name", fmt.Sprintf("Use of volume '%v'", mnt.VolumeOptions.Volume))
 	}
 
@@ -278,7 +278,7 @@ func (uc *UC) validateStorageSettingsVolumeMount(
 	if subpathRequired != "" {
 		isSubpath, _ := fileutil.IsEqualOrSubpath(subpathRequired, mnt.VolumeOptions.Subpath)
 		if !isSubpath {
-			return apperrors.New(apperrors.ErrSettingViolated).
+			return apperrors.New(apperrors.ErrSettingViolation).
 				WithParam("Name", fmt.Sprintf("Use of subpath '%v'", mnt.VolumeOptions.Subpath))
 		}
 	}
@@ -302,7 +302,7 @@ func (uc *UC) validateStorageSettingsClusterVolumeMount(
 
 	if len(volumeSettings.Volumes) > 0 &&
 		!gofn.Contain(volumeSettings.Volumes.ToIDStringSlice(), mnt.ClusterOptions.Volume) {
-		return apperrors.New(apperrors.ErrSettingViolated).
+		return apperrors.New(apperrors.ErrSettingViolation).
 			WithParam("Name", fmt.Sprintf("Use of volume '%v'", mnt.ClusterOptions.Volume))
 	}
 
@@ -310,7 +310,7 @@ func (uc *UC) validateStorageSettingsClusterVolumeMount(
 	if subpathRequired != "" {
 		isSubpath, _ := fileutil.IsEqualOrSubpath(subpathRequired, mnt.ClusterOptions.Subpath)
 		if !isSubpath {
-			return apperrors.New(apperrors.ErrSettingViolated).
+			return apperrors.New(apperrors.ErrSettingViolation).
 				WithParam("Name", fmt.Sprintf("Use of subpath '%v'", mnt.ClusterOptions.Subpath))
 		}
 	}
@@ -337,7 +337,7 @@ func (uc *UC) validateStorageSettingsTmpfsMount(
 		size = int64(mnt.TmpfsOptions.Size)
 	}
 	if tmpfsSettings.MaxSize > 0 && size > int64(tmpfsSettings.MaxSize) {
-		return apperrors.New(apperrors.ErrSettingViolated).
+		return apperrors.New(apperrors.ErrSettingViolation).
 			WithParam("Name", fmt.Sprintf("Tmpfs size '%v'", size))
 	}
 

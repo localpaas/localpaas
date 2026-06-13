@@ -2,7 +2,6 @@ package appsettingsuc
 
 import (
 	"context"
-	"errors"
 	"time"
 
 	"github.com/tiendc/gofn"
@@ -13,7 +12,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/domainhelper"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/ulid"
@@ -95,7 +93,7 @@ func (uc *UC) loadAppHttpSettingsForUpdate(
 	newHttpSettings := req.ToEntity()
 	data.NewHttpSettings = newHttpSettings
 
-	// Make sure all reference settings used in this settings exist actively
+	// Make sure all reference settings used in these settings exist actively
 	data.RefObjects, err = uc.settingService.LoadReferenceObjectsByIDs(ctx, db, app.GetSettingScope(),
 		true, true, newHttpSettings.GetRefObjectIDs())
 	if err != nil {
@@ -105,41 +103,16 @@ func (uc *UC) loadAppHttpSettingsForUpdate(
 	// Active domains of the app need to validate
 	activeDomains := newHttpSettings.GetActiveDomainNames()
 
-	// Load domain settings in project
-	domainSttg, err := uc.settingRepo.GetSingle(ctx, db, app.GetSettingScope(),
-		base.SettingTypeDomainSettings, true)
-	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
+	// Verify domains are allowed in project
+	err = uc.domainService.VerifyProjectDomains(ctx, db, app.ProjectID, activeDomains)
+	if err != nil {
 		return apperrors.Wrap(err)
-	}
-	for domainSttg != nil {
-		domainSettings := domainSttg.MustAsDomainSettings()
-		if len(domainSettings.AllowedDomains) == 0 {
-			break
-		}
-		for _, domain := range activeDomains {
-			if !domainhelper.IsDomainAllowed(domain, domainSettings.AllowedDomains) {
-				return apperrors.New(apperrors.ErrSettingViolated).
-					WithParam("Name", apperrors.Fmt("Use of domain '%v'", domain))
-			}
-		}
-		break //nolint:staticcheck
 	}
 
 	// Make sure all domains used by the app are not hold by any other app
-	if len(activeDomains) > 0 {
-		conflictDomains, _, err := uc.resLinkRepo.List(ctx, db, nil,
-			bunex.SelectWhere("res_link.src_type = ?", base.ResourceTypeApp),
-			bunex.SelectWhere("res_link.src_id != ?", app.ID),
-			bunex.SelectWhere("res_link.dst_type = ?", base.ResourceTypeDomain),
-			bunex.SelectWhereIn("res_link.dst_id IN (?)", activeDomains...),
-			bunex.SelectLimit(1),
-		)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
-		if len(conflictDomains) > 0 {
-			return apperrors.NewInUse(apperrors.Fmt("Domain '%v'", conflictDomains[0].DstID))
-		}
+	err = uc.domainService.VerifyDomainsAvailable(ctx, db, activeDomains, []string{app.ID})
+	if err != nil {
+		return apperrors.Wrap(err)
 	}
 
 	// Calculate domain links update

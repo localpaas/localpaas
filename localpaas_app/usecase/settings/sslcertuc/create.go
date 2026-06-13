@@ -4,7 +4,9 @@ import (
 	"context"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
+	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/sslcertuc/sslcertdto"
@@ -21,6 +23,16 @@ func (uc *UC) CreateSSLCert(
 		VerifyingName:   req.Domain,
 		VerifyingRefIDs: sslCert.GetRefObjectIDs(),
 		Version:         currentSettingVersion,
+		AfterLoading: func(
+			ctx context.Context,
+			db database.Tx,
+			data *settings.CreateSettingData,
+		) error {
+			if err := uc.verifyDomainInProject(ctx, db, req.Scope, sslCert); err != nil {
+				return apperrors.Wrap(err)
+			}
+			return nil
+		},
 		PrepareCreation: func(
 			ctx context.Context,
 			db database.Tx,
@@ -60,4 +72,20 @@ func (uc *UC) CreateSSLCert(
 	return &sslcertdto.CreateSSLCertResp{
 		Data: resp.Data,
 	}, nil
+}
+
+func (uc *UC) verifyDomainInProject(
+	ctx context.Context,
+	db database.IDB,
+	scope *base.ObjectScope,
+	sslCert *entity.SSLCert,
+) error {
+	if scope.ProjectID == "" {
+		return nil
+	}
+	err := uc.domainService.VerifyProjectDomains(ctx, db, scope.ProjectID, []string{sslCert.Domain})
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
 }

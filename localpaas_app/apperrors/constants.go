@@ -81,7 +81,7 @@ var (
 	ErrUnconfigured                 = errors.New("ERR_UNCONFIGURED")
 	ErrSettingInactive              = errors.New("ERR_SETTING_INACTIVE")
 	ErrSettingMissing               = errors.New("ERR_SETTING_MISSING")
-	ErrSettingViolated              = errors.New("ERR_SETTING_VIOLATED")
+	ErrSettingViolation             = errors.New("ERR_SETTING_VIOLATION")
 	ErrSettingUnallowed             = errors.New("ERR_SETTING_UNALLOWED")
 	ErrGlobalSettingRequired        = errors.New("ERR_GLOBAL_SETTING_REQUIRED")
 	ErrScopeSettingRequired         = errors.New("ERR_SCOPE_SETTING_REQUIRED")
@@ -207,7 +207,7 @@ var errorStatusMap = map[error]int{
 	ErrUnconfigured:                 http.StatusUnprocessableEntity,
 	ErrSettingInactive:              http.StatusUnprocessableEntity,
 	ErrSettingMissing:               http.StatusUnprocessableEntity,
-	ErrSettingViolated:              http.StatusUnprocessableEntity,
+	ErrSettingViolation:             http.StatusUnprocessableEntity,
 	ErrSettingUnallowed:             http.StatusUnprocessableEntity,
 	ErrGlobalSettingRequired:        http.StatusUnprocessableEntity,
 	ErrScopeSettingRequired:         http.StatusUnprocessableEntity,

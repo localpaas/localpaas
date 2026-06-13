@@ -54,10 +54,8 @@ const (
 	SSLSelfSignedValidPeriodDefault   = timeutil.Day * 365
 	SSLSelfSignedRenewalPeriodDefault = timeutil.Day * 30
 
-	DomainNameMaxLen = 100
-
 	SSLExpirationFromFirstRenewableDate = timeutil.Day * 30
 
-	ZeroSSLACMEURL  = "https://acme.zerossl.com/v2/DV90"
-	GoogleTSACMEURL = "https://dv.acme-v02.api.pki.goog/directory"
+	SSLAcmeCADirURLZeroSSL  = "https://acme.zerossl.com/v2/DV90"
+	SSLAcmeCADirURLGoogleTS = "https://dv.acme-v02.api.pki.goog/directory"
 )

@@ -23,17 +23,13 @@ func (uc *UC) UpdateSSLCert(
 		VerifyingName:   req.Domain,
 		VerifyingRefIDs: newCert.GetRefObjectIDs(),
 		AfterLoading: func(ctx context.Context, db database.Tx, data *settings.UpdateSettingData) error {
+			if err := uc.verifyDomainInProject(ctx, db, req.Scope, newCert); err != nil {
+				return apperrors.Wrap(err)
+			}
+
 			currCert, err := data.Setting.AsSSLCert()
 			if err != nil {
 				return apperrors.Wrap(err)
-			}
-			// Not allow to change cert type
-			if currCert.CertType != newCert.CertType {
-				return apperrors.NewNonEditable("Certificate type")
-			}
-			// Not allow to change provider
-			if currCert.Provider.ID != newCert.Provider.ID {
-				return apperrors.NewNonEditable("Certificate provider")
 			}
 			switch newCert.CertType {
 			case base.SSLCertTypeLetsEncrypt, base.SSLCertTypeZeroSSL, base.SSLCertTypeGoogleTS:

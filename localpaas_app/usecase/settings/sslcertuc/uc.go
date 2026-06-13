@@ -3,6 +3,7 @@ package sslcertuc
 import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/service/domainservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/sslservice"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 )
@@ -14,15 +15,18 @@ const (
 
 type UC struct {
 	*settings.BaseUC
-	sslService sslservice.Service
+	sslService    sslservice.Service
+	domainService domainservice.Service
 }
 
 func New(
 	baseUC *settings.BaseUC,
 	sslService sslservice.Service,
+	domainService domainservice.Service,
 ) *UC {
 	return &UC{
-		BaseUC:     baseUC,
-		sslService: sslService,
+		BaseUC:        baseUC,
+		sslService:    sslService,
+		domainService: domainService,
 	}
 }

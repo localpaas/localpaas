@@ -113,13 +113,13 @@ func (req *IMServiceBaseReq) validate(field string) (res []vld.Validator) {
 	}
 	switch req.Kind {
 	case base.IMServiceKindSlack:
-		res = append(res, basedto.ValidateValue(req.Slack != nil, field+"slack")...)
+		res = append(res, basedto.ValidateCond(req.Slack != nil, field+"slack")...)
 		res = append(res, req.Slack.validate(field+"slack")...)
 	case base.IMServiceKindDiscord:
-		res = append(res, basedto.ValidateValue(req.Discord != nil, field+"discord")...)
+		res = append(res, basedto.ValidateCond(req.Discord != nil, field+"discord")...)
 		res = append(res, req.Discord.validate(field+"discord")...)
 	case base.IMServiceKindTelegram:
-		res = append(res, basedto.ValidateValue(req.Telegram != nil, field+"telegram")...)
+		res = append(res, basedto.ValidateCond(req.Telegram != nil, field+"telegram")...)
 		res = append(res, req.Telegram.validate(field+"telegram")...)
 	}
 	return res

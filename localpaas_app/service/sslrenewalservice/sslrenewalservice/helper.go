@@ -49,11 +49,11 @@ func (s *service) sslGetAcmeClient(
 		case base.SSLCertTypeLetsEncrypt:
 			// Do nothing for now
 		case base.SSLCertTypeZeroSSL:
-			acmeCfg.CADirURL = base.ZeroSSLACMEURL
+			acmeCfg.CADirURL = base.SSLAcmeCADirURLZeroSSL
 			acmeCfg.EABKid = provider.ZeroSSL.EABKid
 			acmeCfg.EABHmacKey = provider.ZeroSSL.EABHmacKey.MustGetPlain()
 		case base.SSLCertTypeGoogleTS:
-			acmeCfg.CADirURL = base.GoogleTSACMEURL
+			acmeCfg.CADirURL = base.SSLAcmeCADirURLGoogleTS
 			acmeCfg.EABKid = provider.GoogleTS.EABKid
 			acmeCfg.EABHmacKey = provider.GoogleTS.EABHmacKey.MustGetPlain()
 		case base.SSLCertTypeSelfSigned, base.SSLCertTypeCustom:

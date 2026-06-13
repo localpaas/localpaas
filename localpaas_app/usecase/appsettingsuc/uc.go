@@ -6,6 +6,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/appdeploymentservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/appservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/clusterservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/domainservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/envvarservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/networkservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/projectservice"
@@ -34,6 +35,7 @@ type UC struct {
 	envVarService        envvarservice.Service
 	traefikService       traefikservice.Service
 	clusterService       clusterservice.Service
+	domainService        domainservice.Service
 	dockerManager        docker.Manager
 	taskQueue            queue.TaskQueue
 }
@@ -55,6 +57,7 @@ func New(
 	envVarService envvarservice.Service,
 	traefikService traefikservice.Service,
 	clusterService clusterservice.Service,
+	domainService domainservice.Service,
 	dockerManager docker.Manager,
 	taskQueue queue.TaskQueue,
 ) *UC {
@@ -75,6 +78,7 @@ func New(
 		envVarService:        envVarService,
 		traefikService:       traefikService,
 		clusterService:       clusterService,
+		domainService:        domainService,
 		dockerManager:        dockerManager,
 		taskQueue:            taskQueue,
 	}

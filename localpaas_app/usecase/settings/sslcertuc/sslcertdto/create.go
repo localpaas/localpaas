@@ -84,9 +84,11 @@ func (req *SSLCertBaseReq) validate(field string) (res []vld.Validator) {
 
 	cfg := config.Current
 	requireCert := req.CertType == base.SSLCertTypeCustom
-	wildcardAllowed := req.CertType != base.SSLCertTypeLetsEncrypt
+	wildcardAllowed := req.CertType == base.SSLCertTypeCustom || req.CertType == base.SSLCertTypeSelfSigned
+	requireProvider := req.CertType == base.SSLCertTypeZeroSSL || req.CertType == base.SSLCertTypeGoogleTS
 
 	res = append(res, basedto.ValidateStrIn(&req.CertType, true, base.AllSSLCertTypes, field+"certType")...)
+	res = append(res, basedto.ValidateObjectIDReq(&req.Provider, requireProvider, field+"provider")...)
 	res = append(res, basedto.ValidateDomain(&req.Domain, true, base.DomainNameMaxLen, wildcardAllowed, field+"domain")...)
 	res = append(res, basedto.ValidateStr(&req.Certificate, requireCert, 1, keyMaxLen, field+"certificate")...)
 	res = append(res, basedto.ValidateStr(&req.PrivateKey, requireCert, 1, keyMaxLen, field+"privateKey")...)

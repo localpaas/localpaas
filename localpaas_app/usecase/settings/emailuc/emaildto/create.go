@@ -118,10 +118,10 @@ func (req *EmailBaseReq) validate(field string) (res []vld.Validator) {
 	}
 	switch req.Kind {
 	case base.EmailKindSMTP:
-		res = append(res, basedto.ValidateValue(req.SMTP != nil, field+"smtp")...)
+		res = append(res, basedto.ValidateCond(req.SMTP != nil, field+"smtp")...)
 		res = append(res, req.SMTP.validate(field+"smtp")...)
 	case base.EmailKindHTTP:
-		res = append(res, basedto.ValidateValue(req.HTTP != nil, field+"http")...)
+		res = append(res, basedto.ValidateCond(req.HTTP != nil, field+"http")...)
 		res = append(res, req.HTTP.validate(field+"http")...)
 	}
 	return res

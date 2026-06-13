@@ -83,7 +83,7 @@ func ValidateObjectSliceBy[T, A comparable, S ~[]T](s S, required, unique bool, 
 	return result
 }
 
-func ValidateValue(mustCond bool, field string) (result []vld.Validator) {
+func ValidateCond(mustCond bool, field string) (result []vld.Validator) {
 	result = append(result,
 		vld.Must(mustCond).OnError(
 			vld.SetField(field, nil),

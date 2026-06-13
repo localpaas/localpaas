@@ -12,7 +12,7 @@ import (
 
 const (
 	eabKidMaxLen     = 100
-	eabHmacKeyMaxLen = 100
+	eabHmacKeyMaxLen = 200
 )
 
 type CreateSSLProviderReq struct {
@@ -112,13 +112,13 @@ func (req *SSLProviderBaseReq) validate(field string) (res []vld.Validator) {
 	}
 	switch req.Kind {
 	case base.SSLProviderLetsEncrypt:
-		res = append(res, basedto.ValidateValue(req.LetsEncrypt != nil, field+"letsEncrypt")...)
+		res = append(res, basedto.ValidateCond(req.LetsEncrypt != nil, field+"letsEncrypt")...)
 		res = append(res, req.LetsEncrypt.validate(field+"letsEncrypt")...)
 	case base.SSLProviderZeroSSL:
-		res = append(res, basedto.ValidateValue(req.ZeroSSL != nil, field+"zeroSSL")...)
+		res = append(res, basedto.ValidateCond(req.ZeroSSL != nil, field+"zeroSSL")...)
 		res = append(res, req.ZeroSSL.validate(field+"zeroSSL")...)
 	case base.SSLProviderGoogleTS:
-		res = append(res, basedto.ValidateValue(req.GoogleTS != nil, field+"googleTS")...)
+		res = append(res, basedto.ValidateCond(req.GoogleTS != nil, field+"googleTS")...)
 		res = append(res, req.GoogleTS.validate(field+"googleTS")...)
 	}
 	return res
