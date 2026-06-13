@@ -55,8 +55,8 @@ func (s *service) SysUpdate(
 			task.Status = base.TaskStatusDone
 		}
 
-		// Send result notifications (not count its error if happens)
-		_ = s.sendResultNotifications(ctx, db, data)
+		// Send result notifications
+		s.sendResultNotifications(ctx, db, data)
 	}()
 	defer funcutil.EnsureNoPanic(&err) // Early catch panic before the above defers
 
@@ -180,15 +180,15 @@ func (s *service) sendResultNotifications(
 	ctx context.Context,
 	db database.IDB,
 	data *sysUpdateData,
-) error {
+) {
 	task := data.Task
 	if task.IsDone() || task.IsFailedCompletely() {
 		err := s.notifyForSystemUpdate(ctx, db, data)
 		if err != nil {
-			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Failed to send system update notification"+
-				" with error: "+err.Error(), tasklog.TsNow))
-			return apperrors.Wrap(err)
+			_ = data.LogStore.Add(ctx,
+				tasklog.NewOutFrame("---------------------------------", tasklog.TsNow),
+				tasklog.NewOutFrame("Failed to send system update notification with error: "+err.Error(),
+					tasklog.TsNow))
 		}
 	}
-	return nil
 }

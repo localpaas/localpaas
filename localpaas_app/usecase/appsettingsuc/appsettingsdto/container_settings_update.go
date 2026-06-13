@@ -24,7 +24,7 @@ func (req *UpdateAppContainerSettingsReq) Validate() apperrors.ValidationErrors 
 	var validators []vld.Validator
 	validators = append(validators, basedto.ValidateID(&req.ProjectID, true, "projectId")...)
 	validators = append(validators, basedto.ValidateID(&req.AppID, true, "appId")...)
-	// TODO: validate other input
+	// TODO: add validation
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 

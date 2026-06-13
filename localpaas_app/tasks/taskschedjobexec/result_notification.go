@@ -90,7 +90,7 @@ func (e *Executor) buildNotificationMsgData(
 	}
 	switch {
 	case data.App != nil:
-		msgData.DashboardLink = config.Current.DashboardAppSchedTaskDetailsURL(data.App.ID, data.App.ProjectID,
+		msgData.DashboardLink = config.Current.DashboardAppSchedTaskDetailsURL(data.App.ProjectID, data.App.ID,
 			data.SchedJob.ID, data.Task.ID)
 	case data.Project != nil:
 		msgData.DashboardLink = config.Current.DashboardProjectSchedTaskDetailsURL(data.Project.ID,

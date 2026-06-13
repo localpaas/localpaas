@@ -33,10 +33,11 @@ func (cfg *Config) DashboardPasswordResetURL(userID, token string) string {
 		fmt.Sprintf("?userID=%s&token=%s", userID, token)
 }
 
-// Deployments
+// App deployments
 
-func (cfg *Config) DashboardDeploymentDetailsURL(deploymentID string) string {
-	return gofn.Must(url.JoinPath(cfg.BaseURL, "deployments", deploymentID)) // TODO: update this
+func (cfg *Config) DashboardAppDeploymentDetailsURL(appID, projectID, deploymentID string) string {
+	return gofn.Must(url.JoinPath(cfg.BaseURL, "projects", projectID, "apps", appID,
+		"deployments", deploymentID))
 }
 
 // Scheduled jobs
@@ -46,9 +47,9 @@ func (cfg *Config) DashboardGlobalSchedTaskDetailsURL(schedJobID, taskID string)
 		"tasks", taskID)) // TODO: update this
 }
 
-func (cfg *Config) DashboardAppSchedTaskDetailsURL(appID, projectID, schedJobID, taskID string) string {
+func (cfg *Config) DashboardAppSchedTaskDetailsURL(projectID, appID, schedJobID, taskID string) string {
 	return gofn.Must(url.JoinPath(cfg.BaseURL, "projects", projectID, "apps", appID,
-		"sched-jobs", schedJobID, "tasks", taskID)) // TODO: update this
+		"sched-jobs", schedJobID, "tasks", taskID))
 }
 
 func (cfg *Config) DashboardProjectSchedTaskDetailsURL(projectID, schedJobID, taskID string) string {
@@ -59,11 +60,11 @@ func (cfg *Config) DashboardProjectSchedTaskDetailsURL(projectID, schedJobID, ta
 // Github Apps
 
 func (cfg *Config) DashboardGlobalGithubAppsURL() string {
-	return gofn.Must(url.JoinPath(cfg.BaseURL, "settings/github-apps"))
+	return gofn.Must(url.JoinPath(cfg.BaseURL, "sources/github-apps"))
 }
 
 func (cfg *Config) DashboardProjectGithubAppsURL(projectID string) string {
-	return gofn.Must(url.JoinPath(cfg.BaseURL, "projects", projectID, "github-apps"))
+	return gofn.Must(url.JoinPath(cfg.BaseURL, "projects", projectID, "provider-settings/github-apps"))
 }
 
 // Health checks

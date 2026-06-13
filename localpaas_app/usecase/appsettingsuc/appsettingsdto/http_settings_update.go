@@ -81,8 +81,7 @@ func (req *DomainReq) validate(field string) (res []vld.Validator) {
 	res = append(res, basedto.ValidateDomain(&req.DomainRedirect, false, base.DomainNameMaxLen,
 		false, field+"domainRedirect")...)
 	res = append(res, basedto.ValidatePort(&req.ContainerPort, true, 1, field+"containerPort")...)
-	// TODO: validate other config
-	// TODO: validate paths
+	// TODO: add validation for others
 	return res
 }
 

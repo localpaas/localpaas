@@ -237,8 +237,10 @@ func (s *service) onPostTransaction(
 	if data.Task.IsDone() || data.Task.IsFailedCompletely() {
 		err := s.notifyForDeployment(ctx, db, data)
 		if err != nil {
-			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame("Failed to send deployment notification"+
-				" with error: "+err.Error(), tasklog.TsNow))
+			_ = data.LogStore.Add(ctx,
+				tasklog.NewOutFrame("---------------------------------", tasklog.TsNow),
+				tasklog.NewOutFrame("Failed to send deployment notification with error: "+err.Error(),
+					tasklog.TsNow))
 		}
 	}
 }

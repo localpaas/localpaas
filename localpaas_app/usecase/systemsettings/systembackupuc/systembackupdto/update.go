@@ -110,7 +110,7 @@ func (req *SystemBackupCloudStorageReq) validate(field string) (res []vld.Valida
 		field += "."
 	}
 	res = append(res, basedto.ValidateID(&req.ID, false, field+"id")...)
-	// TODO: validate `destinationDir`
+	// TODO: add validation
 	return res
 }
 

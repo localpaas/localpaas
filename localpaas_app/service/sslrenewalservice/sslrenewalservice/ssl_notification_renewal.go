@@ -79,7 +79,7 @@ func (s *service) sslBuildRenewalNotificationMsgData(
 
 	switch {
 	case app != nil:
-		msgData.DashboardLink = config.Current.DashboardAppSchedTaskDetailsURL(app.ID, app.ProjectID,
+		msgData.DashboardLink = config.Current.DashboardAppSchedTaskDetailsURL(app.ProjectID, app.ID,
 			data.SchedJob.ID, data.Task.ID)
 	case project != nil:
 		msgData.DashboardLink = config.Current.DashboardProjectSchedTaskDetailsURL(project.ID,

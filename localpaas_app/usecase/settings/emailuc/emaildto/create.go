@@ -108,7 +108,7 @@ func (r *EmailHTTP) validate(field string) (res []vld.Validator) {
 	}
 	res = append(res, basedto.ValidateStr(&r.Endpoint, true, 1, urlMaxLen, field+"endpoint")...)
 	res = append(res, basedto.ValidateStrIn(&r.Method, true, base.AllHTTPMethods, field+"method")...)
-	// TODO: add more validation
+	// TODO: add validation
 	return res
 }
 

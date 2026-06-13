@@ -26,7 +26,7 @@ func (req *UpdateAppServiceSettingsReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, basedto.ValidateID(&req.ProjectID, true, "projectId")...)
 	validators = append(validators, basedto.ValidateID(&req.AppID, true, "appId")...)
-	// TODO: validate env var input
+	// TODO: add validation
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 

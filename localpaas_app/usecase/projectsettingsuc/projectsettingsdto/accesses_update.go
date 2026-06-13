@@ -26,7 +26,7 @@ func NewUpdateUserAccessesReq() *UpdateUserAccessesReq {
 func (req *UpdateUserAccessesReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, basedto.ValidateID(&req.ProjectID, true, "projectId")...)
-	// TODO: validate user accesses
+	// TODO: add validation
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 
