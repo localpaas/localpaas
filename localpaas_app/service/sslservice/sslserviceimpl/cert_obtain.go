@@ -24,7 +24,7 @@ func (s *service) ObtainCert(
 	ssl := sslSetting.MustAsSSLCert()
 	switch ssl.CertType {
 	case base.SSLCertTypeLetsEncrypt, base.SSLCertTypeZeroSSL, base.SSLCertTypeGoogleTS:
-		updated, err = s.obtainCertByACME(ctx, sslSetting, refObjects)
+		updated, err = s.obtainCertByAcme(ctx, sslSetting, refObjects)
 	case base.SSLCertTypeSelfSigned:
 		updated, err = s.obtainCertSelfSigned(ctx, sslSetting)
 	case base.SSLCertTypeCustom:
@@ -47,7 +47,7 @@ func (s *service) ObtainCert(
 	return updated, nil
 }
 
-func (s *service) obtainCertByACME(
+func (s *service) obtainCertByAcme(
 	ctx context.Context,
 	sslSetting *entity.Setting,
 	refObjects *entity.RefObjects,

@@ -67,7 +67,7 @@ func NewClient(cfg ACMEConfig) (client *Client, err error) {
 		PrivateKey: cfg.UserPrivKey,
 	}
 	legoCfg := lego.NewConfig(&user)
-	if legoCfg.CADirURL != "" {
+	if cfg.CADirURL != "" {
 		legoCfg.CADirURL = cfg.CADirURL // Custom ACME endpoint
 	}
 

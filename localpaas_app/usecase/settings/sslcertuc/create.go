@@ -44,7 +44,7 @@ func (uc *UC) CreateSSLCert(
 				return apperrors.Wrap(err)
 			}
 
-			// Save SSL cert/key files in a directory for using later
+			// Save SSL cert/key files in a directory with forceRecreate=true (for using later)
 			err = uc.sslService.WriteCertFiles(true, pData.Setting)
 			if err != nil {
 				return apperrors.Wrap(err)
