@@ -39,6 +39,11 @@ func (uc *UC) UpdateAppHttpSettings(
 			return apperrors.Wrap(err)
 		}
 
+		err = uc.persistAppHttpSettingsDomainLinks(ctx, db, data)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+
 		err = uc.applyAppHttpSettings(ctx, data)
 		if err != nil {
 			return apperrors.Wrap(err)
@@ -57,9 +62,6 @@ type updateAppHttpSettingsData struct {
 	HttpSettings    *entity.Setting
 	NewHttpSettings *entity.AppHttpSettings
 	RefObjects      *entity.RefObjects
-
-	DomainsToDelete []*entity.ResLink
-	DomainsToAdd    []string
 }
 
 func (uc *UC) loadAppHttpSettingsForUpdate(
@@ -74,10 +76,6 @@ func (uc *UC) loadAppHttpSettingsForUpdate(
 		bunex.SelectRelation("Project"),
 		bunex.SelectRelation("Settings",
 			bunex.SelectWhere("setting.type = ?", base.SettingTypeAppHttp),
-		),
-		bunex.SelectRelation("DstResLinks",
-			// NOTE: for now, we only need domain links
-			bunex.SelectWhereIn("res_link.dst_type IN (?)", base.ResourceTypeDomain),
 		),
 	)
 	if err != nil {
@@ -115,26 +113,6 @@ func (uc *UC) loadAppHttpSettingsForUpdate(
 		return apperrors.Wrap(err)
 	}
 
-	// Calculate domain links update
-	mapCurrentDomainLinks := make(map[string]*entity.ResLink, len(app.DstResLinks))
-	for _, domainLink := range app.DstResLinks {
-		if domainLink.DstType != base.ResourceTypeDomain {
-			continue
-		}
-		mapCurrentDomainLinks[domainLink.DstID] = domainLink
-	}
-	for _, domain := range newHttpSettings.GetActiveDomainNames() {
-		domainLink := mapCurrentDomainLinks[domain]
-		if domainLink == nil {
-			data.DomainsToAdd = append(data.DomainsToAdd, domain)
-		} else {
-			delete(mapCurrentDomainLinks, domain)
-		}
-	}
-	for _, domainLink := range mapCurrentDomainLinks {
-		data.DomainsToDelete = append(data.DomainsToDelete, domainLink)
-	}
-
 	return nil
 }
 
@@ -164,20 +142,20 @@ func (uc *UC) prepareUpdatingAppHttpSettings(
 	setting.ExpireAt = time.Time{}
 	setting.MustSetData(data.NewHttpSettings)
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
+}
 
-	// Domain links
-	for _, domainLink := range data.DomainsToDelete {
-		domainLink.DeletedAt = timeNow
-		persistingData.UpsertingResLinks = append(persistingData.UpsertingResLinks, domainLink)
+func (uc *UC) persistAppHttpSettingsDomainLinks(
+	ctx context.Context,
+	db database.Tx,
+	data *updateAppHttpSettingsData,
+) error {
+	domainNames := data.NewHttpSettings.GetActiveDomainNames()
+	err := uc.resLinkService.SetLinks(ctx, db, base.ResourceTypeApp, data.App.ID,
+		base.ResourceTypeDomain, domainNames)
+	if err != nil {
+		return apperrors.Wrap(err)
 	}
-	for _, domain := range data.DomainsToAdd {
-		persistingData.UpsertingResLinks = append(persistingData.UpsertingResLinks, &entity.ResLink{
-			SrcType: base.ResourceTypeApp,
-			SrcID:   app.ID,
-			DstType: base.ResourceTypeDomain,
-			DstID:   domain,
-		})
-	}
+	return nil
 }
 
 func (uc *UC) applyAppHttpSettings(

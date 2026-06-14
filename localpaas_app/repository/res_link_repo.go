@@ -30,7 +30,7 @@ type ResLinkRepo interface {
 	UpsertMulti(ctx context.Context, db database.IDB, resLinks []*entity.ResLink, conflictCols, updateCols []string,
 		opts ...bunex.InsertQueryOption) error
 
-	DeleteAllBySourceIDs(ctx context.Context, db database.IDB, sourceType base.SubjectType, sourceIDs []string,
+	DeleteAllBySourceIDs(ctx context.Context, db database.IDB, sourceType base.ResourceType, sourceIDs []string,
 		opts ...bunex.DeleteQueryOption) error
 	DeleteHard(ctx context.Context, db database.IDB, opts ...bunex.DeleteQueryOption) error
 }
@@ -136,7 +136,7 @@ func (repo *resLinkRepo) UpsertMulti(ctx context.Context, db database.IDB, resLi
 }
 
 func (repo *resLinkRepo) DeleteAllBySourceIDs(ctx context.Context, db database.IDB,
-	sourceType base.SubjectType, sourceIDs []string, opts ...bunex.DeleteQueryOption) error {
+	sourceType base.ResourceType, sourceIDs []string, opts ...bunex.DeleteQueryOption) error {
 	if len(sourceIDs) == 0 {
 		return nil
 	}

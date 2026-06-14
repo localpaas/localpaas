@@ -41,6 +41,12 @@ func (uc *UC) UpdateAppDeploymentSettings(
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
+
+		err = uc.persistAppDeploymentSettingsRepoLinks(ctx, db, data)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+
 		return nil
 	})
 	if err != nil {
@@ -62,9 +68,6 @@ type updateAppDeploymentSettingsData struct {
 	RegistryAuth          *entity.Setting
 	Errors                []string // stores errors
 	Warnings              []string // stores warnings
-
-	RepoLinksToDelete []*entity.ResLink
-	RepoLinksToAdd    []string
 }
 
 func (uc *UC) loadAppDeploymentSettingsForUpdate(
@@ -81,10 +84,6 @@ func (uc *UC) loadAppDeploymentSettingsForUpdate(
 		),
 		bunex.SelectRelation("Settings",
 			bunex.SelectWhere("setting.type = ?", base.SettingTypeAppDeployment),
-		),
-		bunex.SelectRelation("DstResLinks",
-			// NOTE: for now, we only need repo links
-			bunex.SelectWhereIn("res_link.dst_type IN (?)", base.ResourceTypeRepo),
 		),
 	)
 	if err != nil {
@@ -121,27 +120,6 @@ func (uc *UC) loadAppDeploymentSettingsForUpdate(
 		if isMultiNode && newDeploymentSettings.RepoSource.PushToRegistry.ID == "" {
 			return apperrors.Wrap(apperrors.ErrMultiNodeClusterRequireRegistryForImages)
 		}
-	}
-
-	// Calculate repo links update
-	mapCurrentRepoLinks := make(map[string]*entity.ResLink, len(app.DstResLinks))
-	for _, repoLink := range app.DstResLinks {
-		if repoLink.DstType != base.ResourceTypeRepo {
-			continue
-		}
-		mapCurrentRepoLinks[repoLink.DstID] = repoLink
-	}
-	if newDeploymentSettings.ActiveMethod == base.DeploymentMethodRepo {
-		repoID := newDeploymentSettings.RepoSource.RepoID
-		repoLink := mapCurrentRepoLinks[repoID]
-		if repoLink == nil {
-			data.RepoLinksToAdd = append(data.RepoLinksToAdd, repoID)
-		} else {
-			delete(mapCurrentRepoLinks, repoID)
-		}
-	}
-	for _, repoLink := range mapCurrentRepoLinks {
-		data.RepoLinksToDelete = append(data.RepoLinksToDelete, repoLink)
 	}
 
 	return nil
@@ -188,21 +166,23 @@ func (uc *UC) prepareUpdatingAppDeploymentSettings(
 
 	persistingData.UpsertingDeployments = append(persistingData.UpsertingDeployments, deployment)
 	persistingData.UpsertingTasks = append(persistingData.UpsertingTasks, deploymentTask)
+	return nil
+}
 
-	// Repo links
-	for _, repoLink := range data.RepoLinksToDelete {
-		repoLink.DeletedAt = timeNow
-		persistingData.UpsertingResLinks = append(persistingData.UpsertingResLinks, repoLink)
+func (uc *UC) persistAppDeploymentSettingsRepoLinks(
+	ctx context.Context,
+	db database.Tx,
+	data *updateAppDeploymentSettingsData,
+) error {
+	var repoIDs []string
+	if data.NewDeploymentSettings.ActiveMethod == base.DeploymentMethodRepo {
+		repoIDs = append(repoIDs, data.NewDeploymentSettings.RepoSource.RepoID)
 	}
-	for _, repoID := range data.RepoLinksToAdd {
-		persistingData.UpsertingResLinks = append(persistingData.UpsertingResLinks, &entity.ResLink{
-			SrcType: base.ResourceTypeApp,
-			SrcID:   app.ID,
-			DstType: base.ResourceTypeRepo,
-			DstID:   repoID,
-		})
+	err := uc.resLinkService.SetLinks(ctx, db, base.ResourceTypeApp, data.App.ID,
+		base.ResourceTypeRepo, repoIDs)
+	if err != nil {
+		return apperrors.Wrap(err)
 	}
-
 	return nil
 }
 

@@ -32,7 +32,7 @@ func (s *service) DeleteUser(ctx context.Context, db database.IDB, user *entity.
 	}
 
 	// Resource links
-	err = s.resLinkRepo.DeleteAllBySourceIDs(ctx, db, base.SubjectTypeUser, userIDs)
+	err = s.resLinkRepo.DeleteAllBySourceIDs(ctx, db, base.ResourceTypeUser, userIDs)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}

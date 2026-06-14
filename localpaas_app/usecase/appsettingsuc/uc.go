@@ -10,6 +10,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/envvarservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/networkservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/projectservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/reslinkservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/sslservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/traefikservice"
@@ -23,12 +24,12 @@ type UC struct {
 	projectRepo          repository.ProjectRepo
 	appRepo              repository.AppRepo
 	settingRepo          repository.SettingRepo
-	resLinkRepo          repository.ResLinkRepo
 	deploymentRepo       repository.DeploymentRepo
 	userService          userservice.Service
 	appService           appservice.Service
 	appDeploymentService appdeploymentservice.Service
 	settingService       settingservice.Service
+	resLinkService       reslinkservice.Service
 	sslService           sslservice.Service
 	projectService       projectservice.Service
 	networkService       networkservice.Service
@@ -45,12 +46,12 @@ func New(
 	projectRepo repository.ProjectRepo,
 	appRepo repository.AppRepo,
 	settingRepo repository.SettingRepo,
-	resLinkRepo repository.ResLinkRepo,
 	deploymentRepo repository.DeploymentRepo,
 	userService userservice.Service,
 	appService appservice.Service,
 	appDeploymentService appdeploymentservice.Service,
 	settingService settingservice.Service,
+	resLinkService reslinkservice.Service,
 	sslService sslservice.Service,
 	projectService projectservice.Service,
 	networkService networkservice.Service,
@@ -66,12 +67,12 @@ func New(
 		projectRepo:          projectRepo,
 		appRepo:              appRepo,
 		settingRepo:          settingRepo,
-		resLinkRepo:          resLinkRepo,
 		deploymentRepo:       deploymentRepo,
 		userService:          userService,
 		appService:           appService,
 		appDeploymentService: appDeploymentService,
 		settingService:       settingService,
+		resLinkService:       resLinkService,
 		sslService:           sslService,
 		projectService:       projectService,
 		networkService:       networkService,
