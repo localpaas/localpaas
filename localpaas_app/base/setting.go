@@ -10,6 +10,7 @@ type SettingType string
 
 const (
 	SettingTypeAccessToken        SettingType = "access-token"
+	SettingTypeAcmeDnsProvider    SettingType = "acme-dns-provider"
 	SettingTypeAPIKey             SettingType = "api-key"
 	SettingTypeApp                SettingType = "app"
 	SettingTypeAppDeployment      SettingType = "app-deployment"

@@ -6,6 +6,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/fileuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accessiblebyprojectsuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accesstokenuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/acmednsprovideruc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cloudstorageuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/configfileuc"
@@ -42,6 +43,7 @@ type Handler struct {
 	IMServiceUC            *imserviceuc.UC
 	RegistryAuthUC         *registryauthuc.UC
 	BasicAuthUC            *basicauthuc.UC
+	AcmeDnsProviderUC      *acmednsprovideruc.UC
 	SSLProviderUC          *sslprovideruc.UC
 	SSLCertUC              *sslcertuc.UC
 	DomainSettingsUC       *domainsettingsuc.UC
@@ -74,6 +76,7 @@ func New(
 	imServiceUC *imserviceuc.UC,
 	registryAuthUC *registryauthuc.UC,
 	basicAuthUC *basicauthuc.UC,
+	acmeDnsProviderUC *acmednsprovideruc.UC,
 	sslProviderUC *sslprovideruc.UC,
 	sslCertUC *sslcertuc.UC,
 	domainSettingsUC *domainsettingsuc.UC,
@@ -105,6 +108,7 @@ func New(
 		IMServiceUC:            imServiceUC,
 		RegistryAuthUC:         registryAuthUC,
 		BasicAuthUC:            basicAuthUC,
+		AcmeDnsProviderUC:      acmeDnsProviderUC,
 		SSLProviderUC:          sslProviderUC,
 		SSLCertUC:              sslCertUC,
 		DomainSettingsUC:       domainSettingsUC,

@@ -160,6 +160,16 @@ func (s *HTTPServer) registerProjectRoutes(apiGroup *gin.RouterGroup) {
 		sslProviderGroup.DELETE("/:itemID", projectSettingsHandler.DeleteSSLProvider)
 	}
 
+	{ // ACME DNS Provider group
+		acmeDnsProviderGroup := projectGroup.Group("/:projectID/acme-dns-providers")
+		acmeDnsProviderGroup.GET("/:itemID", projectSettingsHandler.GetAcmeDnsProvider)
+		acmeDnsProviderGroup.GET("", projectSettingsHandler.ListAcmeDnsProvider)
+		acmeDnsProviderGroup.POST("", projectSettingsHandler.CreateAcmeDnsProvider)
+		acmeDnsProviderGroup.PUT("/:itemID", projectSettingsHandler.UpdateAcmeDnsProvider)
+		acmeDnsProviderGroup.PUT("/:itemID/status", projectSettingsHandler.UpdateAcmeDnsProviderStatus)
+		acmeDnsProviderGroup.DELETE("/:itemID", projectSettingsHandler.DeleteAcmeDnsProvider)
+	}
+
 	{ // SSL Cert group
 		sslCertGroup := projectGroup.Group("/:projectID/ssl-certs")
 		sslCertGroup.GET("/:itemID", projectSettingsHandler.GetSSLCert)

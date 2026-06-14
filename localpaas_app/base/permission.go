@@ -16,6 +16,7 @@ type ResourceType string
 
 const (
 	ResourceTypeAccessToken        ResourceType = "access-token"
+	ResourceTypeAcmeDnsProvider    ResourceType = "acme-dns-provider"
 	ResourceTypeAPIKey             ResourceType = "api-key"
 	ResourceTypeApp                ResourceType = "app"
 	ResourceTypeBasicAuth          ResourceType = "basic-auth"

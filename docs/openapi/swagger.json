@@ -2725,6 +2725,390 @@
         "x-codegen-request-body-name" : "body"
       }
     },
+    "/projects/{projectID}/acme-dns-providers" : {
+      "get" : {
+        "description" : "Lists ACME DNS providers",
+        "operationId" : "listProjectAcmeDnsProvider",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`search=<target> (support *)`",
+          "in" : "query",
+          "name" : "search",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`pageOffset=offset`",
+          "in" : "query",
+          "name" : "pageOffset",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`pageLimit=limit`",
+          "in" : "query",
+          "name" : "pageLimit",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`sort=[-]field1|field2...`",
+          "in" : "query",
+          "name" : "sort",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.ListAcmeDnsProviderResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Lists ACME DNS providers",
+        "tags" : [ "project_settings" ]
+      },
+      "post" : {
+        "description" : "Creates a new ACME DNS provider",
+        "operationId" : "createProjectAcmeDnsProvider",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.CreateAcmeDnsProviderReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.CreateAcmeDnsProviderResp"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Creates a new ACME DNS provider",
+        "tags" : [ "project_settings" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/projects/{projectID}/acme-dns-providers/{itemID}" : {
+      "delete" : {
+        "description" : "Deletes an ACME DNS provider",
+        "operationId" : "deleteProjectAcmeDnsProvider",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.DeleteAcmeDnsProviderResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Deletes an ACME DNS provider",
+        "tags" : [ "project_settings" ]
+      },
+      "get" : {
+        "description" : "Gets ACME DNS provider details",
+        "operationId" : "getProjectAcmeDnsProvider",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.GetAcmeDnsProviderResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Gets ACME DNS provider details",
+        "tags" : [ "project_settings" ]
+      },
+      "put" : {
+        "description" : "Updates an ACME DNS provider",
+        "operationId" : "updateProjectAcmeDnsProvider",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.UpdateAcmeDnsProviderReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.UpdateAcmeDnsProviderResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates an ACME DNS provider",
+        "tags" : [ "project_settings" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/projects/{projectID}/acme-dns-providers/{itemID}/status" : {
+      "put" : {
+        "description" : "Updates ACME DNS provider status",
+        "operationId" : "updateProjectAcmeDnsProviderStatus",
+        "parameters" : [ {
+          "description" : "project ID",
+          "in" : "path",
+          "name" : "projectID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.UpdateAcmeDnsProviderStatusReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.UpdateAcmeDnsProviderStatusResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates ACME DNS provider status",
+        "tags" : [ "project_settings" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
     "/projects/{projectID}/apps" : {
       "get" : {
         "description" : "Lists apps",
@@ -15340,6 +15724,341 @@
         "x-codegen-request-body-name" : "body"
       }
     },
+    "/settings/acme-dns-providers" : {
+      "get" : {
+        "description" : "Lists ACME DNS providers",
+        "operationId" : "listSettingAcmeDnsProvider",
+        "parameters" : [ {
+          "description" : "`search=<target> (support *)`",
+          "in" : "query",
+          "name" : "search",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "`pageOffset=offset`",
+          "in" : "query",
+          "name" : "pageOffset",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`pageLimit=limit`",
+          "in" : "query",
+          "name" : "pageLimit",
+          "schema" : {
+            "type" : "integer"
+          }
+        }, {
+          "description" : "`sort=[-]field1|field2...`",
+          "in" : "query",
+          "name" : "sort",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.ListAcmeDnsProviderResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Lists ACME DNS providers",
+        "tags" : [ "settings" ]
+      },
+      "post" : {
+        "description" : "Creates a new ACME DNS provider",
+        "operationId" : "createSettingAcmeDnsProvider",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.CreateAcmeDnsProviderReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.CreateAcmeDnsProviderResp"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Creates a new ACME DNS provider",
+        "tags" : [ "settings" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/settings/acme-dns-providers/{itemID}" : {
+      "delete" : {
+        "description" : "Deletes ACME DNS provider",
+        "operationId" : "deleteSettingAcmeDnsProvider",
+        "parameters" : [ {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.DeleteAcmeDnsProviderResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Deletes ACME DNS provider",
+        "tags" : [ "settings" ]
+      },
+      "get" : {
+        "description" : "Gets ACME DNS provider details",
+        "operationId" : "getSettingAcmeDnsProvider",
+        "parameters" : [ {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.GetAcmeDnsProviderResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Gets ACME DNS provider details",
+        "tags" : [ "settings" ]
+      },
+      "put" : {
+        "description" : "Updates ACME DNS provider",
+        "operationId" : "updateSettingAcmeDnsProvider",
+        "parameters" : [ {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.UpdateAcmeDnsProviderReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.UpdateAcmeDnsProviderResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates ACME DNS provider",
+        "tags" : [ "settings" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/settings/acme-dns-providers/{itemID}/status" : {
+      "put" : {
+        "description" : "Updates ACME DNS provider status",
+        "operationId" : "updateSettingAcmeDnsProviderStatus",
+        "parameters" : [ {
+          "description" : "setting ID",
+          "in" : "path",
+          "name" : "itemID",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.UpdateAcmeDnsProviderStatusReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.UpdateAcmeDnsProviderStatusResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Updates ACME DNS provider status",
+        "tags" : [ "settings" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
     "/settings/basic-auth" : {
       "get" : {
         "description" : "Lists basic auth settings",
@@ -24767,7 +25486,7 @@
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_fileutil.FileMode" : {
-        "enum" : [ 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511, 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511, 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511 ],
+        "enum" : [ 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511, 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511 ],
         "format" : "int32",
         "type" : "integer",
         "x-enum-comments" : {
@@ -29426,6 +30145,654 @@
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_accesstokenuc_accesstokendto.UpdateAccessTokenStatusResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderAcmeDNSReq" : {
+        "properties" : {
+          "accountJson" : {
+            "type" : "string"
+          },
+          "serverUrl" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "accountJson", "serverUrl" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderAcmeDNSResp" : {
+        "properties" : {
+          "accountJson" : {
+            "type" : "string"
+          },
+          "serverUrl" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "accountJson", "serverUrl" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderAzureReq" : {
+        "properties" : {
+          "clientId" : {
+            "type" : "string"
+          },
+          "clientSecret" : {
+            "type" : "string"
+          },
+          "resourceGroupName" : {
+            "type" : "string"
+          },
+          "subscriptionId" : {
+            "type" : "string"
+          },
+          "tenantId" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "clientId", "clientSecret", "resourceGroupName", "subscriptionId", "tenantId" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderAzureResp" : {
+        "properties" : {
+          "clientId" : {
+            "type" : "string"
+          },
+          "clientSecret" : {
+            "type" : "string"
+          },
+          "resourceGroupName" : {
+            "type" : "string"
+          },
+          "subscriptionId" : {
+            "type" : "string"
+          },
+          "tenantId" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "clientId", "clientSecret", "resourceGroupName", "subscriptionId", "tenantId" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderBaiduCloudReq" : {
+        "properties" : {
+          "accessKey" : {
+            "type" : "string"
+          },
+          "secretKey" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "accessKey", "secretKey" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderBaiduCloudResp" : {
+        "properties" : {
+          "accessKey" : {
+            "type" : "string"
+          },
+          "secretKey" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "accessKey", "secretKey" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderCloudflareReq" : {
+        "properties" : {
+          "authToken" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "authToken" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderCloudflareResp" : {
+        "properties" : {
+          "authToken" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "authToken" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderDigitalOceanReq" : {
+        "properties" : {
+          "authToken" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "authToken" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderDigitalOceanResp" : {
+        "properties" : {
+          "authToken" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "authToken" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderGCloudReq" : {
+        "properties" : {
+          "projectId" : {
+            "type" : "string"
+          },
+          "serviceAccountJson" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "projectId", "serviceAccountJson" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderGCloudResp" : {
+        "properties" : {
+          "projectId" : {
+            "type" : "string"
+          },
+          "serviceAccountJson" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "projectId", "serviceAccountJson" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderGoDaddyReq" : {
+        "properties" : {
+          "apiKey" : {
+            "type" : "string"
+          },
+          "apiSecret" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "apiKey", "apiSecret" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderGoDaddyResp" : {
+        "properties" : {
+          "apiKey" : {
+            "type" : "string"
+          },
+          "apiSecret" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "apiKey", "apiSecret" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderHetznerReq" : {
+        "properties" : {
+          "apiToken" : {
+            "type" : "string"
+          },
+          "zoneId" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "apiToken" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderHetznerResp" : {
+        "properties" : {
+          "apiToken" : {
+            "type" : "string"
+          },
+          "zoneId" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "apiToken" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderHuaweiCloudReq" : {
+        "properties" : {
+          "accessKey" : {
+            "type" : "string"
+          },
+          "projectId" : {
+            "type" : "string"
+          },
+          "region" : {
+            "type" : "string"
+          },
+          "secretKey" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "accessKey", "secretKey" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderHuaweiCloudResp" : {
+        "properties" : {
+          "accessKey" : {
+            "type" : "string"
+          },
+          "projectId" : {
+            "type" : "string"
+          },
+          "region" : {
+            "type" : "string"
+          },
+          "secretKey" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "accessKey", "secretKey" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderNamecheapReq" : {
+        "properties" : {
+          "apiKey" : {
+            "type" : "string"
+          },
+          "apiUser" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "apiKey", "apiUser" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderNamecheapResp" : {
+        "properties" : {
+          "apiKey" : {
+            "type" : "string"
+          },
+          "apiUser" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "apiKey", "apiUser" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderRFC2136Req" : {
+        "properties" : {
+          "nameserver" : {
+            "type" : "string"
+          },
+          "tsigAlgorithm" : {
+            "type" : "string"
+          },
+          "tsigKeyName" : {
+            "type" : "string"
+          },
+          "tsigSecret" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "nameserver", "tsigAlgorithm", "tsigKeyName", "tsigSecret" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderRFC2136Resp" : {
+        "properties" : {
+          "nameserver" : {
+            "type" : "string"
+          },
+          "tsigAlgorithm" : {
+            "type" : "string"
+          },
+          "tsigKeyName" : {
+            "type" : "string"
+          },
+          "tsigSecret" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "nameserver", "tsigAlgorithm", "tsigKeyName", "tsigSecret" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderResp" : {
+        "properties" : {
+          "acmeDns" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderAcmeDNSResp"
+          },
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
+          "azure" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderAzureResp"
+          },
+          "baiduCloud" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderBaiduCloudResp"
+          },
+          "cloudflare" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderCloudflareResp"
+          },
+          "createdAt" : {
+            "type" : "string"
+          },
+          "default" : {
+            "type" : "boolean"
+          },
+          "digitalOcean" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderDigitalOceanResp"
+          },
+          "expireAt" : {
+            "type" : "string"
+          },
+          "gCloud" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderGCloudResp"
+          },
+          "goDaddy" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderGoDaddyResp"
+          },
+          "hetzner" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderHetznerResp"
+          },
+          "huaweiCloud" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderHuaweiCloudResp"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "inherited" : {
+            "type" : "boolean"
+          },
+          "kind" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "namecheap" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderNamecheapResp"
+          },
+          "rfc2136" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderRFC2136Resp"
+          },
+          "route53" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderRoute53Resp"
+          },
+          "secretMasked" : {
+            "type" : "boolean"
+          },
+          "status" : {
+            "type" : "string"
+          },
+          "tencentCloud" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderTencentCloudResp"
+          },
+          "type" : {
+            "type" : "string"
+          },
+          "updateVer" : {
+            "type" : "integer"
+          },
+          "updatedAt" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "createdAt", "id", "kind", "name", "status", "type", "updateVer", "updatedAt" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderRoute53Req" : {
+        "properties" : {
+          "accessKeyId" : {
+            "type" : "string"
+          },
+          "hostedZoneId" : {
+            "type" : "string"
+          },
+          "region" : {
+            "type" : "string"
+          },
+          "secretAccessKey" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "accessKeyId", "secretAccessKey" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderRoute53Resp" : {
+        "properties" : {
+          "accessKeyId" : {
+            "type" : "string"
+          },
+          "hostedZoneId" : {
+            "type" : "string"
+          },
+          "region" : {
+            "type" : "string"
+          },
+          "secretAccessKey" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "accessKeyId", "secretAccessKey" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderTencentCloudReq" : {
+        "properties" : {
+          "region" : {
+            "type" : "string"
+          },
+          "secretId" : {
+            "type" : "string"
+          },
+          "secretKey" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "secretId", "secretKey" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderTencentCloudResp" : {
+        "properties" : {
+          "region" : {
+            "type" : "string"
+          },
+          "secretId" : {
+            "type" : "string"
+          },
+          "secretKey" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "secretId", "secretKey" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.CreateAcmeDnsProviderReq" : {
+        "properties" : {
+          "acmeDns" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderAcmeDNSReq"
+          },
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
+          "azure" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderAzureReq"
+          },
+          "baiduCloud" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderBaiduCloudReq"
+          },
+          "cloudflare" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderCloudflareReq"
+          },
+          "default" : {
+            "type" : "boolean"
+          },
+          "digitalOcean" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderDigitalOceanReq"
+          },
+          "gCloud" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderGCloudReq"
+          },
+          "goDaddy" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderGoDaddyReq"
+          },
+          "hetzner" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderHetznerReq"
+          },
+          "huaweiCloud" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderHuaweiCloudReq"
+          },
+          "kind" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "namecheap" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderNamecheapReq"
+          },
+          "rfc2136" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderRFC2136Req"
+          },
+          "route53" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderRoute53Req"
+          },
+          "tencentCloud" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderTencentCloudReq"
+          }
+        },
+        "required" : [ "acmeDns", "availableInProjects", "azure", "baiduCloud", "cloudflare", "default", "digitalOcean", "gCloud", "goDaddy", "hetzner", "huaweiCloud", "kind", "name", "namecheap", "rfc2136", "route53", "tencentCloud" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.CreateAcmeDnsProviderResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ObjectIDResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.DeleteAcmeDnsProviderResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.GetAcmeDnsProviderResp" : {
+        "properties" : {
+          "data" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderResp"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.ListAcmeDnsProviderResp" : {
+        "properties" : {
+          "data" : {
+            "items" : {
+              "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderResp"
+            },
+            "type" : "array"
+          },
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.ListMeta"
+          }
+        },
+        "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.UpdateAcmeDnsProviderReq" : {
+        "properties" : {
+          "acmeDns" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderAcmeDNSReq"
+          },
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
+          "azure" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderAzureReq"
+          },
+          "baiduCloud" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderBaiduCloudReq"
+          },
+          "cloudflare" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderCloudflareReq"
+          },
+          "default" : {
+            "type" : "boolean"
+          },
+          "digitalOcean" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderDigitalOceanReq"
+          },
+          "gCloud" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderGCloudReq"
+          },
+          "goDaddy" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderGoDaddyReq"
+          },
+          "hetzner" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderHetznerReq"
+          },
+          "huaweiCloud" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderHuaweiCloudReq"
+          },
+          "kind" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "namecheap" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderNamecheapReq"
+          },
+          "rfc2136" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderRFC2136Req"
+          },
+          "route53" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderRoute53Req"
+          },
+          "tencentCloud" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderTencentCloudReq"
+          },
+          "updateVer" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "acmeDns", "availableInProjects", "azure", "baiduCloud", "cloudflare", "default", "digitalOcean", "gCloud", "goDaddy", "hetzner", "huaweiCloud", "kind", "name", "namecheap", "rfc2136", "route53", "tencentCloud", "updateVer" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.UpdateAcmeDnsProviderResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.UpdateAcmeDnsProviderStatusReq" : {
+        "properties" : {
+          "availableInProjects" : {
+            "type" : "boolean"
+          },
+          "default" : {
+            "type" : "boolean"
+          },
+          "expireAt" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string"
+          },
+          "updateVer" : {
+            "type" : "integer"
+          }
+        },
+        "required" : [ "availableInProjects", "default", "expireAt", "status", "updateVer" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.UpdateAcmeDnsProviderStatusResp" : {
         "properties" : {
           "meta" : {
             "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
@@ -37494,10 +38861,10 @@
         "x-enum-varnames" : [ "SeccompModeDefault", "SeccompModeUnconfined", "SeccompModeCustom" ]
       },
       "timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
         "format" : "int64",
         "type" : "integer",
-        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
+        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
       },
       "uploadFiles_request" : {
         "properties" : {

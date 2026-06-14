@@ -86,6 +86,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accessiblebyprojectsuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accesstokenuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/acmednsprovideruc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cloudstorageuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/configfileuc"
@@ -214,6 +215,7 @@ var Provides = []any{
 	domainsettingsuc.New,
 	githubappuc.New,
 	accesstokenuc.New,
+	acmednsprovideruc.New,
 	traefikuc.New,
 	lpappuc.New,
 	schedjobuc.New,

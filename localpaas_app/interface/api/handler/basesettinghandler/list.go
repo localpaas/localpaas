@@ -9,6 +9,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/accesstokenuc/accesstokendto"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/acmednsprovideruc/acmednsproviderdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/basicauthuc/basicauthdto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/cloudstorageuc/cloudstoragedto"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/configfileuc/configfiledto"
@@ -40,7 +41,7 @@ func ListSettingPreRequestHandler(fn func(auth *basedto.Auth, req any) error) Li
 	}
 }
 
-//nolint:funlen
+//nolint:funlen,gocyclo
 func (h *Handler) ListSetting(
 	ctx *gin.Context,
 	resType base.ResourceType,
@@ -93,6 +94,11 @@ func (h *Handler) ListSetting(
 		r := accesstokendto.NewListAccessTokenReq()
 		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.AccessTokenUC.ListAccessToken(reqCtx, auth, r) }
+
+	case base.ResourceTypeAcmeDnsProvider:
+		r := acmednsproviderdto.NewListAcmeDnsProviderReq()
+		r.Scope = scope
+		req, ucFunc = r, func() (any, error) { return h.AcmeDnsProviderUC.ListAcmeDnsProvider(reqCtx, auth, r) }
 
 	case base.ResourceTypeOAuth:
 		r := oauthdto.NewListOAuthReq()
