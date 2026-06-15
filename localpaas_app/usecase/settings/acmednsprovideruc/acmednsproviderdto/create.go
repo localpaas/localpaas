@@ -183,9 +183,9 @@ func (req *AcmeDnsProviderAzureReq) validate(field string) (res []vld.Validator)
 	}
 	res = append(res, basedto.ValidateStr(&req.ClientID, true, 1, len200, field+"clientId")...)
 	res = append(res, basedto.ValidateStr(&req.ClientSecret, true, 1, len1000, field+"clientSecret")...)
-	res = append(res, basedto.ValidateStr(&req.SubscriptionID, true, 1, len200, field+"subscriptionId")...)
-	res = append(res, basedto.ValidateStr(&req.TenantID, true, 1, len200, field+"tenantId")...)
-	res = append(res, basedto.ValidateStr(&req.ResourceGroupName, true, 1, len200, field+"resourceGroupName")...)
+	res = append(res, basedto.ValidateStr(&req.SubscriptionID, false, 1, len200, field+"subscriptionId")...)
+	res = append(res, basedto.ValidateStr(&req.TenantID, false, 1, len200, field+"tenantId")...)
+	res = append(res, basedto.ValidateStr(&req.ResourceGroupName, false, 1, len200, field+"resourceGroupName")...)
 	return res
 }
 
@@ -338,7 +338,7 @@ func (req *AcmeDnsProviderRFC2136Req) validate(field string) (res []vld.Validato
 	res = append(res, basedto.ValidateStr(&req.Nameserver, true, 1, len200, field+"nameserver")...)
 	res = append(res, basedto.ValidateStr(&req.TSIGKeyName, true, 1, len200, field+"tsigKeyName")...)
 	res = append(res, basedto.ValidateStr(&req.TSIGSecret, true, 1, len1000, field+"tsigSecret")...)
-	res = append(res, basedto.ValidateStr(&req.TSIGAlgorithm, true, 1, len200, field+"tsigAlgorithm")...)
+	res = append(res, basedto.ValidateStr(&req.TSIGAlgorithm, false, 1, len200, field+"tsigAlgorithm")...)
 	return res
 }
 
