@@ -10,6 +10,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
+	"github.com/localpaas/localpaas/localpaas_app/permission"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
@@ -23,7 +24,7 @@ func (uc *UC) UpdateProject(
 ) (*projectdto.UpdateProjectResp, error) {
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
 		projectData := &updateProjectData{}
-		err := uc.loadProjectDataForUpdate(ctx, db, req, projectData)
+		err := uc.loadProjectDataForUpdate(ctx, db, auth, req, projectData)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}
@@ -51,6 +52,7 @@ type updateProjectData struct {
 func (uc *UC) loadProjectDataForUpdate(
 	ctx context.Context,
 	db database.IDB,
+	auth *basedto.Auth,
 	req *projectdto.UpdateProjectReq,
 	data *updateProjectData,
 ) error {
@@ -81,6 +83,22 @@ func (uc *UC) loadProjectDataForUpdate(
 		if conflictProject != nil {
 			return apperrors.NewAlreadyExist("Project").
 				WithMsgLog("project name '%s' already exists", req.Name)
+		}
+	}
+
+	// Only admin, current owner, and users have permission on Project module can change project owner
+	if req.Owner.ID != project.OwnerID && !auth.User.IsAdmin() && auth.User.ID != project.OwnerID {
+		hasPerm, err := uc.permissionManager.CheckAccess(ctx, db, auth, &permission.AccessCheck{
+			SubjectType:    base.SubjectTypeUser,
+			SubjectID:      auth.User.ID,
+			ResourceModule: base.ResourceModuleProject,
+			Action:         base.ActionTypeWrite,
+		})
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+		if !hasPerm {
+			return apperrors.Wrap(apperrors.ErrUnauthorized)
 		}
 	}
 
