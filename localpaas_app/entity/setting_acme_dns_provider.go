@@ -37,8 +37,10 @@ type AcmeDnsProvider struct {
 }
 
 type AcmeDnsProviderAcmeDNS struct {
-	AccountJSON string `json:"accountJson"`
-	ServerURL   string `json:"serverUrl"`
+	APIBase        string   `json:"apiBase"`
+	AllowList      []string `json:"allowList"`
+	StoragePath    string   `json:"storagePath"`
+	StorageBaseURL string   `json:"storageBaseUrl"`
 }
 
 type AcmeDnsProviderAzure struct {
@@ -63,8 +65,8 @@ type AcmeDnsProviderDigitalOcean struct {
 }
 
 type AcmeDnsProviderGCloud struct {
-	ProjectID          string         `json:"projectId"`
-	ServiceAccountJSON EncryptedField `json:"serviceAccountJson"`
+	ProjectID      string         `json:"projectId"`
+	ServiceAccount EncryptedField `json:"serviceAccount"`
 }
 
 type AcmeDnsProviderGoDaddy struct {
@@ -74,13 +76,11 @@ type AcmeDnsProviderGoDaddy struct {
 
 type AcmeDnsProviderHetzner struct {
 	APIToken EncryptedField `json:"apiToken"`
-	ZoneID   string         `json:"zoneId,omitempty"`
 }
 
 type AcmeDnsProviderHuaweiCloud struct {
 	AccessKey string         `json:"accessKey"`
 	SecretKey EncryptedField `json:"secretKey"`
-	ProjectID string         `json:"projectId,omitempty"`
 	Region    string         `json:"region,omitempty"`
 }
 
@@ -132,7 +132,7 @@ func (s *AcmeDnsProvider) MustDecrypt() *AcmeDnsProvider {
 		s.DigitalOcean.AuthToken.MustGetPlain()
 	}
 	if s.GCloud != nil {
-		s.GCloud.ServiceAccountJSON.MustGetPlain()
+		s.GCloud.ServiceAccount.MustGetPlain()
 	}
 	if s.GoDaddy != nil {
 		s.GoDaddy.APISecret.MustGetPlain()

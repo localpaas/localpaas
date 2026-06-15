@@ -28,8 +28,7 @@ func (uc *UC) TestAccessTokenConn(
 	case base.AccessTokenKindBitbucket, base.AccessTokenKindGogs:
 		fallthrough
 	default:
-		err = apperrors.New(apperrors.ErrUnsupported).
-			WithMsgLog("Git source '%s' unsupported", req.Kind)
+		err = apperrors.NewUnsupported(apperrors.Fmt("Git source '%v'", req.Kind))
 	}
 	if err != nil {
 		return nil, apperrors.Wrap(err)

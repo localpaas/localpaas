@@ -1,11 +1,14 @@
 package settinghandler
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 
 	_ "github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	_ "github.com/localpaas/localpaas/localpaas_app/usecase/settings/acmednsprovideruc/acmednsproviderdto"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/settings/acmednsprovideruc/acmednsproviderdto"
 )
 
 // ListAcmeDnsProvider Lists ACME DNS providers
@@ -101,4 +104,37 @@ func (h *Handler) UpdateAcmeDnsProviderStatus(ctx *gin.Context) {
 // @Router  /settings/acme-dns-providers/{itemID} [delete]
 func (h *Handler) DeleteAcmeDnsProvider(ctx *gin.Context) {
 	h.DeleteSetting(ctx, base.ResourceTypeAcmeDnsProvider, base.ObjectScopeGlobal)
+}
+
+// TestAcmeDnsProviderAccess Tests provider access
+// @Summary Tests provider access
+// @Description Tests provider access
+// @Tags    settings
+// @Produce json
+// @Id      testAcmeDnsProviderAccess
+// @Param   body body acmednsproviderdto.TestProviderAccessReq true "request data"
+// @Success 200 {object} acmednsproviderdto.TestProviderAccessResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /settings/acme-dns-providers/test-access [post]
+func (h *Handler) TestAcmeDnsProviderAccess(ctx *gin.Context) {
+	auth, err := h.AuthHandler.GetCurrentAuth(ctx, authhandler.NoAccessCheck)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := acmednsproviderdto.NewTestProviderAccessReq()
+	if err := h.ParseAndValidateJSONBody(ctx, req); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	resp, err := h.AcmeDnsProviderUC.TestProviderAccess(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, resp)
 }

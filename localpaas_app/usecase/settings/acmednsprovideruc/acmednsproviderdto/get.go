@@ -55,8 +55,10 @@ type AcmeDnsProviderResp struct {
 }
 
 type AcmeDnsProviderAcmeDNSResp struct {
-	AccountJSON string `json:"accountJson"`
-	ServerURL   string `json:"serverUrl"`
+	APIBase        string   `json:"apiBase"`
+	AllowList      []string `json:"allowList"`
+	StoragePath    string   `json:"storagePath"`
+	StorageBaseURL string   `json:"storageBaseUrl"`
 }
 
 type AcmeDnsProviderAzureResp struct {
@@ -67,22 +69,47 @@ type AcmeDnsProviderAzureResp struct {
 	ResourceGroupName string `json:"resourceGroupName"`
 }
 
+func (resp *AcmeDnsProviderAzureResp) CopyClientSecret(field entity.EncryptedField) error {
+	resp.ClientSecret = field.String()
+	return nil
+}
+
 type AcmeDnsProviderBaiduCloudResp struct {
 	AccessKey string `json:"accessKey"`
 	SecretKey string `json:"secretKey"`
+}
+
+func (resp *AcmeDnsProviderBaiduCloudResp) CopySecretKey(field entity.EncryptedField) error {
+	resp.SecretKey = field.String()
+	return nil
 }
 
 type AcmeDnsProviderCloudflareResp struct {
 	AuthToken string `json:"authToken"`
 }
 
+func (resp *AcmeDnsProviderCloudflareResp) CopyAuthToken(field entity.EncryptedField) error {
+	resp.AuthToken = field.String()
+	return nil
+}
+
 type AcmeDnsProviderDigitalOceanResp struct {
 	AuthToken string `json:"authToken"`
 }
 
+func (resp *AcmeDnsProviderDigitalOceanResp) CopyAuthToken(field entity.EncryptedField) error {
+	resp.AuthToken = field.String()
+	return nil
+}
+
 type AcmeDnsProviderGCloudResp struct {
-	ProjectID          string `json:"projectId"`
-	ServiceAccountJSON string `json:"serviceAccountJson"`
+	ProjectID      string `json:"projectId"`
+	ServiceAccount string `json:"serviceAccount"`
+}
+
+func (resp *AcmeDnsProviderGCloudResp) CopyServiceAccount(field entity.EncryptedField) error {
+	resp.ServiceAccount = field.String()
+	return nil
 }
 
 type AcmeDnsProviderGoDaddyResp struct {
@@ -90,21 +117,39 @@ type AcmeDnsProviderGoDaddyResp struct {
 	APISecret string `json:"apiSecret"`
 }
 
+func (resp *AcmeDnsProviderGoDaddyResp) CopyAPISecret(field entity.EncryptedField) error {
+	resp.APISecret = field.String()
+	return nil
+}
+
 type AcmeDnsProviderHetznerResp struct {
 	APIToken string `json:"apiToken"`
-	ZoneID   string `json:"zoneId,omitempty"`
+}
+
+func (resp *AcmeDnsProviderHetznerResp) CopyAPIToken(field entity.EncryptedField) error {
+	resp.APIToken = field.String()
+	return nil
 }
 
 type AcmeDnsProviderHuaweiCloudResp struct {
 	AccessKey string `json:"accessKey"`
 	SecretKey string `json:"secretKey"`
-	ProjectID string `json:"projectId,omitempty"`
 	Region    string `json:"region,omitempty"`
+}
+
+func (resp *AcmeDnsProviderHuaweiCloudResp) CopySecretKey(field entity.EncryptedField) error {
+	resp.SecretKey = field.String()
+	return nil
 }
 
 type AcmeDnsProviderNamecheapResp struct {
 	APIUser string `json:"apiUser"`
 	APIKey  string `json:"apiKey"`
+}
+
+func (resp *AcmeDnsProviderNamecheapResp) CopyAPIKey(field entity.EncryptedField) error {
+	resp.APIKey = field.String()
+	return nil
 }
 
 type AcmeDnsProviderRFC2136Resp struct {
@@ -114,6 +159,11 @@ type AcmeDnsProviderRFC2136Resp struct {
 	TSIGAlgorithm string `json:"tsigAlgorithm"`
 }
 
+func (resp *AcmeDnsProviderRFC2136Resp) CopyTSIGSecret(field entity.EncryptedField) error {
+	resp.TSIGSecret = field.String()
+	return nil
+}
+
 type AcmeDnsProviderRoute53Resp struct {
 	AccessKeyID     string `json:"accessKeyId"`
 	SecretAccessKey string `json:"secretAccessKey"`
@@ -121,10 +171,20 @@ type AcmeDnsProviderRoute53Resp struct {
 	Region          string `json:"region,omitempty"`
 }
 
+func (resp *AcmeDnsProviderRoute53Resp) CopySecretAccessKey(field entity.EncryptedField) error {
+	resp.SecretAccessKey = field.String()
+	return nil
+}
+
 type AcmeDnsProviderTencentCloudResp struct {
 	SecretID  string `json:"secretId"`
 	SecretKey string `json:"secretKey"`
 	Region    string `json:"region,omitempty"`
+}
+
+func (resp *AcmeDnsProviderTencentCloudResp) CopySecretKey(field entity.EncryptedField) error {
+	resp.SecretKey = field.String()
+	return nil
 }
 
 //nolint:gocognit,gocyclo
@@ -167,9 +227,9 @@ func TransformAcmeDnsProvider(
 			resp.DigitalOcean.AuthToken = maskedSecret
 		}
 	case config.GCloud != nil:
-		resp.SecretMasked = config.GCloud.ServiceAccountJSON.IsEncrypted() || resp.Inherited
+		resp.SecretMasked = config.GCloud.ServiceAccount.IsEncrypted() || resp.Inherited
 		if resp.SecretMasked {
-			resp.GCloud.ServiceAccountJSON = maskedSecret
+			resp.GCloud.ServiceAccount = maskedSecret
 		}
 	case config.GoDaddy != nil:
 		resp.SecretMasked = config.GoDaddy.APISecret.IsEncrypted() || resp.Inherited

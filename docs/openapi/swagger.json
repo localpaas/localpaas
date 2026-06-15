@@ -15843,6 +15843,58 @@
         "x-codegen-request-body-name" : "body"
       }
     },
+    "/settings/acme-dns-providers/test-access" : {
+      "post" : {
+        "description" : "Tests provider access",
+        "operationId" : "testAcmeDnsProviderAccess",
+        "requestBody" : {
+          "content" : {
+            "*/*" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.TestProviderAccessReq"
+              }
+            }
+          },
+          "description" : "request data",
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.TestProviderAccessResp"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Bad Request"
+          },
+          "500" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/apperrors.ErrorInfo"
+                }
+              }
+            },
+            "description" : "Internal Server Error"
+          }
+        },
+        "summary" : "Tests provider access",
+        "tags" : [ "settings" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
     "/settings/acme-dns-providers/{itemID}" : {
       "delete" : {
         "description" : "Deletes ACME DNS provider",
@@ -25486,7 +25538,7 @@
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_fileutil.FileMode" : {
-        "enum" : [ 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511, 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511 ],
+        "enum" : [ 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511, 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511, 2147483648, 1073741824, 536870912, 268435456, 134217728, 67108864, 33554432, 16777216, 8388608, 4194304, 2097152, 1048576, 524288, 2401763328, 511 ],
         "format" : "int32",
         "type" : "integer",
         "x-enum-comments" : {
@@ -25505,8 +25557,8 @@
           "ModeSymlink" : "L: symbolic link",
           "ModeTemporary" : "T: temporary file; Plan 9 only"
         },
-        "x-enum-descriptions" : [ "d: is a directory", "a: append-only", "l: exclusive use", "T: temporary file; Plan 9 only", "L: symbolic link", "D: device file", "p: named pipe (FIFO)", "S: Unix domain socket", "u: setuid", "g: setgid", "c: Unix character device, when ModeDevice is set", "t: sticky", "?: non-regular file; nothing else is known about this file", "", "Unix permission bits, 0o777" ],
-        "x-enum-varnames" : [ "ModeDir", "ModeAppend", "ModeExclusive", "ModeTemporary", "ModeSymlink", "ModeDevice", "ModeNamedPipe", "ModeSocket", "ModeSetuid", "ModeSetgid", "ModeCharDevice", "ModeSticky", "ModeIrregular", "ModeType", "ModePerm" ]
+        "x-enum-descriptions" : [ "d: is a directory", "a: append-only", "l: exclusive use", "T: temporary file; Plan 9 only", "L: symbolic link", "D: device file", "p: named pipe (FIFO)", "S: Unix domain socket", "u: setuid", "g: setgid", "c: Unix character device, when ModeDevice is set", "t: sticky", "?: non-regular file; nothing else is known about this file", "", "Unix permission bits, 0o777", "d: is a directory", "a: append-only", "l: exclusive use", "T: temporary file; Plan 9 only", "L: symbolic link", "D: device file", "p: named pipe (FIFO)", "S: Unix domain socket", "u: setuid", "g: setgid", "c: Unix character device, when ModeDevice is set", "t: sticky", "?: non-regular file; nothing else is known about this file", "", "Unix permission bits, 0o777" ],
+        "x-enum-varnames" : [ "ModeDir", "ModeAppend", "ModeExclusive", "ModeTemporary", "ModeSymlink", "ModeDevice", "ModeNamedPipe", "ModeSocket", "ModeSetuid", "ModeSetgid", "ModeCharDevice", "ModeSticky", "ModeIrregular", "ModeType", "ModePerm", "ModeDir", "ModeAppend", "ModeExclusive", "ModeTemporary", "ModeSymlink", "ModeDevice", "ModeNamedPipe", "ModeSocket", "ModeSetuid", "ModeSetgid", "ModeCharDevice", "ModeSticky", "ModeIrregular", "ModeType", "ModePerm" ]
       },
       "github_com_localpaas_localpaas_localpaas_app_pkg_tasklog.LogFrame" : {
         "properties" : {
@@ -30155,26 +30207,44 @@
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderAcmeDNSReq" : {
         "properties" : {
-          "accountJson" : {
+          "allowList" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "apiBase" : {
             "type" : "string"
           },
-          "serverUrl" : {
+          "storageBaseUrl" : {
+            "type" : "string"
+          },
+          "storagePath" : {
             "type" : "string"
           }
         },
-        "required" : [ "accountJson", "serverUrl" ],
+        "required" : [ "allowList", "apiBase", "storageBaseUrl", "storagePath" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderAcmeDNSResp" : {
         "properties" : {
-          "accountJson" : {
+          "allowList" : {
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          },
+          "apiBase" : {
             "type" : "string"
           },
-          "serverUrl" : {
+          "storageBaseUrl" : {
+            "type" : "string"
+          },
+          "storagePath" : {
             "type" : "string"
           }
         },
-        "required" : [ "accountJson", "serverUrl" ],
+        "required" : [ "allowList", "apiBase", "storageBaseUrl", "storagePath" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderAzureReq" : {
@@ -30284,11 +30354,11 @@
           "projectId" : {
             "type" : "string"
           },
-          "serviceAccountJson" : {
+          "serviceAccount" : {
             "type" : "string"
           }
         },
-        "required" : [ "projectId", "serviceAccountJson" ],
+        "required" : [ "projectId", "serviceAccount" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderGCloudResp" : {
@@ -30296,11 +30366,11 @@
           "projectId" : {
             "type" : "string"
           },
-          "serviceAccountJson" : {
+          "serviceAccount" : {
             "type" : "string"
           }
         },
-        "required" : [ "projectId", "serviceAccountJson" ],
+        "required" : [ "projectId", "serviceAccount" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderGoDaddyReq" : {
@@ -30331,9 +30401,6 @@
         "properties" : {
           "apiToken" : {
             "type" : "string"
-          },
-          "zoneId" : {
-            "type" : "string"
           }
         },
         "required" : [ "apiToken" ],
@@ -30343,9 +30410,6 @@
         "properties" : {
           "apiToken" : {
             "type" : "string"
-          },
-          "zoneId" : {
-            "type" : "string"
           }
         },
         "required" : [ "apiToken" ],
@@ -30354,9 +30418,6 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderHuaweiCloudReq" : {
         "properties" : {
           "accessKey" : {
-            "type" : "string"
-          },
-          "projectId" : {
             "type" : "string"
           },
           "region" : {
@@ -30372,9 +30433,6 @@
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderHuaweiCloudResp" : {
         "properties" : {
           "accessKey" : {
-            "type" : "string"
-          },
-          "projectId" : {
             "type" : "string"
           },
           "region" : {
@@ -30700,6 +30758,69 @@
           }
         },
         "required" : [ "data", "meta" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.TestProviderAccessReq" : {
+        "properties" : {
+          "acmeDns" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderAcmeDNSReq"
+          },
+          "azure" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderAzureReq"
+          },
+          "baiduCloud" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderBaiduCloudReq"
+          },
+          "cloudflare" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderCloudflareReq"
+          },
+          "digitalOcean" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderDigitalOceanReq"
+          },
+          "gCloud" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderGCloudReq"
+          },
+          "goDaddy" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderGoDaddyReq"
+          },
+          "hetzner" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderHetznerReq"
+          },
+          "huaweiCloud" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderHuaweiCloudReq"
+          },
+          "kind" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "namecheap" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderNamecheapReq"
+          },
+          "rfc2136" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderRFC2136Req"
+          },
+          "route53" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderRoute53Req"
+          },
+          "tencentCloud" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.AcmeDnsProviderTencentCloudReq"
+          },
+          "testDomain" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "acmeDns", "azure", "baiduCloud", "cloudflare", "digitalOcean", "gCloud", "goDaddy", "hetzner", "huaweiCloud", "kind", "name", "namecheap", "rfc2136", "route53", "tencentCloud", "testDomain" ],
+        "type" : "object"
+      },
+      "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.TestProviderAccessResp" : {
+        "properties" : {
+          "meta" : {
+            "$ref" : "#/components/schemas/github_com_localpaas_localpaas_localpaas_app_basedto.Meta"
+          }
+        },
+        "required" : [ "meta" ],
         "type" : "object"
       },
       "github_com_localpaas_localpaas_localpaas_app_usecase_settings_acmednsprovideruc_acmednsproviderdto.UpdateAcmeDnsProviderReq" : {
@@ -38861,10 +38982,10 @@
         "x-enum-varnames" : [ "SeccompModeDefault", "SeccompModeUnconfined", "SeccompModeCustom" ]
       },
       "timeutil.Duration" : {
-        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
+        "enum" : [ -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000, -9223372036854775808, 9223372036854775807, 1, 1000, 1000000, 1000000000, 60000000000, 3600000000000 ],
         "format" : "int64",
         "type" : "integer",
-        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
+        "x-enum-varnames" : [ "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour", "minDuration", "maxDuration", "Nanosecond", "Microsecond", "Millisecond", "Second", "Minute", "Hour" ]
       },
       "uploadFiles_request" : {
         "properties" : {

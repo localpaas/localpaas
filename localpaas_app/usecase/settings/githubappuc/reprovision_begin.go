@@ -73,7 +73,7 @@ func (uc *UC) BeginReprovisionGithubApp(
 	case base.ObjectScopeApp, base.ObjectScopeUser:
 		fallthrough
 	default:
-		return nil, apperrors.New(apperrors.ErrUnsupported)
+		return nil, apperrors.NewUnsupported(apperrors.Fmt("Scope '%v'", req.Scope.ScopeType()))
 	}
 
 	manifestCache := &cacheentity.GithubAppManifest{

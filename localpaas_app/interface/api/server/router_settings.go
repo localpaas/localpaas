@@ -34,6 +34,8 @@ func (s *HTTPServer) registerSettingRoutes(apiGroup *gin.RouterGroup) {
 		acmeDnsProviderGroup.PUT("/:itemID", settingHandler.UpdateAcmeDnsProvider)
 		acmeDnsProviderGroup.PUT("/:itemID/status", settingHandler.UpdateAcmeDnsProviderStatus)
 		acmeDnsProviderGroup.DELETE("/:itemID", settingHandler.DeleteAcmeDnsProvider)
+		// Test access
+		acmeDnsProviderGroup.POST("/test-access", settingHandler.TestAcmeDnsProviderAccess)
 	}
 
 	{ // basic auth group

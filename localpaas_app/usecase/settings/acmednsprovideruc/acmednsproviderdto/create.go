@@ -46,8 +46,10 @@ func (req *AcmeDnsProviderBaseReq) ToEntity() *entity.AcmeDnsProvider {
 	case base.AcmeDnsProviderAcmeDNS:
 		if req.AcmeDNS != nil {
 			acmeDnsProvider.AcmeDNS = &entity.AcmeDnsProviderAcmeDNS{
-				AccountJSON: req.AcmeDNS.AccountJSON,
-				ServerURL:   req.AcmeDNS.ServerURL,
+				APIBase:        req.AcmeDNS.APIBase,
+				AllowList:      req.AcmeDNS.AllowList,
+				StoragePath:    req.AcmeDNS.StoragePath,
+				StorageBaseURL: req.AcmeDNS.StorageBaseURL,
 			}
 		}
 	case base.AcmeDnsProviderAzure:
@@ -82,8 +84,8 @@ func (req *AcmeDnsProviderBaseReq) ToEntity() *entity.AcmeDnsProvider {
 	case base.AcmeDnsProviderGCloud:
 		if req.GCloud != nil {
 			acmeDnsProvider.GCloud = &entity.AcmeDnsProviderGCloud{
-				ProjectID:          req.GCloud.ProjectID,
-				ServiceAccountJSON: entity.NewEncryptedField(req.GCloud.ServiceAccountJSON),
+				ProjectID:      req.GCloud.ProjectID,
+				ServiceAccount: entity.NewEncryptedField(req.GCloud.ServiceAccount),
 			}
 		}
 	case base.AcmeDnsProviderGoDaddy:
@@ -97,7 +99,6 @@ func (req *AcmeDnsProviderBaseReq) ToEntity() *entity.AcmeDnsProvider {
 		if req.Hetzner != nil {
 			acmeDnsProvider.Hetzner = &entity.AcmeDnsProviderHetzner{
 				APIToken: entity.NewEncryptedField(req.Hetzner.APIToken),
-				ZoneID:   req.Hetzner.ZoneID,
 			}
 		}
 	case base.AcmeDnsProviderHuaweiCloud:
@@ -105,7 +106,6 @@ func (req *AcmeDnsProviderBaseReq) ToEntity() *entity.AcmeDnsProvider {
 			acmeDnsProvider.HuaweiCloud = &entity.AcmeDnsProviderHuaweiCloud{
 				AccessKey: req.HuaweiCloud.AccessKey,
 				SecretKey: entity.NewEncryptedField(req.HuaweiCloud.SecretKey),
-				ProjectID: req.HuaweiCloud.ProjectID,
 				Region:    req.HuaweiCloud.Region,
 			}
 		}
@@ -147,8 +147,10 @@ func (req *AcmeDnsProviderBaseReq) ToEntity() *entity.AcmeDnsProvider {
 }
 
 type AcmeDnsProviderAcmeDNSReq struct {
-	AccountJSON string `json:"accountJson"`
-	ServerURL   string `json:"serverUrl"`
+	APIBase        string   `json:"apiBase"`
+	AllowList      []string `json:"allowList"`
+	StoragePath    string   `json:"storagePath"`
+	StorageBaseURL string   `json:"storageBaseUrl"`
 }
 
 func (req *AcmeDnsProviderAcmeDNSReq) validate(field string) (res []vld.Validator) {
@@ -158,8 +160,9 @@ func (req *AcmeDnsProviderAcmeDNSReq) validate(field string) (res []vld.Validato
 	if field != "" {
 		field += "."
 	}
-	res = append(res, basedto.ValidateStr(&req.AccountJSON, true, 1, len10000, field+"accountJson")...)
-	res = append(res, basedto.ValidateStr(&req.ServerURL, true, 1, len1000, field+"serverUrl")...)
+	res = append(res, basedto.ValidateStr(&req.APIBase, true, 1, len1000, field+"apiBase")...)
+	res = append(res, basedto.ValidateStr(&req.StoragePath, false, 1, len1000, field+"storagePath")...)
+	res = append(res, basedto.ValidateStr(&req.StorageBaseURL, false, 1, len1000, field+"storageBaseUrl")...)
 	return res
 }
 
@@ -234,8 +237,8 @@ func (req *AcmeDnsProviderDigitalOceanReq) validate(field string) (res []vld.Val
 }
 
 type AcmeDnsProviderGCloudReq struct {
-	ProjectID          string `json:"projectId"`
-	ServiceAccountJSON string `json:"serviceAccountJson"`
+	ProjectID      string `json:"projectId"`
+	ServiceAccount string `json:"serviceAccount"`
 }
 
 func (req *AcmeDnsProviderGCloudReq) validate(field string) (res []vld.Validator) {
@@ -245,8 +248,8 @@ func (req *AcmeDnsProviderGCloudReq) validate(field string) (res []vld.Validator
 	if field != "" {
 		field += "."
 	}
-	res = append(res, basedto.ValidateStr(&req.ProjectID, true, 1, len200, field+"projectId")...)
-	res = append(res, basedto.ValidateStr(&req.ServiceAccountJSON, true, 1, len10000, field+"serviceAccountJson")...)
+	res = append(res, basedto.ValidateStr(&req.ServiceAccount, true, 1, len10000, field+"serviceAccount")...)
+	res = append(res, basedto.ValidateStr(&req.ProjectID, false, 1, len200, field+"projectId")...)
 	return res
 }
 
@@ -269,7 +272,6 @@ func (req *AcmeDnsProviderGoDaddyReq) validate(field string) (res []vld.Validato
 
 type AcmeDnsProviderHetznerReq struct {
 	APIToken string `json:"apiToken"`
-	ZoneID   string `json:"zoneId,omitempty"`
 }
 
 func (req *AcmeDnsProviderHetznerReq) validate(field string) (res []vld.Validator) {
@@ -280,14 +282,12 @@ func (req *AcmeDnsProviderHetznerReq) validate(field string) (res []vld.Validato
 		field += "."
 	}
 	res = append(res, basedto.ValidateStr(&req.APIToken, true, 1, len1000, field+"apiToken")...)
-	res = append(res, basedto.ValidateStr(&req.ZoneID, false, 0, len200, field+"zoneId")...)
 	return res
 }
 
 type AcmeDnsProviderHuaweiCloudReq struct {
 	AccessKey string `json:"accessKey"`
 	SecretKey string `json:"secretKey"`
-	ProjectID string `json:"projectId,omitempty"`
 	Region    string `json:"region,omitempty"`
 }
 
@@ -300,7 +300,6 @@ func (req *AcmeDnsProviderHuaweiCloudReq) validate(field string) (res []vld.Vali
 	}
 	res = append(res, basedto.ValidateStr(&req.AccessKey, true, 1, len200, field+"accessKey")...)
 	res = append(res, basedto.ValidateStr(&req.SecretKey, true, 1, len1000, field+"secretKey")...)
-	res = append(res, basedto.ValidateStr(&req.ProjectID, false, 0, len200, field+"projectId")...)
 	res = append(res, basedto.ValidateStr(&req.Region, false, 0, len200, field+"region")...)
 	return res
 }

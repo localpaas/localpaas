@@ -61,8 +61,7 @@ func (uc *UC) CreateVolume(
 		}
 
 	default:
-		return nil, apperrors.New(apperrors.ErrUnsupported).
-			WithMsgLog("driver '%s' is not supported", req.Driver)
+		return nil, apperrors.NewUnsupported(apperrors.Fmt("Driver '%v'", req.Driver))
 	}
 	// Overwrite the driver opts with the extra values from the client
 	maps.Copy(driverOpts, req.Options)
