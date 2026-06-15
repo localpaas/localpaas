@@ -195,3 +195,58 @@ func (h *Handler) CancelTask(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, resp)
 }
+
+// GetTaskLogs Gets logs of a task
+// @Summary Gets logs of a task
+// @Description Gets logs of a task
+// @Tags    system_tasks
+// @Produce json
+// @Id      getTaskLogs
+// @Param   taskID path string true "task ID"
+// @Success 200 {object} taskdto.GetTaskLogsResp
+// @Failure 400 {object} apperrors.ErrorInfo
+// @Failure 500 {object} apperrors.ErrorInfo
+// @Router  /system/tasks/{taskID}/logs [get]
+func (h *Handler) GetTaskLogs(ctx *gin.Context) {
+	taskID, err := h.ParseStringParam(ctx, "taskID")
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	auth, err := h.authHandler.GetCurrentAuth(ctx, &permission.AccessCheck{
+		ResourceModule: base.ResourceModuleSystem,
+		ResourceType:   base.ResourceTypeTask,
+		ResourceID:     taskID,
+		Action:         base.ActionTypeRead,
+	})
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	req := taskdto.NewGetTaskLogsReq()
+	req.TaskID = taskID
+	if err = h.ParseAndValidateRequest(ctx, req, nil); err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	isWebsocketReq := h.IsWebsocketRequest(ctx)
+	if !isWebsocketReq {
+		req.Follow = false // Not a websocket request, we don't support `follow` flag
+	}
+
+	resp, err := h.taskUC.GetTaskLogs(h.RequestCtx(ctx), auth, req)
+	if err != nil {
+		h.RenderError(ctx, err)
+		return
+	}
+
+	if !isWebsocketReq {
+		// Not a websocket request, return data via body
+		ctx.JSON(http.StatusOK, resp)
+	} else {
+		h.StreamAppLogs(ctx, resp.Data.StaticLogs, resp.Data.LogsStream, resp.Data.LogsStreamCloser)
+	}
+}
