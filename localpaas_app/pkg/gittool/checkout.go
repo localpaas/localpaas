@@ -146,7 +146,7 @@ func (cli *checkoutCli) processCheckoutOpts(
 					sshKeyFile, err.Error()), true, cli.opts.LogStore)
 				return apperrors.Wrap(err)
 			}
-			sshCmd := "ssh -o StrictHostKeyChecking=no -i " + sshKeyFile
+			sshCmd := "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i " + sshKeyFile
 			cli.sharedEnv = append(cli.sharedEnv, "GIT_SSH_COMMAND="+sshCmd)
 
 		default:

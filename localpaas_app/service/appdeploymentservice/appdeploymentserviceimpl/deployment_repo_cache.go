@@ -38,6 +38,10 @@ func (s *service) repoCheckoutLoadCache(
 	if data.ImageBuildSettings != nil && !data.ImageBuildSettings.Sources.RepoCache {
 		return nil
 	}
+	// Cache is not enabled in the current deployment, skip loading cache
+	if data.Deployment.Settings.NoCache {
+		return nil
+	}
 
 	defer func() {
 		if err != nil || recover() != nil {
@@ -99,6 +103,10 @@ func (s *service) repoCheckoutSaveCache(
 ) (err error) {
 	// Cache is not enabled in the settings, skip saving cache
 	if data.ImageBuildSettings != nil && !data.ImageBuildSettings.Sources.RepoCache {
+		return nil
+	}
+	// Cache is not enabled in the current deployment, skip loading cache
+	if data.Deployment.Settings.NoCache {
 		return nil
 	}
 

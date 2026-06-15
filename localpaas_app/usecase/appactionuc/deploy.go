@@ -146,6 +146,8 @@ func (uc *UC) prepareUpdatingAppDeploymentSettings(
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+	// Set NoCache for the current deployment only if configured
+	deployment.Settings.NoCache = req.NoCache
 	// Set trigger for the deployment
 	deployment.Trigger = &entity.AppDeploymentTrigger{
 		Source:   base.DeploymentTriggerSourceAPI,

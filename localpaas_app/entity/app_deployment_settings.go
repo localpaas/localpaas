@@ -24,6 +24,7 @@ type AppDeploymentSettings struct {
 	ImageSource  *DeploymentImageSource `json:"imageSource"`
 	RepoSource   *DeploymentRepoSource  `json:"repoSource"`
 	ActiveMethod base.DeploymentMethod  `json:"activeMethod"`
+	NoCache      bool                   `json:"noCache,omitempty"`
 
 	Command               string `json:"command,omitempty"`
 	WorkingDir            string `json:"workingDir,omitempty"`

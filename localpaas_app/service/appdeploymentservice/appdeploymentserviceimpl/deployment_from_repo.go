@@ -267,7 +267,7 @@ func (s *service) repoDeployStepImageBuild(
 		opts.AuthConfigs = authConfigs
 
 		if buildSetting != nil {
-			opts.NoCache = buildSetting.NoCache
+			opts.NoCache = buildSetting.NoCache || data.Deployment.Settings.NoCache
 			opts.SuppressOutput = buildSetting.NoVerbose
 			res := buildSetting.Resources
 			if res.CPUs > 0 {

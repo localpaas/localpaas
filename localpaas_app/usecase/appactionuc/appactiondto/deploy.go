@@ -23,6 +23,7 @@ type DeployAppReq struct {
 	ImageSource  *DeploymentImageSourceReq `json:"imageSource"`
 	RepoSource   *DeploymentRepoSourceReq  `json:"repoSource"`
 	ActiveMethod base.DeploymentMethod     `json:"activeMethod"`
+	NoCache      bool                      `json:"noCache"`
 	ChangeID     string                    `json:"changeId"`
 }
 
