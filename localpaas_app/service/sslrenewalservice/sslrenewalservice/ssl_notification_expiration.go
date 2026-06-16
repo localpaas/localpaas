@@ -47,7 +47,7 @@ func (s *service) sslBuildExpiringNotificationMsgData(
 	item *sslRenewalDataItem,
 	data *sslRenewalData,
 ) {
-	ssl := item.Setting.MustAsSSLCert()
+	sslCert := item.Setting.MustAsSSLCert()
 	project := item.Setting.BelongToProject
 	app := item.Setting.BelongToApp
 	msgData := &notificationservice.TemplateDataSSLExpiring{
@@ -56,11 +56,11 @@ func (s *service) sslBuildExpiringNotificationMsgData(
 				fmt.Sprintf(" Your SSL expiring in %v", item.ExpiringNotifMsgData.ExpireIn),
 		},
 		SSLName:   item.Setting.Name,
-		SSLType:   string(ssl.CertType),
-		Domain:    ssl.Domain,
+		SSLType:   string(sslCert.CertType),
+		Domain:    sslCert.Domain,
 		CreatedAt: item.Setting.CreatedAt.Truncate(time.Second),
-		ExpireAt:  ssl.ExpireAt.Truncate(time.Second),
-		ExpireIn:  timeutil.Duration(ssl.ExpireAt.Sub(timeutil.NowUTC()).Truncate(time.Hour)),
+		ExpireAt:  sslCert.ExpireAt.Truncate(time.Second),
+		ExpireIn:  timeutil.Duration(sslCert.ExpireAt.Sub(timeutil.NowUTC()).Truncate(time.Hour)),
 	}
 	if project != nil {
 		msgData.ProjectName = project.Name
@@ -72,13 +72,13 @@ func (s *service) sslBuildExpiringNotificationMsgData(
 	switch {
 	case app != nil:
 		msgData.DashboardLink = config.Current.DashboardAppSchedTaskDetailsURL(app.ProjectID, app.ID,
-			data.SchedJob.ID, data.Task.ID)
+			data.RenewalJobSetting.ID, data.Task.ID)
 	case project != nil:
 		msgData.DashboardLink = config.Current.DashboardProjectSchedTaskDetailsURL(project.ID,
-			data.SchedJob.ID, data.Task.ID)
+			data.RenewalJobSetting.ID, data.Task.ID)
 	default:
 		msgData.DashboardLink = config.Current.DashboardGlobalSchedTaskDetailsURL(
-			data.SchedJob.ID, data.Task.ID)
+			data.RenewalJobSetting.ID, data.Task.ID)
 	}
 	item.ExpiringNotifMsgData = msgData
 }

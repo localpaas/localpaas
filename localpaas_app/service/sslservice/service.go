@@ -7,6 +7,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/services/ssl/acme"
 )
 
 type Service interface {
@@ -17,4 +18,6 @@ type Service interface {
 		isCA bool) (cert, key []byte, err error)
 	ObtainCert(ctx context.Context, sslSetting *entity.Setting, refObjects *entity.RefObjects,
 		writeFiles bool) (updated bool, err error)
+
+	GetAcmeClient(sslSetting *entity.Setting, refObjects *entity.RefObjects) (*acme.Client, error)
 }

@@ -7,8 +7,8 @@ import (
 
 type SSLRenewalReq struct {
 	*queue.TaskExecData
-	SchedJob        *entity.Setting
-	RenewalSettings *entity.SSLRenewal
+	RenewalJobSetting *entity.Setting
+	RenewalSettings   *entity.SSLRenewal
 }
 
 type SSLRenewalResp struct {

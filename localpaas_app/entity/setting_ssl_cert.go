@@ -34,6 +34,7 @@ type SSLCert struct {
 	Email         string                 `json:"email"`
 	BaseFilename  string                 `json:"baseFilename,omitempty"`
 	AutoRenew     bool                   `json:"autoRenew,omitempty"`
+	AcmeProvider  ObjectID               `json:"acmeProvider,omitzero"`
 	RenewableFrom time.Time              `json:"renewableFrom,omitzero"`
 	ExpireAt      time.Time              `json:"expireAt,omitzero"`
 	NotifyFrom    time.Time              `json:"notifyFrom,omitzero"`
@@ -49,6 +50,9 @@ func (s *SSLCert) GetRefObjectIDs() *RefObjectIDs {
 	if s.Provider.ID != "" {
 		refIDs.RefSettingIDs = append(refIDs.RefSettingIDs, s.Provider.ID)
 	}
+	if s.AcmeProvider.ID != "" {
+		refIDs.RefSettingIDs = append(refIDs.RefSettingIDs, s.AcmeProvider.ID)
+	}
 	if s.Notification != nil {
 		refIDs.AddRefIDs(s.Notification.GetRefObjectIDs())
 	}
@@ -61,7 +65,7 @@ func (s *SSLCert) MustDecrypt() *SSLCert {
 }
 
 func (s *SSLCert) IsRenewable() bool {
-	return s.CertType == base.SSLCertTypeLetsEncrypt || s.CertType == base.SSLCertTypeSelfSigned
+	return s.CertType != base.SSLCertTypeCustom
 }
 
 func (s *SSLCert) Migrate(setting *Setting) (hasChange bool, err error) {

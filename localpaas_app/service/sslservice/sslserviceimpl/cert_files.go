@@ -32,8 +32,8 @@ func (s *service) WriteCertFiles(
 	}
 
 	for _, setting := range settings {
-		ssl := setting.MustAsSSLCert()
-		baseFilename := gofn.Coalesce(ssl.BaseFilename, setting.ID)
+		sslCert := setting.MustAsSSLCert()
+		baseFilename := gofn.Coalesce(sslCert.BaseFilename, setting.ID)
 
 		certFile := baseFilename + ".crt"
 		keyFile := baseFilename + ".key"
@@ -44,8 +44,8 @@ func (s *service) WriteCertFiles(
 			continue
 		}
 
-		certBytes := reflectutil.UnsafeStrToBytes(ssl.Certificate)
-		keyBytes := reflectutil.UnsafeStrToBytes(ssl.PrivateKey.MustGetPlain())
+		certBytes := reflectutil.UnsafeStrToBytes(sslCert.Certificate)
+		keyBytes := reflectutil.UnsafeStrToBytes(sslCert.PrivateKey.MustGetPlain())
 
 		err := fileutil.WriteCerts(certBytes, keyBytes, certDir, certFile, keyFile, true)
 		if err != nil {
@@ -64,8 +64,8 @@ func (s *service) DeleteCertFiles(
 	}
 	certDir := config.Current.DataPathSslCerts().AbsPath()
 	for _, setting := range settings {
-		ssl := setting.MustAsSSLCert()
-		baseFilename := gofn.Coalesce(ssl.BaseFilename, setting.ID)
+		sslCert := setting.MustAsSSLCert()
+		baseFilename := gofn.Coalesce(sslCert.BaseFilename, setting.ID)
 
 		certFile := baseFilename + ".crt"
 		keyFile := baseFilename + ".key"

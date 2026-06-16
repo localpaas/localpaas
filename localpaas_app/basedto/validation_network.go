@@ -15,18 +15,23 @@ func ValidateDomain[T ~string](s *T, required bool, maxLen int, wildcardAllowed 
 		))
 	}
 	if s != nil && *s != "" {
+		domain := string(*s)
+		isWildcard := strings.HasPrefix(domain, "*.")
+		if isWildcard {
+			domain = strings.TrimPrefix(domain, "*.")
+		}
 		result = append(result,
 			vld.StrLen(s, 1, maxLen).OnError(
 				vld.SetField(field, nil),
 				vld.SetCustomKey("ERR_VLD_FIELD_LENGTH_INVALID"),
 			),
-			vld.StrIsDNSName(s).OnError(
+			vld.StrIsDNSName(&domain).OnError(
 				vld.SetField(field, nil),
 				vld.SetCustomKey("ERR_VLD_DOMAIN_INVALID"),
 			),
 		)
-		if !wildcardAllowed {
-			result = append(result, vld.Must(!strings.Contains(string(*s), "*")).OnError(
+		if isWildcard && !wildcardAllowed {
+			result = append(result, vld.Must(false).OnError(
 				vld.SetField(field, nil),
 				vld.SetCustomKey("ERR_VLD_WILDCARD_UNALLOWED"),
 			))

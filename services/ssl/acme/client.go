@@ -55,7 +55,7 @@ func (u *User) GetPrivateKey() crypto.Signer {
 	return u.PrivateKey
 }
 
-func NewClient(cfg ACMEConfig) (client *Client, err error) {
+func NewClient(cfg *ACMEConfig) (client *Client, err error) {
 	userPrivKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
 		return nil, apperrors.New(err).WithMsgLog("failed to generate private key for user")
@@ -97,7 +97,7 @@ func NewClient(cfg ACMEConfig) (client *Client, err error) {
 
 	return &Client{
 		client:  c,
-		acmeCfg: &cfg,
+		acmeCfg: cfg,
 		user:    user,
 	}, nil
 }
@@ -110,14 +110,16 @@ func (client *Client) registerUser(ctx context.Context) (err error) {
 	var reg *acme.ExtendedAccount
 
 	// If EAB info is used
-	if client.acmeCfg != nil && client.acmeCfg.EABKid != "" && client.acmeCfg.EABHmacKey != "" {
+	if client.acmeCfg.EABKid != "" && client.acmeCfg.EABHmacKey != "" {
 		reg, err = client.client.Registration.RegisterWithExternalAccountBinding(ctx, registration.RegisterEABOptions{
 			TermsOfServiceAgreed: true,
 			Kid:                  client.acmeCfg.EABKid,
 			HmacEncoded:          client.acmeCfg.EABHmacKey,
 		})
 	} else {
-		reg, err = client.client.Registration.Register(ctx, registration.RegisterOptions{TermsOfServiceAgreed: true})
+		reg, err = client.client.Registration.Register(ctx, registration.RegisterOptions{
+			TermsOfServiceAgreed: true,
+		})
 	}
 	if err != nil {
 		return apperrors.New(err).WithMsgLog("failed to register user")

@@ -20,7 +20,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/sslrenewalservice"
-	"github.com/localpaas/localpaas/services/ssl/acme"
 )
 
 const (
@@ -30,9 +29,8 @@ const (
 
 type sslRenewalData struct {
 	*sslrenewalservice.SSLRenewalReq
-	TaskOutput  *entity.TaskSSLRenewalOutput
-	AcmeClients map[string]*acme.Client
-	Mu          *sync.Mutex
+	TaskOutput *entity.TaskSSLRenewalOutput
+	Mu         *sync.Mutex
 }
 
 type sslRenewalDataItem struct {
@@ -58,7 +56,6 @@ func (s *service) SSLRenew(
 	data := &sslRenewalData{
 		SSLRenewalReq: req,
 		TaskOutput:    &entity.TaskSSLRenewalOutput{},
-		AcmeClients:   make(map[string]*acme.Client),
 		Mu:            &sync.Mutex{},
 	}
 
@@ -83,11 +80,11 @@ func (s *service) SSLRenew(
 
 		_ = gofn.ExecTaskFuncEx(ctx, sslHandlingConcurrentTasks, false,
 			func(ctx context.Context, taskItem *sslRenewalDataItem) error {
-				ssl := taskItem.Setting.MustAsSSLCert()
+				sslCert := taskItem.Setting.MustAsSSLCert()
 				switch {
-				case s.sslShouldNotifyOfExpiration(ssl, timeNow):
+				case s.sslShouldNotifyOfExpiration(sslCert, timeNow):
 					taskItem.ExpiringNotifyOnly = true
-				case s.sslShouldRenew(ssl, timeNow):
+				case s.sslShouldRenew(sslCert, timeNow):
 					taskItem.Renewal = true
 					taskItem.RenewalError = s.sslRenew(ctx, taskItem.Setting, data)
 					if taskItem.RenewalError != nil {
@@ -219,39 +216,37 @@ func (s *service) sslShouldRenew(
 
 func (s *service) sslRenew(
 	ctx context.Context,
-	setting *entity.Setting,
+	sslSetting *entity.Setting,
 	data *sslRenewalData,
 ) (err error) {
-	ssl := setting.MustAsSSLCert()
+	sslCert := sslSetting.MustAsSSLCert()
 	startTime := timeutil.NowUTC()
 	defer func() {
 		if err != nil {
 			_ = data.LogStore.Add(ctx, tasklog.NewWarnFrame(fmt.Sprintf(
 				"Obtaining certificate from %v for SSL %v failed with error: %v",
-				ssl.CertType, setting.ID, err.Error()), tasklog.TsNow))
+				sslCert.CertType, sslSetting.ID, err.Error()), tasklog.TsNow))
 		} else {
 			duration := timeutil.NowUTC().Sub(startTime)
 			_ = data.LogStore.Add(ctx, tasklog.NewOutFrame(fmt.Sprintf(
 				"Obtaining certificate from %v for SSL %v finished in %v",
-				ssl.CertType, setting.ID, duration), tasklog.TsNow))
+				sslCert.CertType, sslSetting.ID, duration), tasklog.TsNow))
 		}
 	}()
 
-	switch ssl.CertType {
+	switch sslCert.CertType {
 	case base.SSLCertTypeLetsEncrypt, base.SSLCertTypeZeroSSL, base.SSLCertTypeGoogleTrust:
-		err = s.sslRenewByAcme(ctx, ssl, data)
+		err = s.sslRenewByAcme(ctx, sslSetting, data)
 	case base.SSLCertTypeSelfSigned:
-		err = s.sslRenewSelfSignedCert(ctx, ssl, data)
+		err = s.sslRenewSelfSignedCert(ctx, sslSetting, data)
 	case base.SSLCertTypeCustom:
 		return nil // treat as no error
 	default:
-		return apperrors.NewUnsupported(apperrors.Fmt("SSL type '%v'", ssl.CertType))
+		return apperrors.NewUnsupported(apperrors.Fmt("SSL type '%v'", sslCert.CertType))
 	}
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-
-	setting.MustSetData(ssl)
 	return nil
 }
 

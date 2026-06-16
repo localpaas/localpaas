@@ -5,16 +5,13 @@ import (
 	"crypto/x509/pkix"
 
 	"github.com/go-acme/lego/v5/certcrypto"
-	"github.com/go-acme/lego/v5/lego"
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
-	"github.com/localpaas/localpaas/localpaas_app/config"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
-	"github.com/localpaas/localpaas/services/ssl/acme"
 )
 
 func (s *service) ObtainCert(
@@ -23,8 +20,8 @@ func (s *service) ObtainCert(
 	refObjects *entity.RefObjects,
 	writeFiles bool,
 ) (updated bool, err error) {
-	ssl := sslSetting.MustAsSSLCert()
-	switch ssl.CertType {
+	sslCert := sslSetting.MustAsSSLCert()
+	switch sslCert.CertType {
 	case base.SSLCertTypeLetsEncrypt, base.SSLCertTypeZeroSSL, base.SSLCertTypeGoogleTrust:
 		updated, err = s.obtainCertByAcme(ctx, sslSetting, refObjects)
 	case base.SSLCertTypeSelfSigned:
@@ -33,7 +30,7 @@ func (s *service) ObtainCert(
 		// No need to init as it's custom by user
 		return false, nil
 	default:
-		return false, apperrors.NewUnsupported(apperrors.Fmt("Unknown cert type '%v'", ssl.CertType))
+		return false, apperrors.NewUnsupported(apperrors.Fmt("Cert type '%v'", sslCert.CertType))
 	}
 	if err != nil {
 		return false, apperrors.Wrap(err)
@@ -54,68 +51,32 @@ func (s *service) obtainCertByAcme(
 	sslSetting *entity.Setting,
 	refObjects *entity.RefObjects,
 ) (updated bool, err error) {
-	ssl := sslSetting.MustAsSSLCert()
-	keyType := gofn.Coalesce(ssl.KeyType, base.SSLKeyTypeDefault)
-
-	var provider *entity.SSLProvider
-	if ssl.Provider.ID != "" {
-		providerSetting := refObjects.RefSettings[ssl.Provider.ID]
-		if providerSetting == nil {
-			return false, apperrors.NewNotFound(apperrors.Fmt("SSL provider '%v'", ssl.Provider.ID))
-		}
-		provider = providerSetting.MustAsSSLProvider()
-	}
-
-	http01Provider, err := acme.NewHTTP01Provider(config.Current.DataPathSslAcme().AbsPath())
+	acmeClient, err := s.GetAcmeClient(sslSetting, refObjects)
 	if err != nil {
 		return false, apperrors.Wrap(err)
 	}
 
-	acmeCfg := acme.ACMEConfig{
-		Email:          ssl.Email,
-		HTTP01Provider: http01Provider,
-	}
-	if provider != nil {
-		switch ssl.CertType {
-		case base.SSLCertTypeLetsEncrypt:
-			// Do nothing for now
-		case base.SSLCertTypeZeroSSL:
-			acmeCfg.CACode = lego.CodeZeroSSL
-			acmeCfg.EABKid = provider.ZeroSSL.EABKid
-			acmeCfg.EABHmacKey = provider.ZeroSSL.EABHmacKey.MustGetPlain()
-		case base.SSLCertTypeGoogleTrust:
-			acmeCfg.CACode = lego.CodeGoogleTrust
-			acmeCfg.EABKid = provider.GoogleTrust.EABKid
-			acmeCfg.EABHmacKey = provider.GoogleTrust.EABHmacKey.MustGetPlain()
-		case base.SSLCertTypeSelfSigned, base.SSLCertTypeCustom:
-			// Do nothing
-		}
-	}
-
-	acmeClient, err := acme.NewClient(acmeCfg)
+	sslCert := sslSetting.MustAsSSLCert()
+	keyType := gofn.Coalesce(sslCert.KeyType, base.SSLKeyTypeDefault)
+	certificates, renewalInfo, err := acmeClient.ObtainCertificateWithDetails(ctx, []string{sslCert.Domain}, keyType)
 	if err != nil {
 		return false, apperrors.Wrap(err)
 	}
 
-	certificates, renewalInfo, err := acmeClient.ObtainCertificateWithDetails(ctx, []string{ssl.Domain}, keyType)
-	if err != nil {
-		return false, apperrors.Wrap(err)
-	}
-
-	ssl.Certificate = string(certificates.Certificate)
-	ssl.PrivateKey = entity.NewEncryptedField(string(certificates.PrivateKey))
+	sslCert.Certificate = string(certificates.Certificate)
+	sslCert.PrivateKey = entity.NewEncryptedField(string(certificates.PrivateKey))
 	if renewalInfo != nil {
-		ssl.RenewableFrom = renewalInfo.SuggestedWindow.Start.UTC()
+		sslCert.RenewableFrom = renewalInfo.SuggestedWindow.Start.UTC()
 	}
 	x509Cert, err := certcrypto.ParsePEMCertificate(certificates.Certificate)
 	if err != nil {
 		return false, apperrors.Wrap(err)
 	}
-	ssl.ExpireAt = x509Cert.NotAfter.UTC()
-	ssl.ValidPeriod = timeutil.Duration(ssl.ExpireAt.Sub(timeutil.NowUTC()))
+	sslCert.ExpireAt = x509Cert.NotAfter.UTC()
+	sslCert.ValidPeriod = timeutil.Duration(sslCert.ExpireAt.Sub(timeutil.NowUTC()))
 
 	// Assign the update to the setting
-	sslSetting.MustSetData(ssl)
+	sslSetting.MustSetData(sslCert)
 
 	return true, nil
 }
@@ -124,24 +85,24 @@ func (s *service) obtainCertSelfSigned(
 	_ context.Context,
 	sslSetting *entity.Setting,
 ) (updated bool, err error) {
-	ssl := sslSetting.MustAsSSLCert()
+	sslCert := sslSetting.MustAsSSLCert()
 	notBefore := timeutil.NowUTC()
-	notAfter := notBefore.Add(ssl.ValidPeriod.ToDuration())
+	notAfter := notBefore.Add(sslCert.ValidPeriod.ToDuration())
 
-	certBytes, keyBytes, err := s.GenerateCertAsPEM(&pkix.Name{CommonName: ssl.Domain}, ssl.KeyType,
+	certBytes, keyBytes, err := s.GenerateCertAsPEM(&pkix.Name{CommonName: sslCert.Domain}, sslCert.KeyType,
 		notBefore, notAfter, false)
 	if err != nil {
 		return false, apperrors.Wrap(err)
 	}
 
-	ssl.Certificate = reflectutil.UnsafeBytesToStr(certBytes)
-	ssl.PrivateKey = entity.NewEncryptedField(reflectutil.UnsafeBytesToStr(keyBytes))
-	ssl.ExpireAt = notAfter
-	ssl.RenewableFrom = ssl.ExpireAt.Add(-base.SSLSelfSignedRenewalPeriodDefault)
-	ssl.NotifyFrom = ssl.RenewableFrom
+	sslCert.Certificate = reflectutil.UnsafeBytesToStr(certBytes)
+	sslCert.PrivateKey = entity.NewEncryptedField(reflectutil.UnsafeBytesToStr(keyBytes))
+	sslCert.ExpireAt = notAfter
+	sslCert.RenewableFrom = sslCert.ExpireAt.Add(-base.SSLSelfSignedRenewalPeriodDefault)
+	sslCert.NotifyFrom = sslCert.RenewableFrom
 
 	// Assign the update to the setting
-	sslSetting.MustSetData(ssl)
+	sslSetting.MustSetData(sslCert)
 
 	return true, nil
 }

@@ -13,27 +13,33 @@ import (
 
 func (s *service) sslRenewSelfSignedCert(
 	_ context.Context,
-	ssl *entity.SSLCert,
+	sslSetting *entity.Setting,
 	_ *sslRenewalData,
 ) (err error) {
-	if !ssl.AutoRenew {
+	sslCert := sslSetting.MustAsSSLCert()
+	if !sslCert.AutoRenew {
 		return nil
 	}
 
 	notBefore := timeutil.NowUTC()
-	notAfter := notBefore.Add(ssl.ValidPeriod.ToDuration())
+	notAfter := notBefore.Add(sslCert.ValidPeriod.ToDuration())
 
-	certBytes, keyBytes, err := s.sslService.GenerateCertAsPEM(&pkix.Name{CommonName: ssl.Domain}, ssl.KeyType,
+	certBytes, keyBytes, err := s.sslService.GenerateCertAsPEM(&pkix.Name{CommonName: sslCert.Domain}, sslCert.KeyType,
 		notBefore, notAfter, false)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	ssl.Certificate = reflectutil.UnsafeBytesToStr(certBytes)
-	ssl.PrivateKey = entity.NewEncryptedField(reflectutil.UnsafeBytesToStr(keyBytes))
-	ssl.ExpireAt = notAfter
-	ssl.RenewableFrom = ssl.ExpireAt.Add(-base.SSLSelfSignedRenewalPeriodDefault)
-	ssl.NotifyFrom = ssl.RenewableFrom
+	sslCert.Certificate = reflectutil.UnsafeBytesToStr(certBytes)
+	sslCert.PrivateKey = entity.NewEncryptedField(reflectutil.UnsafeBytesToStr(keyBytes))
+	sslCert.ExpireAt = notAfter
+	sslCert.RenewableFrom = sslCert.ExpireAt.Add(-base.SSLSelfSignedRenewalPeriodDefault)
+	sslCert.NotifyFrom = sslCert.RenewableFrom
+
+	err = sslSetting.SetData(sslCert)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
 
 	return nil
 }

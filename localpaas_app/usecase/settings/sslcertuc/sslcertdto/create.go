@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	keyMaxLen = 50000
+	keyMaxLen = 20000
 )
 
 type CreateSSLCertReq struct {
@@ -36,6 +36,7 @@ type SSLCertBaseReq struct {
 	ValidPeriod  timeutil.Duration                 `json:"validPeriod"`
 	Email        string                            `json:"email"`
 	AutoRenew    bool                              `json:"autoRenew"`
+	AcmeProvider basedto.ObjectIDReq               `json:"acmeProvider"`
 	ExpireAt     time.Time                         `json:"expireAt"`
 	NotifyFrom   time.Time                         `json:"notifyFrom"`
 	Notification *basedto.BaseEventNotificationReq `json:"notification"`
@@ -52,6 +53,7 @@ func (req *SSLCertBaseReq) ToEntity() *entity.SSLCert {
 		ValidPeriod:  req.ValidPeriod,
 		Email:        req.Email,
 		AutoRenew:    req.AutoRenew,
+		AcmeProvider: entity.ObjectID{ID: req.AcmeProvider.ID},
 		ExpireAt:     req.ExpireAt,
 		NotifyFrom:   req.NotifyFrom,
 		Notification: req.Notification.ToEntity(),
@@ -84,15 +86,17 @@ func (req *SSLCertBaseReq) validate(field string) (res []vld.Validator) {
 
 	cfg := config.Current
 	requireCert := req.CertType == base.SSLCertTypeCustom
-	wildcardAllowed := req.CertType == base.SSLCertTypeCustom || req.CertType == base.SSLCertTypeSelfSigned
 	requireProvider := req.CertType == base.SSLCertTypeZeroSSL || req.CertType == base.SSLCertTypeGoogleTrust
+	requireAcmeProvider := strings.HasPrefix(req.Domain, "*.") && req.CertType != base.SSLCertTypeCustom &&
+		req.CertType != base.SSLCertTypeSelfSigned
 
 	res = append(res, basedto.ValidateStrIn(&req.CertType, true, base.AllSSLCertTypes, field+"certType")...)
 	res = append(res, basedto.ValidateObjectIDReq(&req.Provider, requireProvider, field+"provider")...)
-	res = append(res, basedto.ValidateDomain(&req.Domain, true, base.DomainNameMaxLen, wildcardAllowed, field+"domain")...)
+	res = append(res, basedto.ValidateDomain(&req.Domain, true, base.DomainNameMaxLen, true, field+"domain")...)
 	res = append(res, basedto.ValidateStr(&req.Certificate, requireCert, 1, keyMaxLen, field+"certificate")...)
 	res = append(res, basedto.ValidateStr(&req.PrivateKey, requireCert, 1, keyMaxLen, field+"privateKey")...)
 	res = append(res, basedto.ValidateEmail(&req.Email, false, field+"email")...)
+	res = append(res, basedto.ValidateObjectIDReq(&req.AcmeProvider, requireAcmeProvider, field+"acmeProvider")...)
 
 	res = append(res, vld.Must(domainhelper.IsSubdomainOrEqual(cfg.RootDomain, req.Domain)).OnError(
 		vld.SetField(field+"domain", nil),

@@ -150,9 +150,9 @@ func (e *Executor) execute(
 			return apperrors.NewNotFound("SSL renewal settings")
 		}
 		resp, err := e.sslRenewalService.SSLRenew(ctx, db, &sslrenewalservice.SSLRenewalReq{
-			TaskExecData:    data.TaskExecData,
-			SchedJob:        data.SchedJob,
-			RenewalSettings: setting.MustAsSSLRenewal(),
+			TaskExecData:      data.TaskExecData,
+			RenewalJobSetting: data.SchedJob,
+			RenewalSettings:   setting.MustAsSSLRenewal(),
 		})
 		if err != nil {
 			return apperrors.Wrap(err)

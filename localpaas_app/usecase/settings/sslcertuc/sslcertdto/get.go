@@ -48,6 +48,7 @@ type SSLCertResp struct {
 	ValidPeriod   timeutil.Duration                  `json:"validPeriod"`
 	Email         string                             `json:"email"`
 	AutoRenew     bool                               `json:"autoRenew"`
+	AcmeProvider  *settings.BaseSettingResp          `json:"acmeProvider"`
 	RenewableFrom *time.Time                         `json:"renewableFrom" copy:",nilonzero"`
 	ExpireAt      *time.Time                         `json:"expireAt" copy:",nilonzero"`
 	NotifyFrom    *time.Time                         `json:"notifyFrom" copy:",nilonzero"`
@@ -77,6 +78,14 @@ func TransformSSLCert(
 	if config.Provider.ID != "" {
 		providerSetting := refObjects.RefSettings[config.Provider.ID]
 		resp.Provider, err = settings.TransformSettingBase(providerSetting)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+	}
+
+	if config.AcmeProvider.ID != "" {
+		providerSetting := refObjects.RefSettings[config.AcmeProvider.ID]
+		resp.AcmeProvider, err = settings.TransformSettingBase(providerSetting)
 		if err != nil {
 			return nil, apperrors.Wrap(err)
 		}

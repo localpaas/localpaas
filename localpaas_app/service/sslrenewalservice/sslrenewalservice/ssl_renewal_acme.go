@@ -14,35 +14,40 @@ import (
 
 func (s *service) sslRenewByAcme(
 	ctx context.Context,
-	ssl *entity.SSLCert,
+	sslSetting *entity.Setting,
 	data *sslRenewalData,
 ) (err error) {
-	if !ssl.AutoRenew {
+	sslCert := sslSetting.MustAsSSLCert()
+	if !sslCert.AutoRenew {
 		return nil
 	}
 
-	acmeClient, err := s.sslGetAcmeClient(ssl, data)
+	acmeClient, err := s.sslService.GetAcmeClient(sslSetting, data.RefObjects)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	keyType := gofn.Coalesce(ssl.KeyType, base.SSLKeyTypeDefault)
-	certificates, renewalInfo, err := acmeClient.ObtainCertificateWithDetails(ctx, []string{ssl.Domain}, keyType)
+	keyType := gofn.Coalesce(sslCert.KeyType, base.SSLKeyTypeDefault)
+	certificates, renewalInfo, err := acmeClient.ObtainCertificateWithDetails(ctx, []string{sslCert.Domain}, keyType)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
 
-	ssl.Certificate = string(certificates.Certificate)
-	ssl.PrivateKey = entity.NewEncryptedField(string(certificates.PrivateKey))
+	sslCert.Certificate = string(certificates.Certificate)
+	sslCert.PrivateKey = entity.NewEncryptedField(string(certificates.PrivateKey))
 	if renewalInfo != nil {
-		ssl.RenewableFrom = renewalInfo.SuggestedWindow.Start.UTC()
+		sslCert.RenewableFrom = renewalInfo.SuggestedWindow.Start.UTC()
 	}
 	x509Cert, err := certcrypto.ParsePEMCertificate(certificates.Certificate)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	ssl.ExpireAt = x509Cert.NotAfter.UTC()
-	ssl.ValidPeriod = timeutil.Duration(ssl.ExpireAt.Sub(timeutil.NowUTC()))
+	sslCert.ExpireAt = x509Cert.NotAfter.UTC()
+	sslCert.ValidPeriod = timeutil.Duration(sslCert.ExpireAt.Sub(timeutil.NowUTC()))
 
+	err = sslSetting.SetData(sslCert)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
 	return nil
 }
