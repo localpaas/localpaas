@@ -62,15 +62,15 @@ func (h *Handler) UpdateUniqueSetting(
 	reqCtx := h.RequestCtx(ctx)
 
 	switch resType { //nolint:exhaustive
-	case base.ResourceTypeImageBuildSettings:
-		r := imagebuildsettingsdto.NewUpdateImageBuildSettingsReq()
-		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.ImageBuildUC.UpdateImageBuildSettings(reqCtx, auth, r) }
-
 	case base.ResourceTypeDomainSettings:
 		r := domainsettingsdto.NewUpdateDomainSettingsReq()
 		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.DomainSettingsUC.UpdateDomainSettings(reqCtx, auth, r) }
+
+	case base.ResourceTypeImageBuildSettings:
+		r := imagebuildsettingsdto.NewUpdateImageBuildSettingsReq()
+		r.Scope = scope
+		req, ucFunc = r, func() (any, error) { return h.ImageBuildUC.UpdateImageBuildSettings(reqCtx, auth, r) }
 
 	case base.ResourceTypeStorageSettings:
 		r := storagesettingsdto.NewUpdateStorageSettingsReq()

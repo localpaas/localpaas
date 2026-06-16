@@ -79,16 +79,6 @@ func (h *Handler) CreateSetting(
 	reqCtx := h.RequestCtx(ctx)
 
 	switch resType { //nolint:exhaustive
-	case base.ResourceTypeBasicAuth:
-		r := basicauthdto.NewCreateBasicAuthReq()
-		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.BasicAuthUC.CreateBasicAuth(reqCtx, auth, r) }
-
-	case base.ResourceTypeGithubApp:
-		r := githubappdto.NewCreateGithubAppReq()
-		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.GithubAppUC.CreateGithubApp(reqCtx, auth, r) }
-
 	case base.ResourceTypeAccessToken:
 		r := accesstokendto.NewCreateAccessTokenReq()
 		r.Scope = scope
@@ -98,6 +88,51 @@ func (h *Handler) CreateSetting(
 		r := acmednsproviderdto.NewCreateAcmeDnsProviderReq()
 		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.AcmeDnsProviderUC.CreateAcmeDnsProvider(reqCtx, auth, r) }
+
+	case base.ResourceTypeAPIKey:
+		r := apikeydto.NewCreateAPIKeyReq()
+		r.Scope = scope
+		req, ucFunc = r, func() (any, error) { return h.APIKeyUC.CreateAPIKey(reqCtx, auth, r) }
+
+	case base.ResourceTypeBasicAuth:
+		r := basicauthdto.NewCreateBasicAuthReq()
+		r.Scope = scope
+		req, ucFunc = r, func() (any, error) { return h.BasicAuthUC.CreateBasicAuth(reqCtx, auth, r) }
+
+	case base.ResourceTypeCloudStorage:
+		r := cloudstoragedto.NewCreateCloudStorageReq()
+		r.Scope = scope
+		req, ucFunc = r, func() (any, error) { return h.CloudStorageUC.CreateCloudStorage(reqCtx, auth, r) }
+
+	case base.ResourceTypeConfigFile:
+		r := configfiledto.NewCreateConfigFileReq()
+		r.Scope = scope
+		req, ucFunc = r, func() (any, error) { return h.ConfigFileUC.CreateConfigFile(reqCtx, auth, r) }
+
+	case base.ResourceTypeEmail:
+		r := emaildto.NewCreateEmailReq()
+		r.Scope = scope
+		req, ucFunc = r, func() (any, error) { return h.EmailUC.CreateEmail(reqCtx, auth, r) }
+
+	case base.ResourceTypeGithubApp:
+		r := githubappdto.NewCreateGithubAppReq()
+		r.Scope = scope
+		req, ucFunc = r, func() (any, error) { return h.GithubAppUC.CreateGithubApp(reqCtx, auth, r) }
+
+	case base.ResourceTypeHealthcheck:
+		r := healthcheckdto.NewCreateHealthcheckReq()
+		r.Scope = scope
+		req, ucFunc = r, func() (any, error) { return h.HealthcheckUC.CreateHealthcheck(reqCtx, auth, r) }
+
+	case base.ResourceTypeIMService:
+		r := imservicedto.NewCreateIMServiceReq()
+		r.Scope = scope
+		req, ucFunc = r, func() (any, error) { return h.IMServiceUC.CreateIMService(reqCtx, auth, r) }
+
+	case base.ResourceTypeNotification:
+		r := notificationdto.NewCreateNotificationReq()
+		r.Scope = scope
+		req, ucFunc = r, func() (any, error) { return h.NotificationUC.CreateNotification(reqCtx, auth, r) }
 
 	case base.ResourceTypeOAuth:
 		r := oauthdto.NewCreateOAuthReq()
@@ -109,70 +144,35 @@ func (h *Handler) CreateSetting(
 		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.RegistryAuthUC.CreateRegistryAuth(reqCtx, auth, r) }
 
-	case base.ResourceTypeCloudStorage:
-		r := cloudstoragedto.NewCreateCloudStorageReq()
+	case base.ResourceTypeRepoWebhook:
+		r := repowebhookdto.NewCreateRepoWebhookReq()
 		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.CloudStorageUC.CreateCloudStorage(reqCtx, auth, r) }
-
-	case base.ResourceTypeSSHKey:
-		r := sshkeydto.NewCreateSSHKeyReq()
-		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.SSHKeyUC.CreateSSHKey(reqCtx, auth, r) }
-
-	case base.ResourceTypeSSLProvider:
-		r := sslproviderdto.NewCreateSSLProviderReq()
-		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.SSLProviderUC.CreateSSLProvider(reqCtx, auth, r) }
-
-	case base.ResourceTypeSSLCert:
-		r := sslcertdto.NewCreateSSLCertReq()
-		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.SSLCertUC.CreateSSLCert(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.RepoWebhookUC.CreateRepoWebhook(reqCtx, auth, r) }
 
 	case base.ResourceTypeSchedJob:
 		r := schedjobdto.NewCreateSchedJobReq()
 		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.SchedJobUC.CreateSchedJob(reqCtx, auth, r) }
 
-	case base.ResourceTypeHealthcheck:
-		r := healthcheckdto.NewCreateHealthcheckReq()
-		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.HealthcheckUC.CreateHealthcheck(reqCtx, auth, r) }
-
 	case base.ResourceTypeSecret:
 		r := secretdto.NewCreateSecretReq()
 		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.SecretUC.CreateSecret(reqCtx, auth, r) }
 
-	case base.ResourceTypeConfigFile:
-		r := configfiledto.NewCreateConfigFileReq()
+	case base.ResourceTypeSSHKey:
+		r := sshkeydto.NewCreateSSHKeyReq()
 		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.ConfigFileUC.CreateConfigFile(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.SSHKeyUC.CreateSSHKey(reqCtx, auth, r) }
 
-	case base.ResourceTypeAPIKey:
-		r := apikeydto.NewCreateAPIKeyReq()
+	case base.ResourceTypeSSLCert:
+		r := sslcertdto.NewCreateSSLCertReq()
 		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.APIKeyUC.CreateAPIKey(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.SSLCertUC.CreateSSLCert(reqCtx, auth, r) }
 
-	case base.ResourceTypeIMService:
-		r := imservicedto.NewCreateIMServiceReq()
+	case base.ResourceTypeSSLProvider:
+		r := sslproviderdto.NewCreateSSLProviderReq()
 		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.IMServiceUC.CreateIMService(reqCtx, auth, r) }
-
-	case base.ResourceTypeEmail:
-		r := emaildto.NewCreateEmailReq()
-		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.EmailUC.CreateEmail(reqCtx, auth, r) }
-
-	case base.ResourceTypeRepoWebhook:
-		r := repowebhookdto.NewCreateRepoWebhookReq()
-		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.RepoWebhookUC.CreateRepoWebhook(reqCtx, auth, r) }
-
-	case base.ResourceTypeNotification:
-		r := notificationdto.NewCreateNotificationReq()
-		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.NotificationUC.CreateNotification(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.SSLProviderUC.CreateSSLProvider(reqCtx, auth, r) }
 	}
 
 	if err = h.ParseAndValidateJSONBody(ctx, req); err != nil {

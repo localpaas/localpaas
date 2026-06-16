@@ -68,16 +68,6 @@ func (h *Handler) UpdateSettingStatus(
 	reqCtx := h.RequestCtx(ctx)
 
 	switch resType { //nolint:exhaustive
-	case base.ResourceTypeBasicAuth:
-		r := basicauthdto.NewUpdateBasicAuthStatusReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.BasicAuthUC.UpdateBasicAuthStatus(reqCtx, auth, r) }
-
-	case base.ResourceTypeGithubApp:
-		r := githubappdto.NewUpdateGithubAppStatusReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.GithubAppUC.UpdateGithubAppStatus(reqCtx, auth, r) }
-
 	case base.ResourceTypeAccessToken:
 		r := accesstokendto.NewUpdateAccessTokenStatusReq()
 		r.Scope, r.ID = scope, itemID
@@ -87,6 +77,51 @@ func (h *Handler) UpdateSettingStatus(
 		r := acmednsproviderdto.NewUpdateAcmeDnsProviderStatusReq()
 		r.Scope, r.ID = scope, itemID
 		req, ucFunc = r, func() (any, error) { return h.AcmeDnsProviderUC.UpdateAcmeDnsProviderStatus(reqCtx, auth, r) }
+
+	case base.ResourceTypeAPIKey:
+		r := apikeydto.NewUpdateAPIKeyStatusReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.APIKeyUC.UpdateAPIKeyStatus(reqCtx, auth, r) }
+
+	case base.ResourceTypeBasicAuth:
+		r := basicauthdto.NewUpdateBasicAuthStatusReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.BasicAuthUC.UpdateBasicAuthStatus(reqCtx, auth, r) }
+
+	case base.ResourceTypeCloudStorage:
+		r := cloudstoragedto.NewUpdateCloudStorageStatusReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.CloudStorageUC.UpdateCloudStorageStatus(reqCtx, auth, r) }
+
+	case base.ResourceTypeConfigFile:
+		r := configfiledto.NewUpdateConfigFileStatusReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.ConfigFileUC.UpdateConfigFileStatus(reqCtx, auth, r) }
+
+	case base.ResourceTypeEmail:
+		r := emaildto.NewUpdateEmailStatusReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.EmailUC.UpdateEmailStatus(reqCtx, auth, r) }
+
+	case base.ResourceTypeGithubApp:
+		r := githubappdto.NewUpdateGithubAppStatusReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.GithubAppUC.UpdateGithubAppStatus(reqCtx, auth, r) }
+
+	case base.ResourceTypeHealthcheck:
+		r := healthcheckdto.NewUpdateHealthcheckStatusReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.HealthcheckUC.UpdateHealthcheckStatus(reqCtx, auth, r) }
+
+	case base.ResourceTypeIMService:
+		r := imservicedto.NewUpdateIMServiceStatusReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.IMServiceUC.UpdateIMServiceStatus(reqCtx, auth, r) }
+
+	case base.ResourceTypeNotification:
+		r := notificationdto.NewUpdateNotificationStatusReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.NotificationUC.UpdateNotificationStatus(reqCtx, auth, r) }
 
 	case base.ResourceTypeOAuth:
 		r := oauthdto.NewUpdateOAuthStatusReq()
@@ -98,70 +133,35 @@ func (h *Handler) UpdateSettingStatus(
 		r.Scope, r.ID = scope, itemID
 		req, ucFunc = r, func() (any, error) { return h.RegistryAuthUC.UpdateRegistryAuthStatus(reqCtx, auth, r) }
 
-	case base.ResourceTypeCloudStorage:
-		r := cloudstoragedto.NewUpdateCloudStorageStatusReq()
+	case base.ResourceTypeRepoWebhook:
+		r := repowebhookdto.NewUpdateRepoWebhookStatusReq()
 		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.CloudStorageUC.UpdateCloudStorageStatus(reqCtx, auth, r) }
-
-	case base.ResourceTypeSSHKey:
-		r := sshkeydto.NewUpdateSSHKeyStatusReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.SSHKeyUC.UpdateSSHKeyStatus(reqCtx, auth, r) }
-
-	case base.ResourceTypeSSLProvider:
-		r := sslproviderdto.NewUpdateSSLProviderStatusReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.SSLProviderUC.UpdateSSLProviderStatus(reqCtx, auth, r) }
-
-	case base.ResourceTypeSSLCert:
-		r := sslcertdto.NewUpdateSSLCertStatusReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.SSLCertUC.UpdateSSLCertStatus(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.RepoWebhookUC.UpdateRepoWebhookStatus(reqCtx, auth, r) }
 
 	case base.ResourceTypeSchedJob:
 		r := schedjobdto.NewUpdateSchedJobStatusReq()
 		r.Scope, r.ID = scope, itemID
 		req, ucFunc = r, func() (any, error) { return h.SchedJobUC.UpdateSchedJobStatus(reqCtx, auth, r) }
 
-	case base.ResourceTypeHealthcheck:
-		r := healthcheckdto.NewUpdateHealthcheckStatusReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.HealthcheckUC.UpdateHealthcheckStatus(reqCtx, auth, r) }
-
 	case base.ResourceTypeSecret:
 		r := secretdto.NewUpdateSecretStatusReq()
 		r.Scope, r.ID = scope, itemID
 		req, ucFunc = r, func() (any, error) { return h.SecretUC.UpdateSecretStatus(reqCtx, auth, r) }
 
-	case base.ResourceTypeConfigFile:
-		r := configfiledto.NewUpdateConfigFileStatusReq()
+	case base.ResourceTypeSSHKey:
+		r := sshkeydto.NewUpdateSSHKeyStatusReq()
 		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.ConfigFileUC.UpdateConfigFileStatus(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.SSHKeyUC.UpdateSSHKeyStatus(reqCtx, auth, r) }
 
-	case base.ResourceTypeAPIKey:
-		r := apikeydto.NewUpdateAPIKeyStatusReq()
+	case base.ResourceTypeSSLCert:
+		r := sslcertdto.NewUpdateSSLCertStatusReq()
 		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.APIKeyUC.UpdateAPIKeyStatus(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.SSLCertUC.UpdateSSLCertStatus(reqCtx, auth, r) }
 
-	case base.ResourceTypeIMService:
-		r := imservicedto.NewUpdateIMServiceStatusReq()
+	case base.ResourceTypeSSLProvider:
+		r := sslproviderdto.NewUpdateSSLProviderStatusReq()
 		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.IMServiceUC.UpdateIMServiceStatus(reqCtx, auth, r) }
-
-	case base.ResourceTypeEmail:
-		r := emaildto.NewUpdateEmailStatusReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.EmailUC.UpdateEmailStatus(reqCtx, auth, r) }
-
-	case base.ResourceTypeRepoWebhook:
-		r := repowebhookdto.NewUpdateRepoWebhookStatusReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.RepoWebhookUC.UpdateRepoWebhookStatus(reqCtx, auth, r) }
-
-	case base.ResourceTypeNotification:
-		r := notificationdto.NewUpdateNotificationStatusReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.NotificationUC.UpdateNotificationStatus(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.SSLProviderUC.UpdateSSLProviderStatus(reqCtx, auth, r) }
 
 	default:
 		// NOTE: not implemented

@@ -65,15 +65,15 @@ func (h *Handler) GetDownloadToken(
 	reqCtx := h.RequestCtx(ctx)
 
 	switch resType { //nolint:exhaustive
-	case base.ResourceTypeSecret:
-		r := secretdto.NewGetDownloadTokenReq()
-		r.Scope, r.ID, r.DataType, r.Expiration = scope, itemID, dataType, expiration
-		req, ucFunc = r, func() (any, error) { return h.SecretUC.GetDownloadToken(reqCtx, auth, r) }
-
 	case base.ResourceTypeConfigFile:
 		r := configfiledto.NewGetDownloadTokenReq()
 		r.Scope, r.ID, r.DataType, r.Expiration = scope, itemID, dataType, expiration
 		req, ucFunc = r, func() (any, error) { return h.ConfigFileUC.GetDownloadToken(reqCtx, auth, r) }
+
+	case base.ResourceTypeSecret:
+		r := secretdto.NewGetDownloadTokenReq()
+		r.Scope, r.ID, r.DataType, r.Expiration = scope, itemID, dataType, expiration
+		req, ucFunc = r, func() (any, error) { return h.SecretUC.GetDownloadToken(reqCtx, auth, r) }
 
 	default:
 		// NOTE: not implemented

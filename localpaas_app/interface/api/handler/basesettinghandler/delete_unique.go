@@ -62,15 +62,15 @@ func (h *Handler) DeleteUniqueSetting(
 	reqCtx := h.RequestCtx(ctx)
 
 	switch resType { //nolint:exhaustive
-	case base.ResourceTypeImageBuildSettings:
-		r := imagebuildsettingsdto.NewDeleteImageBuildSettingsReq()
-		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.ImageBuildUC.DeleteImageBuildSettings(reqCtx, auth, r) }
-
 	case base.ResourceTypeDomainSettings:
 		r := domainsettingsdto.NewDeleteDomainSettingsReq()
 		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.DomainSettingsUC.DeleteDomainSettings(reqCtx, auth, r) }
+
+	case base.ResourceTypeImageBuildSettings:
+		r := imagebuildsettingsdto.NewDeleteImageBuildSettingsReq()
+		r.Scope = scope
+		req, ucFunc = r, func() (any, error) { return h.ImageBuildUC.DeleteImageBuildSettings(reqCtx, auth, r) }
 
 	case base.ResourceTypeStorageSettings:
 		r := storagesettingsdto.NewDeleteStorageSettingsReq()

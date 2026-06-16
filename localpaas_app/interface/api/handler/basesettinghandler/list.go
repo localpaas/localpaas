@@ -80,16 +80,6 @@ func (h *Handler) ListSetting(
 	reqCtx := h.RequestCtx(ctx)
 
 	switch resType { //nolint:exhaustive
-	case base.ResourceTypeBasicAuth:
-		r := basicauthdto.NewListBasicAuthReq()
-		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.BasicAuthUC.ListBasicAuth(reqCtx, auth, r) }
-
-	case base.ResourceTypeGithubApp:
-		r := githubappdto.NewListGithubAppReq()
-		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.GithubAppUC.ListGithubApp(reqCtx, auth, r) }
-
 	case base.ResourceTypeAccessToken:
 		r := accesstokendto.NewListAccessTokenReq()
 		r.Scope = scope
@@ -99,6 +89,51 @@ func (h *Handler) ListSetting(
 		r := acmednsproviderdto.NewListAcmeDnsProviderReq()
 		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.AcmeDnsProviderUC.ListAcmeDnsProvider(reqCtx, auth, r) }
+
+	case base.ResourceTypeAPIKey:
+		r := apikeydto.NewListAPIKeyReq()
+		r.Scope = scope
+		req, ucFunc = r, func() (any, error) { return h.APIKeyUC.ListAPIKey(reqCtx, auth, r) }
+
+	case base.ResourceTypeBasicAuth:
+		r := basicauthdto.NewListBasicAuthReq()
+		r.Scope = scope
+		req, ucFunc = r, func() (any, error) { return h.BasicAuthUC.ListBasicAuth(reqCtx, auth, r) }
+
+	case base.ResourceTypeCloudStorage:
+		r := cloudstoragedto.NewListCloudStorageReq()
+		r.Scope = scope
+		req, ucFunc = r, func() (any, error) { return h.CloudStorageUC.ListCloudStorage(reqCtx, auth, r) }
+
+	case base.ResourceTypeConfigFile:
+		r := configfiledto.NewListConfigFileReq()
+		r.Scope = scope
+		req, ucFunc = r, func() (any, error) { return h.ConfigFileUC.ListConfigFile(reqCtx, auth, r) }
+
+	case base.ResourceTypeEmail:
+		r := emaildto.NewListEmailReq()
+		r.Scope = scope
+		req, ucFunc = r, func() (any, error) { return h.EmailUC.ListEmail(reqCtx, auth, r) }
+
+	case base.ResourceTypeGithubApp:
+		r := githubappdto.NewListGithubAppReq()
+		r.Scope = scope
+		req, ucFunc = r, func() (any, error) { return h.GithubAppUC.ListGithubApp(reqCtx, auth, r) }
+
+	case base.ResourceTypeHealthcheck:
+		r := healthcheckdto.NewListHealthcheckReq()
+		r.Scope = scope
+		req, ucFunc = r, func() (any, error) { return h.HealthcheckUC.ListHealthcheck(reqCtx, auth, r) }
+
+	case base.ResourceTypeIMService:
+		r := imservicedto.NewListIMServiceReq()
+		r.Scope = scope
+		req, ucFunc = r, func() (any, error) { return h.IMServiceUC.ListIMService(reqCtx, auth, r) }
+
+	case base.ResourceTypeNotification:
+		r := notificationdto.NewListNotificationReq()
+		r.Scope = scope
+		req, ucFunc = r, func() (any, error) { return h.NotificationUC.ListNotification(reqCtx, auth, r) }
 
 	case base.ResourceTypeOAuth:
 		r := oauthdto.NewListOAuthReq()
@@ -110,70 +145,35 @@ func (h *Handler) ListSetting(
 		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.RegistryAuthUC.ListRegistryAuth(reqCtx, auth, r) }
 
-	case base.ResourceTypeCloudStorage:
-		r := cloudstoragedto.NewListCloudStorageReq()
+	case base.ResourceTypeRepoWebhook:
+		r := repowebhookdto.NewListRepoWebhookReq()
 		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.CloudStorageUC.ListCloudStorage(reqCtx, auth, r) }
-
-	case base.ResourceTypeSSHKey:
-		r := sshkeydto.NewListSSHKeyReq()
-		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.SSHKeyUC.ListSSHKey(reqCtx, auth, r) }
-
-	case base.ResourceTypeSSLProvider:
-		r := sslproviderdto.NewListSSLProviderReq()
-		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.SSLProviderUC.ListSSLProvider(reqCtx, auth, r) }
-
-	case base.ResourceTypeSSLCert:
-		r := sslcertdto.NewListSSLCertReq()
-		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.SSLCertUC.ListSSLCert(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.RepoWebhookUC.ListRepoWebhook(reqCtx, auth, r) }
 
 	case base.ResourceTypeSchedJob:
 		r := schedjobdto.NewListSchedJobReq()
 		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.SchedJobUC.ListSchedJob(reqCtx, auth, r) }
 
-	case base.ResourceTypeHealthcheck:
-		r := healthcheckdto.NewListHealthcheckReq()
-		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.HealthcheckUC.ListHealthcheck(reqCtx, auth, r) }
-
 	case base.ResourceTypeSecret:
 		r := secretdto.NewListSecretReq()
 		r.Scope = scope
 		req, ucFunc = r, func() (any, error) { return h.SecretUC.ListSecret(reqCtx, auth, r) }
 
-	case base.ResourceTypeConfigFile:
-		r := configfiledto.NewListConfigFileReq()
+	case base.ResourceTypeSSHKey:
+		r := sshkeydto.NewListSSHKeyReq()
 		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.ConfigFileUC.ListConfigFile(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.SSHKeyUC.ListSSHKey(reqCtx, auth, r) }
 
-	case base.ResourceTypeAPIKey:
-		r := apikeydto.NewListAPIKeyReq()
+	case base.ResourceTypeSSLCert:
+		r := sslcertdto.NewListSSLCertReq()
 		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.APIKeyUC.ListAPIKey(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.SSLCertUC.ListSSLCert(reqCtx, auth, r) }
 
-	case base.ResourceTypeIMService:
-		r := imservicedto.NewListIMServiceReq()
+	case base.ResourceTypeSSLProvider:
+		r := sslproviderdto.NewListSSLProviderReq()
 		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.IMServiceUC.ListIMService(reqCtx, auth, r) }
-
-	case base.ResourceTypeEmail:
-		r := emaildto.NewListEmailReq()
-		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.EmailUC.ListEmail(reqCtx, auth, r) }
-
-	case base.ResourceTypeRepoWebhook:
-		r := repowebhookdto.NewListRepoWebhookReq()
-		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.RepoWebhookUC.ListRepoWebhook(reqCtx, auth, r) }
-
-	case base.ResourceTypeNotification:
-		r := notificationdto.NewListNotificationReq()
-		r.Scope = scope
-		req, ucFunc = r, func() (any, error) { return h.NotificationUC.ListNotification(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.SSLProviderUC.ListSSLProvider(reqCtx, auth, r) }
 
 	default:
 		// NOTE: not implemented

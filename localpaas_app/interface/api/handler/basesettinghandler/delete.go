@@ -80,16 +80,6 @@ func (h *Handler) DeleteSetting(
 	reqCtx := h.RequestCtx(ctx)
 
 	switch resType { //nolint:exhaustive
-	case base.ResourceTypeBasicAuth:
-		r := basicauthdto.NewDeleteBasicAuthReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.BasicAuthUC.DeleteBasicAuth(reqCtx, auth, r) }
-
-	case base.ResourceTypeGithubApp:
-		r := githubappdto.NewDeleteGithubAppReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.GithubAppUC.DeleteGithubApp(reqCtx, auth, r) }
-
 	case base.ResourceTypeAccessToken:
 		r := accesstokendto.NewDeleteAccessTokenReq()
 		r.Scope, r.ID = scope, itemID
@@ -99,6 +89,51 @@ func (h *Handler) DeleteSetting(
 		r := acmednsproviderdto.NewDeleteAcmeDnsProviderReq()
 		r.Scope, r.ID = scope, itemID
 		req, ucFunc = r, func() (any, error) { return h.AcmeDnsProviderUC.DeleteAcmeDnsProvider(reqCtx, auth, r) }
+
+	case base.ResourceTypeAPIKey:
+		r := apikeydto.NewDeleteAPIKeyReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.APIKeyUC.DeleteAPIKey(reqCtx, auth, r) }
+
+	case base.ResourceTypeBasicAuth:
+		r := basicauthdto.NewDeleteBasicAuthReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.BasicAuthUC.DeleteBasicAuth(reqCtx, auth, r) }
+
+	case base.ResourceTypeCloudStorage:
+		r := cloudstoragedto.NewDeleteCloudStorageReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.CloudStorageUC.DeleteCloudStorage(reqCtx, auth, r) }
+
+	case base.ResourceTypeConfigFile:
+		r := configfiledto.NewDeleteConfigFileReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.ConfigFileUC.DeleteConfigFile(reqCtx, auth, r) }
+
+	case base.ResourceTypeEmail:
+		r := emaildto.NewDeleteEmailReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.EmailUC.DeleteEmail(reqCtx, auth, r) }
+
+	case base.ResourceTypeGithubApp:
+		r := githubappdto.NewDeleteGithubAppReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.GithubAppUC.DeleteGithubApp(reqCtx, auth, r) }
+
+	case base.ResourceTypeHealthcheck:
+		r := healthcheckdto.NewDeleteHealthcheckReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.HealthcheckUC.DeleteHealthcheck(reqCtx, auth, r) }
+
+	case base.ResourceTypeIMService:
+		r := imservicedto.NewDeleteIMServiceReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.IMServiceUC.DeleteIMService(reqCtx, auth, r) }
+
+	case base.ResourceTypeNotification:
+		r := notificationdto.NewDeleteNotificationReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.NotificationUC.DeleteNotification(reqCtx, auth, r) }
 
 	case base.ResourceTypeOAuth:
 		r := oauthdto.NewDeleteOAuthReq()
@@ -110,71 +145,35 @@ func (h *Handler) DeleteSetting(
 		r.Scope, r.ID = scope, itemID
 		req, ucFunc = r, func() (any, error) { return h.RegistryAuthUC.DeleteRegistryAuth(reqCtx, auth, r) }
 
-	case base.ResourceTypeCloudStorage:
-		r := cloudstoragedto.NewDeleteCloudStorageReq()
+	case base.ResourceTypeRepoWebhook:
+		r := repowebhookdto.NewDeleteRepoWebhookReq()
 		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.CloudStorageUC.DeleteCloudStorage(reqCtx, auth, r) }
-
-	case base.ResourceTypeSSHKey:
-		r := sshkeydto.NewDeleteSSHKeyReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.SSHKeyUC.DeleteSSHKey(reqCtx, auth, r) }
-
-	case base.ResourceTypeSSLProvider:
-		r := sslproviderdto.NewDeleteSSLProviderReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.SSLProviderUC.DeleteSSLProvider(reqCtx, auth, r) }
-
-	case base.ResourceTypeSSLCert:
-		r := sslcertdto.NewDeleteSSLCertReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.SSLCertUC.DeleteSSLCert(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.RepoWebhookUC.DeleteRepoWebhook(reqCtx, auth, r) }
 
 	case base.ResourceTypeSchedJob:
 		r := schedjobdto.NewDeleteSchedJobReq()
 		r.Scope, r.ID = scope, itemID
 		req, ucFunc = r, func() (any, error) { return h.SchedJobUC.DeleteSchedJob(reqCtx, auth, r) }
 
-	case base.ResourceTypeHealthcheck:
-		r := healthcheckdto.NewDeleteHealthcheckReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.HealthcheckUC.DeleteHealthcheck(reqCtx, auth, r) }
-
 	case base.ResourceTypeSecret:
 		r := secretdto.NewDeleteSecretReq()
 		r.Scope, r.ID = scope, itemID
 		req, ucFunc = r, func() (any, error) { return h.SecretUC.DeleteSecret(reqCtx, auth, r) }
 
-	case base.ResourceTypeConfigFile:
-		r := configfiledto.NewDeleteConfigFileReq()
+	case base.ResourceTypeSSHKey:
+		r := sshkeydto.NewDeleteSSHKeyReq()
 		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.ConfigFileUC.DeleteConfigFile(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.SSHKeyUC.DeleteSSHKey(reqCtx, auth, r) }
 
-	case base.ResourceTypeAPIKey:
-		r := apikeydto.NewDeleteAPIKeyReq()
+	case base.ResourceTypeSSLCert:
+		r := sslcertdto.NewDeleteSSLCertReq()
 		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.APIKeyUC.DeleteAPIKey(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.SSLCertUC.DeleteSSLCert(reqCtx, auth, r) }
 
-	case base.ResourceTypeIMService:
-		r := imservicedto.NewDeleteIMServiceReq()
+	case base.ResourceTypeSSLProvider:
+		r := sslproviderdto.NewDeleteSSLProviderReq()
 		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.IMServiceUC.DeleteIMService(reqCtx, auth, r) }
-
-	case base.ResourceTypeEmail:
-		r := emaildto.NewDeleteEmailReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.EmailUC.DeleteEmail(reqCtx, auth, r) }
-
-	case base.ResourceTypeRepoWebhook:
-		r := repowebhookdto.NewDeleteRepoWebhookReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.RepoWebhookUC.DeleteRepoWebhook(reqCtx, auth, r) }
-
-	case base.ResourceTypeNotification:
-		r := notificationdto.NewDeleteNotificationReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.NotificationUC.DeleteNotification(reqCtx, auth, r) }
-
+		req, ucFunc = r, func() (any, error) { return h.SSLProviderUC.DeleteSSLProvider(reqCtx, auth, r) }
 	default:
 		// NOTE: not implemented
 		err = apperrors.NewNotImplementedNT()

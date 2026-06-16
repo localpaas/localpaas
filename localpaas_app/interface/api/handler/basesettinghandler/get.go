@@ -80,16 +80,6 @@ func (h *Handler) GetSetting(
 	reqCtx := h.RequestCtx(ctx)
 
 	switch resType { //nolint:exhaustive
-	case base.ResourceTypeBasicAuth:
-		r := basicauthdto.NewGetBasicAuthReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.BasicAuthUC.GetBasicAuth(reqCtx, auth, r) }
-
-	case base.ResourceTypeGithubApp:
-		r := githubappdto.NewGetGithubAppReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.GithubAppUC.GetGithubApp(reqCtx, auth, r) }
-
 	case base.ResourceTypeAccessToken:
 		r := accesstokendto.NewGetAccessTokenReq()
 		r.Scope, r.ID = scope, itemID
@@ -99,6 +89,51 @@ func (h *Handler) GetSetting(
 		r := acmednsproviderdto.NewGetAcmeDnsProviderReq()
 		r.Scope, r.ID = scope, itemID
 		req, ucFunc = r, func() (any, error) { return h.AcmeDnsProviderUC.GetAcmeDnsProvider(reqCtx, auth, r) }
+
+	case base.ResourceTypeAPIKey:
+		r := apikeydto.NewGetAPIKeyReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.APIKeyUC.GetAPIKey(reqCtx, auth, r) }
+
+	case base.ResourceTypeBasicAuth:
+		r := basicauthdto.NewGetBasicAuthReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.BasicAuthUC.GetBasicAuth(reqCtx, auth, r) }
+
+	case base.ResourceTypeCloudStorage:
+		r := cloudstoragedto.NewGetCloudStorageReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.CloudStorageUC.GetCloudStorage(reqCtx, auth, r) }
+
+	case base.ResourceTypeConfigFile:
+		r := configfiledto.NewGetConfigFileReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.ConfigFileUC.GetConfigFile(reqCtx, auth, r) }
+
+	case base.ResourceTypeEmail:
+		r := emaildto.NewGetEmailReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.EmailUC.GetEmail(reqCtx, auth, r) }
+
+	case base.ResourceTypeGithubApp:
+		r := githubappdto.NewGetGithubAppReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.GithubAppUC.GetGithubApp(reqCtx, auth, r) }
+
+	case base.ResourceTypeHealthcheck:
+		r := healthcheckdto.NewGetHealthcheckReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.HealthcheckUC.GetHealthcheck(reqCtx, auth, r) }
+
+	case base.ResourceTypeIMService:
+		r := imservicedto.NewGetIMServiceReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.IMServiceUC.GetIMService(reqCtx, auth, r) }
+
+	case base.ResourceTypeNotification:
+		r := notificationdto.NewGetNotificationReq()
+		r.Scope, r.ID = scope, itemID
+		req, ucFunc = r, func() (any, error) { return h.NotificationUC.GetNotification(reqCtx, auth, r) }
 
 	case base.ResourceTypeOAuth:
 		r := oauthdto.NewGetOAuthReq()
@@ -110,70 +145,35 @@ func (h *Handler) GetSetting(
 		r.Scope, r.ID = scope, itemID
 		req, ucFunc = r, func() (any, error) { return h.RegistryAuthUC.GetRegistryAuth(reqCtx, auth, r) }
 
-	case base.ResourceTypeCloudStorage:
-		r := cloudstoragedto.NewGetCloudStorageReq()
+	case base.ResourceTypeRepoWebhook:
+		r := repowebhookdto.NewGetRepoWebhookReq()
 		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.CloudStorageUC.GetCloudStorage(reqCtx, auth, r) }
-
-	case base.ResourceTypeSSHKey:
-		r := sshkeydto.NewGetSSHKeyReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.SSHKeyUC.GetSSHKey(reqCtx, auth, r) }
-
-	case base.ResourceTypeSSLProvider:
-		r := sslproviderdto.NewGetSSLProviderReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.SSLProviderUC.GetSSLProvider(reqCtx, auth, r) }
-
-	case base.ResourceTypeSSLCert:
-		r := sslcertdto.NewGetSSLCertReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.SSLCertUC.GetSSLCert(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.RepoWebhookUC.GetRepoWebhook(reqCtx, auth, r) }
 
 	case base.ResourceTypeSchedJob:
 		r := schedjobdto.NewGetSchedJobReq()
 		r.Scope, r.ID = scope, itemID
 		req, ucFunc = r, func() (any, error) { return h.SchedJobUC.GetSchedJob(reqCtx, auth, r) }
 
-	case base.ResourceTypeHealthcheck:
-		r := healthcheckdto.NewGetHealthcheckReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.HealthcheckUC.GetHealthcheck(reqCtx, auth, r) }
-
 	case base.ResourceTypeSecret:
 		r := secretdto.NewGetSecretReq()
 		r.Scope, r.ID = scope, itemID
 		req, ucFunc = r, func() (any, error) { return h.SecretUC.GetSecret(reqCtx, auth, r) }
 
-	case base.ResourceTypeConfigFile:
-		r := configfiledto.NewGetConfigFileReq()
+	case base.ResourceTypeSSHKey:
+		r := sshkeydto.NewGetSSHKeyReq()
 		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.ConfigFileUC.GetConfigFile(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.SSHKeyUC.GetSSHKey(reqCtx, auth, r) }
 
-	case base.ResourceTypeAPIKey:
-		r := apikeydto.NewGetAPIKeyReq()
+	case base.ResourceTypeSSLCert:
+		r := sslcertdto.NewGetSSLCertReq()
 		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.APIKeyUC.GetAPIKey(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.SSLCertUC.GetSSLCert(reqCtx, auth, r) }
 
-	case base.ResourceTypeIMService:
-		r := imservicedto.NewGetIMServiceReq()
+	case base.ResourceTypeSSLProvider:
+		r := sslproviderdto.NewGetSSLProviderReq()
 		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.IMServiceUC.GetIMService(reqCtx, auth, r) }
-
-	case base.ResourceTypeEmail:
-		r := emaildto.NewGetEmailReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.EmailUC.GetEmail(reqCtx, auth, r) }
-
-	case base.ResourceTypeRepoWebhook:
-		r := repowebhookdto.NewGetRepoWebhookReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.RepoWebhookUC.GetRepoWebhook(reqCtx, auth, r) }
-
-	case base.ResourceTypeNotification:
-		r := notificationdto.NewGetNotificationReq()
-		r.Scope, r.ID = scope, itemID
-		req, ucFunc = r, func() (any, error) { return h.NotificationUC.GetNotification(reqCtx, auth, r) }
+		req, ucFunc = r, func() (any, error) { return h.SSLProviderUC.GetSSLProvider(reqCtx, auth, r) }
 
 	default:
 		// NOTE: not implemented

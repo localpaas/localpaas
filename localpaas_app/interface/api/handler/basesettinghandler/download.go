@@ -64,22 +64,22 @@ func (h *Handler) Download(
 	reqCtx := h.RequestCtx(ctx)
 
 	switch resType { //nolint:exhaustive
-	case base.ResourceTypeSecret:
-		r := secretdto.NewDownloadSecretReq()
+	case base.ResourceTypeConfigFile:
+		r := configfiledto.NewDownloadConfigFileReq()
 		r.Scope, r.ID, r.DataType = scope, itemID, dataType
 		req, ucFunc = r, func() (*settings.BaseDownloadDataResp, error) {
-			resp, err := h.SecretUC.DownloadSecret(reqCtx, auth, r)
+			resp, err := h.ConfigFileUC.DownloadConfigFile(reqCtx, auth, r)
 			if err != nil {
 				return nil, apperrors.Wrap(err)
 			}
 			return resp.Data.BaseDownloadDataResp, nil
 		}
 
-	case base.ResourceTypeConfigFile:
-		r := configfiledto.NewDownloadConfigFileReq()
+	case base.ResourceTypeSecret:
+		r := secretdto.NewDownloadSecretReq()
 		r.Scope, r.ID, r.DataType = scope, itemID, dataType
 		req, ucFunc = r, func() (*settings.BaseDownloadDataResp, error) {
-			resp, err := h.ConfigFileUC.DownloadConfigFile(reqCtx, auth, r)
+			resp, err := h.SecretUC.DownloadSecret(reqCtx, auth, r)
 			if err != nil {
 				return nil, apperrors.Wrap(err)
 			}
