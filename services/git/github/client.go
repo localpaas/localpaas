@@ -21,7 +21,8 @@ type Client struct {
 	appsTransport    *ghinstallation.AppsTransport
 	installTransport *ghinstallation.Transport
 
-	client *gogithub.Client
+	client    *gogithub.Client
+	appClient *gogithub.Client
 }
 
 func (c *Client) IsAppClient() bool {
@@ -49,16 +50,19 @@ func NewFromApp(appID, installationID int64, privateKey []byte) (*Client, error)
 		return nil, apperrors.Wrap(err)
 	}
 
+	appClient := gogithub.NewClient(&http.Client{Transport: appTr})
+
 	client := &Client{
 		appID:          appID,
 		installationID: installationID,
 		appsTransport:  appTr,
+		appClient:      appClient,
 	}
 	if installationID != 0 {
 		client.installTransport = ghinstallation.NewFromAppsTransport(appTr, installationID)
 		client.client = gogithub.NewClient(&http.Client{Transport: client.installTransport})
 	} else {
-		client.client = gogithub.NewClient(&http.Client{Transport: client.appsTransport})
+		client.client = appClient
 	}
 
 	return client, nil

@@ -28,7 +28,7 @@ func (c *Client) ListInstallations(
 		opt(opts)
 	}
 
-	output, _, err := c.client.Apps.ListInstallations(ctx, opts)
+	output, _, err := c.appClient.Apps.ListInstallations(ctx, opts)
 	if err != nil {
 		return nil, nil, apperrors.Wrap(err)
 	}
@@ -54,7 +54,7 @@ func (c *Client) ListAllInstallations(
 	}
 
 	var output []*gogithub.Installation
-	client := c.client
+	client := c.appClient
 	for {
 		result, resp, err := client.Apps.ListInstallations(ctx, opts)
 		if err != nil {

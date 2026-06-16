@@ -15,7 +15,7 @@ func (c *Client) GetAppHookConfig(
 		return nil, apperrors.Wrap(ErrGithubAppClientRequired)
 	}
 
-	output, _, err := c.client.Apps.GetHookConfig(ctx)
+	output, _, err := c.appClient.Apps.GetHookConfig(ctx)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -37,7 +37,7 @@ func (c *Client) UpdateAppHookConfig(
 		opt(opts)
 	}
 
-	_, _, err := c.client.Apps.UpdateHookConfig(ctx, opts)
+	_, _, err := c.appClient.Apps.UpdateHookConfig(ctx, opts)
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
