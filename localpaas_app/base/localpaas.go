@@ -18,6 +18,9 @@ const (
 
 	LocalpaasUpdaterServiceName = "localpaas_updater"
 	LocalpaasUpdaterKey         = "localpaas_updater"
+
+	LocalpaasDockerProxyServiceName = "localpaas_docker_proxy"
+	LocalpaasDockerProxyKey         = "localpaas_docker_proxy"
 )
 
 const (
@@ -31,4 +34,5 @@ var (
 
 const (
 	NetworkGlobalRouting = "localpaas_net"
+	NetworkDockerProxy   = "localpaas_docker_proxy_net"
 )

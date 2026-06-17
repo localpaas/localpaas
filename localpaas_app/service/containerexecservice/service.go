@@ -7,5 +7,6 @@ import (
 )
 
 type Service interface {
-	ContainerExec(ctx context.Context, db database.Tx, req *ContainerExecReq) (*ContainerExecResp, error)
+	ContainerExec(ctx context.Context, req *ContainerExecReq) (*ContainerExecResp, error)
+	SchedJobExec(ctx context.Context, db database.Tx, req *SchedJobExecReq) (*SchedJobExecResp, error)
 }

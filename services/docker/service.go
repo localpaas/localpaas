@@ -303,7 +303,6 @@ func (m *manager) ServiceWaitUntilRunning(
 		return false, nil
 	}
 
-	var isRunningFrom time.Time
 	for {
 		// Check context cancellation
 		if err := ctx.Err(); err != nil {
@@ -311,15 +310,22 @@ func (m *manager) ServiceWaitUntilRunning(
 		}
 
 		taskListResp, err := gofn.ExecRetry2(func() (*client.TaskListResult, error) {
-			return m.ServiceTaskList(ctx, serviceID, "running")
+			return m.ServiceTaskList(ctx, serviceID, []swarm.TaskState{swarm.TaskStateRunning})
 		}, 2, time.Second*3) //nolint:mnd
 		if err != nil {
 			return false, apperrors.Wrap(err)
 		}
 
-		runningTasks := len(taskListResp.Items)
-		if (requireAllReplicas && runningTasks < desiredTasks) || (!requireAllReplicas && runningTasks == 0) {
-			isRunningFrom = time.Time{}
+		satisfiedTasks := 0
+		timeNow := time.Now()
+		for i := range taskListResp.Items {
+			t := &taskListResp.Items[i]
+			if t.Status.State == swarm.TaskStateRunning && timeNow.Sub(t.Status.Timestamp) > requireRunningDuration {
+				satisfiedTasks++
+			}
+		}
+
+		if (requireAllReplicas && satisfiedTasks < desiredTasks) || (!requireAllReplicas && satisfiedTasks == 0) {
 			select {
 			case <-ctx.Done():
 				return false, apperrors.Wrap(ctx.Err())
@@ -327,17 +333,6 @@ func (m *manager) ServiceWaitUntilRunning(
 			}
 			continue
 		}
-		if isRunningFrom.IsZero() {
-			isRunningFrom = time.Now()
-		}
-		if requireRunningDuration <= 0 || time.Since(isRunningFrom) >= requireRunningDuration {
-			return true, nil
-		}
-
-		select {
-		case <-ctx.Done():
-			return false, apperrors.Wrap(ctx.Err())
-		case <-time.After(checkInterval):
-		}
+		return true, nil
 	}
 }

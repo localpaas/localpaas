@@ -5,7 +5,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/moby/moby/api/types/container"
 	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -37,41 +36,6 @@ func (m *manager) ServiceContainerList(
 		FilterAdd(&opts.Filters, "label", "com.docker.swarm.service.id="+serviceID)
 	})
 	return m.ContainerList(ctx, options...)
-}
-
-func (m *manager) ServiceContainerGetActive(
-	ctx context.Context,
-	serviceID string,
-	maxRetry int,
-	retryDelay time.Duration,
-) (active *container.Summary, all *client.ContainerListResult, err error) {
-	return m.serviceContainerGetActive(ctx, serviceID, -1, maxRetry, retryDelay)
-}
-
-func (m *manager) serviceContainerGetActive(
-	ctx context.Context,
-	serviceID string,
-	retry int,
-	maxRetry int,
-	retryDelay time.Duration,
-) (active *container.Summary, all *client.ContainerListResult, err error) {
-	if retry >= maxRetry {
-		return nil, nil, nil
-	}
-	listResp, err := m.ServiceContainerList(ctx, serviceID)
-	if err != nil {
-		return nil, nil, apperrors.Wrap(err)
-	}
-
-	for i := range listResp.Items {
-		c := &listResp.Items[i]
-		if c.State == container.StateRunning {
-			return c, listResp, nil
-		}
-	}
-
-	time.Sleep(retryDelay)
-	return m.serviceContainerGetActive(ctx, serviceID, retry+1, maxRetry, retryDelay)
 }
 
 type ContainerInspectOption func(*client.ContainerInspectOptions)

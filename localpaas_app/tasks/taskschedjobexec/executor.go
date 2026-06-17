@@ -103,11 +103,11 @@ func (e *Executor) execute(
 	schedJob := data.SchedJob.MustAsSchedJob()
 	switch schedJob.JobType {
 	case base.SchedJobTypeContainerCommand:
-		resp, err := e.containerExecService.ContainerExec(ctx, db, &containerexecservice.ContainerExecReq{
-			TaskExecData: data.TaskExecData,
-			SchedJob:     data.SchedJob,
-			Project:      data.Project,
-			App:          data.App,
+		resp, err := e.containerExecService.SchedJobExec(ctx, db, &containerexecservice.SchedJobExecReq{
+			TaskExecData:    data.TaskExecData,
+			SchedJobSetting: data.SchedJob,
+			Project:         data.Project,
+			App:             data.App,
 		})
 		if err != nil {
 			return apperrors.Wrap(err)

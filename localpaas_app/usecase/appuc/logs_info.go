@@ -3,12 +3,13 @@ package appuc
 import (
 	"context"
 
+	"github.com/moby/moby/api/types/swarm"
+
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
-	"github.com/localpaas/localpaas/services/docker"
 )
 
 func (uc *UC) GetAppLogsInfo(
@@ -27,7 +28,7 @@ func (uc *UC) GetAppLogsInfo(
 			WithMsgLog("service not exist for app")
 	}
 
-	taskList, err := uc.dockerManager.ServiceTaskList(ctx, app.ServiceID, docker.TaskStateRunning)
+	taskList, err := uc.dockerManager.ServiceTaskList(ctx, app.ServiceID, []swarm.TaskState{swarm.TaskStateRunning})
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

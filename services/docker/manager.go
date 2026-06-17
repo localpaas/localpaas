@@ -2,15 +2,16 @@ package docker
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"time"
 
-	"github.com/moby/moby/api/types/container"
 	"github.com/moby/moby/api/types/swarm"
 	"github.com/moby/moby/api/types/volume"
 	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 )
 
@@ -44,8 +45,6 @@ type Manager interface {
 		*client.ContainerListResult, error)
 	ServiceContainerList(ctx context.Context, serviceID string, options ...ContainerListOption) (
 		*client.ContainerListResult, error)
-	ServiceContainerGetActive(ctx context.Context, serviceID string, maxRetry int, retryDelay time.Duration) (
-		active *container.Summary, all *client.ContainerListResult, err error)
 	ContainerInspect(ctx context.Context, containerID string, options ...ContainerInspectOption) (
 		*client.ContainerInspectResult, error)
 	ContainerInspectMulti(ctx context.Context, containerIDs []string, options ...ContainerInspectOption) (
@@ -116,6 +115,7 @@ type Manager interface {
 		*client.NodeUpdateResult, error)
 	NodeRemove(ctx context.Context, nodeID string, options ...NodeRemoveOption) (
 		*client.NodeRemoveResult, error)
+	NodeCurrentID(ctx context.Context) (string, error)
 
 	// Registry
 	RegistryLogin(ctx context.Context, options ...RegistryLoginOption) (*client.RegistryLoginResult, error)
@@ -157,12 +157,14 @@ type Manager interface {
 	// Tasks
 	TaskList(ctx context.Context, options ...TaskListOption) (
 		*client.TaskListResult, error)
-	ServiceTaskList(ctx context.Context, serviceID string, desiredState TaskState, options ...TaskListOption) (
-		*client.TaskListResult, error)
+	ServiceTaskList(ctx context.Context, serviceID string, desiredStates []swarm.TaskState,
+		options ...TaskListOption) (*client.TaskListResult, error)
 	TaskInspect(ctx context.Context, taskID string, options ...TaskInspectOption) (
 		*client.TaskInspectResult, error)
 	TaskLogs(ctx context.Context, taskID string, options ...TaskLogsOption) (
 		client.TaskLogsResult, error)
+	ServiceTaskGetRunning(ctx context.Context, serviceID string, minRunningDuration time.Duration,
+		maxRetry int, retryDelay time.Duration) (running *swarm.Task, all *client.TaskListResult, err error)
 
 	// Volumes
 	VolumeList(ctx context.Context, options ...VolumeListOption) (
@@ -180,6 +182,8 @@ type Manager interface {
 		*client.VolumeInspectResult, error)
 	VolumePrune(ctx context.Context, anonymousOnly bool, options ...VolumePruneOption) (
 		*client.VolumePruneResult, error)
+
+	NewClientForNode(ctx context.Context, nodeID string) (Manager, error)
 
 	Close() error
 }
@@ -202,4 +206,56 @@ func New() (Manager, error) {
 
 func (m *manager) Close() error {
 	return m.client.Close() //nolint:wrapcheck
+}
+
+func (m *manager) NewClientForNode(ctx context.Context, nodeID string) (Manager, error) {
+	currNodeID, err := m.NodeCurrentID(ctx)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	if currNodeID == nodeID {
+		return m, nil
+	}
+
+	resp, err := m.TaskList(ctx, func(opts *client.TaskListOptions) {
+		FilterAdd(&opts.Filters, "service", base.LocalpaasDockerProxyServiceName)
+		FilterAdd(&opts.Filters, "node", nodeID)
+		FilterAdd(&opts.Filters, "desired-state", string(swarm.TaskStateRunning))
+	})
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	if len(resp.Items) == 0 {
+		return nil, apperrors.New(apperrors.ErrInfraNotFound).
+			WithMsgLog("no running docker proxy task found on node %s", nodeID)
+	}
+
+	var targetIP string
+	for _, netAttachment := range resp.Items[0].NetworksAttachments {
+		if netAttachment.Network.Spec.Name == base.NetworkDockerProxy {
+			if len(netAttachment.Addresses) > 0 {
+				addr := netAttachment.Addresses[0]
+				if addr.IsValid() {
+					targetIP = addr.Addr().String()
+					break
+				}
+			}
+		}
+	}
+
+	if targetIP == "" {
+		return nil, apperrors.New(apperrors.ErrInfraNotFound).
+			WithMsgLog("docker proxy task on node %s is not connected to network %s", nodeID, base.NetworkDockerProxy)
+	}
+
+	remoteURL := fmt.Sprintf("tcp://%s:2375", targetIP)
+	c, err := client.New(
+		client.WithHost(remoteURL),
+		client.WithAPIVersion(minAPIVersion),
+	)
+	if err != nil {
+		return nil, apperrors.NewInfra(err)
+	}
+
+	return &manager{client: c}, nil
 }

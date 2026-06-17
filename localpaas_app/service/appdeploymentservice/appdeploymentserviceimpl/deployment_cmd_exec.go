@@ -3,7 +3,6 @@ package appdeploymentserviceimpl
 import (
 	"context"
 	"fmt"
-	"io"
 	"time"
 
 	"github.com/moby/moby/client"
@@ -11,8 +10,8 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/executil"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
+	"github.com/localpaas/localpaas/localpaas_app/service/containerexecservice"
 	"github.com/localpaas/localpaas/services/docker"
 )
 
@@ -20,11 +19,13 @@ const (
 	stepPreDeployCmd  = "pre-deploy-cmd-exec"
 	stepPostDeployCmd = "post-deploy-cmd-exec"
 
-	preDeploymentContainerFindRetryMax   = 3
-	preDeploymentContainerFindRetryDelay = time.Second * 5
+	preDeploymentTaskFindRetryMax       = 3
+	preDeploymentTaskFindRetryDelay     = time.Second * 5
+	preDeploymentTaskMinRunningDuration = time.Second * 15
 
-	postDeploymentContainerFindRetryMax   = 10
-	postDeploymentContainerFindRetryDelay = time.Second * 5
+	postDeploymentTaskFindRetryMax       = 10
+	postDeploymentTaskFindRetryDelay     = time.Second * 5
+	postDeploymentTaskMinRunningDuration = time.Second * 20
 )
 
 func (s *service) deployStepExecCmd(
@@ -48,25 +49,17 @@ func (s *service) deployStepExecCmd(
 		gofn.If(preDeployment, "pre", "post")))
 	defer s.addStepEndLog(ctx, data, timeutil.NowUTC(), err)
 
-	var maxRetry int
-	var retryDelay time.Duration
+	var taskFindRetryMax int
+	var taskFindRetryDelay time.Duration
+	var taskMinRunningDuration time.Duration
 	if preDeployment {
-		maxRetry = preDeploymentContainerFindRetryMax
-		retryDelay = preDeploymentContainerFindRetryDelay
+		taskFindRetryMax = preDeploymentTaskFindRetryMax
+		taskFindRetryDelay = preDeploymentTaskFindRetryDelay
+		taskMinRunningDuration = preDeploymentTaskMinRunningDuration
 	} else {
-		maxRetry = postDeploymentContainerFindRetryMax
-		retryDelay = postDeploymentContainerFindRetryDelay
-	}
-
-	contSum, _, err := s.dockerManager.ServiceContainerGetActive(ctx, data.App.ServiceID,
-		maxRetry, retryDelay)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	if contSum == nil {
-		_ = data.LogStore.Add(ctx, tasklog.NewWarnFrame(
-			"No running container found, execution skipped", tasklog.TsNow))
-		return nil
+		taskFindRetryMax = postDeploymentTaskFindRetryMax
+		taskFindRetryDelay = postDeploymentTaskFindRetryDelay
+		taskMinRunningDuration = postDeploymentTaskMinRunningDuration
 	}
 
 	var cmdStr string
@@ -76,35 +69,24 @@ func (s *service) deployStepExecCmd(
 		cmdStr = deployment.Settings.PostDeploymentCommand
 	}
 
-	createResp, attachResp, _, err := s.dockerManager.ContainerExec(ctx, contSum.ID, func(opts *client.ExecCreateOptions) {
-		opts.AttachStdout = true
-		opts.AttachStderr = true
-		opts.Cmd = gofn.Must(executil.CmdSplit(cmdStr))
-		opts.WorkingDir = deployment.Settings.WorkingDir
-		opts.TTY = true
-		opts.ConsoleSize = docker.DefaultConsoleSize
+	_, err = s.containerExecService.ContainerExec(ctx, &containerexecservice.ContainerExecReq{
+		Project:                data.Project,
+		App:                    data.App,
+		TaskMinRunningDuration: taskMinRunningDuration,
+		TaskFindRetryMax:       taskFindRetryMax,
+		TaskFindRetryDelay:     taskFindRetryDelay,
+		LogStore:               data.LogStore,
+		ExecOptions: func(opts *client.ExecCreateOptions) {
+			opts.AttachStdout = true
+			opts.AttachStderr = true
+			opts.Cmd = gofn.Must(executil.CmdSplit(cmdStr))
+			opts.WorkingDir = deployment.Settings.WorkingDir
+			opts.TTY = true
+			opts.ConsoleSize = docker.DefaultConsoleSize
+		},
 	})
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
-	defer attachResp.Close()
-
-	logChan, _ := docker.StartScanningLog(ctx, io.NopCloser(attachResp.Reader), docker.WithParseLogHeader(false))
-
-	for msgs := range logChan {
-		_ = data.LogStore.AddRedacted(ctx, msgs...)
-	}
-
-	execInfo, err := s.dockerManager.ContainerExecInspect(ctx, createResp.ID)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-
-	if execInfo.ExitCode != 0 {
-		_ = data.LogStore.Add(ctx, tasklog.NewErrFrame(fmt.Sprintf(
-			"Command execution failed with exit code: %v", execInfo.ExitCode), tasklog.TsNow))
-		return apperrors.Wrap(apperrors.ErrInfraActionFailed)
-	}
-
 	return nil
 }

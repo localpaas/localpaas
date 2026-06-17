@@ -37,7 +37,7 @@ func (s *service) GetLpAppTasks(ctx context.Context) ([]swarm.Task, error) {
 		return nil, apperrors.Wrap(err)
 	}
 
-	resp, err := s.dockerManager.ServiceTaskList(ctx, service.ID, "")
+	resp, err := s.dockerManager.ServiceTaskList(ctx, service.ID, nil)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}

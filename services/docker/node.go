@@ -143,3 +143,19 @@ func (m *manager) NodeRemove(
 	}
 	return &resp, nil
 }
+
+var (
+	currentNodeID string
+)
+
+func (m *manager) NodeCurrentID(ctx context.Context) (string, error) {
+	if currentNodeID != "" {
+		return currentNodeID, nil
+	}
+	resp, err := m.SystemInfo(ctx)
+	if err != nil {
+		return "", apperrors.Wrap(err)
+	}
+	currentNodeID = resp.Info.Swarm.NodeID
+	return currentNodeID, nil
+}

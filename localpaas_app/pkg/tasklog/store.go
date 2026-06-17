@@ -174,3 +174,7 @@ func NewLocalStore(
 ) *Store {
 	return newStore(key, true, false, nil)
 }
+
+func NewNullStore() *Store {
+	return &Store{}
+}
