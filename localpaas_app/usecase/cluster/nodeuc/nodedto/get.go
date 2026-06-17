@@ -57,6 +57,17 @@ type NodeResp struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
+type NodeBaseResp struct {
+	ID           string                  `json:"id"`
+	Name         string                  `json:"name"`
+	Hostname     string                  `json:"hostname"`
+	Addr         string                  `json:"addr"`
+	Status       docker.NodeStatus       `json:"status"`
+	Availability docker.NodeAvailability `json:"availability"`
+	Role         docker.NodeRole         `json:"role"`
+	IsLeader     bool                    `json:"isLeader"`
+}
+
 type NodePlatformResp struct {
 	Architecture string `json:"architecture"`
 	OS           string `json:"os"`
@@ -117,4 +128,21 @@ func TransformNode(node *swarm.Node, detailed bool) *NodeResp {
 		}
 	}
 	return resp
+}
+
+func TransformNodeBase(node *swarm.Node) *NodeBaseResp {
+	if node == nil {
+		return nil
+	}
+	isManager := node.Spec.Role == swarm.NodeRoleManager
+	return &NodeBaseResp{
+		ID:           node.ID,
+		Name:         node.Spec.Name,
+		Status:       docker.NodeStatus(node.Status.State),
+		Availability: docker.NodeAvailability(node.Spec.Availability),
+		Role:         docker.NodeRole(node.Spec.Role),
+		IsLeader:     isManager && node.ManagerStatus != nil && node.ManagerStatus.Leader,
+		Hostname:     node.Description.Hostname,
+		Addr:         node.Status.Addr,
+	}
 }

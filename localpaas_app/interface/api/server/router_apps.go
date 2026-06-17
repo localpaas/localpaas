@@ -51,6 +51,10 @@ func (s *HTTPServer) registerAppRoutes(projectGroup *gin.RouterGroup) *gin.Route
 		appGroup.PUT("/:appID/container-settings", appSettingsHandler.UpdateAppContainerSettings)
 	}
 
+	{ // Service tasks
+		appGroup.GET("/:appID/service-tasks", appSettingsHandler.GetAppServiceTasks)
+	}
+
 	{ // Env vars
 		envVarGroup := appGroup.Group("/:appID/env-vars")
 		envVarGroup.GET("", appSettingsHandler.GetEnvVars)

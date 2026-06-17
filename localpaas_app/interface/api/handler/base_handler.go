@@ -200,6 +200,7 @@ func (h *BaseHandler) parseQuery(ctx *gin.Context, query any) error {
 
 	config := &mapstructure.DecoderConfig{
 		Result:           query,
+		ZeroFields:       true,
 		WeaklyTypedInput: true,
 		Squash:           true,
 	}

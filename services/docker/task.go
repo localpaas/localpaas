@@ -6,7 +6,6 @@ import (
 
 	"github.com/moby/moby/api/types/swarm"
 	"github.com/moby/moby/client"
-	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
@@ -34,14 +33,10 @@ func (m *manager) ServiceTaskList(
 	desiredStates []swarm.TaskState,
 	options ...TaskListOption,
 ) (*client.TaskListResult, error) {
-	var desiredState string
-	if len(desiredStates) > 0 {
-		desiredState = gofn.StringJoin(desiredStates, "|")
-	}
 	options = append(options, func(opts *client.TaskListOptions) {
 		FilterAdd(&opts.Filters, "service", serviceID)
-		if desiredState != "" {
-			FilterAdd(&opts.Filters, "desired-state", desiredState)
+		for _, state := range desiredStates {
+			FilterAdd(&opts.Filters, "desired-state", string(state))
 		}
 	})
 	return m.TaskList(ctx, options...)
