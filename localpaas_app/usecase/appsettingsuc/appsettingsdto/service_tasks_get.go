@@ -63,9 +63,6 @@ func TransformServiceTask(task *swarm.Task, nodeMap map[string]*swarm.Node) (res
 		return nil, apperrors.Wrap(err)
 	}
 
-	// TODO: remove this later
-	resp.DesiredState = "[" + resp.DesiredState + "]"
-
 	// Transform node details
 	resp.Node = nodedto.TransformNodeBase(nodeMap[task.NodeID])
 
@@ -105,28 +102,26 @@ func TransformServiceTasks(tasks []swarm.Task, nodes []swarm.Node) (resp []*Serv
 	}
 
 	sort.Slice(resp, func(i, j int) bool {
-		var stateI, stateJ swarm.TaskState
-		var slotI, slotJ int
-		var timeI, timeJ time.Time
+		if resp[i].DesiredState != resp[j].DesiredState {
+			return stateRank(resp[i].DesiredState) < stateRank(resp[j].DesiredState)
+		}
 
+		var stateI, stateJ swarm.TaskState
+		var timeI, timeJ time.Time
 		if resp[i].Status != nil {
 			stateI = resp[i].Status.State
-			slotI = resp[i].Slot
 			timeI = resp[i].Status.Timestamp
 		}
 		if resp[j].Status != nil {
 			stateJ = resp[j].Status.State
-			slotJ = resp[j].Slot
 			timeJ = resp[j].Status.Timestamp
 		}
 
-		rankI := stateRank(stateI)
-		rankJ := stateRank(stateJ)
-		if rankI != rankJ {
-			return rankI < rankJ
+		if stateI != stateJ {
+			return stateRank(stateI) < stateRank(stateJ)
 		}
-		if slotI != slotJ {
-			return slotI < slotJ
+		if resp[i].Slot != resp[j].Slot {
+			return resp[i].Slot < resp[j].Slot
 		}
 		return timeI.After(timeJ)
 	})
