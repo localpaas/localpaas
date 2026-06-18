@@ -2,10 +2,8 @@ package appuc
 
 import (
 	"context"
-	"errors"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
@@ -17,7 +15,8 @@ func (uc *UC) GetTerminalInfo(
 	auth *basedto.Auth,
 	req *appdto.GetTerminalInfoReq,
 ) (_ *appdto.GetTerminalInfoResp, err error) {
-	app, err := uc.appService.LoadApp(ctx, uc.db, req.ProjectID, req.AppID, true, true,
+	app, featureSettings, err := uc.appService.LoadAppWithFeatureSettings(ctx, uc.db, req.ProjectID, req.AppID,
+		true, true,
 		bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
 		bunex.SelectRelation("Project",
 			bunex.SelectExcludeColumns(entity.ProjectDefaultExcludeColumns...),
@@ -31,28 +30,14 @@ func (uc *UC) GetTerminalInfo(
 			WithMsgLog("service not exist for app")
 	}
 
-	terminalEnabled := true
-	featureSetting, err := uc.settingRepo.GetSingle(ctx, uc.db, app.GetSettingScope(),
-		base.SettingTypeAppFeatures, true)
-	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-		return nil, apperrors.Wrap(err)
+	resp := &appdto.GetTerminalInfoResp{
+		Data: &appdto.TerminalInfoDataResp{Enabled: true},
 	}
-	if featureSetting != nil {
-		featureSettings := featureSetting.MustAsAppFeatureSettings()
-		if featureSettings.TerminalSettings != nil {
-			terminalEnabled = featureSettings.TerminalSettings.Enabled
-		}
-	}
-	if !terminalEnabled {
-		return &appdto.GetTerminalInfoResp{
-			Data: &appdto.TerminalInfoDataResp{Enabled: false},
-		}, nil
+	if featureSettings.TerminalSettings != nil && !featureSettings.TerminalSettings.Enabled {
+		resp.Data.Enabled = false
+		return resp, nil
 	}
 
-	return &appdto.GetTerminalInfoResp{
-		Data: &appdto.TerminalInfoDataResp{
-			Enabled:         true,
-			SupportedShells: appdto.SupportedShells,
-		},
-	}, nil
+	resp.Data.SupportedShells = appdto.SupportedShells
+	return resp, nil
 }

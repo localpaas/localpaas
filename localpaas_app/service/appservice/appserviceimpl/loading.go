@@ -2,6 +2,7 @@ package appserviceimpl
 
 import (
 	"context"
+	"errors"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -17,9 +18,8 @@ func (s *service) LoadApps(
 	projectID string,
 	appIDs []string,
 	requireProjectActive, requireAppsActive bool,
-	extraOpts ...bunex.SelectQueryOption,
+	extraOpts ...bunex.SelectQueryOption, // NOTE: make sure to add SelectRelation("Project")
 ) ([]*entity.App, error) {
-	// NOTE: make sure to add SelectRelation("Project") into extraOpts
 	apps, err := s.appRepo.ListByIDs(ctx, db, projectID, appIDs, extraOpts...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -45,9 +45,8 @@ func (s *service) LoadApp(
 	db database.IDB,
 	projectID, appID string,
 	requireProjectActive, requireAppActive bool,
-	extraOpts ...bunex.SelectQueryOption,
+	extraOpts ...bunex.SelectQueryOption, // NOTE: make sure to add SelectRelation("Project")
 ) (*entity.App, error) {
-	// NOTE: make sure to add SelectRelation("Project") into extraOpts
 	app, err := s.appRepo.GetByID(ctx, db, projectID, appID, extraOpts...)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -91,4 +90,30 @@ func (s *service) validateAppStatus(
 		return apperrors.New(apperrors.ErrAppInactive).WithNTParam("Name", app.Name)
 	}
 	return nil
+}
+
+func (s *service) LoadAppWithFeatureSettings(
+	ctx context.Context,
+	db database.IDB,
+	projectID, appID string,
+	requireProjectActive, requireAppActive bool,
+	extraOpts ...bunex.SelectQueryOption, // NOTE: make sure to add SelectRelation("Project")
+) (app *entity.App, featureSettings *entity.AppFeatureSettings, err error) {
+	app, err = s.LoadApp(ctx, db, projectID, appID, requireProjectActive, requireAppActive, extraOpts...)
+	if err != nil {
+		return nil, nil, apperrors.Wrap(err)
+	}
+
+	featureSetting, err := s.settingRepo.GetSingle(ctx, db, app.GetSettingScope(),
+		base.SettingTypeAppFeatures, true)
+	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
+		return nil, nil, apperrors.Wrap(err)
+	}
+	if featureSetting != nil {
+		featureSettings = featureSetting.MustAsAppFeatureSettings()
+	} else {
+		featureSettings = &entity.AppFeatureSettings{}
+		entity.InitAppFeatureSettingsDefault(featureSettings)
+	}
+	return app, featureSettings, nil
 }

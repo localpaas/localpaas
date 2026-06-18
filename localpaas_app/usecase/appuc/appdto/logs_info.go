@@ -29,7 +29,8 @@ type GetAppLogsInfoResp struct {
 }
 
 type AppLogsInfoDataResp struct {
-	Tasks []*TaskLogsInfoResp `json:"tasks"`
+	Enabled bool                `json:"enabled"`
+	Tasks   []*TaskLogsInfoResp `json:"tasks"`
 }
 
 type TaskLogsInfoResp struct {

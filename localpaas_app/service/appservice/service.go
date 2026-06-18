@@ -23,6 +23,9 @@ type Service interface {
 	LoadAppByKey(ctx context.Context, db database.IDB, projectID, appKey string,
 		requireProjectActive, requireAppActive bool, extraOpts ...bunex.SelectQueryOption) (
 		*entity.App, error)
+	LoadAppWithFeatureSettings(ctx context.Context, db database.IDB, projectID, appID string,
+		requireProjectActive, requireAppActive bool, extraOpts ...bunex.SelectQueryOption) (
+		*entity.App, *entity.AppFeatureSettings, error)
 
 	PersistAppData(ctx context.Context, db database.IDB, data *PersistingAppData) error
 	DeleteApp(ctx context.Context, db database.IDB, app *entity.App) error

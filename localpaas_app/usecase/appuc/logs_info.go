@@ -17,15 +17,27 @@ func (uc *UC) GetAppLogsInfo(
 	auth *basedto.Auth,
 	req *appdto.GetAppLogsInfoReq,
 ) (*appdto.GetAppLogsInfoResp, error) {
-	app, err := uc.appRepo.GetByID(ctx, uc.db, req.ProjectID, req.AppID,
+	app, featureSettings, err := uc.appService.LoadAppWithFeatureSettings(ctx, uc.db, req.ProjectID, req.AppID,
+		true, true,
 		bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
+		bunex.SelectRelation("Project",
+			bunex.SelectExcludeColumns(entity.ProjectDefaultExcludeColumns...),
+		),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 	if app.ServiceID == "" {
-		return nil, apperrors.New(apperrors.ErrUnavailable).
+		return nil, apperrors.NewUnavailable("App service").
 			WithMsgLog("service not exist for app")
+	}
+
+	resp := &appdto.GetAppLogsInfoResp{
+		Data: &appdto.AppLogsInfoDataResp{Enabled: true},
+	}
+	if featureSettings.LoggingSettings != nil && !featureSettings.LoggingSettings.Enabled {
+		resp.Data.Enabled = false
+		return resp, nil
 	}
 
 	taskList, err := uc.dockerManager.ServiceTaskList(ctx, app.ServiceID, []swarm.TaskState{swarm.TaskStateRunning})
@@ -33,14 +45,11 @@ func (uc *UC) GetAppLogsInfo(
 		return nil, apperrors.Wrap(err)
 	}
 
-	dataResp := &appdto.AppLogsInfoDataResp{}
 	for _, item := range taskList.Items {
-		dataResp.Tasks = append(dataResp.Tasks, &appdto.TaskLogsInfoResp{
+		resp.Data.Tasks = append(resp.Data.Tasks, &appdto.TaskLogsInfoResp{
 			ID: item.ID,
 		})
 	}
 
-	return &appdto.GetAppLogsInfoResp{
-		Data: dataResp,
-	}, nil
+	return resp, nil
 }

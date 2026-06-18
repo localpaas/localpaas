@@ -30,15 +30,22 @@ func (uc *UC) GetAppLogs(
 	auth *basedto.Auth,
 	req *appdto.GetAppLogsReq,
 ) (_ *appdto.GetAppLogsResp, err error) {
-	app, err := uc.appRepo.GetByID(ctx, uc.db, req.ProjectID, req.AppID,
+	app, featureSettings, err := uc.appService.LoadAppWithFeatureSettings(ctx, uc.db, req.ProjectID, req.AppID,
+		true, true,
 		bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
+		bunex.SelectRelation("Project",
+			bunex.SelectExcludeColumns(entity.ProjectDefaultExcludeColumns...),
+		),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
 	if app.ServiceID == "" {
-		return nil, apperrors.New(apperrors.ErrUnavailable).
+		return nil, apperrors.NewUnavailable("App service").
 			WithMsgLog("service not exist for app")
+	}
+	if featureSettings.LoggingSettings != nil && !featureSettings.LoggingSettings.Enabled {
+		return nil, apperrors.NewUnavailable("App logs")
 	}
 	serviceID := app.ServiceID
 

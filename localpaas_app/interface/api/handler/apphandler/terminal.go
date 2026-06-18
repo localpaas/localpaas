@@ -79,12 +79,12 @@ func (h *Handler) OpenAppTerminal(ctx *gin.Context) {
 		h.RenderError(ctx, err)
 		return
 	}
+	defer resp.CloseFunc()
 
 	if !h.IsWebsocketRequest(ctx) || resp.ExecAttachResult == nil {
 		ctx.JSON(http.StatusOK, resp)
 		return
 	}
-	defer resp.ExecAttachResult.Close()
 
 	wsConn, err := h.UpgradeWebsocket(ctx)
 	if err != nil {
