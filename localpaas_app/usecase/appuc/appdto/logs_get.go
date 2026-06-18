@@ -12,7 +12,6 @@ import (
 )
 
 type GetAppLogsReq struct {
-	Token      string            `json:"-" mapstructure:"token"`
 	ProjectID  string            `json:"-"`
 	AppID      string            `json:"-"`
 	TaskID     string            `json:"-" mapstructure:"taskId"`

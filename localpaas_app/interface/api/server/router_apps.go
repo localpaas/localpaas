@@ -23,15 +23,20 @@ func (s *HTTPServer) registerAppRoutes(projectGroup *gin.RouterGroup) *gin.Route
 		appGroup.PUT("/:appID/status", appHandler.UpdateAppStatus)
 	}
 
+	{ // Tags
+		tagGroup := appGroup.Group("/:appID/tags")
+		tagGroup.POST("", appSettingsHandler.CreateAppTag)
+		tagGroup.POST("/delete", appSettingsHandler.DeleteAppTags)
+	}
+
 	{ // Logs
 		appGroup.GET("/:appID/logs/info", appHandler.GetAppLogsInfo)
 		appGroup.GET("/:appID/logs", appHandler.GetAppLogs)
 	}
 
-	{ // Tags
-		tagGroup := appGroup.Group("/:appID/tags")
-		tagGroup.POST("", appSettingsHandler.CreateAppTag)
-		tagGroup.POST("/delete", appSettingsHandler.DeleteAppTags)
+	{ // Terminal
+		appGroup.GET("/:appID/terminal/info", appHandler.GetAppTerminalInfo)
+		appGroup.GET("/:appID/terminal", appHandler.OpenAppTerminal)
 	}
 
 	{ // Settings

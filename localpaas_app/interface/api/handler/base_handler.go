@@ -74,6 +74,13 @@ var (
 	}
 )
 
+var (
+	wsUpgrader = &websocket.Upgrader{
+		Subprotocols: []string{"access_token"},
+		CheckOrigin:  func(r *http.Request) bool { return true },
+	}
+)
+
 // BaseHandler base handler for every other handler to inherit from
 type BaseHandler struct {
 	sysErrorUC *syserroruc.UC
@@ -344,13 +351,6 @@ func (h *BaseHandler) ParseRequestLang(ctx *gin.Context) translation.Lang {
 	return httputil.ParseRequestLang(ctx.GetHeader("Accept-Language"))
 }
 
-var wsUpgrader = websocket.Upgrader{
-	Subprotocols: []string{"access_token"},
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
-}
-
 func (h *BaseHandler) StreamAppLogs(
 	ctx *gin.Context,
 	staticLogs []*tasklog.LogFrame, // static logs are in DB
@@ -412,6 +412,14 @@ func (h *BaseHandler) StreamAppLogs(
 			}
 		}
 	}
+}
+
+func (h *BaseHandler) UpgradeWebsocket(ctx *gin.Context) (*websocket.Conn, error) {
+	conn, err := wsUpgrader.Upgrade(ctx.Writer, ctx.Request, nil)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	return conn, nil
 }
 
 func (h *BaseHandler) IsWebsocketRequest(ctx *gin.Context) bool {
