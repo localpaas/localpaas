@@ -6,11 +6,15 @@ import (
 	"io"
 	"time"
 
+	"github.com/moby/moby/client"
 	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/config"
+	"github.com/localpaas/localpaas/localpaas_app/interface/agent/client/containerservice"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/funcutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
+	"github.com/localpaas/localpaas/localpaas_app/service/agentservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/containerexecservice"
 	"github.com/localpaas/localpaas/services/docker"
 )
@@ -19,11 +23,21 @@ const (
 	taskFindRetryMax           = 3
 	taskFindRetryDelay         = time.Second * 5
 	taskFindMinRunningDuration = time.Second * 10
+
+	containerExecRetryMax = 1
 )
 
 func (s *service) ContainerExec(
 	ctx context.Context,
 	req *containerexecservice.ContainerExecReq,
+) (resp *containerexecservice.ContainerExecResp, err error) {
+	return s.containerExec(ctx, req, 0)
+}
+
+func (s *service) containerExec(
+	ctx context.Context,
+	req *containerexecservice.ContainerExecReq,
+	retry int,
 ) (resp *containerexecservice.ContainerExecResp, err error) {
 	defer funcutil.EnsureNoPanic(&err)
 
@@ -35,7 +49,8 @@ func (s *service) ContainerExec(
 	task, _, err := s.dockerManager.ServiceTaskGetRunning(ctx, req.App.ServiceID,
 		gofn.Coalesce(req.TaskMinRunningDuration, taskFindMinRunningDuration),
 		gofn.Coalesce(req.TaskFindRetryMax, taskFindRetryMax),
-		gofn.Coalesce(req.TaskFindRetryDelay, taskFindRetryDelay))
+		gofn.Coalesce(req.TaskFindRetryDelay, taskFindRetryDelay),
+		nil)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
@@ -45,36 +60,44 @@ func (s *service) ContainerExec(
 		return nil, apperrors.NewNotFound("Running task of service")
 	}
 
-	dockerClient := s.dockerManager
-	if task.NodeID != "" {
-		dockerClient, err = s.dockerManager.NewClientForNode(ctx, task.NodeID)
-		if err != nil {
-			_ = logStore.Add(ctx, tasklog.NewWarnFrame(
-				fmt.Sprintf("Failed to connect to remote node agent: %v", err), tasklog.TsNow))
-			return nil, apperrors.Wrap(err)
-		}
-	}
-	resp = &containerexecservice.ContainerExecResp{
-		DockerManager:     dockerClient,
-		IsRemoteExecution: dockerClient != s.dockerManager,
-	}
-	resp.ExecResizeFunc = func(ctx context.Context, w, h uint) error {
-		if resp.DockerManager == nil || resp.ExecCreateResult == nil || resp.ExecCreateResult.ID == "" {
-			return nil
-		}
-		_, err := resp.DockerManager.ContainerExecResize(ctx, resp.ExecCreateResult.ID, w, h)
-		return apperrors.Wrap(err)
+	currNodeID, err := s.dockerManager.NodeCurrentID(ctx)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
 	}
 
+	isRemote := task.NodeID != "" && task.NodeID != currNodeID
+	if config.Current.DevMode.Enabled && config.Current.DevMode.ForceAgentLocal {
+		isRemote = true
+	}
+
+	execHelper := &containerExecHelper{
+		logStore:     logStore,
+		agentService: s.agentService,
+		dockerClient: gofn.If(isRemote, nil, s.dockerManager),
+		targetNodeID: task.NodeID,
+		retryable:    true,
+	}
+
+	resp = &containerexecservice.ContainerExecResp{
+		IsRemoteExec:   isRemote,
+		CloseFunc:      execHelper.Close,
+		ExecResizeFunc: execHelper.ExecResize,
+	}
 	defer func() {
 		if err != nil || !req.TerminalMode {
-			resp.Close()
+			resp.CloseFunc()
 		}
 	}()
 
 	containerID := task.Status.ContainerStatus.ContainerID
-	createResp, attachResp, startResp, err := dockerClient.ContainerExec(ctx, containerID, req.ExecOptions)
+	createResp, attachResp, startResp, err := execHelper.ExecCreate(ctx, containerID, req)
 	if err != nil {
+		// retry one more time with excluding the current node from the list
+		if execHelper.retryable && retry < containerExecRetryMax {
+			_ = logStore.Add(ctx, tasklog.NewWarnFrame(fmt.Sprintf(
+				"Execution failed to start in node %s, retrying...", execHelper.targetNodeID), tasklog.TsNow))
+			return s.containerExec(ctx, req, retry+1)
+		}
 		return nil, apperrors.Wrap(err)
 	}
 
@@ -87,21 +110,137 @@ func (s *service) ContainerExec(
 	}
 
 	logChan, _ := docker.StartScanningLog(ctx, io.NopCloser(attachResp.Reader), docker.WithParseLogHeader(false))
-
 	for msgs := range logChan {
 		_ = logStore.AddRedacted(ctx, msgs...)
 	}
 
-	execInfo, err := dockerClient.ContainerExecInspect(ctx, createResp.ID)
+	exitCode, err := execHelper.GetExecExitCode(ctx)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-
-	if execInfo.ExitCode != 0 {
+	if exitCode != 0 {
 		_ = logStore.AddRedacted(ctx, tasklog.NewErrFrame(fmt.Sprintf(
-			"Command execution failed with exit code: %v", execInfo.ExitCode), tasklog.TsNow))
+			"Command execution failed with exit code: %v", exitCode), tasklog.TsNow))
 		return nil, apperrors.Wrap(apperrors.ErrInfraActionFailed)
 	}
 
 	return resp, nil
+}
+
+type containerExecHelper struct {
+	dockerClient docker.Manager                        // for local container exec
+	remoteStream *containerservice.ContainerExecStream // for remote container exec
+	agentClient  containerservice.ContainerServiceClient
+
+	targetNodeID string
+
+	createResult *client.ExecCreateResult
+	attachResult *client.ExecAttachResult
+
+	retryable    bool
+	agentService agentservice.Service
+	logStore     *tasklog.Store
+}
+
+func (h *containerExecHelper) ExecCreate(
+	ctx context.Context,
+	containerID string,
+	req *containerexecservice.ContainerExecReq,
+) (_ *client.ExecCreateResult, _ *client.ExecAttachResult, _ *client.ExecStartResult, err error) {
+	defer func() {
+		if err != nil {
+			h.Close()
+		} else {
+			h.retryable = false // Exec created, not allow to retry when a subsequence step fails
+		}
+	}()
+
+	// Local exec
+	if h.dockerClient != nil {
+		createRes, attachRes, startRes, err := h.dockerClient.ContainerExec(ctx, containerID, req.ExecOptions)
+		if err != nil {
+			return nil, nil, nil, apperrors.Wrap(err)
+		}
+		h.createResult = createRes
+		h.attachResult = attachRes
+		return createRes, attachRes, startRes, nil
+	}
+
+	// Remote exec
+	if h.remoteStream == nil {
+		agentAddr, err := h.agentService.GetAgentAddrForNode(ctx, h.targetNodeID)
+		if err != nil {
+			_ = h.logStore.Add(ctx, tasklog.NewWarnFrame(
+				fmt.Sprintf("Failed to get IP of agent for node %s: %v", h.targetNodeID, err), tasklog.TsNow))
+			return nil, nil, nil, apperrors.Wrap(err)
+		}
+
+		h.agentClient, err = containerservice.NewContainerServiceClient(agentAddr)
+		if err != nil {
+			_ = h.logStore.Add(ctx, tasklog.NewWarnFrame(
+				fmt.Sprintf("Failed to connect to agent at %s: %v", agentAddr, err), tasklog.TsNow))
+			return nil, nil, nil, apperrors.Wrap(err)
+		}
+
+		h.remoteStream, err = h.agentClient.ContainerExec(ctx)
+		if err != nil {
+			return nil, nil, nil, apperrors.Wrap(err)
+		}
+	}
+
+	err = h.remoteStream.SendExecCreate(containerID, req.ExecOptions)
+	if err != nil {
+		return nil, nil, nil, apperrors.Wrap(err)
+	}
+
+	h.createResult = &client.ExecCreateResult{ID: "remote"}
+	h.attachResult = h.remoteStream.ToExecAttachResult()
+	return h.createResult, h.attachResult, &client.ExecStartResult{}, nil
+}
+
+func (h *containerExecHelper) ExecResize(
+	ctx context.Context,
+	width, height uint,
+) error {
+	// Local exec
+	if h.dockerClient != nil {
+		_, err := h.dockerClient.ContainerExecResize(ctx, h.createResult.ID, width, height)
+		return apperrors.Wrap(err)
+	}
+
+	// Remote exec
+	return apperrors.Wrap(h.remoteStream.SendResize(width, height))
+}
+
+func (h *containerExecHelper) GetExecExitCode(
+	ctx context.Context,
+) (int, error) {
+	// Local exec
+	if h.dockerClient != nil {
+		execInfo, err := h.dockerClient.ContainerExecInspect(ctx, h.createResult.ID)
+		if err != nil {
+			return 0, apperrors.Wrap(err)
+		}
+		return execInfo.ExitCode, nil
+	}
+
+	// Remote exec
+	exitCode, ok := h.remoteStream.GetExitCode()
+	if !ok {
+		return 0, apperrors.New(apperrors.ErrGRPCRequestFailed).
+			WithParam("Error", "stream closed without exit code")
+	}
+	return int(exitCode), nil
+}
+
+func (h *containerExecHelper) Close() {
+	if h.attachResult != nil {
+		h.attachResult.Close()
+	}
+	if h.remoteStream != nil {
+		_ = h.remoteStream.Close()
+	}
+	if h.agentClient != nil {
+		_ = h.agentClient.Close()
+	}
 }

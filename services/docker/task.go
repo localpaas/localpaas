@@ -6,6 +6,7 @@ import (
 
 	"github.com/moby/moby/api/types/swarm"
 	"github.com/moby/moby/client"
+	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 )
@@ -88,8 +89,10 @@ func (m *manager) ServiceTaskGetRunning(
 	minRunningDuration time.Duration,
 	maxRetry int,
 	retryDelay time.Duration,
+	ignoreNodeIDs []string,
 ) (running *swarm.Task, all *client.TaskListResult, err error) {
-	return m.serviceTaskGetRunning(ctx, serviceID, minRunningDuration, -1, maxRetry, retryDelay)
+	return m.serviceTaskGetRunning(ctx, serviceID, minRunningDuration, -1,
+		maxRetry, retryDelay, ignoreNodeIDs)
 }
 
 func (m *manager) serviceTaskGetRunning(
@@ -99,6 +102,7 @@ func (m *manager) serviceTaskGetRunning(
 	retry int,
 	maxRetry int,
 	retryDelay time.Duration,
+	ignoreNodeIDs []string,
 ) (running *swarm.Task, all *client.TaskListResult, err error) {
 	if retry >= maxRetry {
 		return nil, nil, nil
@@ -111,11 +115,13 @@ func (m *manager) serviceTaskGetRunning(
 	timeNow := time.Now()
 	for i := range listResp.Items {
 		t := &listResp.Items[i]
-		if t.Status.State == swarm.TaskStateRunning && timeNow.Sub(t.Status.Timestamp) > minRunningDuration {
+		if t.Status.State == swarm.TaskStateRunning && timeNow.Sub(t.Status.Timestamp) > minRunningDuration &&
+			(len(ignoreNodeIDs) == 0 || !gofn.Contain(ignoreNodeIDs, t.NodeID)) {
 			return t, listResp, nil
 		}
 	}
 
 	time.Sleep(retryDelay)
-	return m.serviceTaskGetRunning(ctx, serviceID, minRunningDuration, retry+1, maxRetry, retryDelay)
+	return m.serviceTaskGetRunning(ctx, serviceID, minRunningDuration, retry+1,
+		maxRetry, retryDelay, ignoreNodeIDs)
 }

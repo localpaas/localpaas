@@ -5,6 +5,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/logging"
 	"github.com/localpaas/localpaas/localpaas_app/infra/rediscache"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
+	"github.com/localpaas/localpaas/localpaas_app/service/agentservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/appservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/containerexecservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
@@ -42,6 +43,7 @@ type service struct {
 	userService         userservice.Service
 	notificationService notificationservice.Service
 	traefikService      traefikservice.Service
+	agentService        agentservice.Service
 	dockerManager       docker.Manager
 }
 
@@ -69,6 +71,7 @@ func New(
 	userService userservice.Service,
 	notificationService notificationservice.Service,
 	traefikService traefikservice.Service,
+	agentService agentservice.Service,
 	dockerManager docker.Manager,
 ) containerexecservice.Service {
 	return &service{
@@ -95,6 +98,7 @@ func New(
 		userService:              userService,
 		notificationService:      notificationService,
 		traefikService:           traefikService,
+		agentService:             agentService,
 		dockerManager:            dockerManager,
 	}
 }

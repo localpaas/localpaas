@@ -24,24 +24,13 @@ type ContainerExecReq struct {
 }
 
 type ContainerExecResp struct {
-	DockerManager     docker.Manager // docker client through socket proxy if remote execution
-	IsRemoteExecution bool
-
+	IsRemoteExec     bool
 	ExecCreateResult *client.ExecCreateResult
-	ExecAttachResult *client.ExecAttachResult // NOTE: user needs to close this when done
+	ExecAttachResult *client.ExecAttachResult
 	ExecStartResult  *client.ExecStartResult
 
+	CloseFunc      func() // NOTE: need to call this when done
 	ExecResizeFunc func(ctx context.Context, w, h uint) error
-}
-
-func (resp *ContainerExecResp) Close() {
-	if resp.ExecAttachResult != nil {
-		resp.ExecAttachResult.Close()
-	}
-	if resp.IsRemoteExecution && resp.DockerManager != nil {
-		_ = resp.DockerManager.Close()
-		resp.DockerManager = nil
-	}
 }
 
 type SchedJobExecReq struct {

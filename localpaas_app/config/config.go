@@ -62,6 +62,9 @@ type Config struct {
 	Proxy      Proxy      `toml:"proxy"`
 	Tasks      Tasks      `toml:"tasks"`
 	Files      Files      `toml:"files"`
+	Agent      Agent      `toml:"agent"`
+
+	DevMode DevMode `toml:"dev_mode"`
 
 	// Readonly
 	SystemInfo SystemInfo `toml:"-"`
@@ -113,6 +116,9 @@ func loadConfig(configFile string) (*Config, error) {
 	if err != nil {
 		return config, tracerr.Wrap(err)
 	}
+
+	// Turn on dev mode for dev/local env
+	config.DevMode.Enabled = config.IsDevEnv() || config.IsLocalEnv()
 
 	lastConfigFile = configFile
 	return config, nil

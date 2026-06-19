@@ -33,6 +33,7 @@ ERR_URL_INVALID = "URL '{{.URL}}' is invalid or unsupported"
 ERR_VALIDATION = "Validation failed"
 
 ERR_HTTP_REQUEST_FAILED = "HTTP request failed with status code {{.StatusCode}}"
+ERR_GRPC_REQUEST_FAILED = "gRPC request failed with error: {{.Error}}"
 
 # Session errors
 ERR_NO_SESSION = "No session found"

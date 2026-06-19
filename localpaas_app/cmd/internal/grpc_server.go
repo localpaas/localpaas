@@ -3,12 +3,15 @@ package internal
 import (
 	"context"
 	"net"
+	"os"
+	"strconv"
 	"time"
 
 	"go.uber.org/fx"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/keepalive"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
@@ -17,7 +20,6 @@ import (
 )
 
 const (
-	grpcPort              = "10001"
 	maxConnectionIdle     = 15 * time.Minute
 	maxConnectionAge      = 30 * time.Minute
 	maxConnectionAgeGrace = 5 * time.Second
@@ -49,11 +51,17 @@ func InitGrpcServer(
 		PermitWithoutStream: true,             // Allow pings even if no active RPCs
 	}
 
-	// 2. Setup server options including keepalives and custom interceptor
+	// 2. Setup server options including keepalives and chained custom interceptors
 	opts := []grpc.ServerOption{
 		grpc.KeepaliveParams(keepaliveParams),
 		grpc.KeepaliveEnforcementPolicy(keepalivePolicy),
-		grpc.UnaryInterceptor(unaryLoggingAndRecoveryInterceptor(logger)),
+		grpc.ChainUnaryInterceptor(
+			unaryAuthInterceptor(),
+			unaryLoggingAndRecoveryInterceptor(logger),
+		),
+		grpc.ChainStreamInterceptor(
+			streamAuthInterceptor(),
+		),
 	}
 
 	server := grpc.NewServer(opts...)
@@ -63,6 +71,7 @@ func InitGrpcServer(
 
 	lc.Append(fx.Hook{
 		OnStart: func(_ context.Context) error {
+			grpcPort := strconv.Itoa(cfg.Agent.Port)
 			lis, err := net.Listen("tcp", ":"+grpcPort)
 			if err != nil {
 				return apperrors.Wrap(err)
@@ -113,5 +122,56 @@ func unaryLoggingAndRecoveryInterceptor(logger logging.Logger) grpc.UnaryServerI
 		}
 
 		return resp, apperrors.Wrap(err)
+	}
+}
+
+func validateAuthToken(ctx context.Context) error {
+	secretToken := os.Getenv("AGENT_SECRET_TOKEN")
+	if secretToken == "" {
+		return nil // No token configured, skip authentication (for local dev)
+	}
+
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return status.Errorf(codes.Unauthenticated, "missing metadata")
+	}
+
+	tokens := md.Get("authorization")
+	if len(tokens) == 0 {
+		return status.Errorf(codes.Unauthenticated, "missing authorization token")
+	}
+
+	if tokens[0] != secretToken {
+		return status.Errorf(codes.Unauthenticated, "invalid authorization token")
+	}
+
+	return nil
+}
+
+func unaryAuthInterceptor() grpc.UnaryServerInterceptor {
+	return func(
+		ctx context.Context,
+		req any,
+		info *grpc.UnaryServerInfo,
+		handler grpc.UnaryHandler,
+	) (any, error) {
+		if err := validateAuthToken(ctx); err != nil {
+			return nil, err
+		}
+		return handler(ctx, req)
+	}
+}
+
+func streamAuthInterceptor() grpc.StreamServerInterceptor {
+	return func(
+		srv any,
+		ss grpc.ServerStream,
+		info *grpc.StreamServerInfo,
+		handler grpc.StreamHandler,
+	) error {
+		if err := validateAuthToken(ss.Context()); err != nil {
+			return err
+		}
+		return handler(srv, ss)
 	}
 }

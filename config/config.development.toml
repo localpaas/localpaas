@@ -55,3 +55,7 @@ app_path = "/var/lib/localpaas"
 
 [tasks.healthcheck]
     base_interval = "30s"
+
+[agent]
+    secret_token = "abc123"
+

@@ -21,6 +21,9 @@ const (
 
 	LocalpaasDockerProxyServiceName = "localpaas_docker_proxy"
 	LocalpaasDockerProxyKey         = "localpaas_docker_proxy"
+
+	LocalpaasAgentServiceName = "localpaas_agent"
+	LocalpaasAgentKey         = "localpaas_agent"
 )
 
 const (
@@ -33,6 +36,7 @@ var (
 )
 
 const (
-	NetworkGlobalRouting = "localpaas_net"
-	NetworkDockerProxy   = "localpaas_docker_proxy_net"
+	NetworkGlobalRouting  = "localpaas_net"
+	NetworkDockerProxy    = "localpaas_docker_proxy_net"
+	NetworkLocalpaasLocal = "localpaas_local_net"
 )

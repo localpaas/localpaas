@@ -26,7 +26,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AgentServiceClient interface {
-	Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingResponse, error)
+	Ping(ctx context.Context, in *PingReq, opts ...grpc.CallOption) (*PingResp, error)
 }
 
 type agentServiceClient struct {
@@ -37,8 +37,8 @@ func NewAgentServiceClient(cc grpc.ClientConnInterface) AgentServiceClient {
 	return &agentServiceClient{cc}
 }
 
-func (c *agentServiceClient) Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingResponse, error) {
-	out := new(PingResponse)
+func (c *agentServiceClient) Ping(ctx context.Context, in *PingReq, opts ...grpc.CallOption) (*PingResp, error) {
+	out := new(PingResp)
 	err := c.cc.Invoke(ctx, AgentService_Ping_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -50,7 +50,7 @@ func (c *agentServiceClient) Ping(ctx context.Context, in *PingRequest, opts ...
 // All implementations must embed UnimplementedAgentServiceServer
 // for forward compatibility
 type AgentServiceServer interface {
-	Ping(context.Context, *PingRequest) (*PingResponse, error)
+	Ping(context.Context, *PingReq) (*PingResp, error)
 	mustEmbedUnimplementedAgentServiceServer()
 }
 
@@ -58,7 +58,7 @@ type AgentServiceServer interface {
 type UnimplementedAgentServiceServer struct {
 }
 
-func (UnimplementedAgentServiceServer) Ping(context.Context, *PingRequest) (*PingResponse, error) {
+func (UnimplementedAgentServiceServer) Ping(context.Context, *PingReq) (*PingResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
 }
 func (UnimplementedAgentServiceServer) mustEmbedUnimplementedAgentServiceServer() {}
@@ -75,7 +75,7 @@ func RegisterAgentServiceServer(s grpc.ServiceRegistrar, srv AgentServiceServer)
 }
 
 func _AgentService_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PingRequest)
+	in := new(PingReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -87,7 +87,7 @@ func _AgentService_Ping_Handler(srv interface{}, ctx context.Context, dec func(i
 		FullMethod: AgentService_Ping_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AgentServiceServer).Ping(ctx, req.(*PingRequest))
+		return srv.(AgentServiceServer).Ping(ctx, req.(*PingReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/infra/logging"
 	"github.com/localpaas/localpaas/localpaas_app/infra/rediscache"
+	agentserver "github.com/localpaas/localpaas/localpaas_app/interface/agent/server"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/appactionhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/appbasehandler"
@@ -34,6 +35,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/permission/permissionimpl"
 	"github.com/localpaas/localpaas/localpaas_app/repository"
 	"github.com/localpaas/localpaas/localpaas_app/repository/cacherepository"
+	"github.com/localpaas/localpaas/localpaas_app/service/agentservice/agentserviceimpl"
 	"github.com/localpaas/localpaas/localpaas_app/service/appdeploymentservice/appdeploymentserviceimpl"
 	"github.com/localpaas/localpaas/localpaas_app/service/appservice/appserviceimpl"
 	"github.com/localpaas/localpaas/localpaas_app/service/clusterservice/clusterserviceimpl"
@@ -123,6 +125,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/usecase/usersettings/apikeyuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/useruc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/webhookuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecaseagent/containeragentuc"
 	"github.com/localpaas/localpaas/services/docker"
 )
 
@@ -273,6 +276,7 @@ var Provides = []any{
 	reslinkserviceimpl.New,
 	repocheckoutserviceimpl.New,
 	imagebuildserviceimpl.New,
+	agentserviceimpl.New,
 
 	// Repo: User
 	repository.NewUserRepo,
@@ -315,4 +319,10 @@ var Provides = []any{
 	cacherepository.NewHealthcheckNotifEventRepo,
 	cacherepository.NewHealthcheckSettingsRepo,
 	cacherepository.NewGithubAppManifestRepo,
+
+	// Agent
+	agentserver.NewAgentServer,
+
+	// Use case of Agent
+	containeragentuc.New,
 }

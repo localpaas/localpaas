@@ -43,6 +43,7 @@ var (
 	ErrValidation               = errors.New("ERR_VALIDATION")
 
 	ErrHTTPRequestFailed = errors.New("ERR_HTTP_REQUEST_FAILED")
+	ErrGRPCRequestFailed = errors.New("ERR_GRPC_REQUEST_FAILED")
 )
 
 // Errors for session
@@ -178,6 +179,7 @@ var errorStatusMap = map[error]int{
 	ErrValidation:               http.StatusBadRequest,
 
 	ErrHTTPRequestFailed: http.StatusUnprocessableEntity,
+	ErrGRPCRequestFailed: http.StatusUnprocessableEntity,
 
 	// Session errors
 	ErrNoSession:                   http.StatusUnauthorized,

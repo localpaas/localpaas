@@ -6,21 +6,40 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/infra/logging"
 	agentproto "github.com/localpaas/localpaas/localpaas_app/interface/agent/proto"
+	"github.com/localpaas/localpaas/localpaas_app/interface/agent/server/containerservice"
+	"github.com/localpaas/localpaas/localpaas_app/usecaseagent/containeragentuc"
 )
 
-// AgentServer implements agentproto.AgentServiceServer
+// AgentServer implements agentproto.AgentServiceServer and agentproto.ContainerServiceServer
 type AgentServer struct {
 	agentproto.UnimplementedAgentServiceServer
-	logger logging.Logger
+	agentproto.UnimplementedContainerServiceServer
+	logger           logging.Logger
+	containerAgentUC *containeragentuc.UC
 }
 
-func NewAgentServer(logger logging.Logger) *AgentServer {
-	return &AgentServer{logger: logger}
+func NewAgentServer(
+	logger logging.Logger,
+	containerAgentUC *containeragentuc.UC,
+) *AgentServer {
+	return &AgentServer{
+		logger:           logger,
+		containerAgentUC: containerAgentUC,
+	}
 }
 
-func (s *AgentServer) Ping(ctx context.Context, req *agentproto.PingRequest) (*agentproto.PingResponse, error) {
+func (s *AgentServer) Ping(
+	_ context.Context,
+	req *agentproto.PingReq,
+) (*agentproto.PingResp, error) {
 	s.logger.Infof("Received Ping request with message: %s", req.GetMessage())
-	return &agentproto.PingResponse{
+	return &agentproto.PingResp{
 		Message: fmt.Sprintf("Pong: %s", req.GetMessage()),
 	}, nil
+}
+
+/// CONTAINER SERVICE
+
+func (s *AgentServer) ContainerExec(req agentproto.ContainerService_ContainerExecServer) error {
+	return containerservice.ContainerExec(s.containerAgentUC, req) //nolint:wrapcheck
 }

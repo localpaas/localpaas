@@ -5,13 +5,13 @@ package agent;
 option go_package = "github.com/localpaas/localpaas/localpaas_app/interface/agent/proto;agentproto";
 
 service AgentService {
-  rpc Ping(PingRequest) returns (PingResponse);
+  rpc Ping(PingReq) returns (PingResp);
 }
 
-message PingRequest {
+message PingReq {
   string message = 1;
 }
 
-message PingResponse {
+message PingResp {
   string message = 1;
 }
