@@ -6,20 +6,39 @@ on:
       - 'dev-**'
 
 env:
-  IMAGE_NAME: localpaas/localpaas-dev
+  APP_IMAGE_NAME: localpaas/localpaas-dev
+  AGENT_IMAGE_NAME: localpaas/localpaas-agent-dev
 
 jobs:
   build-image:
     strategy:
       matrix:
         include:
-          # Intel/AMD builds run on the standard runner
-          - platform: linux/amd64
+          # Intel/AMD builds for App
+          - image_name: localpaas/localpaas-dev
+            dockerfile: deployment/dev/Dockerfile
+            platform: linux/amd64
             runner: ubuntu-24.04
             arch: amd64
 
-          # ARM builds run natively on the ARM runner!
-          - platform: linux/arm64
+          # ARM builds for App
+          - image_name: localpaas/localpaas-dev
+            dockerfile: deployment/dev/Dockerfile
+            platform: linux/arm64
+            runner: ubuntu-24.04-arm
+            arch: arm64
+
+          # Intel/AMD builds for Agent
+          - image_name: localpaas/localpaas-agent-dev
+            dockerfile: deployment/dev/Dockerfile.agent
+            platform: linux/amd64
+            runner: ubuntu-24.04
+            arch: amd64
+
+          # ARM builds for Agent
+          - image_name: localpaas/localpaas-agent-dev
+            dockerfile: deployment/dev/Dockerfile.agent
+            platform: linux/arm64
             runner: ubuntu-24.04-arm
             arch: arm64
 
@@ -49,11 +68,11 @@ jobs:
         name: Build and push natively
         uses: docker/build-push-action@v7
         with:
-          file: deployment/dev/Dockerfile
+          file: ${{ matrix.dockerfile }}
           platforms: ${{ matrix.platform }}
           push: true
-          # We can use the 'arch' directly from our matrix block now
-          tags: ${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.arch }}
+          # We can use the 'arch' and 'image_name' directly from our matrix block
+          tags: ${{ matrix.image_name }}:${{ github.sha }}-${{ matrix.arch }}
 
   create-image-manifest:
     needs: build-image
@@ -67,29 +86,23 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
-        name: Create and push multi-arch manifest
+        name: Create and push multi-arch manifests
         run: |
           TAG_VERSION=${GITHUB_REF_NAME#dev-v}
+          
+          # App Manifest
           docker buildx imagetools create \
-            -t ${{ env.IMAGE_NAME }}:latest \
-            -t ${{ env.IMAGE_NAME }}:${TAG_VERSION} \
-            ${{ env.IMAGE_NAME }}:${{ github.sha }}-amd64 \
-            ${{ env.IMAGE_NAME }}:${{ github.sha }}-arm64
-#      -
-#        name: Clean up intermediate tags
-#        run: |
-#          # Authenticate to Docker Hub API
-#          TOKEN=$(curl -s -X POST \
-#            -H "Content-Type: application/json" \
-#            -d '{"username": "${{ secrets.DOCKERHUB_USERNAME }}", "password": "${{ secrets.DOCKERHUB_TOKEN }}"}' \
-#            https://hub.docker.com/v2/users/login/ | jq -r .token)
-#
-#          # Delete intermediate tags
-#          curl -s -X DELETE -H "Authorization: JWT ${TOKEN}" \
-#            https://hub.docker.com/v2/repositories/${{ env.IMAGE_NAME }}/tags/${{ github.sha }}-amd64/
-#
-#          curl -s -X DELETE -H "Authorization: JWT ${TOKEN}" \
-#            https://hub.docker.com/v2/repositories/${{ env.IMAGE_NAME }}/tags/${{ github.sha }}-arm64/
+            -t ${{ env.APP_IMAGE_NAME }}:latest \
+            -t ${{ env.APP_IMAGE_NAME }}:${TAG_VERSION} \
+            ${{ env.APP_IMAGE_NAME }}:${{ github.sha }}-amd64 \
+            ${{ env.APP_IMAGE_NAME }}:${{ github.sha }}-arm64
+            
+          # Agent Manifest
+          docker buildx imagetools create \
+            -t ${{ env.AGENT_IMAGE_NAME }}:latest \
+            -t ${{ env.AGENT_IMAGE_NAME }}:${TAG_VERSION} \
+            ${{ env.AGENT_IMAGE_NAME }}:${{ github.sha }}-amd64 \
+            ${{ env.AGENT_IMAGE_NAME }}:${{ github.sha }}-arm64
 
   deploy-app:
     needs: create-image-manifest

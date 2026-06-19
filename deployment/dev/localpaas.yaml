@@ -244,6 +244,29 @@ services:
         max-size: 20m
         compress: "true"
 
+  agent:
+    image: localpaas/localpaas-agent-dev:latest
+    environment:
+      LP_CONFIG_FILE: config/config.development.toml
+      AGENT_PORT: "9090"
+      AGENT_NODE_ID: "{{.Node.ID}}"
+      AGENT_NODE_NAME: "{{.Node.Hostname}}"
+    volumes:
+      - ./localpaas:/var/lib/localpaas
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - local_net
+      - localpaas_net
+    deploy:
+      mode: global
+      endpoint_mode: dnsrr
+    logging:
+      driver: local
+      options:
+        max-size: 20m
+        compress: "true"
+
+
 networks:
   localpaas_net:
     external: true

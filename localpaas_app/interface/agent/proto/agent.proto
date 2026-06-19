@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package agent;
+
+option go_package = "github.com/localpaas/localpaas/localpaas_app/interface/agent/proto;agentproto";
+
+service AgentService {
+  rpc Ping(PingRequest) returns (PingResponse);
+}
+
+message PingRequest {
+  string message = 1;
+}
+
+message PingResponse {
+  string message = 1;
+}

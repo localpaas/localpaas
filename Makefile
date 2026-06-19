@@ -33,7 +33,8 @@ run:
 gen: gen-go gen-swag
 
 gen-go:
-	@go generate ./...
+	$(DEVTOOLS_CMD) env GOCACHE=/tmp/go-cache go generate ./...
+
 
 gen-swag:
 	@./tools/swag/swag.sh
@@ -114,3 +115,7 @@ smee-connect:
 # ----- Build local image -----
 build-image:
 	docker build -f deployment/dev/Dockerfile -t localpaas:latest .
+
+build-agent-image:
+	docker build -f deployment/dev/Dockerfile.agent -t localpaas-agent:latest .
+
