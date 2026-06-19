@@ -88,10 +88,8 @@ func (s *Server) Start() error {
 	// Start a job to periodically check controlling messages in redis
 	s.wg.Go(func() {
 		for {
-			select {
-			case <-ctx.Done():
+			if ctx.Err() != nil {
 				return
-			default:
 			}
 			s.listenToCtrlMessages(ctx)
 		}

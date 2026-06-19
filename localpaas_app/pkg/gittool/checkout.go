@@ -62,11 +62,21 @@ func (cli *checkoutCli) checkout(
 		return nil, nil, apperrors.New(err)
 	}
 
+	// Check if the context was canceled
+	if err := ctx.Err(); err != nil {
+		return nil, nil, apperrors.Wrap(err)
+	}
+
 	// 2. Clone repository if source cache is not there
 	if !cli.opts.CacheLoaded {
 		if err = cli.clone(ctx); err != nil {
 			return nil, nil, apperrors.Wrap(err)
 		}
+	}
+
+	// Check if the context was canceled
+	if err := ctx.Err(); err != nil {
+		return nil, nil, apperrors.Wrap(err)
 	}
 
 	// Open repo with go-git
@@ -79,8 +89,18 @@ func (cli *checkoutCli) checkout(
 		return nil, nil, apperrors.Wrap(err)
 	}
 
+	// Check if the context was canceled
+	if err := ctx.Err(); err != nil {
+		return nil, nil, apperrors.Wrap(err)
+	}
+
 	// 4. Fetch submodules if needed
 	if err = cli.fetchSubmodules(ctx); err != nil {
+		return nil, nil, apperrors.Wrap(err)
+	}
+
+	// Check if the context was canceled
+	if err := ctx.Err(); err != nil {
 		return nil, nil, apperrors.Wrap(err)
 	}
 

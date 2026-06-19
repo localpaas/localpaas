@@ -24,7 +24,7 @@ type repoCheckoutData struct {
 	*repocheckoutservice.RepoCheckoutReq
 	Resp *repocheckoutservice.RepoCheckoutResp
 
-	RepoCache        *entity.File
+	RepoCacheFile    *entity.File
 	RepoCacheLoaded  bool
 	CheckoutDuration time.Duration
 }
@@ -79,6 +79,11 @@ func (s *service) doCheckout(
 		return apperrors.Wrap(err)
 	}
 
+	// Check if the context was canceled
+	if err := ctx.Err(); err != nil {
+		return apperrors.Wrap(err)
+	}
+
 	checkoutOptions := &gittool.CheckoutOptions{
 		URL:         repoSource.RepoURL,
 		Credentials: data.CredSetting,
@@ -122,11 +127,21 @@ func (s *service) doCheckout(
 	data.Resp.CommitTitle = strutil.GetFirstLine(commit.Message)
 	data.Resp.CommitAuthor = commit.Author.Name
 
+	// Check if the context was canceled
+	if err := ctx.Err(); err != nil {
+		return apperrors.Wrap(err)
+	}
+
 	// Cache the latest repo source if satisfied our condition
 	ee := s.saveRepoCache(ctx, data)
 	if ee != nil { // Just log
 		_ = data.LogStore.Add(ctx, tasklog.NewErrFrame("Failed to cache repository source: "+
 			ee.Error(), tasklog.TsNow))
+	}
+
+	// Check if the context was canceled
+	if err := ctx.Err(); err != nil {
+		return apperrors.Wrap(err)
 	}
 
 	// Remove .git dir within the source dir before building image

@@ -68,7 +68,7 @@ func (s *service) loadRepoCache(
 		if file == nil || file.StorageType != base.FileStorageLocal {
 			return nil
 		}
-		data.RepoCache = file
+		data.RepoCacheFile = file
 
 		rootDir := config.Current.AppPath
 		filePath := filepath.Join(rootDir, file.Path, file.Name)
@@ -106,8 +106,8 @@ func (s *service) saveRepoCache(
 	// We don't want to update the cache file too frequently as that requires file compression
 	// which is a time-consuming action.
 	shouldCache := !data.RepoCacheLoaded ||
-		data.RepoCache == nil ||
-		timeNow.Sub(data.RepoCache.UpdatedAt) >= repoCacheMinUpdateInterval ||
+		data.RepoCacheFile == nil ||
+		timeNow.Sub(data.RepoCacheFile.UpdatedAt) >= repoCacheMinUpdateInterval ||
 		// When checkout time is long, that often means a large amount of data has been downloaded
 		data.CheckoutDuration > repoCheckoutDurConsideredLong
 
@@ -116,8 +116,8 @@ func (s *service) saveRepoCache(
 	}
 
 	var newCacheFile *entity.File
-	if data.RepoCache != nil {
-		newCacheFile = new(*data.RepoCache)
+	if data.RepoCacheFile != nil {
+		newCacheFile = new(*data.RepoCacheFile)
 	}
 	if newCacheFile == nil {
 		newCacheFile = &entity.File{
@@ -135,7 +135,7 @@ func (s *service) saveRepoCache(
 	for {
 		newCacheFile.Name = fmt.Sprintf("%v.%v%v", newCacheFile.ID, gofn.RandTokenAsHex(4), //nolint:mnd
 			repoCacheArchiveFormat.FileExtDefault())
-		if data.RepoCache == nil || data.RepoCache.Name != newCacheFile.Name {
+		if data.RepoCacheFile == nil || data.RepoCacheFile.Name != newCacheFile.Name {
 			break
 		}
 	}
@@ -149,8 +149,8 @@ func (s *service) saveRepoCache(
 	defer func() {
 		if err == nil && recover() == nil && fileEntitySaved {
 			// Remove the old cache file as it becomes orphaned
-			if data.RepoCache != nil {
-				oldFilePath := filepath.Join(rootDir, data.RepoCache.Path, data.RepoCache.Name)
+			if data.RepoCacheFile != nil {
+				oldFilePath := filepath.Join(rootDir, data.RepoCacheFile.Path, data.RepoCacheFile.Name)
 				_ = os.RemoveAll(oldFilePath)
 			}
 		} else {

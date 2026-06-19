@@ -82,12 +82,12 @@ func StartScanningLog(
 				if opts.ParseLogTimestamp {
 					logFrame.ParseTimestampFromData()
 				}
-				select {
-				case <-ctx.Done(): // Make sure to quit if the context is done
+
+				if ctx.Err() != nil { // context is done
 					return
-				default:
-					batchChan.Send(logFrame)
 				}
+
+				batchChan.Send(logFrame)
 			}
 		}
 	}()
@@ -198,11 +198,10 @@ func parseLogs(
 		// Move the index
 		nr -= frameSize + stdWriterPrefixLen
 
-		select {
-		case <-ctx.Done(): // Make sure to quit if the context is done
-			return nil
-		default:
-			dst.Send(logFrame)
+		if err := ctx.Err(); err != nil { // Context is done
+			return apperrors.Wrap(err)
 		}
+
+		dst.Send(logFrame)
 	}
 }

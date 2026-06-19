@@ -59,12 +59,11 @@ func StartScanningJSONMsg(
 			}
 			msg := &JSONMsg{Message: &jm}
 
-			select {
-			case <-ctx.Done(): // Make sure to quit if the context is done
+			if ctx.Err() != nil { // context is done
 				return
-			default:
-				batchChan.Send(msg)
 			}
+
+			batchChan.Send(msg)
 		}
 	}()
 

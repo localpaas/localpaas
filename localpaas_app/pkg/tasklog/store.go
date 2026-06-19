@@ -41,6 +41,16 @@ func (s *Store) SetRedactor(redactor *redact.Redactor) {
 	s.mu.Unlock()
 }
 
+func (s *Store) UpdateRedactorAddSecrets(secrets []string) {
+	s.mu.Lock()
+	if s.redactor == nil {
+		s.redactor = redact.New(secrets)
+	} else {
+		s.redactor.AddSecrets(secrets)
+	}
+	s.mu.Unlock()
+}
+
 func (s *Store) Add(ctx context.Context, frames ...*LogFrame) error {
 	if s.storeLocal {
 		s.mu.Lock()

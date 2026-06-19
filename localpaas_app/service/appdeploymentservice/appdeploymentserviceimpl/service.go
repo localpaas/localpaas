@@ -9,6 +9,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/appdeploymentservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/containerexecservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/envvarservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/imagebuildservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/repocheckoutservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
@@ -32,6 +33,7 @@ type service struct {
 	dockerManager        docker.Manager
 	containerExecService containerexecservice.Service
 	repoCheckoutService  repocheckoutservice.Service
+	imageBuildService    imagebuildservice.Service
 	envVarService        envvarservice.Service
 	settingService       settingservice.Service
 	userService          userservice.Service
@@ -54,6 +56,7 @@ func New(
 	dockerManager docker.Manager,
 	containerExecService containerexecservice.Service,
 	repoCheckoutService repocheckoutservice.Service,
+	imageBuildService imagebuildservice.Service,
 	envVarService envvarservice.Service,
 	settingService settingservice.Service,
 	userService userservice.Service,
@@ -75,6 +78,7 @@ func New(
 		dockerManager:        dockerManager,
 		containerExecService: containerExecService,
 		repoCheckoutService:  repoCheckoutService,
+		imageBuildService:    imageBuildService,
 		envVarService:        envVarService,
 		settingService:       settingService,
 		userService:          userService,

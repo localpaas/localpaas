@@ -44,6 +44,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/envvarservice/envvarserviceimpl"
 	"github.com/localpaas/localpaas/localpaas_app/service/fileservice/fileserviceimpl"
 	"github.com/localpaas/localpaas/localpaas_app/service/healthcheckservice/healthcheckserviceimpl"
+	imagebuildserviceimpl "github.com/localpaas/localpaas/localpaas_app/service/imagebuildservice/repocheckoutserviceimpl"
 	"github.com/localpaas/localpaas/localpaas_app/service/lpappservice/lpappserviceimpl"
 	"github.com/localpaas/localpaas/localpaas_app/service/networkservice/networkserviceimpl"
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice/notificationserviceimpl"
@@ -271,6 +272,7 @@ var Provides = []any{
 	domainserviceimpl.New,
 	reslinkserviceimpl.New,
 	repocheckoutserviceimpl.New,
+	imagebuildserviceimpl.New,
 
 	// Repo: User
 	repository.NewUserRepo,

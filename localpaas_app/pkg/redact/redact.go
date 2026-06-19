@@ -17,14 +17,21 @@ const (
 
 // Redactor handles the masking of sensitive secrets within text data.
 type Redactor struct {
+	secrets  []string
 	replacer *strings.Replacer
 }
 
 // New creates a new Redactor initialized with the given secrets.
 // Secrets are sorted by length in descending order to prevent partial matching.
 func New(secrets []string) *Redactor {
-	sorted := make([]string, len(secrets))
-	copy(sorted, secrets)
+	r := &Redactor{secrets: secrets}
+	r.init()
+	return r
+}
+
+func (r *Redactor) init() {
+	sorted := make([]string, len(r.secrets))
+	copy(sorted, r.secrets)
 	sort.Slice(sorted, func(i, j int) bool {
 		return len(sorted[i]) > len(sorted[j])
 	})
@@ -32,12 +39,18 @@ func New(secrets []string) *Redactor {
 	for _, s := range sorted {
 		pairs = append(pairs, s, redactionMask)
 	}
-	return &Redactor{replacer: strings.NewReplacer(pairs...)}
+	r.replacer = strings.NewReplacer(pairs...)
 }
 
 // String replaces secrets in a single string sequentially.
 func (r *Redactor) String(text string) string {
 	return r.replacer.Replace(text)
+}
+
+func (r *Redactor) AddSecrets(secrets []string) {
+	// TODO: do we need to use mutex
+	r.secrets = append(r.secrets, secrets...)
+	r.init()
 }
 
 // Slice replaces secrets in-place inside the given slice of strings,

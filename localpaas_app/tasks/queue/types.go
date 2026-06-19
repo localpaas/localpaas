@@ -21,6 +21,7 @@ type TaskExecData struct {
 	TaskNonRetryable  bool
 	TaskCanceled      bool
 	TaskDone          bool
+	CancelFunc        context.CancelFunc
 
 	// Callback functions
 	OnCommandFunc         func(base.TaskCommand, ...any)

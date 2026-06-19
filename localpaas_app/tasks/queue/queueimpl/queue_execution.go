@@ -66,6 +66,7 @@ func (q *taskQueue) executeTask(
 		taskTimeout := task.Config.Timeout.ToDuration()
 		ctx, cancel := context.WithTimeout(ctx, gofn.Coalesce(taskTimeout, taskDefaultTimeout))
 		defer cancel()
+		taskData.CancelFunc = cancel
 
 		// Put task to in-progress state
 		task.StartedAt = timeutil.NowUTC()
@@ -215,6 +216,7 @@ func (q *taskQueue) taskControlCheck(
 			taskData.OnCommandFunc(cmd)
 		}
 		if !taskData.TaskNonCancelable && cmd == base.TaskCommandCancel {
+			taskData.CancelFunc()
 			taskData.TaskCanceled = true
 			return
 		}
