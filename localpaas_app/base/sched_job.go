@@ -1,5 +1,7 @@
 package base
 
+import "github.com/localpaas/localpaas/localpaas_app/pkg/unit"
+
 type SchedJobType string
 
 const (
@@ -12,4 +14,8 @@ const (
 var (
 	AllSchedJobTypes = []SchedJobType{SchedJobTypeContainerCommand, SchedJobTypeSystemCleanup,
 		SchedJobTypeSystemBackup, SchedJobTypeSSLRenewal}
+)
+
+const (
+	ExecCommandMaxSize = 300 * unit.KB
 )

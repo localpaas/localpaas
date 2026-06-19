@@ -86,8 +86,8 @@ func (req *ScheduleReq) validate(field string) (res []vld.Validator) {
 }
 
 type ContainerCommandReq struct {
-	RunInShell  string                 `json:"runInShell"`
 	Command     string                 `json:"command"`
+	Script      string                 `json:"script"`
 	WorkingDir  string                 `json:"workingDir"`
 	EnvVars     []*basedto.EnvVarReq   `json:"envVars"`
 	ArgGroups   []*CommandArgGroupReq  `json:"argGroups"`
@@ -101,6 +101,7 @@ func (req *ContainerCommandReq) ToEntity() *entity.SchedJobContainerCommand {
 	}
 	return &entity.SchedJobContainerCommand{
 		Command:    req.Command,
+		Script:     req.Script,
 		WorkingDir: req.WorkingDir,
 		ArgGroups: gofn.MapSlice(req.ArgGroups, func(item *CommandArgGroupReq) *entity.SchedJobCommandArgGroup {
 			return item.ToEntity()
@@ -110,11 +111,17 @@ func (req *ContainerCommandReq) ToEntity() *entity.SchedJobContainerCommand {
 	}
 }
 
-// nolint
-func (req *ContainerCommandReq) validate(_ string) (res []vld.Validator) {
+func (req *ContainerCommandReq) validate(field string) (res []vld.Validator) {
 	if req == nil {
 		return nil
 	}
+	if field != "" {
+		field += "."
+	}
+	cmdValid := (req.Command != "" && req.Script == "") || (req.Command == "" && req.Script != "")
+	res = append(res, basedto.ValidateCond(cmdValid, field+"command|script")...)
+	res = append(res, basedto.ValidateStr(&req.Command, false, 1, int(base.ExecCommandMaxSize), field+"command")...)
+	res = append(res, basedto.ValidateStr(&req.Script, false, 1, int(base.ExecCommandMaxSize), field+"script")...)
 	// TODO: add validation
 	return res
 }
@@ -181,6 +188,9 @@ func (req *SchedJobBaseReq) modifyRequest() error {
 			req.Schedule.InitialTime = timeutil.NowUTC()
 		}
 		req.Schedule.InitialTime = req.Schedule.InitialTime.Truncate(time.Second)
+	}
+	if req.Command != nil {
+		req.Command.Script = strings.ReplaceAll(req.Command.Script, "\r\n", "\n")
 	}
 	return nil
 }

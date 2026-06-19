@@ -2,6 +2,9 @@ package containerexecserviceimpl
 
 import (
 	"context"
+	"encoding/base64"
+	"fmt"
+	"strings"
 
 	"github.com/moby/moby/client"
 	"github.com/tiendc/gofn"
@@ -11,6 +14,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/executil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/funcutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/redact"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/tasklog"
 	"github.com/localpaas/localpaas/localpaas_app/service/containerexecservice"
 	"github.com/localpaas/localpaas/services/docker"
@@ -25,11 +29,11 @@ func (s *service) SchedJobExec(
 
 	schedJob := req.SchedJobSetting.MustAsSchedJob()
 	command := schedJob.Command
-	if command == nil || command.Command == "" { // can't continue if this happens
+	if command == nil || (command.Command == "" && command.Script == "") { // can't continue if this happens
 		req.TaskNonRetryable = true
 		_ = req.LogStore.Add(ctx, tasklog.NewErrFrame(
-			"Execution command is empty, aborted", tasklog.TsNow))
-		return nil, apperrors.New(apperrors.ErrInternalServer).WithMsgLog("schedule job command is empty")
+			"Execution command/script is empty, aborted", tasklog.TsNow))
+		return nil, apperrors.New(apperrors.ErrInternalServer).WithMsgLog("schedule job command/script is empty")
 	}
 
 	envVars, refSecrets, err := s.schedJobService.BuildCommandEnv(ctx, db, req.App, schedJob)
@@ -50,8 +54,28 @@ func (s *service) SchedJobExec(
 	}
 
 	var cmd []string
-	if command.RunInShell != "" {
-		cmd = []string{command.RunInShell, "-c", executil.ArgQuote(command.Command)}
+	if command.Script != "" {
+		encodedScript := base64.StdEncoding.EncodeToString(reflectutil.UnsafeStrToBytes(command.Script))
+		tmpFilePath := fmt.Sprintf("/tmp/localpaas_job_%s.sh", req.Task.ID)
+
+		// Sample command format constructed below:
+		// sh -c "echo '<base64>' | base64 -d > script-file && chmod +x script-file && script-file; exit_code=$?; \
+		// rm -f script-file; exit $exit_code"
+		var sb strings.Builder
+		sb.Grow(len(encodedScript) + len(tmpFilePath)*5 + 100) //nolint:mnd
+		sb.WriteString("echo '")
+		sb.WriteString(encodedScript)
+		sb.WriteString("' | base64 -d > ")
+		sb.WriteString(tmpFilePath)
+		sb.WriteString(" && chmod +x ")
+		sb.WriteString(tmpFilePath)
+		sb.WriteString(" && ")
+		sb.WriteString(tmpFilePath)
+		sb.WriteString("; exit_code=$?; rm -f ")
+		sb.WriteString(tmpFilePath)
+		sb.WriteString("; exit $exit_code")
+
+		cmd = []string{"sh", "-c", sb.String()}
 	} else {
 		cmd, err = executil.CmdSplit(command.Command)
 		if err != nil {

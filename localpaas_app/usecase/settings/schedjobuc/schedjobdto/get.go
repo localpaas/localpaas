@@ -58,8 +58,8 @@ type ScheduleResp struct {
 }
 
 type ContainerCommandResp struct {
-	RunInShell  string                  `json:"runInShell"`
 	Command     string                  `json:"command"`
+	Script      string                  `json:"script"`
 	WorkingDir  string                  `json:"workingDir"`
 	EnvVars     []*basedto.EnvVarResp   `json:"envVars"`
 	ArgGroups   []*CommandArgGroupResp  `json:"argGroups"`

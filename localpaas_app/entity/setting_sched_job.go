@@ -203,8 +203,8 @@ func (s *SchedJobSchedule) AdjustInitialTime(initialTimeAdj time.Time) bool {
 }
 
 type SchedJobContainerCommand struct {
-	RunInShell  string                     `json:"runInShell,omitempty"`
 	Command     string                     `json:"command"`
+	Script      string                     `json:"script,omitempty"`
 	WorkingDir  string                     `json:"workingDir,omitempty"`
 	EnvVars     []*EnvVar                  `json:"envVars,omitempty"`
 	ArgGroups   []*SchedJobCommandArgGroup `json:"argGroups,omitempty"`
