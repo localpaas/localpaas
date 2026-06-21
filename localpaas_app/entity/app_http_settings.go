@@ -162,6 +162,28 @@ func (s *AppHttpSettings) GetBasicAuthIDs() (res []string) {
 	return
 }
 
+func (s *AppHttpSettings) CalcResLinks(setting *Setting) []*ResLink {
+	resLinks := s.GetRefObjectIDs().CalcResLinks(base.ResourceTypeSetting, setting.ID)
+
+	// Links domain to the current setting
+	timeNow := timeutil.NowUTC()
+	for _, domain := range s.GetActiveDomainNames() {
+		if setting.ObjectID == "" {
+			continue
+		}
+		resLinks = append(resLinks, &ResLink{
+			SrcType:   base.ResourceTypeSetting,
+			SrcID:     setting.ID,
+			DstType:   base.ResourceTypeDomain,
+			DstID:     domain,
+			CreatedAt: timeNow,
+			UpdatedAt: timeNow,
+		})
+	}
+
+	return resLinks
+}
+
 func (s *AppHttpSettings) Migrate(setting *Setting) (hasChange bool, err error) {
 	if setting.Version == CurrentAppHttpSettingsVersion {
 		return false, nil

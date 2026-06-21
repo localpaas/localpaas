@@ -39,6 +39,10 @@ func (s *EnvVars) GetRefObjectIDs() *RefObjectIDs {
 	return &RefObjectIDs{}
 }
 
+func (s *EnvVars) CalcResLinks(setting *Setting) []*ResLink {
+	return s.GetRefObjectIDs().CalcResLinks(base.ResourceTypeSetting, setting.ID)
+}
+
 func (s *EnvVars) Migrate(setting *Setting) (hasChange bool, err error) {
 	if setting.Version == CurrentEnvVarsVersion {
 		return false, nil

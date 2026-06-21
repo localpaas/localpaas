@@ -37,6 +37,26 @@ func (s *RegistryAuth) GetRefObjectIDs() *RefObjectIDs {
 	return &RefObjectIDs{}
 }
 
+func (s *RegistryAuth) CalcResLinks(setting *Setting) []*ResLink {
+	return s.GetRefObjectIDs().CalcResLinks(base.ResourceTypeSetting, setting.ID)
+}
+
+func (s *RegistryAuth) Migrate(setting *Setting) (hasChange bool, err error) {
+	if setting.Version == CurrentRegistryAuthVersion {
+		return false, nil
+	}
+	if setting.Version > CurrentRegistryAuthVersion {
+		return false, apperrors.New(apperrors.ErrDataVerNewerThanSystemVer)
+	}
+
+	// TODO: add migration if we make any change
+
+	setting.Version = CurrentRegistryAuthVersion
+	setting.UpdateVer++
+	setting.MustSetData(s)
+	return true, nil
+}
+
 func (s *RegistryAuth) MustDecrypt() *RegistryAuth {
 	s.Password.MustGetPlain()
 	return s
@@ -56,22 +76,6 @@ func (s *RegistryAuth) GenerateAuthHeader() (string, error) {
 		return "", apperrors.Wrap(err)
 	}
 	return h, nil
-}
-
-func (s *RegistryAuth) Migrate(setting *Setting) (hasChange bool, err error) {
-	if setting.Version == CurrentRegistryAuthVersion {
-		return false, nil
-	}
-	if setting.Version > CurrentRegistryAuthVersion {
-		return false, apperrors.New(apperrors.ErrDataVerNewerThanSystemVer)
-	}
-
-	// TODO: add migration if we make any change
-
-	setting.Version = CurrentRegistryAuthVersion
-	setting.UpdateVer++
-	setting.MustSetData(s)
-	return true, nil
 }
 
 func (s *Setting) AsRegistryAuth() (*RegistryAuth, error) {

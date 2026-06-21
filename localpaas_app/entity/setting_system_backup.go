@@ -62,9 +62,8 @@ func (s *SystemBackup) GetRefObjectIDs() *RefObjectIDs {
 	return refIDs
 }
 
-func (s *SystemBackup) MustDecrypt() *SystemBackup {
-	s.Encryption.Secret.MustGetPlain()
-	return s
+func (s *SystemBackup) CalcResLinks(setting *Setting) []*ResLink {
+	return s.GetRefObjectIDs().CalcResLinks(base.ResourceTypeSetting, setting.ID)
 }
 
 func (s *SystemBackup) Migrate(setting *Setting) (hasChange bool, err error) {
@@ -81,6 +80,11 @@ func (s *SystemBackup) Migrate(setting *Setting) (hasChange bool, err error) {
 	setting.UpdateVer++
 	setting.MustSetData(s)
 	return true, nil
+}
+
+func (s *SystemBackup) MustDecrypt() *SystemBackup {
+	s.Encryption.Secret.MustGetPlain()
+	return s
 }
 
 func (s *Setting) AsSystemBackup() (*SystemBackup, error) {

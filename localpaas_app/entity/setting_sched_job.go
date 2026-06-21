@@ -248,6 +248,10 @@ func (s *SchedJob) GetRefObjectIDs() *RefObjectIDs {
 	return refIDs
 }
 
+func (s *SchedJob) CalcResLinks(setting *Setting) []*ResLink {
+	return s.GetRefObjectIDs().CalcResLinks(base.ResourceTypeSetting, setting.ID)
+}
+
 func (s *SchedJob) Migrate(setting *Setting) (hasChange bool, err error) {
 	if setting.Version == CurrentSchedJobVersion {
 		return false, nil

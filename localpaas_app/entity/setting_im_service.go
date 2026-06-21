@@ -47,17 +47,8 @@ func (s *IMService) GetRefObjectIDs() *RefObjectIDs {
 	return &RefObjectIDs{}
 }
 
-func (s *IMService) MustDecrypt() *IMService {
-	if s.Slack != nil {
-		s.Slack.Webhook.MustGetPlain()
-	}
-	if s.Discord != nil {
-		s.Discord.Webhook.MustGetPlain()
-	}
-	if s.Telegram != nil {
-		s.Telegram.BotToken.MustGetPlain()
-	}
-	return s
+func (s *IMService) CalcResLinks(setting *Setting) []*ResLink {
+	return s.GetRefObjectIDs().CalcResLinks(base.ResourceTypeSetting, setting.ID)
 }
 
 func (s *IMService) Migrate(setting *Setting) (hasChange bool, err error) {
@@ -74,6 +65,19 @@ func (s *IMService) Migrate(setting *Setting) (hasChange bool, err error) {
 	setting.UpdateVer++
 	setting.MustSetData(s)
 	return true, nil
+}
+
+func (s *IMService) MustDecrypt() *IMService {
+	if s.Slack != nil {
+		s.Slack.Webhook.MustGetPlain()
+	}
+	if s.Discord != nil {
+		s.Discord.Webhook.MustGetPlain()
+	}
+	if s.Telegram != nil {
+		s.Telegram.BotToken.MustGetPlain()
+	}
+	return s
 }
 
 func (s *Setting) AsIMService() (*IMService, error) {

@@ -40,6 +40,26 @@ func (s *GithubApp) GetRefObjectIDs() *RefObjectIDs {
 	return &RefObjectIDs{}
 }
 
+func (s *GithubApp) CalcResLinks(setting *Setting) []*ResLink {
+	return s.GetRefObjectIDs().CalcResLinks(base.ResourceTypeSetting, setting.ID)
+}
+
+func (s *GithubApp) Migrate(setting *Setting) (hasChange bool, err error) {
+	if setting.Version == CurrentGithubAppVersion {
+		return false, nil
+	}
+	if setting.Version > CurrentGithubAppVersion {
+		return false, apperrors.New(apperrors.ErrDataVerNewerThanSystemVer)
+	}
+
+	// TODO: add migration if we make any change
+
+	setting.Version = CurrentGithubAppVersion
+	setting.UpdateVer++
+	setting.MustSetData(s)
+	return true, nil
+}
+
 func (s *GithubApp) MustDecrypt() *GithubApp {
 	s.ClientSecret.MustGetPlain()
 	s.PrivateKey.MustGetPlain()
@@ -62,22 +82,6 @@ func (s *GithubApp) ConvertAsRepoWebhook() *RepoWebhook {
 		Kind:   base.WebhookKindGithub,
 		Secret: s.WebhookSecret,
 	}
-}
-
-func (s *GithubApp) Migrate(setting *Setting) (hasChange bool, err error) {
-	if setting.Version == CurrentGithubAppVersion {
-		return false, nil
-	}
-	if setting.Version > CurrentGithubAppVersion {
-		return false, apperrors.New(apperrors.ErrDataVerNewerThanSystemVer)
-	}
-
-	// TODO: add migration if we make any change
-
-	setting.Version = CurrentGithubAppVersion
-	setting.UpdateVer++
-	setting.MustSetData(s)
-	return true, nil
 }
 
 func (s *Setting) AsGithubApp() (*GithubApp, error) {

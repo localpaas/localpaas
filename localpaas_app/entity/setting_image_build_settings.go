@@ -58,6 +58,10 @@ func (s *ImageBuildSettings) GetRefObjectIDs() *RefObjectIDs {
 	return &RefObjectIDs{}
 }
 
+func (s *ImageBuildSettings) CalcResLinks(setting *Setting) []*ResLink {
+	return s.GetRefObjectIDs().CalcResLinks(base.ResourceTypeSetting, setting.ID)
+}
+
 func (s *ImageBuildSettings) Migrate(setting *Setting) (hasChange bool, err error) {
 	if setting.Version == CurrentImageBuildSettingsVersion {
 		return false, nil

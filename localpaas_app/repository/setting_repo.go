@@ -15,6 +15,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
 type SettingRepo interface {
@@ -399,6 +400,13 @@ func (repo *settingRepo) InsertMulti(ctx context.Context, db database.IDB, setti
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+
+	// Update res links for the settings
+	err = repo.updateSettingResLinks(ctx, db, settings)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
 	return nil
 }
 
@@ -420,6 +428,13 @@ func (repo *settingRepo) UpsertMulti(ctx context.Context, db database.IDB, setti
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+
+	// Update res links for the settings
+	err = repo.updateSettingResLinks(ctx, db, settings)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
 	return nil
 }
 
@@ -432,6 +447,13 @@ func (repo *settingRepo) Update(ctx context.Context, db database.IDB, setting *e
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
+
+	// Update res links for the setting
+	err = repo.updateSettingResLinks(ctx, db, []*entity.Setting{setting})
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
 	return nil
 }
 
@@ -498,6 +520,85 @@ func (repo *settingRepo) updateExpiredSettings(ctx context.Context, db database.
 		return hasChange, apperrors.Wrap(err)
 	}
 	return hasChange, nil
+}
+
+func (repo *settingRepo) updateSettingResLinks(ctx context.Context, db database.IDB, settings []*entity.Setting) error {
+	if len(settings) == 0 {
+		return nil
+	}
+	settingIDs := make([]string, 0, len(settings))
+	for _, setting := range settings {
+		settingIDs = append(settingIDs, setting.ID)
+	}
+
+	newLinks := make([]*entity.ResLink, 0, len(settings)*2) //nolint:mnd
+	for _, setting := range settings {
+		links, err := setting.CalcResLinks()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+		newLinks = append(newLinks, links...)
+	}
+
+	if len(newLinks) == 0 { // delete all current links
+		query := db.NewDelete().Model((*entity.ResLink)(nil)).
+			Where("res_link.src_type = ?", base.ResourceTypeSetting).
+			Where("res_link.src_id IN (?)", bun.List(settingIDs))
+
+		_, err := query.Exec(ctx)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+		return nil
+	}
+
+	var currLinks []*entity.ResLink
+	selQuery := db.NewSelect().Model(&currLinks).
+		Where("res_link.src_type = ?", base.ResourceTypeSetting).
+		Where("res_link.src_id IN (?)", bun.List(settingIDs))
+	err := selQuery.Scan(ctx)
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
+	mapCurrLinks := make(map[string]*entity.ResLink, len(currLinks))
+	for _, link := range currLinks {
+		mapCurrLinks[link.GetKey()] = link
+	}
+
+	upsertingLinks := make([]*entity.ResLink, 0, len(newLinks))
+	timeNow := timeutil.NowUTC()
+
+	for _, newLink := range newLinks {
+		key := newLink.GetKey()
+		if currLink, ok := mapCurrLinks[key]; ok {
+			delete(mapCurrLinks, key)
+			if currLink.Data != newLink.Data {
+				upsertingLinks = append(upsertingLinks, newLink)
+			}
+		} else { // No existing link in the current map, need to add
+			upsertingLinks = append(upsertingLinks, newLink)
+		}
+	}
+
+	// Remaining links in the map need to delete
+	for _, link := range mapCurrLinks {
+		link.DeletedAt = timeNow
+		upsertingLinks = append(upsertingLinks, link)
+	}
+
+	if len(upsertingLinks) > 0 {
+		upsertQuery := db.NewInsert().Model(&upsertingLinks)
+		upsertQuery = bunex.ApplyUpsert(upsertQuery, entity.ResLinkUpsertingConflictCols,
+			entity.ResLinkUpsertingUpdateCols)
+
+		_, err = upsertQuery.Exec(ctx)
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+	}
+
+	return nil
 }
 
 func (repo *settingRepo) DeleteAllByObjects(ctx context.Context, db database.IDB,

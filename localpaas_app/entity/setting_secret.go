@@ -52,21 +52,8 @@ func (s *Secret) GetRefObjectIDs() *RefObjectIDs {
 	return &RefObjectIDs{}
 }
 
-func (s *Secret) MustDecrypt() *Secret {
-	s.Value.MustGetPlain()
-	return s
-}
-
-func (s *Secret) ValueAsBytes() []byte {
-	plain := s.Value.MustGetPlain()
-	if s.Base64 {
-		return gofn.Must(base64.StdEncoding.DecodeString(plain))
-	}
-	return reflectutil.UnsafeStrToBytes(plain)
-}
-
-func (s *Secret) ValueSize() int32 {
-	return int32(len(s.Value.MustGetPlain())) //nolint:gosec
+func (s *Secret) CalcResLinks(setting *Setting) []*ResLink {
+	return s.GetRefObjectIDs().CalcResLinks(base.ResourceTypeSetting, setting.ID)
 }
 
 func (s *Secret) Migrate(setting *Setting) (hasChange bool, err error) {
@@ -83,6 +70,23 @@ func (s *Secret) Migrate(setting *Setting) (hasChange bool, err error) {
 	setting.UpdateVer++
 	setting.MustSetData(s)
 	return true, nil
+}
+
+func (s *Secret) MustDecrypt() *Secret {
+	s.Value.MustGetPlain()
+	return s
+}
+
+func (s *Secret) ValueAsBytes() []byte {
+	plain := s.Value.MustGetPlain()
+	if s.Base64 {
+		return gofn.Must(base64.StdEncoding.DecodeString(plain))
+	}
+	return reflectutil.UnsafeStrToBytes(plain)
+}
+
+func (s *Secret) ValueSize() int32 {
+	return int32(len(s.Value.MustGetPlain())) //nolint:gosec
 }
 
 func (s *Setting) AsSecret() (*Secret, error) {

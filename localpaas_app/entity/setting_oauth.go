@@ -39,9 +39,8 @@ func (s *OAuth) GetRefObjectIDs() *RefObjectIDs {
 	return &RefObjectIDs{}
 }
 
-func (s *OAuth) MustDecrypt() *OAuth {
-	s.ClientSecret.MustGetPlain()
-	return s
+func (s *OAuth) CalcResLinks(setting *Setting) []*ResLink {
+	return s.GetRefObjectIDs().CalcResLinks(base.ResourceTypeSetting, setting.ID)
 }
 
 func (s *OAuth) Migrate(setting *Setting) (hasChange bool, err error) {
@@ -58,6 +57,11 @@ func (s *OAuth) Migrate(setting *Setting) (hasChange bool, err error) {
 	setting.UpdateVer++
 	setting.MustSetData(s)
 	return true, nil
+}
+
+func (s *OAuth) MustDecrypt() *OAuth {
+	s.ClientSecret.MustGetPlain()
+	return s
 }
 
 func (s *Setting) AsOAuth() (*OAuth, error) {

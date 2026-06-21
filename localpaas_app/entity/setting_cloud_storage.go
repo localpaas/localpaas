@@ -39,11 +39,8 @@ func (s *CloudStorage) GetRefObjectIDs() *RefObjectIDs {
 	return &RefObjectIDs{}
 }
 
-func (s *CloudStorage) MustDecrypt() *CloudStorage {
-	if s.S3 != nil {
-		s.S3.SecretKey.MustGetPlain()
-	}
-	return s
+func (s *CloudStorage) CalcResLinks(setting *Setting) []*ResLink {
+	return s.GetRefObjectIDs().CalcResLinks(base.ResourceTypeSetting, setting.ID)
 }
 
 func (s *CloudStorage) Migrate(setting *Setting) (hasChange bool, err error) {
@@ -62,6 +59,12 @@ func (s *CloudStorage) Migrate(setting *Setting) (hasChange bool, err error) {
 	return true, nil
 }
 
+func (s *CloudStorage) MustDecrypt() *CloudStorage {
+	if s.S3 != nil {
+		s.S3.SecretKey.MustGetPlain()
+	}
+	return s
+}
 func (s *Setting) AsCloudStorage() (*CloudStorage, error) {
 	return parseSettingAs[*CloudStorage](s)
 }

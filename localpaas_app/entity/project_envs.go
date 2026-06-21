@@ -37,6 +37,10 @@ func (s *ProjectEnvs) GetRefObjectIDs() *RefObjectIDs {
 	return &RefObjectIDs{}
 }
 
+func (s *ProjectEnvs) CalcResLinks(setting *Setting) []*ResLink {
+	return s.GetRefObjectIDs().CalcResLinks(base.ResourceTypeSetting, setting.ID)
+}
+
 func (s *ProjectEnvs) Migrate(setting *Setting) (hasChange bool, err error) {
 	if setting.Version == CurrentProjectEnvsVersion {
 		return false, nil

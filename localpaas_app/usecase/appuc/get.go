@@ -23,9 +23,9 @@ func (uc *UC) GetApp(
 		bunex.SelectRelation("Tags",
 			bunex.SelectOrder("display_order"),
 		),
-		bunex.SelectRelation("DstResLinks",
-			// NOTE: for now, we only need to load linked domains
-			bunex.SelectWhere("res_link.dst_type = ?", base.ResourceTypeDomain),
+		bunex.SelectRelation("Settings",
+			// NOTE: load http settings to extract active domain names of the app
+			bunex.SelectWhere("setting.type = ?", base.SettingTypeAppHttp),
 		),
 	)
 	if err != nil {

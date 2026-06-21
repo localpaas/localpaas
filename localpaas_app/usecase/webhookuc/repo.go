@@ -142,9 +142,32 @@ func (uc *UC) findAppsToRedeployByPushEvent(
 	db database.IDB,
 	pushEvent *repoPushEventData,
 ) ([]*entity.App, error) {
+	// Finds all deployment settings which are linked to the repo ID (URL)
+	settings, _, err := uc.settingRepo.List(ctx, db, nil, nil,
+		bunex.SelectColumns("id", "type", "scope", "object_id"),
+		bunex.SelectWhere("setting.type = ?", base.SettingTypeAppDeployment),
+		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
+		bunex.SelectJoin("JOIN res_links ON res_links.src_id = setting.id"),
+		bunex.SelectWhere("res_links.deleted_at IS NULL"),
+		bunex.SelectWhere("res_links.dst_type = ?", base.ResourceTypeRepo),
+		bunex.SelectWhere("res_links.dst_id = ?", pushEvent.RepoID),
+	)
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	if len(settings) == 0 {
+		return nil, nil
+	}
+
+	appIDs := make([]string, 0, len(settings))
+	for _, setting := range settings {
+		appIDs = append(appIDs, setting.ObjectID)
+	}
+
 	apps, _, err := uc.appRepo.List(ctx, db, "", nil,
 		bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
 		bunex.SelectFor("UPDATE OF app"),
+		bunex.SelectWhereIn("app.id IN (?)", appIDs...),
 		bunex.SelectWhere("app.status = ?", base.AppStatusActive),
 		bunex.SelectRelation("Project",
 			bunex.SelectExcludeColumns(entity.ProjectDefaultExcludeColumns...),
@@ -154,11 +177,6 @@ func (uc *UC) findAppsToRedeployByPushEvent(
 			bunex.SelectWhere("setting.type = ?", base.SettingTypeAppDeployment),
 			bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
 		),
-
-		bunex.SelectJoin("JOIN res_links ON res_links.src_id = app.id"),
-		bunex.SelectWhere("res_links.deleted_at IS NULL"),
-		bunex.SelectWhere("res_links.dst_type = ?", base.ResourceTypeRepo),
-		bunex.SelectWhere("res_links.dst_id = ?", pushEvent.RepoID),
 	)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -194,7 +212,8 @@ func (uc *UC) shouldRedeployAppByPushEvent(
 		return false, nil
 	}
 	deploymentSettings := deploymentSetting.MustAsAppDeploymentSettings()
-	if deploymentSettings.ActiveMethod != base.DeploymentMethodRepo {
+	if deploymentSettings.ActiveMethod != base.DeploymentMethodRepo ||
+		deploymentSettings.RepoSource == nil || deploymentSettings.RepoSource.RepoID != pushEvent.RepoID {
 		return false, nil
 	}
 

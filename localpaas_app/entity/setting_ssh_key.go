@@ -35,10 +35,8 @@ func (s *SSHKey) GetRefObjectIDs() *RefObjectIDs {
 	return &RefObjectIDs{}
 }
 
-func (s *SSHKey) MustDecrypt() *SSHKey {
-	s.PrivateKey.MustGetPlain()
-	s.Passphrase.MustGetPlain()
-	return s
+func (s *SSHKey) CalcResLinks(setting *Setting) []*ResLink {
+	return s.GetRefObjectIDs().CalcResLinks(base.ResourceTypeSetting, setting.ID)
 }
 
 func (s *SSHKey) Migrate(setting *Setting) (hasChange bool, err error) {
@@ -55,6 +53,12 @@ func (s *SSHKey) Migrate(setting *Setting) (hasChange bool, err error) {
 	setting.UpdateVer++
 	setting.MustSetData(s)
 	return true, nil
+}
+
+func (s *SSHKey) MustDecrypt() *SSHKey {
+	s.PrivateKey.MustGetPlain()
+	s.Passphrase.MustGetPlain()
+	return s
 }
 
 func (s *Setting) AsSSHKey() (*SSHKey, error) {

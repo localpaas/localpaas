@@ -34,6 +34,10 @@ func (s *APIKey) GetRefObjectIDs() *RefObjectIDs {
 	return &RefObjectIDs{}
 }
 
+func (s *APIKey) CalcResLinks(setting *Setting) []*ResLink {
+	return s.GetRefObjectIDs().CalcResLinks(base.ResourceTypeSetting, setting.ID)
+}
+
 func (s *APIKey) Migrate(setting *Setting) (hasChange bool, err error) {
 	if setting.Version == CurrentAPIKeyVersion {
 		return false, nil

@@ -33,9 +33,8 @@ func (s *BasicAuth) GetRefObjectIDs() *RefObjectIDs {
 	return &RefObjectIDs{}
 }
 
-func (s *BasicAuth) MustDecrypt() *BasicAuth {
-	s.Password.MustGetPlain()
-	return s
+func (s *BasicAuth) CalcResLinks(setting *Setting) []*ResLink {
+	return s.GetRefObjectIDs().CalcResLinks(base.ResourceTypeSetting, setting.ID)
 }
 
 func (s *BasicAuth) Migrate(setting *Setting) (hasChange bool, err error) {
@@ -52,6 +51,11 @@ func (s *BasicAuth) Migrate(setting *Setting) (hasChange bool, err error) {
 	setting.UpdateVer++
 	setting.MustSetData(s)
 	return true, nil
+}
+
+func (s *BasicAuth) MustDecrypt() *BasicAuth {
+	s.Password.MustGetPlain()
+	return s
 }
 
 func (s *Setting) AsBasicAuth() (*BasicAuth, error) {

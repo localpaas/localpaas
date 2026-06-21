@@ -59,13 +59,8 @@ func (s *SSLCert) GetRefObjectIDs() *RefObjectIDs {
 	return refIDs
 }
 
-func (s *SSLCert) MustDecrypt() *SSLCert {
-	s.PrivateKey.MustGetPlain()
-	return s
-}
-
-func (s *SSLCert) IsRenewable() bool {
-	return s.CertType != base.SSLCertTypeCustom
+func (s *SSLCert) CalcResLinks(setting *Setting) []*ResLink {
+	return s.GetRefObjectIDs().CalcResLinks(base.ResourceTypeSetting, setting.ID)
 }
 
 func (s *SSLCert) Migrate(setting *Setting) (hasChange bool, err error) {
@@ -82,6 +77,15 @@ func (s *SSLCert) Migrate(setting *Setting) (hasChange bool, err error) {
 	setting.UpdateVer++
 	setting.MustSetData(s)
 	return true, nil
+}
+
+func (s *SSLCert) MustDecrypt() *SSLCert {
+	s.PrivateKey.MustGetPlain()
+	return s
+}
+
+func (s *SSLCert) IsRenewable() bool {
+	return s.CertType != base.SSLCertTypeCustom
 }
 
 func (s *Setting) AsSSLCert() (*SSLCert, error) {

@@ -51,14 +51,8 @@ func (s *SSLProvider) GetRefObjectIDs() *RefObjectIDs {
 	return refIDs
 }
 
-func (s *SSLProvider) MustDecrypt() *SSLProvider {
-	if s.ZeroSSL != nil {
-		s.ZeroSSL.EABHmacKey.MustGetPlain()
-	}
-	if s.GoogleTrust != nil {
-		s.GoogleTrust.EABHmacKey.MustGetPlain()
-	}
-	return s
+func (s *SSLProvider) CalcResLinks(setting *Setting) []*ResLink {
+	return s.GetRefObjectIDs().CalcResLinks(base.ResourceTypeSetting, setting.ID)
 }
 
 func (s *SSLProvider) Migrate(setting *Setting) (hasChange bool, err error) {
@@ -77,6 +71,15 @@ func (s *SSLProvider) Migrate(setting *Setting) (hasChange bool, err error) {
 	return true, nil
 }
 
+func (s *SSLProvider) MustDecrypt() *SSLProvider {
+	if s.ZeroSSL != nil {
+		s.ZeroSSL.EABHmacKey.MustGetPlain()
+	}
+	if s.GoogleTrust != nil {
+		s.GoogleTrust.EABHmacKey.MustGetPlain()
+	}
+	return s
+}
 func (s *Setting) AsSSLProvider() (*SSLProvider, error) {
 	return parseSettingAs[*SSLProvider](s)
 }

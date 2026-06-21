@@ -5,6 +5,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
 const (
@@ -95,6 +96,25 @@ func (s *AppDeploymentSettings) GetGitCredentialIDs() (res []string) {
 	}
 	res = gofn.ToSet(res)
 	return
+}
+
+func (s *AppDeploymentSettings) CalcResLinks(setting *Setting) []*ResLink {
+	resLinks := s.GetRefObjectIDs().CalcResLinks(base.ResourceTypeSetting, setting.ID)
+
+	// Links repo ID (URL) to the current deployment
+	if s.ActiveMethod == base.DeploymentMethodRepo && s.RepoSource != nil && setting.ObjectID != "" {
+		timeNow := timeutil.NowUTC()
+		resLinks = append(resLinks, &ResLink{
+			SrcType:   base.ResourceTypeSetting,
+			SrcID:     setting.ID,
+			DstType:   base.ResourceTypeRepo,
+			DstID:     s.RepoSource.RepoID,
+			CreatedAt: timeNow,
+			UpdatedAt: timeNow,
+		})
+	}
+
+	return resLinks
 }
 
 func (s *AppDeploymentSettings) Migrate(setting *Setting) (hasChange bool, err error) {

@@ -60,6 +60,10 @@ func (s *StorageSettings) GetRefObjectIDs() *RefObjectIDs {
 	return refIDs
 }
 
+func (s *StorageSettings) CalcResLinks(setting *Setting) []*ResLink {
+	return s.GetRefObjectIDs().CalcResLinks(base.ResourceTypeSetting, setting.ID)
+}
+
 func (s *StorageSettings) Migrate(setting *Setting) (hasChange bool, err error) {
 	if setting.Version == CurrentStorageSettingsVersion {
 		return false, nil

@@ -58,6 +58,8 @@ type Setting struct {
 	BelongToApp          *App                    `bun:"rel:belongs-to,join:object_id=id" json:"belongToApp,omitempty"`
 	AccessibleByProjects []*ProjectSharedSetting `bun:"rel:has-many,join:id=setting_id" json:"accessibleByProjects,omitempty"` //nolint:lll
 	Tasks                []*Task                 `bun:"rel:has-many,join:id=target_id" json:"tasks,omitempty"`
+	SrcResLinks          []*ResLink              `bun:"rel:has-many,join:id=dst_id" json:"srcResLinks,omitempty"`
+	DstResLinks          []*ResLink              `bun:"rel:has-many,join:id=src_id" json:"dstResLinks,omitempty"`
 
 	// NOTE: temporary fields
 	parsedData      SettingData
@@ -67,6 +69,7 @@ type Setting struct {
 type SettingData interface {
 	GetType() base.SettingType
 	GetRefObjectIDs() *RefObjectIDs
+	CalcResLinks(setting *Setting) []*ResLink
 	Migrate(setting *Setting) (hasChange bool, err error)
 }
 
@@ -167,6 +170,20 @@ func parseSettingAs[T SettingData](s *Setting) (res T, err error) {
 		}
 	}
 	return res, nil
+}
+
+func (s *Setting) CalcResLinks() ([]*ResLink, error) {
+	if !s.DeletedAt.IsZero() {
+		return nil, nil
+	}
+	settingData, err := s.Parse()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	if settingData == nil {
+		return nil, nil
+	}
+	return settingData.CalcResLinks(s), nil
 }
 
 func (s *Setting) Migrate() (hasChange bool, err error) {

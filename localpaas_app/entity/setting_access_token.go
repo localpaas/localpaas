@@ -34,9 +34,8 @@ func (s *AccessToken) GetRefObjectIDs() *RefObjectIDs {
 	return &RefObjectIDs{}
 }
 
-func (s *AccessToken) MustDecrypt() *AccessToken {
-	s.Token.MustGetPlain()
-	return s
+func (s *AccessToken) CalcResLinks(setting *Setting) []*ResLink {
+	return s.GetRefObjectIDs().CalcResLinks(base.ResourceTypeSetting, setting.ID)
 }
 
 func (s *AccessToken) Migrate(setting *Setting) (hasChange bool, err error) {
@@ -53,6 +52,11 @@ func (s *AccessToken) Migrate(setting *Setting) (hasChange bool, err error) {
 	setting.UpdateVer++
 	setting.MustSetData(s)
 	return true, nil
+}
+
+func (s *AccessToken) MustDecrypt() *AccessToken {
+	s.Token.MustGetPlain()
+	return s
 }
 
 func (s *Setting) AsAccessToken() (*AccessToken, error) {

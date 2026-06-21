@@ -33,8 +33,8 @@ func (s *RepoWebhook) GetRefObjectIDs() *RefObjectIDs {
 	return &RefObjectIDs{}
 }
 
-func (s *RepoWebhook) MustDecrypt() *RepoWebhook {
-	return s
+func (s *RepoWebhook) CalcResLinks(setting *Setting) []*ResLink {
+	return s.GetRefObjectIDs().CalcResLinks(base.ResourceTypeSetting, setting.ID)
 }
 
 func (s *RepoWebhook) Migrate(setting *Setting) (hasChange bool, err error) {
@@ -51,6 +51,10 @@ func (s *RepoWebhook) Migrate(setting *Setting) (hasChange bool, err error) {
 	setting.UpdateVer++
 	setting.MustSetData(s)
 	return true, nil
+}
+
+func (s *RepoWebhook) MustDecrypt() *RepoWebhook {
+	return s
 }
 
 func (s *Setting) AsRepoWebhook() (*RepoWebhook, error) {

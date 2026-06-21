@@ -52,8 +52,11 @@ func (s *LocalPaaSService) GetType() base.SettingType {
 }
 
 func (s *LocalPaaSService) GetRefObjectIDs() *RefObjectIDs {
-	refIDs := &RefObjectIDs{}
-	return refIDs
+	return &RefObjectIDs{}
+}
+
+func (s *LocalPaaSService) CalcResLinks(setting *Setting) []*ResLink {
+	return s.GetRefObjectIDs().CalcResLinks(base.ResourceTypeSetting, setting.ID)
 }
 
 func (s *LocalPaaSService) Migrate(setting *Setting) (hasChange bool, err error) {

@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -25,4 +26,8 @@ type ResLink struct {
 	SrcUser    *User    `bun:"rel:has-one,join:src_id=id" json:"srcUser,omitempty"`
 	SrcProject *Project `bun:"rel:has-one,join:src_id=id" json:"srcProject,omitempty"`
 	SrcApp     *App     `bun:"rel:has-one,join:src_id=id" json:"srcApp,omitempty"`
+}
+
+func (lnk *ResLink) GetKey() string {
+	return fmt.Sprintf("%s:%s:%s:%s", lnk.SrcType, lnk.SrcID, lnk.DstType, lnk.DstID)
 }

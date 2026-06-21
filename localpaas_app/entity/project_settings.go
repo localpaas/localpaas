@@ -32,6 +32,10 @@ func (s *ProjectSettings) GetRefObjectIDs() *RefObjectIDs {
 	return &RefObjectIDs{}
 }
 
+func (s *ProjectSettings) CalcResLinks(setting *Setting) []*ResLink {
+	return s.GetRefObjectIDs().CalcResLinks(base.ResourceTypeSetting, setting.ID)
+}
+
 func (s *ProjectSettings) Migrate(setting *Setting) (hasChange bool, err error) {
 	if setting.Version == CurrentProjectSettingsVersion {
 		return false, nil

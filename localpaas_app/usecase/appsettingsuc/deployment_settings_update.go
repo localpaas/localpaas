@@ -44,11 +44,6 @@ func (uc *UC) UpdateAppDeploymentSettings(
 			return apperrors.Wrap(err)
 		}
 
-		err = uc.persistAppDeploymentSettingsRepoLinks(ctx, db, data)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
-
 		return nil
 	})
 	if err != nil {
@@ -182,23 +177,6 @@ func (uc *UC) prepareUpdatingAppDeploymentSettings(
 
 	persistingData.UpsertingDeployments = append(persistingData.UpsertingDeployments, deployment)
 	persistingData.UpsertingTasks = append(persistingData.UpsertingTasks, deploymentTask)
-	return nil
-}
-
-func (uc *UC) persistAppDeploymentSettingsRepoLinks(
-	ctx context.Context,
-	db database.Tx,
-	data *updateAppDeploymentSettingsData,
-) error {
-	var repoIDs []string
-	if data.NewDeploymentSettings.ActiveMethod == base.DeploymentMethodRepo {
-		repoIDs = append(repoIDs, data.NewDeploymentSettings.RepoSource.RepoID)
-	}
-	err := uc.resLinkService.SetLinks(ctx, db, base.ResourceTypeApp, data.App.ID,
-		base.ResourceTypeRepo, repoIDs)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
 	return nil
 }
 

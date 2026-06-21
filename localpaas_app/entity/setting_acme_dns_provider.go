@@ -118,6 +118,26 @@ func (s *AcmeDnsProvider) GetRefObjectIDs() *RefObjectIDs {
 	return refIDs
 }
 
+func (s *AcmeDnsProvider) CalcResLinks(setting *Setting) []*ResLink {
+	return s.GetRefObjectIDs().CalcResLinks(base.ResourceTypeSetting, setting.ID)
+}
+
+func (s *AcmeDnsProvider) Migrate(setting *Setting) (hasChange bool, err error) {
+	if setting.Version == CurrentAcmeDnsProviderVersion {
+		return false, nil
+	}
+	if setting.Version > CurrentAcmeDnsProviderVersion {
+		return false, apperrors.New(apperrors.ErrDataVerNewerThanSystemVer)
+	}
+
+	// TODO: add migration if we make any change
+
+	setting.Version = CurrentAcmeDnsProviderVersion
+	setting.UpdateVer++
+	setting.MustSetData(s)
+	return true, nil
+}
+
 func (s *AcmeDnsProvider) MustDecrypt() *AcmeDnsProvider {
 	if s.Azure != nil {
 		s.Azure.ClientSecret.MustGetPlain()
@@ -156,22 +176,6 @@ func (s *AcmeDnsProvider) MustDecrypt() *AcmeDnsProvider {
 		s.TencentCloud.SecretKey.MustGetPlain()
 	}
 	return s
-}
-
-func (s *AcmeDnsProvider) Migrate(setting *Setting) (hasChange bool, err error) {
-	if setting.Version == CurrentAcmeDnsProviderVersion {
-		return false, nil
-	}
-	if setting.Version > CurrentAcmeDnsProviderVersion {
-		return false, apperrors.New(apperrors.ErrDataVerNewerThanSystemVer)
-	}
-
-	// TODO: add migration if we make any change
-
-	setting.Version = CurrentAcmeDnsProviderVersion
-	setting.UpdateVer++
-	setting.MustSetData(s)
-	return true, nil
 }
 
 func (s *Setting) AsAcmeDnsProvider() (*AcmeDnsProvider, error) {

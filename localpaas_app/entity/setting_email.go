@@ -63,14 +63,8 @@ func (s *Email) GetRefObjectIDs() *RefObjectIDs {
 	return &RefObjectIDs{}
 }
 
-func (s *Email) MustDecrypt() *Email {
-	if s.SMTP != nil {
-		s.SMTP.Password.MustGetPlain()
-	}
-	if s.HTTP != nil {
-		s.HTTP.Password.MustGetPlain()
-	}
-	return s
+func (s *Email) CalcResLinks(setting *Setting) []*ResLink {
+	return s.GetRefObjectIDs().CalcResLinks(base.ResourceTypeSetting, setting.ID)
 }
 
 func (s *Email) Migrate(setting *Setting) (hasChange bool, err error) {
@@ -89,6 +83,15 @@ func (s *Email) Migrate(setting *Setting) (hasChange bool, err error) {
 	return true, nil
 }
 
+func (s *Email) MustDecrypt() *Email {
+	if s.SMTP != nil {
+		s.SMTP.Password.MustGetPlain()
+	}
+	if s.HTTP != nil {
+		s.HTTP.Password.MustGetPlain()
+	}
+	return s
+}
 func (s *Setting) AsEmail() (*Email, error) {
 	return parseSettingAs[*Email](s)
 }

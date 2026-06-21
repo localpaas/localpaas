@@ -1,6 +1,11 @@
 package entity
 
-import "github.com/tiendc/gofn"
+import (
+	"github.com/tiendc/gofn"
+
+	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
+)
 
 func NewRefObjects() *RefObjects {
 	return &RefObjects{
@@ -84,4 +89,40 @@ func (r *RefObjectIDs) GetRecursiveRefObjectIDs(refObjects *RefObjects) *RefObje
 		}
 	}
 	return res
+}
+
+func (r *RefObjectIDs) CalcResLinks(srcType base.ResourceType, srcID string) []*ResLink {
+	resLinks := make([]*ResLink, 0, len(r.RefSettingIDs)+len(r.RefAppIDs)+len(r.RefUserIDs))
+	timeNow := timeutil.NowUTC()
+	for _, refSettingID := range r.RefSettingIDs {
+		resLinks = append(resLinks, &ResLink{
+			SrcType:   srcType,
+			SrcID:     srcID,
+			DstType:   base.ResourceTypeSetting,
+			DstID:     refSettingID,
+			CreatedAt: timeNow,
+			UpdatedAt: timeNow,
+		})
+	}
+	for _, refAppID := range r.RefAppIDs {
+		resLinks = append(resLinks, &ResLink{
+			SrcType:   srcType,
+			SrcID:     srcID,
+			DstType:   base.ResourceTypeApp,
+			DstID:     refAppID,
+			CreatedAt: timeNow,
+			UpdatedAt: timeNow,
+		})
+	}
+	for _, refUserID := range r.RefUserIDs {
+		resLinks = append(resLinks, &ResLink{
+			SrcType:   srcType,
+			SrcID:     srcID,
+			DstType:   base.ResourceTypeUser,
+			DstID:     refUserID,
+			CreatedAt: timeNow,
+			UpdatedAt: timeNow,
+		})
+	}
+	return resLinks
 }

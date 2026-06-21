@@ -39,11 +39,6 @@ func (uc *UC) UpdateAppHttpSettings(
 			return apperrors.Wrap(err)
 		}
 
-		err = uc.persistAppHttpSettingsDomainLinks(ctx, db, data)
-		if err != nil {
-			return apperrors.Wrap(err)
-		}
-
 		err = uc.applyAppHttpSettings(ctx, data)
 		if err != nil {
 			return apperrors.Wrap(err)
@@ -142,20 +137,6 @@ func (uc *UC) prepareUpdatingAppHttpSettings(
 	setting.ExpireAt = time.Time{}
 	setting.MustSetData(data.NewHttpSettings)
 	persistingData.UpsertingSettings = append(persistingData.UpsertingSettings, setting)
-}
-
-func (uc *UC) persistAppHttpSettingsDomainLinks(
-	ctx context.Context,
-	db database.Tx,
-	data *updateAppHttpSettingsData,
-) error {
-	domainNames := data.NewHttpSettings.GetActiveDomainNames()
-	err := uc.resLinkService.SetLinks(ctx, db, base.ResourceTypeApp, data.App.ID,
-		base.ResourceTypeDomain, domainNames)
-	if err != nil {
-		return apperrors.Wrap(err)
-	}
-	return nil
 }
 
 func (uc *UC) applyAppHttpSettings(
