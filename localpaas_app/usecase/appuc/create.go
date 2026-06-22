@@ -205,6 +205,7 @@ func (uc *UC) preparePersistingAppSettingsDefault(
 				Image:    gofn.If(isDevEnv, "crccheck/hello-world:latest", "busybox:latest"),
 				Command:  gofn.If(isDevEnv, nil, []string{"sleep", "infinity"}),
 				Hostname: app.Key,
+				Init:     new(true), // default to use `tini`
 			},
 			Networks: []swarm.NetworkAttachmentConfig{
 				{

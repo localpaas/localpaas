@@ -106,6 +106,7 @@ func (uc *UC) prepareUpdatingAppContainerSettings(
 	containerSpec.Groups = req.Groups
 	containerSpec.StopSignal = req.StopSignal
 	containerSpec.TTY = req.TTY
+	containerSpec.Init = req.Init
 	containerSpec.OpenStdin = req.OpenStdin
 	containerSpec.ReadOnly = req.ReadOnly
 	if req.StopGracePeriod != nil {

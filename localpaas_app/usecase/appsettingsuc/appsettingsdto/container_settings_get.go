@@ -52,6 +52,7 @@ type BaseContainerSettings struct {
 	Groups          []string           `json:"groups"`
 	StopSignal      string             `json:"stopSignal"`
 	TTY             bool               `json:"tty"`
+	Init            *bool              `json:"init"`
 	OpenStdin       bool               `json:"openStdin"`
 	ReadOnly        bool               `json:"readOnly"`
 	StopGracePeriod *timeutil.Duration `json:"stopGracePeriod"`
@@ -150,6 +151,7 @@ func TransformContainerSettingsBase(spec *swarm.ServiceSpec) *BaseContainerSetti
 		Groups:          containerSpec.Groups,
 		StopSignal:      containerSpec.StopSignal,
 		TTY:             containerSpec.TTY,
+		Init:            containerSpec.Init,
 		OpenStdin:       containerSpec.OpenStdin,
 		ReadOnly:        containerSpec.ReadOnly,
 		Privileges:      TransformContainerPrivileges(containerSpec.Privileges),
