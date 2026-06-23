@@ -28,13 +28,13 @@ func (uc *UC) CreateHealthcheck(
 			pData *settings.PersistingSettingCreationData,
 		) error {
 			if err := pData.Setting.SetData(healthcheck); err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 			return nil
 		},
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &healthcheckdto.CreateHealthcheckResp{

@@ -12,7 +12,7 @@ import (
 func (s *service) GetLpUpdaterSwarmService(ctx context.Context) (*swarm.Service, error) {
 	service, err := s.dockerManager.ServiceGetByName(ctx, base.LocalpaasUpdaterServiceName, false)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return service, nil
 }
@@ -20,13 +20,13 @@ func (s *service) GetLpUpdaterSwarmService(ctx context.Context) (*swarm.Service,
 func (s *service) RestartLpUpdaterSwarmService(ctx context.Context) error {
 	service, err := s.GetLpUpdaterSwarmService(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	service.Spec.TaskTemplate.ForceUpdate++
 	_, err = s.dockerManager.ServiceUpdate(ctx, service.ID, &service.Version, &service.Spec)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -34,7 +34,7 @@ func (s *service) RestartLpUpdaterSwarmService(ctx context.Context) error {
 func (s *service) ShutdownLpUpdaterSwarmService(ctx context.Context) error {
 	service, err := s.GetLpUpdaterSwarmService(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	if service.Spec.Mode.Replicated == nil || *service.Spec.Mode.Replicated.Replicas == 0 {
@@ -44,7 +44,7 @@ func (s *service) ShutdownLpUpdaterSwarmService(ctx context.Context) error {
 
 	_, err = s.dockerManager.ServiceUpdate(ctx, service.ID, &service.Version, &service.Spec)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

@@ -24,7 +24,7 @@ func (uc *UC) UpdateSchedJob(
 		AfterLoading: func(ctx context.Context, db database.Tx, data *settings.UpdateSettingData) error {
 			job, err := data.Setting.AsSchedJob()
 			if err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 			scheduleChanges = !job.Schedule.Equal(newJob.Schedule)
 			return nil
@@ -38,7 +38,7 @@ func (uc *UC) UpdateSchedJob(
 			pData.Setting.Kind = string(newJob.JobType)
 			err := pData.Setting.SetData(newJob)
 			if err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 			return nil
 		},
@@ -50,13 +50,13 @@ func (uc *UC) UpdateSchedJob(
 		) error {
 			err := uc.taskQueue.ScheduleTasksForSchedJob(ctx, db, data.Setting, scheduleChanges)
 			if err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 			return nil
 		},
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &schedjobdto.UpdateSchedJobResp{}, nil

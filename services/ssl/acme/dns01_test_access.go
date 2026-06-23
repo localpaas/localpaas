@@ -16,15 +16,15 @@ func DNS01ProviderTestAccess(
 ) (err error) {
 	provider, err := NewDNS01Provider(providerKind, dnsConfig)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	err = provider.Present(ctx, testDomain, "test", "test")
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	err = provider.CleanUp(ctx, testDomain, "test", "test")
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

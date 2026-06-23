@@ -20,7 +20,7 @@ func (s *service) GenerateDownloadToken(
 		RequireLogin: requireLogin,
 	}, expiration)
 	if err != nil {
-		return "", apperrors.Wrap(err)
+		return "", apperrors.New(err)
 	}
 	return fileToken, nil
 }

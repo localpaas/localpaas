@@ -77,13 +77,13 @@ func TransformIMService(
 ) (resp *IMServiceResp, err error) {
 	config := setting.MustAsIMService()
 	if err = copier.Copy(&resp, config); err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	resp.Kind = base.IMServiceKind(setting.Kind)
 
 	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	switch {

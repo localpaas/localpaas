@@ -27,7 +27,7 @@ func (uc *UC) DownloadConfigFile(
 	req.Type = currentSettingType
 	resp, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	if resp.Data.ID != tokenClaims.FileID {
 		return nil, apperrors.New(apperrors.ErrTokenInvalid).
@@ -36,7 +36,7 @@ func (uc *UC) DownloadConfigFile(
 
 	configFile, err := resp.Data.AsConfigFile()
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	data := configFile.ContentAsBytes()
 	contentType := gofn.If(configFile.Base64, "application/octet-stream", "text/plain")

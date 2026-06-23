@@ -42,12 +42,12 @@ func TransformAPIKey(
 ) (resp *APIKeyResp, err error) {
 	apiKey := setting.MustAsAPIKey()
 	if err = copier.Copy(&resp, apiKey); err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return resp, nil
 }

@@ -43,11 +43,11 @@ func (c *Cache) Get(key string) (any, error) {
 func (c *Cache) GetStr(key string) (string, error) {
 	val, err := c.Get(key)
 	if err != nil {
-		return "", apperrors.Wrap(err)
+		return "", apperrors.New(err)
 	}
 	v, ok := val.(string)
 	if !ok {
-		return "", apperrors.NewTypeInvalid("string expected")
+		return "", apperrors.NewMismatch("Value type", "string type")
 	}
 	return v, nil
 }
@@ -55,11 +55,11 @@ func (c *Cache) GetStr(key string) (string, error) {
 func (c *Cache) GetInt(key string) (int, error) {
 	val, err := c.Get(key)
 	if err != nil {
-		return 0, apperrors.Wrap(err)
+		return 0, apperrors.New(err)
 	}
 	v, ok := val.(int)
 	if !ok {
-		return 0, apperrors.NewTypeInvalid("int expected")
+		return 0, apperrors.NewMismatch("Value type", "int type")
 	}
 	return v, nil
 }
@@ -67,11 +67,11 @@ func (c *Cache) GetInt(key string) (int, error) {
 func (c *Cache) GetBool(key string) (bool, error) {
 	val, err := c.Get(key)
 	if err != nil {
-		return false, apperrors.Wrap(err)
+		return false, apperrors.New(err)
 	}
 	v, ok := val.(bool)
 	if !ok {
-		return false, apperrors.NewTypeInvalid("bool expected")
+		return false, apperrors.NewMismatch("Value type", "bool type")
 	}
 	return v, nil
 }

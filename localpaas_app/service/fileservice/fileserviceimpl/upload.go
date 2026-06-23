@@ -81,13 +81,13 @@ func (s *service) Upload(
 			return err
 		}, requests...)
 	if err := errors.Join(gofn.MapValues(errMap)...); err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	resp := &fileservice.UploadResp{Files: files}
 	if req.SaveToDB {
 		if err := s.fileRepo.InsertMulti(ctx, db, files); err != nil {
-			return resp, apperrors.Wrap(err)
+			return resp, apperrors.New(err)
 		}
 	}
 	return resp, nil

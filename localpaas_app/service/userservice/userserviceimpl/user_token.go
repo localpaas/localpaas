@@ -26,7 +26,7 @@ func (s *service) GenerateMFAToken(userID string, mfaType base.MFAType, trustedD
 		TrustedDeviceID: trustedDeviceID,
 	}, MFATokenExp)
 	if err != nil {
-		return "", apperrors.Wrap(err)
+		return "", apperrors.New(err)
 	}
 	return mfaToken, nil
 }
@@ -50,7 +50,7 @@ func (s *service) GenerateMFATotpSetupToken(userID string, toptSecret string) (s
 		Secret: toptSecret,
 	}, MFATotpSetupTokenExp)
 	if err != nil {
-		return "", apperrors.Wrap(err)
+		return "", apperrors.New(err)
 	}
 	return mfaToken, nil
 }
@@ -73,7 +73,7 @@ func (s *service) GenerateUserInviteToken(userID string) (string, error) {
 		UserID: userID,
 	}, UserInviteTokenExp)
 	if err != nil {
-		return "", apperrors.Wrap(err)
+		return "", apperrors.New(err)
 	}
 	return token, nil
 }
@@ -96,7 +96,7 @@ func (s *service) GeneratePasswordResetToken(userID string) (string, error) {
 		UserID: userID,
 	}, PasswordResetTokenExp)
 	if err != nil {
-		return "", apperrors.Wrap(err)
+		return "", apperrors.New(err)
 	}
 	return token, nil
 }

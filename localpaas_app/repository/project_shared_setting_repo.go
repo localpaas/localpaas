@@ -48,7 +48,7 @@ func (repo *projectSharedSettingRepo) Get(ctx context.Context, db database.IDB, 
 		return nil, apperrors.NewNotFound("ProjectSharedSetting").WithCause(err)
 	}
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return projectSharedSetting, nil
 }
@@ -66,7 +66,7 @@ func (repo *projectSharedSettingRepo) List(ctx context.Context, db database.IDB,
 		// Counts the total first
 		total, err := query.Count(ctx)
 		if err != nil {
-			return nil, nil, apperrors.Wrap(err)
+			return nil, nil, apperrors.New(err)
 		}
 		pagingMeta.Total = total
 
@@ -94,7 +94,7 @@ func (repo *projectSharedSettingRepo) UpsertMulti(ctx context.Context, db databa
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -106,7 +106,7 @@ func (repo *projectSharedSettingRepo) Update(ctx context.Context, db database.ID
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -119,7 +119,7 @@ func (repo *projectSharedSettingRepo) DeleteAllBySetting(ctx context.Context, db
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -127,14 +127,14 @@ func (repo *projectSharedSettingRepo) DeleteAllBySetting(ctx context.Context, db
 func (repo *projectSharedSettingRepo) DeleteHard(ctx context.Context, db database.IDB,
 	opts ...bunex.DeleteQueryOption) error {
 	if len(opts) == 0 {
-		return apperrors.NewParamInvalid("opts").WithMsgLog("DeleteHard requires at least one condition")
+		return apperrors.NewArgumentInvalid("opts").WithMsgLog("DeleteHard requires at least one condition")
 	}
 	query := db.NewDelete().Model((*entity.ProjectSharedSetting)(nil)).ForceDelete().WhereAllWithDeleted()
 	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

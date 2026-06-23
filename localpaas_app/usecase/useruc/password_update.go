@@ -19,7 +19,7 @@ func (uc *UC) UpdatePassword(
 	req *userdto.UpdatePasswordReq,
 ) (*userdto.UpdatePasswordResp, error) {
 	if auth.User.IsDemoUser() {
-		return nil, apperrors.Wrap(apperrors.ErrUserDemoUnauthorized)
+		return nil, apperrors.New(apperrors.ErrUserDemoUnauthorized)
 	}
 
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
@@ -27,7 +27,7 @@ func (uc *UC) UpdatePassword(
 			bunex.SelectFor("UPDATE"),
 		)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		if user.SecurityOption == base.UserSecurityEnforceSSO {
@@ -45,13 +45,13 @@ func (uc *UC) UpdatePassword(
 			bunex.UpdateColumns("updated_at", "password"),
 		)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		return nil
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &userdto.UpdatePasswordResp{}, nil

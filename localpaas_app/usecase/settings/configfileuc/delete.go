@@ -27,14 +27,14 @@ func (uc *UC) DeleteConfigFile(
 				// Delete the related config in docker swarm
 				err := uc.AppService.DeleteSwarmConfig(ctx, db, data.ScopeApp, data.Setting.MustAsConfigFile())
 				if err != nil {
-					return apperrors.Wrap(err)
+					return apperrors.New(err)
 				}
 			}
 			return nil
 		},
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &configfiledto.DeleteConfigFileResp{}, nil

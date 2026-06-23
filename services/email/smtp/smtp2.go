@@ -32,17 +32,17 @@ func SendMail2(
 
 	password, err := conf.Password.GetPlain()
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	sender, err := smtp.NewSmtpEmailSender(conf.Host, conf.Port, conf.Username, password, "")
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	err = sender.SendEmail(message)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

@@ -58,11 +58,11 @@ func (s *SSHKey) Migrate(setting *Setting) (hasChange bool, err error) {
 func (s *SSHKey) Decrypt() error {
 	_, err := s.PrivateKey.GetPlain()
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	_, err = s.Passphrase.GetPlain()
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

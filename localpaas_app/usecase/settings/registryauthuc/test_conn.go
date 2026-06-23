@@ -21,7 +21,7 @@ func (uc *UC) TestRegistryAuthConn(
 		opts.ServerAddress = req.Address
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &registryauthdto.TestRegistryAuthConnResp{}, nil

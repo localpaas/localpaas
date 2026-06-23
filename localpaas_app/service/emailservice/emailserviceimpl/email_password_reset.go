@@ -18,20 +18,20 @@ func (s *service) SendMailPasswordReset(
 ) error {
 	template, err := s.GetTemplate(ctx, db, emailservice.TemplateNamePasswordReset)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	buf, cleanup := s.getBuildBuf()
 	defer cleanup()
 	err = template.Execute(buf, data)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	subject := gofn.Coalesce(data.Subject, "[LocalPaaS] Password reset")
 	err = email.SendMail(ctx, data.Email, data.Recipients, subject, buf.String())
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

@@ -29,7 +29,7 @@ func (uc *UC) CreateSchedJob(
 		) error {
 			pData.Setting.Kind = string(schedJob.JobType)
 			if err := pData.Setting.SetData(schedJob); err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 			return nil
 		},
@@ -41,13 +41,13 @@ func (uc *UC) CreateSchedJob(
 		) error {
 			err := uc.taskQueue.ScheduleTasksForSchedJob(ctx, db, pData.Setting, false)
 			if err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 			return nil
 		},
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &schedjobdto.CreateSchedJobResp{

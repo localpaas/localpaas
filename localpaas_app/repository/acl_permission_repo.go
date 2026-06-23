@@ -107,7 +107,7 @@ func (repo *aclPermissionRepo) List(ctx context.Context, db database.IDB, paging
 		// Counts the total first
 		total, err := query.Count(ctx)
 		if err != nil {
-			return nil, nil, apperrors.Wrap(err)
+			return nil, nil, apperrors.New(err)
 		}
 		pagingMeta.Total = total
 
@@ -134,7 +134,7 @@ func (repo *aclPermissionRepo) UpsertMulti(ctx context.Context, db database.IDB,
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -175,7 +175,7 @@ func (repo *aclPermissionRepo) DeleteByResources(ctx context.Context, db databas
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -192,7 +192,7 @@ func (repo *aclPermissionRepo) DeleteBySubjects(ctx context.Context, db database
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -200,14 +200,14 @@ func (repo *aclPermissionRepo) DeleteBySubjects(ctx context.Context, db database
 func (repo *aclPermissionRepo) DeleteHard(ctx context.Context, db database.IDB,
 	opts ...bunex.DeleteQueryOption) error {
 	if len(opts) == 0 {
-		return apperrors.NewParamInvalid("opts").WithMsgLog("DeleteHard requires at least one condition")
+		return apperrors.NewArgumentInvalid("opts").WithMsgLog("DeleteHard requires at least one condition")
 	}
 	query := db.NewDelete().Model((*entity.ACLPermission)(nil)).ForceDelete().WhereAllWithDeleted()
 	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

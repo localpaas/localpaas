@@ -19,7 +19,7 @@ func (uc *UC) Upload(
 		baseFileData: &baseFileData{},
 	}
 	if err := uc.loadUploadData(ctx, uc.db, req, uploadData); err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	uploadReq := &fileservice.UploadReq{
@@ -58,7 +58,7 @@ func (uc *UC) Upload(
 
 	resp, err := filedto.TransformFiles(uploadResp.Files)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &filedto.UploadResp{
@@ -78,7 +78,7 @@ func (uc *UC) loadUploadData(
 ) (err error) {
 	err = uc.loadScopeData(ctx, db, req.Scope, data.baseFileData)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	return nil

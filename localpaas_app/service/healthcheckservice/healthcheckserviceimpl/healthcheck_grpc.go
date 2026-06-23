@@ -2,6 +2,7 @@ package healthcheckserviceimpl
 
 import (
 	"context"
+	"fmt"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -35,23 +36,23 @@ func (s *service) doHealthcheckGRPC(
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
 		)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		defer conn.Close()
 
 		healthClient := grpc_health_v1.NewHealthClient(conn)
 		resp, err := healthClient.Check(reqCtx, &grpc_health_v1.HealthCheckRequest{Service: healthchk.Service})
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		data.Output.GRPC.ReturnStatus = base.HealthcheckGRPCStatus(resp.Status)
 		if healthchk.ReturnStatus != base.HealthcheckGRPCStatus(resp.Status) {
-			return apperrors.Wrap(apperrors.ErrActionFailed)
+			return apperrors.New(apperrors.ErrActionFailed)
 		}
 
 	default:
-		return apperrors.NewUnsupported(apperrors.Fmt("gRPC health version '%v'", healthchk.Version))
+		return apperrors.NewUnsupported(fmt.Sprintf("gRPC health version '%v'", healthchk.Version))
 	}
 
 	return nil

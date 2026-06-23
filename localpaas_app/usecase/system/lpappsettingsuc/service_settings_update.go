@@ -34,7 +34,7 @@ func (uc *UC) UpdateServiceSettings(
 		data = &updateServiceSettingsData{}
 		err := uc.loadServiceSettingsForUpdate(ctx, db, req, data)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		persistingData := &persistingSettingsData{}
@@ -42,13 +42,13 @@ func (uc *UC) UpdateServiceSettings(
 
 		err = uc.persistSettingsData(ctx, db, persistingData)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		return nil
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	if data.workerSvcChanges {
@@ -82,7 +82,7 @@ func (uc *UC) UpdateServiceSettings(
 	}
 
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &lpappsettingsdto.UpdateServiceSettingsResp{}, nil
@@ -109,12 +109,12 @@ func (uc *UC) loadServiceSettingsForUpdate(
 		bunex.SelectFor("UPDATE"),
 	)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	data.Setting = setting
 
 	if setting != nil && setting.UpdateVer != req.UpdateVer {
-		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
+		return apperrors.New(apperrors.ErrUpdateVerMismatched)
 	}
 
 	newSettings := req.ToEntity()
@@ -122,18 +122,18 @@ func (uc *UC) loadServiceSettingsForUpdate(
 
 	currSettings, err := data.Setting.AsLocalPaaSService()
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	mainAppSvc, err := uc.lpAppService.GetLpAppSwarmService(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	data.MainService = mainAppSvc
 
 	workerSvc, err := uc.lpAppService.GetLpWorkerSwarmService(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	data.WorkerService = workerSvc
 
@@ -183,7 +183,7 @@ func (uc *UC) applyServiceSettingsToMainService(
 
 	_, err := uc.dockerManager.ServiceUpdate(ctx, mainAppSvc.ID, &mainAppSvc.Version, &mainAppSvc.Spec)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -203,7 +203,7 @@ func (uc *UC) applyServiceSettingsToWorkerService(
 
 	_, err := uc.dockerManager.ServiceUpdate(ctx, workerSvc.ID, &workerSvc.Version, &workerSvc.Spec)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -232,7 +232,7 @@ func (uc *UC) persistSettingsData(
 	err := uc.settingRepo.UpsertMulti(ctx, db, persistingData.Settings,
 		entity.SettingUpsertingConflictCols, entity.SettingUpsertingUpdateCols)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

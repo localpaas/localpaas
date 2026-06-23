@@ -26,7 +26,7 @@ func (uc *UC) CancelDeployment(
 			bunex.SelectFor("UPDATE OF deployment SKIP LOCKED"),
 		)
 		if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		if deployment != nil {
@@ -39,7 +39,7 @@ func (uc *UC) CancelDeployment(
 				bunex.UpdateColumns("status", "updated_at"),
 			)
 			if err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 			canceled = true
 			return nil
@@ -52,7 +52,7 @@ func (uc *UC) CancelDeployment(
 				return apperrors.New(apperrors.ErrUnavailable).
 					WithMsgLog("deployment info not found, please try again later")
 			}
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		err = uc.taskControlRepo.Push(ctx, deploymentInfo.TaskID, &cacheentity.TaskControl{
@@ -60,13 +60,13 @@ func (uc *UC) CancelDeployment(
 			Cmd: base.TaskCommandCancel,
 		})
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		return nil
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &appdeploymentdto.CancelDeploymentResp{

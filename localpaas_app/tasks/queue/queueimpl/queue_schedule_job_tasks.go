@@ -20,12 +20,12 @@ func (q *taskQueue) doCreateTasksForJobs(
 	err := transaction.Execute(ctx, q.db, func(db database.Tx) (err error) {
 		newTasks, err = q.createTasksForJobs(ctx, db, nil, q.config.Tasks.Queue.TaskCreateInterval)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		return nil
 	}, transaction.NoRetry())
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	// Ignore error as tasks were inserted into DB, the next scan will schedule them again
@@ -50,7 +50,7 @@ func (q *taskQueue) createTasksForJobs(
 
 	jobSettings, _, err := q.settingRepo.List(ctx, db, nil, nil, opts...)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	if len(jobSettings) == 0 {
 		return nil, nil
@@ -63,11 +63,11 @@ func (q *taskQueue) createTasksForJobs(
 	for _, jobSetting := range jobSettings {
 		schedJob, err := jobSetting.AsSchedJob()
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		nextRuns, err := schedJob.Schedule.CalcNextRunsInRange(timeNow, timeNow.Add(withinDuration))
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 
 		var lastSchedTime time.Time
@@ -75,7 +75,7 @@ func (q *taskQueue) createTasksForJobs(
 			lastSchedTime = nextRunAt
 			task, err := q.schedJobService.CreateSchedJobTask(jobSetting, nextRunAt, timeNow)
 			if err != nil {
-				return nil, apperrors.Wrap(err)
+				return nil, apperrors.New(err)
 			}
 			allNewTasks = append(allNewTasks, task)
 		}
@@ -89,13 +89,13 @@ func (q *taskQueue) createTasksForJobs(
 	err = q.taskRepo.UpsertMulti(ctx, db, allNewTasks,
 		entity.TaskUpsertingConflictCols, entity.TaskUpsertingUpdateCols)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	err = q.settingRepo.UpsertMulti(ctx, db, updatingJobSettings,
 		entity.SettingUpsertingConflictCols, entity.SettingUpsertingUpdateCols)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return allNewTasks, nil

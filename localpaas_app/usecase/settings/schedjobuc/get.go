@@ -17,12 +17,12 @@ func (uc *UC) GetSchedJob(
 	req.Type = currentSettingType
 	resp, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	respData, err := schedjobdto.TransformSchedJob(resp.Data, resp.RefObjects, false)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &schedjobdto.GetSchedJobResp{

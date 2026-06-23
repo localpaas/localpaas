@@ -31,7 +31,7 @@ func (cli *checkoutCli) cleanup(
 	err = errors.Join(err, err2)
 
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

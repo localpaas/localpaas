@@ -143,7 +143,7 @@ func parseLogs(
 				break
 			}
 			if err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 		}
 
@@ -184,7 +184,7 @@ func parseLogs(
 				break
 			}
 			if err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 		}
 
@@ -199,7 +199,7 @@ func parseLogs(
 		nr -= frameSize + stdWriterPrefixLen
 
 		if err := ctx.Err(); err != nil { // Context is done
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		dst.Send(logFrame)

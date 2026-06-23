@@ -29,7 +29,7 @@ func (uc *UC) CreateNetwork(
 	if req.ProjectID != "" {
 		project, err := uc.projectService.LoadProject(ctx, uc.db, req.ProjectID, true)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		labels[docker.StackLabelNamespace] = project.Key
 
@@ -53,7 +53,7 @@ func (uc *UC) CreateNetwork(
 	})
 
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &networkdto.CreateNetworkResp{

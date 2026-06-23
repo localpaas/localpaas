@@ -18,7 +18,7 @@ func (uc *UC) GetTaskStatus(
 		ID: req.ID,
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &taskdto.GetTaskStatusResp{

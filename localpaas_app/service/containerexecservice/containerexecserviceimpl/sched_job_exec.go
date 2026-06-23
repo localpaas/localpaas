@@ -32,12 +32,12 @@ func (s *service) SchedJobExec(
 		req.TaskNonRetryable = true
 		_ = req.LogStore.Add(ctx, tasklog.NewErrFrame(
 			"Execution command/script is empty, aborted", tasklog.TsNow))
-		return nil, apperrors.New(apperrors.ErrInternalServer).WithMsgLog("schedule job command/script is empty")
+		return nil, apperrors.New(apperrors.ErrInternal).WithMsgLog("schedule job command/script is empty")
 	}
 
 	envVars, refSecrets, err := s.schedJobService.BuildCommandEnv(ctx, db, req.App, schedJob)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	env := make([]string, 0, len(envVars))
 	for _, v := range envVars {
@@ -49,7 +49,7 @@ func (s *service) SchedJobExec(
 		for _, secret := range refSecrets {
 			plainSecret, err := secret.Value.GetPlain()
 			if err != nil {
-				return nil, apperrors.Wrap(err)
+				return nil, apperrors.New(err)
 			}
 			secrets = append(secrets, plainSecret)
 		}
@@ -82,7 +82,7 @@ func (s *service) SchedJobExec(
 	} else {
 		cmd, err = executil.CmdSplit(command.Command)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 	}
 
@@ -105,7 +105,7 @@ func (s *service) SchedJobExec(
 		},
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &containerexecservice.SchedJobExecResp{}, nil

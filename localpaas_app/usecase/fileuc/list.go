@@ -45,12 +45,12 @@ func (uc *UC) ListFile(
 
 	files, paging, err := uc.fileRepo.List(ctx, uc.db, &req.Paging, listOpts...)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	respData, err := filedto.TransformFiles(files)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &filedto.ListFileResp{

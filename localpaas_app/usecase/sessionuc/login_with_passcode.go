@@ -26,7 +26,7 @@ func (uc *UC) LoginWithPasscode(
 
 	dbUser, err := uc.userRepo.GetByID(ctx, uc.db, mfaTokenClaims.UserID)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	// Verify passcode TOTP
@@ -37,7 +37,7 @@ func (uc *UC) LoginWithPasscode(
 				return nil, apperrors.New(apperrors.ErrPasscodeMismatched).
 					WithMsgLog("need to login with password first")
 			}
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		if passcode.Attempts >= passcodeMaxAttempts {
 			_ = uc.cacheMfaPasscodeRepo.Del(ctx, mfaTokenClaims.UserID)
@@ -46,12 +46,12 @@ func (uc *UC) LoginWithPasscode(
 		}
 		// Increase the attempts
 		_ = uc.cacheMfaPasscodeRepo.IncrAttempts(ctx, mfaTokenClaims.UserID, passcode)
-		return nil, apperrors.Wrap(apperrors.ErrPasscodeMismatched)
+		return nil, apperrors.New(apperrors.ErrPasscodeMismatched)
 	}
 
 	// Removes the passcode in redis
 	if err = uc.cacheMfaPasscodeRepo.Del(ctx, mfaTokenClaims.UserID); err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	// Save trusted device if needs to
@@ -66,14 +66,14 @@ func (uc *UC) LoginWithPasscode(
 		err = uc.loginTrustedDeviceRepo.Upsert(ctx, uc.db, trustedDevice,
 			entity.LoginTrustedDeviceUpsertingConflictCols, entity.LoginTrustedDeviceUpsertingUpdateCols)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 	}
 
 	// Create a new session as login succeeds
 	sessionData, err := uc.createSession(ctx, &sessiondto.BaseCreateSessionReq{User: dbUser})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &sessiondto.LoginWithPasscodeResp{

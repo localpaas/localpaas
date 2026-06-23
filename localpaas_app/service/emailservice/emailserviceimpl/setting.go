@@ -21,7 +21,7 @@ func (s *service) GetDefaultSystemEmail(
 		bunex.SelectLimit(2), //nolint
 	)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	if (len(settings) == 1 || (len(settings) > 1 && settings[0].Default)) && settings[0].IsActive() {
 		return settings[0], nil

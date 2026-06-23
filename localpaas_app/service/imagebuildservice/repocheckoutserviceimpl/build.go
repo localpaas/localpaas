@@ -38,23 +38,23 @@ func (s *service) ImageBuild(
 
 	defer func() {
 		if r := recover(); r != nil {
-			err = errors.Join(err, apperrors.NewPanic(apperrors.Fmt("%v", r)))
+			err = errors.Join(err, apperrors.NewPanic(r))
 		}
 	}()
 
 	err = s.doImageBuild(ctx, db, data)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	// Check if the context was canceled
 	if err := ctx.Err(); err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	err = s.doImagePush(ctx, data)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return resp, err
@@ -77,30 +77,30 @@ func (s *service) doImageBuild(
 
 	imageTags, err := s.calcBuildImageTags(repoSource.ImageTags, data)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	data.Resp.ImageTags = imageTags
 
 	envVars, err := s.calcBuildEnvVars(ctx, db, data)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	authConfigs, err := s.calcBuildRegistryAuths(ctx, db, data)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	// Create tar archive for the source code
 	tar, err := archive.TarWithOptions(data.CheckoutDir, &archive.TarOptions{})
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	defer tar.Close()
 
 	// Check if the context was canceled
 	if err := ctx.Err(); err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	// Build the image
@@ -131,7 +131,7 @@ func (s *service) doImageBuild(
 		}
 	})
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	logsChan, _ := docker.StartScanningJSONMsg(ctx, resp.Body, batchrecvchan.Options{})
@@ -148,7 +148,7 @@ func (s *service) doImageBuild(
 		}
 	}
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	return nil
@@ -171,7 +171,7 @@ func (s *service) doImagePush(
 		regAuth := data.RefObjects.RefSettings[repoSource.PushToRegistry.ID]
 		regAuthHeader, err = regAuth.MustAsRegistryAuth().GenerateAuthHeader()
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	}
 
@@ -183,7 +183,7 @@ func (s *service) doImagePush(
 			options.RegistryAuth = regAuthHeader
 		})
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		logsChan, _ := docker.StartScanningJSONMsg(ctx, logsReader, batchrecvchan.Options{})
@@ -200,7 +200,7 @@ func (s *service) doImagePush(
 			}
 		}
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	}
 

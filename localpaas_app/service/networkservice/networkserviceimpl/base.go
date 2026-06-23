@@ -26,7 +26,7 @@ func (s *service) GetGlobalRoutingNetworkID(ctx context.Context) (string, error)
 		docker.FilterAdd(&opts.Filters, "name", base.NetworkGlobalRouting)
 	})
 	if err != nil {
-		return "", apperrors.Wrap(err)
+		return "", apperrors.New(err)
 	}
 
 	var netID string
@@ -56,7 +56,7 @@ func (s *service) createGlobalRoutingNetwork(ctx context.Context) (string, error
 			}
 		})
 	if err != nil {
-		return "", apperrors.Wrap(err)
+		return "", apperrors.New(err)
 	}
 	return resp.ID, nil
 }

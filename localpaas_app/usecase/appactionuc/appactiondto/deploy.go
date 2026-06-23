@@ -36,11 +36,11 @@ func (req *DeployAppReq) ApplyTo(setting *entity.AppDeploymentSettings) error {
 	switch setting.ActiveMethod {
 	case base.DeploymentMethodImage:
 		if err := req.ImageSource.ApplyTo(setting.ImageSource); err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	case base.DeploymentMethodRepo:
 		if err := req.RepoSource.ApplyTo(setting.RepoSource); err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	}
 	return nil

@@ -52,7 +52,7 @@ func (s *service) containerExec(
 		gofn.Coalesce(req.TaskFindRetryDelay, taskFindRetryDelay),
 		nil)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	if task == nil {
 		_ = logStore.Add(ctx, tasklog.NewWarnFrame(
@@ -62,7 +62,7 @@ func (s *service) containerExec(
 
 	currNodeID, err := s.dockerManager.NodeCurrentID(ctx)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	isRemote := task.NodeID != "" && task.NodeID != currNodeID
@@ -98,7 +98,7 @@ func (s *service) containerExec(
 				"Execution failed to start in node %s, retrying...", execHelper.targetNodeID), tasklog.TsNow))
 			return s.containerExec(ctx, req, retry+1)
 		}
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	resp.ExecCreateResult = createResp
@@ -116,12 +116,12 @@ func (s *service) containerExec(
 
 	exitCode, err := execHelper.GetExecExitCode(ctx)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	if exitCode != 0 {
 		_ = logStore.AddRedacted(ctx, tasklog.NewErrFrame(fmt.Sprintf(
 			"Command execution failed with exit code: %v", exitCode), tasklog.TsNow))
-		return nil, apperrors.Wrap(apperrors.ErrInfraActionFailed)
+		return nil, apperrors.New(apperrors.ErrInfraActionFailed)
 	}
 
 	return resp, nil
@@ -159,7 +159,7 @@ func (h *containerExecHelper) ExecCreate(
 	if h.dockerClient != nil {
 		createRes, attachRes, startRes, err := h.dockerClient.ContainerExec(ctx, containerID, req.ExecOptions)
 		if err != nil {
-			return nil, nil, nil, apperrors.Wrap(err)
+			return nil, nil, nil, apperrors.New(err)
 		}
 		h.createResult = createRes
 		h.attachResult = attachRes
@@ -172,25 +172,25 @@ func (h *containerExecHelper) ExecCreate(
 		if err != nil {
 			_ = h.logStore.Add(ctx, tasklog.NewWarnFrame(
 				fmt.Sprintf("Failed to get IP of agent for node %s: %v", h.targetNodeID, err), tasklog.TsNow))
-			return nil, nil, nil, apperrors.Wrap(err)
+			return nil, nil, nil, apperrors.New(err)
 		}
 
 		h.agentClient, err = containerservice.NewContainerServiceClient(agentAddr)
 		if err != nil {
 			_ = h.logStore.Add(ctx, tasklog.NewWarnFrame(
 				fmt.Sprintf("Failed to connect to agent at %s: %v", agentAddr, err), tasklog.TsNow))
-			return nil, nil, nil, apperrors.Wrap(err)
+			return nil, nil, nil, apperrors.New(err)
 		}
 
 		h.remoteStream, err = h.agentClient.ContainerExec(ctx)
 		if err != nil {
-			return nil, nil, nil, apperrors.Wrap(err)
+			return nil, nil, nil, apperrors.New(err)
 		}
 	}
 
 	err = h.remoteStream.SendExecCreate(containerID, req.ExecOptions)
 	if err != nil {
-		return nil, nil, nil, apperrors.Wrap(err)
+		return nil, nil, nil, apperrors.New(err)
 	}
 
 	h.createResult = &client.ExecCreateResult{ID: "remote"}
@@ -205,11 +205,11 @@ func (h *containerExecHelper) ExecResize(
 	// Local exec
 	if h.dockerClient != nil {
 		_, err := h.dockerClient.ContainerExecResize(ctx, h.createResult.ID, width, height)
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	// Remote exec
-	return apperrors.Wrap(h.remoteStream.SendResize(width, height))
+	return apperrors.New(h.remoteStream.SendResize(width, height))
 }
 
 func (h *containerExecHelper) GetExecExitCode(
@@ -219,7 +219,7 @@ func (h *containerExecHelper) GetExecExitCode(
 	if h.dockerClient != nil {
 		execInfo, err := h.dockerClient.ContainerExecInspect(ctx, h.createResult.ID)
 		if err != nil {
-			return 0, apperrors.Wrap(err)
+			return 0, apperrors.New(err)
 		}
 		return execInfo.ExitCode, nil
 	}

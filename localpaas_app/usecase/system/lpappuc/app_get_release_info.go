@@ -15,7 +15,7 @@ func (uc *UC) GetLpAppReleaseInfo(
 ) (*lpappdto.GetLpAppReleaseInfoResp, error) {
 	info, err := uc.lpAppService.GetAppReleaseInfo(ctx)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &lpappdto.GetLpAppReleaseInfoResp{

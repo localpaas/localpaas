@@ -25,13 +25,13 @@ func (uc *UC) UpdateSchedJobStatus(
 		) error {
 			err := uc.taskQueue.ScheduleTasksForSchedJob(ctx, db, data.Setting, true)
 			if err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 			return nil
 		},
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &schedjobdto.UpdateSchedJobStatusResp{}, nil

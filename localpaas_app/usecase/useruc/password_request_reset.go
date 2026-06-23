@@ -21,14 +21,14 @@ func (uc *UC) RequestResetPassword(
 	req *userdto.RequestResetPasswordReq,
 ) (*userdto.RequestResetPasswordResp, error) {
 	if auth.User.IsDemoUser() {
-		return nil, apperrors.Wrap(apperrors.ErrUserDemoUnauthorized)
+		return nil, apperrors.New(apperrors.ErrUserDemoUnauthorized)
 	}
 
 	user, err := uc.userRepo.GetByID(ctx, uc.db, req.ID,
 		bunex.SelectExcludeColumns(entity.UserDefaultExcludeColumns...),
 	)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	if user.SecurityOption == base.UserSecurityEnforceSSO {
@@ -46,12 +46,12 @@ func (uc *UC) RequestResetPassword(
 	if req.SendResettingEmail {
 		emailSetting, err := uc.emailService.GetDefaultSystemEmail(ctx, uc.db)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 
 		email, err := emailSetting.AsEmail()
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 
 		err = uc.emailService.SendMailPasswordReset(ctx, uc.db, &emailservice.EmailDataPasswordReset{
@@ -63,7 +63,7 @@ func (uc *UC) RequestResetPassword(
 			ResetPasswordLink: resetLink,
 		})
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 
 		// When send the link via email, we don't return it via the response

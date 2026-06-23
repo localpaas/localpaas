@@ -18,12 +18,12 @@ func (uc *UC) GetTask(
 		ID: req.ID,
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	resp, err := taskdto.TransformTask(getResp.Task, getResp.TaskInfo)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &taskdto.GetTaskResp{

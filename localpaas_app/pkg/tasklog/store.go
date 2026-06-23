@@ -122,7 +122,7 @@ func (s *Store) GetLocalData(ctx context.Context, fromIndex int64) ([]*LogFrame,
 func (s *Store) GetRemoteData(ctx context.Context, fromIndex int64) ([]*LogFrame, error) {
 	frames, err := redishelper.LRange[*LogFrame](ctx, s.redisClient, s.Key, fromIndex, -1)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return frames, nil
 }

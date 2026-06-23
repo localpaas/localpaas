@@ -47,7 +47,7 @@ func Decompress(filename, dirPath string, format ArchiveFormat) (errStr string, 
 		fallthrough
 
 	default:
-		err = apperrors.NewUnsupported(apperrors.Fmt("Archive format '%v'", format))
+		err = apperrors.New(apperrors.ErrArchiveFormatUnsupported).WithParam("Format", format)
 		return err.Error(), err
 	}
 }

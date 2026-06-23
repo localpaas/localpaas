@@ -51,13 +51,13 @@ func (s *service) Deploy(
 
 	err = s.loadDeploymentData(ctx, db, data)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	resp.Deployment = data.Deployment
 
 	defer func() {
 		if r := recover(); r != nil {
-			err = errors.Join(err, apperrors.NewPanic(apperrors.Fmt("%v", r)))
+			err = errors.Join(err, apperrors.NewPanic(r))
 		}
 		data.Deployment.UpdatedAt = timeutil.NowUTC()
 		data.Deployment.EndedAt = data.Deployment.UpdatedAt
@@ -95,7 +95,7 @@ func (s *service) loadDeploymentData(
 	task := data.Task
 	args, err := task.ArgsAsAppDeploy()
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	deployment, err := s.deploymentRepo.GetByID(ctx, db, "", args.Deployment.ID,
@@ -112,7 +112,7 @@ func (s *service) loadDeploymentData(
 		bunex.SelectFor("UPDATE OF deployment"),
 	)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	if deployment == nil || deployment.App == nil || deployment.App.Project == nil { // no active deployment, return
 		return nil
@@ -132,7 +132,7 @@ func (s *service) loadDeploymentData(
 		StartedAt: deployment.StartedAt,
 	}, deploymentInfoCacheExp)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	data.App = deployment.App
@@ -146,7 +146,7 @@ func (s *service) loadDeploymentData(
 	refObjects, err := s.settingService.LoadReferenceObjectsByIDs(ctx, db, data.App.GetObjectScope(),
 		true, true, refObjectIDs)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	data.AddRefObjects(refObjects)
 
@@ -174,7 +174,7 @@ func (s *service) saveLogs(
 
 	logFrames, err := logStore.GetData(ctx, 0)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	_ = logStore.Close() //nolint
 
@@ -192,7 +192,7 @@ func (s *service) saveLogs(
 		}
 		err = s.taskLogRepo.InsertMulti(ctx, db, taskLogs)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	}
 

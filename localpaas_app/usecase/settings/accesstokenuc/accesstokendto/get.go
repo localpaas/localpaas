@@ -52,12 +52,12 @@ func TransformAccessToken(
 ) (resp *AccessTokenResp, err error) {
 	config := setting.MustAsAccessToken()
 	if err = copier.Copy(&resp, config); err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	resp.SecretMasked = config.Token.IsEncrypted() || resp.Inherited

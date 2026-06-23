@@ -33,7 +33,7 @@ func (uc *UC) UpdateConfigFileStatus(
 					err = uc.AppService.DeleteSwarmConfig(ctx, db, data.ScopeApp, configFile)
 				}
 				if err != nil {
-					return apperrors.Wrap(err)
+					return apperrors.New(err)
 				}
 				pData.Setting.MustSetData(configFile)
 			}
@@ -41,7 +41,7 @@ func (uc *UC) UpdateConfigFileStatus(
 		},
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &configfiledto.UpdateConfigFileStatusResp{}, nil

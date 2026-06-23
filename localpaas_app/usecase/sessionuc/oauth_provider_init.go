@@ -23,13 +23,13 @@ func (uc *UC) InitOAuthProvider(
 ) error {
 	setting, err := uc.settingRepo.GetByID(ctx, uc.db, base.NewObjectScopeGlobal(), "", req.Provider, true)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	oauth := setting.MustAsOAuth()
 	clientSecret, err := oauth.ClientSecret.GetPlain()
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	callbackURL := config.Current.SsoCallbackURL(req.Provider)
 
@@ -59,7 +59,7 @@ func (uc *UC) InitOAuthProvider(
 		provider, err = openidConnect.New(oauth.ClientID, clientSecret, callbackURL,
 			oauth.AutoDiscoveryURL, oauth.Scopes...)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	}
 	provider.SetName(req.Provider)

@@ -30,7 +30,7 @@ func (uc *UC) CreateAPIKey(
 	req *apikeydto.CreateAPIKeyReq,
 ) (*apikeydto.CreateAPIKeyResp, error) {
 	if auth.User.IsDemoUser() {
-		return nil, apperrors.Wrap(apperrors.ErrUserDemoUnauthorized)
+		return nil, apperrors.New(apperrors.ErrUserDemoUnauthorized)
 	}
 
 	actingUser := auth.User.User
@@ -56,13 +56,13 @@ func (uc *UC) CreateAPIKey(
 				AccessAction: req.AccessAction,
 			})
 			if err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 			return nil
 		},
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &apikeydto.CreateAPIKeyResp{

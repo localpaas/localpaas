@@ -107,7 +107,7 @@ func (m *manager) NodeUpdate(
 	if version == nil {
 		resp, err := m.NodeInspect(ctx, nodeID)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		version = &resp.Node.Version
 	}
@@ -154,7 +154,7 @@ func (m *manager) NodeCurrentID(ctx context.Context) (string, error) {
 	}
 	resp, err := m.SystemInfo(ctx)
 	if err != nil {
-		return "", apperrors.Wrap(err)
+		return "", apperrors.New(err)
 	}
 	currentNodeID = resp.Info.Swarm.NodeID
 	return currentNodeID, nil

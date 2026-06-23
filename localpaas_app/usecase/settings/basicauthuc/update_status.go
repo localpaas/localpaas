@@ -17,7 +17,7 @@ func (uc *UC) UpdateBasicAuthStatus(
 	req.Type = currentSettingType
 	_, err := uc.UpdateSettingStatus(ctx, &req.UpdateSettingStatusReq, &settings.UpdateSettingStatusData{})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &basicauthdto.UpdateBasicAuthStatusResp{}, nil

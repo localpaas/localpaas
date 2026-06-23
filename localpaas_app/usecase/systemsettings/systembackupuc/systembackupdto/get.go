@@ -82,15 +82,15 @@ func TransformSystemBackup(
 	config := setting.MustAsSystemBackup()
 	err = config.Decrypt()
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	if err = copier.Copy(&resp, config); err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	if config.CloudStorage.ID != "" {

@@ -28,7 +28,7 @@ func (uc *UC) ListVolume(
 	if req.ProjectID != "" {
 		project, err = uc.projectService.LoadProject(ctx, uc.db, req.ProjectID, true)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 	}
 
@@ -38,7 +38,7 @@ func (uc *UC) ListVolume(
 		}
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	filterVolumes := listResp.Items

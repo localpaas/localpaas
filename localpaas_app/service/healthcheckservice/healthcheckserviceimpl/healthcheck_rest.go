@@ -48,13 +48,13 @@ func (s *service) doHealthcheckREST(
 	}
 	req, err := http.NewRequestWithContext(reqCtx, string(method), healthchk.URL, input)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	req.Header.Set("Content-Type", gofn.Coalesce(healthchk.ContentType, restContentTypeDefault))
 
 	resp, err := httpclient.DefaultClient.Do(req)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	if resp.Body != nil {
 		defer resp.Body.Close()
@@ -62,26 +62,26 @@ func (s *service) doHealthcheckREST(
 
 	data.Output.REST.ReturnCode = resp.StatusCode
 	if len(healthchk.ReturnCode) > 0 && !gofn.Contain(healthchk.ReturnCode, resp.StatusCode) {
-		return apperrors.Wrap(apperrors.ErrActionFailed)
+		return apperrors.New(apperrors.ErrActionFailed)
 	}
 
 	//nolint:nestif
 	if healthchk.ReturnText != nil || healthchk.ReturnJSON != nil {
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		bodyStr := reflectutil.UnsafeBytesToStr(body)
 		data.Output.REST.ReturnText = strutil.CutShort(bodyStr, restBodySavingMaxLen, "...")
 
 		if healthchk.ReturnText != nil {
 			if healthchk.ReturnText.Exact != "" && healthchk.ReturnText.Exact != bodyStr {
-				return apperrors.Wrap(apperrors.ErrActionFailed)
+				return apperrors.New(apperrors.ErrActionFailed)
 			}
 			if healthchk.ReturnText.Regex != "" {
 				matched, _ := regexp.MatchString(healthchk.ReturnText.Regex, bodyStr)
 				if !matched {
-					return apperrors.Wrap(apperrors.ErrActionFailed)
+					return apperrors.New(apperrors.ErrActionFailed)
 				}
 			}
 		}
@@ -89,17 +89,17 @@ func (s *service) doHealthcheckREST(
 			var actualObj any
 			err := json.Unmarshal(body, &actualObj)
 			if err != nil {
-				return apperrors.Wrap(apperrors.ErrActionFailed)
+				return apperrors.New(apperrors.ErrActionFailed)
 			}
 
 			if healthchk.ReturnJSON.Exact != nil {
 				if !reflect.DeepEqual(actualObj, healthchk.ReturnJSON.Exact) {
-					return apperrors.Wrap(apperrors.ErrActionFailed)
+					return apperrors.New(apperrors.ErrActionFailed)
 				}
 			}
 			if healthchk.ReturnJSON.Contain != nil {
 				if !jsonutil.Contains(actualObj, healthchk.ReturnJSON.Contain) {
-					return apperrors.Wrap(apperrors.ErrActionFailed)
+					return apperrors.New(apperrors.ErrActionFailed)
 				}
 			}
 		}

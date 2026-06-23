@@ -36,10 +36,11 @@ func GenerateKey(keyType base.PrivateKeyType, passphrase string) (privKeyStr str
 	case base.PrivateKeyTypeRSA8192:
 		privKey, err = rsa.GenerateKey(rand.Reader, 8192)
 	default:
-		return "", "", apperrors.NewUnsupported(apperrors.Fmt("Key type '%v'", keyType))
+		return "", "", apperrors.New(apperrors.ErrPrivateKeyTypeUnsupported).
+			WithParam("Type", keyType)
 	}
 	if err != nil {
-		return "", "", apperrors.Wrap(err)
+		return "", "", apperrors.New(err)
 	}
 
 	// 1. Generate Private Key String
@@ -50,14 +51,14 @@ func GenerateKey(keyType base.PrivateKeyType, passphrase string) (privKeyStr str
 		pemBlock, err = ssh.MarshalPrivateKey(privKey, "")
 	}
 	if err != nil {
-		return "", "", apperrors.Wrap(err)
+		return "", "", apperrors.New(err)
 	}
 	privKeyStr = string(pem.EncodeToMemory(pemBlock))
 
 	// 2. Generate Public Key String
 	pub, err := ssh.NewPublicKey(privKey.Public())
 	if err != nil {
-		return "", "", apperrors.Wrap(err)
+		return "", "", apperrors.New(err)
 	}
 	pubKeyStr = string(ssh.MarshalAuthorizedKey(pub))
 
@@ -74,7 +75,7 @@ func GeneratePublicKey(privKey, passphrase string) (base.PrivateKeyType, string,
 		signer, err = ssh.ParsePrivateKey([]byte(privKey))
 	}
 	if err != nil {
-		return "", "", apperrors.Wrap(err)
+		return "", "", apperrors.New(err)
 	}
 
 	pub := signer.PublicKey()

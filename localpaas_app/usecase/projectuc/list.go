@@ -49,12 +49,12 @@ func (uc *UC) ListProject(
 
 	projects, paging, err := uc.projectRepo.List(ctx, uc.db, &req.Paging, listOpts...)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	resp, err := projectdto.TransformProjects(projects)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &projectdto.ListProjectResp{

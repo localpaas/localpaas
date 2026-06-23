@@ -32,16 +32,16 @@ func (uc *UC) CreateSSHKey(
 			pData *settings.PersistingSettingCreationData,
 		) error {
 			if err := generateKey(sshKey); err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 			if err := pData.Setting.SetData(sshKey); err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 			return nil
 		},
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &sshkeydto.CreateSSHKeyResp{
@@ -53,16 +53,16 @@ func generateKey(sshKey *entity.SSHKey) error {
 	if sshKey.PublicKey == "" {
 		privateKey, err := sshKey.PrivateKey.GetPlain()
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		passphrase, err := sshKey.Passphrase.GetPlain()
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		keyType, pubKey, err := sshutil.GeneratePublicKey(privateKey, passphrase)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		sshKey.PublicKey = pubKey
 		sshKey.KeyType = gofn.Coalesce(keyType, sshKey.KeyType)

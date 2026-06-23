@@ -31,23 +31,23 @@ func (uc *UC) CreateSecret(
 				// Create a secret in docker swarm
 				_, err := uc.AppService.CreateSwarmSecret(ctx, db, data.ScopeApp, secret)
 				if err != nil {
-					return apperrors.Wrap(err)
+					return apperrors.New(err)
 				}
 			}
 
 			err := pData.Setting.SetData(secret)
 			if err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 			pData.Setting.Size, err = secret.ValueSize()
 			if err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 			return nil
 		},
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &secretdto.CreateSecretResp{

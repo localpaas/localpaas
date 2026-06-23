@@ -21,7 +21,7 @@ func (s *service) VerifyProjectDomains(
 	domainSetting, err := s.settingRepo.GetSingle(ctx, db, base.NewObjectScopeProject(projectID),
 		base.SettingTypeDomainSettings, true)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	if domainSetting == nil {
 		return nil
@@ -32,8 +32,7 @@ func (s *service) VerifyProjectDomains(
 	}
 	for _, domain := range domains {
 		if !domainhelper.IsDomainAllowed(domain, domainSettings.AllowedDomains) {
-			return apperrors.New(apperrors.ErrSettingViolation).
-				WithParam("Name", apperrors.Fmt("Use of domain '%v'", domain))
+			return apperrors.New(apperrors.ErrDomainUnallowed).WithParam("Domain", domain)
 		}
 	}
 
@@ -62,10 +61,10 @@ func (s *service) VerifyDomainsAvailable(
 	}
 	conflictDomains, _, err := s.resLinkRepo.List(ctx, db, nil, listOpts...)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	if len(conflictDomains) > 0 {
-		return apperrors.NewInUse(apperrors.Fmt("Domain '%v'", conflictDomains[0].DstID))
+		return apperrors.New(apperrors.ErrDomainInUse).WithParam("Domain", conflictDomains[0].DstID)
 	}
 	return nil
 }

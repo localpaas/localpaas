@@ -20,7 +20,7 @@ func (uc *UC) GetAppEnvVars(
 		bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
 	)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	settings, _, err := uc.settingRepo.List(ctx, uc.db, app.GetObjectScope(), nil,
@@ -28,12 +28,12 @@ func (uc *UC) GetAppEnvVars(
 		bunex.SelectWhere("setting.status = ?", base.SettingStatusActive),
 	)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	resp, err := appsettingsdto.TransformEnvVars(app, settings)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &appsettingsdto.GetAppEnvVarsResp{

@@ -27,7 +27,7 @@ func (uc *UC) RestartLpApp(
 
 	err := errors.Join(errMain, errDb, errCache)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &lpappdto.RestartLpAppResp{}, nil

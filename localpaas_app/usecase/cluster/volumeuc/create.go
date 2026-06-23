@@ -29,11 +29,10 @@ func (uc *UC) CreateVolume(
 		docker.FilterAdd(&options.Filters, "name", req.Name)
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	if res != nil && len(res.Items) > 0 {
-		return nil, apperrors.New(apperrors.ErrInfraAlreadyExists).
-			WithNTParam("Error", apperrors.Fmt("Volume '%v' already exists", req.Name))
+		return nil, apperrors.New(apperrors.ErrVolumeAlreadyExists).WithNTParam("Volume", req.Name)
 	}
 
 	driverOpts := map[string]string{}
@@ -61,7 +60,7 @@ func (uc *UC) CreateVolume(
 		}
 
 	default:
-		return nil, apperrors.NewUnsupported(apperrors.Fmt("Driver '%v'", req.Driver))
+		return nil, apperrors.New(apperrors.ErrVolumeDriverUnsupported).WithParam("Driver", req.Driver)
 	}
 	// Overwrite the driver opts with the extra values from the client
 	maps.Copy(driverOpts, req.Options)
@@ -73,7 +72,7 @@ func (uc *UC) CreateVolume(
 	if req.ProjectID != "" {
 		project, err := uc.projectService.LoadProject(ctx, uc.db, req.ProjectID, true)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		labels[docker.StackLabelNamespace] = project.Key
 	} else if !req.AvailInProjects {
@@ -87,7 +86,7 @@ func (uc *UC) CreateVolume(
 		opts.Name = req.Name
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	volID := createResp.Volume.Name

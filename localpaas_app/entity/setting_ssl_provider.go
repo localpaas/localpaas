@@ -75,13 +75,13 @@ func (s *SSLProvider) Decrypt() error {
 	if s.ZeroSSL != nil {
 		_, err := s.ZeroSSL.EABHmacKey.GetPlain()
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	}
 	if s.GoogleTrust != nil {
 		_, err := s.GoogleTrust.EABHmacKey.GetPlain()
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	}
 	return nil

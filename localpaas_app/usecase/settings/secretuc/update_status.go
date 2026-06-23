@@ -33,7 +33,7 @@ func (uc *UC) UpdateSecretStatus(
 					err = uc.AppService.DeleteSwarmSecret(ctx, db, data.ScopeApp, secret)
 				}
 				if err != nil {
-					return apperrors.Wrap(err)
+					return apperrors.New(err)
 				}
 				pData.Setting.MustSetData(secret)
 			}
@@ -41,7 +41,7 @@ func (uc *UC) UpdateSecretStatus(
 		},
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &secretdto.UpdateSecretStatusResp{}, nil

@@ -21,7 +21,7 @@ func (uc *UC) ListDeployment(
 ) (*appdeploymentdto.ListDeploymentResp, error) {
 	deploymentInfoMap, err := uc.deploymentInfoRepo.GetAll(ctx)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	inprogressDeploymentIDs := make([]string, 0, len(deploymentInfoMap))
 	for id, info := range deploymentInfoMap {
@@ -63,12 +63,12 @@ func (uc *UC) ListDeployment(
 
 	deployments, paging, err := uc.deploymentRepo.List(ctx, uc.db, req.AppID, &req.Paging, listOpts...)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	triggerUserMap, err := uc.loadDeploymentTriggerUsers(ctx, uc.db, deployments)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	input := &appdeploymentdto.DeploymentTransformInput{
@@ -77,7 +77,7 @@ func (uc *UC) ListDeployment(
 	}
 	resp, err := appdeploymentdto.TransformDeployments(deployments, input)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &appdeploymentdto.ListDeploymentResp{
@@ -103,7 +103,7 @@ func (uc *UC) loadDeploymentTriggerUsers(
 	}
 	userMap, err := uc.userService.LoadUsers(ctx, db, userIDs, false)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return userMap, nil
 }

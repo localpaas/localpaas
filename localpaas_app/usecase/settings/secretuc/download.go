@@ -27,7 +27,7 @@ func (uc *UC) DownloadSecret(
 	req.Type = currentSettingType
 	resp, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	if resp.Data.ID != tokenClaims.FileID {
 		return nil, apperrors.New(apperrors.ErrTokenInvalid).
@@ -36,11 +36,11 @@ func (uc *UC) DownloadSecret(
 
 	secret, err := resp.Data.AsSecret()
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	data, err := secret.ValueAsBytes()
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	contentType := gofn.If(secret.Base64, "application/octet-stream", "text/plain")
 	extraHeaders := map[string]string{

@@ -37,7 +37,7 @@ func (s *service) LoadLocalPaaSServiceSetting(
 
 	setting, err := s.settingRepo.GetSingle(ctx, s.db, nil, base.SettingTypeLocalPaaSService, true)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	gStartupData.LocalPaaSServiceSetting = setting
 

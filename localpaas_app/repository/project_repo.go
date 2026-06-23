@@ -57,7 +57,7 @@ func (repo *projectRepo) GetByID(ctx context.Context, db database.IDB, id string
 		return nil, apperrors.NewNotFound("Project").WithCause(err)
 	}
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return project, nil
 }
@@ -75,7 +75,7 @@ func (repo *projectRepo) GetByIDAndOwner(ctx context.Context, db database.IDB, p
 		return nil, apperrors.NewNotFound("Project").WithCause(err)
 	}
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return project, nil
 }
@@ -91,7 +91,7 @@ func (repo *projectRepo) GetByName(ctx context.Context, db database.IDB, name st
 		return nil, apperrors.NewNotFound("Project").WithCause(err)
 	}
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return project, nil
 }
@@ -107,7 +107,7 @@ func (repo *projectRepo) GetByKey(ctx context.Context, db database.IDB, key stri
 		return nil, apperrors.NewNotFound("Project").WithCause(err)
 	}
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return project, nil
 }
@@ -125,7 +125,7 @@ func (repo *projectRepo) List(ctx context.Context, db database.IDB, paging *base
 		// Counts the total first
 		total, err := query.Count(ctx)
 		if err != nil {
-			return nil, nil, apperrors.Wrap(err)
+			return nil, nil, apperrors.New(err)
 		}
 		pagingMeta.Total = total
 
@@ -173,7 +173,7 @@ func (repo *projectRepo) UpsertMulti(ctx context.Context, db database.IDB, proje
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -185,7 +185,7 @@ func (repo *projectRepo) Update(ctx context.Context, db database.IDB, project *e
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -193,14 +193,14 @@ func (repo *projectRepo) Update(ctx context.Context, db database.IDB, project *e
 func (repo *projectRepo) DeleteHard(ctx context.Context, db database.IDB,
 	opts ...bunex.DeleteQueryOption) error {
 	if len(opts) == 0 {
-		return apperrors.NewParamInvalid("opts").WithMsgLog("DeleteHard requires at least one condition")
+		return apperrors.NewArgumentInvalid("opts").WithMsgLog("DeleteHard requires at least one condition")
 	}
 	query := db.NewDelete().Model((*entity.Project)(nil)).ForceDelete().WhereAllWithDeleted()
 	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

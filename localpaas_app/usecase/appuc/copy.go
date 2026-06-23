@@ -30,7 +30,7 @@ func (uc *UC) CopyApp(
 		data = &copyAppData{}
 		err := uc.loadAppDataForCopying(ctx, db, req, data)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		copyResp, err = uc.appCopyService.CopyApp(ctx, db, &appcopyservice.AppCopyReq{
@@ -48,7 +48,7 @@ func (uc *UC) CopyApp(
 			},
 		})
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		return nil
 	})
@@ -57,7 +57,7 @@ func (uc *UC) CopyApp(
 		if copyResp != nil && copyResp.CleanupFunc != nil {
 			_ = copyResp.CleanupFunc(err)
 		}
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &appdto.CopyAppResp{
@@ -81,10 +81,10 @@ func (uc *UC) loadAppDataForCopying(
 		bunex.SelectRelation("Project"),
 	)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	if app.UpdateVer != req.UpdateVer {
-		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
+		return apperrors.New(apperrors.ErrUpdateVerMismatched)
 	}
 
 	data.App = app

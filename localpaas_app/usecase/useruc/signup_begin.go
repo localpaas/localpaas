@@ -25,7 +25,7 @@ func (uc *UC) BeginUserSignup(
 		bunex.SelectExcludeColumns(entity.UserDefaultExcludeColumns...),
 	)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	if user.Status != base.UserStatusPending {
@@ -47,7 +47,7 @@ func (uc *UC) BeginUserSignup(
 	if user.SecurityOption == base.UserSecurityPassword2FA {
 		secret, qrCode, err := totp.GenerateSecretAndQRCode(qrCodeImageSize)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		resp.MFATotpSecret = secret
 		resp.QRCode = &userdto.MFATotpQRCodeResp{

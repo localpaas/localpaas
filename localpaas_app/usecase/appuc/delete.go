@@ -22,7 +22,7 @@ func (uc *UC) DeleteApp(
 		appData := &deleteAppData{}
 		err := uc.loadAppDataForDelete(ctx, db, req, appData)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		persistingData := &persistingAppData{}
@@ -30,19 +30,19 @@ func (uc *UC) DeleteApp(
 
 		err = uc.persistData(ctx, db, persistingData)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		// Remove app and its data from the infra
 		err = uc.appService.DeleteApp(ctx, db, appData.App)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		return nil
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &appdto.DeleteAppResp{}, nil
@@ -62,7 +62,7 @@ func (uc *UC) loadAppDataForDelete(
 		bunex.SelectFor("UPDATE OF app"),
 	)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	data.App = app
 

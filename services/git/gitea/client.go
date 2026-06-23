@@ -18,7 +18,7 @@ type Client struct {
 func NewFromToken(token string, baseURL string) (*Client, error) {
 	client, err := gogitea.NewClient(baseURL, gogitea.SetToken(token))
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return &Client{
 		token:   token,
@@ -37,15 +37,15 @@ func NewFromSetting(setting *entity.Setting) (*Client, error) {
 				WithMsgLog("token kind '%s' is unsupported", tokenKind)
 		}
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		token, err := gitToken.Token.GetPlain()
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		return NewFromToken(token, gitToken.BaseURL)
 
 	default:
-		return nil, apperrors.Wrap(ErrAccessProviderInvalid)
+		return nil, apperrors.New(ErrAccessProviderInvalid)
 	}
 }

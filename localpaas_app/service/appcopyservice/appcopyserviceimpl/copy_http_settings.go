@@ -19,7 +19,7 @@ func (s *service) applyAppHttpSettings(
 	httpSetting := app.GetSettingByType(base.SettingTypeAppHttp)
 	httpSettings, err := httpSetting.AsAppHttpSettings()
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	mapSslSettings := map[string]*entity.Setting{}
@@ -30,12 +30,12 @@ func (s *service) applyAppHttpSettings(
 	}
 	err = s.sslService.WriteCertFiles(false, gofn.MapValues(mapSslSettings)...)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	inspect, err := s.dockerManager.ServiceInspect(ctx, app.ServiceID)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	service := &inspect.Service
 
@@ -44,12 +44,12 @@ func (s *service) applyAppHttpSettings(
 		RefObjects:   data.RefObjects,
 	})
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	_, err = s.dockerManager.ServiceUpdate(ctx, service.ID, &service.Version, &service.Spec)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	return nil

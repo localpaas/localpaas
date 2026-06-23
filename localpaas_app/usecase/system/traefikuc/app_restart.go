@@ -15,7 +15,7 @@ func (uc *UC) RestartTraefik(
 ) (*traefikdto.RestartTraefikResp, error) {
 	err := uc.traefikService.RestartTraefikSwarmService(ctx)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &traefikdto.RestartTraefikResp{}, nil

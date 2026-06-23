@@ -47,16 +47,16 @@ func (s *service) initDefaultSSLSelfSigned(
 		certBytes, keyBytes, err = s.sslService.GenerateCertAsPEM(&pkix.Name{CommonName: domain},
 			sslSelfSignedKeyType, timeNow, validTo, false)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	} else {
 		certBytes, err = os.ReadFile(certFile)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		keyBytes, err = os.ReadFile(keyFile)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	}
 
@@ -94,13 +94,13 @@ func (s *service) initDefaultSSLSelfSigned(
 	// Save the objects in DB
 	err = s.settingRepo.Insert(ctx, db, sslSetting)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	if regenerate {
 		err = s.sslService.WriteCertFiles(true, sslSetting)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	}
 

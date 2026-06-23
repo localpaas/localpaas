@@ -44,7 +44,7 @@ func (repo *appTagRepo) List(ctx context.Context, db database.IDB, paging *based
 		// Counts the total first
 		total, err := query.Count(ctx)
 		if err != nil {
-			return nil, nil, apperrors.Wrap(err)
+			return nil, nil, apperrors.New(err)
 		}
 		pagingMeta.Total = total
 
@@ -71,7 +71,7 @@ func (repo *appTagRepo) UpsertMulti(ctx context.Context, db database.IDB, appTag
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -87,7 +87,7 @@ func (repo *appTagRepo) DeleteAllByApps(ctx context.Context, db database.IDB,
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -95,14 +95,14 @@ func (repo *appTagRepo) DeleteAllByApps(ctx context.Context, db database.IDB,
 func (repo *appTagRepo) DeleteHard(ctx context.Context, db database.IDB,
 	opts ...bunex.DeleteQueryOption) error {
 	if len(opts) == 0 {
-		return apperrors.NewParamInvalid("opts").WithMsgLog("DeleteHard requires at least one condition")
+		return apperrors.NewArgumentInvalid("opts").WithMsgLog("DeleteHard requires at least one condition")
 	}
 	query := db.NewDelete().Model((*entity.AppTag)(nil)).ForceDelete().WhereAllWithDeleted()
 	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

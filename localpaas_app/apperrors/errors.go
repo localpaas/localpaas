@@ -4,13 +4,11 @@ import (
 	"errors"
 	"net/http"
 
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	"github.com/localpaas/localpaas/localpaas_app/pkg/translation"
 )
-
-// Wrap wraps an error with storing stack trace
-func Wrap(err error) error {
-	return New(err)
-}
 
 type ErrLevel uint8
 
@@ -34,7 +32,8 @@ func ParseError(err error, lang translation.Lang) (*ErrorInfo, ErrLevel) {
 	if errorInfo.Status == http.StatusInternalServerError {
 		return errorInfo, ErrLevelError
 	}
-	if errorWarnLevelMap[appErr.UnwrapTilRoot()] {
+	baseErr := getBaseError(appErr)
+	if baseErr != nil && errorWarnLevelMap[baseErr] {
 		return errorInfo, ErrLevelWarn
 	}
 	// User error, not the logic and not unexpected, reports at INFO level
@@ -48,6 +47,11 @@ func ParseErrorDetail(err error, lang translation.Lang) (detail string) {
 		detail = errInfo.Detail
 	}
 	return detail
+}
+
+// NewInternal return AppError for error Internal
+func NewInternal() AppError {
+	return New(ErrInternal)
 }
 
 // NewPanic return AppError for error Panic
@@ -79,12 +83,12 @@ func NewConflictNT(name any) AppError { // NT: non translation param
 	return New(ErrConflict).WithNTParam("Name", name)
 }
 
-// NewParamInvalid return AppError for error ParamInvalid
-func NewParamInvalid(name any) AppError {
-	return New(ErrParamInvalid).WithParam("Name", name)
+// NewArgumentInvalid return AppError for error ErrArgumentInvalid
+func NewArgumentInvalid(name any) AppError {
+	return New(ErrArgumentInvalid).WithParam("Name", name)
 }
-func NewParamInvalidNT(name any) AppError { // NT: non translation param
-	return New(ErrParamInvalid).WithNTParam("Name", name)
+func NewArgumentInvalidNT(name any) AppError { // NT: non translation param
+	return New(ErrArgumentInvalid).WithNTParam("Name", name)
 }
 
 // NewUnavailable return AppError for error Unavailable
@@ -121,42 +125,26 @@ func NewNonDeletableNT(name any) AppError { // NT: non translation param
 
 // NewInUse return AppError for error ResourceInUse
 func NewInUse(name any) AppError {
-	return New(ErrResourceInUse).WithParam("Name", name)
+	return New(ErrInUse).WithParam("Name", name)
 }
 func NewInUseNT(name any) AppError { // NT: non translation param
-	return New(ErrResourceInUse).WithNTParam("Name", name)
+	return New(ErrInUse).WithNTParam("Name", name)
 }
 
 // NewInactive return AppError for error ResourceInactive
 func NewInactive(name any) AppError {
-	return New(ErrResourceInactive).WithParam("Name", name)
+	return New(ErrInactive).WithParam("Name", name)
 }
 func NewInactiveNT(name any) AppError { // NT: non translation param
-	return New(ErrResourceInactive).WithNTParam("Name", name)
+	return New(ErrInactive).WithNTParam("Name", name)
 }
 
 // NewMissing return AppError for error ResourceMissing
 func NewMissing(name any) AppError {
-	return New(ErrResourceMissing).WithParam("Name", name)
+	return New(ErrMissing).WithParam("Name", name)
 }
 func NewMissingNT(name any) AppError { // NT: non translation param
-	return New(ErrResourceMissing).WithNTParam("Name", name)
-}
-
-// NewTypeInvalid return AppError for error TypeInvalid
-func NewTypeInvalid(name any) AppError {
-	return New(ErrTypeInvalid).WithParam("Name", name)
-}
-func NewTypeInvalidNT(name any) AppError { // NT: non translation param
-	return New(ErrTypeInvalid).WithNTParam("Name", name)
-}
-
-// NewValueInvalid return AppError for error ValueInvalid
-func NewValueInvalid(name any) AppError {
-	return New(ErrValueInvalid).WithParam("Name", name)
-}
-func NewValueInvalidNT(name any) AppError { // NT: non translation param
-	return New(ErrValueInvalid).WithNTParam("Name", name)
+	return New(ErrMissing).WithNTParam("Name", name)
 }
 
 // NewMismatch return AppError for error Mismatch
@@ -181,4 +169,31 @@ func NewNotImplemented() AppError {
 }
 func NewNotImplementedNT() AppError { // NT: non translation param
 	return New(ErrNotImplemented)
+}
+
+// ToGRPCError converts any error (including AppError) to a gRPC status error.
+func ToGRPCError(err error) error {
+	if err == nil {
+		return nil
+	}
+
+	// If it is already a gRPC status error, return as is
+	if _, ok := status.FromError(err); ok {
+		return err
+	}
+
+	if appErr, ok := errors.AsType[AppError](err); ok {
+		grpcCode := grpcErrorStatusMap[getBaseError(appErr)]
+
+		// Translate the error message using Default English Language
+		detail, _ := appErr.Message(translation.LangEn)
+		if detail == "" {
+			detail = appErr.Error()
+		}
+
+		return status.Error(grpcCode, detail) //nolint:wrapcheck
+	}
+
+	// Fallback to internal error code
+	return status.Error(codes.Internal, err.Error()) //nolint:wrapcheck
 }

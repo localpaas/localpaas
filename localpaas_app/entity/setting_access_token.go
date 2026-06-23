@@ -57,7 +57,7 @@ func (s *AccessToken) Migrate(setting *Setting) (hasChange bool, err error) {
 func (s *AccessToken) Decrypt() error {
 	_, err := s.Token.GetPlain()
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

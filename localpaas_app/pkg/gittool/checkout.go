@@ -64,44 +64,44 @@ func (cli *checkoutCli) checkout(
 
 	// Check if the context was canceled
 	if err := ctx.Err(); err != nil {
-		return nil, nil, apperrors.Wrap(err)
+		return nil, nil, apperrors.New(err)
 	}
 
 	// 2. Clone repository if source cache is not there
 	if !cli.opts.CacheLoaded {
 		if err = cli.clone(ctx); err != nil {
-			return nil, nil, apperrors.Wrap(err)
+			return nil, nil, apperrors.New(err)
 		}
 	}
 
 	// Check if the context was canceled
 	if err := ctx.Err(); err != nil {
-		return nil, nil, apperrors.Wrap(err)
+		return nil, nil, apperrors.New(err)
 	}
 
 	// Open repo with go-git
 	if repo, err = git.PlainOpen(cli.opts.CheckoutDir); err != nil {
-		return nil, nil, apperrors.Wrap(err)
+		return nil, nil, apperrors.New(err)
 	}
 
 	// 3. Checkout target commit
 	if commit, err = cli.checkoutTargetCommit(ctx, repo); err != nil {
-		return nil, nil, apperrors.Wrap(err)
+		return nil, nil, apperrors.New(err)
 	}
 
 	// Check if the context was canceled
 	if err := ctx.Err(); err != nil {
-		return nil, nil, apperrors.Wrap(err)
+		return nil, nil, apperrors.New(err)
 	}
 
 	// 4. Fetch submodules if needed
 	if err = cli.fetchSubmodules(ctx); err != nil {
-		return nil, nil, apperrors.Wrap(err)
+		return nil, nil, apperrors.New(err)
 	}
 
 	// Check if the context was canceled
 	if err := ctx.Err(); err != nil {
-		return nil, nil, apperrors.Wrap(err)
+		return nil, nil, apperrors.New(err)
 	}
 
 	// 5. Pull LFS files if configured
@@ -110,7 +110,7 @@ func (cli *checkoutCli) checkout(
 	// 6. Cleanup orphaned data
 	if cli.needCleanup {
 		if err = cli.cleanup(ctx); err != nil {
-			return nil, nil, apperrors.Wrap(err)
+			return nil, nil, apperrors.New(err)
 		}
 	}
 
@@ -137,12 +137,12 @@ func (cli *checkoutCli) processCheckoutOpts(
 
 	authMethod, err := calcGitAuthMethod(ctx, cli.opts.Credentials)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	if authMethod != nil { //nolint:nestif
 		parseURL, err := vcsurl.Parse(cli.opts.URL)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		switch auth := authMethod.(type) {
@@ -154,7 +154,7 @@ func (cli *checkoutCli) processCheckoutOpts(
 			// Add user info to the url
 			u, err := url.Parse(cli.opts.URL)
 			if err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 			u.User = url.UserPassword(auth.Username, auth.Password)
 			cli.opts.URL = u.String()
@@ -169,7 +169,7 @@ func (cli *checkoutCli) processCheckoutOpts(
 			if err != nil {
 				addLog(ctx, fmt.Sprintf("Failed to write SSH key file: %v error: %v",
 					sshKeyFile, err.Error()), true, cli.opts.LogStore)
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 			sshCmd := "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i " + sshKeyFile
 			cli.sharedEnv = append(cli.sharedEnv, "GIT_SSH_COMMAND="+sshCmd)
@@ -177,7 +177,7 @@ func (cli *checkoutCli) processCheckoutOpts(
 		default:
 			addLog(ctx, fmt.Sprintf("Git auth method '%v' is unsupported", auth.Name()),
 				true, cli.opts.LogStore)
-			return apperrors.NewUnsupported(apperrors.Fmt("Git auth method '%v'", auth.Name()))
+			return apperrors.New(apperrors.ErrGitAuthMethodUnsupported).WithParam("AuthMethod", auth.Name())
 		}
 	}
 

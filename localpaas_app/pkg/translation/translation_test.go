@@ -13,7 +13,7 @@ func TestLocalize(t *testing.T) {
 	assert.Equal(t, "Unauthorized", msg)
 
 	// 2. Localization with template data
-	msg, err = LocalizeEx(LangEn, "ERR_PARAM_INVALID", map[string]any{"Name": "Email"})
+	msg, err = LocalizeEx(LangEn, "ERR_ARGUMENT_INVALID", map[string]any{"Name": "Email"})
 	assert.NoError(t, err)
 	assert.Equal(t, "Email is invalid", msg)
 

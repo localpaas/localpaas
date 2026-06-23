@@ -63,7 +63,7 @@ func (s *CloudStorage) Decrypt() error {
 	if s.S3 != nil {
 		_, err := s.S3.SecretKey.GetPlain()
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	}
 	return nil

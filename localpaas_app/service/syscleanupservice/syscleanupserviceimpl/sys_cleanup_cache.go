@@ -67,7 +67,7 @@ func (s *service) sysCleanupCacheRepoSource(
 		bunex.SelectWhere("file.updated_at < ?", timeNow.Add(-retention)),
 	)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	for _, file := range deletingFiles {
@@ -78,7 +78,7 @@ func (s *service) sysCleanupCacheRepoSource(
 	err = s.fileRepo.UpsertMulti(ctx, db, deletingFiles, entity.FileUpsertingConflictCols,
 		[]string{"deleted_at"}) //nolint:goconst
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	// Delete real files in local

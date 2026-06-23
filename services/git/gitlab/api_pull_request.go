@@ -32,7 +32,7 @@ func (c *Client) ListPullRequest(
 
 	output, resp, err := c.client.MergeRequests.ListProjectMergeRequests(pid, listOpts, gogitlab.WithContext(ctx))
 	if err != nil {
-		return nil, nil, apperrors.Wrap(err)
+		return nil, nil, apperrors.New(err)
 	}
 	return output, &basedto.PagingMeta{
 		Offset: int(opts.Page * opts.PerPage),
@@ -60,7 +60,7 @@ func (c *Client) ListAllPullRequests(
 	for {
 		result, resp, err := client.MergeRequests.ListProjectMergeRequests(pid, listOpts, gogitlab.WithContext(ctx))
 		if err != nil {
-			return nil, nil, apperrors.Wrap(err)
+			return nil, nil, apperrors.New(err)
 		}
 		output = append(output, result...)
 		if resp.NextPage <= 0 || listOpts.Page == resp.NextPage {
@@ -89,10 +89,10 @@ func (c *Client) GetPullRequestByNumber(
 ) (*gogitlab.MergeRequest, error) {
 	output, resp, err := c.client.MergeRequests.GetMergeRequest(pid, int64(number), nil, gogitlab.WithContext(ctx))
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	if resp.StatusCode == http.StatusNotFound {
-		return nil, apperrors.NewNotFound(apperrors.Fmt("PR #%v", number))
+		return nil, apperrors.New(apperrors.ErrPullRequestNotFound).WithParam("PullRequest", number)
 	}
 	return output, nil
 }

@@ -46,7 +46,7 @@ func TransformTasks(tasks []*entity.Task, taskInfoMap map[string]*cacheentity.Ta
 	for _, task := range tasks {
 		item, err := TransformTask(task, taskInfoMap[task.ID])
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		resp = append(resp, item)
 	}

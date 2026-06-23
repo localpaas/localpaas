@@ -8,7 +8,7 @@ func TransformObjectSlice[T, U any, TS ~[]T](objects TS, singleTransformFn func(
 	for _, obj := range objects {
 		itemResp, err := singleTransformFn(obj)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		resp = append(resp, itemResp)
 	}

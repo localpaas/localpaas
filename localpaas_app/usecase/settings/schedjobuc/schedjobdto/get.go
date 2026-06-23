@@ -92,18 +92,18 @@ func TransformSchedJob(
 ) (resp *SchedJobResp, err error) {
 	job := setting.MustAsSchedJob()
 	if err = copier.Copy(&resp, job); err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	if job.App.ID != "" {
 		refApp := refObjects.RefApps[job.App.ID]
 		if err = copier.Copy(&resp.App, refApp); err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 	}
 

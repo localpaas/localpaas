@@ -17,55 +17,55 @@ func (s *service) DeleteApp(ctx context.Context, db database.IDB, app *entity.Ap
 	// ACL permissions having the app ID as subject ID
 	err := s.permissionManager.RemoveACLPermissionsBySubjects(ctx, db, base.SubjectTypeApp, appIDs)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	// App tags
 	err = s.appTagRepo.DeleteAllByApps(ctx, db, appIDs)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	// App files
 	err = s.fileRepo.DeleteAllByObjects(ctx, db, base.ObjectScopeApp, appIDs)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	// Resource links
 	err = s.resLinkRepo.DeleteAllBySourceIDs(ctx, db, base.ResourceTypeApp, appIDs)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	// Settings
 	err = s.settingRepo.DeleteAllByObjects(ctx, db, base.ObjectScopeApp, appIDs)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	// Tasks (must delete tasks before deployments)
 	err = s.taskRepo.DeleteAllByApps(ctx, db, appIDs)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	// Deployments
 	err = s.deploymentRepo.DeleteAllByApps(ctx, db, appIDs)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	// Remove service for the app in docker swarm
 	_, err = s.dockerManager.ServiceRemove(ctx, app.ServiceID)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	// Remove app config from traefik
 	err = s.traefikService.RemoveAppConfig(ctx, app, nil)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	return nil

@@ -75,13 +75,13 @@ func TransformSSLProvider(
 ) (resp *SSLProviderResp, err error) {
 	config := setting.MustAsSSLProvider()
 	if err = copier.Copy(&resp, config); err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	resp.Kind = base.SSLProvider(setting.Kind)
 
 	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	switch {

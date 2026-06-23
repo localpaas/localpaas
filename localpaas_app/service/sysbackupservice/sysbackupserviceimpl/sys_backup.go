@@ -58,7 +58,7 @@ func (s *service) Backup(
 	// Backup DB
 	err = s.sysBackup(ctx, db, data)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	// Assign back the result output
@@ -80,13 +80,13 @@ func (s *service) sysBackup(
 
 	data.TempDir, err = fileutil.CreateTempDirInAppPath("", "sys-backup-*", 0)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	defer os.RemoveAll(data.TempDir)
 
 	bakTmpFile, tarW, closer, err := s.sysBackupCreateWriter(data)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	defer func() {
 		if closer != nil {
@@ -97,12 +97,12 @@ func (s *service) sysBackup(
 	// Start the data backup
 	err = s.sysBackupDB(ctx, tarW, data)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	err = s.sysBackupFiles(ctx, tarW, data)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	_ = closer() // Flush data in writers
@@ -111,13 +111,13 @@ func (s *service) sysBackup(
 	// Save the result in a local file
 	err = s.sysBackupSaveResultInLocal(ctx, db, bakTmpFile, data)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	// Upload backup file to cloud storage if configured
 	err = s.sysBackupSaveResultInStorage(ctx, db, data)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	return nil
@@ -132,13 +132,13 @@ func (s *service) sysBackupCreateWriter(
 
 	err = os.MkdirAll(data.BackupSaveDir, base.DirModeDefault)
 	if err != nil {
-		return "", nil, nil, apperrors.Wrap(err)
+		return "", nil, nil, apperrors.New(err)
 	}
 
 	tmpFileName = filepath.Join(data.TempDir, "sys-backup")
 	tmpFile, err := os.Create(tmpFileName)
 	if err != nil {
-		return "", nil, nil, apperrors.Wrap(err)
+		return "", nil, nil, apperrors.New(err)
 	}
 
 	var w io.Writer
@@ -150,18 +150,18 @@ func (s *service) sysBackupCreateWriter(
 	case base.FileEncryptionFormatAge:
 		encSecret, err := data.SysBackupSettings.Encryption.Secret.GetPlain()
 		if err != nil {
-			return "", nil, nil, apperrors.Wrap(err)
+			return "", nil, nil, apperrors.New(err)
 		}
 		if encSecret == "" {
 			return "", nil, nil, apperrors.NewMissing("Encryption secret")
 		}
 		recipient, err := age.NewScryptRecipient(encSecret)
 		if err != nil {
-			return "", nil, nil, apperrors.Wrap(err)
+			return "", nil, nil, apperrors.New(err)
 		}
 		encW, err = age.Encrypt(w, recipient)
 		if err != nil {
-			return "", nil, nil, apperrors.Wrap(err)
+			return "", nil, nil, apperrors.New(err)
 		}
 		w = encW
 	case base.FileEncryptionNone: // Do nothing
@@ -177,7 +177,7 @@ func (s *service) sysBackupCreateWriter(
 	case base.FileCompressionFormatZstd:
 		zstdW, err = zstd.NewWriter(w)
 		if err != nil {
-			return "", nil, nil, apperrors.Wrap(err)
+			return "", nil, nil, apperrors.New(err)
 		}
 		w = zstdW
 	case base.FileCompressionNone: // Do nothing

@@ -20,7 +20,7 @@ func (uc *UC) GetNodeJoinCommand(
 	data := &joinNodeCommandData{}
 	err := uc.loadGetNodeJoinCommandData(ctx, req, data)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	command := fmt.Sprintf("docker swarm join --token %s %s", data.JoinToken, data.PreferManagerAddr)
@@ -44,7 +44,7 @@ func (uc *UC) loadGetNodeJoinCommandData(
 	// Find join token from the cluster
 	inspect, err := uc.dockerManager.SwarmInspect(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	theSwarm := &inspect.Swarm
 
@@ -58,7 +58,7 @@ func (uc *UC) loadGetNodeJoinCommandData(
 	// List all manager nodes to get the addr to join new node
 	listResp, err := uc.dockerManager.NodeManagerList(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	var leaderAddr, managerAddr string

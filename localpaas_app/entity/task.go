@@ -130,7 +130,7 @@ func (t *Task) GetRuns() ([]*TaskRun, error) {
 	runs := []*TaskRun{}
 	err := json.Unmarshal(reflectutil.UnsafeStrToBytes(t.Runs), &runs)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return runs, nil
 }
@@ -138,13 +138,13 @@ func (t *Task) GetRuns() ([]*TaskRun, error) {
 func (t *Task) AddRun(run *TaskRun) error {
 	runs, err := t.GetRuns()
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	runs = append(runs, run)
 	runBytes, err := json.Marshal(runs)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	t.Runs = reflectutil.UnsafeBytesToStr(runBytes)
 	return nil
@@ -162,7 +162,7 @@ func (t *Task) parseArgs(structPtr any) error {
 	}
 	err := json.Unmarshal(reflectutil.UnsafeStrToBytes(t.Args), structPtr)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	t.parsedArgs = structPtr
 	return nil
@@ -171,7 +171,7 @@ func (t *Task) parseArgs(structPtr any) error {
 func (t *Task) SetArgs(args any) error {
 	b, err := json.Marshal(args)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	t.Args = reflectutil.UnsafeBytesToStr(b)
 	t.parsedArgs = args
@@ -193,7 +193,7 @@ func parseTaskArgsAs[T any](t *Task, newFn func() T) (res T, error error) {
 	if t.Args != "" {
 		res = newFn()
 		if err := t.parseArgs(res); err != nil {
-			return res, apperrors.Wrap(err)
+			return res, apperrors.New(err)
 		}
 	}
 	return res, nil
@@ -205,7 +205,7 @@ func (t *Task) parseOutput(structPtr any) error {
 	}
 	err := json.Unmarshal(reflectutil.UnsafeStrToBytes(t.Output), structPtr)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	t.parsedOutput = structPtr
 	return nil
@@ -214,7 +214,7 @@ func (t *Task) parseOutput(structPtr any) error {
 func (t *Task) SetOutput(output any) error {
 	b, err := json.Marshal(output)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	t.Output = reflectutil.UnsafeBytesToStr(b)
 	t.parsedOutput = output
@@ -236,7 +236,7 @@ func parseTaskOutputAs[T any](t *Task, newFn func() T) (res T, error error) {
 	if t.Output != "" {
 		res = newFn()
 		if err := t.parseOutput(res); err != nil {
-			return res, apperrors.Wrap(err)
+			return res, apperrors.New(err)
 		}
 	}
 	return res, nil

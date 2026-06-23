@@ -82,7 +82,7 @@ func (s *SSLCert) Migrate(setting *Setting) (hasChange bool, err error) {
 func (s *SSLCert) Decrypt() error {
 	_, err := s.PrivateKey.GetPlain()
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

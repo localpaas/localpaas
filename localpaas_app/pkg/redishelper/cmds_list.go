@@ -41,7 +41,7 @@ func LRange[T any](
 		if errors.Is(err, redis.Nil) {
 			return nil, nil
 		}
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return unmarshalStrSlice[T](data...)
 }
@@ -57,7 +57,7 @@ func BLPop(
 		if errors.Is(err, redis.Nil) {
 			return nil, nil
 		}
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	result := make(map[string]string, len(strSlice)/2) //nolint:mnd
 	i := 0
@@ -79,7 +79,7 @@ func BLPopOne[T any](
 		if errors.Is(err, redis.Nil) {
 			return val, apperrors.NewNotFoundNT(key)
 		}
-		return val, apperrors.Wrap(err)
+		return val, apperrors.New(err)
 	}
 	return unmarshalStr[T](strSlice[1])
 }

@@ -75,7 +75,7 @@ func (s *Secret) Migrate(setting *Setting) (hasChange bool, err error) {
 func (s *Secret) Decrypt() error {
 	_, err := s.Value.GetPlain()
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -83,12 +83,12 @@ func (s *Secret) Decrypt() error {
 func (s *Secret) ValueAsBytes() ([]byte, error) {
 	plain, err := s.Value.GetPlain()
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	if s.Base64 {
 		plainBytes, err := base64.StdEncoding.DecodeString(plain)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		return plainBytes, nil
 	}
@@ -98,7 +98,7 @@ func (s *Secret) ValueAsBytes() ([]byte, error) {
 func (s *Secret) ValueSize() (int32, error) {
 	plain, err := s.Value.GetPlain()
 	if err != nil {
-		return 0, apperrors.Wrap(err)
+		return 0, apperrors.New(err)
 	}
 	return int32(len(plain)), nil //nolint:gosec
 }

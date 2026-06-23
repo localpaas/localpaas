@@ -22,19 +22,19 @@ func (s *service) LoadApps(
 ) ([]*entity.App, error) {
 	apps, err := s.appRepo.ListByIDs(ctx, db, projectID, appIDs, extraOpts...)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	appMap := entityutil.SliceToIDMap(apps)
 	for _, appID := range appIDs {
 		if _, exists := appMap[appID]; !exists {
-			return nil, apperrors.NewNotFound(apperrors.Fmt("App '%v'", appID))
+			return nil, apperrors.New(apperrors.ErrAppNotFound).WithParam("Name", appID)
 		}
 	}
 
 	for _, app := range apps {
 		if err = s.validateAppStatus(app, requireProjectActive, requireAppsActive); err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 	}
 	return apps, nil
@@ -49,10 +49,10 @@ func (s *service) LoadApp(
 ) (*entity.App, error) {
 	app, err := s.appRepo.GetByID(ctx, db, projectID, appID, extraOpts...)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	if err = s.validateAppStatus(app, requireProjectActive, requireAppActive); err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return app, nil
 }
@@ -67,10 +67,10 @@ func (s *service) LoadAppByKey(
 	// NOTE: make sure to add SelectRelation("Project") into extraOpts
 	app, err := s.appRepo.GetByKey(ctx, db, projectID, appKey, extraOpts...)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	if err = s.validateAppStatus(app, requireProjectActive, requireAppActive); err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return app, nil
 }
@@ -101,13 +101,13 @@ func (s *service) LoadAppWithFeatureSettings(
 ) (app *entity.App, featureSettings *entity.AppFeatureSettings, err error) {
 	app, err = s.LoadApp(ctx, db, projectID, appID, requireProjectActive, requireAppActive, extraOpts...)
 	if err != nil {
-		return nil, nil, apperrors.Wrap(err)
+		return nil, nil, apperrors.New(err)
 	}
 
 	featureSetting, err := s.settingRepo.GetSingle(ctx, db, app.GetObjectScope(),
 		base.SettingTypeAppFeatures, true)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-		return nil, nil, apperrors.Wrap(err)
+		return nil, nil, apperrors.New(err)
 	}
 	if featureSetting != nil {
 		featureSettings = featureSetting.MustAsAppFeatureSettings()

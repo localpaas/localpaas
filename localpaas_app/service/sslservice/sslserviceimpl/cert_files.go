@@ -47,13 +47,13 @@ func (s *service) WriteCertFiles(
 		certBytes := reflectutil.UnsafeStrToBytes(sslCert.Certificate)
 		privateKey, err := sslCert.PrivateKey.GetPlain()
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		keyBytes := reflectutil.UnsafeStrToBytes(privateKey)
 
 		err = fileutil.WriteCerts(certBytes, keyBytes, certDir, certFile, keyFile, true)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	}
 
@@ -76,12 +76,12 @@ func (s *service) DeleteCertFiles(
 
 		err := os.Remove(filepath.Join(certDir, certFile))
 		if err != nil && !errors.Is(err, os.ErrNotExist) {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		err = os.Remove(filepath.Join(certDir, keyFile))
 		if err != nil && !errors.Is(err, os.ErrNotExist) {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	}
 	return nil

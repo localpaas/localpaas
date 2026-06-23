@@ -18,7 +18,7 @@ func (uc *UC) GetProjectIDForAppKey(
 		bunex.SelectWhereIf(requireActive, "app.status = ?", base.AppStatusActive),
 	)
 	if err != nil {
-		return "", apperrors.Wrap(err)
+		return "", apperrors.New(err)
 	}
 	return app.ProjectID, nil
 }

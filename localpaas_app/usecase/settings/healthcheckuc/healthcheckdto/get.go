@@ -87,12 +87,12 @@ func TransformHealthcheck(
 ) (resp *HealthcheckResp, err error) {
 	config := setting.MustAsHealthcheck()
 	if err = copier.Copy(&resp, config); err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	TransformHealthcheckREST(config.REST, resp.REST)

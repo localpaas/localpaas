@@ -71,19 +71,19 @@ func (s *IMService) Decrypt() error {
 	if s.Slack != nil {
 		_, err := s.Slack.Webhook.GetPlain()
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	}
 	if s.Discord != nil {
 		_, err := s.Discord.Webhook.GetPlain()
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	}
 	if s.Telegram != nil {
 		_, err := s.Telegram.BotToken.GetPlain()
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	}
 	return nil

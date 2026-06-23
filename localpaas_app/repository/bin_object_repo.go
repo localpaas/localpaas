@@ -61,7 +61,7 @@ func (repo *binObjectRepo) GetByID(ctx context.Context, db database.IDB, typ bas
 		return nil, apperrors.NewNotFound("BinObject").WithCause(err)
 	}
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return binObject, nil
 }
@@ -79,7 +79,7 @@ func (repo *binObjectRepo) List(ctx context.Context, db database.IDB, paging *ba
 		// Counts the total first
 		total, err := query.Count(ctx)
 		if err != nil {
-			return nil, nil, apperrors.Wrap(err)
+			return nil, nil, apperrors.New(err)
 		}
 		pagingMeta.Total = total
 
@@ -125,7 +125,7 @@ func (repo *binObjectRepo) InsertMulti(ctx context.Context, db database.IDB, bin
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -146,7 +146,7 @@ func (repo *binObjectRepo) UpsertMulti(ctx context.Context, db database.IDB, bin
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -158,7 +158,7 @@ func (repo *binObjectRepo) Update(ctx context.Context, db database.IDB, binObjec
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -171,7 +171,7 @@ func (repo *binObjectRepo) UpdateMulti(ctx context.Context, db database.IDB, bin
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -187,7 +187,7 @@ func (repo *binObjectRepo) DeleteByIDs(ctx context.Context, db database.IDB, ids
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -195,14 +195,14 @@ func (repo *binObjectRepo) DeleteByIDs(ctx context.Context, db database.IDB, ids
 func (repo *binObjectRepo) DeleteHard(ctx context.Context, db database.IDB,
 	opts ...bunex.DeleteQueryOption) error {
 	if len(opts) == 0 {
-		return apperrors.NewParamInvalid("opts").WithMsgLog("DeleteHard requires at least one condition")
+		return apperrors.NewArgumentInvalid("opts").WithMsgLog("DeleteHard requires at least one condition")
 	}
 	query := db.NewDelete().Model((*entity.BinObject)(nil)).ForceDelete().WhereAllWithDeleted()
 	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

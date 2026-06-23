@@ -30,7 +30,7 @@ func validateUsername(username *string, required bool, field string) (res []vld.
 	if username != nil {
 		res = append(res, vld.Must(!govalidator.IsEmail(*username)).OnError(
 			vld.SetField(field, nil),
-			vld.SetCustomKey("ERR_PARAM_INVALID"),
+			vld.SetCustomKey("ERR_ARGUMENT_INVALID"),
 		))
 	}
 	return res

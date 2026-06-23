@@ -62,7 +62,7 @@ func (s *Setting) AsRepoWebhook() (*RepoWebhook, error) {
 	if s.Type == base.SettingTypeGithubApp {
 		ghApp, err := s.AsGithubApp()
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		return ghApp.ConvertAsRepoWebhook(), nil
 	}

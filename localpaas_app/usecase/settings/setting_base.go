@@ -59,7 +59,7 @@ func (uc *BaseUC) loadSettingScopeData(
 			bunex.SelectExcludeColumns(entity.ProjectDefaultExcludeColumns...),
 		)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 	case base.ObjectScopeApp:
@@ -74,14 +74,14 @@ func (uc *BaseUC) loadSettingScopeData(
 			bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
 		)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		data.ScopeProject = data.ScopeApp.Project
 
 	case base.ObjectScopeUser:
 		data.ScopeUser, err = uc.UserService.LoadUserEx(ctx, db, req.Scope.UserID, requireActive)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	}
 
@@ -101,7 +101,7 @@ func (uc *BaseUC) loadSettingByID(
 	}
 	setting, err = uc.SettingRepo.GetByID(ctx, db, req.Scope, req.Type, id, requireActive, opts...)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return setting, nil
 }
@@ -117,7 +117,7 @@ func (uc *BaseUC) checkNameConflict(
 	}
 	setting, err := uc.SettingRepo.GetByName(ctx, db, req.Scope, req.Type, name, false)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	if setting != nil {
 		return apperrors.NewAlreadyExist(strutil.ToPascalCase(string(req.Type))).
@@ -138,15 +138,15 @@ func (uc *BaseUC) checkRefObjectsExistence(
 	}
 	err = uc.checkRefSettingsExistence(ctx, db, req, refIDs.RefSettingIDs, requireActive)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	err = uc.checkRefAppsExistence(ctx, db, refIDs.RefAppIDs, requireActive)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	err = uc.checkRefUsersExistence(ctx, db, refIDs.RefUserIDs, requireActive)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -166,7 +166,7 @@ func (uc *BaseUC) checkRefSettingsExistence(
 		bunex.SelectWhereIf(requireActive, "setting.status = ?", base.SettingStatusActive),
 	)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	for _, refSettingID := range refSettingIDs {
 		found := entityutil.FindByID(settings, refSettingID)
@@ -192,7 +192,7 @@ func (uc *BaseUC) checkRefAppsExistence(
 		),
 	)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -208,7 +208,7 @@ func (uc *BaseUC) checkRefUsersExistence(
 	}
 	_, err = uc.UserService.LoadUsers(ctx, db, refUserIDs, requireActive)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -223,7 +223,7 @@ func (uc *BaseUC) ensureSettingDefaultUniqueness(
 		bunex.UpdateWithDeleted(),
 	)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -233,7 +233,7 @@ func TransformSettingBase(setting *entity.Setting) (resp *BaseSettingResp, err e
 		return nil, nil
 	}
 	if err = copier.Copy(&resp, setting); err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	if setting.ObjectID != setting.CurrentObjectID {
 		resp.Inherited = true

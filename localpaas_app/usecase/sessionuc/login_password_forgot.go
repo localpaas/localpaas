@@ -25,7 +25,7 @@ func (uc *UC) LoginPasswordForgot(
 		bunex.SelectExcludeColumns(entity.UserDefaultExcludeColumns...),
 	)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	if user.SecurityOption == base.UserSecurityEnforceSSO {
@@ -42,7 +42,7 @@ func (uc *UC) LoginPasswordForgot(
 
 	email, err := emailSetting.AsEmail()
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	err = uc.emailService.SendMailPasswordReset(ctx, uc.db, &emailservice.EmailDataPasswordReset{
@@ -54,7 +54,7 @@ func (uc *UC) LoginPasswordForgot(
 		ResetPasswordLink: resetLink,
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &sessiondto.LoginPasswordForgotResp{}, nil

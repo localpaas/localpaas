@@ -35,11 +35,11 @@ func (c *Client) IsTokenClient() bool {
 
 func (c *Client) CreateAppToken(ctx context.Context) (string, error) {
 	if !c.IsAppClient() {
-		return "", apperrors.Wrap(ErrGithubAppClientRequired)
+		return "", apperrors.New(ErrGithubAppClientRequired)
 	}
 	token, err := c.installTransport.Token(ctx)
 	if err != nil {
-		return "", apperrors.Wrap(err)
+		return "", apperrors.New(err)
 	}
 	return token, nil
 }
@@ -47,7 +47,7 @@ func (c *Client) CreateAppToken(ctx context.Context) (string, error) {
 func NewFromApp(appID, installationID int64, privateKey []byte) (*Client, error) {
 	appTr, err := ghinstallation.NewAppsTransport(http.DefaultTransport, appID, privateKey)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	appClient := gogithub.NewClient(&http.Client{Transport: appTr})
@@ -83,11 +83,11 @@ func NewFromSetting(setting *entity.Setting) (*Client, error) {
 	case base.SettingTypeGithubApp:
 		githubApp, err := setting.AsGithubApp()
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		privateKey, err := githubApp.PrivateKey.GetPlain()
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		return NewFromApp(githubApp.AppID, githubApp.InstallationID, reflectutil.UnsafeStrToBytes(privateKey))
 
@@ -98,11 +98,11 @@ func NewFromSetting(setting *entity.Setting) (*Client, error) {
 		}
 		gitToken, err := setting.AsAccessToken()
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		token, err := gitToken.Token.GetPlain()
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		return NewFromPersonalToken(token)
 

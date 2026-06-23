@@ -23,7 +23,7 @@ func (uc *UC) UpdateLpApp(
 ) (*lpappdto.UpdateLpAppResp, error) {
 	info, err := uc.lpAppService.GetAppReleaseInfo(ctx)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	var targetVersion *base.ReleaseInfo
@@ -33,7 +33,7 @@ func (uc *UC) UpdateLpApp(
 	case info.Beta != nil && info.Beta.AppVersion == req.TargetVersion:
 		targetVersion = &info.Beta.ReleaseInfo
 	default:
-		return nil, apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
+		return nil, apperrors.New(apperrors.ErrUpdateVerMismatched)
 	}
 
 	err = transaction.Execute(ctx, uc.db, func(db database.Tx) error {
@@ -41,16 +41,16 @@ func (uc *UC) UpdateLpApp(
 			bunex.SelectFor("UPDATE"),
 		)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		err = uc.lpAppService.UpdateSystemVersion(ctx, db, targetVersion)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		return nil
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &lpappdto.UpdateLpAppResp{}, nil

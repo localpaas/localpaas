@@ -55,12 +55,12 @@ func (uc *BaseUC) UpdateUniqueSetting(
 	err := transaction.Execute(ctx, uc.DB, func(db database.Tx) error {
 		err := uc.loadUniqueSettingForUpdate(ctx, db, req, data)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		if data.AfterLoading != nil {
 			if err := data.AfterLoading(ctx, db, data); err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 		}
 
@@ -69,24 +69,24 @@ func (uc *BaseUC) UpdateUniqueSetting(
 
 		if data.PrepareUpdate != nil {
 			if err := data.PrepareUpdate(ctx, db, data, persistingData); err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 		}
 
 		if data.BeforePersisting != nil {
 			if err := data.BeforePersisting(ctx, db, data, persistingData); err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 		}
 
 		err = uc.persistUniqueSettingUpdate(ctx, db, req, persistingData)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		if data.AfterPersisting != nil {
 			if err := data.AfterPersisting(ctx, db, data, persistingData); err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 		}
 
@@ -96,13 +96,13 @@ func (uc *BaseUC) UpdateUniqueSetting(
 			OldSetting: data.Setting,
 		})
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		return nil
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &UpdateUniqueSettingResp{}, nil
@@ -116,13 +116,13 @@ func (uc *BaseUC) loadUniqueSettingForUpdate(
 ) (err error) {
 	err = uc.loadSettingScopeData(ctx, db, &req.BaseSettingReq, &data.BaseSettingData)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	if data.Load != nil {
 		err = data.Load(ctx, db, data)
 		if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	} else {
 		loadOpts := []bunex.SelectQueryOption{
@@ -131,7 +131,7 @@ func (uc *BaseUC) loadUniqueSettingForUpdate(
 		loadOpts = append(loadOpts, data.ExtraLoadOpts...)
 		setting, err := uc.SettingRepo.GetSingle(ctx, db, req.Scope, req.Type, false, loadOpts...)
 		if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		data.Setting = setting
 	}
@@ -142,14 +142,14 @@ func (uc *BaseUC) loadUniqueSettingForUpdate(
 	}
 
 	if data.Setting != nil && req.UpdateVer != data.Setting.UpdateVer {
-		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
+		return apperrors.New(apperrors.ErrUpdateVerMismatched)
 	}
 
 	// Verify that the referenced settings exist
 	if len(data.VerifyingRefIDs) > 0 {
 		err := uc.checkRefSettingsExistence(ctx, db, &req.BaseSettingReq, data.VerifyingRefIDs, true)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	}
 
@@ -200,12 +200,12 @@ func (uc *BaseUC) persistUniqueSettingUpdate(
 	err := uc.SettingRepo.Upsert(ctx, db, persistingData.Setting,
 		entity.SettingUpsertingConflictCols, entity.SettingUpsertingUpdateCols)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	err = uc.SettingRepo.EnsureUnique(ctx, db, req.Scope, req.Type)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

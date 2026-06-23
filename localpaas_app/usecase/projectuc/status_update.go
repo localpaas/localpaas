@@ -23,7 +23,7 @@ func (uc *UC) UpdateProjectStatus(
 		projectData := &updateProjectData{}
 		err := uc.loadProjectDataForUpdateStatus(ctx, db, req, projectData)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		if !projectData.HasChanges {
 			return nil
@@ -63,7 +63,7 @@ func (uc *UC) UpdateProjectStatus(
 		return uc.persistData(ctx, db, persistingData)
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &projectdto.UpdateProjectStatusResp{}, nil
@@ -82,10 +82,10 @@ func (uc *UC) loadProjectDataForUpdateStatus(
 		),
 	)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	if project.UpdateVer != req.UpdateVer {
-		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
+		return apperrors.New(apperrors.ErrUpdateVerMismatched)
 	}
 	data.Project = project
 	data.HasChanges = project.Status != req.Status

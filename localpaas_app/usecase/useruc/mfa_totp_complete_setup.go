@@ -20,7 +20,7 @@ func (uc *UC) CompleteMFATotpSetup(
 	req *userdto.CompleteMFATotpSetupReq,
 ) (*userdto.CompleteMFATotpSetupResp, error) {
 	if auth.User.IsDemoUser() {
-		return nil, apperrors.Wrap(apperrors.ErrUserDemoUnauthorized)
+		return nil, apperrors.New(apperrors.ErrUserDemoUnauthorized)
 	}
 
 	mfaTokenClaims, err := uc.userService.ParseMFATotpSetupToken(req.TotpToken)
@@ -33,7 +33,7 @@ func (uc *UC) CompleteMFATotpSetup(
 			bunex.SelectFor("UPDATE"),
 		)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		if user.SecurityOption == base.UserSecurityEnforceSSO {
 			return apperrors.New(apperrors.ErrActionNotAllowed).
@@ -54,13 +54,13 @@ func (uc *UC) CompleteMFATotpSetup(
 			bunex.UpdateColumns("updated_at", "totp_secret", "status"),
 		)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		return nil
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &userdto.CompleteMFATotpSetupResp{}, nil

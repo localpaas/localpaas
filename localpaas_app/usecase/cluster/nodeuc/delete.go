@@ -21,7 +21,7 @@ func (uc *UC) DeleteNode(
 
 	_, err := uc.dockerManager.NodeRemove(ctx, req.NodeID, options...)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &nodedto.DeleteNodeResp{}, nil

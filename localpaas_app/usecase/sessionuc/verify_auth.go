@@ -22,7 +22,7 @@ func (uc *UC) VerifyAuth(
 		return nil
 	}
 	if !accessCheck.IsValid() {
-		return apperrors.NewParamInvalid("Either 'Action' or 'AllOf' or 'AnyOf'")
+		return apperrors.NewArgumentInvalid("Either 'Action' or 'AllOf' or 'AnyOf'")
 	}
 
 	// Requested action is higher than the one limited within the session settings
@@ -57,7 +57,7 @@ func (uc *UC) VerifyAuth(
 	}
 	hasPerm, err := uc.permissionManager.CheckAccess(ctx, uc.db, auth, accessCheck)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	if !hasPerm {
 		return apperrors.New(apperrors.ErrUnauthorized)

@@ -87,7 +87,7 @@ type AppTransformationInput struct {
 
 func TransformApp(app *entity.App, input *AppTransformationInput) (resp *AppResp, err error) {
 	if err = copier.Copy(&resp, &app); err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	resp.Tags = gofn.MapSlice(app.Tags, func(t *entity.AppTag) string { return t.Tag })
 	resp.Stats = TransformAppStats(app, input)

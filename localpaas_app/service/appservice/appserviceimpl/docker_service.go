@@ -19,7 +19,7 @@ func (s *service) ServiceInspect(
 
 	resp, err := s.dockerManager.ServiceInspect(ctx, serviceID)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &resp.Service, nil
@@ -34,7 +34,7 @@ func (s *service) ServiceUpdate(
 ) (*client.ServiceUpdateResult, error) {
 	resp, err := s.dockerManager.ServiceUpdate(ctx, serviceID, version, service, options...)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return resp, nil
 }

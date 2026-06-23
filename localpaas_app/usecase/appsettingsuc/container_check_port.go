@@ -28,7 +28,7 @@ func (uc *UC) CheckAppContainerPort(
 		bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
 	)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	address := net.JoinHostPort(app.Key, strconv.Itoa(int(req.Port))) //nolint

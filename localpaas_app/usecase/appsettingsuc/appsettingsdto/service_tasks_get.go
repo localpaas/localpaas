@@ -60,7 +60,7 @@ type ContainerStatus struct {
 
 func TransformServiceTask(task *swarm.Task, nodeMap map[string]*swarm.Node) (resp *ServiceTaskResp, err error) {
 	if err = copier.Copy(&resp, task); err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	// Transform node details
@@ -80,7 +80,7 @@ func TransformServiceTasks(tasks []swarm.Task, nodes []swarm.Node) (resp []*Serv
 	for i := range tasks {
 		taskResp, err := TransformServiceTask(&tasks[i], nodeMap)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		resp = append(resp, taskResp)
 	}

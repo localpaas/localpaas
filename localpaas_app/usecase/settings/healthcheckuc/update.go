@@ -27,13 +27,13 @@ func (uc *UC) UpdateHealthcheck(
 			pData *settings.PersistingSettingData,
 		) error {
 			if err := pData.Setting.SetData(healthcheck); err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 			return nil
 		},
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &healthcheckdto.UpdateHealthcheckResp{}, nil

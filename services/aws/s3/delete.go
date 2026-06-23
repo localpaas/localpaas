@@ -25,7 +25,7 @@ func (client *Client) DeleteObject(ctx context.Context, bucketName string, objec
 			return apperrors.New(apperrors.ErrNotFound).
 				WithMsgLog("object %s does not exist in bucket %s", objectKey, bucketName)
 		}
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

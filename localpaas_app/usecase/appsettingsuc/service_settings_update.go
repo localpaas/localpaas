@@ -24,7 +24,7 @@ func (uc *UC) UpdateAppServiceSettings(
 		data := &updateAppServiceSettingsData{}
 		err := uc.loadAppServiceSettingsForUpdate(ctx, db, req, data)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		persistingData := &persistingAppData{}
@@ -32,17 +32,17 @@ func (uc *UC) UpdateAppServiceSettings(
 
 		err = uc.persistData(ctx, db, persistingData)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		err = uc.applyAppServiceSettings(ctx, data)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		return nil
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &appsettingsdto.UpdateAppServiceSettingsResp{}, nil
@@ -67,18 +67,18 @@ func (uc *UC) loadAppServiceSettingsForUpdate(
 		),
 	)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	data.App = app
 
 	service, err := uc.appService.ServiceInspect(ctx, app.ServiceID, false)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	data.Service = service
 
 	if data.Service == nil || data.Service.Version.Index != uint64(req.UpdateVer) { //nolint:gosec
-		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
+		return apperrors.New(apperrors.ErrUpdateVerMismatched)
 	}
 
 	return nil
@@ -171,7 +171,7 @@ func (uc *UC) applyAppServiceSettings(
 
 	_, err := uc.dockerManager.ServiceUpdate(ctx, service.ID, &service.Version, &service.Spec)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	return nil

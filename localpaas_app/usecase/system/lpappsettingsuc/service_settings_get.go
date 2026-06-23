@@ -16,16 +16,16 @@ func (uc *UC) GetServiceSettings(
 ) (*lpappsettingsdto.GetServiceSettingsResp, error) {
 	setting, err := uc.settingRepo.GetSingle(ctx, uc.db, nil, base.SettingTypeLocalPaaSService, true)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	mainSvc, err := uc.lpAppService.GetLpAppSwarmService(ctx)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	workerSvc, err := uc.lpAppService.GetLpWorkerSwarmService(ctx)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	respData, err := lpappsettingsdto.TransformServiceSettings(&lpappsettingsdto.ServiceSettingsTransformInput{
@@ -34,7 +34,7 @@ func (uc *UC) GetServiceSettings(
 		WorkerService: workerSvc,
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &lpappsettingsdto.GetServiceSettingsResp{

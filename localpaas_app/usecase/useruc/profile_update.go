@@ -31,14 +31,14 @@ func (uc *UC) UpdateProfile(
 	req *userdto.UpdateProfileReq,
 ) (*userdto.UpdateProfileResp, error) {
 	if auth.User.IsDemoUser() {
-		return nil, apperrors.Wrap(apperrors.ErrUserDemoUnauthorized)
+		return nil, apperrors.New(apperrors.ErrUserDemoUnauthorized)
 	}
 
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
 		profileData := &userProfileData{}
 		err := uc.loadUserProfileData(ctx, db, auth, req, profileData)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		persistingData := &persistingUserProfileData{}
@@ -47,7 +47,7 @@ func (uc *UC) UpdateProfile(
 		return uc.persistUserProfileData(ctx, db, persistingData)
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &userdto.UpdateProfileResp{}, nil
@@ -75,7 +75,7 @@ func (uc *UC) loadUserProfileData(
 		bunex.SelectRelationIf(req.Photo.IsChanged(), "PhotoData"),
 	)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	if user.Status != base.UserStatusActive {
@@ -88,10 +88,10 @@ func (uc *UC) loadUserProfileData(
 	if req.Username != "" && req.Username != user.Username {
 		conflictUser, err := uc.userRepo.GetByUsername(ctx, db, req.Username)
 		if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		if conflictUser != nil {
-			return apperrors.NewAlreadyExist(apperrors.Fmt("Username '%v'", req.Username)).
+			return apperrors.New(apperrors.ErrUsernameUnavailable).
 				WithMsgLog("user '%s' already exists", req.Username)
 		}
 	}
@@ -104,7 +104,7 @@ func (uc *UC) loadUserProfileData(
 		}
 		conflictUser, err := uc.userRepo.GetByEmail(ctx, db, req.Email)
 		if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		if conflictUser != nil {
 			return apperrors.New(apperrors.ErrEmailUnavailable).
@@ -194,19 +194,19 @@ func (uc *UC) persistUserProfileData(
 ) error {
 	err := uc.userRepo.Update(ctx, db, persistingData.UpdatingUser)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	err = uc.binObjectRepo.UpsertMulti(ctx, db, persistingData.UpsertingBinObjects,
 		entity.BinObjectUpsertingConflictCols, entity.BinObjectUpsertingUpdateCols)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	err = uc.binObjectRepo.DeleteByIDs(ctx, db, persistingData.HardDeletingBinObjectIDs,
 		bunex.DeleteWithForceDelete())
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	return nil

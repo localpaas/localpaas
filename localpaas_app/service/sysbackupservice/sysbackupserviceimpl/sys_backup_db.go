@@ -41,7 +41,7 @@ func (s *service) sysBackupDB(
 
 	pgDumpBin, err := exec.LookPath("pg_dump")
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	cmd := exec.CommandContext(ctx, pgDumpBin,
@@ -57,32 +57,32 @@ func (s *service) sysBackupDB(
 	out, err := cmd.CombinedOutput()
 	logCmdOutput(ctx, reflectutil.UnsafeBytesToStr(out), err != nil, data.LogStore)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	fileInfo, err := os.Stat(dumpFilePath)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	header, err := tar.FileInfoHeader(fileInfo, "")
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	header.Name = dumpFileName
 
 	if err := tarW.WriteHeader(header); err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	file, err := os.Open(dumpFilePath)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	defer file.Close()
 
 	if _, err := io.Copy(tarW, file); err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	return nil

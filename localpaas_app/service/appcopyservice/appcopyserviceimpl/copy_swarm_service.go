@@ -18,7 +18,7 @@ func (s *service) copySwarmService(
 	targetApp := data.TargetApp
 	srcSvcRes, err := s.dockerManager.ServiceInspect(ctx, data.SrcApp.ServiceID)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	srcSvc := &srcSvcRes.Service
 	data.SrcService = srcSvc
@@ -55,7 +55,7 @@ func (s *service) copySwarmService(
 	// Update network attachments
 	globalNetID, err := s.networkService.GetGlobalRoutingNetworkID(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	oldLocalNet := s.networkService.GetProjectNetworkName(data.SrcProject, data.SrcApp.Env)
 	newLocalNet := s.networkService.GetProjectNetworkName(data.TargetProject, data.TargetApp.Env)
@@ -89,7 +89,7 @@ func (s *service) copySwarmService(
 
 	err = data.CopyService(targetSvc, srcSvc)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	return nil
@@ -122,7 +122,7 @@ func (s *service) createSwarmService(
 	// Create a service in docker for the app
 	res, err := s.dockerManager.ServiceCreate(ctx, &data.TargetService.Spec)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	if res.ID == "" { // should never happen
 		return apperrors.New(apperrors.ErrInfraInternal).
@@ -139,7 +139,7 @@ func (s *service) applyFinalContainerSettings(
 ) error {
 	inspect, err := s.dockerManager.ServiceInspect(ctx, data.TargetApp.ServiceID)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	service := &inspect.Service
 
@@ -153,7 +153,7 @@ func (s *service) applyFinalContainerSettings(
 
 	_, err = s.dockerManager.ServiceUpdate(ctx, service.ID, &service.Version, &service.Spec)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	return nil

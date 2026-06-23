@@ -63,11 +63,11 @@ func (s *GithubApp) Migrate(setting *Setting) (hasChange bool, err error) {
 func (s *GithubApp) Decrypt() error {
 	_, err := s.ClientSecret.GetPlain()
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	_, err = s.PrivateKey.GetPlain()
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

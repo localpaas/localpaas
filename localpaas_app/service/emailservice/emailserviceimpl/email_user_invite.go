@@ -18,20 +18,20 @@ func (s *service) SendMailUserInvite(
 ) error {
 	template, err := s.GetTemplate(ctx, db, emailservice.TemplateNameUserInvite)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	buf, cleanup := s.getBuildBuf()
 	defer cleanup()
 	err = template.Execute(buf, *data)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	subject := gofn.Coalesce(data.Subject, "You’ve been invited to join LocalPaaS")
 	err = email.SendMail(ctx, data.Email, data.Recipients, subject, buf.String())
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

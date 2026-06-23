@@ -60,7 +60,7 @@ func (e *Executor) Execute(
 ) (err error) {
 	task, err := e.loadUpdateTask(ctx, db)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	if task == nil {
 		return nil
@@ -93,14 +93,14 @@ func (e *Executor) Execute(
 		// Lock all pending tasks from execution by the app and workers
 		_, err = e.taskService.LockAllPendingTasks(ctx, db, 0)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		latestTask, err := e.loadUpdateTask(ctx, db,
 			bunex.SelectFor("UPDATE OF task"),
 		)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		data.Task = latestTask
 		if latestTask == nil {
@@ -110,13 +110,13 @@ func (e *Executor) Execute(
 		// Stop only services which need to be stopped (main app and workers)
 		err = e.taskQueue.StopAllSchedulers()
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		return nil
 	})
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	if data.Task == nil {
 		return nil
@@ -129,7 +129,7 @@ func (e *Executor) Execute(
 		TaskExecData: data.TaskExecData,
 	})
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	return nil
@@ -150,7 +150,7 @@ func (e *Executor) loadUpdateTask(
 	opts = append(opts, extraOpts...)
 	tasks, _, err := e.taskRepo.List(ctx, db, "", nil, opts...)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	if len(tasks) == 0 {
 		return nil, nil
@@ -184,7 +184,7 @@ func (e *Executor) saveLogs(
 
 	logFrames, err := logStore.GetData(ctx, 0)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	_ = logStore.Close() //nolint
 
@@ -201,7 +201,7 @@ func (e *Executor) saveLogs(
 		}
 		err = e.taskLogRepo.InsertMulti(ctx, db, taskLogs)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	}
 

@@ -74,7 +74,7 @@ func InitGrpcServer(
 			grpcPort := strconv.Itoa(cfg.Agent.Port)
 			lis, err := net.Listen("tcp", ":"+grpcPort)
 			if err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 			logger.Infof("gRPC Server listening on port %s ...", grpcPort)
 			go func() {
@@ -121,7 +121,7 @@ func unaryLoggingAndRecoveryInterceptor(logger logging.Logger) grpc.UnaryServerI
 			logger.Infof("[gRPC Request] Success - Method: %s, Duration: %s", info.FullMethod, duration)
 		}
 
-		return resp, apperrors.Wrap(err)
+		return resp, apperrors.New(err)
 	}
 }
 

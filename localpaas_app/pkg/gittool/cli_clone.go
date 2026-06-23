@@ -25,7 +25,7 @@ func (cli *checkoutCli) clone(
 	out, err := cmd.CombinedOutput()
 	addLog(ctx, reflectutil.UnsafeBytesToStr(out), err != nil, cli.opts.LogStore)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	return nil

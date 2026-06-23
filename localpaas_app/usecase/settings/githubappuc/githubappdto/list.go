@@ -43,7 +43,7 @@ func TransformGithubApps(
 	for _, setting := range settings {
 		item, err := TransformGithubApp(setting, input)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		resp = append(resp, item)
 	}

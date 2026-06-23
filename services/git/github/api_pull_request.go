@@ -33,7 +33,7 @@ func (c *Client) ListPullRequest(
 
 	output, _, err := c.client.PullRequests.List(ctx, owner, repo, listOpts)
 	if err != nil {
-		return nil, nil, apperrors.Wrap(err)
+		return nil, nil, apperrors.New(err)
 	}
 	return output, &basedto.PagingMeta{
 		Offset: opts.Page * opts.PerPage,
@@ -62,7 +62,7 @@ func (c *Client) ListAllPullRequests(
 	for {
 		result, resp, err := client.PullRequests.List(ctx, owner, repo, listOpts)
 		if err != nil {
-			return nil, nil, apperrors.Wrap(err)
+			return nil, nil, apperrors.New(err)
 		}
 		output = append(output, result...)
 		if resp.NextPage <= 0 || listOpts.Page == resp.NextPage || resp.Rate.Remaining <= 0 {
@@ -92,10 +92,10 @@ func (c *Client) GetPullRequestByNumber(
 ) (*gogithub.PullRequest, error) {
 	output, resp, err := c.client.PullRequests.Get(ctx, owner, repo, number)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	if resp.StatusCode == http.StatusNotFound {
-		return nil, apperrors.NewNotFound(apperrors.Fmt("PR #%v", number))
+		return nil, apperrors.New(apperrors.ErrPullRequestNotFound).WithParam("PullRequest", number)
 	}
 	return output, nil
 }

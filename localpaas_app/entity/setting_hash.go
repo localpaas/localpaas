@@ -25,7 +25,7 @@ type HashField struct {
 func (s *HashField) MarshalJSON() ([]byte, error) {
 	hashedSecret, err := s.hash()
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return reflectutil.UnsafeStrToBytes(gofn.StringWrap(hashedSecret, "\"")), nil
 }
@@ -49,7 +49,7 @@ func (s *HashField) IsHashed() bool {
 func (s *HashField) Get() (string, error) {
 	hashedSecret, err := s.hash()
 	if err != nil {
-		return "", apperrors.Wrap(err)
+		return "", apperrors.New(err)
 	}
 	return hashedSecret, nil
 }
@@ -78,7 +78,7 @@ func (s *HashField) VerifyHash(secret string) error {
 			hashingKeyLen, hashingIteration)
 	}
 	if !matched {
-		return apperrors.Wrap(apperrors.ErrAPIKeyMismatched)
+		return apperrors.New(apperrors.ErrAPIKeyInvalid)
 	}
 	return nil
 }
@@ -90,7 +90,7 @@ func (s *HashField) hash() (string, error) {
 	hashedSecret, salt, err := randtoken.HashAsHex(s.secret, defaultSaltLen,
 		hashingKeyLen, hashingIteration)
 	if err != nil {
-		return "", apperrors.Wrap(err)
+		return "", apperrors.New(err)
 	}
 	s.hashedSecret = cryptoutil.PackSecret(hashedSecret, salt)
 	return s.hashedSecret, nil

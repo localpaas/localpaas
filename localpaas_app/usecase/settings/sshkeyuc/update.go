@@ -27,16 +27,16 @@ func (uc *UC) UpdateSSHKey(
 			pData *settings.PersistingSettingData,
 		) error {
 			if err := generateKey(sshKey); err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 			if err := pData.Setting.SetData(sshKey); err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 			return nil
 		},
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &sshkeydto.UpdateSSHKeyResp{}, nil

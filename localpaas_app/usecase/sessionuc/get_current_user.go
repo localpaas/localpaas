@@ -40,24 +40,24 @@ func (uc *UC) GetCurrentUserByJWT(ctx context.Context, jwt string) (*basedto.Use
 func (uc *UC) GetCurrentUserByAPIKey(ctx context.Context, keyID, secret string) (*basedto.User, error) {
 	apiKeySetting, err := uc.settingRepo.GetByKind(ctx, uc.db, nil, base.SettingTypeAPIKey, keyID, false)
 	if err != nil {
-		return nil, apperrors.Wrap(apperrors.ErrAPIKeyInvalid)
+		return nil, apperrors.New(apperrors.ErrAPIKeyInvalid)
 	}
 	if apiKeySetting == nil || !apiKeySetting.IsActive() {
-		return nil, apperrors.Wrap(apperrors.ErrAPIKeyInvalid)
+		return nil, apperrors.New(apperrors.ErrAPIKeyInvalid)
 	}
 
 	apiKey := apiKeySetting.MustAsAPIKey()
 	if apiKey == nil {
-		return nil, apperrors.Wrap(apperrors.ErrAPIKeyMismatched)
+		return nil, apperrors.New(apperrors.ErrAPIKeyInvalid)
 	}
 	if err = apiKey.SecretKey.VerifyHash(secret); err != nil {
-		return nil, apperrors.Wrap(apperrors.ErrAPIKeyMismatched)
+		return nil, apperrors.New(apperrors.ErrAPIKeyInvalid)
 	}
 	actingUserID := apiKeySetting.ObjectID
 
 	user, err := uc.userService.LoadUser(ctx, uc.db, actingUserID)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &basedto.User{User: user, AuthClaims: &jwtsession.AuthClaims{

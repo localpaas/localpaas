@@ -27,14 +27,14 @@ func (uc *UC) DeleteSecret(
 				// Delete the related secret in docker swarm
 				err := uc.AppService.DeleteSwarmSecret(ctx, db, data.ScopeApp, data.Setting.MustAsSecret())
 				if err != nil {
-					return apperrors.Wrap(err)
+					return apperrors.New(err)
 				}
 			}
 			return nil
 		},
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &secretdto.DeleteSecretResp{}, nil

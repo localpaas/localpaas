@@ -21,12 +21,12 @@ func (uc *UC) RestartApp(
 		),
 	)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	err = uc.dockerManager.ServiceForceUpdate(ctx, app.ServiceID)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &appactiondto.RestartAppResp{}, nil

@@ -61,7 +61,7 @@ func TestCache_TypeSpecificGetters(t *testing.T) {
 		_ = c.Set(key, 123, NoExpiration)
 		_, err = c.GetStr(key)
 		assert.Error(t, err)
-		assert.True(t, errors.Is(err, apperrors.ErrTypeInvalid))
+		assert.True(t, errors.Is(err, apperrors.ErrMismatch))
 	})
 
 	t.Run("Int", func(t *testing.T) {
@@ -77,7 +77,7 @@ func TestCache_TypeSpecificGetters(t *testing.T) {
 		_ = c.Set(key, "not-an-int", NoExpiration)
 		_, err = c.GetInt(key)
 		assert.Error(t, err)
-		assert.True(t, errors.Is(err, apperrors.ErrTypeInvalid))
+		assert.True(t, errors.Is(err, apperrors.ErrMismatch))
 	})
 
 	t.Run("Bool", func(t *testing.T) {
@@ -93,7 +93,7 @@ func TestCache_TypeSpecificGetters(t *testing.T) {
 		_ = c.Set(key, "not-a-bool", NoExpiration)
 		_, err = c.GetBool(key)
 		assert.Error(t, err)
-		assert.True(t, errors.Is(err, apperrors.ErrTypeInvalid))
+		assert.True(t, errors.Is(err, apperrors.ErrMismatch))
 	})
 }
 

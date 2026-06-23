@@ -144,14 +144,14 @@ func (h *BaseHandler) parsePagination(ctx *gin.Context, paging *basedto.Paging) 
 	if limitStr := ctx.Query("pageLimit"); limitStr != "" {
 		limit, err := strconv.Atoi(limitStr)
 		if err != nil || limit <= 0 || limit > basedto.PageLimitMax {
-			return apperrors.NewParamInvalid("pageLimit")
+			return apperrors.NewArgumentInvalid("pageLimit")
 		}
 		paging.Limit = limit
 	}
 	if offsetStr := ctx.Query("pageOffset"); offsetStr != "" {
 		offset, err := strconv.Atoi(offsetStr)
 		if err != nil || offset < 0 {
-			return apperrors.NewParamInvalid("pageOffset")
+			return apperrors.NewArgumentInvalid("pageOffset")
 		}
 		if offset > 0 {
 			paging.Offset = offset
@@ -165,7 +165,7 @@ func (h *BaseHandler) parsePagination(ctx *gin.Context, paging *basedto.Paging) 
 		for _, str := range sort {
 			if strings.HasPrefix(str, "-") {
 				if len(str) == 1 {
-					return apperrors.NewParamInvalid("sort")
+					return apperrors.NewArgumentInvalid("sort")
 				}
 				orders.Add(&basedto.Order{Direction: basedto.DirectionDesc, ColumnName: str[1:]})
 			} else {
@@ -223,7 +223,7 @@ func (h *BaseHandler) parseQuery(ctx *gin.Context, query any) error {
 		return apperrors.New(err)
 	}
 	if err = decoder.Decode(mapQuery); err != nil {
-		return apperrors.NewParamInvalid("query").WithCause(err)
+		return apperrors.NewArgumentInvalid("query").WithCause(err)
 	}
 
 	return nil
@@ -373,7 +373,7 @@ func (h *BaseHandler) StreamAppLogs(
 	writeFrames := func(frames []*tasklog.LogFrame) error {
 		dataBytes, err := json.Marshal(frames)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		return conn.WriteMessage(websocket.BinaryMessage, dataBytes)
 	}
@@ -417,7 +417,7 @@ func (h *BaseHandler) StreamAppLogs(
 func (h *BaseHandler) UpgradeWebsocket(ctx *gin.Context) (*websocket.Conn, error) {
 	conn, err := wsUpgrader.Upgrade(ctx.Writer, ctx.Request, nil)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return conn, nil
 }
@@ -431,9 +431,9 @@ func (h *BaseHandler) ParseFormFiles(ctx *gin.Context, req *filedto.UploadReq) e
 	err := ctx.Request.ParseMultipartForm(int64(cfg.RequestMaxSize))
 	if err != nil {
 		if errors.Is(err, multipart.ErrMessageTooLarge) {
-			return apperrors.New(apperrors.ErrTooBig).WithParam("MaxSize", cfg.RequestMaxSize)
+			return apperrors.New(apperrors.ErrRequestTooBig).WithParam("MaxSize", cfg.RequestMaxSize)
 		}
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	fileType := ctx.PostForm("fileType")
@@ -450,49 +450,50 @@ func (h *BaseHandler) ParseFormFiles(ctx *gin.Context, req *filedto.UploadReq) e
 	case base.FileTypeSystemBackup, base.FileTypeRepoCache:
 		fallthrough
 	default:
-		return apperrors.NewUnsupported(apperrors.Fmt("File type '%v'", fileType))
+		return apperrors.New(apperrors.ErrFileTypeNotSupported).
+			WithParam("SupportedTypes", []base.FileType{base.FileTypeBuildSource})
 	}
 	req.FileType = base.FileType(fileType)
 
 	scope := base.ObjectScopeType(ctx.PostForm("scope"))
 	if !gofn.Contain(requiredScopes, scope) {
-		return apperrors.NewUnsupported(apperrors.Fmt("File scope '%v'", scope))
+		return apperrors.New(apperrors.ErrFileScopeUnsupported).WithParam("Scope", scope)
 	}
 
 	switch scope {
 	case base.ObjectScopeApp:
 		projectID, appID := ctx.PostForm("projectId"), ctx.PostForm("appId")
 		if projectID == "" || appID == "" {
-			return apperrors.NewMissing(apperrors.Fmt("Param 'projectId' or 'appId'"))
+			return apperrors.New(apperrors.ErrParamMissing).WithParam("Name", "projectId or appId")
 		}
 		req.Scope = base.NewObjectScopeApp(appID, projectID)
 	case base.ObjectScopeProject:
 		projectID := ctx.PostForm("projectId")
 		if projectID == "" {
-			return apperrors.NewMissing(apperrors.Fmt("Param 'projectId'"))
+			return apperrors.New(apperrors.ErrParamMissing).WithParam("Name", "projectId")
 		}
 		req.Scope = base.NewObjectScopeProject(projectID)
 	case base.ObjectScopeUser:
 		userID := ctx.PostForm("userId")
 		if userID == "" {
-			return apperrors.NewMissing(apperrors.Fmt("Param 'userId'"))
+			return apperrors.New(apperrors.ErrParamMissing).WithParam("Name", "userId")
 		}
 		req.Scope = base.NewObjectScopeUser(userID)
 	case base.ObjectScopeGlobal, "global":
 		req.Scope = base.NewObjectScopeGlobal()
 	default:
-		return apperrors.NewUnsupported(apperrors.Fmt("Scope '%v'", scope))
+		return apperrors.New(apperrors.ErrObjectScopeInvalid).WithParam("Scope", scope)
 	}
 
 	req.StorageType = base.FileStorageType(ctx.PostForm("storageType"))
 	if !gofn.Contain(base.AllFileStorageTypes, req.StorageType) {
-		return apperrors.NewUnsupported(apperrors.Fmt("File storage '%v'", req.StorageType))
+		return apperrors.New(apperrors.ErrStorageTypeUnsupported).WithParam("Type", req.StorageType)
 	}
 	req.StorageID = ctx.PostForm("storageId")
 
 	form, err := ctx.MultipartForm()
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	if maxFile > 0 && len(form.File["file"]) > maxFile {
 		return apperrors.New(apperrors.ErrTooMany).WithParam("Name", "Files").

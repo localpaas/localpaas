@@ -29,7 +29,7 @@ func (uc *UC) JoinNode(
 	data := &joinNodeData{}
 	err := uc.loadJoinNodeData(ctx, uc.db, req, data)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	cmdCtx, cancelFunc := context.WithTimeout(ctx, executionTimeout)
@@ -40,11 +40,11 @@ func (uc *UC) JoinNode(
 
 	privateKey, err := data.SSHKey.PrivateKey.GetPlain()
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	passphrase, err := data.SSHKey.Passphrase.GetPlain()
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	output, err := ssh.Execute(cmdCtx, &ssh.CommandInput{
@@ -81,14 +81,14 @@ func (uc *UC) loadJoinNodeData(
 	sshKeySetting, err := uc.settingRepo.GetByID(ctx, db, base.NewObjectScopeGlobal(), base.SettingTypeSSHKey,
 		req.SSHKey.ID, true)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	data.SSHKey = sshKeySetting.MustAsSSHKey()
 
 	// Find join token from the cluster
 	inspect, err := uc.dockerManager.SwarmInspect(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	theSwarm := &inspect.Swarm
 
@@ -102,7 +102,7 @@ func (uc *UC) loadJoinNodeData(
 	// List all manager nodes to get the addr to join new node
 	listResp, err := uc.dockerManager.NodeManagerList(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	managerNodes := listResp.Items
 

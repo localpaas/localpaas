@@ -29,13 +29,13 @@ func (uc *UC) UpdateRepoWebhook(
 			pData.Setting.Kind = string(req.Kind)
 			err := pData.Setting.SetData(webhookData)
 			if err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 			return nil
 		},
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &repowebhookdto.UpdateRepoWebhookResp{}, nil

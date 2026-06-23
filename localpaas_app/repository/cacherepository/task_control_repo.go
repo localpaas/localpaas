@@ -30,7 +30,7 @@ func (repo *taskControlRepo) Push(
 	key := repo.formatKey(taskID)
 	err := redishelper.RPush(ctx, repo.client, key, taskControl)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

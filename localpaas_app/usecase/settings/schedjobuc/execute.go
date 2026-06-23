@@ -18,22 +18,22 @@ func (uc *UC) ExecuteSchedJob(
 	req.Type = currentSettingType
 	setting, err := uc.GetSettingByID(ctx, uc.DB, &req.BaseSettingReq, req.ID, true)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	task, err := uc.schedJobService.CreateSchedJobTask(setting, time.Time{}, timeutil.NowUTC())
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	err = uc.taskRepo.Insert(ctx, uc.DB, task)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	err = uc.taskQueue.ScheduleTask(ctx, task)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &schedjobdto.ExecuteSchedJobResp{

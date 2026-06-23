@@ -22,7 +22,7 @@ func (uc *UC) PasswordForgot(
 		bunex.SelectExcludeColumns(entity.UserDefaultExcludeColumns...),
 	)
 	if err != nil || user.IsDemoUser() {
-		return nil, apperrors.Wrap(apperrors.ErrActionFailed)
+		return nil, apperrors.New(apperrors.ErrActionFailed)
 	}
 
 	if user.SecurityOption == base.UserSecurityEnforceSSO {
@@ -32,16 +32,16 @@ func (uc *UC) PasswordForgot(
 
 	emailSetting, err := uc.emailService.GetDefaultSystemEmail(ctx, uc.db)
 	if err != nil {
-		return nil, apperrors.Wrap(apperrors.ErrActionNotAllowedByAdmin)
+		return nil, apperrors.New(apperrors.ErrActionNotAllowedByAdmin)
 	}
 	email, err := emailSetting.AsEmail()
 	if err != nil {
-		return nil, apperrors.Wrap(apperrors.ErrActionFailed)
+		return nil, apperrors.New(apperrors.ErrActionFailed)
 	}
 
 	token, err := uc.userService.GeneratePasswordResetToken(user.ID)
 	if err != nil {
-		return nil, apperrors.Wrap(apperrors.ErrActionFailed)
+		return nil, apperrors.New(apperrors.ErrActionFailed)
 	}
 
 	resetLink := config.Current.DashboardPasswordResetURL(user.ID, token)
@@ -54,7 +54,7 @@ func (uc *UC) PasswordForgot(
 		ResetPasswordLink: resetLink,
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(apperrors.ErrActionFailed)
+		return nil, apperrors.New(apperrors.ErrActionFailed)
 	}
 
 	return &userdto.PasswordForgotResp{}, nil

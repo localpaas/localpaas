@@ -24,7 +24,7 @@ func (uc *UC) DeleteUser(
 		userData := &deleteUserData{}
 		err := uc.loadUserDataForDelete(ctx, db, auth, req, userData)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		persistingData := &userservice.PersistingUserData{}
@@ -32,13 +32,13 @@ func (uc *UC) DeleteUser(
 
 		err = uc.userService.DeleteUser(ctx, db, userData.User)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		return uc.userService.PersistUserData(ctx, db, persistingData)
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &userdto.DeleteUserResp{}, nil
@@ -59,7 +59,7 @@ func (uc *UC) loadUserDataForDelete(
 		bunex.SelectFor("UPDATE"),
 	)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	data.User = user
 
@@ -78,7 +78,7 @@ func (uc *UC) loadUserDataForDelete(
 			bunex.SelectLimit(1),
 		)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		if len(otherAdmins) == 0 {
 			return apperrors.New(apperrors.ErrActionNotAllowed).

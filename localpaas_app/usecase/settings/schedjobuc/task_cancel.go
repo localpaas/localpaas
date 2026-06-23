@@ -20,16 +20,16 @@ func (uc *UC) CancelSchedJobTask(
 	err = transaction.Execute(ctx, uc.DB, func(db database.Tx) error {
 		_, err = uc.GetSettingByID(ctx, db, &req.BaseSettingReq, req.JobID, false)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		canceled, err = uc.taskService.CancelTask(ctx, db, req.TaskID, &req.JobID)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		return nil
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &schedjobdto.CancelSchedJobTaskResp{

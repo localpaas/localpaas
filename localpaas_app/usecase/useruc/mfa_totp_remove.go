@@ -20,7 +20,7 @@ func (uc *UC) RemoveMFATotp(
 	req *userdto.RemoveMFATotpReq,
 ) (*userdto.RemoveMFATotpResp, error) {
 	if auth.User.IsDemoUser() {
-		return nil, apperrors.Wrap(apperrors.ErrUserDemoUnauthorized)
+		return nil, apperrors.New(apperrors.ErrUserDemoUnauthorized)
 	}
 
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
@@ -28,7 +28,7 @@ func (uc *UC) RemoveMFATotp(
 			bunex.SelectFor("UPDATE"),
 		)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		if user.TotpSecret == "" {
 			return nil
@@ -53,13 +53,13 @@ func (uc *UC) RemoveMFATotp(
 			bunex.UpdateColumns("updated_at", "totp_secret"),
 		)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		return nil
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &userdto.RemoveMFATotpResp{}, nil

@@ -28,12 +28,12 @@ func (uc *UC) CalcNextRuns(
 		InitialTime: initTime,
 	}
 	if err := sched.IsValid(); err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	nextRuns, err := sched.CalcNextRuns(initTime, req.Count)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &schedjobdto.CalcNextRunsResp{

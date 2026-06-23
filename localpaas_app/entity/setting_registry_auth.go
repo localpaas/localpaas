@@ -60,7 +60,7 @@ func (s *RegistryAuth) Migrate(setting *Setting) (hasChange bool, err error) {
 func (s *RegistryAuth) Decrypt() error {
 	_, err := s.Password.GetPlain()
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -68,7 +68,7 @@ func (s *RegistryAuth) Decrypt() error {
 func (s *RegistryAuth) GenerateAuthHeader() (string, error) {
 	password, err := s.Password.GetPlain()
 	if err != nil {
-		return "", apperrors.Wrap(err)
+		return "", apperrors.New(err)
 	}
 	h, err := docker.GenerateAuthHeader(&registry.AuthConfig{
 		Username:      s.Username,
@@ -76,7 +76,7 @@ func (s *RegistryAuth) GenerateAuthHeader() (string, error) {
 		ServerAddress: s.Address,
 	})
 	if err != nil {
-		return "", apperrors.Wrap(err)
+		return "", apperrors.New(err)
 	}
 	return h, nil
 }

@@ -17,14 +17,14 @@ func (uc *UC) parseBitbucketWebhook(
 ) error {
 	hook, err := bitbucket.New(bitbucket.Options.UUID(secret))
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	payload, err := hook.Parse(req, bitbucket.RepoPushEvent)
 	if err != nil {
 		if errors.Is(err, bitbucket.ErrEventNotFound) { // ok event wasn't one of the ones asked to be parsed
 			return nil
 		}
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	switch payload.(type) { //nolint

@@ -17,14 +17,14 @@ func (uc *UC) parseGogsWebhook(
 ) error {
 	hook, err := gogs.New(gogs.Options.Secret(secret))
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	payload, err := hook.Parse(req, gogs.PushEvent)
 	if err != nil {
 		if errors.Is(err, gogs.ErrEventNotFound) { // ok event wasn't one of the ones asked to be parsed
 			return nil
 		}
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	switch payload.(type) { //nolint

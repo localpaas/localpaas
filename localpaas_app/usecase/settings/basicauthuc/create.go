@@ -29,13 +29,13 @@ func (uc *UC) CreateBasicAuth(
 		) error {
 			err := pData.Setting.SetData(basicAuth)
 			if err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 			return nil
 		},
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &basicauthdto.CreateBasicAuthResp{

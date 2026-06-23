@@ -23,7 +23,7 @@ func (uc *UC) BeginMFATotpSetup(
 ) (*userdto.BeginMFATotpSetupResp, error) {
 	user, err := uc.userRepo.GetByID(ctx, uc.db, auth.User.ID)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	if user.SecurityOption == base.UserSecurityEnforceSSO {
@@ -38,12 +38,12 @@ func (uc *UC) BeginMFATotpSetup(
 
 	secret, qrCode, err := totp.GenerateSecretAndQRCode(qrCodeImageSize)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	totpToken, err := uc.userService.GenerateMFATotpSetupToken(user.ID, secret)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &userdto.BeginMFATotpSetupResp{

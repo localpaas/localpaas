@@ -17,12 +17,12 @@ func (uc *UC) DeleteVolume(
 	if req.ProjectID != "" {
 		project, err := uc.projectService.LoadProject(ctx, uc.db, req.ProjectID, true)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 
 		inspect, err := uc.dockerManager.VolumeInspect(ctx, req.VolumeID)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 
 		if inspect.Volume.Labels[docker.StackLabelNamespace] != project.Key {
@@ -32,7 +32,7 @@ func (uc *UC) DeleteVolume(
 
 	_, err := uc.dockerManager.VolumeRemove(ctx, req.VolumeID, req.Force)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &volumedto.DeleteVolumeResp{}, nil

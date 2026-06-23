@@ -17,7 +17,7 @@ func (uc *UC) DeleteRegistryAuth(
 	req.Type = currentSettingType
 	_, err := uc.DeleteSetting(ctx, &req.DeleteSettingReq, &settings.DeleteSettingData{})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &registryauthdto.DeleteRegistryAuthResp{}, nil

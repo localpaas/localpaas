@@ -30,13 +30,13 @@ func (uc *UC) CreateRegistryAuth(
 			pData.Setting.Kind = req.Address
 			err := pData.Setting.SetData(regAuth)
 			if err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 			return nil
 		},
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &registryauthdto.CreateRegistryAuthResp{

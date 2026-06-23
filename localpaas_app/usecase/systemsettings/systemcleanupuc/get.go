@@ -17,12 +17,12 @@ func (uc *UC) GetSystemCleanup(
 	req.Type = currentSettingType
 	resp, err := uc.GetSetting(ctx, auth, &req.GetSettingReq, &settings.GetSettingData{})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	respData, err := systemcleanupdto.TransformSystemCleanup(resp.Data, resp.RefObjects)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &systemcleanupdto.GetSystemCleanupResp{

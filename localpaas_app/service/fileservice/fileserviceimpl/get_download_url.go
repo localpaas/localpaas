@@ -24,11 +24,11 @@ func (s *service) GetDownloadURL(
 	if file.StorageType == base.FileStorageLocal || !req.CloudPresign {
 		token, err := s.GenerateDownloadToken(auth.User.ID, req.File.ID, req.RequireLogin, req.Expiration)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		urlStr, err := url.JoinPath(config.Current.BaseAPIURL(), "files", req.File.ID, "download")
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		urlStr += "?token=" + token
 		if req.ViewInline {
@@ -44,12 +44,12 @@ func (s *service) GetDownloadURL(
 	case base.CloudStorageKindS3:
 		s3Client, err := s3.NewClientFromSetting(ctx, storageSetting)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		urlStr, err := s3Client.PresignGetObject(ctx, file.Bucket, filepath.Join(file.Path, file.Name),
 			file.Name, file.Mimetype, req.ViewInline, req.Expiration)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		return &fileservice.GetDownloadURLResp{URL: urlStr}, nil
 	default:

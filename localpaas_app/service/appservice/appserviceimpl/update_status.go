@@ -38,13 +38,13 @@ func (s *service) onAppDisabled(ctx context.Context, app *entity.App) error {
 
 	inspect, err := s.dockerManager.ServiceInspect(ctx, app.ServiceID)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	service := &inspect.Service
 
 	prevSvcMode, err := json.Marshal(service.Spec.Mode)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	service.Spec.Labels[labelLocalPaaSAppPrevServiceMode] = string(prevSvcMode)
 
@@ -57,10 +57,10 @@ func (s *service) onAppDisabled(ctx context.Context, app *entity.App) error {
 
 	err = gofn.ExecRetry(func() error {
 		_, err := s.dockerManager.ServiceUpdate(ctx, app.ServiceID, &service.Version, &service.Spec)
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}, 2, 5*time.Second) //nolint:mnd
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	return nil
@@ -73,7 +73,7 @@ func (s *service) onAppEnabled(ctx context.Context, app *entity.App) error {
 
 	inspect, err := s.dockerManager.ServiceInspect(ctx, app.ServiceID)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	service := &inspect.Service
 
@@ -82,7 +82,7 @@ func (s *service) onAppEnabled(ctx context.Context, app *entity.App) error {
 		mode := swarm.ServiceMode{}
 		err = json.Unmarshal(reflectutil.UnsafeStrToBytes(prevSvcModeStr), &mode)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		service.Spec.Mode = mode
 		delete(service.Spec.Labels, labelLocalPaaSAppPrevServiceMode)
@@ -96,10 +96,10 @@ func (s *service) onAppEnabled(ctx context.Context, app *entity.App) error {
 
 	err = gofn.ExecRetry(func() error {
 		_, err := s.dockerManager.ServiceUpdate(ctx, app.ServiceID, &service.Version, &service.Spec)
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}, 2, 5*time.Second) //nolint:mnd
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	return nil

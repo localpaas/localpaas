@@ -22,7 +22,7 @@ func (uc *UC) CreateAppTag(
 		tagData := &createAppTagData{}
 		err := uc.loadAppTagDataForAddNew(ctx, db, req, tagData)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		persistingData := &persistingAppData{}
@@ -31,7 +31,7 @@ func (uc *UC) CreateAppTag(
 		return uc.persistData(ctx, db, persistingData)
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &appsettingsdto.CreateAppTagResp{}, nil
@@ -55,7 +55,7 @@ func (uc *UC) loadAppTagDataForAddNew(
 		bunex.SelectRelation("Tags", bunex.SelectOrder("display_order")),
 	)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	data.App = app
 

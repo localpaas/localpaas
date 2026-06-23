@@ -18,12 +18,12 @@ func (uc *UC) GetFile(
 		bunex.SelectRelation("Storage"),
 	)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	respData, err := filedto.TransformFile(file)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &filedto.GetFileResp{

@@ -16,14 +16,14 @@ func (uc *UC) parseGithubWebhook(
 ) error {
 	hook, err := github.New(github.Options.Secret(secret))
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	payload, err := hook.Parse(req, github.PushEvent)
 	if err != nil {
 		if errors.Is(err, github.ErrEventNotFound) { // ok event wasn't one of the ones asked to be parsed
 			return nil
 		}
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	switch payload.(type) { //nolint

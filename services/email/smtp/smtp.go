@@ -35,7 +35,7 @@ func SendMail(
 
 	password, err := conf.Password.GetPlain()
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	dialer := gomail.NewDialer(conf.Host, conf.Port, conf.Username, password)
@@ -43,7 +43,7 @@ func SendMail(
 
 	err = dialer.DialAndSend(message)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

@@ -38,7 +38,7 @@ func (m *manager) ServiceListByStack(
 	})
 	resp, err := m.ServiceList(ctx, options...)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return resp, nil
 }
@@ -54,7 +54,7 @@ func (m *manager) ServiceGetByName(
 	}
 	resp, err := m.ServiceList(ctx, option)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	if len(resp.Items) == 0 {
 		return nil, apperrors.New(apperrors.ErrInfraNotFound).
@@ -138,7 +138,7 @@ func (m *manager) ServiceUpdate(
 	if version == nil {
 		inspectResp, err := m.ServiceInspect(ctx, serviceID)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		version = &inspectResp.Service.Version
 	}
@@ -168,7 +168,7 @@ func (m *manager) ServiceRollback(
 
 	inspectResp, err := m.ServiceInspect(ctx, serviceID)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	opts.Version = inspectResp.Service.Version
 
@@ -191,7 +191,7 @@ func (m *manager) ServiceForceUpdate(ctx context.Context, serviceID string) erro
 	resp.Service.Spec.TaskTemplate.ForceUpdate++
 	_, err = m.ServiceUpdate(ctx, serviceID, &resp.Service.Version, &resp.Service.Spec)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -258,7 +258,7 @@ func (m *manager) ServiceUpdateWait(
 			return m.ServiceInspect(ctx, serviceID)
 		}, 2, time.Second*3) //nolint:mnd
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 
 		service := &inspectResp.Service
@@ -270,7 +270,7 @@ func (m *manager) ServiceUpdateWait(
 
 		select {
 		case <-ctx.Done():
-			return nil, apperrors.Wrap(ctx.Err())
+			return nil, apperrors.New(ctx.Err())
 		case <-time.After(inspectInterval):
 		}
 	}
@@ -291,7 +291,7 @@ func (m *manager) ServiceWaitUntilRunning(
 		return m.ServiceInspect(ctx, serviceID)
 	}, 2, time.Second*3) //nolint:mnd
 	if err != nil {
-		return false, apperrors.Wrap(err)
+		return false, apperrors.New(err)
 	}
 	// Service must be a replicated one
 	service := &inspectResp.Service
@@ -313,7 +313,7 @@ func (m *manager) ServiceWaitUntilRunning(
 			return m.ServiceTaskList(ctx, serviceID, []swarm.TaskState{swarm.TaskStateRunning})
 		}, 2, time.Second*3) //nolint:mnd
 		if err != nil {
-			return false, apperrors.Wrap(err)
+			return false, apperrors.New(err)
 		}
 
 		satisfiedTasks := 0
@@ -328,7 +328,7 @@ func (m *manager) ServiceWaitUntilRunning(
 		if (requireAllReplicas && satisfiedTasks < desiredTasks) || (!requireAllReplicas && satisfiedTasks == 0) {
 			select {
 			case <-ctx.Done():
-				return false, apperrors.Wrap(ctx.Err())
+				return false, apperrors.New(ctx.Err())
 			case <-time.After(checkInterval):
 			}
 			continue

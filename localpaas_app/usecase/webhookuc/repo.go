@@ -28,22 +28,22 @@ func (uc *UC) HandleRepoWebhook(
 
 		err := uc.loadWebhookSettings(ctx, db, req, data)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		err = uc.processRepoWebhook(ctx, db, req, data, persistingData)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		err = uc.appService.PersistAppData(ctx, db, persistingData)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		return nil
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	// Schedule deployment tasks
@@ -90,27 +90,27 @@ func (uc *UC) processRepoWebhook(
 	case base.WebhookKindGogs:
 		err = uc.parseGogsWebhook(req.Request, webhook.Secret, eventData)
 	default:
-		return apperrors.NewUnsupported(apperrors.Fmt("Webhook kind '%v'", webhook.Kind))
+		return apperrors.New(apperrors.ErrWebhookTypeUnsupported).WithParam("Type", webhook.Kind)
 	}
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	if eventData.Push != nil {
 		parsedURL, err := vcsurl.Parse(eventData.Push.RepoURL)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		eventData.Push.RepoID = parsedURL.ID
 
 		apps, err := uc.findAppsToRedeployByPushEvent(ctx, db, eventData.Push)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		for _, app := range apps {
 			err = uc.createAppDeploymentByPushEvent(app, eventData.Push, data, persistingData)
 			if err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 		}
 	}
@@ -127,11 +127,11 @@ func (uc *UC) loadWebhookSettings(
 		bunex.SelectWhereIn("setting.type IN (?)", base.SettingTypeRepoWebhook, base.SettingTypeGithubApp),
 	)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	_, err = setting.AsRepoWebhook()
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	data.WebhookSetting = setting
 	return nil
@@ -153,7 +153,7 @@ func (uc *UC) findAppsToRedeployByPushEvent(
 		bunex.SelectWhere("res_links.dst_id = ?", pushEvent.RepoID),
 	)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	if len(settings) == 0 {
 		return nil, nil
@@ -179,7 +179,7 @@ func (uc *UC) findAppsToRedeployByPushEvent(
 		),
 	)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	if len(apps) == 0 {
 		return nil, nil
@@ -192,7 +192,7 @@ func (uc *UC) findAppsToRedeployByPushEvent(
 		}
 		shouldRedeploy, err := uc.shouldRedeployAppByPushEvent(ctx, db, app, pushEvent)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		if shouldRedeploy {
 			matchingApps = append(matchingApps, app)
@@ -229,7 +229,7 @@ func (uc *UC) shouldRedeployAppByPushEvent(
 		bunex.SelectWhere("deployment.trigger->>'changeId' = ?", pushEvent.ChangeID),
 	)
 	if err != nil {
-		return false, apperrors.Wrap(err)
+		return false, apperrors.New(err)
 	}
 	return len(deployments) == 0, nil
 }
@@ -243,7 +243,7 @@ func (uc *UC) createAppDeploymentByPushEvent(
 	deploymentSetting := app.GetSettingByType(base.SettingTypeAppDeployment)
 	deploymentSettings, err := deploymentSetting.AsAppDeploymentSettings()
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	if deploymentSettings.RepoSource != nil && deploymentSettings.RepoSource.CommitHash != "" {
 		deploymentSettings.RepoSource.CommitHash = ""
@@ -255,7 +255,7 @@ func (uc *UC) createAppDeploymentByPushEvent(
 
 	deployment, task, err := uc.appDeploymentService.CreateDeploymentAndTask(app, deploymentSettings)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	// Override target commit hash
 	deployment.Settings.RepoSource.CommitHash = pushEvent.ChangeID

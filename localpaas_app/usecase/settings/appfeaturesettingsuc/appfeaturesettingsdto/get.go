@@ -57,12 +57,12 @@ func TransformAppFeatureSettings(
 ) (resp *AppFeatureSettingsResp, err error) {
 	config := input.Setting.MustAsAppFeatureSettings()
 	if err = copier.Copy(&resp, config); err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	resp.BaseSettingResp, err = settings.TransformSettingBase(input.Setting)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return resp, nil

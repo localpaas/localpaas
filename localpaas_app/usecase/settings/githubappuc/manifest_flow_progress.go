@@ -34,16 +34,16 @@ func (uc *UC) handleGithubAppManifestFlowOnCreation(
 ) (*githubappdto.HandleGithubAppManifestFlowProgressResp, error) {
 	manifestCache, err := uc.cacheAppManifestRepo.Get(ctx, req.SettingID)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	if req.State != manifestCache.State {
-		return nil, apperrors.NewParamInvalid("State").WithMsgLog("param 'state' must match")
+		return nil, apperrors.NewArgumentInvalid("State").WithMsgLog("param 'state' must match")
 	}
 
 	appConfig, err := github.AppManifestFlowComplete(ctx, req.Code)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	appSetting := manifestCache.GithubApp
@@ -57,7 +57,7 @@ func (uc *UC) handleGithubAppManifestFlowOnCreation(
 
 	err = uc.cacheAppManifestRepo.Set(ctx, appSetting.ID, manifestCache, appManifestCacheExp)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	var redirectURL string
@@ -83,7 +83,7 @@ func (uc *UC) handleGithubAppManifestFlowOnInstallation(
 ) (*githubappdto.HandleGithubAppManifestFlowProgressResp, error) {
 	manifestCache, err := uc.cacheAppManifestRepo.Get(ctx, req.SettingID)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	// TODO: query installation list of the app and validate this one
@@ -97,21 +97,21 @@ func (uc *UC) handleGithubAppManifestFlowOnInstallation(
 		// Loads the setting from DB to check update version matching
 		dbSetting, err := uc.SettingRepo.GetByID(ctx, uc.DB, nil, "", appSetting.ID, false)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		if dbSetting.UpdateVer != appSetting.UpdateVer {
-			return nil, apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
+			return nil, apperrors.New(apperrors.ErrUpdateVerMismatched)
 		}
 
 		appSetting.UpdateVer++
 		err = uc.SettingRepo.Update(ctx, uc.DB, appSetting)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 	} else {
 		err = uc.SettingRepo.Insert(ctx, uc.DB, appSetting)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 	}
 

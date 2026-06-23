@@ -15,7 +15,7 @@ func (uc *UC) ReloadLpAppConfig(
 ) (*lpappdto.ReloadLpAppConfigResp, error) {
 	err := uc.lpAppService.ReloadLpAppConfig(ctx)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &lpappdto.ReloadLpAppConfigResp{}, nil

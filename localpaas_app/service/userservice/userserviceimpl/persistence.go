@@ -16,33 +16,33 @@ func (s *service) PersistUserData(ctx context.Context, db database.IDB,
 	err := s.userRepo.UpsertMulti(ctx, db, persistingData.UpsertingUsers,
 		entity.UserUpsertingConflictCols, entity.UserUpsertingUpdateCols)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	// Settings
 	err = s.settingRepo.UpsertMulti(ctx, db, persistingData.UpsertingSettings,
 		entity.SettingUpsertingConflictCols, entity.SettingUpsertingUpdateCols)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	// Binaries
 	err = s.binObjectRepo.UpsertMulti(ctx, db, persistingData.UpsertingBinObjects,
 		entity.BinObjectUpsertingConflictCols, entity.BinObjectUpsertingUpdateCols)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	// Remove accesses
 	err = s.permissionManager.RemoveACLPermissions(ctx, db, persistingData.DeletingAccesses)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	// Project/App/... accesses
 	err = s.permissionManager.UpdateACLPermissions(ctx, db, persistingData.UpsertingAccesses)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	return nil

@@ -17,12 +17,12 @@ func (uc *UC) ListBasicAuth(
 	req.Type = currentSettingType
 	resp, err := uc.ListSetting(ctx, auth, &req.ListSettingReq, &settings.ListSettingData{})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	respData, err := basicauthdto.TransformBasicAuths(resp.Data, resp.RefObjects)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &basicauthdto.ListBasicAuthResp{

@@ -25,7 +25,7 @@ func (uc *UC) DeleteProjectTags(
 		tagData := &deleteProjectTagData{}
 		err := uc.loadProjectTagDataForDelete(ctx, db, req, tagData)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		persistingData := &persistingProjectData{}
@@ -34,7 +34,7 @@ func (uc *UC) DeleteProjectTags(
 		return uc.persistData(ctx, db, persistingData)
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &projectsettingsdto.DeleteProjectTagsResp{}, nil
@@ -58,7 +58,7 @@ func (uc *UC) loadProjectTagDataForDelete(
 		bunex.SelectRelation("Tags", bunex.SelectOrder("display_order")),
 	)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	data.Project = project
 

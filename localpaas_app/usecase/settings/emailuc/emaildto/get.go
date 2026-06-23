@@ -88,13 +88,13 @@ func TransformEmail(
 ) (resp *EmailResp, err error) {
 	config := setting.MustAsEmail()
 	if err = copier.Copy(&resp, config); err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	resp.Kind = base.EmailKind(setting.Kind)
 
 	resp.BaseSettingResp, err = settings.TransformSettingBase(setting)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	switch {

@@ -33,7 +33,7 @@ func (s *service) CreateSwarmConfigs(
 	for _, cfg := range configs {
 		ref, err := s.createSwarmConfig(ctx, db, app, cfg)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		refs = append(refs, ref)
 	}
@@ -48,7 +48,7 @@ func (s *service) CreateSwarmConfig(
 ) (*entity.SwarmConfigRef, error) {
 	refs, err := s.CreateSwarmConfigs(ctx, db, app, []*entity.ConfigFile{config})
 	ref, _ := gofn.First(refs)
-	return ref, apperrors.Wrap(err)
+	return ref, apperrors.New(err)
 }
 
 func (s *service) createSwarmConfig(
@@ -82,7 +82,7 @@ func (s *service) createSwarmConfig(
 				return s.createSwarmConfig(ctx, db, app, config)
 			}
 		}
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	swarmRef.ConfigID = configResp.ID
 	swarmRef.ConfigName = configName
@@ -101,7 +101,7 @@ func (s *service) addSwarmConfigsToService(
 
 	inspect, err := s.dockerManager.ServiceInspect(ctx, app.ServiceID)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	swarmSvc := &inspect.Service
 	containerSpec := swarmSvc.Spec.TaskTemplate.ContainerSpec
@@ -131,7 +131,7 @@ func (s *service) addSwarmConfigsToService(
 
 	_, err = s.dockerManager.ServiceUpdate(ctx, app.ServiceID, &swarmSvc.Version, &swarmSvc.Spec)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	// If this app is parent of some other apps
@@ -140,12 +140,12 @@ func (s *service) addSwarmConfigsToService(
 			bunex.SelectWhere("app.parent_id = ?", app.ID),
 		)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		for _, childApp := range childApps {
 			err = s.addSwarmConfigsToService(ctx, db, childApp, refs)
 			if err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 		}
 	}
@@ -166,7 +166,7 @@ func (s *service) DeleteSwarmConfig(
 	// Remove the config from the swarm service of the app
 	err = s.removeSwarmConfigFromService(ctx, app.ServiceID, config.SwarmRef)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	// If this app is parent of some other apps, also remove the config from the child apps
@@ -175,12 +175,12 @@ func (s *service) DeleteSwarmConfig(
 			bunex.SelectWhere("app.parent_id = ?", app.ID),
 		)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		for _, childApp := range childApps {
 			err = s.DeleteSwarmConfig(ctx, db, childApp, config)
 			if err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 		}
 	} else {
@@ -188,13 +188,13 @@ func (s *service) DeleteSwarmConfig(
 		inheritedConfigSetting, err := s.settingRepo.GetByName(ctx, db, base.NewObjectScopeApp(app.ParentID, app.ProjectID),
 			base.SettingTypeConfigFile, config.Name, false)
 		if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		if inheritedConfigSetting != nil {
 			err = s.addSwarmConfigsToService(ctx, db, app,
 				[]*entity.SwarmConfigRef{inheritedConfigSetting.MustAsConfigFile().SwarmRef})
 			if err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 		}
 	}
@@ -202,7 +202,7 @@ func (s *service) DeleteSwarmConfig(
 	// Now delete the config
 	_, err = s.dockerManager.ConfigRemove(ctx, config.SwarmRef.ConfigID)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	config.SwarmRef.ConfigID = ""
 	config.SwarmRef.ConfigName = ""
@@ -219,13 +219,13 @@ func (s *service) UpdateSwarmConfig(
 	// Remove the old config from services then delete it from the swarm
 	err = s.DeleteSwarmConfig(ctx, db, app, oldConfig)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	// Create a config in the swarm then add it to the services
 	_, err = s.CreateSwarmConfig(ctx, db, app, newConfig)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	return nil
@@ -242,7 +242,7 @@ func (s *service) removeSwarmConfigFromService(
 
 	inspect, err := s.dockerManager.ServiceInspect(ctx, serviceID)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	swarmSvc := &inspect.Service
 
@@ -262,7 +262,7 @@ func (s *service) removeSwarmConfigFromService(
 	swarmSvc.Spec.TaskTemplate.ContainerSpec.Configs = updateConfigs
 	_, err = s.dockerManager.ServiceUpdate(ctx, serviceID, &swarmSvc.Version, &swarmSvc.Spec)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -282,7 +282,7 @@ func (s *service) deleteOrphanSwarmConfig(
 		if errors.Is(err, apperrors.ErrNotFound) {
 			return nil
 		}
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	orphanSwarmConfig := &inspect.Config
 
@@ -295,7 +295,7 @@ func (s *service) deleteOrphanSwarmConfig(
 	// Remove the config from the swarm service of the app
 	err = s.removeSwarmConfigFromService(ctx, app.ServiceID, orphanSwarmRef)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	// If this app is parent of some other apps, also remove the config from the child apps
@@ -304,12 +304,12 @@ func (s *service) deleteOrphanSwarmConfig(
 			bunex.SelectWhere("app.parent_id = ?", app.ID),
 		)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		for _, childApp := range childApps {
 			err = s.removeSwarmConfigFromService(ctx, childApp.ServiceID, orphanSwarmRef)
 			if err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 		}
 	}
@@ -317,7 +317,7 @@ func (s *service) deleteOrphanSwarmConfig(
 	// Now delete the config
 	_, err = s.dockerManager.ConfigRemove(ctx, orphanSwarmConfig.ID)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	return nil

@@ -62,7 +62,7 @@ func (s *OAuth) Migrate(setting *Setting) (hasChange bool, err error) {
 func (s *OAuth) Decrypt() error {
 	_, err := s.ClientSecret.GetPlain()
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -72,7 +72,7 @@ func (s *Setting) AsOAuth() (*OAuth, error) {
 	if s.Type == base.SettingTypeGithubApp {
 		ghApp, err := s.AsGithubApp()
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		return ghApp.ConvertAsOAuth(), nil
 	}

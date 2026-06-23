@@ -17,12 +17,12 @@ func (uc *UC) TestGithubAppConn(
 ) (*githubappdto.TestGithubAppConnResp, error) {
 	client, err := github.NewFromApp(req.GhAppID, req.GhInstallationID, reflectutil.UnsafeStrToBytes(req.PrivateKey))
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	_, _, err = client.ListInstallations(ctx, &basedto.Paging{Limit: 1})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &githubappdto.TestGithubAppConnResp{}, nil

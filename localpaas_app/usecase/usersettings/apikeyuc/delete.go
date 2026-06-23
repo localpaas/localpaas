@@ -16,7 +16,7 @@ func (uc *UC) DeleteAPIKey(
 	req *apikeydto.DeleteAPIKeyReq,
 ) (*apikeydto.DeleteAPIKeyResp, error) {
 	if auth.User.IsDemoUser() {
-		return nil, apperrors.Wrap(apperrors.ErrUserDemoUnauthorized)
+		return nil, apperrors.New(apperrors.ErrUserDemoUnauthorized)
 	}
 
 	req.Type = currentSettingType
@@ -26,7 +26,7 @@ func (uc *UC) DeleteAPIKey(
 		},
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &apikeydto.DeleteAPIKeyResp{}, nil

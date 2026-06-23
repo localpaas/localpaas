@@ -36,7 +36,7 @@ func (uc *UC) CreateProject(
 	projectData := &createProjectData{}
 	err := uc.loadProjectData(ctx, uc.db, auth, req, projectData)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	persistingData := &persistingProjectData{}
@@ -45,12 +45,12 @@ func (uc *UC) CreateProject(
 	err = transaction.Execute(ctx, uc.db, func(db database.Tx) error {
 		err = uc.persistData(ctx, db, persistingData)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		return nil
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &projectdto.CreateProjectResp{
@@ -71,14 +71,13 @@ func (uc *UC) loadProjectData(
 ) error {
 	data.ProjectKey = projecthelper.CalcProjectKey(req.Name)
 	if gofn.Contain(base.UnallowedProjectKeys, data.ProjectKey) {
-		return apperrors.NewParamInvalid(apperrors.Fmt("Project name '%v'", req.Name)).
-			WithMsgLog("project name is not allowed")
+		return apperrors.New(apperrors.ErrProjectNameNotAllowed).WithParam("Name", req.Name)
 	}
 
 	// Project key must be unique
 	conflictProject, err := uc.projectRepo.GetByKey(ctx, db, data.ProjectKey, bunex.SelectColumns("id"))
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	if conflictProject != nil {
 		return apperrors.NewAlreadyExist("Project").
@@ -88,7 +87,7 @@ func (uc *UC) loadProjectData(
 	// Project name must be unique
 	conflictProject, err = uc.projectRepo.GetByName(ctx, db, req.Name, bunex.SelectColumns("id"))
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	if conflictProject != nil {
 		return apperrors.NewAlreadyExist("Project").
@@ -99,7 +98,7 @@ func (uc *UC) loadProjectData(
 	if req.Owner.ID != "" {
 		_, err = uc.userService.LoadUser(ctx, db, req.Owner.ID)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	} else {
 		req.Owner.ID = auth.User.ID
@@ -250,7 +249,7 @@ func (uc *UC) persistData(
 ) error {
 	err := uc.projectService.PersistProjectData(ctx, db, &persistingData.PersistingProjectData)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

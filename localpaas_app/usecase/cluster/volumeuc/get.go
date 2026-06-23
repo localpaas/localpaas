@@ -16,14 +16,14 @@ func (uc *UC) GetVolume(
 ) (*volumedto.GetVolumeResp, error) {
 	inspect, err := uc.dockerManager.VolumeInspect(ctx, req.VolumeID)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	volume := &inspect.Volume
 
 	if req.ProjectID != "" {
 		project, err := uc.projectService.LoadProject(ctx, uc.db, req.ProjectID, true)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 
 		if volume.Labels[docker.StackLabelNamespace] != project.Key {

@@ -85,7 +85,7 @@ func (s *SystemBackup) Migrate(setting *Setting) (hasChange bool, err error) {
 func (s *SystemBackup) Decrypt() error {
 	_, err := s.Encryption.Secret.GetPlain()
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

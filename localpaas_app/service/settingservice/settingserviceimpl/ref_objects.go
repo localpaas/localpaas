@@ -46,7 +46,7 @@ func (s *service) LoadReferenceObjectsByIDs(
 	if len(refIDs.RefUserIDs) > 0 {
 		refObjects.RefUsers, err = s.userService.LoadUsers(ctx, db, refIDs.RefUserIDs, errorIfUnavail)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 	}
 
@@ -63,7 +63,7 @@ func (s *service) LoadReferenceObjectsByIDs(
 		refObjects.RefApps, err = s.LoadReferenceApps(ctx, db, projectID, requireActive,
 			errorIfUnavail, refIDs.RefAppIDs)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 	}
 
@@ -72,7 +72,7 @@ func (s *service) LoadReferenceObjectsByIDs(
 		refObjects.RefSettings, err = s.LoadReferenceSettings(ctx, db, scope, requireActive,
 			errorIfUnavail, refIDs.RefSettingIDs)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 	}
 
@@ -85,7 +85,7 @@ func (s *service) LoadReferenceObjectsByIDs(
 	newRecursiveRefObjects, err := s.LoadReferenceObjectsByIDs(ctx, db, scope, requireActive,
 		errorIfUnavail, newRecursiveRefIDs)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	refObjects.AddRefObjects(newRecursiveRefObjects)
 
@@ -110,7 +110,7 @@ func (s *service) LoadReferenceSettings(
 
 	settings, _, err := s.settingRepo.List(ctx, db, scope, nil, listOpts...)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	settingMap = entityutil.SliceToIDMap(settings)
 
@@ -148,7 +148,7 @@ func (s *service) LoadReferenceApps(
 
 	apps, err := s.appRepo.ListByIDs(ctx, db, projectID, appIDs, opts...)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	appMap = entityutil.SliceToIDMap(apps)
 

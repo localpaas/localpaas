@@ -26,7 +26,7 @@ func (uc *UC) PrepareAppCopy(
 		),
 	)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	if app.ProjectID != req.ProjectID {
 		return nil, apperrors.New(apperrors.ErrUnauthorized)
@@ -35,12 +35,12 @@ func (uc *UC) PrepareAppCopy(
 	refObjects, err := uc.settingService.LoadReferenceObjects(ctx, uc.db, app.GetObjectScope(),
 		true, false, app.Settings...)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	resp, err := appdto.TransformAppCopyPreparationData(app, refObjects)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &appdto.PrepareAppCopyResp{

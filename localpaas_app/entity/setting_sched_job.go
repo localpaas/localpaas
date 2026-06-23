@@ -60,18 +60,18 @@ func (s *SchedJobSchedule) Equal(oldSched *SchedJobSchedule) bool {
 func (s *SchedJobSchedule) IsValid() error {
 	if s.CronExpr != "" {
 		if s.Interval > 0 {
-			return apperrors.NewValueInvalid("Schedule")
+			return apperrors.NewArgumentInvalid("Schedule")
 		}
 		_, err := cronParser.Parse(s.CronExpr)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		return nil
 	}
 	if s.Interval > 0 {
 		return nil
 	}
-	return apperrors.NewValueInvalid("Schedule")
+	return apperrors.NewArgumentInvalid("Schedule")
 }
 
 func (s *SchedJobSchedule) ParseCronExpr() (cron.Schedule, error) {
@@ -80,14 +80,14 @@ func (s *SchedJobSchedule) ParseCronExpr() (cron.Schedule, error) {
 	}
 	sched, err := cronParser.Parse(s.CronExpr)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return sched, nil
 }
 
 func (s *SchedJobSchedule) CalcNextRuns(fromTime time.Time, count int) (res []time.Time, err error) {
 	if count == 0 {
-		return nil, apperrors.NewValueInvalid("count")
+		return nil, apperrors.NewArgumentInvalid("count")
 	}
 
 	nextRunAt := s.InitialTime
@@ -119,7 +119,7 @@ func (s *SchedJobSchedule) CalcNextRuns(fromTime time.Time, count int) (res []ti
 		}
 		cronSched, err := cronParser.Parse(s.CronExpr)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		for {
 			nextRunAt = cronSched.Next(nextRunAt)
@@ -134,12 +134,12 @@ func (s *SchedJobSchedule) CalcNextRuns(fromTime time.Time, count int) (res []ti
 		return res, nil
 	}
 
-	return nil, apperrors.NewValueInvalid("Schedule")
+	return nil, apperrors.NewArgumentInvalid("Schedule")
 }
 
 func (s *SchedJobSchedule) CalcNextRunsInRange(fromTime, toTime time.Time) (res []time.Time, err error) {
 	if toTime.IsZero() {
-		return nil, apperrors.NewValueInvalid("toTime")
+		return nil, apperrors.NewArgumentInvalid("toTime")
 	}
 	nextRunAt := s.InitialTime
 
@@ -171,7 +171,7 @@ func (s *SchedJobSchedule) CalcNextRunsInRange(fromTime, toTime time.Time) (res 
 		}
 		cronSched, err := cronParser.Parse(s.CronExpr)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		for {
 			nextRunAt = cronSched.Next(nextRunAt)
@@ -186,7 +186,7 @@ func (s *SchedJobSchedule) CalcNextRunsInRange(fromTime, toTime time.Time) (res 
 		return res, nil
 	}
 
-	return nil, apperrors.NewValueInvalid("Schedule")
+	return nil, apperrors.NewArgumentInvalid("Schedule")
 }
 
 func (s *SchedJobSchedule) AdjustInitialTime(initialTimeAdj time.Time) bool {

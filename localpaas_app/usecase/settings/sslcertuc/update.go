@@ -24,12 +24,12 @@ func (uc *UC) UpdateSSLCert(
 		VerifyingRefIDs: newCert.GetRefObjectIDs(),
 		AfterLoading: func(ctx context.Context, db database.Tx, data *settings.UpdateSettingData) error {
 			if err := uc.verifyDomainInProject(ctx, db, req.Scope, newCert); err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 
 			currCert, err := data.Setting.AsSSLCert()
 			if err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 			switch newCert.CertType {
 			case base.SSLCertTypeLetsEncrypt, base.SSLCertTypeZeroSSL, base.SSLCertTypeGoogleTrust:
@@ -51,33 +51,33 @@ func (uc *UC) UpdateSSLCert(
 		) error {
 			err := pData.Setting.SetData(newCert)
 			if err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 
 			if reObtainCert {
 				refObjects, err := uc.SettingService.LoadReferenceObjects(ctx, db, req.Scope,
 					true, true, pData.Setting)
 				if err != nil {
-					return apperrors.Wrap(err)
+					return apperrors.New(err)
 				}
 
 				_, err = uc.sslService.ObtainCert(ctx, pData.Setting, refObjects, false)
 				if err != nil {
-					return apperrors.Wrap(err)
+					return apperrors.New(err)
 				}
 			}
 
 			// Save SSL cert/key files in a directory with forceRecreate=true
 			err = uc.sslService.WriteCertFiles(true, pData.Setting)
 			if err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 
 			return nil
 		},
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &sslcertdto.UpdateSSLCertResp{}, nil

@@ -28,10 +28,10 @@ func (uc *UC) TestAccessTokenConn(
 	case base.AccessTokenKindBitbucket, base.AccessTokenKindGogs:
 		fallthrough
 	default:
-		err = apperrors.NewUnsupported(apperrors.Fmt("Git source '%v'", req.Kind))
+		err = apperrors.New(apperrors.ErrGitTypeUnsupported).WithParam("Type", req.Kind)
 	}
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &accesstokendto.TestAccessTokenConnResp{}, nil
@@ -43,11 +43,11 @@ func (uc *UC) testGithubTokenConn(
 ) error {
 	client, err := github.NewFromPersonalToken(req.Token)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	_, _, err = client.ListUserRepos(ctx, &basedto.Paging{Limit: 1})
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -58,11 +58,11 @@ func (uc *UC) testGitlabTokenConn(
 ) error {
 	client, err := gitlab.NewFromToken(req.Token, req.BaseURL)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	_, _, err = client.ListAllProjects(ctx, &basedto.Paging{Limit: 1})
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -73,11 +73,11 @@ func (uc *UC) testGiteaTokenConn(
 ) error {
 	client, err := gitea.NewFromToken(req.Token, req.BaseURL)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	_, _, err = client.ListAllRepos(ctx, &basedto.Paging{Limit: 1})
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

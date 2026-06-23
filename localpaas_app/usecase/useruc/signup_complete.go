@@ -24,7 +24,7 @@ func (uc *UC) CompleteUserSignup(
 		signupData := &userSignupData{}
 		err := uc.loadUserSignupData(ctx, db, req, signupData)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		persistingData := &persistingUserSignupData{}
@@ -35,7 +35,7 @@ func (uc *UC) CompleteUserSignup(
 		return uc.persistUserSignupData(ctx, db, persistingData)
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &userdto.CompleteUserSignupResp{}, nil
@@ -65,7 +65,7 @@ func (uc *UC) loadUserSignupData(
 		bunex.SelectRelationIf(req.Photo.IsChanged(), "PhotoData"),
 	)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	if user.Status != base.UserStatusPending {
@@ -78,10 +78,10 @@ func (uc *UC) loadUserSignupData(
 	if req.Username != "" && req.Username != user.Username {
 		conflictUser, err := uc.userRepo.GetByUsername(ctx, db, req.Username)
 		if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		if conflictUser != nil {
-			return apperrors.NewAlreadyExist(apperrors.Fmt("Username '%v'", req.Username)).
+			return apperrors.New(apperrors.ErrUsernameUnavailable).
 				WithMsgLog("user '%s' already exists", req.Username)
 		}
 	}
@@ -106,17 +106,17 @@ func (uc *UC) preparePersistingUserSignupData(
 		user.Password = ""
 	} else {
 		if req.Password == "" {
-			return apperrors.NewParamInvalid("Password").
+			return apperrors.NewArgumentInvalid("Password").
 				WithMsgLog("password is required")
 		}
 		err := uc.userService.ChangePassword(user, req.Password, userservice.SkipCheckingCurrentPassword)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	}
 	if user.SecurityOption == base.UserSecurityPassword2FA {
 		if req.Passcode == "" || req.MFATotpSecret == "" {
-			return apperrors.NewParamInvalid("Passcode").
+			return apperrors.NewArgumentInvalid("Passcode").
 				WithMsgLog("passcode and totp secret are required")
 		}
 		if !totp.VerifyPasscode(req.Passcode, req.MFATotpSecret) {

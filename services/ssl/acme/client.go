@@ -137,12 +137,12 @@ func (client *Client) ObtainCertificate(
 	// New users will need to register
 	err := client.registerUser(ctx)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	certKeyType, err := client.getKeyType(keyType)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	certificates, err := client.client.Certificate.Obtain(ctx, certificate.ObtainRequest{
@@ -164,7 +164,7 @@ func (client *Client) GetRenewalInfo(
 	// New users will need to register
 	err := client.registerUser(ctx)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	x509Cert, err := certcrypto.ParsePEMCertificate(cert)

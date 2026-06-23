@@ -23,14 +23,14 @@ func (uc *UC) CreateImage(
 	data := &createImageData{}
 	err := uc.loadImageData(ctx, uc.db, req, data)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	_, err = uc.dockerManager.ImagePull(ctx, req.Name, func(opts *client.ImagePullOptions) {
 		opts.RegistryAuth = data.AuthHeader
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &imagedto.CreateImageResp{
@@ -53,20 +53,20 @@ func (uc *UC) loadImageData(
 		regAuth, err := uc.settingRepo.GetByID(ctx, db, base.NewObjectScopeGlobal(), base.SettingTypeRegistryAuth,
 			req.RegistryAuth.ID, true)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		data.RegistryAuth = regAuth.MustAsRegistryAuth()
 		password, err := data.RegistryAuth.Password.GetPlain()
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		data.AuthHeader, err = docker.GenerateAuthHeader(&registry.AuthConfig{
 			Username: data.RegistryAuth.Username,
 			Password: password,
 		})
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	}
 

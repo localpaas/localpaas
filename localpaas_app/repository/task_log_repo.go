@@ -44,7 +44,7 @@ func (repo *taskLogRepo) GetByID(ctx context.Context, db database.IDB, id string
 		return nil, apperrors.NewNotFound("TaskLog").WithCause(err)
 	}
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return log, nil
 }
@@ -68,7 +68,7 @@ func (repo *taskLogRepo) List(ctx context.Context, db database.IDB, taskID, targ
 		// Counts the total first
 		total, err := query.Count(ctx)
 		if err != nil {
-			return nil, nil, apperrors.Wrap(err)
+			return nil, nil, apperrors.New(err)
 		}
 		pagingMeta.Total = total
 
@@ -98,7 +98,7 @@ func (repo *taskLogRepo) InsertMulti(ctx context.Context, db database.IDB, logs 
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -106,14 +106,14 @@ func (repo *taskLogRepo) InsertMulti(ctx context.Context, db database.IDB, logs 
 func (repo *taskLogRepo) DeleteHard(ctx context.Context, db database.IDB,
 	opts ...bunex.DeleteQueryOption) error {
 	if len(opts) == 0 {
-		return apperrors.NewParamInvalid("opts").WithMsgLog("DeleteHard requires at least one condition")
+		return apperrors.NewArgumentInvalid("opts").WithMsgLog("DeleteHard requires at least one condition")
 	}
 	query := db.NewDelete().Model((*entity.TaskLog)(nil)).ForceDelete() /* No soft delete */
 	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

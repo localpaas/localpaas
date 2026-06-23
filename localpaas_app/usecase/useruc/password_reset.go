@@ -26,10 +26,10 @@ func (uc *UC) ResetPassword(
 			bunex.SelectFor("UPDATE"),
 		)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		if user.IsDemoUser() {
-			return apperrors.Wrap(apperrors.ErrUserDemoUnauthorized)
+			return apperrors.New(apperrors.ErrUserDemoUnauthorized)
 		}
 
 		err = uc.userService.ChangePassword(user, req.Password, userservice.SkipCheckingCurrentPassword)
@@ -42,13 +42,13 @@ func (uc *UC) ResetPassword(
 			bunex.UpdateColumns("updated_at", "password"),
 		)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		return nil
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &userdto.ResetPasswordResp{}, nil

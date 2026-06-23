@@ -19,17 +19,17 @@ func (uc *UC) GetAppServiceSettings(
 		bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
 	)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	service, err := uc.appService.ServiceInspect(ctx, app.ServiceID, true)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	resp, err := appsettingsdto.TransformServiceSettings(service)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &appsettingsdto.GetAppServiceSettingsResp{

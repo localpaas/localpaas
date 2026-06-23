@@ -19,7 +19,7 @@ func (s *service) UpdateAppGlobalRoutingNetwork(
 	httpSettings := httpSetting.MustAsAppHttpSettings()
 	globalNetworkID, err := s.GetGlobalRoutingNetworkID(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	spec := &service.Spec

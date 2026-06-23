@@ -18,14 +18,14 @@ func (uc *UC) GetNetworkInspection(
 ) (*networkdto.GetNetworkInspectionResp, error) {
 	inspect, err := uc.dockerManager.NetworkInspect(ctx, req.NetworkID)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	network := &inspect.Network
 
 	if req.ProjectID != "" {
 		project, err := uc.projectService.LoadProject(ctx, uc.db, req.ProjectID, true)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 
 		if network.Labels[docker.StackLabelNamespace] != project.Key {
@@ -35,7 +35,7 @@ func (uc *UC) GetNetworkInspection(
 
 	resp, err := json.MarshalIndent(network, "", "   ")
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &networkdto.GetNetworkInspectionResp{

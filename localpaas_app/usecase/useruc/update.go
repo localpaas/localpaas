@@ -22,14 +22,14 @@ func (uc *UC) UpdateUser(
 	req *userdto.UpdateUserReq,
 ) (*userdto.UpdateUserResp, error) {
 	if auth.User.IsDemoUser() {
-		return nil, apperrors.Wrap(apperrors.ErrUserDemoUnauthorized)
+		return nil, apperrors.New(apperrors.ErrUserDemoUnauthorized)
 	}
 
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
 		userData := &userUpdateData{}
 		err := uc.loadUserDataForUpdate(ctx, db, auth, req, userData)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		persistingData := &userservice.PersistingUserData{}
@@ -38,13 +38,13 @@ func (uc *UC) UpdateUser(
 		// Revoke target user's JWT, user needs to re-login
 		err = uc.userTokenRepo.DelAll(ctx, req.ID)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		return uc.userService.PersistUserData(ctx, db, persistingData)
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &userdto.UpdateUserResp{}, nil
@@ -65,7 +65,7 @@ func (uc *UC) loadUserDataForUpdate(
 		bunex.SelectFor("UPDATE"),
 	)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	data.User = user
 
@@ -73,10 +73,10 @@ func (uc *UC) loadUserDataForUpdate(
 	if req.Username != "" && req.Username != user.Username {
 		conflictUser, err := uc.userRepo.GetByUsername(ctx, db, req.Username)
 		if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		if conflictUser != nil {
-			return apperrors.NewAlreadyExist(apperrors.Fmt("Username '%v'", req.Username)).
+			return apperrors.New(apperrors.ErrUsernameUnavailable).
 				WithMsgLog("user '%s' already exists", req.Username)
 		}
 	}
@@ -85,7 +85,7 @@ func (uc *UC) loadUserDataForUpdate(
 	if req.Email != "" && req.Email != user.Email {
 		conflictUser, err := uc.userRepo.GetByEmail(ctx, db, req.Email)
 		if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		if conflictUser != nil {
 			return apperrors.New(apperrors.ErrEmailUnavailable).

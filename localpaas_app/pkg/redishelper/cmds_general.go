@@ -20,7 +20,7 @@ func ScanKeys(
 		var keys []string
 		keys, cursor, err = cmder.Scan(ctx, cursor, pattern, 100).Result() //nolint:mnd
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		allKeys = append(allKeys, keys...)
 		if cursor == 0 {
@@ -58,7 +58,7 @@ func MGet[T any](
 		if errors.Is(err, redis.Nil) {
 			return nil, nil
 		}
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return unmarshalSlice[T](slice...)
 }

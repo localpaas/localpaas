@@ -34,7 +34,7 @@ func (e *Executor) execute(
 		TaskExecData: execData,
 	})
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

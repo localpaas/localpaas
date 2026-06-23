@@ -14,7 +14,7 @@ import (
 func (uc *UC) GetCurrentAuthByJWT(ctx context.Context, jwt string) (*basedto.Auth, error) {
 	user, err := uc.GetCurrentUserByJWT(ctx, jwt)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	auth := &basedto.Auth{User: user}
 	return auth, uc.verifyAuth(ctx, auth)
@@ -23,7 +23,7 @@ func (uc *UC) GetCurrentAuthByJWT(ctx context.Context, jwt string) (*basedto.Aut
 func (uc *UC) GetCurrentAuthByAPIKey(ctx context.Context, keyID, secret string) (*basedto.Auth, error) {
 	user, err := uc.GetCurrentUserByAPIKey(ctx, keyID, secret)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	auth := &basedto.Auth{User: user}
 	return auth, uc.verifyAuth(ctx, auth)

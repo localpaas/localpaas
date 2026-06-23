@@ -28,12 +28,12 @@ func (uc *UC) GetMe(
 
 	dbUser, err := uc.userRepo.GetByID(ctx, uc.db, user.ID, loadOpts...)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	userResp, err := sessiondto.TransformUserDetails(dbUser)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	respData := &sessiondto.GetMeDataResp{User: userResp}
@@ -41,7 +41,7 @@ func (uc *UC) GetMe(
 	if config.Current.SystemInfo.NextStep != "" && user.IsAdmin() {
 		sysStatus, err := uc.systemStatusRepo.Get(ctx, uc.db)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		config.Current.SystemInfo.NextStep = sysStatus.NextStep
 		respData.NextStep = string(sysStatus.NextStep)

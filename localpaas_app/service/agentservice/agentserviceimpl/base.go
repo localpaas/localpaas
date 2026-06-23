@@ -25,7 +25,7 @@ func (s *service) GetAgentAddrForNode(ctx context.Context, nodeID string) (strin
 		docker.FilterAdd(&opts.Filters, "desired-state", string(swarm.TaskStateRunning))
 	})
 	if err != nil {
-		return "", apperrors.Wrap(err)
+		return "", apperrors.New(err)
 	}
 	if len(resp.Items) == 0 {
 		return "", apperrors.New(apperrors.ErrInfraNotFound).

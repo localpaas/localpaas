@@ -74,7 +74,7 @@ func (s *service) migrateDBSchema(
 		_ = data.LogStore.Add(ctx, tasklog.NewOutFrame(line, tasklog.TsNow))
 	}
 
-	return apperrors.Wrap(err)
+	return apperrors.New(err)
 }
 
 func (s *service) migrateDBData(
@@ -96,7 +96,7 @@ func (s *service) migrateDBData(
 	}()
 
 	err = s.dbService.MigrateData(ctx, db)
-	return apperrors.Wrap(err)
+	return apperrors.New(err)
 }
 
 func (s *service) updateDbService(
@@ -124,7 +124,7 @@ func (s *service) updateDbService(
 
 	dbSvc, err := s.lpAppService.GetLpDbSwarmService(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	dbSvc.Spec.TaskTemplate.ContainerSpec.Image = args.TargetVersion.DbImage
@@ -137,25 +137,25 @@ func (s *service) updateDbService(
 
 	_, err = s.dockerManager.ServiceUpdate(ctx, dbSvc.ID, &dbSvc.Version, &dbSvc.Spec)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	// Wait for the update to finish
 	dbSvc, err = s.dockerManager.ServiceUpdateWait(ctx, dbSvc.ID, dbServiceUpdateCheckInterval)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	if dbSvc.UpdateStatus != nil && dbSvc.UpdateStatus.State == swarm.UpdateStateRollbackCompleted {
 		_ = data.LogStore.Add(ctx, tasklog.NewWarnFrame("service db is rolled back",
 			tasklog.TsNow))
-		return apperrors.Wrap(apperrors.ErrActionFailed)
+		return apperrors.New(apperrors.ErrActionFailed)
 	}
 
 	// Wait for the service up and running
 	running, err := s.dockerManager.ServiceWaitUntilRunning(ctx, dbSvc.ID, true,
 		dbServiceRequiredRunningDuration, dbServiceUpdateCheckInterval)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	if !running {
 		return apperrors.New(apperrors.ErrServiceNotRunning).WithParam("Name", "db")
@@ -164,13 +164,13 @@ func (s *service) updateDbService(
 	// Migrate DB schema
 	err = s.migrateDBSchema(ctx, data)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	// Migrate DB data
 	err = s.migrateDBData(ctx, db, data)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	return nil

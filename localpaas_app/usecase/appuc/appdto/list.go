@@ -46,7 +46,7 @@ func TransformApps(apps []*entity.App, input *AppTransformationInput) ([]*AppRes
 	for _, app := range apps {
 		appResp, err := TransformApp(app, input)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		resp = append(resp, appResp)
 	}

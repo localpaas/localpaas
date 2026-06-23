@@ -21,7 +21,7 @@ func (uc *UC) GetFileDownloadURL(
 		bunex.SelectWhere("file.status = ?", base.FileStatusActive),
 	)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	resp, err := uc.fileService.GetDownloadURL(ctx, uc.db, auth, &fileservice.GetDownloadURLReq{
@@ -32,7 +32,7 @@ func (uc *UC) GetFileDownloadURL(
 		ViewInline:   req.ViewInline,
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &filedto.GetFileDownloadURLResp{

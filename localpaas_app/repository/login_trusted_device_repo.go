@@ -49,7 +49,7 @@ func (repo *loginTrustedDeviceRepo) GetByUserAndDevice(
 			WithMsgLog("user id: %s, device id: %s", userID, deviceID)
 	}
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return trustedDevice, nil
 }
@@ -72,7 +72,7 @@ func (repo *loginTrustedDeviceRepo) UpsertMulti(ctx context.Context, db database
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -80,14 +80,14 @@ func (repo *loginTrustedDeviceRepo) UpsertMulti(ctx context.Context, db database
 func (repo *loginTrustedDeviceRepo) DeleteHard(ctx context.Context, db database.IDB,
 	opts ...bunex.DeleteQueryOption) error {
 	if len(opts) == 0 {
-		return apperrors.NewParamInvalid("opts").WithMsgLog("DeleteHard requires at least one condition")
+		return apperrors.NewArgumentInvalid("opts").WithMsgLog("DeleteHard requires at least one condition")
 	}
 	query := db.NewDelete().Model((*entity.LoginTrustedDevice)(nil)).ForceDelete() /* No soft delete */
 	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

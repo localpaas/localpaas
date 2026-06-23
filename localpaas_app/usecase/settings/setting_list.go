@@ -49,7 +49,7 @@ func (uc *BaseUC) ListSetting(
 
 	err = uc.loadSettingScopeData(ctx, db, &req.BaseSettingReq, &data.BaseSettingData)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	listOpts := []bunex.SelectQueryOption{
@@ -78,7 +78,7 @@ func (uc *BaseUC) ListSetting(
 
 	settings, paging, err := uc.SettingRepo.List(ctx, db, req.Scope, &req.Paging, listOpts...)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	for _, setting := range settings {
@@ -88,7 +88,7 @@ func (uc *BaseUC) ListSetting(
 	refObjects, err := uc.SettingService.LoadReferenceObjects(ctx, db, req.Scope, true,
 		false, settings...)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &ListSettingResp{

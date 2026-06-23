@@ -32,28 +32,28 @@ func (uc *UC) DeployApp(
 		data = &deployAppData{}
 		err := uc.loadAppDeploymentSettingsForUpdate(ctx, db, req, data)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		persistingData = &persistingAppData{}
 		err = uc.prepareUpdatingAppDeploymentSettings(auth, req, data, persistingData)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		err = uc.persistAppData(ctx, db, persistingData)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		return nil
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	err = uc.postTransactionAppDeploymentSettings(ctx, persistingData)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	deployment, _ := gofn.First(persistingData.UpsertingDeployments)
@@ -89,7 +89,7 @@ func (uc *UC) loadAppDeploymentSettingsForUpdate(
 		),
 	)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	data.App = app
 	data.DeploymentSettingEnt, _ = gofn.First(app.Settings)
@@ -108,18 +108,18 @@ func (uc *UC) loadAppDeploymentSettingsForUpdate(
 
 	newSettings, err := copier.CopyAs(currSettings)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	data.NewDeploymentSettings = newSettings
 	if err = req.ApplyTo(newSettings); err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	// Make sure all reference settings used in this settings exist actively
 	refObjects, err := uc.settingService.LoadReferenceObjectsByIDs(ctx, db, app.GetObjectScope(),
 		true, true, newSettings.GetRefObjectIDs())
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	// Validate active deployment method
@@ -138,10 +138,10 @@ func (uc *UC) loadAppDeploymentSettingsForUpdate(
 		// that can be accessed by all the nodes in the cluster.
 		isMultiNode, err := uc.clusterService.IsMultiNode(ctx)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		if isMultiNode && repoSource.PushToRegistry.ID == "" {
-			return apperrors.Wrap(apperrors.ErrMultiNodeClusterRequireRegistryForImages)
+			return apperrors.New(apperrors.ErrMultiNodeClusterRequireRegistryForImages)
 		}
 
 		// Validate existence of repo and ref
@@ -154,12 +154,12 @@ func (uc *UC) loadAppDeploymentSettingsForUpdate(
 				ReferenceName: plumbing.ReferenceName(repoSource.RepoRef),
 			})
 			if err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 		}
 
 	default:
-		return apperrors.NewValueInvalid("deployment method")
+		return apperrors.NewArgumentInvalid("deployment method")
 	}
 
 	return nil
@@ -184,7 +184,7 @@ func (uc *UC) prepareUpdatingAppDeploymentSettings(
 	// Create a deployment and a task for it
 	deployment, deploymentTask, err := uc.appDeploymentService.CreateDeploymentAndTask(app, data.NewDeploymentSettings)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	// Set NoCache for the current deployment only if configured
 	deployment.Settings.NoCache = req.NoCache
@@ -208,7 +208,7 @@ func (uc *UC) persistAppData(
 ) error {
 	err := uc.appService.PersistAppData(ctx, db, &persistingData.PersistingAppData)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -220,7 +220,7 @@ func (uc *UC) postTransactionAppDeploymentSettings(
 	for _, task := range persistingData.UpsertingTasks {
 		err := uc.taskQueue.ScheduleTask(ctx, task)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	}
 	return nil

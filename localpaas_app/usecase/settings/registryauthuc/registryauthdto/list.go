@@ -43,7 +43,7 @@ func TransformRegistryAuths(
 	for _, setting := range settings {
 		item, err := TransformRegistryAuth(setting, refObjects)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		resp = append(resp, item)
 	}

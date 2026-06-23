@@ -54,7 +54,7 @@ func (repo *deploymentRepo) GetByID(ctx context.Context, db database.IDB, appID,
 		return nil, apperrors.NewNotFound("Deployment").WithCause(err)
 	}
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return deployment, nil
 }
@@ -75,7 +75,7 @@ func (repo *deploymentRepo) List(ctx context.Context, db database.IDB, appID str
 		// Counts the total first
 		total, err := query.Count(ctx)
 		if err != nil {
-			return nil, nil, apperrors.Wrap(err)
+			return nil, nil, apperrors.New(err)
 		}
 		pagingMeta.Total = total
 
@@ -125,7 +125,7 @@ func (repo *deploymentRepo) UpsertMulti(ctx context.Context, db database.IDB, de
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -137,7 +137,7 @@ func (repo *deploymentRepo) Update(ctx context.Context, db database.IDB, deploym
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -153,7 +153,7 @@ func (repo *deploymentRepo) DeleteAllByApps(ctx context.Context, db database.IDB
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -161,14 +161,14 @@ func (repo *deploymentRepo) DeleteAllByApps(ctx context.Context, db database.IDB
 func (repo *deploymentRepo) DeleteHard(ctx context.Context, db database.IDB,
 	opts ...bunex.DeleteQueryOption) error {
 	if len(opts) == 0 {
-		return apperrors.NewParamInvalid("opts").WithMsgLog("DeleteHard requires at least one condition")
+		return apperrors.NewArgumentInvalid("opts").WithMsgLog("DeleteHard requires at least one condition")
 	}
 	query := db.NewDelete().Model((*entity.Deployment)(nil)).ForceDelete().WhereAllWithDeleted()
 	query = bunex.ApplyDelete(query, opts...)
 
 	_, err := query.Exec(ctx)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

@@ -87,13 +87,13 @@ func (s *Email) Decrypt() error {
 	if s.SMTP != nil {
 		_, err := s.SMTP.Password.GetPlain()
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	}
 	if s.HTTP != nil {
 		_, err := s.HTTP.Password.GetPlain()
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	}
 	return nil

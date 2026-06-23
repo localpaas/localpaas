@@ -32,13 +32,13 @@ func (uc *UC) UpdateAccessToken(
 			pData.Setting.ExpireAt = req.ExpireAt
 			err := pData.Setting.SetData(accessToken)
 			if err != nil {
-				return apperrors.Wrap(err)
+				return apperrors.New(err)
 			}
 			return nil
 		},
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &accesstokendto.UpdateAccessTokenResp{}, nil

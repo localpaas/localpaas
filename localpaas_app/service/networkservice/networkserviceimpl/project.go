@@ -28,7 +28,7 @@ func (s *service) GetOrCreateProjectNetwork(
 	netName := s.GetProjectNetworkName(project, env)
 	inspect, err := s.dockerManager.NetworkInspect(ctx, netName)
 	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	if inspect == nil { // not found, create one
@@ -42,12 +42,12 @@ func (s *service) GetOrCreateProjectNetwork(
 				}
 			})
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 		// Inspect again
 		inspect, err = s.dockerManager.NetworkInspect(ctx, netName)
 		if err != nil {
-			return nil, apperrors.Wrap(err)
+			return nil, apperrors.New(err)
 		}
 	}
 
@@ -62,7 +62,7 @@ func (s *service) ListProjectNetworks(
 		docker.FilterAdd(&opts.Filters, "label", docker.StackLabelNamespace+"="+project.Key)
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return resp.Items, nil
 }
@@ -77,7 +77,7 @@ func (s *service) RemoveProjectNetwork(
 		if errors.Is(err, apperrors.ErrNotFound) {
 			return nil
 		}
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }
@@ -88,7 +88,7 @@ func (s *service) RemoveAllProjectNetworks(
 ) error {
 	networks, err := s.ListProjectNetworks(ctx, project)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	for i := range networks {
 		net := &networks[i]
@@ -96,7 +96,7 @@ func (s *service) RemoveAllProjectNetworks(
 		err = errors.Join(err, e)
 	}
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

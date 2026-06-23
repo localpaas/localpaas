@@ -38,7 +38,7 @@ func (uc *UC) persistData(
 ) error {
 	err := uc.appService.PersistAppData(ctx, db, &persistingData.PersistingAppData)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

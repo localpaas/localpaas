@@ -67,12 +67,13 @@ func (h *Handler) checkUploadPermission(ctx *gin.Context, req *filedto.UploadReq
 	case base.FileTypeSystemBackup, base.FileTypeRepoCache:
 		fallthrough
 	default:
-		return nil, apperrors.NewUnsupported(apperrors.Fmt("File type '%v'", req.FileType))
+		return nil, apperrors.New(apperrors.ErrFileTypeNotSupported).
+			WithParam("SupportedTypes", []base.FileType{base.FileTypeBuildSource})
 	}
 
 	auth, err = h.authHandler.GetCurrentAuth(ctx, accessCheck)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	return auth, nil
 }

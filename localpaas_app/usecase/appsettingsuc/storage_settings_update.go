@@ -41,7 +41,7 @@ func (uc *UC) UpdateAppStorageSettings(
 		data := &updateAppStorageSettingsData{}
 		err := uc.loadAppStorageSettingsForUpdate(ctx, db, req, data)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		persistingData := &persistingAppData{}
@@ -49,17 +49,17 @@ func (uc *UC) UpdateAppStorageSettings(
 
 		err = uc.persistData(ctx, db, persistingData)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 
 		err = uc.applyAppStorageSettings(ctx, data)
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 		return nil
 	})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &appsettingsdto.UpdateAppStorageSettingsResp{}, nil
@@ -87,19 +87,19 @@ func (uc *UC) loadAppStorageSettingsForUpdate(
 		),
 	)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	data.App = app
 	data.Project = app.Project
 
 	service, err := uc.appService.ServiceInspect(ctx, app.ServiceID, false)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	data.Service = service
 
 	if data.Service == nil || data.Service.Version.Index != uint64(req.UpdateVer) { //nolint:gosec
-		return apperrors.Wrap(apperrors.ErrUpdateVerMismatched)
+		return apperrors.New(apperrors.ErrUpdateVerMismatched)
 	}
 
 	// Calculate mount keys of existing mounts to distinguish new changes
@@ -113,13 +113,13 @@ func (uc *UC) loadAppStorageSettingsForUpdate(
 	storageSetting, err := uc.settingRepo.GetSingle(ctx, db, base.NewObjectScopeProject(app.ProjectID),
 		base.SettingTypeStorageSettings, true)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	data.StorageSettings = storageSetting.MustAsStorageSettings()
 
 	for _, reqMnt := range req.Mounts {
 		if !gofn.Contain(supportedMountTypes, reqMnt.Type) {
-			return apperrors.NewUnsupported(apperrors.Fmt("Mount type '%v'", reqMnt.Type))
+			return apperrors.New(apperrors.ErrMountTypeUnsupported).WithParam("Type", reqMnt.Type)
 		}
 		switch reqMnt.Type {
 		case mount.TypeBind:
@@ -131,10 +131,10 @@ func (uc *UC) loadAppStorageSettingsForUpdate(
 		case mount.TypeTmpfs:
 			err = uc.validateStorageSettingsTmpfsMount(reqMnt, data)
 		case mount.TypeNamedPipe, mount.TypeImage:
-			return apperrors.NewUnsupported(apperrors.Fmt("Mount type '%v'", reqMnt.Type))
+			return apperrors.New(apperrors.ErrMountTypeUnsupported).WithParam("Type", reqMnt.Type)
 		}
 		if err != nil {
-			return apperrors.Wrap(err)
+			return apperrors.New(err)
 		}
 	}
 
@@ -482,7 +482,7 @@ func (uc *UC) applyAppStorageSettings(
 
 	_, err := uc.dockerManager.ServiceUpdate(ctx, service.ID, &service.Version, &service.Spec)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 
 	return nil

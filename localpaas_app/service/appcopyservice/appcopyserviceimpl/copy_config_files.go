@@ -25,7 +25,7 @@ func (s *service) applySwarmConfigFiles(
 	}
 	data.TargetConfig, err = s.appService.CreateSwarmConfigs(ctx, db, app, configItems)
 	if err != nil {
-		return apperrors.Wrap(err)
+		return apperrors.New(err)
 	}
 	return nil
 }

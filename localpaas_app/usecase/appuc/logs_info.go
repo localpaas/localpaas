@@ -25,7 +25,7 @@ func (uc *UC) GetAppLogsInfo(
 		),
 	)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 	if app.ServiceID == "" {
 		return nil, apperrors.NewUnavailable("App service").
@@ -42,7 +42,7 @@ func (uc *UC) GetAppLogsInfo(
 
 	taskList, err := uc.dockerManager.ServiceTaskList(ctx, app.ServiceID, []swarm.TaskState{swarm.TaskStateRunning})
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	for _, item := range taskList.Items {

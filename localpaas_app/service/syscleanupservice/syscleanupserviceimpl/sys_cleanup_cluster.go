@@ -79,5 +79,5 @@ func (s *service) sysCleanupCluster(
 		}
 	}
 
-	return apperrors.Wrap(err)
+	return apperrors.New(err)
 }

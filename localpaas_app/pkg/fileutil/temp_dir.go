@@ -20,13 +20,13 @@ func CreateTempDir(baseDir, pattern string, perm os.FileMode) (dir string, err e
 
 	err = os.MkdirAll(dir, perm)
 	if err != nil {
-		return "", apperrors.Wrap(err)
+		return "", apperrors.New(err)
 	}
 
 	if pattern != "" {
 		dir, err = os.MkdirTemp(dir, pattern)
 		if err != nil {
-			return "", apperrors.Wrap(err)
+			return "", apperrors.New(err)
 		}
 	}
 
@@ -41,13 +41,13 @@ func CreateTempDirInAppPath(baseDir, pattern string, perm os.FileMode) (dir stri
 
 	err = os.MkdirAll(dir, perm)
 	if err != nil {
-		return "", apperrors.Wrap(err)
+		return "", apperrors.New(err)
 	}
 
 	if pattern != "" {
 		dir, err = os.MkdirTemp(dir, pattern)
 		if err != nil {
-			return "", apperrors.Wrap(err)
+			return "", apperrors.New(err)
 		}
 	}
 

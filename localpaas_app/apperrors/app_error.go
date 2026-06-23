@@ -9,8 +9,6 @@ import (
 
 	goerrors "github.com/go-errors/errors"
 	"github.com/hashicorp/go-multierror"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	"github.com/localpaas/localpaas/localpaas_app/infra/logging"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/translation"
@@ -63,9 +61,6 @@ type AppError interface {
 	Message(lang translation.Lang) (msg string, transErr error)
 	// Build builds error info for JSON API recommendation
 	Build(lang translation.Lang) *ErrorInfo
-
-	// UnwrapTilRoot unwraps til the root error
-	UnwrapTilRoot() error
 }
 
 // appError implements AppError interface
@@ -160,9 +155,9 @@ func (e *appError) Build(lang translation.Lang) *ErrorInfo {
 	errInfo.Status = e.getMappingStatus()
 	if errInfo.Status == 0 {
 		errInfo.Status = http.StatusInternalServerError
-		errInfo.Code = ErrInternalServer.Error()
+		errInfo.Code = ErrInternal.Error()
 	} else {
-		errInfo.Code = e.err.Error()
+		errInfo.Code = getMessageID(e.err)
 	}
 
 	detail, transErr := e.Message(lang)
@@ -215,9 +210,9 @@ func (e *appError) Message(lang translation.Lang) (msg string, transErr error) {
 		}
 	}
 
-	msgID := e.UnwrapTilRoot().Error()
+	msgID := getMessageID(e.err)
 	missingTranslation := false
-	if strings.HasPrefix(msgID, "ERR_") {
+	if msgID != "" {
 		var err error
 		msg, err = translation.LocalizeEx(lang, msgID, params)
 		if err != nil {
@@ -232,7 +227,7 @@ func (e *appError) Message(lang translation.Lang) (msg string, transErr error) {
 		if e.fallbackToErrorMsg {
 			msg = e.Error()
 		} else {
-			msg, _ = translation.Localize(lang, ErrInternalServer.Error()) // Show error 500
+			msg, _ = translation.Localize(lang, ErrInternal.Error()) // Show error 500
 		}
 	}
 	return msg, transErr //nolint:wrapcheck
@@ -255,33 +250,6 @@ func (e *appError) Unwrap() error {
 	return e.err
 }
 
-// UnwrapTilRoot keeps unwrapping until the root error
-func (e *appError) UnwrapTilRoot() error {
-	lastErr := e.err
-	for {
-		err := errorUnwrap(lastErr)
-		if err == nil {
-			return lastErr
-		}
-		lastErr = err
-	}
-}
-
-func errorUnwrap(err error) error {
-	u, ok := err.(interface{ Unwrap() error })
-	if ok {
-		return u.Unwrap() //nolint:wrapcheck
-	}
-	u2, ok := err.(interface{ Unwrap() []error })
-	if ok {
-		res := u2.Unwrap()
-		if len(res) > 0 {
-			return res[0]
-		}
-	}
-	return nil
-}
-
 func (e *appError) StackTrace() string {
 	if errWithStack, ok := errors.AsType[*goerrors.Error](e.err); ok {
 		return errWithStack.ErrorStack()
@@ -291,21 +259,74 @@ func (e *appError) StackTrace() string {
 }
 
 func (e *appError) getMappingStatus() int {
+	baseErr := getBaseError(e.err)
+	if baseErr != nil {
+		return errorStatusMap[baseErr]
+	}
+	return http.StatusInternalServerError
+}
+
+func getBaseError(err error) error {
 	// errorStatusMap[error] with an unhashable input error object
 	// can cause panic. We recover from panic and return 0.
 	defer func() {
 		_ = recover()
 	}()
-	err := e.err
-	for {
-		if err == nil {
-			return 0
-		}
-		if status, ok := errorStatusMap[err]; ok {
-			return status
-		}
-		err = errors.Unwrap(err)
+	if err == nil {
+		return nil
 	}
+	if _, ok := errorStatusMap[err]; ok {
+		return err
+	}
+	u, ok := err.(interface{ Unwrap() error })
+	if ok {
+		return getBaseError(u.Unwrap())
+	}
+	u2, ok := err.(interface{ Unwrap() []error })
+	if ok {
+		for _, err := range u2.Unwrap() {
+			if baseErr := getBaseError(err); baseErr != nil {
+				return baseErr
+			}
+		}
+	}
+	return nil
+}
+
+func getMessageID(err error) (msg string) {
+	if err == nil {
+		return ""
+	}
+	if isValidMessageID(err.Error()) {
+		return err.Error()
+	}
+	u, ok := err.(interface{ Unwrap() error })
+	if ok {
+		return getMessageID(u.Unwrap())
+	}
+	u2, ok := err.(interface{ Unwrap() []error })
+	if ok {
+		errs := u2.Unwrap()
+		for i := len(errs) - 1; i >= 0; i-- {
+			if getMessageID(errs[i]) != "" {
+				return errs[i].Error()
+			}
+		}
+	}
+	return ""
+}
+
+// isValidMessageID check if a string is a message ID (ERR_UPPERCASE_WORDS)
+func isValidMessageID(s string) bool {
+	if !strings.HasPrefix(s, "ERR_") {
+		return false
+	}
+	for _, ch := range s {
+		if ch != '_' && !('0' <= ch && ch <= '9') && !('A' <= ch && ch <= 'Z') { //nolint:staticcheck
+			return false
+		}
+	}
+	return true
 }
 
 func notifyTranslationMissing(e error, _ translation.Lang) {
@@ -331,31 +352,4 @@ func New(err error) AppError {
 		fallbackToErrorMsg: true,
 		err:                goerrors.Wrap(err, 1),
 	}
-}
-
-// ToGRPCError converts any error (including AppError) to a gRPC status error.
-func ToGRPCError(err error) error {
-	if err == nil {
-		return nil
-	}
-
-	// If it is already a gRPC status error, return as is
-	if _, ok := status.FromError(err); ok {
-		return err
-	}
-
-	if appErr, ok := errors.AsType[AppError](err); ok {
-		grpcCode := HTTPStatusToGRPCCode(appErr.StatusCode())
-
-		// Translate the error message using Default English Language
-		detail, _ := appErr.Message(translation.LangEn)
-		if detail == "" {
-			detail = appErr.Error()
-		}
-
-		return status.Error(grpcCode, detail) //nolint:wrapcheck
-	}
-
-	// Fallback to internal error code
-	return status.Error(codes.Internal, err.Error()) //nolint:wrapcheck
 }

@@ -106,7 +106,8 @@ func (uc *UC) BeginGithubAppManifestFlow(
 	case base.ObjectScopeApp, base.ObjectScopeUser:
 		fallthrough
 	default:
-		return nil, apperrors.NewUnsupported(apperrors.Fmt("Scope '%v'", req.Scope.ScopeType()))
+		return nil, apperrors.New(apperrors.ErrObjectScopeInvalid).
+			WithParam("Scope", req.Scope.ScopeType())
 	}
 
 	manifestCache := &cacheentity.GithubAppManifest{
@@ -117,7 +118,7 @@ func (uc *UC) BeginGithubAppManifestFlow(
 
 	err := uc.cacheAppManifestRepo.Set(ctx, appSetting.ID, manifestCache, appManifestCacheExp)
 	if err != nil {
-		return nil, apperrors.Wrap(err)
+		return nil, apperrors.New(err)
 	}
 
 	return &githubappdto.BeginGithubAppManifestFlowResp{
