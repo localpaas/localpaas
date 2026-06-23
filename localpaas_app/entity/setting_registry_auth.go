@@ -57,9 +57,12 @@ func (s *RegistryAuth) Migrate(setting *Setting) (hasChange bool, err error) {
 	return true, nil
 }
 
-func (s *RegistryAuth) MustDecrypt() *RegistryAuth {
-	s.Password.MustGetPlain()
-	return s
+func (s *RegistryAuth) Decrypt() error {
+	_, err := s.Password.GetPlain()
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
 }
 
 func (s *RegistryAuth) GenerateAuthHeader() (string, error) {

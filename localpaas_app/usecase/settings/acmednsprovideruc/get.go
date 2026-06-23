@@ -22,7 +22,9 @@ func (uc *UC) GetAcmeDnsProvider(
 
 	setting := resp.Data
 	if setting.ObjectID == setting.CurrentObjectID { // not return sensitive data if setting is inherited
-		setting.MustAsAcmeDnsProvider().MustDecrypt()
+		if err := setting.MustAsAcmeDnsProvider().Decrypt(); err != nil {
+			return nil, apperrors.Wrap(err)
+		}
 	}
 
 	respData, err := acmednsproviderdto.TransformAcmeDnsProvider(setting, resp.RefObjects)

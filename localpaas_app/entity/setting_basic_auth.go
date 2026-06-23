@@ -53,9 +53,12 @@ func (s *BasicAuth) Migrate(setting *Setting) (hasChange bool, err error) {
 	return true, nil
 }
 
-func (s *BasicAuth) MustDecrypt() *BasicAuth {
-	s.Password.MustGetPlain()
-	return s
+func (s *BasicAuth) Decrypt() error {
+	_, err := s.Password.GetPlain()
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
 }
 
 func (s *Setting) AsBasicAuth() (*BasicAuth, error) {

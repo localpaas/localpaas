@@ -22,7 +22,9 @@ func (uc *UC) GetSSHKey(
 
 	setting := resp.Data
 	if setting.ObjectID == setting.CurrentObjectID { // not return sensitive data if setting is inherited
-		setting.MustAsSSHKey().MustDecrypt()
+		if err := setting.MustAsSSHKey().Decrypt(); err != nil {
+			return nil, apperrors.Wrap(err)
+		}
 	}
 
 	respData, err := sshkeydto.TransformSSHKey(setting, resp.RefObjects)

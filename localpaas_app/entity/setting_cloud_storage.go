@@ -59,11 +59,14 @@ func (s *CloudStorage) Migrate(setting *Setting) (hasChange bool, err error) {
 	return true, nil
 }
 
-func (s *CloudStorage) MustDecrypt() *CloudStorage {
+func (s *CloudStorage) Decrypt() error {
 	if s.S3 != nil {
-		s.S3.SecretKey.MustGetPlain()
+		_, err := s.S3.SecretKey.GetPlain()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
-	return s
+	return nil
 }
 func (s *Setting) AsCloudStorage() (*CloudStorage, error) {
 	return parseSettingAs[*CloudStorage](s)

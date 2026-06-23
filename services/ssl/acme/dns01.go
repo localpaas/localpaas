@@ -59,7 +59,7 @@ func NewDNS01Provider(
 	return provider, nil
 }
 
-func dns01CreateProviderAcmeDNS(dns01 *entity.AcmeDnsProviderAcmeDNS) (challenge.Provider, error) {
+func dns01CreateProviderAcmeDNS(dns01 *entity.AcmeDnsProviderAcmeDNS) (_ challenge.Provider, err error) {
 	config := acmedns.NewDefaultConfig()
 	config.APIBase = dns01.APIBase
 	config.AllowList = dns01.AllowList
@@ -73,10 +73,13 @@ func dns01CreateProviderAcmeDNS(dns01 *entity.AcmeDnsProviderAcmeDNS) (challenge
 	return provider, nil
 }
 
-func dns01CreateProviderAzure(dns01 *entity.AcmeDnsProviderAzure) (challenge.Provider, error) {
+func dns01CreateProviderAzure(dns01 *entity.AcmeDnsProviderAzure) (_ challenge.Provider, err error) {
 	config := azuredns.NewDefaultConfig()
 	config.ClientID = dns01.ClientID
-	config.ClientSecret = dns01.ClientSecret.MustGetPlain()
+	config.ClientSecret, err = dns01.ClientSecret.GetPlain()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
 	config.TenantID = dns01.TenantID
 	config.SubscriptionID = dns01.SubscriptionID
 	config.ResourceGroup = dns01.ResourceGroupName
@@ -88,11 +91,13 @@ func dns01CreateProviderAzure(dns01 *entity.AcmeDnsProviderAzure) (challenge.Pro
 	return provider, nil
 }
 
-func dns01CreateProviderBaiduCloud(dns01 *entity.AcmeDnsProviderBaiduCloud) (challenge.Provider, error) {
+func dns01CreateProviderBaiduCloud(dns01 *entity.AcmeDnsProviderBaiduCloud) (_ challenge.Provider, err error) {
 	config := baiducloud.NewDefaultConfig()
 	config.AccessKeyID = dns01.AccessKey
-	config.SecretAccessKey = dns01.SecretKey.MustGetPlain()
-
+	config.SecretAccessKey, err = dns01.SecretKey.GetPlain()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
 	provider, err := baiducloud.NewDNSProviderConfig(config)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -100,10 +105,12 @@ func dns01CreateProviderBaiduCloud(dns01 *entity.AcmeDnsProviderBaiduCloud) (cha
 	return provider, nil
 }
 
-func dns01CreateProviderCloudflare(dns01 *entity.AcmeDnsProviderCloudflare) (challenge.Provider, error) {
+func dns01CreateProviderCloudflare(dns01 *entity.AcmeDnsProviderCloudflare) (_ challenge.Provider, err error) {
 	config := cloudflare.NewDefaultConfig()
-	config.AuthToken = dns01.AuthToken.MustGetPlain()
-
+	config.AuthToken, err = dns01.AuthToken.GetPlain()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
 	provider, err := cloudflare.NewDNSProviderConfig(config)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -111,10 +118,12 @@ func dns01CreateProviderCloudflare(dns01 *entity.AcmeDnsProviderCloudflare) (cha
 	return provider, nil
 }
 
-func dns01CreateProviderDigitalOcean(dns01 *entity.AcmeDnsProviderDigitalOcean) (challenge.Provider, error) {
+func dns01CreateProviderDigitalOcean(dns01 *entity.AcmeDnsProviderDigitalOcean) (_ challenge.Provider, err error) {
 	config := digitalocean.NewDefaultConfig()
-	config.AuthToken = dns01.AuthToken.MustGetPlain()
-
+	config.AuthToken, err = dns01.AuthToken.GetPlain()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
 	provider, err := digitalocean.NewDNSProviderConfig(config)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -122,11 +131,13 @@ func dns01CreateProviderDigitalOcean(dns01 *entity.AcmeDnsProviderDigitalOcean) 
 	return provider, nil
 }
 
-func dns01CreateProviderGCloud(dns01 *entity.AcmeDnsProviderGCloud) (challenge.Provider, error) {
+func dns01CreateProviderGCloud(dns01 *entity.AcmeDnsProviderGCloud) (_ challenge.Provider, err error) {
 	config := gcloud.NewDefaultConfig()
 	config.Project = dns01.ProjectID
-	config.ImpersonateServiceAccount = dns01.ServiceAccount.MustGetPlain()
-
+	config.ImpersonateServiceAccount, err = dns01.ServiceAccount.GetPlain()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
 	provider, err := gcloud.NewDNSProviderConfig(config)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -134,11 +145,13 @@ func dns01CreateProviderGCloud(dns01 *entity.AcmeDnsProviderGCloud) (challenge.P
 	return provider, nil
 }
 
-func dns01CreateProviderGoDaddy(dns01 *entity.AcmeDnsProviderGoDaddy) (challenge.Provider, error) {
+func dns01CreateProviderGoDaddy(dns01 *entity.AcmeDnsProviderGoDaddy) (_ challenge.Provider, err error) {
 	config := godaddy.NewDefaultConfig()
 	config.APIKey = dns01.APIKey
-	config.APISecret = dns01.APISecret.MustGetPlain()
-
+	config.APISecret, err = dns01.APISecret.GetPlain()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
 	provider, err := godaddy.NewDNSProviderConfig(config)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -146,10 +159,12 @@ func dns01CreateProviderGoDaddy(dns01 *entity.AcmeDnsProviderGoDaddy) (challenge
 	return provider, nil
 }
 
-func dns01CreateProviderHetzner(dns01 *entity.AcmeDnsProviderHetzner) (challenge.Provider, error) {
+func dns01CreateProviderHetzner(dns01 *entity.AcmeDnsProviderHetzner) (_ challenge.Provider, err error) {
 	config := hetzner.NewDefaultConfig()
-	config.APIToken = dns01.APIToken.MustGetPlain()
-
+	config.APIToken, err = dns01.APIToken.GetPlain()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
 	provider, err := hetzner.NewDNSProviderConfig(config)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -157,10 +172,13 @@ func dns01CreateProviderHetzner(dns01 *entity.AcmeDnsProviderHetzner) (challenge
 	return provider, nil
 }
 
-func dns01CreateProviderHuaweiCloud(dns01 *entity.AcmeDnsProviderHuaweiCloud) (challenge.Provider, error) {
+func dns01CreateProviderHuaweiCloud(dns01 *entity.AcmeDnsProviderHuaweiCloud) (_ challenge.Provider, err error) {
 	config := huaweicloud.NewDefaultConfig()
 	config.AccessKeyID = dns01.AccessKey
-	config.SecretAccessKey = dns01.SecretKey.MustGetPlain()
+	config.SecretAccessKey, err = dns01.SecretKey.GetPlain()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
 	config.Region = dns01.Region
 
 	provider, err := huaweicloud.NewDNSProviderConfig(config)
@@ -170,11 +188,13 @@ func dns01CreateProviderHuaweiCloud(dns01 *entity.AcmeDnsProviderHuaweiCloud) (c
 	return provider, nil
 }
 
-func dns01CreateProviderNamecheap(dns01 *entity.AcmeDnsProviderNamecheap) (challenge.Provider, error) {
+func dns01CreateProviderNamecheap(dns01 *entity.AcmeDnsProviderNamecheap) (_ challenge.Provider, err error) {
 	config := namecheap.NewDefaultConfig()
 	config.APIUser = dns01.APIUser
-	config.APIKey = dns01.APIKey.MustGetPlain()
-
+	config.APIKey, err = dns01.APIKey.GetPlain()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
 	provider, err := namecheap.NewDNSProviderConfig(config)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
@@ -182,11 +202,14 @@ func dns01CreateProviderNamecheap(dns01 *entity.AcmeDnsProviderNamecheap) (chall
 	return provider, nil
 }
 
-func dns01CreateProviderRFC2136(dns01 *entity.AcmeDnsProviderRFC2136) (challenge.Provider, error) {
+func dns01CreateProviderRFC2136(dns01 *entity.AcmeDnsProviderRFC2136) (_ challenge.Provider, err error) {
 	config := dnsupdate.NewDefaultConfig()
 	config.Nameserver = dns01.Nameserver
 	config.TSIGKey = dns01.TSIGKeyName
-	config.TSIGSecret = dns01.TSIGSecret.MustGetPlain()
+	config.TSIGSecret, err = dns01.TSIGSecret.GetPlain()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
 	config.TSIGAlgorithm = dns01.TSIGAlgorithm
 
 	provider, err := dnsupdate.NewDNSProviderConfig(config)
@@ -196,10 +219,13 @@ func dns01CreateProviderRFC2136(dns01 *entity.AcmeDnsProviderRFC2136) (challenge
 	return provider, nil
 }
 
-func dns01CreateProviderRoute53(dns01 *entity.AcmeDnsProviderRoute53) (challenge.Provider, error) {
+func dns01CreateProviderRoute53(dns01 *entity.AcmeDnsProviderRoute53) (_ challenge.Provider, err error) {
 	config := route53.NewDefaultConfig()
 	config.AccessKeyID = dns01.AccessKeyID
-	config.SecretAccessKey = dns01.SecretAccessKey.MustGetPlain()
+	config.SecretAccessKey, err = dns01.SecretAccessKey.GetPlain()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
 	config.HostedZoneID = dns01.HostedZoneID
 	config.Region = dns01.Region
 
@@ -210,10 +236,13 @@ func dns01CreateProviderRoute53(dns01 *entity.AcmeDnsProviderRoute53) (challenge
 	return provider, nil
 }
 
-func dns01CreateProviderTencentCloud(dns01 *entity.AcmeDnsProviderTencentCloud) (challenge.Provider, error) {
+func dns01CreateProviderTencentCloud(dns01 *entity.AcmeDnsProviderTencentCloud) (_ challenge.Provider, err error) {
 	config := tencentcloud.NewDefaultConfig()
 	config.SecretID = dns01.SecretID
-	config.SecretKey = dns01.SecretKey.MustGetPlain()
+	config.SecretKey, err = dns01.SecretKey.GetPlain()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
 	config.Region = dns01.Region
 
 	provider, err := tencentcloud.NewDNSProviderConfig(config)

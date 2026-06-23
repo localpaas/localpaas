@@ -83,14 +83,20 @@ func (s *Email) Migrate(setting *Setting) (hasChange bool, err error) {
 	return true, nil
 }
 
-func (s *Email) MustDecrypt() *Email {
+func (s *Email) Decrypt() error {
 	if s.SMTP != nil {
-		s.SMTP.Password.MustGetPlain()
+		_, err := s.SMTP.Password.GetPlain()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
 	if s.HTTP != nil {
-		s.HTTP.Password.MustGetPlain()
+		_, err := s.HTTP.Password.GetPlain()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
-	return s
+	return nil
 }
 func (s *Setting) AsEmail() (*Email, error) {
 	return parseSettingAs[*Email](s)

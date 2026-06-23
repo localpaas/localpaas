@@ -39,7 +39,10 @@ func (uc *UC) CreateSecret(
 			if err != nil {
 				return apperrors.Wrap(err)
 			}
-			pData.Setting.Size = secret.ValueSize()
+			pData.Setting.Size, err = secret.ValueSize()
+			if err != nil {
+				return apperrors.Wrap(err)
+			}
 			return nil
 		},
 	})

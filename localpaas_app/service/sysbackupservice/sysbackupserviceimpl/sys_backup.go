@@ -148,7 +148,10 @@ func (s *service) sysBackupCreateWriter(
 
 	switch data.SysBackupSettings.Encryption.Format {
 	case base.FileEncryptionFormatAge:
-		encSecret := data.SysBackupSettings.Encryption.Secret.MustGetPlain()
+		encSecret, err := data.SysBackupSettings.Encryption.Secret.GetPlain()
+		if err != nil {
+			return "", nil, nil, apperrors.Wrap(err)
+		}
 		if encSecret == "" {
 			return "", nil, nil, apperrors.NewMissing("Encryption secret")
 		}

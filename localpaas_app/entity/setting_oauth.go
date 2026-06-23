@@ -59,9 +59,12 @@ func (s *OAuth) Migrate(setting *Setting) (hasChange bool, err error) {
 	return true, nil
 }
 
-func (s *OAuth) MustDecrypt() *OAuth {
-	s.ClientSecret.MustGetPlain()
-	return s
+func (s *OAuth) Decrypt() error {
+	_, err := s.ClientSecret.GetPlain()
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
 }
 
 func (s *Setting) AsOAuth() (*OAuth, error) {

@@ -54,9 +54,12 @@ func (s *AccessToken) Migrate(setting *Setting) (hasChange bool, err error) {
 	return true, nil
 }
 
-func (s *AccessToken) MustDecrypt() *AccessToken {
-	s.Token.MustGetPlain()
-	return s
+func (s *AccessToken) Decrypt() error {
+	_, err := s.Token.GetPlain()
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
 }
 
 func (s *Setting) AsAccessToken() (*AccessToken, error) {

@@ -73,7 +73,9 @@ func (s *service) ApplyAppConfig(
 		labels["traefik.swarm.network"] = base.NetworkGlobalRouting
 
 		for i, domain := range httpSettings.Domains {
-			s.collectDomainConfig(app, domain, i, labels, traefikConfig, data)
+			if err := s.collectDomainConfig(app, domain, i, labels, traefikConfig, data); err != nil {
+				return apperrors.Wrap(err)
+			}
 		}
 	}
 
@@ -104,11 +106,11 @@ func (s *service) collectDomainConfig(
 	labels map[string]string,
 	traefikConfig *AppTraefikConfig,
 	data *appConfigData,
-) {
+) error {
 	appKey := sanitizeRouterNameReplacer.Replace(app.Key)
 	domainKey := sanitizeRouterNameReplacer.Replace(domain.Domain)
 	if domainKey == "" {
-		return
+		return nil
 	}
 
 	// Service
@@ -139,7 +141,9 @@ func (s *service) collectDomainConfig(
 	s.createRedirectionConfig(needRedirection, routerName, domain.Domain, domain.DomainRedirect, labels, &middlewares)
 
 	// Basic auth config
-	s.createBasicAuthConfig(domain.BasicAuth, data.RefObjects, routerName, labels, &middlewares)
+	if err := s.createBasicAuthConfig(domain.BasicAuth, data.RefObjects, routerName, labels, &middlewares); err != nil {
+		return apperrors.Wrap(err)
+	}
 
 	// Client config
 	s.createClientConfig(domain.ClientConfig, routerName, labels, &middlewares)
@@ -160,13 +164,17 @@ func (s *service) collectDomainConfig(
 
 	// Paths config
 	for pathIdx, pathCfg := range domain.Paths {
-		s.collectPathConfig(domain, pathCfg, pathIdx, routerName, serviceName,
-			middlewares, labels, data)
+		if err := s.collectPathConfig(domain, pathCfg, pathIdx, routerName, serviceName, middlewares,
+			labels, data); err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
 
 	if s.addTLSCertificate(traefikConfig, domain.SSLCert.ID) {
 		data.hasCerts = true
 	}
+
+	return nil
 }
 
 func (s *service) collectPathConfig(
@@ -178,9 +186,9 @@ func (s *service) collectPathConfig(
 	sharedMiddlewares []string,
 	labels map[string]string,
 	data *appConfigData,
-) {
+) error {
 	if !pathCfg.Enabled || pathCfg.Path == "" {
-		return
+		return nil
 	}
 
 	// Apply Path router labels
@@ -204,7 +212,10 @@ func (s *service) collectPathConfig(
 	copy(pathMiddlewares, sharedMiddlewares)
 
 	// Basic auth config for path
-	s.createBasicAuthConfig(pathCfg.BasicAuth, data.RefObjects, pathRouterName, labels, &pathMiddlewares)
+	if err := s.createBasicAuthConfig(pathCfg.BasicAuth, data.RefObjects, pathRouterName,
+		labels, &pathMiddlewares); err != nil {
+		return apperrors.Wrap(err)
+	}
 
 	// Client config for path
 	s.createClientConfig(pathCfg.ClientConfig, pathRouterName, labels, &pathMiddlewares)
@@ -222,6 +233,8 @@ func (s *service) collectPathConfig(
 		labels[fmt.Sprintf("traefik.http.routers.%s.middlewares", pathRouterName)] =
 			strings.Join(pathMiddlewares, ",")
 	}
+
+	return nil
 }
 
 func (s *service) createForceHttpsConfig(
@@ -330,13 +343,17 @@ func (s *service) createBasicAuthConfig(
 	routerName string,
 	labels map[string]string,
 	middlewares *[]string,
-) {
+) error {
 	if basicAuth == nil || !basicAuth.Enabled || basicAuth.ID == "" {
-		return
+		return nil
 	}
 	if s := refObjects.RefSettings[basicAuth.ID]; s != nil {
 		basicAuthConfig := s.MustAsBasicAuth()
-		hashedPasswd, err := htpasswd.HashPassword(basicAuthConfig.Password.MustGetPlain())
+		password, err := basicAuthConfig.Password.GetPlain()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+		hashedPasswd, err := htpasswd.HashPassword(password)
 		if err == nil {
 			mwName := fmt.Sprintf("%s-basicauth", routerName)
 			labels[fmt.Sprintf("traefik.http.middlewares.%s.basicauth.users", mwName)] =
@@ -344,6 +361,7 @@ func (s *service) createBasicAuthConfig(
 			*middlewares = append(*middlewares, mwName+middlewareProvider)
 		}
 	}
+	return nil
 }
 
 func (s *service) createCompressionConfig(

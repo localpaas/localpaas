@@ -22,7 +22,9 @@ func (uc *UC) GetNotification(
 
 	setting := resp.Data
 	if setting.ObjectID == setting.CurrentObjectID { // not return sensitive data if setting is inherited
-		setting.MustAsNotification().MustDecrypt()
+		if err := setting.MustAsNotification().Decrypt(); err != nil {
+			return nil, apperrors.Wrap(err)
+		}
 	}
 
 	respData, err := notificationdto.TransformNotification(setting, resp.RefObjects)

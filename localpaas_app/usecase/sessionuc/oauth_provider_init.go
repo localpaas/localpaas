@@ -27,7 +27,10 @@ func (uc *UC) InitOAuthProvider(
 	}
 
 	oauth := setting.MustAsOAuth()
-	clientSecret := oauth.ClientSecret.MustGetPlain()
+	clientSecret, err := oauth.ClientSecret.GetPlain()
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
 	callbackURL := config.Current.SsoCallbackURL(req.Provider)
 
 	var provider goth.Provider

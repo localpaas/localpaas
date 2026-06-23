@@ -55,10 +55,16 @@ func (s *SSHKey) Migrate(setting *Setting) (hasChange bool, err error) {
 	return true, nil
 }
 
-func (s *SSHKey) MustDecrypt() *SSHKey {
-	s.PrivateKey.MustGetPlain()
-	s.Passphrase.MustGetPlain()
-	return s
+func (s *SSHKey) Decrypt() error {
+	_, err := s.PrivateKey.GetPlain()
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	_, err = s.Passphrase.GetPlain()
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
 }
 
 func (s *Setting) AsSSHKey() (*SSHKey, error) {

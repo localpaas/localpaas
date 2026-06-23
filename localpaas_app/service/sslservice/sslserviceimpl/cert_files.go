@@ -45,9 +45,13 @@ func (s *service) WriteCertFiles(
 		}
 
 		certBytes := reflectutil.UnsafeStrToBytes(sslCert.Certificate)
-		keyBytes := reflectutil.UnsafeStrToBytes(sslCert.PrivateKey.MustGetPlain())
+		privateKey, err := sslCert.PrivateKey.GetPlain()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+		keyBytes := reflectutil.UnsafeStrToBytes(privateKey)
 
-		err := fileutil.WriteCerts(certBytes, keyBytes, certDir, certFile, keyFile, true)
+		err = fileutil.WriteCerts(certBytes, keyBytes, certDir, certFile, keyFile, true)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}

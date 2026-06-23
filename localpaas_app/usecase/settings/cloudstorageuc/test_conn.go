@@ -30,9 +30,13 @@ func (uc *UC) testCloudStorageS3Conn(
 	req *cloudstoragedto.TestCloudStorageConnReq,
 ) (*cloudstoragedto.TestCloudStorageConnResp, error) {
 	storage := req.ToEntity()
+	secretKey, err := storage.S3.SecretKey.GetPlain()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
 	s3Client, err := s3.NewClient(ctx, &s3.Config{
 		AccessKeyID:     storage.S3.AccessKeyID,
-		SecretAccessKey: storage.S3.SecretKey.MustGetPlain(),
+		SecretAccessKey: secretKey,
 		Region:          gofn.Coalesce(req.S3.Region, storage.S3.CloudProviderAWS.Region),
 		Endpoint:        req.S3.Endpoint,
 		Bucket:          req.S3.Bucket,

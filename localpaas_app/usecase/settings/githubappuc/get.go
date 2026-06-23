@@ -23,7 +23,9 @@ func (uc *UC) GetGithubApp(
 
 	setting := resp.Data
 	if setting.ObjectID == setting.CurrentObjectID { // not return sensitive data if setting is inherited
-		setting.MustAsGithubApp().MustDecrypt()
+		if err := setting.MustAsGithubApp().Decrypt(); err != nil {
+			return nil, apperrors.Wrap(err)
+		}
 	}
 
 	input := &githubappdto.GithubAppTransformInput{

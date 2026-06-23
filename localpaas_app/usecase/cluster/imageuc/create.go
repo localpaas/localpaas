@@ -56,10 +56,14 @@ func (uc *UC) loadImageData(
 			return apperrors.Wrap(err)
 		}
 
-		data.RegistryAuth = regAuth.MustAsRegistryAuth().MustDecrypt()
+		data.RegistryAuth = regAuth.MustAsRegistryAuth()
+		password, err := data.RegistryAuth.Password.GetPlain()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 		data.AuthHeader, err = docker.GenerateAuthHeader(&registry.AuthConfig{
 			Username: data.RegistryAuth.Username,
-			Password: data.RegistryAuth.Password.MustGetPlain(),
+			Password: password,
 		})
 		if err != nil {
 			return apperrors.Wrap(err)

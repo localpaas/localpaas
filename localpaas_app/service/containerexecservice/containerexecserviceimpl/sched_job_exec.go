@@ -47,7 +47,11 @@ func (s *service) SchedJobExec(
 	if len(refSecrets) > 0 && req.LogStore != nil {
 		secrets := make([]string, 0, len(refSecrets))
 		for _, secret := range refSecrets {
-			secrets = append(secrets, secret.Value.MustGetPlain())
+			plainSecret, err := secret.Value.GetPlain()
+			if err != nil {
+				return nil, apperrors.Wrap(err)
+			}
+			secrets = append(secrets, plainSecret)
 		}
 		req.LogStore.UpdateRedactorAddSecrets(secrets)
 	}

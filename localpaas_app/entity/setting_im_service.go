@@ -67,17 +67,26 @@ func (s *IMService) Migrate(setting *Setting) (hasChange bool, err error) {
 	return true, nil
 }
 
-func (s *IMService) MustDecrypt() *IMService {
+func (s *IMService) Decrypt() error {
 	if s.Slack != nil {
-		s.Slack.Webhook.MustGetPlain()
+		_, err := s.Slack.Webhook.GetPlain()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
 	if s.Discord != nil {
-		s.Discord.Webhook.MustGetPlain()
+		_, err := s.Discord.Webhook.GetPlain()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
 	if s.Telegram != nil {
-		s.Telegram.BotToken.MustGetPlain()
+		_, err := s.Telegram.BotToken.GetPlain()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
-	return s
+	return nil
 }
 
 func (s *Setting) AsIMService() (*IMService, error) {

@@ -32,11 +32,17 @@ func (s *service) GetAcmeClient(
 		case base.SSLCertTypeZeroSSL:
 			acmeCfg.CACode = lego.CodeZeroSSL
 			acmeCfg.EABKid = provider.ZeroSSL.EABKid
-			acmeCfg.EABHmacKey = provider.ZeroSSL.EABHmacKey.MustGetPlain()
+			acmeCfg.EABHmacKey, err = provider.ZeroSSL.EABHmacKey.GetPlain()
+			if err != nil {
+				return nil, apperrors.Wrap(err)
+			}
 		case base.SSLCertTypeGoogleTrust:
 			acmeCfg.CACode = lego.CodeGoogleTrust
 			acmeCfg.EABKid = provider.GoogleTrust.EABKid
-			acmeCfg.EABHmacKey = provider.GoogleTrust.EABHmacKey.MustGetPlain()
+			acmeCfg.EABHmacKey, err = provider.GoogleTrust.EABHmacKey.GetPlain()
+			if err != nil {
+				return nil, apperrors.Wrap(err)
+			}
 		case base.SSLCertTypeSelfSigned, base.SSLCertTypeCustom:
 			// Do nothing
 		}

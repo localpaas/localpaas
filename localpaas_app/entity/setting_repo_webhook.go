@@ -53,8 +53,8 @@ func (s *RepoWebhook) Migrate(setting *Setting) (hasChange bool, err error) {
 	return true, nil
 }
 
-func (s *RepoWebhook) MustDecrypt() *RepoWebhook {
-	return s
+func (s *RepoWebhook) Decrypt() error {
+	return nil
 }
 
 func (s *Setting) AsRepoWebhook() (*RepoWebhook, error) {

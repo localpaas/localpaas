@@ -72,21 +72,35 @@ func (s *Secret) Migrate(setting *Setting) (hasChange bool, err error) {
 	return true, nil
 }
 
-func (s *Secret) MustDecrypt() *Secret {
-	s.Value.MustGetPlain()
-	return s
-}
-
-func (s *Secret) ValueAsBytes() []byte {
-	plain := s.Value.MustGetPlain()
-	if s.Base64 {
-		return gofn.Must(base64.StdEncoding.DecodeString(plain))
+func (s *Secret) Decrypt() error {
+	_, err := s.Value.GetPlain()
+	if err != nil {
+		return apperrors.Wrap(err)
 	}
-	return reflectutil.UnsafeStrToBytes(plain)
+	return nil
 }
 
-func (s *Secret) ValueSize() int32 {
-	return int32(len(s.Value.MustGetPlain())) //nolint:gosec
+func (s *Secret) ValueAsBytes() ([]byte, error) {
+	plain, err := s.Value.GetPlain()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	if s.Base64 {
+		plainBytes, err := base64.StdEncoding.DecodeString(plain)
+		if err != nil {
+			return nil, apperrors.Wrap(err)
+		}
+		return plainBytes, nil
+	}
+	return reflectutil.UnsafeStrToBytes(plain), nil
+}
+
+func (s *Secret) ValueSize() (int32, error) {
+	plain, err := s.Value.GetPlain()
+	if err != nil {
+		return 0, apperrors.Wrap(err)
+	}
+	return int32(len(plain)), nil //nolint:gosec
 }
 
 func (s *Setting) AsSecret() (*Secret, error) {

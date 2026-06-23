@@ -51,8 +51,16 @@ func (uc *UC) CreateSSHKey(
 
 func generateKey(sshKey *entity.SSHKey) error {
 	if sshKey.PublicKey == "" {
-		keyType, pubKey, err := sshutil.GeneratePublicKey(sshKey.PrivateKey.MustGetPlain(),
-			sshKey.Passphrase.MustGetPlain())
+		privateKey, err := sshKey.PrivateKey.GetPlain()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+		passphrase, err := sshKey.Passphrase.GetPlain()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
+
+		keyType, pubKey, err := sshutil.GeneratePublicKey(privateKey, passphrase)
 		if err != nil {
 			return apperrors.Wrap(err)
 		}

@@ -79,9 +79,12 @@ func (s *SSLCert) Migrate(setting *Setting) (hasChange bool, err error) {
 	return true, nil
 }
 
-func (s *SSLCert) MustDecrypt() *SSLCert {
-	s.PrivateKey.MustGetPlain()
-	return s
+func (s *SSLCert) Decrypt() error {
+	_, err := s.PrivateKey.GetPlain()
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
 }
 
 func (s *SSLCert) IsRenewable() bool {

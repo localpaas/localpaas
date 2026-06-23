@@ -144,8 +144,8 @@ func (s *Notification) Migrate(setting *Setting) (hasChange bool, err error) {
 	return true, nil
 }
 
-func (s *Notification) MustDecrypt() *Notification {
-	return s
+func (s *Notification) Decrypt() error {
+	return nil
 }
 
 func (s *Setting) AsNotification() (*Notification, error) {

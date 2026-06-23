@@ -22,7 +22,9 @@ func (uc *UC) GetRepoWebhook(
 
 	setting := resp.Data
 	if setting.ObjectID == setting.CurrentObjectID { // not return sensitive data if setting is inherited
-		setting.MustAsRepoWebhook().MustDecrypt()
+		if err := setting.MustAsRepoWebhook().Decrypt(); err != nil {
+			return nil, apperrors.Wrap(err)
+		}
 	}
 
 	respData, err := repowebhookdto.TransformRepoWebhook(setting, resp.RefObjects)

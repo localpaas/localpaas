@@ -60,10 +60,16 @@ func (s *GithubApp) Migrate(setting *Setting) (hasChange bool, err error) {
 	return true, nil
 }
 
-func (s *GithubApp) MustDecrypt() *GithubApp {
-	s.ClientSecret.MustGetPlain()
-	s.PrivateKey.MustGetPlain()
-	return s
+func (s *GithubApp) Decrypt() error {
+	_, err := s.ClientSecret.GetPlain()
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	_, err = s.PrivateKey.GetPlain()
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+	return nil
 }
 
 func (s *GithubApp) ConvertAsOAuth() *OAuth {

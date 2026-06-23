@@ -22,7 +22,9 @@ func (uc *UC) GetIMService(
 
 	setting := resp.Data
 	if setting.ObjectID == setting.CurrentObjectID { // not return sensitive data if setting is inherited
-		setting.MustAsIMService().MustDecrypt()
+		if err := setting.MustAsIMService().Decrypt(); err != nil {
+			return nil, apperrors.Wrap(err)
+		}
 	}
 
 	respData, err := imservicedto.TransformIMService(setting, resp.RefObjects)

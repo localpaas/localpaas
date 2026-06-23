@@ -37,12 +37,22 @@ func (uc *UC) JoinNode(
 
 	command := fmt.Sprintf("docker swarm leave --force && docker swarm join --token %s %s",
 		data.JoinToken, data.PreferManagerAddr)
+
+	privateKey, err := data.SSHKey.PrivateKey.GetPlain()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+	passphrase, err := data.SSHKey.Passphrase.GetPlain()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
 	output, err := ssh.Execute(cmdCtx, &ssh.CommandInput{
 		Host:       req.Host,
 		Port:       req.Port,
 		User:       req.User,
-		PrivateKey: data.SSHKey.PrivateKey.MustGetPlain(),
-		Passphrase: data.SSHKey.Passphrase.MustGetPlain(),
+		PrivateKey: privateKey,
+		Passphrase: passphrase,
 		Command:    command,
 	})
 	if err != nil {

@@ -59,7 +59,11 @@ func (s *service) calcBuildEnvVars(
 	if data.LogStore != nil && len(refSecrets) > 0 {
 		secrets := make([]string, 0, len(refSecrets))
 		for _, secret := range refSecrets {
-			secrets = append(secrets, secret.Value.MustGetPlain())
+			plainSecret, err := secret.Value.GetPlain()
+			if err != nil {
+				return nil, apperrors.Wrap(err)
+			}
+			secrets = append(secrets, plainSecret)
 		}
 		data.LogStore.UpdateRedactorAddSecrets(secrets)
 	}

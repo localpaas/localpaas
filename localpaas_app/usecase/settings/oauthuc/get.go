@@ -23,7 +23,9 @@ func (uc *UC) GetOAuth(
 
 	setting := resp.Data
 	if setting.ObjectID == setting.CurrentObjectID { // not return sensitive data if setting is inherited
-		setting.MustAsOAuth().MustDecrypt()
+		if err := setting.MustAsOAuth().Decrypt(); err != nil {
+			return nil, apperrors.Wrap(err)
+		}
 	}
 
 	input := &oauthdto.OAuthTransformInput{

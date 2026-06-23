@@ -22,7 +22,9 @@ func (uc *UC) GetAccessToken(
 
 	setting := resp.Data
 	if setting.ObjectID == setting.CurrentObjectID { // not return sensitive data if setting is inherited
-		setting.MustAsAccessToken().MustDecrypt()
+		if err := setting.MustAsAccessToken().Decrypt(); err != nil {
+			return nil, apperrors.Wrap(err)
+		}
 	}
 
 	respData, err := accesstokendto.TransformAccessToken(setting, resp.RefObjects)

@@ -138,44 +138,81 @@ func (s *AcmeDnsProvider) Migrate(setting *Setting) (hasChange bool, err error) 
 	return true, nil
 }
 
-func (s *AcmeDnsProvider) MustDecrypt() *AcmeDnsProvider {
+//nolint:gocognit
+func (s *AcmeDnsProvider) Decrypt() error {
 	if s.Azure != nil {
-		s.Azure.ClientSecret.MustGetPlain()
+		_, err := s.Azure.ClientSecret.GetPlain()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
 	if s.BaiduCloud != nil {
-		s.BaiduCloud.SecretKey.MustGetPlain()
+		_, err := s.BaiduCloud.SecretKey.GetPlain()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
 	if s.Cloudflare != nil {
-		s.Cloudflare.AuthToken.MustGetPlain()
+		_, err := s.Cloudflare.AuthToken.GetPlain()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
 	if s.DigitalOcean != nil {
-		s.DigitalOcean.AuthToken.MustGetPlain()
+		_, err := s.DigitalOcean.AuthToken.GetPlain()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
 	if s.GCloud != nil {
-		s.GCloud.ServiceAccount.MustGetPlain()
+		_, err := s.GCloud.ServiceAccount.GetPlain()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
 	if s.GoDaddy != nil {
-		s.GoDaddy.APISecret.MustGetPlain()
+		_, err := s.GoDaddy.APISecret.GetPlain()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
 	if s.Hetzner != nil {
-		s.Hetzner.APIToken.MustGetPlain()
+		_, err := s.Hetzner.APIToken.GetPlain()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
 	if s.HuaweiCloud != nil {
-		s.HuaweiCloud.SecretKey.MustGetPlain()
+		_, err := s.HuaweiCloud.SecretKey.GetPlain()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
 	if s.Namecheap != nil {
-		s.Namecheap.APIKey.MustGetPlain()
+		_, err := s.Namecheap.APIKey.GetPlain()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
 	if s.RFC2136 != nil {
-		s.RFC2136.TSIGSecret.MustGetPlain()
+		_, err := s.RFC2136.TSIGSecret.GetPlain()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
 	if s.Route53 != nil {
-		s.Route53.SecretAccessKey.MustGetPlain()
+		_, err := s.Route53.SecretAccessKey.GetPlain()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
 	if s.TencentCloud != nil {
-		s.TencentCloud.SecretKey.MustGetPlain()
+		_, err := s.TencentCloud.SecretKey.GetPlain()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
-	return s
+	return nil
 }
 
 func (s *Setting) AsAcmeDnsProvider() (*AcmeDnsProvider, error) {

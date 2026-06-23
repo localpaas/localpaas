@@ -58,20 +58,12 @@ func (s *EncryptedField) GetPlain() (string, error) {
 	return decrypted, nil
 }
 
-func (s *EncryptedField) MustGetPlain() string {
-	return gofn.Must(s.GetPlain())
-}
-
 func (s *EncryptedField) GetEncrypted() (string, error) {
 	encrypted, err := s.encrypt()
 	if err != nil {
 		return "", apperrors.Wrap(err)
 	}
 	return encrypted, nil
-}
-
-func (s *EncryptedField) MustGetEncrypted() string {
-	return gofn.Must(s.GetEncrypted())
 }
 
 func (s *EncryptedField) Set(value string) {
@@ -84,8 +76,16 @@ func (s *EncryptedField) Set(value string) {
 	}
 }
 
-func (s *EncryptedField) Equal(enc *EncryptedField) bool {
-	return s.MustGetPlain() == enc.MustGetPlain()
+func (s *EncryptedField) Equal(enc *EncryptedField) (bool, error) {
+	v1, err := s.GetPlain()
+	if err != nil {
+		return false, apperrors.Wrap(err)
+	}
+	v2, err := enc.GetPlain()
+	if err != nil {
+		return false, apperrors.Wrap(err)
+	}
+	return v1 == v2, nil
 }
 
 func (s *EncryptedField) encrypt() (string, error) {

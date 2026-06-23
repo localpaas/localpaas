@@ -69,7 +69,12 @@ func (s *service) createSwarmSecret(
 
 	// Create the secret in docker swarm
 	secretName := app.LocalKey + "_" + strings.ToLower(secret.Key)
-	secretResp, err := s.dockerManager.SecretCreate(ctx, secretName, secret.ValueAsBytes(),
+	secretBytes, err := secret.ValueAsBytes()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
+
+	secretResp, err := s.dockerManager.SecretCreate(ctx, secretName, secretBytes,
 		func(opts *client.SecretCreateOptions) {
 			opts.Spec.Labels = map[string]string{
 				docker.StackLabelNamespace: app.Project.Key,

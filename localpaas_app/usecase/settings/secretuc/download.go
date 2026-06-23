@@ -38,7 +38,10 @@ func (uc *UC) DownloadSecret(
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-	data := secret.ValueAsBytes()
+	data, err := secret.ValueAsBytes()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
 	contentType := gofn.If(secret.Base64, "application/octet-stream", "text/plain")
 	extraHeaders := map[string]string{
 		"Content-Disposition": gofn.If(req.ViewInline, "inline; ", "attachment; ") +

@@ -47,7 +47,10 @@ func (uc *UC) UpdateSecret(
 			if err = pData.Setting.SetData(updatedSecret); err != nil {
 				return apperrors.Wrap(err)
 			}
-			pData.Setting.Size = updatedSecret.ValueSize()
+			pData.Setting.Size, err = updatedSecret.ValueSize()
+			if err != nil {
+				return apperrors.Wrap(err)
+			}
 			return nil
 		},
 	})

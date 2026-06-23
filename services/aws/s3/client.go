@@ -63,9 +63,13 @@ func NewClientFromSetting(ctx context.Context, storageSetting *entity.Setting) (
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
+	secretKey, err := storage.S3.SecretKey.GetPlain()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
 	return NewClient(ctx, &Config{
 		AccessKeyID:     storage.S3.AccessKeyID,
-		SecretAccessKey: storage.S3.SecretKey.MustGetPlain(),
+		SecretAccessKey: secretKey,
 		Endpoint:        storage.S3.Endpoint,
 		Region:          gofn.Coalesce(storage.S3.Region, storage.S3.CloudProviderAWS.Region),
 		Bucket:          storage.S3.Bucket,

@@ -79,7 +79,11 @@ func TransformSystemBackup(
 	setting *entity.Setting,
 	refObjects *entity.RefObjects,
 ) (resp *SystemBackupResp, err error) {
-	config := setting.MustAsSystemBackup().MustDecrypt()
+	config := setting.MustAsSystemBackup()
+	err = config.Decrypt()
+	if err != nil {
+		return nil, apperrors.Wrap(err)
+	}
 	if err = copier.Copy(&resp, config); err != nil {
 		return nil, apperrors.Wrap(err)
 	}

@@ -71,14 +71,20 @@ func (s *SSLProvider) Migrate(setting *Setting) (hasChange bool, err error) {
 	return true, nil
 }
 
-func (s *SSLProvider) MustDecrypt() *SSLProvider {
+func (s *SSLProvider) Decrypt() error {
 	if s.ZeroSSL != nil {
-		s.ZeroSSL.EABHmacKey.MustGetPlain()
+		_, err := s.ZeroSSL.EABHmacKey.GetPlain()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
 	if s.GoogleTrust != nil {
-		s.GoogleTrust.EABHmacKey.MustGetPlain()
+		_, err := s.GoogleTrust.EABHmacKey.GetPlain()
+		if err != nil {
+			return apperrors.Wrap(err)
+		}
 	}
-	return s
+	return nil
 }
 func (s *Setting) AsSSLProvider() (*SSLProvider, error) {
 	return parseSettingAs[*SSLProvider](s)

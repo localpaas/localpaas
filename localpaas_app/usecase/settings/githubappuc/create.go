@@ -76,8 +76,13 @@ func (uc *UC) installGithubAppWebhook(
 		githubApp.WebhookURL = config.Current.RepoWebhookURL(settingID)
 	}
 
+	privateKey, err := githubApp.PrivateKey.GetPlain()
+	if err != nil {
+		return apperrors.Wrap(err)
+	}
+
 	client, err := github.NewFromApp(githubApp.AppID, githubApp.InstallationID,
-		reflectutil.UnsafeStrToBytes(githubApp.PrivateKey.MustGetPlain()))
+		reflectutil.UnsafeStrToBytes(privateKey))
 	if err != nil {
 		return apperrors.Wrap(err)
 	}
