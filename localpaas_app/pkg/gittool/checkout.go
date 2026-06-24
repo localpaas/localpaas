@@ -35,6 +35,7 @@ type CheckoutOptions struct {
 	LogStore    *tasklog.Store
 
 	// Internal fields
+	refType  githelper.RefType
 	refShort string
 }
 
@@ -129,9 +130,8 @@ func (cli *checkoutCli) processCheckoutOpts(
 		cli.opts.RemoteName = "origin"
 	}
 
-	if cli.opts.ReferenceName.IsBranch() || cli.opts.ReferenceName.IsTag() { // Only support branch and tag
-		cli.opts.refShort = cli.opts.ReferenceName.Short()
-	} else {
+	cli.opts.refType, cli.opts.refShort = githelper.GetRefShort(string(cli.opts.ReferenceName))
+	if !cli.opts.refType.CanCheckout() {
 		return apperrors.NewUnsupported("Repository ref type")
 	}
 

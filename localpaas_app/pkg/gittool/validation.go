@@ -44,8 +44,8 @@ type validationCli struct {
 	sharedEnv      []string
 	cleanupTempDir bool
 
-	refShort    string
-	refIsBranch bool
+	refType  githelper.RefType
+	refShort string
 }
 
 func (cli *validationCli) validate(
@@ -75,14 +75,17 @@ func (cli *validationCli) validate(
 		}
 	}
 
-	if cli.refIsBranch {
+	switch {
+	case cli.refType.IsBranch():
 		if !refsMap["refs/heads/"+cli.refShort] {
 			return apperrors.New(apperrors.ErrRepoRefNotFound).WithParam("RepoRef", cli.opts.ReferenceName)
 		}
-	} else {
+	case cli.refType.IsTag():
 		if !refsMap["refs/tags/"+cli.refShort] {
 			return apperrors.New(apperrors.ErrRepoRefNotFound).WithParam("RepoRef", cli.opts.ReferenceName)
 		}
+	default: // Pull request
+		// TODO: add validation
 	}
 
 	// 4. Validate commit hash
@@ -152,11 +155,9 @@ func (cli *validationCli) processValidationOpts(
 		cli.opts.RemoteName = "origin"
 	}
 
-	cli.refIsBranch = cli.opts.ReferenceName.IsBranch()
-	if cli.refIsBranch || cli.opts.ReferenceName.IsTag() { // Only support branch and tag
-		cli.refShort = cli.opts.ReferenceName.Short()
-	} else {
-		return apperrors.NewUnsupported("Repository branch")
+	cli.refType, cli.refShort = githelper.GetRefShort(string(cli.opts.ReferenceName))
+	if !cli.refType.CanCheckout() {
+		return apperrors.NewUnsupported("Repository ref type")
 	}
 
 	authMethod, err := calcGitAuthMethod(ctx, cli.opts.Credentials)

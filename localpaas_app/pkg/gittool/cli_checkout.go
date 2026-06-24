@@ -17,7 +17,7 @@ func (cli *checkoutCli) checkoutTargetCommit(
 	repo *git.Repository,
 ) (commit *object.Commit, err error) {
 	commitHash := cli.opts.CommitHash
-	if commitHash != "" {
+	if commitHash != "" { //nolint:nestif
 		// Fetch the commit
 		cmd := exec.CommandContext(ctx, "git", "fetch", "--depth=1", "origin", commitHash)
 		cmd.Dir = cli.opts.CheckoutDir
@@ -29,15 +29,17 @@ func (cli *checkoutCli) checkoutTargetCommit(
 			return nil, apperrors.New(err)
 		}
 
-		// Make sure the commit belongs to the branch
-		cmd = exec.CommandContext(ctx, "git", "merge-base", "--is-ancestor", commitHash,
-			fmt.Sprintf("%s/%s", cli.opts.RemoteName, cli.opts.refShort))
-		cmd.Dir = cli.opts.CheckoutDir
-		cmd.Env = []string{}
-		out, err = cmd.CombinedOutput()
-		addLog(ctx, reflectutil.UnsafeBytesToStr(out), err != nil, cli.opts.LogStore)
-		if err != nil {
-			return nil, apperrors.New(err)
+		// Make sure the commit belongs to the branch (skip for Pull Requests)
+		if !cli.opts.refType.IsPull() {
+			cmd = exec.CommandContext(ctx, "git", "merge-base", "--is-ancestor", commitHash,
+				fmt.Sprintf("%s/%s", cli.opts.RemoteName, cli.opts.refShort))
+			cmd.Dir = cli.opts.CheckoutDir
+			cmd.Env = []string{}
+			out, err = cmd.CombinedOutput()
+			addLog(ctx, reflectutil.UnsafeBytesToStr(out), err != nil, cli.opts.LogStore)
+			if err != nil {
+				return nil, apperrors.New(err)
+			}
 		}
 	} else {
 		//nolint:gosec
@@ -54,7 +56,12 @@ func (cli *checkoutCli) checkoutTargetCommit(
 	}
 
 	// Hard reset the branch to make it point to the last fetched commit
-	cmd := exec.CommandContext(ctx, "git", "checkout", "-B", cli.opts.refShort, "FETCH_HEAD") //nolint:gosec
+	var cmd *exec.Cmd
+	if cli.opts.refType.IsPull() {
+		cmd = exec.CommandContext(ctx, "git", "checkout", "--detach", "FETCH_HEAD")
+	} else {
+		cmd = exec.CommandContext(ctx, "git", "checkout", "-B", cli.opts.refShort, "FETCH_HEAD") //nolint:gosec
+	}
 	cmd.Dir = cli.opts.CheckoutDir
 	cmd.Env = cli.sharedEnv
 

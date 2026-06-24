@@ -119,6 +119,7 @@ ERR_REPO_NOT_FOUND = "Repo '{{.Repo}}' is not found"
 ERR_REPO_TYPE_UNSUPPORTED = "Repo type '{{.Type}}' is not supported"
 ERR_REPO_REF_NOT_FOUND = "Repo ref '{{.RepoRef}}' is not found"
 ERR_PULL_REQUEST_NOT_FOUND = "Pull request '{{.PullRequest}}' is not found"
+ERR_PULL_REQUEST_INVALID = "Pull request '{{.PullRequest}}' is invalid"
 ERR_GIT_TYPE_UNSUPPORTED = "Git type '{{.Type}}' is not supported"
 ERR_GIT_AUTH_METHOD_UNSUPPORTED = "Git authentication method '{{.AuthMethod}}' is not supported"
 

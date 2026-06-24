@@ -4,7 +4,7 @@ import (
 	"github.com/gitsight/go-vcsurl"
 	vld "github.com/tiendc/go-validator"
 
-	"github.com/localpaas/localpaas/localpaas_app/pkg/githelper"
+	gitvalidation "github.com/localpaas/localpaas/localpaas_app/pkg/githelper/validation"
 )
 
 func ValidateGitRepoURL[T ~string](s *T, required bool, field string) (result []vld.Validator) {
@@ -34,7 +34,7 @@ func ValidateGitCommitHash[T ~string](s *T, required bool, field string) (result
 		))
 	}
 	if s != nil && *s != "" {
-		if !githelper.IsCommitHash(string(*s)) {
+		if !gitvalidation.IsCommitHash(string(*s)) {
 			result = append(result, vld.Must(false).OnError(
 				vld.SetField(field, nil),
 				vld.SetCustomKey("ERR_VLD_VALUE_INVALID"),
