@@ -10,6 +10,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/appactionhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/appdeploymenthandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/apphandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/apppreviewhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/appsettingshandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/clusterhandler"
@@ -41,6 +42,7 @@ type HandlerRegistry struct {
 	appSettingsHandler     *appsettingshandler.Handler
 	appDeploymentHandler   *appdeploymenthandler.Handler
 	appActionHandler       *appactionhandler.Handler
+	appPreviewHandler      *apppreviewhandler.Handler
 	settingHandler         *settinghandler.Handler
 	userSettingsHandler    *usersettingshandler.Handler
 	systemHandler          *systemhandler.Handler
@@ -65,6 +67,7 @@ func NewHandlerRegistry(
 	appSettingsHandler *appsettingshandler.Handler,
 	appDeploymentHandler *appdeploymenthandler.Handler,
 	appActionHandler *appactionhandler.Handler,
+	appPreviewHandler *apppreviewhandler.Handler,
 	settingHandler *settinghandler.Handler,
 	userSettingsHandler *usersettingshandler.Handler,
 	systemHandler *systemhandler.Handler,
@@ -88,6 +91,7 @@ func NewHandlerRegistry(
 		appSettingsHandler:     appSettingsHandler,
 		appDeploymentHandler:   appDeploymentHandler,
 		appActionHandler:       appActionHandler,
+		appPreviewHandler:      appPreviewHandler,
 		settingHandler:         settingHandler,
 		userSettingsHandler:    userSettingsHandler,
 		systemHandler:          systemHandler,

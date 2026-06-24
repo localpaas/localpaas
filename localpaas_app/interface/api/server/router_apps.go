@@ -11,6 +11,7 @@ func (s *HTTPServer) registerAppRoutes(projectGroup *gin.RouterGroup) *gin.Route
 	appSettingsHandler := s.handlerRegistry.appSettingsHandler
 	appDeploymentHandler := s.handlerRegistry.appDeploymentHandler
 	appActionHandler := s.handlerRegistry.appActionHandler
+	appPreviewHandler := s.handlerRegistry.appPreviewHandler
 
 	{ // Base
 		appGroup.GET("/base", appHandler.ListAppBase)
@@ -155,6 +156,12 @@ func (s *HTTPServer) registerAppRoutes(projectGroup *gin.RouterGroup) *gin.Route
 		appActionGroup.POST("/deploy", appActionHandler.DeployApp)
 		// Restart app
 		appActionGroup.POST("/restart", appActionHandler.RestartApp)
+	}
+
+	{ // App previews
+		previewGroup := appGroup.Group("/:appID/previews")
+		// Create
+		previewGroup.POST("", appPreviewHandler.CreateAppPreview)
 	}
 
 	return appGroup

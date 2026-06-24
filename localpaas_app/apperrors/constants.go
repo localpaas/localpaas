@@ -162,6 +162,7 @@ var (
 	ErrAppNotFound                              = NewErr(ErrNotFound, "ERR_APP_NOT_FOUND")
 	ErrAppInactive                              = NewErr(ErrInactive, "ERR_APP_INACTIVE")
 	ErrMultiNodeClusterRequireRegistryForImages = NewErr(ErrPreconditionRequired, "ERR_MULTI_NODE_CLUSTER_REQUIRE_REGISTRY_FOR_IMAGES") //nolint:lll
+	ErrDeploymentMethodRepoRequired             = NewErr(ErrUnconfigured, "ERR_DEPLOYMENT_METHOD_REPO_REQUIRED")
 )
 
 // Errors for cluster

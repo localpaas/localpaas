@@ -96,6 +96,7 @@ ERR_PROJECT_NAME_NOT_ALLOWED = "Project '{{.Name}}' is not allowed"
 ERR_APP_NOT_FOUND = "App '{{.Name}}' is not found"
 ERR_APP_INACTIVE = "App '{{.Name}}' is inactive"
 ERR_MULTI_NODE_CLUSTER_REQUIRE_REGISTRY_FOR_IMAGES = "Multi-node cluster reuquires an accessible registry for the built images"
+ERR_DEPLOYMENT_METHOD_REPO_REQUIRED = "App is required to be deployed from a repo source"
 
 # Cluster error
 ERR_NODE_REQUIRED_BY_LOCALPAAS_APP = "Node is required to be an active manager as LocalPaaS app is running in it"

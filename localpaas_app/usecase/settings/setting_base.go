@@ -23,8 +23,8 @@ type BaseSettingReq struct {
 
 type BaseSettingResp struct {
 	ID              string             `json:"id"`
-	Type            base.SettingType   `json:"type"`
-	Name            string             `json:"name"`
+	Type            base.SettingType   `json:"type,omitempty"`
+	Name            string             `json:"name,omitempty"`
 	Kind            string             `json:"kind,omitempty"`
 	Status          base.SettingStatus `json:"status"`
 	Inherited       bool               `json:"inherited,omitempty"`
@@ -32,8 +32,8 @@ type BaseSettingResp struct {
 	Default         bool               `json:"default,omitempty"`
 	UpdateVer       int                `json:"updateVer"`
 
-	CreatedAt time.Time  `json:"createdAt"`
-	UpdatedAt time.Time  `json:"updatedAt"`
+	CreatedAt time.Time  `json:"createdAt,omitzero"`
+	UpdatedAt time.Time  `json:"updatedAt,omitzero"`
 	ExpireAt  *time.Time `json:"expireAt,omitempty" copy:",nilonzero"`
 }
 

@@ -110,7 +110,7 @@ func (s *service) CopyApp(
 
 	resp.TargetApp = data.TargetApp
 	resp.TargetService = data.TargetService
-	resp.CleanupFunc = func(e error) error {
+	resp.OnCleanup = func(e error) error {
 		return s.cleanupOnFail(ctx, data, e)
 	}
 	return resp, nil
@@ -132,7 +132,7 @@ func (s *service) copyApp(
 	}
 	data.TargetApp = targetApp
 
-	err = data.CopyApp(targetApp, data.SrcApp)
+	err = data.OnCopyApp(targetApp, data.SrcApp)
 	if err != nil {
 		return apperrors.New(err)
 	}
@@ -185,7 +185,7 @@ func (s *service) copyAppSettings(
 		cpSetting.CreatedAt = data.TimeNow
 		cpSetting.UpdatedAt = data.TimeNow
 		cpSetting.UpdateVer = 0
-		st, err := data.CopySetting(targetApp, cpSetting)
+		st, err := data.OnCopySetting(targetApp, cpSetting)
 		if err != nil {
 			return apperrors.New(err)
 		}

@@ -1,13 +1,9 @@
 package githelper
 
 import (
-	"strconv"
 	"strings"
 
 	"github.com/go-git/go-git/v5/plumbing"
-
-	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/githelper/validation"
 )
 
 const (
@@ -98,31 +94,4 @@ func GetRefShort(ref string) (RefType, string) {
 		return refType, plumbing.ReferenceName(ref).Short()
 	}
 	return refType, ref
-}
-
-func GetPullNumberAsStr(ref string) (string, error) {
-	after, ok := strings.CutPrefix(ref, refPullPrefix)
-	if !ok {
-		after, ok = strings.CutPrefix(ref, refMergeRequestsPrefix)
-	}
-	if !ok {
-		return "", apperrors.New(apperrors.ErrPullRequestInvalid).WithParam("PullRequest", ref)
-	}
-	return strings.TrimSuffix(after, "/head"), nil
-}
-
-func GetPullNumber(ref string) (uint64, error) {
-	pullNumberStr, err := GetPullNumberAsStr(ref)
-	if err != nil {
-		return 0, apperrors.New(apperrors.ErrPullRequestInvalid).WithParam("PullRequest", ref)
-	}
-	number, err := strconv.ParseUint(pullNumberStr, 10, 64)
-	if err != nil {
-		return 0, apperrors.New(apperrors.ErrPullRequestInvalid).WithParam("PullRequest", ref)
-	}
-	return number, nil
-}
-
-func IsCommitHash(hash string) bool {
-	return validation.IsCommitHash(hash)
 }

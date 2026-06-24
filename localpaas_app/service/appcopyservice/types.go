@@ -11,13 +11,13 @@ type AppCopyReq struct {
 	SrcApp        *entity.App
 	TargetProject *entity.Project
 
-	CopyApp     func(targetApp, srcApp *entity.App) error
-	CopySetting func(targetApp *entity.App, s *entity.Setting) (*entity.Setting, error)
-	CopyService func(targetSvc, srcSvc *swarm.Service) error
+	OnCopyApp     func(targetApp, srcApp *entity.App) error
+	OnCopySetting func(targetApp *entity.App, s *entity.Setting) (*entity.Setting, error)
+	OnCopyService func(targetSvc, srcSvc *swarm.Service) error
 }
 
 type AppCopyResp struct {
 	TargetApp     *entity.App
 	TargetService *swarm.Service
-	CleanupFunc   func(error) error
+	OnCleanup     func(error) error
 }

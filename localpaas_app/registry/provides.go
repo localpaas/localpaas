@@ -11,6 +11,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/appbasehandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/appdeploymenthandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/apphandler"
+	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/apppreviewhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/appsettingshandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/authhandler"
 	"github.com/localpaas/localpaas/localpaas_app/interface/api/handler/basesettinghandler"
@@ -38,6 +39,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/agentservice/agentserviceimpl"
 	"github.com/localpaas/localpaas/localpaas_app/service/appcopyservice/appcopyserviceimpl"
 	"github.com/localpaas/localpaas/localpaas_app/service/appdeploymentservice/appdeploymentserviceimpl"
+	"github.com/localpaas/localpaas/localpaas_app/service/apppreviewservice/apppreviewserviceimpl"
 	"github.com/localpaas/localpaas/localpaas_app/service/appservice/appserviceimpl"
 	"github.com/localpaas/localpaas/localpaas_app/service/clusterservice/clusterserviceimpl"
 	"github.com/localpaas/localpaas/localpaas_app/service/containerexecservice/containerexecserviceimpl"
@@ -75,6 +77,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/updater/updaterimpl"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appactionuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appdeploymentuc"
+	"github.com/localpaas/localpaas/localpaas_app/usecase/apppreviewuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appsettingsuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/binobjectuc"
@@ -181,6 +184,7 @@ var Provides = []any{
 	appsettingshandler.New,
 	appdeploymenthandler.New,
 	appactionhandler.New,
+	apppreviewhandler.New,
 	settinghandler.New,
 	usersettingshandler.New,
 	systemhandler.New,
@@ -207,6 +211,7 @@ var Provides = []any{
 	appsettingsuc.New,
 	appdeploymentuc.New,
 	appactionuc.New,
+	apppreviewuc.New,
 	settings.New,
 	cloudstorageuc.New,
 	sshkeyuc.New,
@@ -279,6 +284,7 @@ var Provides = []any{
 	imagebuildserviceimpl.New,
 	agentserviceimpl.New,
 	appcopyserviceimpl.New,
+	apppreviewserviceimpl.New,
 
 	// Repo: User
 	repository.NewUserRepo,

@@ -37,13 +37,13 @@ func (uc *UC) CopyApp(
 			SrcProject:    data.Project,
 			SrcApp:        data.App,
 			TargetProject: data.Project,
-			CopyApp: func(targetApp, srcApp *entity.App) error {
+			OnCopyApp: func(targetApp, srcApp *entity.App) error {
 				return uc.onCopyApp(req, targetApp, srcApp)
 			},
-			CopySetting: func(targetApp *entity.App, setting *entity.Setting) (*entity.Setting, error) {
+			OnCopySetting: func(targetApp *entity.App, setting *entity.Setting) (*entity.Setting, error) {
 				return uc.onCopyAppSetting(req, setting)
 			},
-			CopyService: func(targetSvc, srcSvc *swarm.Service) error {
+			OnCopyService: func(targetSvc, srcSvc *swarm.Service) error {
 				return uc.onCopyAppService(req, targetSvc, srcSvc)
 			},
 		})
@@ -52,11 +52,11 @@ func (uc *UC) CopyApp(
 		}
 		return nil
 	})
+	// Run the cleanup function
+	if copyResp != nil && copyResp.OnCleanup != nil {
+		_ = copyResp.OnCleanup(err)
+	}
 	if err != nil {
-		// Transaction fails, but service might be created in docker, need to delete it
-		if copyResp != nil && copyResp.CleanupFunc != nil {
-			_ = copyResp.CleanupFunc(err)
-		}
 		return nil, apperrors.New(err)
 	}
 

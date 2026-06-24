@@ -1,0 +1,66 @@
+package githelper
+
+import (
+	"fmt"
+	"strconv"
+	"strings"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+)
+
+func NormalizePullRef(ref string) (pullRef string, pullNumber uint64, err error) {
+	var pullNumStr string
+
+	for {
+		// Pull ref (github, gitea)
+		if refStr, ok := strings.CutPrefix(ref, "pull/"); ok {
+			pullNumStr, _ = strings.CutSuffix(refStr, "/head")
+			pullRef = refPullPrefix + pullNumStr + "/head"
+			break
+		}
+
+		// Merge request ref (gitlab)
+		if refStr, ok := strings.CutPrefix(ref, "merge-requests/"); ok {
+			pullNumStr, _ = strings.CutSuffix(refStr, "/head")
+			pullRef = refMergeRequestsPrefix + pullNumStr + "/head"
+			break
+		}
+
+		pullNumStr = ref
+		break //nolint
+	}
+
+	pullNumber, err = strconv.ParseUint(pullNumStr, 10, 64)
+	if err != nil {
+		return "", 0, apperrors.New(err)
+	}
+
+	if pullRef == "" {
+		pullRef = fmt.Sprintf("refs/pull/%d/head", pullNumber)
+	}
+
+	return pullRef, pullNumber, nil
+}
+
+func GetPullNumberAsStr(ref string) (string, error) {
+	after, ok := strings.CutPrefix(ref, refPullPrefix)
+	if !ok {
+		after, ok = strings.CutPrefix(ref, refMergeRequestsPrefix)
+	}
+	if !ok {
+		return "", apperrors.New(apperrors.ErrPullRequestInvalid).WithParam("PullRequest", ref)
+	}
+	return strings.TrimSuffix(after, "/head"), nil
+}
+
+func GetPullNumber(ref string) (uint64, error) {
+	pullNumberStr, err := GetPullNumberAsStr(ref)
+	if err != nil {
+		return 0, apperrors.New(apperrors.ErrPullRequestInvalid).WithParam("PullRequest", ref)
+	}
+	number, err := strconv.ParseUint(pullNumberStr, 10, 64)
+	if err != nil {
+		return 0, apperrors.New(apperrors.ErrPullRequestInvalid).WithParam("PullRequest", ref)
+	}
+	return number, nil
+}

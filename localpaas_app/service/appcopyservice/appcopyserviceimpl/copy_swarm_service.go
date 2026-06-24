@@ -93,7 +93,7 @@ func (s *service) copySwarmService(
 
 	// TODO Update mounts
 
-	err = data.CopyService(targetSvc, srcSvc)
+	err = data.OnCopyService(targetSvc, srcSvc)
 	if err != nil {
 		return apperrors.New(err)
 	}
