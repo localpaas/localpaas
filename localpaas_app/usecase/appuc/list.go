@@ -22,8 +22,16 @@ func (uc *UC) ListApp(
 	listOpts := []bunex.SelectQueryOption{
 		bunex.SelectRelation("Project"),
 		bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
+		bunex.SelectRelation("ParentApp",
+			bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
+		),
 	}
 
+	if req.ParentID != "" {
+		listOpts = append(listOpts,
+			bunex.SelectWhere("app.parent_id = ?", req.ParentID),
+		)
+	}
 	if len(req.Status) > 0 {
 		listOpts = append(listOpts,
 			bunex.SelectWhere("app.status IN (?)", bunex.List(req.Status)),

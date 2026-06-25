@@ -41,14 +41,13 @@ type AppResp struct {
 	ID        string                      `json:"id"`
 	Name      string                      `json:"name"`
 	Project   *projectdto.ProjectBaseResp `json:"project"`
-	ParentID  string                      `json:"parentId"`
+	ParentApp *AppBaseResp                `json:"parentApp"`
 	Key       string                      `json:"key"`
 	LocalKey  string                      `json:"localKey"`
 	Status    base.AppStatus              `json:"status"`
 	Env       string                      `json:"env"`
-	Token     string                      `json:"token"`
-	Note      string                      `json:"note"`
-	Tags      []string                    `json:"tags" copy:"-"` // manual copy AppTag -> string
+	Note      string                      `json:"note,omitempty"`
+	Tags      []string                    `json:"tags,omitempty" copy:"-"` // manual copy AppTag -> string
 	UpdateVer int                         `json:"updateVer"`
 
 	// Stats of app, only returns when req.getStats=true
@@ -92,6 +91,9 @@ func TransformApp(app *entity.App, input *AppTransformationInput) (resp *AppResp
 	resp.Tags = gofn.MapSlice(app.Tags, func(t *entity.AppTag) string { return t.Tag })
 	resp.Stats = TransformAppStats(app, input)
 	resp.AccessLinks = TransformAppAccessLinks(app)
+	if app.ParentID != "" {
+		resp.ParentApp = gofn.Coalesce(TransformAppBase(app.ParentApp), &AppBaseResp{ID: app.ParentID})
+	}
 	return resp, nil
 }
 
@@ -122,15 +124,20 @@ func TransformAppAccessLinks(app *entity.App) (resp []string) {
 	return resp
 }
 
+func TransformAppBase(app *entity.App) *AppBaseResp {
+	if app == nil {
+		return nil
+	}
+	return &AppBaseResp{
+		ID:       app.ID,
+		Name:     app.Name,
+		Key:      app.Key,
+		LocalKey: app.LocalKey,
+		Status:   app.Status,
+		Env:      app.Env,
+	}
+}
+
 func TransformAppsBase(apps []*entity.App) []*AppBaseResp {
-	return gofn.MapSlice(apps, func(app *entity.App) *AppBaseResp {
-		return &AppBaseResp{
-			ID:       app.ID,
-			Name:     app.Name,
-			Key:      app.Key,
-			LocalKey: app.LocalKey,
-			Status:   app.Status,
-			Env:      app.Env,
-		}
-	})
+	return gofn.MapSlice(apps, TransformAppBase)
 }

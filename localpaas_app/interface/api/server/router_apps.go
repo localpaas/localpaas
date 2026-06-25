@@ -160,7 +160,7 @@ func (s *HTTPServer) registerAppRoutes(projectGroup *gin.RouterGroup) *gin.Route
 
 	{ // App previews
 		previewGroup := appGroup.Group("/:appID/previews")
-		// Create
+		previewGroup.GET("", appPreviewHandler.ListAppPreview)
 		previewGroup.POST("", appPreviewHandler.CreateAppPreview)
 	}
 

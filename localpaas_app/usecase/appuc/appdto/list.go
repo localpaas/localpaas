@@ -11,6 +11,7 @@ import (
 
 type ListAppReq struct {
 	ProjectID string           `json:"-"`
+	ParentID  string           `json:"-" mapstructure:"parentId"`
 	Status    []base.AppStatus `json:"-" mapstructure:"status"`
 	Env       []string         `json:"-" mapstructure:"env"`
 	Search    string           `json:"-" mapstructure:"search"`
@@ -31,6 +32,7 @@ func NewListAppReq() *ListAppReq {
 func (req *ListAppReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, basedto.ValidateID(&req.ProjectID, true, "projectId")...)
+	validators = append(validators, basedto.ValidateID(&req.ParentID, false, "parentId")...)
 	validators = append(validators, basedto.ValidateSlice(req.Status, true, 0,
 		base.AllAppStatuses, "status")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))

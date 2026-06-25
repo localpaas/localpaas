@@ -19,18 +19,21 @@ func (uc *UC) ListAppBase(
 		bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
 	}
 
+	if req.ParentID != "" {
+		listOpts = append(listOpts,
+			bunex.SelectWhere("app.parent_id = ?", req.ParentID),
+		)
+	}
 	if len(req.Status) > 0 {
 		listOpts = append(listOpts,
 			bunex.SelectWhere("app.status IN (?)", bunex.List(req.Status)),
 		)
 	}
-
 	if len(req.Env) > 0 {
 		listOpts = append(listOpts,
 			bunex.SelectWhere("app.env IN (?)", bunex.List(req.Env)),
 		)
 	}
-
 	if req.Search != "" {
 		keyword := bunex.MakeLikeOpStr(req.Search, true)
 		listOpts = append(listOpts,
@@ -40,7 +43,6 @@ func (uc *UC) ListAppBase(
 			),
 		)
 	}
-
 	if len(auth.AllowObjectIDs) > 0 {
 		listOpts = append(listOpts,
 			bunex.SelectWhere("app.id IN (?)", bunex.List(auth.AllowObjectIDs)),
