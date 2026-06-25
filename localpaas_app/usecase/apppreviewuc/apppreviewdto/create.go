@@ -8,14 +8,16 @@ import (
 )
 
 const (
-	pullRequestMaxLen = 100
+	repoRefMaxLen   = 100
+	subdomainMaxLen = 30
 )
 
 type CreatePreviewReq struct {
 	ProjectID string `json:"-"`
 	AppID     string `json:"-"`
 
-	PullRequest string `json:"pullRequest"`
+	RepoRef         string `json:"repoRef"`
+	CustomSubdomain string `json:"customSubdomain"`
 }
 
 func NewCreatePreviewReq() *CreatePreviewReq {
@@ -26,8 +28,10 @@ func (req *CreatePreviewReq) Validate() apperrors.ValidationErrors {
 	var validators []vld.Validator
 	validators = append(validators, basedto.ValidateID(&req.ProjectID, true, "projectId")...)
 	validators = append(validators, basedto.ValidateID(&req.AppID, true, "appId")...)
-	validators = append(validators, basedto.ValidateStr(&req.PullRequest, true, 1, pullRequestMaxLen,
-		"pullRequest")...)
+	validators = append(validators, basedto.ValidateStr(&req.RepoRef, true, 1, repoRefMaxLen,
+		"repoRef")...)
+	validators = append(validators, basedto.ValidateStr(&req.CustomSubdomain, false, 1, subdomainMaxLen,
+		"customSubdomain")...)
 	return apperrors.NewValidationErrors(vld.Validate(validators...))
 }
 

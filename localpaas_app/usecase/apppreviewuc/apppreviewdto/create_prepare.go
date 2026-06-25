@@ -1,0 +1,35 @@
+package apppreviewdto
+
+import (
+	vld "github.com/tiendc/go-validator"
+
+	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/basedto"
+)
+
+type PrepareCreatePreviewReq struct {
+	ProjectID string `json:"-"`
+	AppID     string `json:"-"`
+}
+
+func NewPrepareCreatePreviewReq() *PrepareCreatePreviewReq {
+	return &PrepareCreatePreviewReq{}
+}
+
+func (req *PrepareCreatePreviewReq) Validate() apperrors.ValidationErrors {
+	var validators []vld.Validator
+	validators = append(validators, basedto.ValidateID(&req.ProjectID, true, "projectId")...)
+	validators = append(validators, basedto.ValidateID(&req.AppID, true, "appId")...)
+	return apperrors.NewValidationErrors(vld.Validate(validators...))
+}
+
+type PrepareCreatePreviewResp struct {
+	Meta *basedto.Meta                 `json:"meta"`
+	Data *PrepareCreatePreviewDataResp `json:"data"`
+}
+
+type PrepareCreatePreviewDataResp struct {
+	CanListBranches     bool                  `json:"canListBranches"`
+	CanListPullRequests bool                  `json:"canListPullRequests"`
+	RepoCredentials     *basedto.ObjectIDResp `json:"repoCredentials"`
+}

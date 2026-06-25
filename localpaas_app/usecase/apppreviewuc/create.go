@@ -21,9 +21,10 @@ func (uc *UC) CreatePreview(
 	var createResp *apppreviewservice.CreatePreviewResp
 	err = transaction.Execute(ctx, uc.db, func(db database.Tx) error {
 		createResp, err = uc.appPreviewService.CreatePreview(ctx, db, &apppreviewservice.CreatePreviewReq{
-			ProjectID:   req.ProjectID,
-			AppID:       req.AppID,
-			PullRequest: req.PullRequest,
+			ProjectID:       req.ProjectID,
+			AppID:           req.AppID,
+			RepoRef:         req.RepoRef,
+			CustomSubdomain: req.CustomSubdomain,
 			OnInitDeployment: func(deployment *entity.Deployment) error {
 				// Set trigger for the deployment
 				deployment.Trigger = &entity.AppDeploymentTrigger{

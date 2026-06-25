@@ -5,9 +5,10 @@ import (
 )
 
 type CreatePreviewReq struct {
-	ProjectID   string
-	AppID       string
-	PullRequest string
+	ProjectID       string
+	AppID           string
+	RepoRef         string
+	CustomSubdomain string
 
 	OnInitDeployment func(*entity.Deployment) error
 	OnDeploymentTask func(*entity.Task) error

@@ -7,6 +7,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/repository/cacherepository"
 	"github.com/localpaas/localpaas/localpaas_app/service/apppreviewservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/appservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/taskservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/userservice"
 	"github.com/localpaas/localpaas/localpaas_app/tasks/queue"
@@ -25,6 +26,7 @@ type UC struct {
 	userService        userservice.Service
 	appService         appservice.Service
 	appPreviewService  apppreviewservice.Service
+	settingService     settingservice.Service
 	taskService        taskservice.Service
 	taskQueue          queue.TaskQueue
 	dockerManager      docker.Manager
@@ -43,6 +45,7 @@ func New(
 	appService appservice.Service,
 	appPreviewService apppreviewservice.Service,
 	taskService taskservice.Service,
+	settingService settingservice.Service,
 	taskQueue queue.TaskQueue,
 	dockerManager docker.Manager,
 ) *UC {
@@ -59,6 +62,7 @@ func New(
 		appService:         appService,
 		appPreviewService:  appPreviewService,
 		taskService:        taskService,
+		settingService:     settingService,
 		taskQueue:          taskQueue,
 		dockerManager:      dockerManager,
 	}

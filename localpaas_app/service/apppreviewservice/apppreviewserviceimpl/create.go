@@ -3,8 +3,10 @@ package apppreviewserviceimpl
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/moby/moby/api/types/swarm"
+	"github.com/tiendc/gofn"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
@@ -19,10 +21,12 @@ import (
 type createPreviewData struct {
 	*apppreviewservice.CreatePreviewReq
 
-	Project    *entity.Project
-	App        *entity.App
-	PullRef    string // normalized pull ref
-	PullNumber uint64
+	Project       *entity.Project
+	App           *entity.App
+	CalcRepoRef   string // normalized repo ref
+	PullNumber    uint64
+	CalcSubdomain string
+	CalcAppName   string
 
 	PreviewApp         *entity.App
 	Deployment         *entity.Deployment
@@ -49,10 +53,11 @@ func (s *service) CreatePreview(
 		SrcApp:        data.App,
 		TargetProject: data.Project,
 		OnCopyApp: func(targetApp, srcApp *entity.App) error {
+			data.PreviewApp = targetApp
 			return s.onCopyApp(targetApp, srcApp, data)
 		},
 		OnCopySetting: func(targetApp *entity.App, setting *entity.Setting) (*entity.Setting, error) {
-			return s.onCopyAppSetting(setting, data)
+			return s.onCopyAppSetting(ctx, db, setting, data)
 		},
 		OnCopyService: func(targetSvc, srcSvc *swarm.Service) error {
 			return s.onCopyAppService(targetSvc, srcSvc, data)
@@ -61,7 +66,6 @@ func (s *service) CreatePreview(
 	if err != nil {
 		return nil, apperrors.New(err)
 	}
-	data.PreviewApp = copyResp.TargetApp
 
 	err = s.createDeploymentAndTask(ctx, data)
 	if err != nil {
@@ -86,9 +90,23 @@ func (s *service) loadAppDataForCreatingPreview(
 	db database.IDB,
 	data *createPreviewData,
 ) (err error) {
-	data.PullRef, data.PullNumber, err = githelper.NormalizePullRef(data.PullRequest)
+	data.CalcRepoRef, data.PullNumber, err = githelper.NormalizePullRef(data.RepoRef)
 	if err != nil {
-		return apperrors.New(err)
+		data.CalcRepoRef = string(githelper.NormalizeRepoRef(data.RepoRef))
+		data.PullNumber = 0
+	}
+	data.CalcSubdomain = data.CustomSubdomain
+	if data.CalcSubdomain == "" && data.PullNumber > 0 {
+		data.CalcSubdomain = fmt.Sprintf("pr-%v", data.PullNumber)
+	}
+	if data.CalcSubdomain == "" {
+		data.CalcSubdomain = gofn.RandTokenAsHex(4) //nolint:mnd
+	}
+	if data.PullNumber > 0 {
+		data.CalcAppName = fmt.Sprintf("pr-%v", data.PullNumber)
+	}
+	if data.CalcAppName == "" {
+		data.CalcAppName = data.CalcSubdomain
 	}
 
 	app, err := s.appService.LoadApp(ctx, db, data.ProjectID, data.AppID, true, true,
@@ -123,7 +141,7 @@ func (s *service) onCopyApp(
 	targetApp, _ *entity.App,
 	data *createPreviewData,
 ) error {
-	targetApp.Name = fmt.Sprintf("pr-%v", data.PullNumber)
+	targetApp.Name = data.CalcAppName
 	targetApp.Env = data.App.Env
 	targetApp.Status = base.AppStatusActive
 	targetApp.ParentID = data.App.ID // Preview app must be a child app of the current
@@ -131,6 +149,8 @@ func (s *service) onCopyApp(
 }
 
 func (s *service) onCopyAppSetting(
+	ctx context.Context,
+	db database.IDB,
 	setting *entity.Setting,
 	data *createPreviewData,
 ) (*entity.Setting, error) {
@@ -142,7 +162,7 @@ func (s *service) onCopyAppSetting(
 	case base.SettingTypeAppFeatures:
 		return nil, nil
 	case base.SettingTypeAppHttp:
-		return s.onCopyHttpSetting(setting, data)
+		return s.onCopyHttpSetting(ctx, db, setting, data)
 	case base.SettingTypeConfigFile:
 		return nil, nil
 	case base.SettingTypeEnvVar:
@@ -163,7 +183,7 @@ func (s *service) onCopyDeploymentSetting(
 	data *createPreviewData,
 ) (*entity.Setting, error) {
 	deploymentSettings := setting.MustAsAppDeploymentSettings()
-	deploymentSettings.RepoSource.RepoRef = data.PullRef
+	deploymentSettings.RepoSource.RepoRef = data.CalcRepoRef
 	deploymentSettings.RepoSource.CommitHash = "" // unset target commit
 	data.DeploymentSettings = deploymentSettings
 
@@ -172,17 +192,31 @@ func (s *service) onCopyDeploymentSetting(
 }
 
 func (s *service) onCopyHttpSetting(
+	ctx context.Context,
+	db database.IDB,
 	setting *entity.Setting,
 	data *createPreviewData,
 ) (*entity.Setting, error) {
 	httpSettings := setting.MustAsAppHttpSettings()
 
+	var activeDomains []string
 	currDomains := httpSettings.Domains
 	httpSettings.Domains = nil
 	for _, domain := range currDomains {
-		domain.Domain = fmt.Sprintf("pr-%v.%v", data.PullNumber, domain.Domain)
+		if !domain.Enabled {
+			continue
+		}
+		subdomain := strings.TrimSuffix(data.CalcSubdomain, "."+domain.Domain)
+		domain.Domain = fmt.Sprintf("%v.%v", subdomain, domain.Domain)
 		// TODO: handle SSL cert
 		httpSettings.Domains = append(httpSettings.Domains, domain)
+		activeDomains = append(activeDomains, domain.Domain)
+	}
+
+	// Make sure all domains used by the app are not hold by any other app
+	err := s.domainService.VerifyDomainsAvailable(ctx, db, activeDomains, []string{data.PreviewApp.ID})
+	if err != nil {
+		return nil, apperrors.New(err)
 	}
 
 	setting.MustSetData(httpSettings)

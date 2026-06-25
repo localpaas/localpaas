@@ -31,8 +31,9 @@ func NormalizePullRef(ref string) (pullRef string, pullNumber uint64, err error)
 	}
 
 	pullNumber, err = strconv.ParseUint(pullNumStr, 10, 64)
-	if err != nil {
-		return "", 0, apperrors.New(err)
+	if err != nil || pullNumber == 0 {
+		return "", 0, apperrors.New(apperrors.ErrPullRequestInvalid).
+			WithParam("PullRequest", ref)
 	}
 
 	if pullRef == "" {
