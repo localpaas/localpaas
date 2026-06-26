@@ -157,10 +157,10 @@ func (e *appError) Build(lang translation.Lang) *ErrorInfo {
 		errInfo.Status = http.StatusInternalServerError
 		errInfo.Code = ErrInternal.Error()
 	} else {
-		errInfo.Code = getMessageID(e.err)
+		errInfo.Code = getErrorCode(e.err)
 	}
 
-	detail, transErr := e.Message(lang)
+	detail, transErr := e.getMessage(errInfo.Code, lang)
 	if transErr != nil {
 		// This is not error, just notify dev team about missing translation
 		notifyTranslationMissing(transErr, lang)
@@ -194,6 +194,10 @@ func (e *appError) StatusCode() int {
 }
 
 func (e *appError) Message(lang translation.Lang) (msg string, transErr error) {
+	return e.getMessage("", lang)
+}
+
+func (e *appError) getMessage(msgID string, lang translation.Lang) (msg string, transErr error) {
 	params := make(map[string]any, len(e.params)+len(e.ntParams))
 	maps.Copy(params, e.ntParams)
 	for k, v := range e.params {
@@ -210,7 +214,10 @@ func (e *appError) Message(lang translation.Lang) (msg string, transErr error) {
 		}
 	}
 
-	msgID := getMessageID(e.err)
+	if msgID == "" {
+		msgID = getMessageID(e.err)
+	}
+
 	missingTranslation := false
 	if msgID != "" {
 		var err error
@@ -291,6 +298,10 @@ func getBaseError(err error) error {
 		}
 	}
 	return nil
+}
+
+func getErrorCode(err error) string {
+	return getMessageID(err)
 }
 
 func getMessageID(err error) (msg string) {

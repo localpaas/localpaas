@@ -49,7 +49,7 @@ func (e ValidationErrors) Build(lang translation.Lang) *ErrorInfo {
 	return &ErrorInfo{
 		Title:        http.StatusText(errVldStatusCode),
 		Status:       errVldStatusCode,
-		Code:         ErrValidation.Error(),
+		Code:         getErrorCode(ErrValidation),
 		Detail:       detail,
 		DisplayLevel: errVldDisplayLevel,
 		InnerErrors:  vldErrs,
@@ -77,7 +77,7 @@ func (e *ValidationError) Error() string {
 func (e *ValidationError) build(lang translation.Lang) (*InnerErrorInfo, error) {
 	msg, field, transErr := e.message(lang)
 	errInfo := &InnerErrorInfo{
-		Code:    ErrValidation.Error(),
+		Code:    getErrorCode(ErrValidation),
 		Path:    field,
 		Message: msg,
 		Cause:   e.err.Error(),

@@ -62,6 +62,7 @@ type ScheduleReq struct {
 	CronExpr    string            `json:"cronExpr"` // cronExpr and interval are mutually exclusive
 	Interval    timeutil.Duration `json:"interval"`
 	InitialTime time.Time         `json:"initialTime"`
+	EndTime     time.Time         `json:"endTime"`
 }
 
 func (req *ScheduleReq) ToEntity() *entity.SchedJobSchedule {
@@ -72,6 +73,7 @@ func (req *ScheduleReq) ToEntity() *entity.SchedJobSchedule {
 		CronExpr:    req.CronExpr,
 		Interval:    req.Interval,
 		InitialTime: req.InitialTime,
+		EndTime:     req.EndTime,
 	}
 }
 

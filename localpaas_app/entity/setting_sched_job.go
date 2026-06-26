@@ -46,6 +46,7 @@ type SchedJobSchedule struct {
 	CronExpr    string            `json:"cronExpr,omitempty"` // cronExpr and interval are mutually exclusive
 	Interval    timeutil.Duration `json:"interval,omitempty"`
 	InitialTime time.Time         `json:"initialTime"`
+	EndTime     time.Time         `json:"endTime,omitzero"`
 
 	InitialTimeAdj  time.Time `json:"initialTimeAdj"`
 	LastCronExpr    string    `json:"lastCronExpr,omitempty"`
@@ -85,6 +86,7 @@ func (s *SchedJobSchedule) ParseCronExpr() (cron.Schedule, error) {
 	return sched, nil
 }
 
+//nolint:gocognit
 func (s *SchedJobSchedule) CalcNextRuns(fromTime time.Time, count int) (res []time.Time, err error) {
 	if count == 0 {
 		return nil, apperrors.NewArgumentInvalid("count")
@@ -99,7 +101,7 @@ func (s *SchedJobSchedule) CalcNextRuns(fromTime time.Time, count int) (res []ti
 		if diff := fromTime.Sub(nextRunAt); diff > interval {
 			nextRunAt = nextRunAt.Add((diff / interval) * interval)
 		}
-		for {
+		for s.EndTime.IsZero() || nextRunAt.Before(s.EndTime) {
 			if nextRunAt.Before(fromTime) {
 				nextRunAt = nextRunAt.Add(interval)
 				continue
@@ -113,7 +115,7 @@ func (s *SchedJobSchedule) CalcNextRuns(fromTime time.Time, count int) (res []ti
 		return res, nil
 	}
 
-	if s.CronExpr != "" {
+	if s.CronExpr != "" { //nolint:nestif
 		if !s.InitialTimeAdj.IsZero() && s.LastCronExpr == s.CronExpr && s.LastInitialTime.Equal(s.InitialTime) {
 			nextRunAt = s.InitialTimeAdj
 		}
@@ -123,6 +125,9 @@ func (s *SchedJobSchedule) CalcNextRuns(fromTime time.Time, count int) (res []ti
 		}
 		for {
 			nextRunAt = cronSched.Next(nextRunAt)
+			if !s.EndTime.IsZero() && nextRunAt.After(s.EndTime) {
+				break
+			}
 			if nextRunAt.Before(fromTime) {
 				continue
 			}
@@ -137,6 +142,7 @@ func (s *SchedJobSchedule) CalcNextRuns(fromTime time.Time, count int) (res []ti
 	return nil, apperrors.NewArgumentInvalid("Schedule")
 }
 
+//nolint:gocognit
 func (s *SchedJobSchedule) CalcNextRunsInRange(fromTime, toTime time.Time) (res []time.Time, err error) {
 	if toTime.IsZero() {
 		return nil, apperrors.NewArgumentInvalid("toTime")
@@ -151,7 +157,7 @@ func (s *SchedJobSchedule) CalcNextRunsInRange(fromTime, toTime time.Time) (res 
 		if diff := fromTime.Sub(nextRunAt); diff > interval {
 			nextRunAt = nextRunAt.Add((diff / interval) * interval)
 		}
-		for {
+		for s.EndTime.IsZero() || nextRunAt.Before(s.EndTime) {
 			if nextRunAt.Before(fromTime) {
 				nextRunAt = nextRunAt.Add(interval)
 				continue
@@ -165,7 +171,7 @@ func (s *SchedJobSchedule) CalcNextRunsInRange(fromTime, toTime time.Time) (res 
 		return res, nil
 	}
 
-	if s.CronExpr != "" {
+	if s.CronExpr != "" { //nolint:nestif
 		if !s.InitialTimeAdj.IsZero() && s.LastCronExpr == s.CronExpr && s.LastInitialTime.Equal(s.InitialTime) {
 			nextRunAt = s.InitialTimeAdj
 		}
@@ -175,6 +181,9 @@ func (s *SchedJobSchedule) CalcNextRunsInRange(fromTime, toTime time.Time) (res 
 		}
 		for {
 			nextRunAt = cronSched.Next(nextRunAt)
+			if !s.EndTime.IsZero() && nextRunAt.After(s.EndTime) {
+				break
+			}
 			if nextRunAt.Before(fromTime) {
 				continue
 			}

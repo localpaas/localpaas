@@ -55,6 +55,7 @@ type ScheduleResp struct {
 	CronExpr    string            `json:"cronExpr,omitempty"` // cronExpr and interval are mutually exclusive
 	Interval    timeutil.Duration `json:"interval,omitempty"`
 	InitialTime time.Time         `json:"initialTime"`
+	EndTime     time.Time         `json:"endTime,omitzero"`
 }
 
 type ContainerCommandResp struct {
