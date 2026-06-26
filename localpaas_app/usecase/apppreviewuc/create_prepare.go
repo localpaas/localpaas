@@ -45,7 +45,9 @@ func (uc *UC) PrepareCreatePreview(
 		return nil, apperrors.New(err)
 	}
 
-	respData := &apppreviewdto.PrepareCreatePreviewDataResp{}
+	respData := &apppreviewdto.PrepareCreatePreviewDataResp{
+		RepoURL: repoSource.RepoURL,
+	}
 	if repoSource.Credentials.ID != "" {
 		respData.RepoCredentials = &basedto.ObjectIDResp{ID: repoSource.Credentials.ID}
 	}

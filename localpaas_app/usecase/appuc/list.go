@@ -7,6 +7,7 @@ import (
 	"github.com/moby/moby/client"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
@@ -30,6 +31,10 @@ func (uc *UC) ListApp(
 	if req.ParentID != "" {
 		listOpts = append(listOpts,
 			bunex.SelectWhere("app.parent_id = ?", req.ParentID),
+			bunex.SelectRelation("Settings",
+				// NOTE: load http settings to extract active domain names of the app
+				bunex.SelectWhere("setting.type = ?", base.SettingTypeAppHttp),
+			),
 		)
 	}
 	if len(req.Status) > 0 {

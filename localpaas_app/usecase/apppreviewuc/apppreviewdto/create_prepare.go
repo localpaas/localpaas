@@ -29,7 +29,8 @@ type PrepareCreatePreviewResp struct {
 }
 
 type PrepareCreatePreviewDataResp struct {
+	RepoURL             string                `json:"repoURL"`
+	RepoCredentials     *basedto.ObjectIDResp `json:"repoCredentials"`
 	CanListBranches     bool                  `json:"canListBranches"`
 	CanListPullRequests bool                  `json:"canListPullRequests"`
-	RepoCredentials     *basedto.ObjectIDResp `json:"repoCredentials"`
 }
