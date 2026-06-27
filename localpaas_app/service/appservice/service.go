@@ -23,6 +23,9 @@ type Service interface {
 		requireProjectActive, requireAppActive bool, extraOpts ...bunex.SelectQueryOption) (
 		*entity.App, *entity.AppFeatureSettings, error)
 
+	FindAppsMatchingRepository(ctx context.Context, db database.IDB, repoID, repoRef string,
+		extraAppOpts ...bunex.SelectQueryOption) ([]*entity.App, error)
+
 	PersistAppData(ctx context.Context, db database.IDB, data *PersistingAppData) error
 	DeleteApp(ctx context.Context, db database.IDB, app *entity.App) error
 	OnAppStatusChanged(ctx context.Context, app *entity.App, oldStatus base.AppStatus) error

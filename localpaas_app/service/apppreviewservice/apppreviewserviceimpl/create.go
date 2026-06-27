@@ -2,6 +2,7 @@ package apppreviewserviceimpl
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -90,25 +91,6 @@ func (s *service) loadAppDataForCreatingPreview(
 	db database.IDB,
 	data *createPreviewData,
 ) (err error) {
-	data.CalcRepoRef, data.PullNumber, err = githelper.NormalizePullRef(data.RepoRef)
-	if err != nil {
-		data.CalcRepoRef = string(githelper.NormalizeRepoRef(data.RepoRef))
-		data.PullNumber = 0
-	}
-	data.CalcSubdomain = data.CustomSubdomain
-	if data.CalcSubdomain == "" && data.PullNumber > 0 {
-		data.CalcSubdomain = fmt.Sprintf("pr-%v", data.PullNumber)
-	}
-	if data.CalcSubdomain == "" {
-		data.CalcSubdomain = gofn.RandTokenAsHex(4) //nolint:mnd
-	}
-	if data.PullNumber > 0 {
-		data.CalcAppName = fmt.Sprintf("pr-%v", data.PullNumber)
-	}
-	if data.CalcAppName == "" {
-		data.CalcAppName = data.CalcSubdomain
-	}
-
 	app, err := s.appService.LoadApp(ctx, db, data.ProjectID, data.AppID, true, true,
 		bunex.SelectFor("UPDATE OF app"),
 		bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
@@ -134,6 +116,34 @@ func (s *service) loadAppDataForCreatingPreview(
 
 	data.App = app
 	data.Project = app.Project
+
+	data.CalcRepoRef, data.PullNumber, err = githelper.NormalizePullRef(data.RepoRef)
+	if err != nil {
+		data.CalcRepoRef = string(githelper.NormalizeRepoRef(data.RepoRef))
+		data.PullNumber = 0
+	}
+	data.CalcSubdomain = data.CustomSubdomain
+	if data.CalcSubdomain == "" && data.PullNumber > 0 {
+		data.CalcSubdomain = fmt.Sprintf("pr-%v", data.PullNumber)
+	}
+	if data.CalcSubdomain == "" {
+		data.CalcSubdomain = gofn.RandTokenAsHex(4) //nolint:mnd
+	}
+	if data.PullNumber > 0 {
+		data.CalcAppName = fmt.Sprintf("pr-%v", data.PullNumber)
+	}
+	if data.CalcAppName == "" {
+		data.CalcAppName = data.CalcSubdomain
+	}
+
+	previewApp, err := s.GetPreview(ctx, db, app.ID, data.CalcRepoRef, bunex.SelectColumns("id"))
+	if err != nil && !errors.Is(err, apperrors.ErrNotFound) {
+		return apperrors.New(err)
+	}
+	if previewApp != nil {
+		return apperrors.NewAlreadyExist("Preview app")
+	}
+
 	return nil
 }
 

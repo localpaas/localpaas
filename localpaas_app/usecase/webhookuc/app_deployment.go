@@ -4,63 +4,57 @@ import (
 	"context"
 	"time"
 
-	"github.com/gitsight/go-vcsurl"
-
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/service/appservice"
 )
 
-type repoPushEventData struct {
-	RepoRef  string
-	RepoURL  string
-	RepoID   string
-	ChangeID string
-}
-
-func (uc *UC) processWebhookEventPush(
+func (uc *UC) createAppDeployment(
 	ctx context.Context,
-	db database.Tx,
-	pushEvent *repoPushEventData,
-	data *handleRepoWebhookData,
-	persistingData *appservice.PersistingAppData,
-) (err error) {
-	parsedURL, err := vcsurl.Parse(pushEvent.RepoURL)
-	if err != nil {
-		return apperrors.New(err)
-	}
-	pushEvent.RepoID = parsedURL.ID
-
-	apps, err := uc.findAppsMatchingRepository(ctx, db, pushEvent.RepoID, pushEvent.RepoRef)
-	if err != nil {
-		return apperrors.New(err)
-	}
-	for _, app := range apps {
-		err = uc.createAppDeploymentByPushEvent(ctx, db, app, pushEvent, data, persistingData)
+	db database.IDB,
+	app *entity.App,
+	changeID string,
+	webhookID string,
+) error {
+	persistingData := &appservice.PersistingAppData{}
+	err := transaction.Execute(ctx, db, func(db database.Tx) error {
+		err := uc.createAppDeploymentByChangeID(ctx, db, app, changeID, webhookID, persistingData)
 		if err != nil {
 			return apperrors.New(err)
 		}
+		err = uc.appService.PersistAppData(ctx, db, persistingData)
+		if err != nil {
+			return apperrors.New(err)
+		}
+		return nil
+	})
+	if err == nil && len(persistingData.UpsertingTasks) > 0 {
+		_ = uc.taskQueue.ScheduleTask(ctx, persistingData.UpsertingTasks...)
+	}
+	if err != nil {
+		return apperrors.New(err)
 	}
 	return nil
 }
 
-func (uc *UC) createAppDeploymentByPushEvent(
+func (uc *UC) createAppDeploymentByChangeID(
 	ctx context.Context,
-	db database.IDB,
+	db database.Tx,
 	app *entity.App,
-	pushEvent *repoPushEventData,
-	data *handleRepoWebhookData,
+	changeID string,
+	webhookID string,
 	persistingData *appservice.PersistingAppData,
 ) error {
-	shouldDeploy, err := uc.shouldCreateAppDeploymentByPushEvent(ctx, db, app, pushEvent)
+	hasDeployment, err := uc.hasAppDeploymentByChangeID(ctx, db, app, changeID)
 	if err != nil {
 		return apperrors.New(err)
 	}
-	if !shouldDeploy {
+	if hasDeployment {
 		return nil
 	}
 
@@ -82,12 +76,12 @@ func (uc *UC) createAppDeploymentByPushEvent(
 		return apperrors.New(err)
 	}
 	// Override target commit hash
-	deployment.Settings.RepoSource.CommitHash = pushEvent.ChangeID
+	deployment.Settings.RepoSource.CommitHash = changeID
 	// Set trigger for the deployment
 	deployment.Trigger = &entity.AppDeploymentTrigger{
 		Source:   base.DeploymentTriggerSourceRepoWebhook,
-		SourceID: data.WebhookSetting.ID,
-		ChangeID: pushEvent.ChangeID,
+		SourceID: webhookID,
+		ChangeID: changeID,
 	}
 
 	persistingData.UpsertingDeployments = append(persistingData.UpsertingDeployments, deployment)
@@ -95,25 +89,40 @@ func (uc *UC) createAppDeploymentByPushEvent(
 	return nil
 }
 
-func (uc *UC) shouldCreateAppDeploymentByPushEvent(
+func (uc *UC) getAppDeploymentByChangeID(
 	ctx context.Context,
 	db database.IDB,
 	app *entity.App,
-	pushEvent *repoPushEventData,
-) (bool, error) {
-	// Make sure there is no duplicated deployment having the same `change id`
-	if pushEvent.ChangeID == "" {
-		return true, nil
+	changeID string,
+) (*entity.Deployment, error) {
+	if changeID == "" {
+		return nil, nil
 	}
 	deployments, _, err := uc.deploymentRepo.List(ctx, db, app.ID, nil,
 		bunex.SelectColumns("id"),
 		bunex.SelectLimit(1),
 		bunex.SelectWhere("deployment.created_at > ?", timeutil.NowUTC().Add(-time.Minute)),
 		bunex.SelectWhere("deployment.trigger->>'source' = ?", base.DeploymentTriggerSourceRepoWebhook),
-		bunex.SelectWhere("deployment.trigger->>'changeId' = ?", pushEvent.ChangeID),
+		bunex.SelectWhere("deployment.trigger->>'changeId' = ?", changeID),
 	)
+	if err != nil {
+		return nil, apperrors.New(err)
+	}
+	if len(deployments) == 0 {
+		return nil, nil
+	}
+	return deployments[0], nil
+}
+
+func (uc *UC) hasAppDeploymentByChangeID(
+	ctx context.Context,
+	db database.IDB,
+	app *entity.App,
+	changeID string,
+) (bool, error) {
+	deployment, err := uc.getAppDeploymentByChangeID(ctx, db, app, changeID)
 	if err != nil {
 		return false, apperrors.New(err)
 	}
-	return len(deployments) == 0, nil
+	return deployment != nil, nil
 }

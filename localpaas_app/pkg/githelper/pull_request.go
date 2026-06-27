@@ -6,10 +6,12 @@ import (
 	"strings"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
+	"github.com/localpaas/localpaas/localpaas_app/base"
 )
 
 func NormalizePullRef(ref string) (pullRef string, pullNumber uint64, err error) {
 	var pullNumStr string
+	ref, _ = strings.CutPrefix(ref, "refs/")
 
 	for {
 		// Pull ref (github, gitea)
@@ -64,4 +66,19 @@ func GetPullNumber(ref string) (uint64, error) {
 		return 0, apperrors.New(apperrors.ErrPullRequestInvalid).WithParam("PullRequest", ref)
 	}
 	return number, nil
+}
+
+func GetPullNumberRef(prNumber int64, gitSource base.GitSource) (string, error) {
+	switch gitSource {
+	case base.GitSourceGithub:
+		return "refs/pull/" + strconv.FormatInt(prNumber, 10) + "/head", nil
+	case base.GitSourceGitlab:
+		return "refs/merge-requests/" + strconv.FormatInt(prNumber, 10) + "/head", nil
+	case base.GitSourceGitea, base.GitSourceGogs:
+		return "refs/pull/" + strconv.FormatInt(prNumber, 10) + "/head", nil
+	case base.GitSourceBitbucket:
+		fallthrough
+	default:
+		return "", apperrors.New(apperrors.ErrGitTypeUnsupported).WithParam("Type", gitSource)
+	}
 }

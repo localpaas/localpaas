@@ -10,8 +10,9 @@ import (
 )
 
 const (
-	actionCreated = "created"
-	actionClosed  = "closed"
+	actionCreated     = "created"
+	actionSynchronize = "synchronize"
+	actionClosed      = "closed"
 )
 
 func (uc *UC) parseGithubWebhook(
@@ -48,7 +49,14 @@ func (uc *UC) parseGithubWebhook(
 			}
 		}
 	case github.PullRequestPayload:
-		if p.Action == actionClosed {
+		switch p.Action {
+		case actionSynchronize:
+			data.PRSynchronized = &repoPRSynchronizedEventData{
+				RepoURL:  p.Repository.HTMLURL,
+				PRNumber: p.Number,
+				ChangeID: p.PullRequest.Head.Sha,
+			}
+		case actionClosed:
 			data.PRClosed = &repoPRClosedEventData{
 				RepoURL:  p.Repository.HTMLURL,
 				PRNumber: p.Number,

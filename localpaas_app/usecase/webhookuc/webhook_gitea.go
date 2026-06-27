@@ -44,7 +44,14 @@ func (uc *UC) parseGiteaWebhook(
 			}
 		}
 	case gitea.PullRequestPayload:
-		if p.Action == actionClosed {
+		switch p.Action {
+		case actionSynchronize:
+			data.PRSynchronized = &repoPRSynchronizedEventData{
+				RepoURL:  p.Repository.HTMLURL,
+				PRNumber: p.Index,
+				ChangeID: p.PullRequest.Head.Sha,
+			}
+		case actionClosed:
 			data.PRClosed = &repoPRClosedEventData{
 				RepoURL:  p.Repository.HTMLURL,
 				PRNumber: p.Index,

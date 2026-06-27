@@ -8,8 +8,6 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
-	"github.com/localpaas/localpaas/localpaas_app/service/appservice"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/webhookuc/webhookdto"
 )
 
@@ -17,34 +15,15 @@ func (uc *UC) HandleRepoWebhook(
 	ctx context.Context,
 	req *webhookdto.HandleRepoWebhookReq,
 ) (*webhookdto.HandleRepoWebhookResp, error) {
-	var persistingData *appservice.PersistingAppData
-	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
-		data := &handleRepoWebhookData{}
-		persistingData = &appservice.PersistingAppData{}
+	db := uc.db
 
-		err := uc.loadWebhookSettings(ctx, db, req, data)
-		if err != nil {
-			return apperrors.New(err)
-		}
-
-		err = uc.processRepoWebhook(ctx, db, req, data, persistingData)
-		if err != nil {
-			return apperrors.New(err)
-		}
-
-		err = uc.appService.PersistAppData(ctx, db, persistingData)
-		if err != nil {
-			return apperrors.New(err)
-		}
-		return nil
-	})
-	if err != nil {
+	data := &handleRepoWebhookData{}
+	if err := uc.loadWebhookSettings(ctx, db, req, data); err != nil {
 		return nil, apperrors.New(err)
 	}
 
-	// Schedule deployment tasks
-	for _, task := range persistingData.UpsertingTasks {
-		_ = uc.taskQueue.ScheduleTask(ctx, task)
+	if err := uc.processRepoWebhook(ctx, db, req, data); err != nil {
+		return nil, apperrors.New(err)
 	}
 
 	return &webhookdto.HandleRepoWebhookResp{}, nil
@@ -55,9 +34,10 @@ type handleRepoWebhookData struct {
 }
 
 type repoEventData struct {
-	Push      *repoPushEventData
-	PRComment *repoPRCommentEventData
-	PRClosed  *repoPRClosedEventData
+	Push           *repoPushEventData
+	PRComment      *repoPRCommentEventData
+	PRClosed       *repoPRClosedEventData
+	PRSynchronized *repoPRSynchronizedEventData
 }
 
 func (uc *UC) loadWebhookSettings(
@@ -82,10 +62,9 @@ func (uc *UC) loadWebhookSettings(
 
 func (uc *UC) processRepoWebhook(
 	ctx context.Context,
-	db database.Tx,
+	db database.IDB,
 	req *webhookdto.HandleRepoWebhookReq,
 	data *handleRepoWebhookData,
-	persistingData *appservice.PersistingAppData,
 ) (err error) {
 	webhook := data.WebhookSetting.MustAsRepoWebhook()
 	eventData := &repoEventData{}
@@ -107,23 +86,18 @@ func (uc *UC) processRepoWebhook(
 		return apperrors.New(err)
 	}
 
-	if eventData.Push != nil {
-		if err := uc.processWebhookEventPush(ctx, db, eventData.Push, data, persistingData); err != nil {
-			return apperrors.New(err)
-		}
+	switch {
+	case eventData.Push != nil:
+		err = uc.processWebhookEventPush(ctx, db, eventData.Push, data)
+	case eventData.PRComment != nil:
+		err = uc.processWebhookEventPRComment(ctx, db, eventData.PRComment, data)
+	case eventData.PRClosed != nil:
+		err = uc.processWebhookEventPRClosed(ctx, db, eventData.PRClosed, data)
+	case eventData.PRSynchronized != nil:
+		err = uc.processWebhookEventPRSynchronized(ctx, db, eventData.PRSynchronized, data)
 	}
-
-	if eventData.PRComment != nil {
-		if err := uc.processWebhookEventPRComment(ctx, db, eventData.PRComment, data, persistingData); err != nil {
-			return apperrors.New(err)
-		}
+	if err != nil {
+		return apperrors.New(err)
 	}
-
-	if eventData.PRClosed != nil {
-		if err := uc.processWebhookEventPRClosed(ctx, db, eventData.PRClosed, data, persistingData); err != nil {
-			return apperrors.New(err)
-		}
-	}
-
 	return nil
 }

@@ -1,4 +1,4 @@
-package webhookuc
+package appserviceimpl
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 )
 
-func (uc *UC) findAppsMatchingRepository(
+func (s *service) FindAppsMatchingRepository(
 	ctx context.Context,
 	db database.IDB,
 	repoID, repoRef string,
@@ -33,7 +33,7 @@ func (uc *UC) findAppsMatchingRepository(
 		)
 	}
 
-	settings, _, err := uc.settingRepo.List(ctx, db, nil, nil, settingListOpts...)
+	settings, _, err := s.settingRepo.List(ctx, db, nil, nil, settingListOpts...)
 	if err != nil {
 		return nil, apperrors.New(err)
 	}
@@ -47,8 +47,6 @@ func (uc *UC) findAppsMatchingRepository(
 	}
 
 	appListOpts := []bunex.SelectQueryOption{
-		bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
-		bunex.SelectFor("UPDATE OF app"),
 		bunex.SelectWhereIn("app.id IN (?)", appIDs...),
 		bunex.SelectWhere("app.status = ?", base.AppStatusActive),
 		bunex.SelectRelation("Project",
@@ -62,7 +60,7 @@ func (uc *UC) findAppsMatchingRepository(
 	}
 	appListOpts = append(appListOpts, extraAppOpts...)
 
-	apps, _, err := uc.appRepo.List(ctx, db, "", nil, appListOpts...)
+	apps, _, err := s.appRepo.List(ctx, db, "", nil, appListOpts...)
 	if err != nil {
 		return nil, apperrors.New(err)
 	}

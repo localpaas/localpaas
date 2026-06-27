@@ -3,11 +3,13 @@ package appserviceimpl
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/service/clusterservice"
 )
 
@@ -65,6 +67,13 @@ func (s *service) DeleteApp(ctx context.Context, db database.IDB, app *entity.Ap
 
 	// Remove app config from traefik
 	err = s.traefikService.RemoveAppConfig(ctx, app, nil)
+	if err != nil {
+		return apperrors.New(err)
+	}
+
+	app.DeletedAt = time.Now()
+	app.UpdateVer++
+	err = s.appRepo.Update(ctx, db, app, bunex.UpdateColumns("deleted_at", "update_ver"))
 	if err != nil {
 		return apperrors.New(err)
 	}

@@ -11,6 +11,7 @@ import (
 
 const (
 	actionMerged = "merged"
+	actionUpdate = "update"
 )
 
 func (uc *UC) parseGitlabWebhook(
@@ -47,7 +48,13 @@ func (uc *UC) parseGitlabWebhook(
 			}
 		}
 	case gitlab.MergeRequestEventPayload:
-		if p.ObjectAttributes.State == actionClosed || p.ObjectAttributes.State == actionMerged {
+		if p.ObjectAttributes.Action == actionUpdate {
+			data.PRSynchronized = &repoPRSynchronizedEventData{
+				RepoURL:  p.Repository.GitHTTPURL,
+				PRNumber: p.ObjectAttributes.IID,
+				ChangeID: p.ObjectAttributes.SHA,
+			}
+		} else if p.ObjectAttributes.State == actionClosed || p.ObjectAttributes.State == actionMerged {
 			data.PRClosed = &repoPRClosedEventData{
 				RepoURL:  p.Repository.GitHTTPURL,
 				PRNumber: p.ObjectAttributes.IID,

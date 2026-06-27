@@ -3,11 +3,11 @@ package base
 type WebhookKind string
 
 const (
-	WebhookKindGithub    WebhookKind = "github"
-	WebhookKindGitlab    WebhookKind = "gitlab"
-	WebhookKindGitea     WebhookKind = "gitea"
-	WebhookKindBitbucket WebhookKind = "bitbucket"
-	WebhookKindGogs      WebhookKind = "gogs"
+	WebhookKindGithub    = WebhookKind(GitSourceGithub)
+	WebhookKindGitlab    = WebhookKind(GitSourceGitlab)
+	WebhookKindGitea     = WebhookKind(GitSourceGitea)
+	WebhookKindBitbucket = WebhookKind(GitSourceBitbucket)
+	WebhookKindGogs      = WebhookKind(GitSourceGogs)
 )
 
 var (
