@@ -60,7 +60,7 @@ func TestExecute(t *testing.T) {
 
 		err := Execute(context.Background(), db, func(tx database.Tx) error {
 			return nil
-		})
+		}, MaxRetryTimes(1))
 
 		assert.NoError(t, err)
 		assert.Equal(t, 2, calls)
@@ -120,7 +120,7 @@ func TestExecute(t *testing.T) {
 		start := time.Now()
 		err := Execute(context.Background(), db, func(tx database.Tx) error {
 			return nil
-		}, RetryDelay(delay))
+		}, MaxRetryTimes(1), RetryDelay(delay))
 
 		assert.NoError(t, err)
 		assert.GreaterOrEqual(t, time.Since(start), delay)
