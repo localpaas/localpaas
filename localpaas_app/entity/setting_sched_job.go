@@ -29,17 +29,20 @@ var (
 )
 
 type SchedJob struct {
-	JobType         base.SchedJobType         `json:"jobType"`
-	Schedule        *SchedJobSchedule         `json:"schedule"`
-	App             ObjectID                  `json:"app,omitzero"`
-	TargetSetting   ObjectID                  `json:"targetSetting,omitzero"`
-	Priority        base.TaskPriority         `json:"priority,omitempty"`
-	MaxRetry        int                       `json:"maxRetry,omitempty"`
-	RetryDelay      timeutil.Duration         `json:"retryDelay,omitempty"`
-	Timeout         timeutil.Duration         `json:"timeout,omitempty"`
-	ControlDisabled bool                      `json:"controlDisabled,omitempty"`
-	Command         *SchedJobContainerCommand `json:"command,omitempty"`
-	Notification    *BaseEventNotification    `json:"notification,omitempty"`
+	JobType            base.SchedJobType         `json:"jobType"`
+	Schedule           *SchedJobSchedule         `json:"schedule"`
+	App                ObjectID                  `json:"app,omitzero"`
+	TargetSetting      ObjectID                  `json:"targetSetting,omitzero"`
+	Priority           base.TaskPriority         `json:"priority,omitempty"`
+	MaxRetry           int                       `json:"maxRetry,omitempty"`
+	RetryDelay         timeutil.Duration         `json:"retryDelay,omitempty"`
+	RetryDelayIncr     timeutil.Duration         `json:"retryDelayIncr,omitempty"`
+	RetryBackoffJitter timeutil.Duration         `json:"retryBackoffJitter,omitempty"`
+	RetryDelayMax      timeutil.Duration         `json:"retryDelayMax,omitempty"`
+	Timeout            timeutil.Duration         `json:"timeout,omitempty"`
+	ControlDisabled    bool                      `json:"controlDisabled,omitempty"`
+	Command            *SchedJobContainerCommand `json:"command,omitempty"`
+	Notification       *BaseEventNotification    `json:"notification,omitempty"`
 }
 
 type SchedJobSchedule struct {

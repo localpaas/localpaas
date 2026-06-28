@@ -36,16 +36,20 @@ type GetSchedJobResp struct {
 
 type SchedJobResp struct {
 	*settings.BaseSettingResp
-	JobType         base.SchedJobType                  `json:"jobType"`
-	Schedule        *ScheduleResp                      `json:"schedule"`
-	App             *basedto.NamedObjectResp           `json:"app"`
-	Priority        base.TaskPriority                  `json:"priority"`
-	MaxRetry        int                                `json:"maxRetry"`
-	RetryDelay      timeutil.Duration                  `json:"retryDelay"`
-	Timeout         timeutil.Duration                  `json:"timeout"`
-	ControlDisabled bool                               `json:"controlDisabled"`
-	Command         *ContainerCommandResp              `json:"command"`
-	Notification    *basedto.BaseEventNotificationResp `json:"notification"`
+	JobType            base.SchedJobType                  `json:"jobType"`
+	Schedule           *ScheduleResp                      `json:"schedule"`
+	App                *basedto.NamedObjectResp           `json:"app"`
+	Priority           base.TaskPriority                  `json:"priority"`
+	MaxRetry           int                                `json:"maxRetry"`
+	RetryDelay         timeutil.Duration                  `json:"retryDelay"`
+	RetryDelayIncr     timeutil.Duration                  `json:"retryDelayIncr,omitempty"`
+	RetryBackoff       bool                               `json:"retryBackoff,omitempty"`
+	RetryBackoffJitter timeutil.Duration                  `json:"retryBackoffJitter,omitempty"`
+	RetryDelayMax      timeutil.Duration                  `json:"retryDelayMax,omitempty"`
+	Timeout            timeutil.Duration                  `json:"timeout"`
+	ControlDisabled    bool                               `json:"controlDisabled"`
+	Command            *ContainerCommandResp              `json:"command"`
+	Notification       *basedto.BaseEventNotificationResp `json:"notification"`
 
 	// Calculated fields
 	NextRuns []time.Time `json:"nextRuns,omitempty"`
@@ -111,6 +115,11 @@ func TransformSchedJob(
 	}
 
 	resp.Notification = basedto.TransformBaseEventNotification(job.Notification, refObjects)
+
+	// Custom fields
+	if !resp.RetryBackoff && resp.RetryBackoffJitter > 0 {
+		resp.RetryBackoff = true
+	}
 
 	if setting.IsActive() {
 		count := gofn.If(isListAPI, 1, 5) //nolint:mnd

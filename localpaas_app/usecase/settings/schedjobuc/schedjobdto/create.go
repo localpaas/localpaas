@@ -27,30 +27,37 @@ type CreateSchedJobReq struct {
 }
 
 type SchedJobBaseReq struct {
-	Name            string                            `json:"name"`
-	JobType         base.SchedJobType                 `json:"jobType"`
-	Schedule        *ScheduleReq                      `json:"schedule"`
-	App             basedto.ObjectIDReq               `json:"app"`
-	Priority        base.TaskPriority                 `json:"priority"`
-	MaxRetry        int                               `json:"maxRetry"`
-	RetryDelay      timeutil.Duration                 `json:"retryDelay"`
-	Timeout         timeutil.Duration                 `json:"timeout"`
-	ControlDisabled bool                              `json:"controlDisabled"`
-	Command         *ContainerCommandReq              `json:"command"`
-	Notification    *basedto.BaseEventNotificationReq `json:"notification"`
+	Name               string                            `json:"name"`
+	JobType            base.SchedJobType                 `json:"jobType"`
+	Schedule           *ScheduleReq                      `json:"schedule"`
+	App                basedto.ObjectIDReq               `json:"app"`
+	Priority           base.TaskPriority                 `json:"priority"`
+	MaxRetry           int                               `json:"maxRetry"`
+	RetryDelay         timeutil.Duration                 `json:"retryDelay"`
+	RetryDelayIncr     timeutil.Duration                 `json:"retryDelayIncr"`
+	RetryBackoff       bool                              `json:"retryBackoff"`
+	RetryBackoffJitter timeutil.Duration                 `json:"retryBackoffJitter"`
+	RetryDelayMax      timeutil.Duration                 `json:"retryDelayMax"`
+	Timeout            timeutil.Duration                 `json:"timeout"`
+	ControlDisabled    bool                              `json:"controlDisabled"`
+	Command            *ContainerCommandReq              `json:"command"`
+	Notification       *basedto.BaseEventNotificationReq `json:"notification"`
 }
 
 func (req *SchedJobBaseReq) ToEntity() *entity.SchedJob {
 	res := &entity.SchedJob{
-		JobType:         req.JobType,
-		Schedule:        req.Schedule.ToEntity(),
-		App:             entity.ObjectID{ID: req.App.ID},
-		Priority:        req.Priority,
-		MaxRetry:        req.MaxRetry,
-		RetryDelay:      req.RetryDelay,
-		Timeout:         req.Timeout,
-		ControlDisabled: req.ControlDisabled,
-		Notification:    req.Notification.ToEntity(),
+		JobType:            req.JobType,
+		Schedule:           req.Schedule.ToEntity(),
+		App:                entity.ObjectID{ID: req.App.ID},
+		Priority:           req.Priority,
+		MaxRetry:           req.MaxRetry,
+		RetryDelay:         req.RetryDelay,
+		RetryDelayIncr:     req.RetryDelayIncr,
+		RetryBackoffJitter: req.RetryBackoffJitter,
+		RetryDelayMax:      req.RetryDelayMax,
+		Timeout:            req.Timeout,
+		ControlDisabled:    req.ControlDisabled,
+		Notification:       req.Notification.ToEntity(),
 	}
 	if req.JobType == base.SchedJobTypeContainerCommand {
 		res.Command = req.Command.ToEntity()
@@ -193,6 +200,9 @@ func (req *SchedJobBaseReq) modifyRequest() error {
 			req.Schedule.InitialTime = timeutil.NowUTC()
 		}
 		req.Schedule.InitialTime = req.Schedule.InitialTime.Truncate(time.Second)
+	}
+	if req.RetryBackoff && req.RetryBackoffJitter <= 0 {
+		req.RetryBackoffJitter = timeutil.Duration(time.Second)
 	}
 	if req.Command != nil {
 		req.Command.Script = strings.ReplaceAll(req.Command.Script, "\r\n", "\n")

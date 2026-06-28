@@ -10,6 +10,7 @@ import (
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/executil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
@@ -57,12 +58,15 @@ type Task struct {
 }
 
 type TaskConfig struct {
-	Priority        base.TaskPriority `json:"priority"`
-	MaxRetry        int               `json:"maxRetry,omitempty"`
-	Retry           int               `json:"retry,omitempty"`
-	RetryDelay      timeutil.Duration `json:"retryDelay,omitempty"`
-	Timeout         timeutil.Duration `json:"timeout,omitempty"`
-	ControlDisabled bool              `json:"controlDisabled,omitempty"`
+	Priority           base.TaskPriority `json:"priority"`
+	MaxRetry           int               `json:"maxRetry,omitempty"`
+	Retry              int               `json:"retry,omitempty"`
+	RetryDelay         timeutil.Duration `json:"retryDelay,omitempty"`
+	RetryDelayIncr     timeutil.Duration `json:"retryDelayIncr,omitempty"`
+	RetryBackoffJitter timeutil.Duration `json:"retryBackoffJitter,omitempty"`
+	RetryDelayMax      timeutil.Duration `json:"retryDelayMax,omitempty"`
+	Timeout            timeutil.Duration `json:"timeout,omitempty"`
+	ControlDisabled    bool              `json:"controlDisabled,omitempty"`
 }
 
 // GetID implements IDEntity interface
@@ -148,6 +152,28 @@ func (t *Task) AddRun(run *TaskRun) error {
 	}
 	t.Runs = reflectutil.UnsafeBytesToStr(runBytes)
 	return nil
+}
+
+func (t *Task) NextRetryDelay() time.Duration {
+	if t == nil {
+		return 0
+	}
+	delayIncr := t.Config.RetryDelayIncr.ToDuration()
+	backoffJitter := t.Config.RetryBackoffJitter.ToDuration()
+	var delayIncrPtr *time.Duration
+	if delayIncr > 0 {
+		delayIncrPtr = &delayIncr
+	}
+	var backoffJitterPtr *time.Duration
+	if backoffJitter > 0 {
+		backoffJitterPtr = &backoffJitter
+	}
+
+	delay := executil.RetryDelay(t.Config.Retry+1, t.Config.RetryDelay.ToDuration(), delayIncrPtr, backoffJitterPtr)
+	if t.Config.RetryDelayMax > 0 && delay > t.Config.RetryDelayMax.ToDuration() {
+		return t.Config.RetryDelayMax.ToDuration()
+	}
+	return delay
 }
 
 type TaskRun struct {

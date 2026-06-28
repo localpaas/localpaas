@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"math"
-	"math/rand"
 	"time"
 
 	"github.com/tiendc/gofn"
@@ -27,8 +25,7 @@ import (
 const (
 	taskDefaultTimeout      = 3 * time.Hour
 	taskInfoCacheExp        = 24 * time.Hour
-	taskRetryMaxBackoff     = 24 * time.Hour
-	taskControlCheckTimeout = 10 * time.Second
+	taskControlCheckTimeout = 7 * time.Second
 )
 
 func (q *taskQueue) RegisterExecutor(typ base.TaskType, execFunc queue.TaskExecFunc) {
@@ -107,7 +104,7 @@ func (q *taskQueue) executeTask(
 					task.Config.MaxRetry = task.Config.Retry
 				}
 				if task.CanRetry() {
-					task.RetryAt = task.EndedAt.Add(calcExpBackoffRetry(task))
+					task.RetryAt = task.EndedAt.Add(task.NextRetryDelay())
 					rescheduleAt = &task.RetryAt
 				} else {
 					task.RetryAt = time.Time{}
@@ -221,17 +218,4 @@ func (q *taskQueue) taskControlCheck(
 			return
 		}
 	}
-}
-
-func calcExpBackoffRetry(task *entity.Task) time.Duration {
-	randDur := time.Duration(rand.Int31n(1000)) * time.Millisecond //nolint:mnd,gosec
-	delay := task.Config.RetryDelay.ToDuration()
-	if delay == 0 {
-		return randDur
-	}
-	exp := 1.0
-	if task.Config.Retry > 0 {
-		exp = math.Pow(2, float64(task.Config.Retry)) //nolint:mnd
-	}
-	return min(time.Duration(exp*float64(delay))+randDur, taskRetryMaxBackoff)
 }
