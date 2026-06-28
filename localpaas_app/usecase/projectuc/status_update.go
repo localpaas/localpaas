@@ -46,17 +46,8 @@ func (uc *UC) UpdateProjectStatus(
 		// TODO: lock apps
 		if targetAppStatus != "" {
 			for _, app := range project.Apps {
-				if app.Status == targetAppStatus {
-					continue
-				}
-				oldAppStatus := app.Status
-				app.Status = targetAppStatus
-				app.UpdatedAt = project.UpdatedAt
-				app.UpdateVer++
-				persistingData.UpsertingApps = append(persistingData.UpsertingApps, app)
-
 				// TODO: handle error when update a specific app status
-				_ = uc.appService.OnAppStatusChanged(ctx, app, oldAppStatus)
+				_ = uc.appService.SetAppStatus(ctx, db, app, targetAppStatus, true)
 			}
 		}
 
@@ -76,7 +67,7 @@ func (uc *UC) loadProjectDataForUpdateStatus(
 	data *updateProjectData,
 ) error {
 	project, err := uc.projectRepo.GetByID(ctx, db, req.ID,
-		bunex.SelectFor("UPDATE"),
+		bunex.SelectFor("UPDATE OF project"),
 		bunex.SelectRelation("Apps",
 			bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
 		),

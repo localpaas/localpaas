@@ -11,22 +11,60 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
 	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/entity"
+	"github.com/localpaas/localpaas/localpaas_app/infra/database"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/reflectutil"
+	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 )
 
 const (
 	labelLocalPaaSAppPrevServiceMode = "localpaas.app.prevServiceMode"
 )
 
-func (s *service) OnAppStatusChanged(ctx context.Context, app *entity.App, oldStatus base.AppStatus) error {
-	if app.Status == oldStatus {
+func (s *service) SetAppStatus(
+	ctx context.Context,
+	db database.IDB,
+	app *entity.App,
+	status base.AppStatus,
+	recursive bool,
+) error {
+	// Update status of all child apps
+	if app.ParentID == "" && recursive {
+		childApps, _, err := s.appRepo.List(ctx, db, "", nil,
+			bunex.SelectExcludeColumns(entity.AppDefaultExcludeColumns...),
+			bunex.SelectWhere("app.parent_id = ?", app.ID),
+		)
+		if err != nil {
+			return apperrors.New(err)
+		}
+		for _, childApp := range childApps {
+			if err := s.SetAppStatus(ctx, db, childApp, status, recursive); err != nil {
+				return apperrors.New(err)
+			}
+		}
+	}
+
+	if app.Status == status {
 		return nil
 	}
+	app.Status = status
+	app.UpdatedAt = timeutil.NowUTC()
+	app.UpdateVer++
+
 	if app.Status == base.AppStatusDisabled {
-		return s.onAppDisabled(ctx, app)
+		if err := s.onAppDisabled(ctx, app); err != nil {
+			return apperrors.New(err)
+		}
 	}
 	if app.Status == base.AppStatusActive {
-		return s.onAppEnabled(ctx, app)
+		if err := s.onAppEnabled(ctx, app); err != nil {
+			return apperrors.New(err)
+		}
+	}
+
+	err := s.appRepo.Update(ctx, db, app, bunex.UpdateColumns("status", "updated_at", "update_ver"))
+	if err != nil {
+		return apperrors.New(err)
 	}
 	return nil
 }

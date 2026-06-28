@@ -28,5 +28,5 @@ type Service interface {
 
 	PersistAppData(ctx context.Context, db database.IDB, data *PersistingAppData) error
 	DeleteApp(ctx context.Context, db database.IDB, app *entity.App) error
-	OnAppStatusChanged(ctx context.Context, app *entity.App, oldStatus base.AppStatus) error
+	SetAppStatus(ctx context.Context, db database.IDB, app *entity.App, status base.AppStatus, recursive bool) error
 }

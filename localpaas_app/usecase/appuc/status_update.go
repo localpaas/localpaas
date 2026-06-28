@@ -4,11 +4,9 @@ import (
 	"context"
 
 	"github.com/localpaas/localpaas/localpaas_app/apperrors"
-	"github.com/localpaas/localpaas/localpaas_app/base"
 	"github.com/localpaas/localpaas/localpaas_app/basedto"
 	"github.com/localpaas/localpaas/localpaas_app/infra/database"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/bunex"
-	"github.com/localpaas/localpaas/localpaas_app/pkg/timeutil"
 	"github.com/localpaas/localpaas/localpaas_app/pkg/transaction"
 	"github.com/localpaas/localpaas/localpaas_app/usecase/appuc/appdto"
 )
@@ -18,7 +16,6 @@ func (uc *UC) UpdateAppStatus(
 	auth *basedto.Auth,
 	req *appdto.UpdateAppStatusReq,
 ) (*appdto.UpdateAppStatusResp, error) {
-	var oldAppStatus base.AppStatus
 	err := transaction.Execute(ctx, uc.db, func(db database.Tx) error {
 		appData := &updateAppData{}
 		err := uc.loadAppDataForUpdateStatus(ctx, db, req, appData)
@@ -29,16 +26,7 @@ func (uc *UC) UpdateAppStatus(
 			return nil
 		}
 
-		oldAppStatus = appData.App.Status
-		persistingData := &persistingAppData{}
-		uc.preparePersistingAppStatusUpdate(req, appData, persistingData)
-
-		err = uc.persistData(ctx, db, persistingData)
-		if err != nil {
-			return apperrors.New(err)
-		}
-
-		err = uc.appService.OnAppStatusChanged(ctx, appData.App, oldAppStatus)
+		err = uc.appService.SetAppStatus(ctx, db, appData.App, req.Status, true)
 		if err != nil {
 			return apperrors.New(err)
 		}
@@ -71,18 +59,4 @@ func (uc *UC) loadAppDataForUpdateStatus(
 	data.HasChanges = app.Status != req.Status
 
 	return nil
-}
-
-func (uc *UC) preparePersistingAppStatusUpdate(
-	req *appdto.UpdateAppStatusReq,
-	data *updateAppData,
-	persistingData *persistingAppData,
-) {
-	timeNow := timeutil.NowUTC()
-	app := data.App
-	app.UpdateVer++
-	app.Status = req.Status
-	app.UpdatedAt = timeNow
-
-	persistingData.UpsertingApps = append(persistingData.UpsertingApps, app)
 }
