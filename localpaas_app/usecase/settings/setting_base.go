@@ -77,6 +77,8 @@ func (uc *BaseUC) loadSettingScopeData(
 			return apperrors.New(err)
 		}
 		data.ScopeProject = data.ScopeApp.Project
+		req.Scope.ProjectID = data.ScopeApp.ProjectID
+		req.Scope.ParentAppID = data.ScopeApp.ParentID
 
 	case base.ObjectScopeUser:
 		data.ScopeUser, err = uc.UserService.LoadUserEx(ctx, db, req.Scope.UserID, requireActive)

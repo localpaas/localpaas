@@ -86,8 +86,13 @@ func (s *service) validateAppStatus(
 		}
 		return apperrors.New(apperrors.ErrProjectInactive).WithNTParam("Name", projectName)
 	}
-	if requireAppActive && app.Status != base.AppStatusActive {
-		return apperrors.New(apperrors.ErrAppInactive).WithNTParam("Name", app.Name)
+	if requireAppActive {
+		if app.Status != base.AppStatusActive {
+			return apperrors.New(apperrors.ErrAppInactive).WithNTParam("Name", app.Name)
+		}
+		if app.ParentApp != nil && app.ParentApp.Status != base.AppStatusActive {
+			return apperrors.New(apperrors.ErrAppInactive).WithNTParam("Name", app.ParentApp.Name)
+		}
 	}
 	return nil
 }
