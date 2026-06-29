@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS files
     scope           VARCHAR(50) NOT NULL,
     object_id       VARCHAR(100) NULL,
     type            VARCHAR(100) NOT NULL,
+    kind            VARCHAR(100) NULL,
     key             VARCHAR(100) NULL,
     status          VARCHAR NOT NULL CONSTRAINT chk_status CHECK
                         (status IN ('active','pending','disabled','deleting')) DEFAULT 'active',
@@ -26,6 +27,7 @@ CREATE TABLE IF NOT EXISTS files
 CREATE INDEX idx_files_scope ON files(scope);
 CREATE INDEX idx_files_object_id ON files(object_id);
 CREATE INDEX idx_files_type ON files(type);
+CREATE INDEX idx_files_kind ON files(kind);
 CREATE INDEX idx_files_key ON files(key);
 CREATE INDEX idx_files_status ON files(status);
 CREATE INDEX idx_files_name ON files(name);

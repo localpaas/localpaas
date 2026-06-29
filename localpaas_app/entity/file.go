@@ -8,7 +8,7 @@ import (
 
 var (
 	FileUpsertingConflictCols = []string{"id"}
-	FileUpsertingUpdateCols   = []string{"scope", "object_id", "type", "status", "key", "name", "path",
+	FileUpsertingUpdateCols   = []string{"scope", "object_id", "type", "kind", "key", "status", "name", "path",
 		"size", "mimetype", "storage_type", "deleted", "storage_id", "bucket", "update_ver",
 		"updated_at", "deleted_at"}
 )
@@ -18,8 +18,9 @@ type File struct {
 	Scope       base.ObjectScopeType `json:"scope"`
 	ObjectID    string               `bun:",nullzero" json:"objectId,omitempty"`
 	Type        base.FileType        `json:"type"`
-	Status      base.FileStatus      `json:"status"`
+	Kind        string               `bun:",nullzero" json:"kind,omitempty"`
 	Key         string               `bun:",nullzero" json:"key,omitempty"`
+	Status      base.FileStatus      `json:"status"`
 	Name        string               `bun:",nullzero" json:"name"`
 	Path        string               `json:"path"`
 	Size        int64                `json:"size"`

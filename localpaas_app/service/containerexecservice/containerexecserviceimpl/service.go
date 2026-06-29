@@ -8,6 +8,7 @@ import (
 	"github.com/localpaas/localpaas/localpaas_app/service/agentservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/appservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/containerexecservice"
+	"github.com/localpaas/localpaas/localpaas_app/service/fileservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/notificationservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/schedjobservice"
 	"github.com/localpaas/localpaas/localpaas_app/service/settingservice"
@@ -35,6 +36,7 @@ type service struct {
 	taskRepo                 repository.TaskRepo
 	sysErrorRepo             repository.SysErrorRepo
 	loginTrustedDeviceRepo   repository.LoginTrustedDeviceRepo
+	fileRepo                 repository.FileRepo
 
 	schedJobService     schedjobservice.Service
 	appService          appservice.Service
@@ -44,6 +46,7 @@ type service struct {
 	notificationService notificationservice.Service
 	traefikService      traefikservice.Service
 	agentService        agentservice.Service
+	fileService         fileservice.Service
 	dockerManager       docker.Manager
 }
 
@@ -64,6 +67,7 @@ func New(
 	taskRepo repository.TaskRepo,
 	sysErrorRepo repository.SysErrorRepo,
 	loginTrustedDeviceRepo repository.LoginTrustedDeviceRepo,
+	fileRepo repository.FileRepo,
 	schedJobService schedjobservice.Service,
 	appService appservice.Service,
 	settingService settingservice.Service,
@@ -72,6 +76,7 @@ func New(
 	notificationService notificationservice.Service,
 	traefikService traefikservice.Service,
 	agentService agentservice.Service,
+	fileService fileservice.Service,
 	dockerManager docker.Manager,
 ) containerexecservice.Service {
 	return &service{
@@ -91,6 +96,7 @@ func New(
 		taskRepo:                 taskRepo,
 		sysErrorRepo:             sysErrorRepo,
 		loginTrustedDeviceRepo:   loginTrustedDeviceRepo,
+		fileRepo:                 fileRepo,
 		schedJobService:          schedJobService,
 		appService:               appService,
 		settingService:           settingService,
@@ -99,6 +105,7 @@ func New(
 		notificationService:      notificationService,
 		traefikService:           traefikService,
 		agentService:             agentService,
+		fileService:              fileService,
 		dockerManager:            dockerManager,
 	}
 }

@@ -16,6 +16,7 @@ import (
 
 type ScanningLogOptions struct {
 	BatchRecvOptions  batchrecvchan.Options
+	StdoutWriter      io.Writer
 	ParseLogHeader    bool
 	ParseLogTimestamp bool
 }
@@ -37,6 +38,12 @@ func WithParseLogTimestamp(flag bool) ScanningLogOption {
 func WithBatchRecvOptions(recvOpts batchrecvchan.Options) ScanningLogOption {
 	return func(o *ScanningLogOptions) {
 		o.BatchRecvOptions = recvOpts
+	}
+}
+
+func WithStdoutWriter(w io.Writer) ScanningLogOption {
+	return func(o *ScanningLogOptions) {
+		o.StdoutWriter = w
 	}
 }
 
@@ -71,7 +78,7 @@ func StartScanningLog(
 		if opts.ParseLogHeader {
 			// Docker logs have an 8-byte header for stdout/stderr
 			// Ref: https://docs.docker.com/reference/api/engine/version/v1.51/#tag/Container/operation/ContainerAttach
-			_ = parseLogs(ctx, reader, batchChan, opts.ParseLogTimestamp)
+			_ = parseLogs(ctx, reader, batchChan, opts.StdoutWriter, opts.ParseLogTimestamp)
 		} else {
 			scanner := bufio.NewScanner(reader)
 			for scanner.Scan() {
@@ -100,14 +107,13 @@ func StartScanningLog(
 
 const (
 	// Stdin represents standard input stream type.
-	Stdin byte = iota
+	Stdin byte = 0
 	// Stdout represents standard output stream type.
-	Stdout
+	Stdout byte = 1
 	// Stderr represents standard error steam type.
-	Stderr
-	// Systemerr represents errors originating from the system that make it
-	// into the multiplexed stream.
-	Systemerr
+	Stderr byte = 2
+	// Systemerr represents errors originating from the system that make it into the multiplexed stream.
+	Systemerr byte = 3
 
 	stdWriterPrefixLen = 8
 	stdWriterFdIndex   = 0
@@ -121,6 +127,7 @@ func parseLogs(
 	ctx context.Context,
 	src io.Reader,
 	dst *batchrecvchan.Chan[*tasklog.LogFrame],
+	dstOfStdout io.Writer,
 	parseTimestamp bool,
 ) (err error) {
 	var (
@@ -147,19 +154,19 @@ func parseLogs(
 			}
 		}
 
-		logFrame := &tasklog.LogFrame{}
+		var logType tasklog.LogType
 
 		// Check the first byte to know where to write
-		switch buf[stdWriterFdIndex] {
+		stream := buf[stdWriterFdIndex]
+		switch stream {
 		case Stdin:
-			logFrame.Type = tasklog.LogTypeIn
+			logType = tasklog.LogTypeIn
 		case Stdout:
-			logFrame.Type = tasklog.LogTypeOut
+			logType = tasklog.LogTypeOut
 		case Stderr, Systemerr:
-			logFrame.Type = tasklog.LogTypeErr
+			logType = tasklog.LogTypeErr
 		default:
-			return fmt.Errorf("%w: Unrecognized input header: %d",
-				apperrors.ErrInfraInternal, buf[stdWriterFdIndex])
+			return fmt.Errorf("%w: Unrecognized input header: %d", apperrors.ErrInfraInternal, stream)
 		}
 
 		// Retrieve the size of the frame
@@ -188,9 +195,27 @@ func parseLogs(
 			}
 		}
 
-		logFrame.Data = string(buf[stdWriterPrefixLen : frameSize+stdWriterPrefixLen])
-		if parseTimestamp {
-			logFrame.ParseTimestampFromData()
+		frameData := buf[stdWriterPrefixLen : frameSize+stdWriterPrefixLen]
+
+		if stream == Stdout && dstOfStdout != nil {
+			// Write the retrieved frame (without header)
+			nw, err := dstOfStdout.Write(frameData)
+			if err != nil {
+				return apperrors.New(err)
+			}
+			// If the frame has not been fully written: error
+			if nw != frameSize {
+				return apperrors.New(io.ErrShortWrite)
+			}
+		} else {
+			logFrame := &tasklog.LogFrame{
+				Type: logType,
+				Data: string(frameData),
+			}
+			if parseTimestamp {
+				logFrame.ParseTimestampFromData()
+			}
+			dst.Send(logFrame)
 		}
 
 		// Move the rest of the buffer to the beginning
@@ -198,10 +223,8 @@ func parseLogs(
 		// Move the index
 		nr -= frameSize + stdWriterPrefixLen
 
-		if err := ctx.Err(); err != nil { // Context is done
+		if err = ctx.Err(); err != nil { // Context is done
 			return apperrors.New(err)
 		}
-
-		dst.Send(logFrame)
 	}
 }

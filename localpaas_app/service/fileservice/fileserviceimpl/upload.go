@@ -34,7 +34,7 @@ func (s *service) Upload(
 	var filePath string
 	switch req.FileType { //nolint
 	case base.FileTypeBuildSource:
-		filePath = config.Current.DataPathFilesUpload().RelPath()
+		filePath = config.Current.DataPathFiles().RelPath()
 	default:
 		// Do nothing
 	}

@@ -36,8 +36,9 @@ type GetFileResp struct {
 type FileResp struct {
 	ID          string                    `json:"id"`
 	Type        base.FileType             `json:"type"`
-	Status      base.FileStatus           `json:"status"`
+	Kind        base.FileKind             `json:"kind"`
 	Key         string                    `json:"key"`
+	Status      base.FileStatus           `json:"status"`
 	Name        string                    `json:"name"`
 	Path        string                    `json:"path"`
 	Bucket      string                    `json:"bucket,omitempty"`

@@ -222,6 +222,7 @@ type SchedJobContainerCommand struct {
 	ArgGroups   []*SchedJobCommandArgGroup `json:"argGroups,omitempty"`
 	ConsoleSize SchedJobCommandConsoleSize `json:"consoleSize"`
 	TTY         bool                       `json:"tty,omitempty"`
+	Output      *SchedJobCommandOutput     `json:"output,omitempty"`
 }
 
 type SchedJobCommandArgGroup struct {
@@ -242,6 +243,17 @@ type SchedJobCommandConsoleSize struct {
 	Height uint `json:"h"`
 }
 
+type SchedJobCommandOutput struct {
+	Enabled           bool                       `json:"enabled"`
+	SaveFileName      string                     `json:"saveFileName"`
+	SavePath          string                     `json:"savePath"`
+	Storage           ObjectID                   `json:"storage"`
+	FileKind          base.FileKind              `json:"fileKind"`
+	CompressionFormat base.FileCompressionFormat `json:"compressionFormat"`
+	EncryptionFormat  base.FileEncryptionFormat  `json:"encryptionFormat"`
+	EncryptionSecret  EncryptedField             `json:"encryptionSecret"`
+}
+
 func (s *SchedJob) GetType() base.SettingType {
 	return base.SettingTypeSchedJob
 }
@@ -256,6 +268,9 @@ func (s *SchedJob) GetRefObjectIDs() *RefObjectIDs {
 	}
 	if s.Notification != nil {
 		refIDs.AddRefIDs(s.Notification.GetRefObjectIDs())
+	}
+	if s.Command != nil && s.Command.Output != nil && s.Command.Output.Storage.ID != "" {
+		refIDs.RefSettingIDs = append(refIDs.RefSettingIDs, s.Command.Output.Storage.ID)
 	}
 	return refIDs
 }

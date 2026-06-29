@@ -183,6 +183,7 @@ var (
 	ErrFileNameTooLong             = NewErr(ErrArgumentInvalid, "ERR_FILE_NAME_TOO_LONG")
 	ErrFileTargetObjectUnavailable = NewErr(ErrArgumentInvalid, "ERR_FILE_TARGET_OBJECT_UNAVAILABLE")
 	ErrArchiveFormatUnsupported    = NewErr(ErrUnsupported, "ERR_ARCHIVE_FORMAT_UNSUPPORTED")
+	ErrEncryptionFormatUnsupported = NewErr(ErrUnsupported, "ERR_ENCRYPTION_FORMAT_UNSUPPORTED")
 	ErrStorageTypeUnsupported      = NewErr(ErrUnsupported, "ERR_STORAGE_TYPE_UNSUPPORTED")
 )
 

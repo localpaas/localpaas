@@ -20,11 +20,14 @@ func (uc *UC) ListFile(
 	if len(req.Types) > 0 {
 		listOpts = append(listOpts, bunex.SelectWhereIn("file.type IN (?)", req.Types...))
 	}
-	if len(req.Statuses) > 0 {
-		listOpts = append(listOpts, bunex.SelectWhereIn("file.status IN (?)", req.Statuses...))
+	if len(req.Kinds) > 0 {
+		listOpts = append(listOpts, bunex.SelectWhereIn("file.kind IN (?)", req.Kinds...))
 	}
 	if len(req.Keys) > 0 {
 		listOpts = append(listOpts, bunex.SelectWhereIn("file.key IN (?)", req.Keys...))
+	}
+	if len(req.Statuses) > 0 {
+		listOpts = append(listOpts, bunex.SelectWhereIn("file.status IN (?)", req.Statuses...))
 	}
 	if len(req.StorageTypes) > 0 {
 		listOpts = append(listOpts, bunex.SelectWhereIn("file.storage_type IN (?)", req.StorageTypes...))

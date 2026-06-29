@@ -39,8 +39,8 @@ func (s *service) sysBackupSaveResultInLocal(
 		data.OutFileName += ".zst"
 	case base.FileCompressionNone: // Do nothing
 	default:
-		return apperrors.NewUnsupported(
-			fmt.Sprintf("Compression format '%v'", data.SysBackupSettings.Compression.Format))
+		return apperrors.New(apperrors.ErrArchiveFormatUnsupported).
+			WithParam("Format", data.SysBackupSettings.Compression.Format)
 	}
 
 	switch data.SysBackupSettings.Encryption.Format {
@@ -48,8 +48,8 @@ func (s *service) sysBackupSaveResultInLocal(
 		data.OutFileName += ".age"
 	case base.FileEncryptionNone: // Do nothing
 	default:
-		return apperrors.NewUnsupported(
-			fmt.Sprintf("Encryption format '%v'", data.SysBackupSettings.Encryption.Format))
+		return apperrors.New(apperrors.ErrEncryptionFormatUnsupported).
+			WithParam("Format", data.SysBackupSettings.Encryption.Format)
 	}
 
 	data.OutFilePath = filepath.Join(data.BackupSaveDir, data.OutFileName)

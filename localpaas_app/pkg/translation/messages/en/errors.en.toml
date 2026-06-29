@@ -113,6 +113,7 @@ ERR_FILE_EXT_NOT_SUPPORTED = "File extension must be one of {{.SupportedExts}}"
 ERR_FILE_NAME_TOO_LONG = "File name must contain less than {{.MaxNameLen}} characters"
 ERR_FILE_TARGET_OBJECT_UNAVAILABLE = "Target object is unavailable"
 ERR_ARCHIVE_FORMAT_UNSUPPORTED = "Archive format '{{.Format}}' is not supported"
+ERR_ENCRYPTION_FORMAT_UNSUPPORTED = "Encryption format '{{.Format}}' is not supported"
 ERR_STORAGE_TYPE_UNSUPPORTED = "Storage type '{{.Type}}' is not supported"
 
 # Source errors

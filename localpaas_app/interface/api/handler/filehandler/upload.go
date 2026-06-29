@@ -66,6 +66,8 @@ func (h *Handler) checkUploadPermission(ctx *gin.Context, req *filedto.UploadReq
 		}
 	case base.FileTypeSystemBackup, base.FileTypeRepoCache:
 		fallthrough
+	case base.FileTypeSchedJobOutput:
+		fallthrough
 	default:
 		return nil, apperrors.New(apperrors.ErrFileTypeNotSupported).
 			WithParam("SupportedTypes", []base.FileType{base.FileTypeBuildSource})

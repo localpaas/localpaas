@@ -449,6 +449,8 @@ func (h *BaseHandler) ParseFormFiles(ctx *gin.Context, req *filedto.UploadReq) e
 		requiredScopes = []base.ObjectScopeType{base.ObjectScopeApp}
 	case base.FileTypeSystemBackup, base.FileTypeRepoCache:
 		fallthrough
+	case base.FileTypeSchedJobOutput:
+		fallthrough
 	default:
 		return apperrors.New(apperrors.ErrFileTypeNotSupported).
 			WithParam("SupportedTypes", []base.FileType{base.FileTypeBuildSource})

@@ -5,7 +5,6 @@ import (
 	"compress/gzip"
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -166,8 +165,8 @@ func (s *service) sysBackupCreateWriter(
 		w = encW
 	case base.FileEncryptionNone: // Do nothing
 	default:
-		return "", nil, nil, apperrors.NewUnsupported(
-			fmt.Sprintf("Encryption format '%v'", data.SysBackupSettings.Encryption.Format))
+		return "", nil, nil, apperrors.New(apperrors.ErrEncryptionFormatUnsupported).
+			WithParam("Format", data.SysBackupSettings.Encryption.Format)
 	}
 
 	switch data.SysBackupSettings.Compression.Format {
@@ -182,8 +181,8 @@ func (s *service) sysBackupCreateWriter(
 		w = zstdW
 	case base.FileCompressionNone: // Do nothing
 	default:
-		return "", nil, nil, apperrors.NewUnsupported(
-			fmt.Sprintf("Compression format '%v'", data.SysBackupSettings.Compression.Format))
+		return "", nil, nil, apperrors.New(apperrors.ErrArchiveFormatUnsupported).
+			WithParam("Format", data.SysBackupSettings.Compression.Format)
 	}
 
 	tarW = tar.NewWriter(w)

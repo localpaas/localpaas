@@ -124,7 +124,8 @@ func (s *service) containerExec(
 		return resp, nil
 	}
 
-	logChan, _ := docker.StartScanningLog(ctx, io.NopCloser(attachResp.Reader), docker.WithParseLogHeader(false))
+	logChan, _ := docker.StartScanningLog(ctx, io.NopCloser(attachResp.Reader),
+		docker.WithParseLogHeader(!execHelper.isTTY), docker.WithStdoutWriter(req.StdoutWriter))
 	for msgs := range logChan {
 		_ = logStore.AddRedacted(ctx, msgs...)
 	}
@@ -151,6 +152,7 @@ type containerExecHelper struct {
 
 	createResult *client.ExecCreateResult
 	attachResult *client.ExecAttachResult
+	isTTY        bool
 
 	retryable    bool
 	agentService agentservice.Service
@@ -172,7 +174,11 @@ func (h *containerExecHelper) ExecCreate(
 
 	// Local exec
 	if h.dockerClient != nil {
-		createRes, attachRes, startRes, err := h.dockerClient.ContainerExec(ctx, containerID, req.ExecOptions)
+		createRes, attachRes, startRes, err := h.dockerClient.ContainerExec(ctx, containerID,
+			func(opts *client.ExecCreateOptions) {
+				req.ExecOptions(opts)
+				h.isTTY = opts.TTY || opts.ConsoleSize.Width > 0 && opts.ConsoleSize.Height > 0
+			})
 		if err != nil {
 			return nil, nil, nil, apperrors.New(err)
 		}

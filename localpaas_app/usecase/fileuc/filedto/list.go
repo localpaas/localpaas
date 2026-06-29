@@ -11,8 +11,9 @@ import (
 
 type ListFileReq struct {
 	Types        []base.FileType        `json:"-" mapstructure:"type"`
-	Statuses     []base.SettingStatus   `json:"-" mapstructure:"status"`
+	Kinds        []base.FileKind        `json:"-" mapstructure:"kind"`
 	Keys         []string               `json:"-" mapstructure:"key"`
+	Statuses     []base.SettingStatus   `json:"-" mapstructure:"status"`
 	StorageTypes []base.FileStorageType `json:"-" mapstructure:"storageType"`
 	Search       string                 `json:"-" mapstructure:"search"`
 

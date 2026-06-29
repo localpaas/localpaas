@@ -2,6 +2,7 @@ package containerexecservice
 
 import (
 	"context"
+	"io"
 	"time"
 
 	"github.com/moby/moby/client"
@@ -21,6 +22,7 @@ type ContainerExecReq struct {
 	TaskFindRetryMax       int
 	TaskFindRetryDelay     time.Duration
 	LogStore               *tasklog.Store
+	StdoutWriter           io.Writer
 }
 
 type ContainerExecResp struct {
